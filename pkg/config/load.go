@@ -57,7 +57,7 @@ func Parse(content []byte) ([]*v1alpha1.Configuration, error) {
 			}
 			policies = append(policies, policy)
 		default:
-			return nil, fmt.Errorf("policy type not supported %s", gvk)
+			return nil, fmt.Errorf("type not supported %s", gvk)
 		}
 	}
 	return policies, nil
