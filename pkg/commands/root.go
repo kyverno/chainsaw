@@ -1,6 +1,8 @@
 package commands
 
 import (
+	"github.com/kyverno/chainsaw/pkg/commands/test"
+	"github.com/kyverno/chainsaw/pkg/commands/version"
 	"github.com/spf13/cobra"
 )
 
@@ -12,7 +14,9 @@ func RootCommand() *cobra.Command {
 			return cmd.Help()
 		},
 	}
-
-	cmd.AddCommand(chainsawTestCMD())
+	cmd.AddCommand(
+		test.Command(),
+		version.Command(),
+	)
 	return cmd
 }

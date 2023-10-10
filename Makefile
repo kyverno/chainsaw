@@ -88,8 +88,14 @@ codegen-crds: $(CONTROLLER_GEN) ## Generate CRDs
 	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
 	@cp config/crds/* pkg/data/crds
 
+.PHONY: codegen-cli-docs
+codegen-cli-docs: $(CLI_BIN) ## Generate CLI docs
+	@echo Generate cli docs... >&2
+	@rm -rf website/docs/commands
+	@go run ./hack/docs/cmd/main.go
+
 .PHONY: codegen-mkdocs
-codegen-mkdocs: ## Generate mkdocs website
+codegen-mkdocs: codegen-cli-docs ## Generate mkdocs website
 	@echo Generate mkdocs website... >&2
 	@pip install mkdocs
 	@pip install --upgrade pip
