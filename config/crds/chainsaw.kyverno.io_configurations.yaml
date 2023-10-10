@@ -17,6 +17,8 @@ spec:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
+        description: Configuration is the resource that contains the configuration
+          used to run tests.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -31,11 +33,12 @@ spec:
           metadata:
             type: object
           spec:
+            description: Configuration spec.
             properties:
-              duration:
+              timeout:
                 type: integer
             required:
-            - duration
+            - timeout
             type: object
         required:
         - spec

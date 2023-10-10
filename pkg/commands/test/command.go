@@ -55,7 +55,7 @@ func Command() *cobra.Command {
 			}
 
 			if isSet(flags, "duraiton") {
-				options.Spec.Duration = duration
+				options.Spec.Timeout = duration
 			}
 
 			return nil
