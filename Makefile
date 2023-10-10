@@ -162,7 +162,7 @@ build: $(CLI_BIN) ## Build
 .PHONY: tests
 tests: $(CLI_BIN) ## Run tests
 	@echo Running tests... >&2
-	@go test ./...
+	@go test ./... -race -coverprofile=coverage.out -covermode=atomic
 
 ########
 # HELP #
