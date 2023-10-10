@@ -9,7 +9,8 @@ chainsaw test [flags]... [test directories]...
 ### Options
 
 ```
-      --duration duration   The duration to use as default for configuration. (default 30ns)
+      --config string       Chainsaw configuration file.
+      --duration duration   The duration to use as default for configuration. (default 30s)
   -h, --help                help for test
 ```
 
