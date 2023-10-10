@@ -48,6 +48,7 @@ clean-tools: ## Remove installed tools
 # BUILD #
 #########
 
+CMD_FOLDER     := cmd
 CLI_BIN        := chainsaw
 CGO_ENABLED    ?= 0
 GOOS           ?= $(shell go env GOOS)
@@ -69,7 +70,7 @@ vet: ## Run go vet
 
 $(CLI_BIN): fmt vet
 	@echo Build cli binary... >&2
-	@CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) go build -o ./$(CLI_BIN) -ldflags=$(LD_FLAGS) .
+	@CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) go build -o ./$(CLI_BIN) -ldflags=$(LD_FLAGS) ./$(CMD_FOLDER)
 
 build: $(CLI_BIN) ## Build
 
