@@ -35,6 +35,6 @@ auto_generated: true
 
 | Field | Type | Required | Description |
 |---|---|---|---|
-| `timeout` | `int` | :white_check_mark: | *No description provided.* |
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  | <p>Timeout per test step.</p> |
 
   
