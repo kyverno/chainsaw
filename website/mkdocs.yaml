@@ -6,6 +6,9 @@ nav:
   - intro.md
   - install.md
   - quick-start.md
+  - Command Line Usage:
+    - commands/chainsaw.md
+    - commands/chainsaw_version.md
 # - Writing policies:
 #   - policies/index.md
 #   - Basics:
