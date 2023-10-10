@@ -91,6 +91,14 @@ codegen-crds: $(CONTROLLER_GEN) ## Generate CRDs
 .PHONY: codegen-all
 codegen-all: codegen-crds codegen-deepcopy codegen-register ## Rebuild all generated code and docs
 
+.PHONY: verify-codegen
+verify-codegen: codegen-all ## Verify all generated code and docs are up to date
+	@echo Checking codegen is up to date... >&2
+	@git --no-pager diff -- .
+	@echo 'If this test fails, it is because the git diff is non-empty after running "make codegen-all".' >&2
+	@echo 'To correct this, locally run "make codegen-all", commit the changes, and re-run tests.' >&2
+	@git diff --quiet --exit-code -- .
+
 #########
 # BUILD #
 #########
@@ -120,6 +128,15 @@ $(CLI_BIN): fmt vet
 	@CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) go build -o ./$(CLI_BIN) -ldflags=$(LD_FLAGS) ./$(CMD_FOLDER)
 
 build: $(CLI_BIN) ## Build
+
+########
+# TEST #
+########
+
+.PHONY: tests
+tests: $(CLI_BIN) ## Run tests
+	@echo Running tests... >&2
+	@go test ./...
 
 ########
 # HELP #
