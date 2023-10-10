@@ -5,12 +5,11 @@ import (
 	"log"
 	"os"
 
+	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	utils "github.com/kyverno/chainsaw/pkg/utils"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-
-	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	utils "github.com/kyverno/chainsaw/pkg/utils"
 )
 
 func chainsawTestCMD() *cobra.Command {
