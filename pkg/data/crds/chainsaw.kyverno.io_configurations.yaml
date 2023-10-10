@@ -36,9 +36,9 @@ spec:
             description: Configuration spec.
             properties:
               timeout:
-                type: integer
-            required:
-            - timeout
+                default: 30s
+                description: Timeout per test step.
+                type: string
             type: object
         required:
         - spec

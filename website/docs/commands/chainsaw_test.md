@@ -9,8 +9,8 @@ chainsaw test [flags]... [test directories]...
 ### Options
 
 ```
-      --duration int   The duration to use as default for configuration. (default 30)
-  -h, --help           help for test
+      --duration duration   The duration to use as default for configuration. (default 30ns)
+  -h, --help                help for test
 ```
 
 ### SEE ALSO
