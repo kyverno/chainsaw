@@ -31,6 +31,11 @@ spec:
           metadata:
             type: object
           spec:
+            properties:
+              duration:
+                type: integer
+            required:
+            - duration
             type: object
         required:
         - spec

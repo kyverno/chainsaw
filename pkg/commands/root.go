@@ -12,5 +12,7 @@ func RootCommand() *cobra.Command {
 			return cmd.Help()
 		},
 	}
+
+	cmd.AddCommand(chainsawTestCMD())
 	return cmd
 }
