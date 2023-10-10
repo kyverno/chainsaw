@@ -1,0 +1,46 @@
+INHERIT: ./mkdocs.base.yaml
+
+nav:
+- Home: index.md
+- Getting Started:
+  - intro.md
+  - install.md
+  - quick-start.md
+# - Writing policies:
+#   - policies/index.md
+#   - Basics:
+#     - policies/api-version.md
+#     - policies/match.md
+#     - policies/assertion-trees.md
+#     - policies/modifiers.md
+#     - policies/explicit-bindings.md
+#     - policies/escaping.md
+#   - Command Line Usage:
+#     - commands/kyverno-json.md
+#     - commands/kyverno-json_completion.md
+#     - commands/kyverno-json_completion_bash.md
+#     - commands/kyverno-json_completion_fish.md
+#     - commands/kyverno-json_completion_powershell.md
+#     - commands/kyverno-json_completion_zsh.md
+#     - commands/kyverno-json_docs.md
+#     - commands/kyverno-json_jp.md
+#     - commands/kyverno-json_jp_function.md
+#     - commands/kyverno-json_jp_parse.md
+#     - commands/kyverno-json_jp_query.md
+#     - commands/kyverno-json_scan.md
+#     - commands/kyverno-json_version.md
+#   - JMESPath:
+#     - Overview: jp.md
+#     - Functions: jp/functions.md
+#   - APIs:
+#     - v1alpha1: apis/kyverno-json.v1alpha1.md
+# - Policy catalog:
+#   - catalog/index.md
+#   - tags.md
+#   - All:
+#     - catalog/policies/aws/policy-1.md
+#     - catalog/policies/ecs/policy-1.md
+# - Playground:
+#   - playground.md
+- Blog:
+  - blog/index.md
