@@ -8,6 +8,7 @@ nav:
   - quick-start.md
   - Command Line Usage:
     - commands/chainsaw.md
+    - commands/chainsaw_test.md
     - commands/chainsaw_version.md
 # - Writing policies:
 #   - policies/index.md
