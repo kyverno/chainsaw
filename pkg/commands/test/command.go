@@ -57,7 +57,7 @@ func Command() *cobra.Command {
 		},
 	}
 	cmd.Flags().DurationVar(&options.timeout.Duration, "duration", 30*time.Second, "The duration to use as default for configuration.")
-	cmd.Flags().StringVar(&options.config, "config", ".chainsaw.yaml", "Chainsaw configuration file.")
+	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file.")
 	// TODO: panic ?
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
