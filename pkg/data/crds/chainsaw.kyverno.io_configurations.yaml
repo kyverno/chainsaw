@@ -32,10 +32,10 @@ spec:
             type: object
           spec:
             properties:
-              timeout:
+              duration:
                 type: integer
             required:
-            - timeout
+            - duration
             type: object
         required:
         - spec

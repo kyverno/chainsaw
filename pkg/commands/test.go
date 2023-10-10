@@ -16,7 +16,7 @@ import (
 func chainsawTestCMD() *cobra.Command {
 
 	configPath := ""
-	timeout := 30
+	duration := 30
 
 	options := v1alpha1.Configuration{}
 
@@ -57,8 +57,8 @@ func chainsawTestCMD() *cobra.Command {
 				}
 			}
 
-			if isSet(flags, "timeout") {
-				options.Spec.Timeout = timeout
+			if isSet(flags, "duraiton") {
+				options.Spec.Duration = duration
 			}
 
 			return nil
@@ -69,7 +69,7 @@ func chainsawTestCMD() *cobra.Command {
 		},
 	}
 
-	testCMD.Flags().IntVar(&timeout, "timeout", 30, "The timeout to use as default for configuration.")
+	testCMD.Flags().IntVar(&duration, "duration", 30, "The duration to use as default for configuration.")
 
 	return testCMD
 
