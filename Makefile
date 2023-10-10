@@ -44,6 +44,53 @@ clean-tools: ## Remove installed tools
 	@echo Clean tools... >&2
 	@rm -rf $(TOOLS_DIR)
 
+###########
+# CODEGEN #
+###########
+
+ORG                         ?= kyverno
+PACKAGE                     ?= github.com/$(ORG)/chainsaw
+GOPATH_SHIM                 := ${PWD}/.gopath
+PACKAGE_SHIM                := $(GOPATH_SHIM)/src/$(PACKAGE)
+INPUT_DIRS                  := $(PACKAGE)/pkg/apis/v1alpha1
+CRDS_PATH                   := ${PWD}/config/crds
+
+$(GOPATH_SHIM):
+	@echo Create gopath shim... >&2
+	@mkdir -p $(GOPATH_SHIM)
+
+.INTERMEDIATE: $(PACKAGE_SHIM)
+$(PACKAGE_SHIM): $(GOPATH_SHIM)
+	@echo Create package shim... >&2
+	@mkdir -p $(GOPATH_SHIM)/src/github.com/$(ORG) && ln -s -f ${PWD} $(PACKAGE_SHIM)
+
+.PHONY: codegen-register
+codegen-register: $(PACKAGE_SHIM) $(REGISTER_GEN) ## Generate types registrations
+	@echo Generate registration... >&2
+	@GOPATH=$(GOPATH_SHIM) $(REGISTER_GEN) \
+		--go-header-file=./hack/boilerplate.go.txt \
+		--input-dirs=$(INPUT_DIRS)
+
+.PHONY: codegen-deepcopy
+codegen-deepcopy: $(PACKAGE_SHIM) $(DEEPCOPY_GEN) ## Generate deep copy functions
+	@echo Generate deep copy functions... >&2
+	@GOPATH=$(GOPATH_SHIM) $(DEEPCOPY_GEN) \
+		--go-header-file=./hack/boilerplate.go.txt \
+		--input-dirs=$(INPUT_DIRS) \
+		--output-file-base=zz_generated.deepcopy
+
+.PHONY: codegen-crds
+codegen-crds: $(CONTROLLER_GEN) ## Generate CRDs
+	@echo Generate crds... >&2
+	@rm -rf $(CRDS_PATH)
+	@$(CONTROLLER_GEN) crd paths=./pkg/apis/... crd:crdVersions=v1 output:dir=$(CRDS_PATH)
+	@echo Copy generated CRDs to embed in the CLI... >&2
+	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
+	@cp config/crds/* pkg/data/crds
+
+.PHONY: codegen-all
+codegen-all: codegen-crds codegen-deepcopy codegen-register ## Rebuild all generated code and docs
+
 #########
 # BUILD #
 #########
