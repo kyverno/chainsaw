@@ -13,6 +13,10 @@ import (
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
 )
 
+const (
+	DefaultFileName = ".chainsaw.yaml"
+)
+
 var configuration_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Configuration")
 
 func Load(path string) (*v1alpha1.Configuration, error) {

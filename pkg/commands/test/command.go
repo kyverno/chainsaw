@@ -2,73 +2,66 @@ package test
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"time"
 
-	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	utils "github.com/kyverno/chainsaw/pkg/utils"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/config"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
+type options struct {
+	config  string
+	timeout metav1.Duration
+}
+
 func Command() *cobra.Command {
-	configPath := ""
-	duration := metav1.Duration{
-		Duration: 30 * time.Second,
-	}
-
-	options := v1alpha1.Configuration{}
-
+	var options options
 	cmd := &cobra.Command{
 		Use:   "test [flags]... [test directories]...",
 		Short: "Stronger tool for e2e testing",
-		PreRunE: func(cmd *cobra.Command, args []string) error {
-			flags := cmd.Flags()
-
-			if configPath == "" {
-				if _, err := os.Stat("chainsaw-test.yaml"); err == nil {
-					configPath = "chainsaw-test.yaml"
-				} else {
-					log.Println("running without a 'chainsaw-test.yaml' configuration")
+		RunE: func(cmd *cobra.Command, _ []string) error {
+			out := cmd.OutOrStdout()
+			var configuration v1alpha1.Configuration
+			// if no config file was provided, give a chance to the default config name
+			if options.config == "" {
+				if _, err := os.Stat(config.DefaultFileName); err == nil {
+					options.config = config.DefaultFileName
+					fmt.Fprintf(out, "No configuration provided but found default file: %s\n", options.config)
 				}
 			}
-
-			if configPath != "" {
-				objects, err := utils.LoadYAMLFromFile(configPath)
+			// try to load configuration file
+			if options.config != "" {
+				fmt.Fprintf(out, "Loading config (%s)...\n", options.config)
+				config, err := config.Load(options.config)
 				if err != nil {
 					return err
 				}
-
-				for _, obj := range objects {
-					kind := obj.GetObjectKind().GroupVersionKind().Kind
-
-					if kind == "Configuration" {
-						switch ts := obj.(type) {
-						case *v1alpha1.Configuration:
-							options = *ts
-						case *unstructured.Unstructured:
-							log.Println(fmt.Errorf("bad configuration in file %q", configPath))
-						}
-					} else {
-						log.Println(fmt.Errorf("unknown object type: %s", kind))
-					}
-				}
+				configuration = *config
+			} else {
+				fmt.Fprintln(out, "Running without configuration")
 			}
-
-			if isSet(flags, "duraiton") {
-				options.Spec.Timeout = &duration
+			// flags take precedence over configuration file
+			flags := cmd.Flags()
+			if isSet(flags, "duration") {
+				configuration.Spec.Timeout = &options.timeout
 			}
-
+			// run tests
+			fmt.Fprintln(out, "Running tests...")
+			fmt.Fprintln(out, "- TODO")
+			// done
+			fmt.Fprintln(out, "Done.")
 			return nil
 		},
-		Run: func(cmd *cobra.Command, args []string) {
-			log.Println("Running tests...")
-		},
 	}
-	cmd.Flags().DurationVar(&duration.Duration, "duration", 30, "The duration to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.timeout.Duration, "duration", 30*time.Second, "The duration to use as default for configuration.")
+	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file.")
+	// TODO: panic ?
+	if err := cmd.MarkFlagFilename("config"); err != nil {
+		panic(err)
+	}
 	return cmd
 }
 
