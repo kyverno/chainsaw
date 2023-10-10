@@ -5,16 +5,15 @@ import (
 	"log"
 	"os"
 
-	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	utils "github.com/kyverno/chainsaw/pkg/utils"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+
+	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	utils "github.com/kyverno/chainsaw/pkg/utils"
 )
 
 func chainsawTestCMD() *cobra.Command {
-
 	configPath := ""
 	duration := 30
 
@@ -34,7 +33,6 @@ func chainsawTestCMD() *cobra.Command {
 				}
 			}
 
-			// Load the configuration YAML into options.
 			if configPath != "" {
 				objects, err := utils.LoadYAMLFromFile(configPath)
 				if err != nil {
@@ -63,7 +61,6 @@ func chainsawTestCMD() *cobra.Command {
 
 			return nil
 		},
-
 		Run: func(cmd *cobra.Command, args []string) {
 			log.Println("Running tests...")
 		},
@@ -72,7 +69,6 @@ func chainsawTestCMD() *cobra.Command {
 	testCMD.Flags().IntVar(&duration, "duration", 30, "The duration to use as default for configuration.")
 
 	return testCMD
-
 }
 
 // isSet returns true if a flag is set on the command line.
