@@ -75,6 +75,15 @@ $(CLI_BIN): fmt vet
 build: $(CLI_BIN) ## Build
 
 ########
+# TEST #
+########
+
+.PHONY: tests
+tests: $(CLI_BIN) ## Run tests
+	@echo Running tests... >&2
+	@go test ./...
+
+########
 # HELP #
 ########
 
