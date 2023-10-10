@@ -1,0 +1,7 @@
+markdownDisabled: false
+
+apis:
+  - name: chainsaw
+    title: chainsaw (v1alpha1)
+    package: github.com/kyverno/chainsaw
+    path: pkg/apis/v1alpha1
