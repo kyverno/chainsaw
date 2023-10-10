@@ -94,8 +94,14 @@ codegen-cli-docs: $(CLI_BIN) ## Generate CLI docs
 	@rm -rf website/docs/commands
 	@go run ./hack/docs/cmd/main.go
 
+.PHONY: codegen-api-docs
+codegen-api-docs: $(REFERENCE_DOCS) ## Generate markdown API docs
+	@echo Generate api docs... >&2
+	@rm -rf ./website/docs/apis
+	@cd ./website/apis && $(REFERENCE_DOCS) -c config.yaml -f markdown -o ../docs/apis
+
 .PHONY: codegen-mkdocs
-codegen-mkdocs: codegen-cli-docs ## Generate mkdocs website
+codegen-mkdocs: codegen-cli-docs codegen-api-docs ## Generate mkdocs website
 	@echo Generate mkdocs website... >&2
 	@pip install mkdocs
 	@pip install --upgrade pip
@@ -103,7 +109,7 @@ codegen-mkdocs: codegen-cli-docs ## Generate mkdocs website
 	@mkdocs build -f ./website/mkdocs.yaml
 
 .PHONY: codegen-all
-codegen-all: codegen-crds codegen-deepcopy codegen-register codegen-mkdocs ## Rebuild all generated code and docs
+codegen-all: codegen-crds codegen-deepcopy codegen-register codegen-mkdocs codegen-cli-docs codegen-api-docs ## Rebuild all generated code and docs
 
 .PHONY: verify-codegen
 verify-codegen: codegen-all ## Verify all generated code and docs are up to date

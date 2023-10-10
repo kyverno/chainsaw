@@ -22,8 +22,8 @@ nav:
   # - JMESPath:
   #   - Overview: jp.md
   #   - Functions: jp/functions.md
-  # - APIs:
-  #   - v1alpha1: apis/kyverno-json.v1alpha1.md
+  - APIs:
+    - v1alpha1: apis/chainsaw.v1alpha1.md
 # - Policy catalog:
 #   - catalog/index.md
 #   - tags.md

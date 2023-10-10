@@ -34,4 +34,4 @@ jobs:
       - name: Deploy site
         run: |
           set -e
-          mkdocs gh-deploy -f ./website/mkdocs.yaml
+          mkdocs gh-deploy -f ./website/mkdocs.yaml --force
