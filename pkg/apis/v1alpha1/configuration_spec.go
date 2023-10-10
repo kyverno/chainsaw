@@ -1,4 +1,3 @@
 package v1alpha1
 
-type ConfigurationSpec struct {
-}
+type ConfigurationSpec struct{}
