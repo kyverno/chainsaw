@@ -88,8 +88,16 @@ codegen-crds: $(CONTROLLER_GEN) ## Generate CRDs
 	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
 	@cp config/crds/* pkg/data/crds
 
+.PHONY: codegen-mkdocs
+codegen-mkdocs: ## Generate mkdocs website
+	@echo Generate mkdocs website... >&2
+	@pip install mkdocs
+	@pip install --upgrade pip
+	@pip install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin
+	@mkdocs build -f ./website/mkdocs.yaml
+
 .PHONY: codegen-all
-codegen-all: codegen-crds codegen-deepcopy codegen-register ## Rebuild all generated code and docs
+codegen-all: codegen-crds codegen-deepcopy codegen-register codegen-mkdocs ## Rebuild all generated code and docs
 
 .PHONY: verify-codegen
 verify-codegen: codegen-all ## Verify all generated code and docs are up to date
@@ -98,6 +106,18 @@ verify-codegen: codegen-all ## Verify all generated code and docs are up to date
 	@echo 'If this test fails, it is because the git diff is non-empty after running "make codegen-all".' >&2
 	@echo 'To correct this, locally run "make codegen-all", commit the changes, and re-run tests.' >&2
 	@git diff --quiet --exit-code -- .
+
+##########
+# MKDOCS #
+##########
+
+.PHONY: mkdocs-serve
+mkdocs-serve: ## Generate and serve mkdocs website
+	@echo Generate and servemkdocs website... >&2
+	@pip install mkdocs
+	@pip install --upgrade pip
+	@pip install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin
+	@mkdocs serve -f ./website/mkdocs.yaml
 
 #########
 # BUILD #
