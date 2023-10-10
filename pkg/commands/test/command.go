@@ -1,4 +1,4 @@
-package commands
+package test
 
 import (
 	"fmt"
@@ -12,7 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-func chainsawTestCMD() *cobra.Command {
+func Command() *cobra.Command {
 	configPath := ""
 	duration := 30
 

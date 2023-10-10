@@ -3,7 +3,7 @@ name: Deploy
 # permissions: {}
 
 on:
-  pull_request:
+  push:
     branches:
       - 'main'
 
