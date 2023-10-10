@@ -1,34 +1,40 @@
-{{ define "members" }}
-  {{/* . is a apiType */}}
-  {{- range .GetMembers -}}
-    {{/* . is a apiMember */}}
-    {{- if not .Hidden }}
-<tr><td><code>{{ .FieldName }}</code>
-      {{- if not .IsOptional }} <B>[Required]</B>{{- end -}}
-<br/>
-{{/* Link for type reference */}}
-      {{- with .GetType -}}
-        {{- if .Link -}}
-<a href="{{ .Link }}"><code>{{ .DisplayName }}</code></a>
+{{- define "comment" -}}
+  {{- $comment := "" -}}
+  {{- range . -}}
+    {{- if . -}}
+      {{- if not (eq (index . 0) '+') -}}
+        {{- if $comment -}}
+          {{- $comment = print $comment " " . -}}
         {{- else -}}
-<code>{{ .DisplayName }}</code>
+          {{- $comment = . -}}
         {{- end -}}
-      {{- end }}
-</td>
-<td>
-   {{- if .IsInline -}}
-(Members of <code>{{ .FieldName }}</code> are embedded into this type.)
-   {{- end }}
-   {{ if .GetComment -}}
-   {{ .GetComment }}
-   {{- else -}}
-   <span class="text-muted">No description provided.</span>
-   {{- end }}
-   {{- if and (eq (.GetType.Name.Name) "ObjectMeta") -}}
-Refer to the Kubernetes API documentation for the fields of the <code>metadata</code> field.
-   {{- end -}}
-</td>
-</tr>
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if $comment -}}
+    <p>{{ $comment }}</p>
+  {{- else -}}
+    *No description provided.*
+  {{- end -}}
+{{- end -}}
+
+{{- define "typ" -}}
+  {{- if .Link -}}
+    [`{{ .DisplayName }}`]({{ .Link }})
+  {{- else -}}
+    `{{ .DisplayName }}`
+  {{- end -}}
+{{- end -}}
+
+{{- define "members" }}
+  {{- range .GetMembers }}
+    {{- if not .Hidden }}
+      {{- $name := .FieldName }}
+      {{- $optional := .IsOptional }}
+      {{- $type := .GetType }}
+      {{- $inline := .IsInline }}
+      {{- $comment := .GetComment }}
+| `{{ $name }}` | {{ template "typ" $type }} | {{ if not $optional }}:white_check_mark:{{ end }} | {{ template "comment" .CommentLines }} |
     {{- end }}
   {{- end }}
-{{ end }}
+{{- end }}

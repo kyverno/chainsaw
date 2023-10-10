@@ -1,5 +1,6 @@
 package v1alpha1
 
+// ConfigurationSpec contains the configuration used to run tests.
 type ConfigurationSpec struct {
-	Duration int `json:"duration"`
+	Timeout int `json:"timeout"`
 }

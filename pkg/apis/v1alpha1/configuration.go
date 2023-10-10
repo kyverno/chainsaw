@@ -9,8 +9,14 @@ import (
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:scope=Cluster
 
+// Configuration is the resource that contains the configuration used to run tests.
 type Configuration struct {
-	metav1.TypeMeta   `json:",inline"`
+	metav1.TypeMeta `json:",inline"`
+
+	// Standard object's metadata.
+	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
-	Spec              ConfigurationSpec `json:"spec"`
+
+	// Configuration spec.
+	Spec ConfigurationSpec `json:"spec"`
 }
