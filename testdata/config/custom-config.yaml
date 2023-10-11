@@ -1,0 +1,13 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Configuration
+metadata:
+  name: custom-config
+spec:
+  timeout: 45s
+  skipDelete: true
+  stopOnFirstFailure: true
+  parallel: 4
+  reportFormat: "JSON"
+  reportName: "custom-report"
+  fullName: true
+  skipTestRegex: "skip-*"
