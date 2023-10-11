@@ -1,0 +1,5 @@
+Usage:
+  version [flags]
+
+Flags:
+  -h, --help   help for version
