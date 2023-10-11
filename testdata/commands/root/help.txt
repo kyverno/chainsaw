@@ -1,0 +1,14 @@
+Usage:
+  chainsaw [flags]
+  chainsaw [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  help        Help about any command
+  test        Stronger tool for e2e testing
+  version     
+
+Flags:
+  -h, --help   help for chainsaw
+
+Use "chainsaw [command] --help" for more information about a command.
