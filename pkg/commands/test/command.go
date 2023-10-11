@@ -58,34 +58,34 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "duration") {
 				configuration.Spec.Timeout = &options.timeout
 			}
-			if isSet(flags, "testDirs") {
+			if flagutils.IsSet(flags, "testDirs") {
 				configuration.Spec.TestDirs = options.testDirs
 			}
-			if isSet(flags, "skipDelete") {
+			if flagutils.IsSet(flags, "skipDelete") {
 				configuration.Spec.SkipDelete = options.skipDelete
 			}
-			if isSet(flags, "stopOnFirstFailure") {
+			if flagutils.IsSet(flags, "stopOnFirstFailure") {
 				configuration.Spec.StopOnFirstFailure = options.stopOnFirstFailure
 			}
-			if isSet(flags, "parallel") {
+			if flagutils.IsSet(flags, "parallel") {
 				configuration.Spec.Parallel = options.parallel
 			}
-			if isSet(flags, "reportFormat") {
+			if flagutils.IsSet(flags, "reportFormat") {
 				configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
 			}
-			if isSet(flags, "reportName") {
+			if flagutils.IsSet(flags, "reportName") {
 				configuration.Spec.ReportName = options.reportName
 			}
-			if isSet(flags, "namespace") {
+			if flagutils.IsSet(flags, "namespace") {
 				configuration.Spec.Namespace = options.namespace
 			}
-			if isSet(flags, "suppress") {
+			if flagutils.IsSet(flags, "suppress") {
 				configuration.Spec.Suppress = options.suppress
 			}
-			if isSet(flags, "fullName") {
+			if flagutils.IsSet(flags, "fullName") {
 				configuration.Spec.FullName = options.fullName
 			}
-			if isSet(flags, "skipTestRegex") {
+			if flagutils.IsSet(flags, "skipTestRegex") {
 				configuration.Spec.SkipTestRegex = options.skipTestRegex
 			}
 			// run tests
