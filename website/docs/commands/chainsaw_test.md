@@ -16,7 +16,7 @@ chainsaw test [flags]... [test directories]...
       --namespace string       Namespace to use for tests.
       --parallel int           The maximum number of tests to run at once. (default 8)
       --reportFormat string    Test report format (JSON|XML|nil).
-      --reportName string      The name of the report to create. (default "kuttl-report")
+      --reportName string      The name of the report to create. (default "chainsaw-report")
       --skipDelete             If set, do not delete the resources after running the tests.
       --skipTestRegex string   Regular expression to skip tests based on.
       --stopOnFirstFailure     Stop the test upon encountering the first failure.

@@ -71,7 +71,7 @@ func Command() *cobra.Command {
 				configuration.Spec.Parallel = options.parallel
 			}
 			if isSet(flags, "reportFormat") {
-				configuration.Spec.ReportFormat = options.reportFormat
+				configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
 			}
 			if isSet(flags, "reportName") {
 				configuration.Spec.ReportName = options.reportName
@@ -103,7 +103,7 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.stopOnFirstFailure, "stopOnFirstFailure", false, "Stop the test upon encountering the first failure.")
 	cmd.Flags().IntVar(&options.parallel, "parallel", 8, "The maximum number of tests to run at once.")
 	cmd.Flags().StringVar(&options.reportFormat, "reportFormat", "", "Test report format (JSON|XML|nil).")
-	cmd.Flags().StringVar(&options.reportName, "reportName", "kuttl-report", "The name of the report to create.")
+	cmd.Flags().StringVar(&options.reportName, "reportName", "chainsaw-report", "The name of the report to create.")
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests.")
 	cmd.Flags().StringSliceVar(&options.suppress, "suppress", []string{}, "Logs to suppress.")
 	cmd.Flags().BoolVar(&options.fullName, "fullName", false, "Use full test case folder path instead of folder name.")

@@ -40,11 +40,19 @@ auto_generated: true
 | `skipDelete` | `bool` |  | <p>If set, do not delete the resources after running the tests (implies SkipClusterDelete).</p> |
 | `stopOnFirstFailure` | `bool` |  | <p>StopOnFirstFailure determines whether the test should stop upon encountering the first failure.</p> |
 | `parallel` | `int` | :white_check_mark: | <p>The maximum number of tests to run at once.</p> |
-| `reportFormat` | `string` |  | <p>ReportFormat determines test report format (JSON|XML|nil) nil == no report. maps to report.Type, however we don't want generated.deepcopy to have reference to it.</p> |
-| `reportName` | `string` |  | <p>ReportName defines the name of report to create. It defaults to "kuttl-report".</p> |
+| `reportFormat` | [`ReportFormatType`](#chainsaw-kyverno-io-v1alpha1-ReportFormatType) |  | <p>ReportFormat determines test report format (JSON|XML|nil) nil == no report. maps to report.Type, however we don't want generated.deepcopy to have reference to it.</p> |
+| `reportName` | `string` |  | <p>ReportName defines the name of report to create. It defaults to "chainsaw-report".</p> |
 | `namespace` | `string` |  | <p>Namespace defines the namespace to use for tests.</p> |
 | `suppress` | `[]string` |  | <p>Suppress is used to suppress logs.</p> |
 | `fullName` | `bool` |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
 | `skipTestRegex` | `string` |  | <p>SkipTestRegex is used to skip tests based on a regular expression.</p> |
+
+## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
+
+(Alias of `string`)
+
+**Appears in:**
+    
+- [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
 
   

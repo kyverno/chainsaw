@@ -50,7 +50,7 @@ func TestLoad(t *testing.T) {
 					StopOnFirstFailure: false,
 					Parallel:           8,
 					ReportFormat:       "",
-					ReportName:         "kuttl-report",
+					ReportName:         "chainsaw-report",
 					FullName:           false,
 					SkipTestRegex:      "",
 				},

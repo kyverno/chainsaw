@@ -36,7 +36,6 @@ spec:
             description: Configuration spec.
             properties:
               fullName:
-                default: false
                 description: FullName makes use of the full test case folder path
                   instead of the folder name.
                 type: boolean
@@ -46,31 +45,30 @@ spec:
               parallel:
                 default: 8
                 description: The maximum number of tests to run at once.
-                format: int64
+                format: int
                 type: integer
               reportFormat:
-                default: ""
                 description: ReportFormat determines test report format (JSON|XML|nil)
                   nil == no report. maps to report.Type, however we don't want generated.deepcopy
                   to have reference to it.
+                enum:
+                - JSON
+                - XML
                 type: string
               reportName:
-                default: kuttl-report
+                default: chainsaw-report
                 description: ReportName defines the name of report to create. It defaults
-                  to "kuttl-report".
+                  to "chainsaw-report".
                 type: string
               skipDelete:
-                default: false
                 description: If set, do not delete the resources after running the
                   tests (implies SkipClusterDelete).
                 type: boolean
               skipTestRegex:
-                default: ""
                 description: SkipTestRegex is used to skip tests based on a regular
                   expression.
                 type: string
               stopOnFirstFailure:
-                default: false
                 description: StopOnFirstFailure determines whether the test should
                   stop upon encountering the first failure.
                 type: boolean
