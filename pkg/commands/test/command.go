@@ -7,8 +7,8 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
+	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -55,37 +55,37 @@ func Command() *cobra.Command {
 			}
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
-			if isSet(flags, "duration") {
+			if flagutils.IsSet(flags, "duration") {
 				configuration.Spec.Timeout = &options.timeout
 			}
-			if isSet(flags, "testDirs") {
+			if flagutils.IsSet(flags, "testDirs") {
 				configuration.Spec.TestDirs = options.testDirs
 			}
-			if isSet(flags, "skipDelete") {
+			if flagutils.IsSet(flags, "skipDelete") {
 				configuration.Spec.SkipDelete = options.skipDelete
 			}
-			if isSet(flags, "stopOnFirstFailure") {
+			if flagutils.IsSet(flags, "stopOnFirstFailure") {
 				configuration.Spec.StopOnFirstFailure = options.stopOnFirstFailure
 			}
-			if isSet(flags, "parallel") {
+			if flagutils.IsSet(flags, "parallel") {
 				configuration.Spec.Parallel = options.parallel
 			}
-			if isSet(flags, "reportFormat") {
+			if flagutils.IsSet(flags, "reportFormat") {
 				configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
 			}
-			if isSet(flags, "reportName") {
+			if flagutils.IsSet(flags, "reportName") {
 				configuration.Spec.ReportName = options.reportName
 			}
-			if isSet(flags, "namespace") {
+			if flagutils.IsSet(flags, "namespace") {
 				configuration.Spec.Namespace = options.namespace
 			}
-			if isSet(flags, "suppress") {
+			if flagutils.IsSet(flags, "suppress") {
 				configuration.Spec.Suppress = options.suppress
 			}
-			if isSet(flags, "fullName") {
+			if flagutils.IsSet(flags, "fullName") {
 				configuration.Spec.FullName = options.fullName
 			}
-			if isSet(flags, "skipTestRegex") {
+			if flagutils.IsSet(flags, "skipTestRegex") {
 				configuration.Spec.SkipTestRegex = options.skipTestRegex
 			}
 			// run tests
@@ -113,15 +113,4 @@ func Command() *cobra.Command {
 		panic(err)
 	}
 	return cmd
-}
-
-// isSet returns true if a flag is set on the command line.
-func isSet(flagSet *pflag.FlagSet, name string) bool {
-	found := false
-	flagSet.Visit(func(flag *pflag.Flag) {
-		if flag.Name == name {
-			found = true
-		}
-	})
-	return found
 }
