@@ -4,7 +4,7 @@ content_type: tool-reference
 package: chainsaw.kyverno.io/v1alpha1
 auto_generated: true
 ---
-<p>Package v1alpha1 contains API Schema definitions for the v1alpha1 API group</p>
+<p>Package v1alpha1 contains API Schema definitions for the v1alpha1 API group.</p>
 
 
 ## Resource Types 
