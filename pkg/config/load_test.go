@@ -15,57 +15,79 @@ func TestLoad(t *testing.T) {
 		path    string
 		want    *v1alpha1.Configuration
 		wantErr bool
-	}{{
-		name:    "confimap",
-		path:    "../../testdata/config/configmap.yaml",
-		wantErr: true,
-	}, {
-		name:    "not found",
-		path:    "../../testdata/config/not-found.yaml",
-		wantErr: true,
-	}, {
-		name:    "empty",
-		path:    "../../testdata/config/empty.yaml",
-		wantErr: true,
-	}, {
-		name: "default",
-		path: "../../testdata/config/default.yaml",
-		want: &v1alpha1.Configuration{
-			TypeMeta: metav1.TypeMeta{
-				APIVersion: "chainsaw.kyverno.io/v1alpha1",
-				Kind:       "Configuration",
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "default",
-			},
-			Spec: v1alpha1.ConfigurationSpec{
-				Timeout: &metav1.Duration{
-					Duration: 30 * time.Second,
+	}{
+		{
+			name:    "confimap",
+			path:    "../../testdata/config/configmap.yaml",
+			wantErr: true,
+		},
+		{
+			name:    "not found",
+			path:    "../../testdata/config/not-found.yaml",
+			wantErr: true,
+		},
+		{
+			name:    "empty",
+			path:    "../../testdata/config/empty.yaml",
+			wantErr: true,
+		},
+		{
+			name: "default",
+			path: "../../testdata/config/default.yaml",
+			want: &v1alpha1.Configuration{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Configuration",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "default",
+				},
+				Spec: v1alpha1.ConfigurationSpec{
+					Timeout: &metav1.Duration{
+						Duration: 30 * time.Second,
+					},
+					SkipDelete:         false,
+					StopOnFirstFailure: false,
+					Parallel:           8,
+					ReportFormat:       "",
+					ReportName:         "chainsaw-report",
+					FullName:           false,
+					SkipTestRegex:      "",
 				},
 			},
 		},
-	}, {
-		name: "timeout 1m",
-		path: "../../testdata/config/timeout-1m.yaml",
-		want: &v1alpha1.Configuration{
-			TypeMeta: metav1.TypeMeta{
-				APIVersion: "chainsaw.kyverno.io/v1alpha1",
-				Kind:       "Configuration",
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "timeout-1m",
-			},
-			Spec: v1alpha1.ConfigurationSpec{
-				Timeout: &metav1.Duration{
-					Duration: time.Minute,
+		{
+			name: "custom-config",
+			path: "../../testdata/config/custom-config.yaml",
+			want: &v1alpha1.Configuration{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Configuration",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "custom-config",
+				},
+				Spec: v1alpha1.ConfigurationSpec{
+					Timeout: &metav1.Duration{
+						Duration: 45 * time.Second,
+					},
+					SkipDelete:         true,
+					StopOnFirstFailure: true,
+					Parallel:           4,
+					ReportFormat:       "JSON",
+					ReportName:         "custom-report",
+					FullName:           true,
+					SkipTestRegex:      "skip-*",
 				},
 			},
 		},
-	}, {
-		name:    "multiple",
-		path:    "../../testdata/config/multiple.yaml",
-		wantErr: true,
-	}}
+
+		{
+			name:    "multiple",
+			path:    "../../testdata/config/multiple.yaml",
+			wantErr: true,
+		},
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Load(tt.path)
