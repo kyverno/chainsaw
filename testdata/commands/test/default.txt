@@ -1,0 +1,4 @@
+Running without configuration
+Running tests...
+- TODO
+Done.
