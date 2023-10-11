@@ -7,8 +7,8 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
+	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	"github.com/spf13/cobra"
-	"github.com/spf13/pflag"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -45,7 +45,7 @@ func Command() *cobra.Command {
 			}
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
-			if isSet(flags, "duration") {
+			if flagutils.IsSet(flags, "duration") {
 				configuration.Spec.Timeout = &options.timeout
 			}
 			// run tests
@@ -63,15 +63,4 @@ func Command() *cobra.Command {
 		panic(err)
 	}
 	return cmd
-}
-
-// isSet returns true if a flag is set on the command line.
-func isSet(flagSet *pflag.FlagSet, name string) bool {
-	found := false
-	flagSet.Visit(func(flag *pflag.Flag) {
-		if flag.Name == name {
-			found = true
-		}
-	})
-	return found
 }
