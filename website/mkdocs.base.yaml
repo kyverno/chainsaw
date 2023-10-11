@@ -16,11 +16,15 @@ copyright: Made with ❤️ by Kyverno contributors.
 # strictness
 strict: true
 
+# style
+extra_css:
+- static/extra.css
+
 theme:
   name: material
   custom_dir: docs/overrides
   language: en
-  logo: static/logo.png
+  logo: static/Kyverno_320x320.png
   favicon: static/favicon.ico
   include_search_page: false
   search_index_only: true
