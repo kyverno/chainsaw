@@ -61,6 +61,16 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.TestDirs != nil {
+		in, out := &in.TestDirs, &out.TestDirs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
+	if in.Suppress != nil {
+		in, out := &in.Suppress, &out.Suppress
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	return
 }
 

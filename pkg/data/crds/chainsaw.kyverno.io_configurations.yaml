@@ -35,6 +35,53 @@ spec:
           spec:
             description: Configuration spec.
             properties:
+              fullName:
+                description: FullName makes use of the full test case folder path
+                  instead of the folder name.
+                type: boolean
+              namespace:
+                description: Namespace defines the namespace to use for tests.
+                type: string
+              parallel:
+                default: 8
+                description: The maximum number of tests to run at once.
+                format: int
+                type: integer
+              reportFormat:
+                description: ReportFormat determines test report format (JSON|XML|nil)
+                  nil == no report. maps to report.Type, however we don't want generated.deepcopy
+                  to have reference to it.
+                enum:
+                - JSON
+                - XML
+                type: string
+              reportName:
+                default: chainsaw-report
+                description: ReportName defines the name of report to create. It defaults
+                  to "chainsaw-report".
+                type: string
+              skipDelete:
+                description: If set, do not delete the resources after running the
+                  tests (implies SkipClusterDelete).
+                type: boolean
+              skipTestRegex:
+                description: SkipTestRegex is used to skip tests based on a regular
+                  expression.
+                type: string
+              stopOnFirstFailure:
+                description: StopOnFirstFailure determines whether the test should
+                  stop upon encountering the first failure.
+                type: boolean
+              suppress:
+                description: Suppress is used to suppress logs.
+                items:
+                  type: string
+                type: array
+              testDirs:
+                description: Directories containing test cases to run.
+                items:
+                  type: string
+                type: array
               timeout:
                 default: 30s
                 description: Timeout per test step.
