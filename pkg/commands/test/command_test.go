@@ -2,7 +2,6 @@ package test
 
 import (
 	"bytes"
-	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -27,48 +26,72 @@ func TestChainsawCommand(t *testing.T) {
 			out:     filepath.Join(basePath, "default.txt"),
 		},
 		{
-			name:    "with duration",
-			args:    []string{"--duration=10s"},
+			name: "with duration",
+			args: []string{
+				"--duration",
+				"10s",
+			},
 			wantErr: false,
 			out:     filepath.Join(basePath, "without_config.txt"),
 		},
 		{
-			name:    "invalid duration",
-			args:    []string{"--duration=invalid"},
+			name: "invalid duration",
+			args: []string{
+				"--duration",
+				"invalid",
+			},
 			wantErr: true,
 		},
 		{
-			name:    "test dirs specified",
-			args:    []string{"--testDirs=dir1,dir2,dir3"},
+			name: "test dirs specified",
+			args: []string{
+				"--testDirs",
+				"dir1,dir2,dir3",
+			},
 			wantErr: false,
 			out:     filepath.Join(basePath, "without_config.txt"),
 		},
 		{
-			name:    "nonexistent config file",
-			args:    []string{"--config=nonexistent.yaml"},
+			name: "nonexistent config file",
+			args: []string{
+				"--config",
+				"nonexistent.yaml",
+			},
 			wantErr: true,
 		},
 		{
-			name:    "suppress logs",
-			args:    []string{"--suppress=warning,error"},
+			name: "suppress logs",
+			args: []string{
+				"--suppress",
+				"warning,error",
+			},
 			wantErr: false,
 			out:     filepath.Join(basePath, "without_config.txt"),
 		},
 		{
-			name:    "skip test with regex",
-			args:    []string{"--skipTestRegex=test[1-3]"},
+			name: "skip test with regex",
+			args: []string{
+				"--skipTestRegex",
+				"test[1-3]",
+			},
 			wantErr: false,
 			out:     filepath.Join(basePath, "without_config.txt"),
 		},
 		{
-			name:    "valid config",
-			args:    []string{fmt.Sprintf("--config=%s/config/empty_config.yaml", basePath)},
+			name: "valid config",
+			args: []string{
+				"--config",
+				filepath.Join(basePath, "config/empty_config.yaml"),
+			},
 			wantErr: false,
 			out:     filepath.Join(basePath, "valid_config.txt"),
 		},
 		{
-			name:    "nonexistent config",
-			args:    []string{fmt.Sprintf("--config=%s/config/nonexistent_config.yaml", basePath)},
+			name: "nonexistent config",
+			args: []string{
+				"--config",
+				filepath.Join(basePath, "config/nonexistent_config.yaml"),
+			},
 			wantErr: true,
 		},
 
@@ -81,8 +104,11 @@ func TestChainsawCommand(t *testing.T) {
 		// 	out:     filepath.Join(basePath, "wrong_format_config.txt",
 		// },
 		{
-			name:    "wrong kind in config",
-			args:    []string{fmt.Sprintf("--config=%s/config/wrong_kind_config.yaml", basePath)},
+			name: "wrong kind in config",
+			args: []string{
+				"--config",
+				filepath.Join(basePath, "config/wrong_kind_config.yaml"),
+			},
 			wantErr: true,
 			out:     filepath.Join(basePath, "wrong_kind_config.txt"),
 		},
