@@ -13,29 +13,29 @@ import (
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
 )
 
-var test_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Test")
+var testStep_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("TestStep")
 
-func Load(path string) ([]*v1alpha1.Test, error) {
+func LoadStep(path string) ([]*v1alpha1.TestStep, error) {
 	content, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		return nil, err
 	}
-	tests, err := Parse(content)
+	testSteps, err := ParseStep(content)
 	if err != nil {
 		return nil, err
 	}
-	if len(tests) == 0 {
-		return nil, fmt.Errorf("found no test in %s", path)
+	if len(testSteps) == 0 {
+		return nil, fmt.Errorf("found no testStep in %s", path)
 	}
-	return tests, nil
+	return testSteps, nil
 }
 
-func Parse(content []byte) ([]*v1alpha1.Test, error) {
+func ParseStep(content []byte) ([]*v1alpha1.TestStep, error) {
 	documents, err := yamlutils.SplitDocuments(content)
 	if err != nil {
 		return nil, err
 	}
-	var tests []*v1alpha1.Test
+	var testSteps []*v1alpha1.TestStep
 	// TODO: no need to allocate a validator every time
 	loader, err := loader.New(openapiclient.NewLocalCRDFiles(data.Crds(), data.CrdsFolder))
 	if err != nil {
@@ -47,15 +47,15 @@ func Parse(content []byte) ([]*v1alpha1.Test, error) {
 			return nil, err
 		}
 		switch gvk {
-		case test_v1alpha1:
-			test, err := convert.To[v1alpha1.Test](untyped)
+		case testStep_v1alpha1:
+			testStep, err := convert.To[v1alpha1.TestStep](untyped)
 			if err != nil {
 				return nil, err
 			}
-			tests = append(tests, test)
+			testSteps = append(testSteps, testStep)
 		default:
 			return nil, fmt.Errorf("type not supported %s", gvk)
 		}
 	}
-	return tests, nil
+	return testSteps, nil
 }
