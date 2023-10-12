@@ -1,0 +1,10 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-1
+spec:
+  steps:
+  - apply:
+    - file: foo.yaml
+  - assert:
+    - file: bar.yaml
