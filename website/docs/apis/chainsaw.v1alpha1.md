@@ -11,6 +11,7 @@ auto_generated: true
 
 
 - [Configuration](#chainsaw-kyverno-io-v1alpha1-Configuration)
+- [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
   
 ## `Configuration`     {#chainsaw-kyverno-io-v1alpha1-Configuration}
 
@@ -23,6 +24,30 @@ auto_generated: true
 | `kind` | `string` | :white_check_mark: | `Configuration` |
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  | <p>Standard object's metadata.</p> |
 | `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec) |  | <p>Configuration spec.</p> |
+
+## `TestStep`     {#chainsaw-kyverno-io-v1alpha1-TestStep}
+
+<p>Configuration is the resource that contains the configuration used to run tests.</p>
+
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `apiVersion` | `string` | :white_check_mark: | `chainsaw.kyverno.io/v1alpha1` |
+| `kind` | `string` | :white_check_mark: | `TestStep` |
+| `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  | <p>Standard object's metadata.</p> |
+| `spec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) |  | <p>Configuration spec.</p> |
+
+## `Apply`     {#chainsaw-kyverno-io-v1alpha1-Apply}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+## `Assert`     {#chainsaw-kyverno-io-v1alpha1-Assert}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -47,6 +72,12 @@ auto_generated: true
 | `fullName` | `bool` |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
 | `skipTestRegex` | `string` |  | <p>SkipTestRegex is used to skip tests based on a regular expression.</p> |
 
+## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
 ## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 
 (Alias of `string`)
@@ -54,5 +85,17 @@ auto_generated: true
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
+
+## `TestStepSpec`     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}
+
+**Appears in:**
+    
+- [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  | *No description provided.* |
+| `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  | *No description provided.* |
+| `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  | *No description provided.* |
 
   
