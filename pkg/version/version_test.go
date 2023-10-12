@@ -24,7 +24,7 @@ func TestHash(t *testing.T) {
 	require.Equal(t, "---", Hash())
 }
 
-func Test_tryeFindSetting(t *testing.T) {
+func Test_tryFindSetting(t *testing.T) {
 	tests := []struct {
 		name     string
 		key      string
@@ -53,7 +53,7 @@ func Test_tryeFindSetting(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tryeFindSetting(tt.key, tt.settings...); got != tt.want {
+			if got := tryFindSetting(tt.key, tt.settings...); got != tt.want {
 				t.Errorf("tryeFindSetting() = %v, want %v", got, tt.want)
 			}
 		})
