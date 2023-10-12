@@ -124,7 +124,7 @@ func Command() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().DurationVar(&options.timeout.Duration, "duration", 30*time.Second, "The duration to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.timeout.Duration, "timeout", 30*time.Second, "The timeout to use as default for configuration.")
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file.")
 	cmd.Flags().StringSliceVar(&options.testDirs, "testDirs", []string{}, "Directories containing test cases to run.")
 	cmd.Flags().BoolVar(&options.skipDelete, "skipDelete", false, "If set, do not delete the resources after running the tests.")
