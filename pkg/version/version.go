@@ -29,7 +29,7 @@ func Time() string {
 	if !ok {
 		return notFound
 	}
-	return tryeFindSetting(vcsTime, bi.Settings...)
+	return tryFindSetting(vcsTime, bi.Settings...)
 }
 
 func Hash() string {
@@ -37,10 +37,10 @@ func Hash() string {
 	if !ok {
 		return notFound
 	}
-	return tryeFindSetting(vcsRevision, bi.Settings...)
+	return tryFindSetting(vcsRevision, bi.Settings...)
 }
 
-func tryeFindSetting(key string, settings ...debug.BuildSetting) string {
+func tryFindSetting(key string, settings ...debug.BuildSetting) string {
 	for _, setting := range settings {
 		if setting.Key == key {
 			return setting.Value

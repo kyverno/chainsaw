@@ -42,31 +42,41 @@ func Run(cfg *rest.Config, tests ...v1alpha1.Test) (int, error) {
 
 func run(t *testing.T, cfg *rest.Config, tests ...v1alpha1.Test) {
 	t.Helper()
-	for _, test := range tests {
-		client, err := client.New(cfg)
-		if err != nil {
-			t.Fatal(err)
-		}
-		func(t *testing.T, test v1alpha1.Test) {
+	for i := range tests {
+		test := tests[i]
+		t.Run(test.GetName(), func(t *testing.T) {
 			t.Helper()
-			t.Run(test.Name, func(t *testing.T) {
-				t.Helper()
-				t.Parallel()
-				for i, step := range test.Spec.Steps {
-					func(t *testing.T, step v1alpha1.TestStepSpec) {
-						t.Helper()
-						t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
-							t.Helper()
-							executeStep(t, step, client)
-						})
-					}(t, step)
-				}
-			})
-		}(t, test)
+			runTest(t, cfg, test)
+		})
 	}
 }
 
-func executeStep(t *testing.T, step v1alpha1.TestStepSpec, client client.Client) {
+func runTest(t *testing.T, cfg *rest.Config, test v1alpha1.Test) {
+	t.Helper()
+	t.Parallel()
+	c, err := client.New(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	namespace := client.PetNamespace()
+	if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
+			t.Fatal(err)
+		}
+	}()
+	for i := range test.Spec.Steps {
+		step := test.Spec.Steps[i]
+		t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
+			t.Helper()
+			executeStep(t, step, c)
+		})
+	}
+}
+
+func executeStep(t *testing.T, step v1alpha1.TestStepSpec, c client.Client) {
 	t.Helper()
 	for _, apply := range step.Apply {
 		resources, err := resource.Load(apply.File)
@@ -74,7 +84,7 @@ func executeStep(t *testing.T, step v1alpha1.TestStepSpec, client client.Client)
 			t.Fatal(err)
 		}
 		for i := range resources {
-			_, err := client.Apply(context.Background(), &resources[i])
+			_, err := client.CreateOrUpdate(context.Background(), c, &resources[i])
 			if err != nil {
 				t.Fatal(err)
 			}

@@ -2,18 +2,9 @@ package client
 
 import (
 	"k8s.io/apimachinery/pkg/api/meta"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
-	apijson "k8s.io/apimachinery/pkg/util/json"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
+	"k8s.io/apimachinery/pkg/util/json"
 )
-
-func ObjectKey(obj metav1.Object) ctrlclient.ObjectKey {
-	return ctrlclient.ObjectKey{
-		Name:      obj.GetName(),
-		Namespace: obj.GetNamespace(),
-	}
-}
 
 func PatchObject(actual, expected runtime.Object) ([]byte, error) {
 	actualMeta, err := meta.Accessor(actual)
@@ -25,5 +16,5 @@ func PatchObject(actual, expected runtime.Object) ([]byte, error) {
 		return nil, err
 	}
 	expectedMeta.SetResourceVersion(actualMeta.GetResourceVersion())
-	return apijson.Marshal(expectedMeta)
+	return json.Marshal(expectedMeta)
 }
