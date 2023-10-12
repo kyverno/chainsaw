@@ -1,0 +1,21 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Configuration
+metadata:
+  name: valid
+  namespace: kyverno
+spec:
+  timeout: "60s"
+  testDirs:
+    - "/path/to/testdir1"
+    - "/path/to/testdir2"
+  skipDelete: true
+  stopOnFirstFailure: true
+  parallel: 5
+  reportFormat: "JSON"
+  reportName: "custom-chainsaw-report"
+  namespace: "test-namespace"
+  suppress:
+    - "logTypeA"
+    - "logTypeB"
+  fullName: true
+  skipTestRegex: "^skip-.*"

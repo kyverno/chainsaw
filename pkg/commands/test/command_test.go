@@ -111,19 +111,17 @@ func TestChainsawCommand(t *testing.T) {
 			},
 			wantErr: true,
 			out:     filepath.Join(basePath, "wrong_kind_config.txt"),
+			err:     filepath.Join(basePath, "wrong_kind_config_err.txt"),
 		},
-		// {
-		// 	name:    "valid config with duration",
-		// 	args:    []string{"--config=config.yaml", "--duration=10s"},
-		// 	wantErr: false,
-		// 	out:     basePath + "valid_config_with_duration.txt",
-		// },
-		// {
-		// 	name:    "invalid config with duration",
-		// 	args:    []string{"--config=wrong_config.yaml", "--duration=10s"},
-		// 	wantErr: true,
-		// 	out:     basePath + "invalid_config_with_duration.txt",
-		// },
+		{
+			name: "config with all fields",
+			args: []string{"--config",
+				filepath.Join(basePath, "config/config_all_fields.yaml"),
+				"--duration",
+				"10s"},
+			wantErr: false,
+			out:     filepath.Join(basePath, "config_all_fields.txt"),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -131,7 +129,7 @@ func TestChainsawCommand(t *testing.T) {
 			assert.NotNil(t, cmd)
 			cmd.SetArgs(tt.args)
 			stdout := bytes.NewBufferString("")
-			cmd.SetOutput(stdout)
+			cmd.SetOut(stdout)
 			stderr := bytes.NewBufferString("")
 			cmd.SetErr(stderr)
 			err := cmd.Execute()
