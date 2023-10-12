@@ -115,10 +115,12 @@ func TestChainsawCommand(t *testing.T) {
 		},
 		{
 			name: "config with all fields",
-			args: []string{"--config",
+			args: []string{
+				"--config",
 				filepath.Join(basePath, "config/config_all_fields.yaml"),
 				"--duration",
-				"10s"},
+				"10s",
+			},
 			wantErr: false,
 			out:     filepath.Join(basePath, "config_all_fields.txt"),
 		},
