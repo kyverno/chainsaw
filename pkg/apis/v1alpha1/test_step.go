@@ -9,7 +9,7 @@ import (
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:scope=Cluster
 
-// Configuration is the resource that contains the configuration used to run tests.
+// TestStep is the resource that contains the testStep used to run tests.
 type TestStep struct {
 	metav1.TypeMeta `json:",inline"`
 
@@ -17,7 +17,6 @@ type TestStep struct {
 	// +optional
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
-	// Configuration spec.
-	// +optional
+	// TestStep spec.
 	Spec TestStepSpec `json:"spec"`
 }
