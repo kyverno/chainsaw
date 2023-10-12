@@ -81,7 +81,6 @@ func TestLoad(t *testing.T) {
 				},
 			},
 		},
-
 		{
 			name:    "multiple",
 			path:    "../../testdata/config/multiple.yaml",
