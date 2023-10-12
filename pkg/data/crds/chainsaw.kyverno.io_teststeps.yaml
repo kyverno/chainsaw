@@ -17,8 +17,8 @@ spec:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Configuration is the resource that contains the configuration
-          used to run tests.
+        description: TestStep is the resource that contains the testStep used to run
+          tests.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -33,7 +33,7 @@ spec:
           metadata:
             type: object
           spec:
-            description: Configuration spec.
+            description: TestStep spec.
             properties:
               apply:
                 items:
@@ -67,6 +67,8 @@ spec:
                   type: object
                 type: array
             type: object
+        required:
+        - spec
         type: object
     served: true
     storage: true

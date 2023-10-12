@@ -40,7 +40,7 @@ auto_generated: true
 
 ## `TestStep`     {#chainsaw-kyverno-io-v1alpha1-TestStep}
 
-<p>Configuration is the resource that contains the configuration used to run tests.</p>
+<p>TestStep is the resource that contains the testStep used to run tests.</p>
 
 
 | Field | Type | Required | Description |
@@ -48,7 +48,7 @@ auto_generated: true
 | `apiVersion` | `string` | :white_check_mark: | `chainsaw.kyverno.io/v1alpha1` |
 | `kind` | `string` | :white_check_mark: | `TestStep` |
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  | <p>Standard object's metadata.</p> |
-| `spec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) |  | <p>Configuration spec.</p> |
+| `spec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | <p>TestStep spec.</p> |
 
 ## `Apply`     {#chainsaw-kyverno-io-v1alpha1-Apply}
 
