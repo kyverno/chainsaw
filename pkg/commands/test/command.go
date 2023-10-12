@@ -7,6 +7,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
+	"github.com/kyverno/chainsaw/pkg/runner"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -89,9 +90,35 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "skipTestRegex") {
 				configuration.Spec.SkipTestRegex = options.skipTestRegex
 			}
+			// loading tests
+			fmt.Fprintln(out, "Loading tests...")
+			fmt.Fprintln(out, "- TODO")
+			// TODO: load tests
+			test := v1alpha1.Test{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Test",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-1",
+				},
+				Spec: v1alpha1.TestSpec{
+					Steps: []v1alpha1.TestStepSpec{{
+						Apply: []v1alpha1.Apply{{
+							File: "foo.yaml",
+						}},
+					}, {
+						Assert: []v1alpha1.Assert{{
+							File: "bar.yaml",
+						}},
+					}},
+				},
+			}
 			// run tests
 			fmt.Fprintln(out, "Running tests...")
-			fmt.Fprintln(out, "- TODO")
+			if _, err := runner.Run(test); err != nil {
+				return err
+			}
 			// done
 			fmt.Fprintln(out, "Done.")
 			return nil
