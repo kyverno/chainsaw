@@ -8,9 +8,3 @@ type TestStepSpec struct {
 	// +optional
 	Error []Error `json:"error"`
 }
-
-type Assert struct{}
-
-type Apply struct{}
-
-type Error struct{}

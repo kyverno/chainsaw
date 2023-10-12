@@ -11,6 +11,7 @@ auto_generated: true
 
 
 - [Configuration](#chainsaw-kyverno-io-v1alpha1-Configuration)
+- [Test](#chainsaw-kyverno-io-v1alpha1-Test)
 - [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
   
 ## `Configuration`     {#chainsaw-kyverno-io-v1alpha1-Configuration}
@@ -24,6 +25,18 @@ auto_generated: true
 | `kind` | `string` | :white_check_mark: | `Configuration` |
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  | <p>Standard object's metadata.</p> |
 | `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec) |  | <p>Configuration spec.</p> |
+
+## `Test`     {#chainsaw-kyverno-io-v1alpha1-Test}
+
+<p>Test is the resource that contains aa test definition.</p>
+
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `apiVersion` | `string` | :white_check_mark: | `chainsaw.kyverno.io/v1alpha1` |
+| `kind` | `string` | :white_check_mark: | `Test` |
+| `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  | <p>Standard object's metadata.</p> |
+| `spec` | [`TestSpec`](#chainsaw-kyverno-io-v1alpha1-TestSpec) | :white_check_mark: | <p>Test spec.</p> |
 
 ## `TestStep`     {#chainsaw-kyverno-io-v1alpha1-TestStep}
 
@@ -43,11 +56,19 @@ auto_generated: true
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `file` | `string` | :white_check_mark: | <p>File containing the manifest to be applied.</p> |
+
 ## `Assert`     {#chainsaw-kyverno-io-v1alpha1-Assert}
 
 **Appears in:**
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `file` | `string` | :white_check_mark: | <p>File containing the assertion manifest.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -78,6 +99,10 @@ auto_generated: true
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `file` | `string` | :white_check_mark: | <p>File containing the assertion manifest. It is expected that the assertion fails.</p> |
+
 ## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 
 (Alias of `string`)
@@ -86,11 +111,25 @@ auto_generated: true
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
 
+## `TestSpec`     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
+
+**Appears in:**
+    
+- [Test](#chainsaw-kyverno-io-v1alpha1-Test)
+
+<p>TestSpec contains the test spec.</p>
+
+
+| Field | Type | Required | Description |
+|---|---|---|---|
+| `steps` | [`[]TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | <p>Steps defining the test.</p> |
+
 ## `TestStepSpec`     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}
 
 **Appears in:**
     
 - [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
+- [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 
 | Field | Type | Required | Description |
 |---|---|---|---|

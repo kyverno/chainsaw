@@ -37,14 +37,33 @@ spec:
             properties:
               apply:
                 items:
+                  properties:
+                    file:
+                      description: File containing the manifest to be applied.
+                      type: string
+                  required:
+                  - file
                   type: object
                 type: array
               assert:
                 items:
+                  properties:
+                    file:
+                      description: File containing the assertion manifest.
+                      type: string
+                  required:
+                  - file
                   type: object
                 type: array
               error:
                 items:
+                  properties:
+                    file:
+                      description: File containing the assertion manifest. It is expected
+                        that the assertion fails.
+                      type: string
+                  required:
+                  - file
                   type: object
                 type: array
             type: object
