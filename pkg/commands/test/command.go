@@ -108,11 +108,11 @@ func Command() *cobra.Command {
 				Spec: v1alpha1.TestSpec{
 					Steps: []v1alpha1.TestStepSpec{{
 						Apply: []v1alpha1.Apply{{
-							File: "foo.yaml",
+							File: "../../../configmap.yaml",
 						}},
 					}, {
 						Assert: []v1alpha1.Assert{{
-							File: "bar.yaml",
+							File: "configmap.yaml",
 						}},
 					}},
 				},
@@ -131,7 +131,7 @@ func Command() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().DurationVar(&options.timeout.Duration, "duration", 30*time.Second, "The duration to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.timeout.Duration, "timeout", 30*time.Second, "The timeout to use as default for configuration.")
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file.")
 	cmd.Flags().StringSliceVar(&options.testDirs, "testDirs", []string{}, "Directories containing test cases to run.")
 	cmd.Flags().BoolVar(&options.skipDelete, "skipDelete", false, "If set, do not delete the resources after running the tests.")

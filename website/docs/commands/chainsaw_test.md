@@ -10,7 +10,6 @@ chainsaw test [flags]... [test directories]...
 
 ```
       --config string          Chainsaw configuration file.
-      --duration duration      The duration to use as default for configuration. (default 30s)
       --fullName               Use full test case folder path instead of folder name.
   -h, --help                   help for test
       --namespace string       Namespace to use for tests.
@@ -22,6 +21,7 @@ chainsaw test [flags]... [test directories]...
       --stopOnFirstFailure     Stop the test upon encountering the first failure.
       --suppress strings       Logs to suppress.
       --testDirs strings       Directories containing test cases to run.
+      --timeout duration       The timeout to use as default for configuration. (default 30s)
 ```
 
 ### SEE ALSO

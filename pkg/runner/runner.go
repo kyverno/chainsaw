@@ -1,11 +1,14 @@
 package runner
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/resource"
 	"k8s.io/client-go/rest"
 )
 
@@ -40,21 +43,41 @@ func Run(cfg *rest.Config, tests ...v1alpha1.Test) (int, error) {
 func run(t *testing.T, cfg *rest.Config, tests ...v1alpha1.Test) {
 	t.Helper()
 	for _, test := range tests {
+		client, err := client.New(cfg)
+		if err != nil {
+			t.Fatal(err)
+		}
 		func(t *testing.T, test v1alpha1.Test) {
 			t.Helper()
 			t.Run(test.Name, func(t *testing.T) {
 				t.Helper()
 				t.Parallel()
 				for i, step := range test.Spec.Steps {
-					func(t *testing.T, test v1alpha1.TestStepSpec) {
+					func(t *testing.T, step v1alpha1.TestStepSpec) {
 						t.Helper()
 						t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
 							t.Helper()
-							// TODO: execute step
+							executeStep(t, step, client)
 						})
 					}(t, step)
 				}
 			})
 		}(t, test)
+	}
+}
+
+func executeStep(t *testing.T, step v1alpha1.TestStepSpec, client client.Client) {
+	t.Helper()
+	for _, apply := range step.Apply {
+		resources, err := resource.Load(apply.File)
+		if err != nil {
+			t.Fatal(err)
+		}
+		for i := range resources {
+			_, err := client.Apply(context.Background(), &resources[i])
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 }

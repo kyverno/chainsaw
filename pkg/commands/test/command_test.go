@@ -26,18 +26,18 @@ func TestChainsawCommand(t *testing.T) {
 			out:     filepath.Join(basePath, "default.txt"),
 		},
 		{
-			name: "with duration",
+			name: "with timeout",
 			args: []string{
-				"--duration",
+				"--timeout",
 				"10s",
 			},
 			wantErr: false,
 			out:     filepath.Join(basePath, "without_config.txt"),
 		},
 		{
-			name: "invalid duration",
+			name: "invalid timeout",
 			args: []string{
-				"--duration",
+				"--timeout",
 				"invalid",
 			},
 			wantErr: true,
@@ -118,7 +118,7 @@ func TestChainsawCommand(t *testing.T) {
 			args: []string{
 				"--config",
 				filepath.Join(basePath, "config/config_all_fields.yaml"),
-				"--duration",
+				"--timeout",
 				"10s",
 			},
 			wantErr: false,

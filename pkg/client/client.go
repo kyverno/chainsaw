@@ -34,6 +34,9 @@ func New(cfg *rest.Config) (Client, error) {
 
 func (c *client) Apply(ctx context.Context, obj ctrlclient.Object) (bool, error) {
 	var actual unstructured.Unstructured
+	kind := obj.GetObjectKind()
+	gvk := kind.GroupVersionKind()
+	actual.SetGroupVersionKind(gvk)
 	err := c.Get(ctx, ObjectKey(obj), &actual)
 	if err == nil {
 		bytes, err := PatchObject(&actual, obj)
