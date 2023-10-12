@@ -30,9 +30,9 @@ type options struct {
 func Command() *cobra.Command {
 	var options options
 	cmd := &cobra.Command{
-		Use:   "test [flags]... [test directories]...",
-		Short: "Stronger tool for e2e testing",
-		// SilenceUsage: true,
+		Use:          "test [flags]... [test directories]...",
+		Short:        "Stronger tool for e2e testing",
+		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			out := cmd.OutOrStdout()
 			var configuration v1alpha1.Configuration

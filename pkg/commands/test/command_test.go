@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -12,24 +13,24 @@ import (
 
 func TestChainsawCommand(t *testing.T) {
 	basePath := "../../../testdata/commands/test"
-
 	tests := []struct {
 		name    string
 		args    []string
 		wantErr bool
 		out     string
+		err     string
 	}{
 		{
 			name:    "default test",
 			args:    []string{},
 			wantErr: false,
-			out:     basePath + "/default.txt",
+			out:     filepath.Join(basePath, "default.txt"),
 		},
 		{
 			name:    "with duration",
 			args:    []string{"--duration=10s"},
 			wantErr: false,
-			out:     basePath + "/without_config.txt",
+			out:     filepath.Join(basePath, "without_config.txt"),
 		},
 		{
 			name:    "invalid duration",
@@ -40,7 +41,7 @@ func TestChainsawCommand(t *testing.T) {
 			name:    "test dirs specified",
 			args:    []string{"--testDirs=dir1,dir2,dir3"},
 			wantErr: false,
-			out:     basePath + "/without_config.txt",
+			out:     filepath.Join(basePath, "without_config.txt"),
 		},
 		{
 			name:    "nonexistent config file",
@@ -51,19 +52,19 @@ func TestChainsawCommand(t *testing.T) {
 			name:    "suppress logs",
 			args:    []string{"--suppress=warning,error"},
 			wantErr: false,
-			out:     basePath + "/without_config.txt",
+			out:     filepath.Join(basePath, "without_config.txt"),
 		},
 		{
 			name:    "skip test with regex",
 			args:    []string{"--skipTestRegex=test[1-3]"},
 			wantErr: false,
-			out:     basePath + "/without_config.txt",
+			out:     filepath.Join(basePath, "without_config.txt"),
 		},
 		{
 			name:    "valid config",
 			args:    []string{fmt.Sprintf("--config=%s/config/empty_config.yaml", basePath)},
 			wantErr: false,
-			out:     basePath + "/valid_config.txt",
+			out:     filepath.Join(basePath, "valid_config.txt"),
 		},
 		{
 			name:    "nonexistent config",
@@ -77,13 +78,13 @@ func TestChainsawCommand(t *testing.T) {
 		// 	name:    "misformatted config",
 		// 	args:    []string{fmt.Sprintf("--config=%s/config/wrong_format_config.yaml", basePath)},
 		// 	wantErr: true,
-		// 	out:     basePath + "/wrong_format_config.txt",
+		// 	out:     filepath.Join(basePath, "wrong_format_config.txt",
 		// },
 		{
 			name:    "wrong kind in config",
 			args:    []string{fmt.Sprintf("--config=%s/config/wrong_kind_config.yaml", basePath)},
 			wantErr: true,
-			out:     basePath + "/wrong_kind_config.txt",
+			out:     filepath.Join(basePath, "wrong_kind_config.txt"),
 		},
 		// {
 		// 	name:    "valid config with duration",
@@ -98,27 +99,34 @@ func TestChainsawCommand(t *testing.T) {
 		// 	out:     basePath + "invalid_config_with_duration.txt",
 		// },
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := Command()
 			assert.NotNil(t, cmd)
 			cmd.SetArgs(tt.args)
-			out := bytes.NewBufferString("")
-			cmd.SetOutput(out)
-
+			stdout := bytes.NewBufferString("")
+			cmd.SetOutput(stdout)
+			stderr := bytes.NewBufferString("")
+			cmd.SetErr(stderr)
 			err := cmd.Execute()
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}
-			actual, err := io.ReadAll(out)
+			actualOut, err := io.ReadAll(stdout)
+			assert.NoError(t, err)
+			actualErr, err := io.ReadAll(stderr)
 			assert.NoError(t, err)
 			if tt.out != "" {
 				expected, err := os.ReadFile(tt.out)
 				assert.NoError(t, err)
-				assert.Equal(t, string(expected), string(actual))
+				assert.Equal(t, string(expected), string(actualOut))
+			}
+			if tt.err != "" {
+				expected, err := os.ReadFile(tt.err)
+				assert.NoError(t, err)
+				assert.Equal(t, string(expected), string(actualErr))
 			}
 		})
 	}
