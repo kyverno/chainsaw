@@ -6,9 +6,10 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"k8s.io/client-go/rest"
 )
 
-func Run(tests ...v1alpha1.Test) (int, error) {
+func Run(cfg *rest.Config, tests ...v1alpha1.Test) (int, error) {
 	if len(tests) == 0 {
 		return 0, nil
 	}
@@ -26,7 +27,7 @@ func Run(tests ...v1alpha1.Test) (int, error) {
 			Name: "chainsaw",
 			F: func(t *testing.T) {
 				t.Helper()
-				run(t, tests...)
+				run(t, cfg, tests...)
 			},
 		}},
 		nil,
@@ -36,7 +37,7 @@ func Run(tests ...v1alpha1.Test) (int, error) {
 	return m.Run(), nil
 }
 
-func run(t *testing.T, tests ...v1alpha1.Test) {
+func run(t *testing.T, cfg *rest.Config, tests ...v1alpha1.Test) {
 	t.Helper()
 	for _, test := range tests {
 		func(t *testing.T, test v1alpha1.Test) {

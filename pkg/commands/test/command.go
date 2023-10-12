@@ -9,23 +9,26 @@ import (
 	"github.com/kyverno/chainsaw/pkg/config"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
+	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type options struct {
-	config             string
-	timeout            metav1.Duration
-	testDirs           []string
-	skipDelete         bool
-	stopOnFirstFailure bool
-	parallel           int
-	reportFormat       string
-	reportName         string
-	namespace          string
-	suppress           []string
-	fullName           bool
-	skipTestRegex      string
+	config              string
+	timeout             metav1.Duration
+	testDirs            []string
+	skipDelete          bool
+	stopOnFirstFailure  bool
+	parallel            int
+	reportFormat        string
+	reportName          string
+	namespace           string
+	suppress            []string
+	fullName            bool
+	skipTestRegex       string
+	kubeConfigOverrides clientcmd.ConfigOverrides
 }
 
 func Command() *cobra.Command {
@@ -116,7 +119,11 @@ func Command() *cobra.Command {
 			}
 			// run tests
 			fmt.Fprintln(out, "Running tests...")
-			if _, err := runner.Run(test); err != nil {
+			cfg, err := restutils.Config(options.kubeConfigOverrides)
+			if err != nil {
+				return err
+			}
+			if _, err := runner.Run(cfg, test); err != nil {
 				return err
 			}
 			// done
@@ -136,6 +143,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringSliceVar(&options.suppress, "suppress", []string{}, "Logs to suppress.")
 	cmd.Flags().BoolVar(&options.fullName, "fullName", false, "Use full test case folder path instead of folder name.")
 	cmd.Flags().StringVar(&options.skipTestRegex, "skipTestRegex", "", "Regular expression to skip tests based on.")
+	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	// TODO: panic ?
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
