@@ -1,4 +1,4 @@
-package test
+package step
 
 import (
 	"fmt"
@@ -15,12 +15,12 @@ import (
 
 var testStep_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("TestStep")
 
-func LoadStep(path string) ([]*v1alpha1.TestStep, error) {
+func Load(path string) ([]*v1alpha1.TestStep, error) {
 	content, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		return nil, err
 	}
-	testSteps, err := ParseStep(content)
+	testSteps, err := Parse(content)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +30,7 @@ func LoadStep(path string) ([]*v1alpha1.TestStep, error) {
 	return testSteps, nil
 }
 
-func ParseStep(content []byte) ([]*v1alpha1.TestStep, error) {
+func Parse(content []byte) ([]*v1alpha1.TestStep, error) {
 	documents, err := yamlutils.SplitDocuments(content)
 	if err != nil {
 		return nil, err
