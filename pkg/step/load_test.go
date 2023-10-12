@@ -1,4 +1,4 @@
-package test
+package step
 
 import (
 	"path/filepath"
@@ -9,8 +9,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func TestLoadStep(t *testing.T) {
-	basePath := "../../testdata/test/step"
+func TestLoad(t *testing.T) {
+	basePath := "../../testdata/step"
 	tests := []struct {
 		name    string
 		path    string
@@ -120,7 +120,7 @@ func TestLoadStep(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := LoadStep(tt.path)
+			got, err := Load(tt.path)
 			if tt.wantErr {
 				require.Error(t, err)
 			} else {
