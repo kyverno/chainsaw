@@ -94,15 +94,15 @@ func TestChainsawCommand(t *testing.T) {
 			},
 			wantErr: true,
 		},
-
-		// fix
-
-		// {
-		// 	name:    "misformatted config",
-		// 	args:    []string{fmt.Sprintf("--config=%s/config/wrong_format_config.yaml", basePath)},
-		// 	wantErr: true,
-		// 	out:     filepath.Join(basePath, "wrong_format_config.txt",
-		// },
+		{
+			name: "misformatted config",
+			args: []string{
+				"--config",
+				filepath.Join(basePath, "config/wrong_format_config.yaml"),
+			},
+			wantErr: true,
+			out:     filepath.Join(basePath, "wrong_format_config.txt"),
+		},
 		{
 			name: "wrong kind in config",
 			args: []string{
