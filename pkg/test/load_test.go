@@ -1,6 +1,7 @@
 package test
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -9,6 +10,7 @@ import (
 )
 
 func TestLoad(t *testing.T) {
+	basePath := "../../testdata/test"
 	tests := []struct {
 		name    string
 		path    string
@@ -16,31 +18,31 @@ func TestLoad(t *testing.T) {
 		wantErr bool
 	}{{
 		name:    "confimap",
-		path:    "../../testdata/test/configmap.yaml",
+		path:    filepath.Join(basePath, "configmap.yaml"),
 		wantErr: true,
 	}, {
 		name:    "not found",
-		path:    "../../testdata/test/not-found.yaml",
+		path:    filepath.Join(basePath, "not-found.yaml"),
 		wantErr: true,
 	}, {
 		name:    "empty",
-		path:    "../../testdata/test/empty.yaml",
+		path:    filepath.Join(basePath, "empty.yaml"),
 		wantErr: true,
 	}, {
 		name:    "no spec",
-		path:    "../../testdata/test/no-spec.yaml",
+		path:    filepath.Join(basePath, "no-spec.yaml"),
 		wantErr: true,
 	}, {
 		name:    "no steps",
-		path:    "../../testdata/test/no-steps.yaml",
+		path:    filepath.Join(basePath, "no-steps.yaml"),
 		wantErr: true,
 	}, {
 		name:    "invalid step",
-		path:    "../../testdata/test/bad-step.yaml",
+		path:    filepath.Join(basePath, "bad-step.yaml"),
 		wantErr: true,
 	}, {
 		name: "ok",
-		path: "../../testdata/test/ok.yaml",
+		path: filepath.Join(basePath, "ok.yaml"),
 		want: []*v1alpha1.Test{{
 			TypeMeta: metav1.TypeMeta{
 				APIVersion: "chainsaw.kyverno.io/v1alpha1",
@@ -63,7 +65,7 @@ func TestLoad(t *testing.T) {
 		}},
 	}, {
 		name: "multiple",
-		path: "../../testdata/test/multiple.yaml",
+		path: filepath.Join(basePath, "multiple.yaml"),
 		want: []*v1alpha1.Test{{
 			TypeMeta: metav1.TypeMeta{
 				APIVersion: "chainsaw.kyverno.io/v1alpha1",
