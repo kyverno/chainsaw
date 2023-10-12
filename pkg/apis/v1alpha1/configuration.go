@@ -19,5 +19,5 @@ type Configuration struct {
 
 	// Configuration spec.
 	// +optional
-	Spec ConfigurationSpec `json:"spec,omitempty"`
+	Spec ConfigurationSpec `json:"spec"`
 }
