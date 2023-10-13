@@ -36,6 +36,8 @@ jobs:
         with:
           go-version-file: go.mod
           cache-dependency-path: go.sum
+      - name: Create test cluster
+        run: make kind-cluster
       - name: Run tests
         run: make tests
       - name: Upload Report to Codecov
