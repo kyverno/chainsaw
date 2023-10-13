@@ -12,7 +12,9 @@ DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
 CODE_GEN_VERSION                   := v0.28.0
 REFERENCE_DOCS                     := $(TOOLS_DIR)/genref
 REFERENCE_DOCS_VERSION             := latest
-TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(REFERENCE_DOCS)
+KIND                               := $(TOOLS_DIR)/kind
+KIND_VERSION                       := v0.20.0
+TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(REFERENCE_DOCS) $(KIND)
 ifeq ($(GOOS), darwin)
 SED                                := gsed
 else
@@ -35,6 +37,10 @@ $(DEEPCOPY_GEN):
 $(REFERENCE_DOCS):
 	@echo Install genref... >&2
 	@GOBIN=$(TOOLS_DIR) go install github.com/kubernetes-sigs/reference-docs/genref@$(REFERENCE_DOCS_VERSION)
+
+$(KIND):
+	@echo Install kind... >&2
+	@GOBIN=$(TOOLS_DIR) go install sigs.k8s.io/kind@$(KIND_VERSION)
 
 .PHONY: install-tools
 install-tools: $(TOOLS) ## Install tools
@@ -169,6 +175,17 @@ build: $(CLI_BIN) ## Build
 tests: $(CLI_BIN) ## Run tests
 	@echo Running tests... >&2
 	@go test ./... -race -coverprofile=coverage.out -covermode=atomic
+
+########
+# KIND #
+########
+
+KIND_IMAGE     ?= kindest/node:v1.28.0
+
+.PHONY: kind-cluster
+kind-cluster: $(KIND) ## Create kind cluster
+	@echo Create kind cluster... >&2
+	@$(KIND) create cluster --image $(KIND_IMAGE)
 
 ########
 # HELP #

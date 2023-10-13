@@ -1,14 +1,20 @@
 package runner
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/resource"
+	"k8s.io/client-go/rest"
 )
 
-func Run(tests ...v1alpha1.Test) (int, error) {
+func Run(cfg *rest.Config, tests ...discovery.Test) (int, error) {
 	if len(tests) == 0 {
 		return 0, nil
 	}
@@ -26,7 +32,7 @@ func Run(tests ...v1alpha1.Test) (int, error) {
 			Name: "chainsaw",
 			F: func(t *testing.T) {
 				t.Helper()
-				run(t, tests...)
+				run(t, cfg, tests...)
 			},
 		}},
 		nil,
@@ -36,24 +42,54 @@ func Run(tests ...v1alpha1.Test) (int, error) {
 	return m.Run(), nil
 }
 
-func run(t *testing.T, tests ...v1alpha1.Test) {
+func run(t *testing.T, cfg *rest.Config, tests ...discovery.Test) {
 	t.Helper()
-	for _, test := range tests {
-		func(t *testing.T, test v1alpha1.Test) {
+	for i := range tests {
+		test := tests[i]
+		t.Run(test.GetName(), func(t *testing.T) {
 			t.Helper()
-			t.Run(test.Name, func(t *testing.T) {
-				t.Helper()
-				t.Parallel()
-				for i, step := range test.Spec.Steps {
-					func(t *testing.T, test v1alpha1.TestStepSpec) {
-						t.Helper()
-						t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
-							t.Helper()
-							// TODO: execute step
-						})
-					}(t, step)
-				}
-			})
-		}(t, test)
+			runTest(t, cfg, test)
+		})
+	}
+}
+
+func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
+	t.Helper()
+	t.Parallel()
+	c, err := client.New(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	namespace := client.PetNamespace()
+	if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
+			t.Fatal(err)
+		}
+	}()
+	for i := range test.Spec.Steps {
+		step := test.Spec.Steps[i]
+		t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
+			t.Helper()
+			executeStep(t, test.BasePath, step, c)
+		})
+	}
+}
+
+func executeStep(t *testing.T, basePath string, step v1alpha1.TestStepSpec, c client.Client) {
+	t.Helper()
+	for _, apply := range step.Apply {
+		resources, err := resource.Load(filepath.Join(basePath, apply.File))
+		if err != nil {
+			t.Fatal(err)
+		}
+		for i := range resources {
+			_, err := client.CreateOrUpdate(context.Background(), c, &resources[i])
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
 	}
 }

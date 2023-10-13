@@ -7,25 +7,29 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
+	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
+	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 type options struct {
-	config             string
-	timeout            metav1.Duration
-	testDirs           []string
-	skipDelete         bool
-	stopOnFirstFailure bool
-	parallel           int
-	reportFormat       string
-	reportName         string
-	namespace          string
-	suppress           []string
-	fullName           bool
-	skipTestRegex      string
+	config              string
+	timeout             metav1.Duration
+	testDirs            []string
+	skipDelete          bool
+	stopOnFirstFailure  bool
+	parallel            int
+	reportFormat        string
+	reportName          string
+	namespace           string
+	suppress            []string
+	fullName            bool
+	skipTestRegex       string
+	kubeConfigOverrides clientcmd.ConfigOverrides
 }
 
 func Command() *cobra.Command {
@@ -92,31 +96,20 @@ func Command() *cobra.Command {
 			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
-			fmt.Fprintln(out, "- TODO")
-			// TODO: load tests
-			test := v1alpha1.Test{
-				TypeMeta: metav1.TypeMeta{
-					APIVersion: "chainsaw.kyverno.io/v1alpha1",
-					Kind:       "Test",
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "test-1",
-				},
-				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestStepSpec{{
-						Apply: []v1alpha1.Apply{{
-							File: "foo.yaml",
-						}},
-					}, {
-						Assert: []v1alpha1.Assert{{
-							File: "bar.yaml",
-						}},
-					}},
-				},
+			tests, err := discovery.DiscoverTests("chainsaw-test.yaml", configuration.Spec.TestDirs...)
+			if err != nil {
+				return err
+			}
+			for _, test := range tests {
+				fmt.Fprintf(out, "- %s (%s)\n", test.Name, test.BasePath)
 			}
 			// run tests
 			fmt.Fprintln(out, "Running tests...")
-			if _, err := runner.Run(test); err != nil {
+			cfg, err := restutils.Config(options.kubeConfigOverrides)
+			if err != nil {
+				return err
+			}
+			if _, err := runner.Run(cfg, tests...); err != nil {
 				return err
 			}
 			// done
@@ -136,6 +129,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringSliceVar(&options.suppress, "suppress", []string{}, "Logs to suppress.")
 	cmd.Flags().BoolVar(&options.fullName, "fullName", false, "Use full test case folder path instead of folder name.")
 	cmd.Flags().StringVar(&options.skipTestRegex, "skipTestRegex", "", "Regular expression to skip tests based on.")
+	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	// TODO: panic ?
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)

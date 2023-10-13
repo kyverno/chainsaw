@@ -15,6 +15,8 @@ type testDeps struct {
 }
 
 func (d *testDeps) MatchString(pat, str string) (bool, error) {
+	// TODO: this needs design to work with unit tests
+	// return true, nil
 	if d.matchRe == nil || d.matchPat != pat {
 		d.matchPat = pat
 		matchRe, err := regexp.Compile(d.matchPat)
