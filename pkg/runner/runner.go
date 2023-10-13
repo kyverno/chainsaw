@@ -73,12 +73,12 @@ func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
 		step := test.Spec.Steps[i]
 		t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
 			t.Helper()
-			executeStep(t, test.BasePath, step, c)
+			executeStep(t, test.BasePath, namespace.Name, step, c)
 		})
 	}
 }
 
-func executeStep(t *testing.T, basePath string, step v1alpha1.TestStepSpec, c client.Client) {
+func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.TestStepSpec, c client.Client) {
 	t.Helper()
 	for _, apply := range step.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, apply.File))
@@ -86,7 +86,17 @@ func executeStep(t *testing.T, basePath string, step v1alpha1.TestStepSpec, c cl
 			t.Fatal(err)
 		}
 		for i := range resources {
-			_, err := client.CreateOrUpdate(context.Background(), c, &resources[i])
+			resource := &resources[i]
+			if resource.GetNamespace() == "" {
+				namespaced, err := c.IsObjectNamespaced(resource)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if namespaced {
+					resource.SetNamespace(namespace)
+				}
+			}
+			_, err := client.CreateOrUpdate(context.Background(), c, resource)
 			if err != nil {
 				t.Fatal(err)
 			}
