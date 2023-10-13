@@ -4,15 +4,17 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"path/filepath"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"k8s.io/client-go/rest"
 )
 
-func Run(cfg *rest.Config, tests ...v1alpha1.Test) (int, error) {
+func Run(cfg *rest.Config, tests ...discovery.Test) (int, error) {
 	if len(tests) == 0 {
 		return 0, nil
 	}
@@ -40,7 +42,7 @@ func Run(cfg *rest.Config, tests ...v1alpha1.Test) (int, error) {
 	return m.Run(), nil
 }
 
-func run(t *testing.T, cfg *rest.Config, tests ...v1alpha1.Test) {
+func run(t *testing.T, cfg *rest.Config, tests ...discovery.Test) {
 	t.Helper()
 	for i := range tests {
 		test := tests[i]
@@ -51,7 +53,7 @@ func run(t *testing.T, cfg *rest.Config, tests ...v1alpha1.Test) {
 	}
 }
 
-func runTest(t *testing.T, cfg *rest.Config, test v1alpha1.Test) {
+func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
 	t.Helper()
 	t.Parallel()
 	c, err := client.New(cfg)
@@ -71,15 +73,15 @@ func runTest(t *testing.T, cfg *rest.Config, test v1alpha1.Test) {
 		step := test.Spec.Steps[i]
 		t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
 			t.Helper()
-			executeStep(t, step, c)
+			executeStep(t, test.BasePath, step, c)
 		})
 	}
 }
 
-func executeStep(t *testing.T, step v1alpha1.TestStepSpec, c client.Client) {
+func executeStep(t *testing.T, basePath string, step v1alpha1.TestStepSpec, c client.Client) {
 	t.Helper()
 	for _, apply := range step.Apply {
-		resources, err := resource.Load(apply.File)
+		resources, err := resource.Load(filepath.Join(basePath, apply.File))
 		if err != nil {
 			t.Fatal(err)
 		}

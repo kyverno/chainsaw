@@ -7,6 +7,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
+	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
@@ -95,27 +96,12 @@ func Command() *cobra.Command {
 			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
-			fmt.Fprintln(out, "- TODO")
-			// TODO: load tests
-			test := v1alpha1.Test{
-				TypeMeta: metav1.TypeMeta{
-					APIVersion: "chainsaw.kyverno.io/v1alpha1",
-					Kind:       "Test",
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "test-1",
-				},
-				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestStepSpec{{
-						Apply: []v1alpha1.Apply{{
-							File: "../../../configmap.yaml",
-						}},
-					}, {
-						Assert: []v1alpha1.Assert{{
-							File: "configmap.yaml",
-						}},
-					}},
-				},
+			tests, err := discovery.DiscoverTests("chainsaw-test.yaml", configuration.Spec.TestDirs...)
+			if err != nil {
+				return err
+			}
+			for _, test := range tests {
+				fmt.Fprintf(out, "- %s (%s)\n", test.Name, test.BasePath)
 			}
 			// run tests
 			fmt.Fprintln(out, "Running tests...")
@@ -123,7 +109,7 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if _, err := runner.Run(cfg, test); err != nil {
+			if _, err := runner.Run(cfg, tests...); err != nil {
 				return err
 			}
 			// done
