@@ -10,7 +10,7 @@ chainsaw test [flags]... [test directories]...
 
 ```
       --config string                       Chainsaw configuration file.
-      --fullName                            Use full test case folder path instead of folder name.
+      --full-name                           Use full test case folder path instead of folder name.
   -h, --help                                help for test
       --kube-as string                      Username to impersonate for the operation
       --kube-as-group stringArray           Group to impersonate for the operation, this flag can be repeated to specify multiple groups.
@@ -33,13 +33,13 @@ chainsaw test [flags]... [test directories]...
       --kube-username string                Username for basic authentication to the API server
       --namespace string                    Namespace to use for tests.
       --parallel int                        The maximum number of tests to run at once. (default 8)
-      --reportFormat string                 Test report format (JSON|XML|nil).
-      --reportName string                   The name of the report to create. (default "chainsaw-report")
-      --skipDelete                          If set, do not delete the resources after running the tests.
-      --skipTestRegex string                Regular expression to skip tests based on.
-      --stopOnFirstFailure                  Stop the test upon encountering the first failure.
-      --suppress strings                    Logs to suppress.
-      --testDirs strings                    Directories containing test cases to run.
+      --report-format string                Test report format (JSON|XML|nil).
+      --report-name string                  The name of the report to create. (default "chainsaw-report")
+      --skip-delete                         If set, do not delete the resources after running the tests.
+      --skip-test-regex string              Regular expression to skip tests based on.
+      --stop-on-first-failure               Stop the test upon encountering the first failure.
+      --suppress stringArray                Logs to suppress.
+      --test-dir stringArray                Directories containing test cases to run.
       --timeout duration                    The timeout to use as default for configuration. (default 30s)
 ```
 
