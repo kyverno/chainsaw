@@ -2,37 +2,35 @@ package client
 
 import (
 	"context"
-	"fmt"
+	"errors"
+	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/utils/kubernetes"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	dClient "k8s.io/client-go/discovery"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Assert(ctx context.Context, client Client, expected ctrlclient.Object) error {
+func Assert(ctx context.Context, expected ctrlclient.Object, client Client, dClient dClient.DiscoveryInterface) error {
 
 	// Resource do have a namespace if they are namespaced
 
-	// We assume here that the gvk kind already exist in the cluster.
+	// Step 1: Check if the resource exists in the cluster
+	// Step 2 Get the actual object from the cluster
+	// Step 3: Compare the actual object with the expected object
 
-	// Step 1: Get the object from the cluster
-	// Step 2 We need to make sure that obj is cluster scoped or namespaced
-	// Step 3: Compare the object with the expected object
-	// Step 4: Return true if the objects are equal, false otherwise
-
-	// gvk := expected.GetObjectKind().GroupVersionKind()
+	// Check if the resource exists in the cluster
+	gvk := expected.GetObjectKind().GroupVersionKind()
+	if err := checkAPIResource(dClient, gvk); err != nil {
+		return err
+	}
 
 	actualObj := unstructured.Unstructured{}
 	expectedObj, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(expected)
 
-	name, ns, err := getNameandNamespace(expected)
-	if err != nil {
-		return err
-	}
-
-	err = client.Get(ctx, ctrlclient.ObjectKey{Name: name, Namespace: ns}, &actualObj)
-	if err != nil {
+	if err := client.Get(ctx, ctrlclient.ObjectKey{Name: expected.GetName(), Namespace: expected.GetNamespace()}, &actualObj); err != nil {
 		return err
 	}
 
@@ -40,12 +38,20 @@ func Assert(ctx context.Context, client Client, expected ctrlclient.Object) erro
 	return nil
 }
 
-func getNameandNamespace(obj ctrlclient.Object) (string, string, error) {
-
-	if obj.GetName() == "" {
-		return "", "", fmt.Errorf("object does not have a name")
+// getAPIResource returns the APIResource object for a specific GroupVersionKind.
+func checkAPIResource(dClient dClient.DiscoveryInterface, gvk schema.GroupVersionKind) error {
+	resourceTypes, err := dClient.ServerResourcesForGroupVersion(gvk.GroupVersion().String())
+	if err != nil {
+		return err
 	}
 
-	return obj.GetName(), obj.GetNamespace(), nil
+	for _, resource := range resourceTypes.APIResources {
+		if !strings.EqualFold(resource.Kind, gvk.Kind) {
+			continue
+		}
 
+		return nil
+	}
+
+	return errors.New("resource type not found")
 }
