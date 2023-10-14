@@ -136,7 +136,7 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 
 			// Try to assert the resource on the cluster
 			// if got error then fail the test
-			_, err := client.Assert(context.Background(), c, &resources[i])
+			err := client.Assert(context.Background(), c, &resources[i])
 			if err != nil {
 				t.Fatal(err)
 			}
