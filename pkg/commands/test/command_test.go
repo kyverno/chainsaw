@@ -45,7 +45,7 @@ func TestChainsawCommand(t *testing.T) {
 		{
 			name: "test dirs specified",
 			args: []string{
-				"--testDirs",
+				"--test-dir",
 				"dir1,dir2,dir3",
 			},
 			wantErr: false,
@@ -71,7 +71,7 @@ func TestChainsawCommand(t *testing.T) {
 		{
 			name: "skip test with regex",
 			args: []string{
-				"--skipTestRegex",
+				"--skip-test-regex",
 				"test[1-3]",
 			},
 			wantErr: false,
