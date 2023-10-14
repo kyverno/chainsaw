@@ -14,7 +14,6 @@ import (
 )
 
 func Assert(ctx context.Context, expected ctrlclient.Object, client Client, dClient dClient.DiscoveryInterface) error {
-
 	// Resource do have a namespace if they are namespaced
 
 	// Step 1: Check if the resource exists in the cluster
