@@ -34,7 +34,7 @@
       {{- $type := .GetType }}
       {{- $inline := .IsInline }}
       {{- $comment := .GetComment }}
-| `{{ $name }}` | {{ template "typ" $type }} | {{ if not $optional }}:white_check_mark:{{ end }} | {{ template "comment" .CommentLines }} |
+| `{{ $name }}` | {{ template "typ" $type }} | {{ if not $optional }}:white_check_mark:{{ end }} | {{ if $inline }}:white_check_mark:{{ end }} | {{ template "comment" .CommentLines }} |
     {{- end }}
   {{- end }}
 {{- end }}

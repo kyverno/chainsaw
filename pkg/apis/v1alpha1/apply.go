@@ -1,6 +1,7 @@
 package v1alpha1
 
+// Apply represents a manifest to be applied.
 type Apply struct {
-	// File containing the manifest to be applied.
-	File string `json:"file"`
+	// Manifest to be applied.
+	FileRef `json:",inline"`
 }

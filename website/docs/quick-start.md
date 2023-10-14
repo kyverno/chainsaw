@@ -56,29 +56,23 @@ data:
 EOF
 ```
 
-### Create the first step
+### Create the test
 
 ```bash
-# create step file (note that the file name starts with `01`, it indicates the sequence order to run steps)
+# create test file
 cat > 01-create-resource.yaml << EOF
 apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: TestStep
+kind: Test
 spec:
-  apply:
-  - configmap.yaml
-EOF
-```
-
-### Create the second step
-
-```bash
-# create step file (note that the file name starts with `02`, it indicates the sequence order to run steps)
-cat > 02-check-resource-exists.yaml << EOF
-apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: TestStep
-spec:
-  assert:
-  - configmap.yaml
+  steps:
+  # first step applies the config map
+  - apply:
+    # file is relative to the test folder
+    - file: configmap.yaml
+  # second step verifies the config map exists and contains the expected data
+  - assert:
+    # file is relative to the test folder
+    - file: configmap.yaml
 EOF
 ```
 

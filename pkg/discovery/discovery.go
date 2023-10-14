@@ -96,7 +96,9 @@ func DiscoverTests2(fileName string, paths ...string) ([]Test, error) {
 					// TODO: if it's not a test step decode operation from file name
 					test.Spec.Steps = append(test.Spec.Steps, v1alpha1.TestStepSpec{
 						Apply: []v1alpha1.Apply{{
-							File: stepFile,
+							FileRef: v1alpha1.FileRef{
+								File: stepFile,
+							},
 						}},
 					})
 				}
