@@ -97,7 +97,7 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 				}
 			}
 			_, err := client.CreateOrUpdate(context.Background(), c, resource)
-			resource := &resources[i]
+			resource = &resources[i]
 			if resource.GetNamespace() == "" {
 				namespaced, err := c.IsObjectNamespaced(resource)
 				if err != nil {
@@ -107,7 +107,7 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 					resource.SetNamespace(namespace)
 				}
 			}
-			_, err := client.CreateOrUpdate(context.Background(), c, resource)
+			_, err = client.CreateOrUpdate(context.Background(), c, resource)
 			if err != nil {
 				t.Fatal(err)
 			}
@@ -121,10 +121,26 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 		}
 
 		for i := range resources {
+			// Try to check that if the resource has a namespace,
+			// if the resource does not have a namespace, then set the namespace to the namespace of the test.
+			resource := &resources[i]
+			if resource.GetNamespace() == "" {
+				namespaced, err := c.IsObjectNamespaced(resource)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if namespaced {
+					resource.SetNamespace(namespace)
+				}
+			}
+
+			// Try to assert the resource on the cluster
+			// if got error then fail the test
 			_, err := client.Assert(context.Background(), c, &resources[i])
 			if err != nil {
 				t.Fatal(err)
 			}
+
 		}
 
 	}
