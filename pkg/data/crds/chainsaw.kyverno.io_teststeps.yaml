@@ -37,9 +37,10 @@ spec:
             properties:
               apply:
                 items:
+                  description: Apply represents a manifest to be applied.
                   properties:
                     file:
-                      description: File containing the manifest to be applied.
+                      description: File is the path to the referenced file.
                       type: string
                   required:
                   - file
@@ -47,9 +48,10 @@ spec:
                 type: array
               assert:
                 items:
+                  description: Error represents an assertion expected to succeed.
                   properties:
                     file:
-                      description: File containing the assertion manifest.
+                      description: File is the path to the referenced file.
                       type: string
                   required:
                   - file
@@ -57,10 +59,10 @@ spec:
                 type: array
               error:
                 items:
+                  description: Error represents an error condition.
                   properties:
                     file:
-                      description: File containing the assertion manifest. It is expected
-                        that the assertion fails.
+                      description: File is the path to the referenced file.
                       type: string
                   required:
                   - file
