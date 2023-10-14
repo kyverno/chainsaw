@@ -1,6 +1,7 @@
 package v1alpha1
 
+// Error represents an assertion expected to succeed.
 type Assert struct {
-	// File containing the assertion manifest.
-	File string `json:"file"`
+	// Assertion manifest.
+	FileRef `json:",inline"`
 }
