@@ -6,3 +6,5 @@ spec:
   steps:
   - apply:
     - file: configmap.yaml
+  - assert:
+    - file: configmap.yaml

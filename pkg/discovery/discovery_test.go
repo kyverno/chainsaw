@@ -16,11 +16,11 @@ func TestDiscoverTests(t *testing.T) {
 		want     []Test
 		wantErr  bool
 	}{{
-		name:     "ok",
+		name:     "quick start",
 		fileName: "chainsaw-test.yaml",
-		paths:    []string{"../../testdata/tests"},
+		paths:    []string{"../../testdata/tests/quick-start"},
 		want: []Test{{
-			BasePath: "../../testdata/tests",
+			BasePath: "../../testdata/tests/quick-start",
 			Test: &v1alpha1.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
@@ -32,7 +32,15 @@ func TestDiscoverTests(t *testing.T) {
 				Spec: v1alpha1.TestSpec{
 					Steps: []v1alpha1.TestStepSpec{{
 						Apply: []v1alpha1.Apply{{
-							File: "configmap.yaml",
+							FileRef: v1alpha1.FileRef{
+								File: "configmap.yaml",
+							},
+						}},
+					}, {
+						Assert: []v1alpha1.Assert{{
+							FileRef: v1alpha1.FileRef{
+								File: "configmap.yaml",
+							},
 						}},
 					}},
 				},
