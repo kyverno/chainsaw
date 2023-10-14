@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"k8s.io/client-go/rest"
+	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Run(cfg *rest.Config, tests ...discovery.Test) (int, error) {
@@ -73,7 +74,7 @@ func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
 		step := test.Spec.Steps[i]
 		t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
 			t.Helper()
-			executeStep(t, test.BasePath, step, c, "")
+			executeStep(t, test.BasePath, namespace.Name, step, c)
 		})
 	}
 }
@@ -87,31 +88,15 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 		}
 		for i := range resources {
 			resource := &resources[i]
-			if resource.GetNamespace() == "" {
-				namespaced, err := c.IsObjectNamespaced(resource)
-				if err != nil {
-					t.Fatal(err)
-				}
-				if namespaced {
-					resource.SetNamespace(namespace)
-				}
+			if err = setResourceNamespaceIfNeeded(c, resource, namespace); err != nil {
+				t.Fatal(err)
 			}
 			_, err := client.CreateOrUpdate(context.Background(), c, resource)
-			resource = &resources[i]
-			if resource.GetNamespace() == "" {
-				namespaced, err := c.IsObjectNamespaced(resource)
-				if err != nil {
-					t.Fatal(err)
-				}
-				if namespaced {
-					resource.SetNamespace(namespace)
-				}
-			}
-			_, err = client.CreateOrUpdate(context.Background(), c, resource)
 			if err != nil {
 				t.Fatal(err)
 			}
 		}
+
 	}
 
 	for _, assert := range step.Assert {
@@ -124,16 +109,9 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 			// Try to check that if the resource has a namespace,
 			// if the resource does not have a namespace, then set the namespace to the namespace of the test.
 			resource := &resources[i]
-			if resource.GetNamespace() == "" {
-				namespaced, err := c.IsObjectNamespaced(resource)
-				if err != nil {
-					t.Fatal(err)
-				}
-				if namespaced {
-					resource.SetNamespace(namespace)
-				}
+			if err = setResourceNamespaceIfNeeded(c, resource, namespace); err != nil {
+				t.Fatal(err)
 			}
-
 			// Try to assert the resource on the cluster
 			// if got error then fail the test
 			err := client.Assert(context.Background(), c, &resources[i])
@@ -144,4 +122,17 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 		}
 
 	}
+}
+
+func setResourceNamespaceIfNeeded(c client.Client, resource crclient.Object, namespace string) error {
+	if resource.GetNamespace() == "" {
+		namespaced, err := c.IsObjectNamespaced(resource)
+		if err != nil {
+			return err
+		}
+		if namespaced {
+			resource.SetNamespace(namespace)
+		}
+	}
+	return nil
 }
