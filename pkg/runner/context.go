@@ -1,11 +1,13 @@
 package runner
 
 import (
+	"testing"
+
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 )
 
 type Context struct {
-	client     client.Client
-	namespacer namespacer.Namespacer
+	clientFactory func(*testing.T) client.Client
+	namespacer    namespacer.Namespacer
 }

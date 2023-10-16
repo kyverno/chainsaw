@@ -2,11 +2,14 @@ package test
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
+	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
@@ -57,7 +60,16 @@ func Command() *cobra.Command {
 				}
 				configuration = *config
 			} else {
-				fmt.Fprintln(out, "Running with default configuration")
+				fmt.Fprintln(out, "Loading default configuration...")
+				bytes, err := fs.ReadFile(data.Config(), filepath.Join("config", "default.yaml"))
+				if err != nil {
+					return err
+				}
+				config, err := config.LoadBytes(bytes)
+				if err != nil {
+					return err
+				}
+				configuration = *config
 			}
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
@@ -94,7 +106,7 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "skip-test-regex") {
 				configuration.Spec.SkipTestRegex = options.skipTestRegex
 			}
-			fmt.Fprintf(out, "- Timeout %v\n", configuration.Spec.Timeout)
+			fmt.Fprintf(out, "- Timeout %v\n", configuration.Spec.Timeout.Duration)
 			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)

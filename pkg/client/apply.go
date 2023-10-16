@@ -10,19 +10,19 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func CreateOrUpdate(ctx context.Context, client Client, obj ctrlclient.Object) (bool, error) {
+func CreateOrUpdate(ctx context.Context, client Client, obj ctrlclient.Object) error {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 	err := client.Get(ctx, ObjectKey(obj), &actual)
 	if err == nil {
 		bytes, err := PatchObject(&actual, obj)
 		if err != nil {
-			return false, err
+			return err
 		}
-		return false, client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes))
+		return client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes))
 	} else if errors.IsNotFound(err) {
-		return true, client.Create(ctx, obj)
+		return client.Create(ctx, obj)
 	}
 	// TODO: context timeout
-	return false, err
+	return err
 }
