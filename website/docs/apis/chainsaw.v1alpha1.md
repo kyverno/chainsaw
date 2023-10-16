@@ -97,7 +97,8 @@ auto_generated: true
 | `namespace` | `string` |  |  | <p>Namespace defines the namespace to use for tests.</p> |
 | `suppress` | `[]string` |  |  | <p>Suppress is used to suppress logs.</p> |
 | `fullName` | `bool` |  |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
-| `skipTestRegex` | `string` |  |  | <p>SkipTestRegex is used to skip tests based on a regular expression.</p> |
+| `excludeTestRegex` | `string` |  |  | <p>ExcludeTestRegex is used to exclude tests based on a regular expression.</p> |
+| `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
 
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
 

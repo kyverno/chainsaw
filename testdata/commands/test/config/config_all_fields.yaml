@@ -18,4 +18,5 @@ spec:
     - "logTypeA"
     - "logTypeB"
   fullName: true
-  skipTestRegex: "^skip-.*"
+  includeTestRegex: "^include-.*"
+  excludeTestRegex: "^exclude-.*"

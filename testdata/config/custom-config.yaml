@@ -10,4 +10,5 @@ spec:
   reportFormat: "JSON"
   reportName: "custom-report"
   fullName: true
-  skipTestRegex: "skip-*"
+  includeTestRegex: "include-*"
+  excludeTestRegex: "exclude-*"

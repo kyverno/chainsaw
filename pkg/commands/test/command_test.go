@@ -71,7 +71,9 @@ func TestChainsawCommand(t *testing.T) {
 		{
 			name: "skip test with regex",
 			args: []string{
-				"--skip-test-regex",
+				"--include-test-regex",
+				"test[4-6]",
+				"--exclude-test-regex",
 				"test[1-3]",
 			},
 			wantErr: false,

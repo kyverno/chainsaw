@@ -59,7 +59,11 @@ type ConfigurationSpec struct {
 	// +optional
 	FullName bool `json:"fullName,omitempty"`
 
-	// SkipTestRegex is used to skip tests based on a regular expression.
+	// ExcludeTestRegex is used to exclude tests based on a regular expression.
 	// +optional
-	SkipTestRegex string `json:"skipTestRegex,omitempty"`
+	ExcludeTestRegex string `json:"excludeTestRegex,omitempty"`
+
+	// IncludeTestRegex is used to include tests based on a regular expression.
+	// +optional
+	IncludeTestRegex string `json:"includeTestRegex,omitempty"`
 }
