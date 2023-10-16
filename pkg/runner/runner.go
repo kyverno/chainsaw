@@ -12,11 +12,12 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
+	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
-	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Run(cfg *rest.Config, options v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, error) {
+func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, error) {
 	if len(tests) == 0 {
 		return 0, nil
 	}
@@ -26,13 +27,13 @@ func Run(cfg *rest.Config, options v1alpha1.ConfigurationSpec, tests ...discover
 	if err := flag.Set("test.v", "true"); err != nil {
 		return 0, err
 	}
-	if err := flag.Set("test.parallel", strconv.Itoa(options.Parallel)); err != nil {
+	if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
 		return 0, err
 	}
-	if err := flag.Set("test.timeout", options.Timeout.String()); err != nil {
+	if err := flag.Set("test.timeout", config.Timeout.String()); err != nil {
 		return 0, err
 	}
-	if err := flag.Set("test.failfast", fmt.Sprint(options.FailFast)); err != nil {
+	if err := flag.Set("test.failfast", fmt.Sprint(config.FailFast)); err != nil {
 		return 0, err
 	}
 	if err := flag.Set("test.paniconexit0", "true"); err != nil {
@@ -49,7 +50,7 @@ func Run(cfg *rest.Config, options v1alpha1.ConfigurationSpec, tests ...discover
 			Name: "chainsaw",
 			F: func(t *testing.T) {
 				t.Helper()
-				run(t, cfg, tests...)
+				run(t, cfg, config, tests...)
 			},
 		}},
 		nil,
@@ -59,42 +60,65 @@ func Run(cfg *rest.Config, options v1alpha1.ConfigurationSpec, tests ...discover
 	return m.Run(), nil
 }
 
-func run(t *testing.T, cfg *rest.Config, tests ...discovery.Test) {
+func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) {
 	t.Helper()
-	for i := range tests {
-		test := tests[i]
-		t.Run(test.GetName(), func(t *testing.T) {
-			t.Helper()
-			runTest(t, cfg, test)
-		})
-	}
-}
-
-func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
-	t.Helper()
-	t.Parallel()
 	c, err := client.New(cfg)
 	if err != nil {
 		t.Fatal(err)
 	}
-	namespace := client.PetNamespace()
-	if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
-		t.Fatal(err)
+	ctx := Context{
+		client: c,
 	}
-	t.Cleanup(func() {
-		t.Logf("cleanup namespace: %s", namespace.Name)
-		if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
-			t.Fatal(err)
+	if config.Namespace != "" {
+		namespace := client.Namespace(config.Namespace)
+		if err := c.Get(context.Background(), client.ObjectKey(&namespace), nil); err != nil {
+			if errors.IsNotFound(err) {
+				if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
+					t.Fatal(err)
+				}
+				t.Cleanup(func() {
+					t.Logf("cleanup namespace: %s", config.Namespace)
+					if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
+						t.Fatal(err)
+					}
+				})
+				ctx.namespacer = namespacer.New(ctx.client, config.Namespace)
+			}
 		}
-	})
-	for i := range test.Spec.Steps {
-		step := test.Spec.Steps[i]
-		t.Logf("step-%d", i+1)
-		executeStep(t, test.BasePath, namespace.Name, step, c)
+	}
+	for i := range tests {
+		test := tests[i]
+		t.Run(test.GetName(), func(t *testing.T) {
+			t.Helper()
+			runTest(t, ctx, test)
+		})
 	}
 }
 
-func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.TestStepSpec, c client.Client) {
+func runTest(t *testing.T, ctx Context, test discovery.Test) {
+	t.Helper()
+	t.Parallel()
+	if ctx.namespacer == nil {
+		namespace := client.PetNamespace()
+		if err := ctx.client.Create(context.Background(), namespace.DeepCopy()); err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() {
+			t.Logf("cleanup namespace: %s", namespace.Name)
+			if err := client.BlockingDelete(context.Background(), ctx.client, &namespace); err != nil {
+				t.Fatal(err)
+			}
+		})
+		ctx.namespacer = namespacer.New(ctx.client, namespace.Name)
+	}
+	for i := range test.Spec.Steps {
+		step := test.Spec.Steps[i]
+		t.Logf("step-%d", i+1)
+		executeStep(t, ctx, test.BasePath, step)
+	}
+}
+
+func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestStepSpec) {
 	t.Helper()
 	for _, apply := range step.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, apply.File))
@@ -103,18 +127,18 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 		}
 		for i := range resources {
 			resource := &resources[i]
-			if err = setResourceNamespaceIfNeeded(c, resource, namespace); err != nil {
+			if err := ctx.namespacer.Apply(resource); err != nil {
 				t.Fatal(err)
 			}
 			t.Logf("apply %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
-			cleanup, err := client.CreateOrUpdate(context.Background(), c, resource)
+			cleanup, err := client.CreateOrUpdate(context.Background(), ctx.client, resource)
 			if err != nil {
 				t.Fatal(err)
 			}
 			if cleanup {
 				t.Cleanup(func() {
 					t.Logf("cleanup resource: %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
-					if err := client.BlockingDelete(context.Background(), c, resource); err != nil {
+					if err := client.BlockingDelete(context.Background(), ctx.client, resource); err != nil {
 						t.Fatal(err)
 					}
 				})
@@ -128,27 +152,14 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 		}
 		for i := range resources {
 			resource := &resources[i]
-			if err = setResourceNamespaceIfNeeded(c, resource, namespace); err != nil {
+			if err := ctx.namespacer.Apply(resource); err != nil {
 				t.Fatal(err)
 			}
 			t.Logf("assert %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
-			err := client.Assert(context.Background(), resources[i], c)
+			err := client.Assert(context.Background(), resources[i], ctx.client)
 			if err != nil {
 				t.Fatal(err)
 			}
 		}
 	}
-}
-
-func setResourceNamespaceIfNeeded(c client.Client, resource crclient.Object, namespace string) error {
-	if resource.GetNamespace() == "" {
-		namespaced, err := c.IsObjectNamespaced(resource)
-		if err != nil {
-			return err
-		}
-		if namespaced {
-			resource.SetNamespace(namespace)
-		}
-	}
-	return nil
 }
