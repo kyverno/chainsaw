@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/utils/kubernetes"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -16,8 +15,9 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, client Clie
 	if err := client.Get(ctx, ctrlclient.ObjectKey{Name: expected.GetName(), Namespace: expected.GetNamespace()}, &actual); err != nil {
 		return err
 	}
-	if kubernetes.IsSubset(actual, expected) {
-		return nil
+	if err := kubernetes.IsSubset(expected.UnstructuredContent(), actual.UnstructuredContent()); err != nil {
+		// return fmt.Errorf("expected object %v is not subset of actual object %v", expected, actual)
+		return err
 	}
-	return fmt.Errorf("expected object %v is not subset of actual object %v", expected, actual)
+	return nil
 }
