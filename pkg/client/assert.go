@@ -16,7 +16,6 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, client Clie
 		return err
 	}
 	if err := kubernetes.IsSubset(expected.UnstructuredContent(), actual.UnstructuredContent()); err != nil {
-		// return fmt.Errorf("expected object %v is not subset of actual object %v", expected, actual)
 		return err
 	}
 	return nil
