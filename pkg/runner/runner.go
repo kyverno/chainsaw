@@ -3,7 +3,6 @@ package runner
 import (
 	"context"
 	"flag"
-	"fmt"
 	"path/filepath"
 	"testing"
 
@@ -66,16 +65,15 @@ func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
 		t.Fatal(err)
 	}
 	defer func() {
+		t.Logf("cleanup namespace: %s", namespace.Name)
 		if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
 			t.Fatal(err)
 		}
 	}()
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
-		t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
-			t.Helper()
-			executeStep(t, test.BasePath, namespace.Name, step, c)
-		})
+		t.Logf("step-%d", i+1)
+		executeStep(t, test.BasePath, namespace.Name, step, c)
 	}
 }
 
@@ -91,29 +89,25 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 			if err = setResourceNamespaceIfNeeded(c, resource, namespace); err != nil {
 				t.Fatal(err)
 			}
+			t.Logf("apply %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
 			_, err := client.CreateOrUpdate(context.Background(), c, resource)
 			if err != nil {
 				t.Fatal(err)
 			}
 		}
 	}
-
 	for _, assert := range step.Assert {
-		resources, err := resource.Load(assert.File)
+		resources, err := resource.Load(filepath.Join(basePath, assert.File))
 		if err != nil {
 			t.Fatal(err)
 		}
-
 		for i := range resources {
-			// Try to check that if the resource has a namespace,
-			// if the resource does not have a namespace, then set the namespace to the namespace of the test.
 			resource := &resources[i]
 			if err = setResourceNamespaceIfNeeded(c, resource, namespace); err != nil {
 				t.Fatal(err)
 			}
-			// Try to assert the resource on the cluster
-			// if got error then fail the test
-			err := client.Assert(context.Background(), &resources[i], c)
+			t.Logf("assert %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
+			err := client.Assert(context.Background(), resources[i], c)
 			if err != nil {
 				t.Fatal(err)
 			}
