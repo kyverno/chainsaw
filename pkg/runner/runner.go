@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"path/filepath"
+	"strconv"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -31,7 +32,7 @@ func Run(cfg *rest.Config, options Options, tests ...discovery.Test) (int, error
 	if err := flag.Set("test.v", "true"); err != nil {
 		return 0, err
 	}
-	if err := flag.Set("test.parallel", fmt.Sprintf("%d", options.Parallel)); err != nil {
+	if err := flag.Set("test.parallel", strconv.Itoa(options.Parallel)); err != nil {
 		return 0, err
 	}
 	if err := flag.Set("test.timeout", options.Timeout.String()); err != nil {
