@@ -4,7 +4,9 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
 	"path/filepath"
+	"strconv"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -27,12 +29,12 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	if err := flag.Set("test.v", "true"); err != nil {
 		return 0, err
 	}
-	// if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
-	// 	return 0, err
-	// }
-	// if err := flag.Set("test.timeout", config.Timeout.String()); err != nil {
-	// 	return 0, err
-	// }
+	if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
+		return 0, err
+	}
+	if err := flag.Set("test.timeout", config.Timeout.Duration.String()); err != nil {
+		return 0, err
+	}
 	if err := flag.Set("test.failfast", fmt.Sprint(config.FailFast)); err != nil {
 		return 0, err
 	}
@@ -42,21 +44,17 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	if err := flag.Set("test.fullpath", "false"); err != nil {
 		return 0, err
 	}
-	// regex related flags
+	// TODO: regex related flags
+	run := func(t *testing.T) {
+		t.Helper()
+		run(t, cfg, config, tests...)
+	}
+	internalTest := []testing.InternalTest{{
+		Name: "chainsaw",
+		F:    run,
+	}}
 	var testDeps testDeps
-	m := testing.MainStart(
-		&testDeps,
-		[]testing.InternalTest{{
-			Name: "chainsaw",
-			F: func(t *testing.T) {
-				t.Helper()
-				run(t, cfg, config, tests...)
-			},
-		}},
-		nil,
-		nil,
-		nil,
-	)
+	m := testing.MainStart(&testDeps, internalTest, nil, nil, nil)
 	return m.Run(), nil
 }
 
@@ -80,19 +78,29 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, test
 				if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 					t.Fatal(err)
 				}
-				t.Cleanup(func() {
-					t.Logf("cleanup namespace: %s", config.Namespace)
-					if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
-						t.Fatal(err)
-					}
-				})
 				ctx.namespacer = namespacer.New(c, config.Namespace)
 			}
 		}
 	}
 	for i := range tests {
 		test := tests[i]
-		t.Run(test.GetName(), func(t *testing.T) {
+		name := test.GetName()
+		if config.FullName {
+			if cwd, err := os.Getwd(); err == nil {
+				if abs, err := filepath.Abs(test.BasePath); err == nil {
+					if rel, err := filepath.Rel(cwd, abs); err == nil {
+						name = fmt.Sprintf("%s[%s]", rel, name)
+					} else {
+						t.Error(err)
+					}
+				} else {
+					t.Error(err)
+				}
+			} else {
+				t.Error(err)
+			}
+		}
+		t.Run(name, func(t *testing.T) {
 			t.Helper()
 			runTest(t, ctx, test)
 		})

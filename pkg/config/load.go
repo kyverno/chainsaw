@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -24,15 +25,23 @@ func Load(path string) (*v1alpha1.Configuration, error) {
 	if err != nil {
 		return nil, err
 	}
+	config, err := LoadBytes(content)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load configuration (%w)", err)
+	}
+	return config, nil
+}
+
+func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
 	configs, err := Parse(content)
 	if err != nil {
 		return nil, err
 	}
 	if len(configs) == 0 {
-		return nil, fmt.Errorf("found no configuration in %s", path)
+		return nil, errors.New("found no configuration")
 	}
 	if len(configs) != 1 {
-		return nil, fmt.Errorf("found multiple configurations in %s (%d)", path, len(configs))
+		return nil, fmt.Errorf("found multiple configurations (%d)", len(configs))
 	}
 	return configs[0], nil
 }

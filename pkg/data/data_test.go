@@ -22,3 +22,19 @@ func TestCrds(t *testing.T) {
 		assert.True(t, file.IsDir())
 	}
 }
+
+func TestConfig(t *testing.T) {
+	data := Config()
+	{
+		file, err := fs.Stat(data, "config/default.yaml")
+		assert.NoError(t, err)
+		assert.NotNil(t, file)
+		assert.False(t, file.IsDir())
+	}
+	{
+		file, err := fs.Stat(data, "config")
+		assert.NoError(t, err)
+		assert.NotNil(t, file)
+		assert.True(t, file.IsDir())
+	}
+}

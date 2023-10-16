@@ -1,6 +1,6 @@
 Loading default configuration...
 - Timeout 30s
-- TestDirs []
+- TestDirs [dir1,dir2,dir3]
 - SkipDelete false
 - FailFast false
 - Parallel 8

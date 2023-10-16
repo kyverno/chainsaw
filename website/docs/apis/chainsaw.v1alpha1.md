@@ -24,7 +24,7 @@ auto_generated: true
 | `apiVersion` | `string` | :white_check_mark: | | `chainsaw.kyverno.io/v1alpha1` |
 | `kind` | `string` | :white_check_mark: | | `Configuration` |
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
-| `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec) |  |  | <p>Configuration spec.</p> |
+| `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec) | :white_check_mark: |  | <p>Configuration spec.</p> |
 
 ## `Test`     {#chainsaw-kyverno-io-v1alpha1-Test}
 

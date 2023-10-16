@@ -87,6 +87,8 @@ spec:
                 description: Timeout per test step.
                 type: string
             type: object
+        required:
+        - spec
         type: object
     served: true
     storage: true

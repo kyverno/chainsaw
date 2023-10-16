@@ -2,11 +2,14 @@ package test
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
+	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
@@ -57,7 +60,16 @@ func Command() *cobra.Command {
 				}
 				configuration = *config
 			} else {
-				fmt.Fprintln(out, "Running without configuration")
+				fmt.Fprintln(out, "Loading default configuration...")
+				bytes, err := fs.ReadFile(data.Config(), filepath.Join("config", "default.yaml"))
+				if err != nil {
+					return err
+				}
+				config, err := config.LoadBytes(bytes)
+				if err != nil {
+					return err
+				}
+				configuration = *config
 			}
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
@@ -94,6 +106,17 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "skip-test-regex") {
 				configuration.Spec.SkipTestRegex = options.skipTestRegex
 			}
+			fmt.Fprintf(out, "- Timeout %v\n", configuration.Spec.Timeout.Duration)
+			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
+			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
+			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
+			fmt.Fprintf(out, "- Parallel %v\n", configuration.Spec.Parallel)
+			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
+			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.ReportName)
+			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
+			fmt.Fprintf(out, "- Suppress %v\n", configuration.Spec.Suppress)
+			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
+			fmt.Fprintf(out, "- SkipTestRegex '%v'\n", configuration.Spec.SkipTestRegex)
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
 			tests, err := discovery.DiscoverTests("chainsaw-test.yaml", configuration.Spec.TestDirs...)
@@ -130,7 +153,6 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name.")
 	cmd.Flags().StringVar(&options.skipTestRegex, "skip-test-regex", "", "Regular expression to skip tests based on.")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
-	// TODO: panic ?
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
 	}

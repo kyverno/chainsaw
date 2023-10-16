@@ -1,4 +1,15 @@
 Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)...
+- Timeout 10s
+- TestDirs [/path/to/testdir1 /path/to/testdir2]
+- SkipDelete true
+- FailFast true
+- Parallel 5
+- ReportFormat 'JSON'
+- ReportName 'custom-chainsaw-report'
+- Namespace 'test-namespace'
+- Suppress [logTypeA logTypeB]
+- FullName true
+- SkipTestRegex '^skip-.*'
 Loading tests...
 Running tests...
 Done.
