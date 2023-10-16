@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
-	dClient "k8s.io/client-go/discovery"
 	"k8s.io/client-go/rest"
 	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -62,10 +61,6 @@ func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	dClient, err := dClient.NewDiscoveryClientForConfig(cfg)
-	if err != nil {
-		t.Fatal(err)
-	}
 	namespace := client.PetNamespace()
 	if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 		t.Fatal(err)
@@ -79,12 +74,12 @@ func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
 		step := test.Spec.Steps[i]
 		t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
 			t.Helper()
-			executeStep(t, test.BasePath, namespace.Name, step, c, dClient)
+			executeStep(t, test.BasePath, namespace.Name, step, c)
 		})
 	}
 }
 
-func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.TestStepSpec, c client.Client, dClient dClient.DiscoveryInterface) {
+func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.TestStepSpec, c client.Client) {
 	t.Helper()
 	for _, apply := range step.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, apply.File))
@@ -118,7 +113,7 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 			}
 			// Try to assert the resource on the cluster
 			// if got error then fail the test
-			err := client.Assert(context.Background(), &resources[i], c, dClient)
+			err := client.Assert(context.Background(), &resources[i], c)
 			if err != nil {
 				t.Fatal(err)
 			}
