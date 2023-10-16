@@ -73,7 +73,7 @@ func TestDiscoverTests2(t *testing.T) {
 		want:    nil,
 		wantErr: false,
 	}, {
-		name:  "quick start",
+		name:  "manifests based",
 		paths: []string{"../../testdata/tests/manifests-based"},
 		want: []Test{{
 			BasePath: "../../testdata/tests/manifests-based",
@@ -95,6 +95,36 @@ func TestDiscoverTests2(t *testing.T) {
 						Assert: []v1alpha1.Assert{{
 							FileRef: v1alpha1.FileRef{
 								File: "01-assert.yaml",
+							},
+						}},
+					}},
+				},
+			},
+		}},
+		wantErr: false,
+	}, {
+		name:  "steps based",
+		paths: []string{"../../testdata/tests/steps-based"},
+		want: []Test{{
+			BasePath: "../../testdata/tests/steps-based",
+			Test: &v1alpha1.Test{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Test",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "steps-based",
+				},
+				Spec: v1alpha1.TestSpec{
+					Steps: []v1alpha1.TestStepSpec{{
+						Apply: []v1alpha1.Apply{{
+							FileRef: v1alpha1.FileRef{
+								File: "foo.yaml",
+							},
+						}},
+						Assert: []v1alpha1.Assert{{
+							FileRef: v1alpha1.FileRef{
+								File: "bar.yaml",
 							},
 						}},
 					}},
