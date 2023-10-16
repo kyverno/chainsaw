@@ -4,7 +4,9 @@ import (
 	"context"
 	"flag"
 	"path/filepath"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -14,7 +16,12 @@ import (
 	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Run(cfg *rest.Config, tests ...discovery.Test) (int, error) {
+type Options struct {
+	Timeout  time.Duration
+	Parallel int
+}
+
+func Run(cfg *rest.Config, options Options, tests ...discovery.Test) (int, error) {
 	if len(tests) == 0 {
 		return 0, nil
 	}
@@ -22,6 +29,12 @@ func Run(cfg *rest.Config, tests ...discovery.Test) (int, error) {
 	testing.Init()
 	// Set the verbose test flag to true since we are not using the regular go test CLI.
 	if err := flag.Set("test.v", "true"); err != nil {
+		return 0, err
+	}
+	if err := flag.Set("test.parallel", strconv.Itoa(options.Parallel)); err != nil {
+		return 0, err
+	}
+	if err := flag.Set("test.timeout", options.Timeout.String()); err != nil {
 		return 0, err
 	}
 	// TODO: flags
