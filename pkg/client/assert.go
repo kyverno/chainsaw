@@ -26,7 +26,10 @@ func Assert(ctx context.Context, expected ctrlclient.Object, client Client, dCli
 	}
 
 	actualObj := unstructured.Unstructured{}
-	expectedObj, _ := runtime.DefaultUnstructuredConverter.ToUnstructured(expected)
+	expectedObj, err := runtime.DefaultUnstructuredConverter.ToUnstructured(expected)
+	if err != nil {
+		return err
+	}
 
 	if err := client.Get(ctx, ctrlclient.ObjectKey{Name: expected.GetName(), Namespace: expected.GetNamespace()}, &actualObj); err != nil {
 		return err
@@ -46,10 +49,9 @@ func checkAPIResource(dClient dClient.DiscoveryInterface, gvk schema.GroupVersio
 	}
 
 	for _, resource := range resourceTypes.APIResources {
-		if !strings.EqualFold(resource.Kind, gvk.Kind) {
+		if strings.EqualFold(resource.Kind, gvk.Kind) {
 			return nil
 		}
 	}
-
 	return errors.New("resource type not found")
 }
