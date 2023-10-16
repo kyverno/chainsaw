@@ -9,7 +9,7 @@ spec:
     - "/path/to/testdir1"
     - "/path/to/testdir2"
   skipDelete: true
-  stopOnFirstFailure: true
+  failFast: true
   parallel: 5
   reportFormat: "JSON"
   reportName: "custom-chainsaw-report"

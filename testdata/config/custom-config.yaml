@@ -5,7 +5,7 @@ metadata:
 spec:
   timeout: 45s
   skipDelete: true
-  stopOnFirstFailure: true
+  failFast: true
   parallel: 4
   reportFormat: "JSON"
   reportName: "custom-report"

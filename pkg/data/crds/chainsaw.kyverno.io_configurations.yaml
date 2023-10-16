@@ -35,6 +35,10 @@ spec:
           spec:
             description: Configuration spec.
             properties:
+              failFast:
+                description: FailFast determines whether the test should stop upon
+                  encountering the first failure.
+                type: boolean
               fullName:
                 description: FullName makes use of the full test case folder path
                   instead of the folder name.
@@ -68,10 +72,6 @@ spec:
                 description: SkipTestRegex is used to skip tests based on a regular
                   expression.
                 type: string
-              stopOnFirstFailure:
-                description: StopOnFirstFailure determines whether the test should
-                  stop upon encountering the first failure.
-                type: boolean
               suppress:
                 description: Suppress is used to suppress logs.
                 items:
