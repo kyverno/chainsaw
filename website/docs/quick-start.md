@@ -60,9 +60,11 @@ EOF
 
 ```bash
 # create test file
-cat > 01-create-resource.yaml << EOF
+cat > chainsaw-test.yaml << EOF
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
+metadata:
+  name: quick-start
 spec:
   steps:
   # first step applies the config map
@@ -81,7 +83,5 @@ EOF
 We finished writing our first test, now we can run Chainsaw to verify the test runs as expected:
 
 ```bash
-chainsaw ...
+chainsaw test --test-dir .
 ```
-
-TODO
