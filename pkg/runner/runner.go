@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"k8s.io/client-go/rest"
+	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Run(cfg *rest.Config, tests ...discovery.Test) (int, error) {
@@ -87,14 +88,8 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 		}
 		for i := range resources {
 			resource := &resources[i]
-			if resource.GetNamespace() == "" {
-				namespaced, err := c.IsObjectNamespaced(resource)
-				if err != nil {
-					t.Fatal(err)
-				}
-				if namespaced {
-					resource.SetNamespace(namespace)
-				}
+			if err = setResourceNamespaceIfNeeded(c, resource, namespace); err != nil {
+				t.Fatal(err)
 			}
 			_, err := client.CreateOrUpdate(context.Background(), c, resource)
 			if err != nil {
@@ -102,4 +97,39 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 			}
 		}
 	}
+
+	for _, assert := range step.Assert {
+		resources, err := resource.Load(assert.File)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		for i := range resources {
+			// Try to check that if the resource has a namespace,
+			// if the resource does not have a namespace, then set the namespace to the namespace of the test.
+			resource := &resources[i]
+			if err = setResourceNamespaceIfNeeded(c, resource, namespace); err != nil {
+				t.Fatal(err)
+			}
+			// Try to assert the resource on the cluster
+			// if got error then fail the test
+			err := client.Assert(context.Background(), &resources[i], c)
+			if err != nil {
+				t.Fatal(err)
+			}
+		}
+	}
+}
+
+func setResourceNamespaceIfNeeded(c client.Client, resource crclient.Object, namespace string) error {
+	if resource.GetNamespace() == "" {
+		namespaced, err := c.IsObjectNamespaced(resource)
+		if err != nil {
+			return err
+		}
+		if namespaced {
+			resource.SetNamespace(namespace)
+		}
+	}
+	return nil
 }
