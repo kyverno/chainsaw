@@ -47,34 +47,10 @@ func TestDiscoverTests(t *testing.T) {
 			},
 		}},
 		wantErr: false,
-	}}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := DiscoverTests(tt.fileName, tt.paths...)
-			if tt.wantErr {
-				require.Error(t, err)
-			} else {
-				require.NoError(t, err)
-			}
-			require.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestDiscoverTests2(t *testing.T) {
-	tests := []struct {
-		name    string
-		paths   []string
-		want    []Test
-		wantErr bool
-	}{{
-		name:    "quick start",
-		paths:   []string{"../../testdata/tests/not-a-test"},
-		want:    nil,
-		wantErr: false,
 	}, {
-		name:  "manifests based",
-		paths: []string{"../../testdata/tests/manifests-based"},
+		name:     "manifests based",
+		fileName: "chainsaw-test.yaml",
+		paths:    []string{"../../testdata/tests/manifests-based"},
 		want: []Test{{
 			BasePath: "../../testdata/tests/manifests-based",
 			Test: &v1alpha1.Test{
@@ -103,8 +79,9 @@ func TestDiscoverTests2(t *testing.T) {
 		}},
 		wantErr: false,
 	}, {
-		name:  "steps based",
-		paths: []string{"../../testdata/tests/steps-based"},
+		name:     "steps based",
+		fileName: "chainsaw-test.yaml",
+		paths:    []string{"../../testdata/tests/steps-based"},
 		want: []Test{{
 			BasePath: "../../testdata/tests/steps-based",
 			Test: &v1alpha1.Test{
@@ -135,7 +112,7 @@ func TestDiscoverTests2(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := DiscoverTests2(tt.paths...)
+			got, err := DiscoverTests(tt.fileName, tt.paths...)
 			if tt.wantErr {
 				require.Error(t, err)
 			} else {
