@@ -19,9 +19,9 @@ func CreateOrUpdate(ctx context.Context, client Client, obj ctrlclient.Object) (
 		if err != nil {
 			return false, err
 		}
-		return true, client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes))
+		return false, client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes))
 	} else if errors.IsNotFound(err) {
-		return false, client.Create(ctx, obj)
+		return true, client.Create(ctx, obj)
 	}
 	// TODO: context timeout
 	return false, err
