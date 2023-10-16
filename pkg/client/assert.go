@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/utils/kubernetes"
@@ -31,8 +32,10 @@ func Assert(ctx context.Context, expected ctrlclient.Object, client Client, dCli
 		return err
 	}
 
-	kubernetes.IsSubset(actualObj, expectedObj)
-	return nil
+	if kubernetes.IsSubset(actualObj, expectedObj) {
+		return nil
+	}
+	return fmt.Errorf("expected object %v is not subset of actual object %v", expectedObj, actualObj)
 }
 
 // getAPIResource returns the APIResource object for a specific GroupVersionKind.
