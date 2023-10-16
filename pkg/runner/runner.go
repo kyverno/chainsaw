@@ -59,6 +59,9 @@ func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
 	t.Helper()
 	t.Parallel()
 	c, err := client.New(cfg)
+	if err != nil {
+		t.Fatal(err)
+	}
 	dClient, err := dClient.NewDiscoveryClientForConfig(cfg)
 	if err != nil {
 		t.Fatal(err)
@@ -98,7 +101,6 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 				t.Fatal(err)
 			}
 		}
-
 	}
 
 	for _, assert := range step.Assert {
@@ -120,9 +122,7 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 			if err != nil {
 				t.Fatal(err)
 			}
-
 		}
-
 	}
 }
 
