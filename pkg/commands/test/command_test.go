@@ -20,7 +20,7 @@ func TestChainsawCommand(t *testing.T) {
 		err     string
 	}{
 		{
-			name:    "default test",
+			name:    "default",
 			args:    []string{},
 			wantErr: false,
 			out:     filepath.Join(basePath, "default.txt"),
@@ -32,7 +32,7 @@ func TestChainsawCommand(t *testing.T) {
 				"10s",
 			},
 			wantErr: false,
-			out:     filepath.Join(basePath, "without_config.txt"),
+			out:     filepath.Join(basePath, "with_timeout.txt"),
 		},
 		{
 			name: "invalid timeout",
@@ -49,7 +49,7 @@ func TestChainsawCommand(t *testing.T) {
 				"dir1,dir2,dir3",
 			},
 			wantErr: false,
-			out:     filepath.Join(basePath, "without_config.txt"),
+			out:     filepath.Join(basePath, "with_test_dirs.txt"),
 		},
 		{
 			name: "nonexistent config file",
@@ -66,7 +66,7 @@ func TestChainsawCommand(t *testing.T) {
 				"warning,error",
 			},
 			wantErr: false,
-			out:     filepath.Join(basePath, "without_config.txt"),
+			out:     filepath.Join(basePath, "with_suppress.txt"),
 		},
 		{
 			name: "skip test with regex",
@@ -75,7 +75,7 @@ func TestChainsawCommand(t *testing.T) {
 				"test[1-3]",
 			},
 			wantErr: false,
-			out:     filepath.Join(basePath, "without_config.txt"),
+			out:     filepath.Join(basePath, "with_regex.txt"),
 		},
 		{
 			name: "valid config",
@@ -83,8 +83,7 @@ func TestChainsawCommand(t *testing.T) {
 				"--config",
 				filepath.Join(basePath, "config/empty_config.yaml"),
 			},
-			wantErr: false,
-			out:     filepath.Join(basePath, "valid_config.txt"),
+			wantErr: true,
 		},
 		{
 			name: "nonexistent config",

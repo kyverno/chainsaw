@@ -18,6 +18,5 @@ type Configuration struct {
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Configuration spec.
-	// +optional
 	Spec ConfigurationSpec `json:"spec"`
 }

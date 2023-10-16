@@ -153,7 +153,6 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name.")
 	cmd.Flags().StringVar(&options.skipTestRegex, "skip-test-regex", "", "Regular expression to skip tests based on.")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
-	// TODO: panic ?
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
 	}

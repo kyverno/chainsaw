@@ -1,1 +1,1 @@
-Error: failed to parse document (failed to retrieve validator: kind foo not found in chainsaw.kyverno.io/v1alpha1 groupversion)
+Error: failed to load configuration (failed to parse document (failed to retrieve validator: kind foo not found in chainsaw.kyverno.io/v1alpha1 groupversion))
