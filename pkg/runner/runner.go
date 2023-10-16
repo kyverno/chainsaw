@@ -5,13 +5,13 @@ import (
 	"flag"
 	"fmt"
 	"path/filepath"
-	"strconv"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
+	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
@@ -27,12 +27,12 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	if err := flag.Set("test.v", "true"); err != nil {
 		return 0, err
 	}
-	if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
-		return 0, err
-	}
-	if err := flag.Set("test.timeout", config.Timeout.String()); err != nil {
-		return 0, err
-	}
+	// if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
+	// 	return 0, err
+	// }
+	// if err := flag.Set("test.timeout", config.Timeout.String()); err != nil {
+	// 	return 0, err
+	// }
 	if err := flag.Set("test.failfast", fmt.Sprint(config.FailFast)); err != nil {
 		return 0, err
 	}
@@ -67,10 +67,14 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, test
 		t.Fatal(err)
 	}
 	ctx := Context{
-		client: c,
+		clientFactory: func(t *testing.T) client.Client {
+			t.Helper()
+			return runnerclient.New(t, c, !config.SkipDelete)
+		},
 	}
 	if config.Namespace != "" {
 		namespace := client.Namespace(config.Namespace)
+		c := ctx.clientFactory(t)
 		if err := c.Get(context.Background(), client.ObjectKey(&namespace), nil); err != nil {
 			if errors.IsNotFound(err) {
 				if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
@@ -82,7 +86,7 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, test
 						t.Fatal(err)
 					}
 				})
-				ctx.namespacer = namespacer.New(ctx.client, config.Namespace)
+				ctx.namespacer = namespacer.New(c, config.Namespace)
 			}
 		}
 	}
@@ -100,16 +104,11 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	t.Parallel()
 	if ctx.namespacer == nil {
 		namespace := client.PetNamespace()
-		if err := ctx.client.Create(context.Background(), namespace.DeepCopy()); err != nil {
+		c := ctx.clientFactory(t)
+		if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 			t.Fatal(err)
 		}
-		t.Cleanup(func() {
-			t.Logf("cleanup namespace: %s", namespace.Name)
-			if err := client.BlockingDelete(context.Background(), ctx.client, &namespace); err != nil {
-				t.Fatal(err)
-			}
-		})
-		ctx.namespacer = namespacer.New(ctx.client, namespace.Name)
+		ctx.namespacer = namespacer.New(c, namespace.Name)
 	}
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
@@ -120,6 +119,7 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 
 func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestStepSpec) {
 	t.Helper()
+	c := ctx.clientFactory(t)
 	for _, apply := range step.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, apply.File))
 		if err != nil {
@@ -130,18 +130,9 @@ func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestS
 			if err := ctx.namespacer.Apply(resource); err != nil {
 				t.Fatal(err)
 			}
-			t.Logf("apply %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
-			cleanup, err := client.CreateOrUpdate(context.Background(), ctx.client, resource)
+			err := client.CreateOrUpdate(context.Background(), c, resource)
 			if err != nil {
 				t.Fatal(err)
-			}
-			if cleanup {
-				t.Cleanup(func() {
-					t.Logf("cleanup resource: %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
-					if err := client.BlockingDelete(context.Background(), ctx.client, resource); err != nil {
-						t.Fatal(err)
-					}
-				})
 			}
 		}
 	}
@@ -156,7 +147,7 @@ func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestS
 				t.Fatal(err)
 			}
 			t.Logf("assert %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
-			err := client.Assert(context.Background(), resources[i], ctx.client)
+			err := client.Assert(context.Background(), resources[i], c)
 			if err != nil {
 				t.Fatal(err)
 			}
