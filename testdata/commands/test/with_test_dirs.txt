@@ -9,7 +9,8 @@ Loading default configuration...
 - Namespace ''
 - Suppress []
 - FullName false
-- SkipTestRegex ''
+- IncludeTestRegex ''
+- ExcludeTestRegex ''
 Loading tests...
 Running tests...
 Done.

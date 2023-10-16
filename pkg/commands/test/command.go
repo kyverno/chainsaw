@@ -31,7 +31,8 @@ type options struct {
 	namespace           string
 	suppress            []string
 	fullName            bool
-	skipTestRegex       string
+	excludeTestRegex    string
+	includeTestRegex    string
 	kubeConfigOverrides clientcmd.ConfigOverrides
 }
 
@@ -103,8 +104,11 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "full-name") {
 				configuration.Spec.FullName = options.fullName
 			}
-			if flagutils.IsSet(flags, "skip-test-regex") {
-				configuration.Spec.SkipTestRegex = options.skipTestRegex
+			if flagutils.IsSet(flags, "include-test-regex") {
+				configuration.Spec.IncludeTestRegex = options.includeTestRegex
+			}
+			if flagutils.IsSet(flags, "exclude-test-regex") {
+				configuration.Spec.ExcludeTestRegex = options.excludeTestRegex
 			}
 			fmt.Fprintf(out, "- Timeout %v\n", configuration.Spec.Timeout.Duration)
 			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
@@ -116,7 +120,8 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
 			fmt.Fprintf(out, "- Suppress %v\n", configuration.Spec.Suppress)
 			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
-			fmt.Fprintf(out, "- SkipTestRegex '%v'\n", configuration.Spec.SkipTestRegex)
+			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.IncludeTestRegex)
+			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.ExcludeTestRegex)
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
 			tests, err := discovery.DiscoverTests("chainsaw-test.yaml", configuration.Spec.TestDirs...)
@@ -151,7 +156,8 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests.")
 	cmd.Flags().StringArrayVar(&options.suppress, "suppress", []string{}, "Logs to suppress.")
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name.")
-	cmd.Flags().StringVar(&options.skipTestRegex, "skip-test-regex", "", "Regular expression to skip tests based on.")
+	cmd.Flags().StringVar(&options.includeTestRegex, "include-test-regex", "", "Regular expression to include tests.")
+	cmd.Flags().StringVar(&options.excludeTestRegex, "exclude-test-regex", "", "Regular expression to exclude tests.")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)

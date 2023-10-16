@@ -9,7 +9,8 @@ Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)..
 - Namespace 'test-namespace'
 - Suppress [logTypeA logTypeB]
 - FullName true
-- SkipTestRegex '^skip-.*'
+- IncludeTestRegex '^include-.*'
+- ExcludeTestRegex '^exclude-.*'
 Loading tests...
 Running tests...
 Done.

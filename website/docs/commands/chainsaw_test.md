@@ -10,8 +10,10 @@ chainsaw test [flags]... [test directories]...
 
 ```
       --config string                       Chainsaw configuration file.
+      --exclude-test-regex string           Regular expression to exclude tests.
       --full-name                           Use full test case folder path instead of folder name.
   -h, --help                                help for test
+      --include-test-regex string           Regular expression to include tests.
       --kube-as string                      Username to impersonate for the operation
       --kube-as-group stringArray           Group to impersonate for the operation, this flag can be repeated to specify multiple groups.
       --kube-as-uid string                  UID to impersonate for the operation
@@ -36,7 +38,6 @@ chainsaw test [flags]... [test directories]...
       --report-format string                Test report format (JSON|XML|nil).
       --report-name string                  The name of the report to create. (default "chainsaw-report")
       --skip-delete                         If set, do not delete the resources after running the tests.
-      --skip-test-regex string              Regular expression to skip tests based on.
       --stop-on-first-failure               Stop the test upon encountering the first failure.
       --suppress stringArray                Logs to suppress.
       --test-dir stringArray                Directories containing test cases to run.

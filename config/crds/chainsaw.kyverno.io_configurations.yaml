@@ -35,6 +35,10 @@ spec:
           spec:
             description: Configuration spec.
             properties:
+              excludeTestRegex:
+                description: ExcludeTestRegex is used to exclude tests based on a
+                  regular expression.
+                type: string
               failFast:
                 description: FailFast determines whether the test should stop upon
                   encountering the first failure.
@@ -43,6 +47,10 @@ spec:
                 description: FullName makes use of the full test case folder path
                   instead of the folder name.
                 type: boolean
+              includeTestRegex:
+                description: IncludeTestRegex is used to include tests based on a
+                  regular expression.
+                type: string
               namespace:
                 description: Namespace defines the namespace to use for tests.
                 type: string
@@ -68,10 +76,6 @@ spec:
                 description: If set, do not delete the resources after running the
                   tests (implies SkipClusterDelete).
                 type: boolean
-              skipTestRegex:
-                description: SkipTestRegex is used to skip tests based on a regular
-                  expression.
-                type: string
               suppress:
                 description: Suppress is used to suppress logs.
                 items:

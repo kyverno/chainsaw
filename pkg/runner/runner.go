@@ -24,7 +24,6 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 		return 0, nil
 	}
 	testing.Init()
-	flag.Parse()
 	// Set the verbose test flag to true since we are not using the regular go test CLI.
 	if err := flag.Set("test.v", "true"); err != nil {
 		return 0, err
@@ -44,7 +43,16 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	if err := flag.Set("test.fullpath", "false"); err != nil {
 		return 0, err
 	}
-	// TODO: regex related flags
+	if err := flag.Set("test.count", "1"); err != nil {
+		return 0, err
+	}
+	if err := flag.Set("test.run", config.IncludeTestRegex); err != nil {
+		return 0, err
+	}
+	if err := flag.Set("test.skip", config.ExcludeTestRegex); err != nil {
+		return 0, err
+	}
+	flag.Parse()
 	run := func(t *testing.T) {
 		t.Helper()
 		run(t, cfg, config, tests...)
