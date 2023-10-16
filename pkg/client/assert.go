@@ -44,9 +44,8 @@ func checkAPIResource(dClient dClient.DiscoveryInterface, gvk schema.GroupVersio
 
 	for _, resource := range resourceTypes.APIResources {
 		if !strings.EqualFold(resource.Kind, gvk.Kind) {
-			continue
+			return nil
 		}
-		return nil
 	}
 
 	return errors.New("resource type not found")
