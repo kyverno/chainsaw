@@ -39,7 +39,7 @@ func TestLoad(t *testing.T) {
 		},
 		{
 			name:    "invalid testStep",
-			path:    filepath.Join(basePath, "invalid-testStep.yaml"),
+			path:    filepath.Join(basePath, "invalid.yaml"),
 			wantErr: true,
 		},
 		{
@@ -71,7 +71,7 @@ func TestLoad(t *testing.T) {
 		},
 		{
 			name: "mlutiple testStep",
-			path: filepath.Join(basePath, "multiple-testStep.yaml"),
+			path: filepath.Join(basePath, "multiple.yaml"),
 			want: []*v1alpha1.TestStep{
 				{
 					TypeMeta: metav1.TypeMeta{

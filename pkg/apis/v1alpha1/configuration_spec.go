@@ -27,9 +27,9 @@ type ConfigurationSpec struct {
 	// +optional
 	SkipDelete bool `json:"skipDelete,omitempty"`
 
-	// StopOnFirstFailure determines whether the test should stop upon encountering the first failure.
+	// FailFast determines whether the test should stop upon encountering the first failure.
 	// +optional
-	StopOnFirstFailure bool `json:"stopOnFirstFailure,omitempty"`
+	FailFast bool `json:"failFast,omitempty"`
 
 	// The maximum number of tests to run at once.
 	// +kubebuilder:default:=8

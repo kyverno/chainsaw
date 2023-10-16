@@ -90,7 +90,7 @@ auto_generated: true
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout per test step.</p> |
 | `testDirs` | `[]string` |  |  | <p>Directories containing test cases to run.</p> |
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running the tests (implies SkipClusterDelete).</p> |
-| `stopOnFirstFailure` | `bool` |  |  | <p>StopOnFirstFailure determines whether the test should stop upon encountering the first failure.</p> |
+| `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
 | `parallel` | `int` | :white_check_mark: |  | <p>The maximum number of tests to run at once.</p> |
 | `reportFormat` | [`ReportFormatType`](#chainsaw-kyverno-io-v1alpha1-ReportFormatType) |  |  | <p>ReportFormat determines test report format (JSON|XML|nil) nil == no report. maps to report.Type, however we don't want generated.deepcopy to have reference to it.</p> |
 | `reportName` | `string` |  |  | <p>ReportName defines the name of report to create. It defaults to "chainsaw-report".</p> |

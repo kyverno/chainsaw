@@ -21,7 +21,7 @@ type options struct {
 	timeout             metav1.Duration
 	testDirs            []string
 	skipDelete          bool
-	stopOnFirstFailure  bool
+	failFast            bool
 	parallel            int
 	reportFormat        string
 	reportName          string
@@ -71,7 +71,7 @@ func Command() *cobra.Command {
 				configuration.Spec.SkipDelete = options.skipDelete
 			}
 			if flagutils.IsSet(flags, "stop-on-first-failure") {
-				configuration.Spec.StopOnFirstFailure = options.stopOnFirstFailure
+				configuration.Spec.FailFast = options.failFast
 			}
 			if flagutils.IsSet(flags, "parallel") {
 				configuration.Spec.Parallel = options.parallel
@@ -109,11 +109,7 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			runnerOptions := runner.Options{
-				Timeout:  options.timeout.Duration,
-				Parallel: options.parallel,
-			}
-			if _, err := runner.Run(cfg, runnerOptions, tests...); err != nil {
+			if _, err := runner.Run(cfg, configuration.Spec, tests...); err != nil {
 				return err
 			}
 			// done
@@ -125,7 +121,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file.")
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run.")
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests.")
-	cmd.Flags().BoolVar(&options.stopOnFirstFailure, "stop-on-first-failure", false, "Stop the test upon encountering the first failure.")
+	cmd.Flags().BoolVar(&options.failFast, "stop-on-first-failure", false, "Stop the test upon encountering the first failure.")
 	cmd.Flags().IntVar(&options.parallel, "parallel", 8, "The maximum number of tests to run at once.")
 	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil).")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create.")

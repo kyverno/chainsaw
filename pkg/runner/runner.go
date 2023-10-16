@@ -3,10 +3,10 @@ package runner
 import (
 	"context"
 	"flag"
+	"fmt"
 	"path/filepath"
 	"strconv"
 	"testing"
-	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -16,17 +16,12 @@ import (
 	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Options struct {
-	Timeout  time.Duration
-	Parallel int
-}
-
-func Run(cfg *rest.Config, options Options, tests ...discovery.Test) (int, error) {
+func Run(cfg *rest.Config, options v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, error) {
 	if len(tests) == 0 {
 		return 0, nil
 	}
-	flag.Parse()
 	testing.Init()
+	flag.Parse()
 	// Set the verbose test flag to true since we are not using the regular go test CLI.
 	if err := flag.Set("test.v", "true"); err != nil {
 		return 0, err
@@ -37,7 +32,16 @@ func Run(cfg *rest.Config, options Options, tests ...discovery.Test) (int, error
 	if err := flag.Set("test.timeout", options.Timeout.String()); err != nil {
 		return 0, err
 	}
-	// TODO: flags
+	if err := flag.Set("test.failfast", fmt.Sprint(options.FailFast)); err != nil {
+		return 0, err
+	}
+	if err := flag.Set("test.paniconexit0", "true"); err != nil {
+		return 0, err
+	}
+	if err := flag.Set("test.fullpath", "false"); err != nil {
+		return 0, err
+	}
+	// regex related flags
 	var testDeps testDeps
 	m := testing.MainStart(
 		&testDeps,
