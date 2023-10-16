@@ -64,12 +64,12 @@ func runTest(t *testing.T, cfg *rest.Config, test discovery.Test) {
 	if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 		t.Fatal(err)
 	}
-	defer func() {
+	t.Cleanup(func() {
 		t.Logf("cleanup namespace: %s", namespace.Name)
 		if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
 			t.Fatal(err)
 		}
-	}()
+	})
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
 		t.Logf("step-%d", i+1)
@@ -90,9 +90,17 @@ func executeStep(t *testing.T, basePath string, namespace string, step v1alpha1.
 				t.Fatal(err)
 			}
 			t.Logf("apply %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
-			_, err := client.CreateOrUpdate(context.Background(), c, resource)
+			cleanup, err := client.CreateOrUpdate(context.Background(), c, resource)
 			if err != nil {
 				t.Fatal(err)
+			}
+			if cleanup {
+				t.Cleanup(func() {
+					t.Logf("cleanup resource: %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
+					if err := client.BlockingDelete(context.Background(), c, resource); err != nil {
+						t.Fatal(err)
+					}
+				})
 			}
 		}
 	}
