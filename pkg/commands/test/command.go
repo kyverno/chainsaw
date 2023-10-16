@@ -57,7 +57,7 @@ func Command() *cobra.Command {
 				}
 				configuration = *config
 			} else {
-				fmt.Fprintln(out, "Running without configuration")
+				fmt.Fprintln(out, "Running with default configuration")
 			}
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
@@ -94,6 +94,17 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "skip-test-regex") {
 				configuration.Spec.SkipTestRegex = options.skipTestRegex
 			}
+			fmt.Fprintf(out, "- Timeout %v\n", configuration.Spec.Timeout)
+			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
+			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
+			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
+			fmt.Fprintf(out, "- Parallel %v\n", configuration.Spec.Parallel)
+			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
+			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.ReportName)
+			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
+			fmt.Fprintf(out, "- Suppress %v\n", configuration.Spec.Suppress)
+			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
+			fmt.Fprintf(out, "- SkipTestRegex '%v'\n", configuration.Spec.SkipTestRegex)
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
 			tests, err := discovery.DiscoverTests("chainsaw-test.yaml", configuration.Spec.TestDirs...)
