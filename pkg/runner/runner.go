@@ -155,8 +155,7 @@ func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestS
 				t.Fatal(err)
 			}
 			t.Logf("assert %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
-			err := client.Assert(context.Background(), resources[i], c)
-			if err != nil {
+			if err := client.Assert(context.Background(), resources[i], c); err != nil {
 				t.Fatal(err)
 			}
 		}
