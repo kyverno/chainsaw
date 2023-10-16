@@ -11,11 +11,17 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
 	crclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Run(cfg *rest.Config, tests ...discovery.Test) (int, error) {
+type Options struct {
+	Timeout  metav1.Duration
+	Parallel int
+}
+
+func Run(cfg *rest.Config, options Options, tests ...discovery.Test) (int, error) {
 	if len(tests) == 0 {
 		return 0, nil
 	}
@@ -23,6 +29,12 @@ func Run(cfg *rest.Config, tests ...discovery.Test) (int, error) {
 	testing.Init()
 	// Set the verbose test flag to true since we are not using the regular go test CLI.
 	if err := flag.Set("test.v", "true"); err != nil {
+		return 0, err
+	}
+	if err := flag.Set("test.parallel", fmt.Sprintf("%d", options.Parallel)); err != nil {
+		return 0, err
+	}
+	if err := flag.Set("test.timeout", options.Timeout.String()); err != nil {
 		return 0, err
 	}
 	// TODO: flags
