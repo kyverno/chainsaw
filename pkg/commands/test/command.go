@@ -110,7 +110,7 @@ func Command() *cobra.Command {
 				return err
 			}
 			runnerOptions := runner.Options{
-				Timeout:  options.timeout,
+				Timeout:  options.timeout.Duration,
 				Parallel: options.parallel,
 			}
 			if _, err := runner.Run(cfg, runnerOptions, tests...); err != nil {
