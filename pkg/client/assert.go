@@ -15,11 +15,9 @@ import (
 
 func Assert(ctx context.Context, expected ctrlclient.Object, client Client, dClient dClient.DiscoveryInterface) error {
 	// Resource do have a namespace if they are namespaced
-
 	// Step 1: Check if the resource exists in the cluster
 	// Step 2 Get the actual object from the cluster
 	// Step 3: Compare the actual object with the expected object
-
 	// Check if the resource exists in the cluster
 	gvk := expected.GetObjectKind().GroupVersionKind()
 	if err := checkAPIResource(dClient, gvk); err != nil {
@@ -48,7 +46,6 @@ func checkAPIResource(dClient dClient.DiscoveryInterface, gvk schema.GroupVersio
 		if !strings.EqualFold(resource.Kind, gvk.Kind) {
 			continue
 		}
-
 		return nil
 	}
 
