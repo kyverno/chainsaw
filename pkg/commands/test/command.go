@@ -61,25 +61,25 @@ func Command() *cobra.Command {
 			}
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
-			if flagutils.IsSet(flags, "duration") {
+			if flagutils.IsSet(flags, "timeout") {
 				configuration.Spec.Timeout = &options.timeout
 			}
-			if flagutils.IsSet(flags, "testDirs") {
+			if flagutils.IsSet(flags, "test-dir") {
 				configuration.Spec.TestDirs = options.testDirs
 			}
-			if flagutils.IsSet(flags, "skipDelete") {
+			if flagutils.IsSet(flags, "skip-delete") {
 				configuration.Spec.SkipDelete = options.skipDelete
 			}
-			if flagutils.IsSet(flags, "stopOnFirstFailure") {
+			if flagutils.IsSet(flags, "stop-on-first-failure") {
 				configuration.Spec.StopOnFirstFailure = options.stopOnFirstFailure
 			}
 			if flagutils.IsSet(flags, "parallel") {
 				configuration.Spec.Parallel = options.parallel
 			}
-			if flagutils.IsSet(flags, "reportFormat") {
+			if flagutils.IsSet(flags, "report-format") {
 				configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
 			}
-			if flagutils.IsSet(flags, "reportName") {
+			if flagutils.IsSet(flags, "report-name") {
 				configuration.Spec.ReportName = options.reportName
 			}
 			if flagutils.IsSet(flags, "namespace") {
@@ -88,10 +88,10 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "suppress") {
 				configuration.Spec.Suppress = options.suppress
 			}
-			if flagutils.IsSet(flags, "fullName") {
+			if flagutils.IsSet(flags, "full-name") {
 				configuration.Spec.FullName = options.fullName
 			}
-			if flagutils.IsSet(flags, "skipTestRegex") {
+			if flagutils.IsSet(flags, "skip-test-regex") {
 				configuration.Spec.SkipTestRegex = options.skipTestRegex
 			}
 			// loading tests
