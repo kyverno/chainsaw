@@ -159,9 +159,10 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 				t.Fatalf("listing matching resources: %v", err)
 			}
 
-			for _, item := range u.Items {
+			for i := range u.Items {
+				item := &u.Items[i]
 				t.Logf("=== DELETE %s/%s", delete.APIVersion, delete.Kind)
-				if err := client.DeleteResource(context.TODO(), c, &item); err != nil {
+				if err := client.DeleteResource(context.TODO(), c, item); err != nil {
 					t.Fatal(err)
 				}
 			}
