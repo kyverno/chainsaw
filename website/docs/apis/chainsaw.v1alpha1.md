@@ -56,12 +56,13 @@ auto_generated: true
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
-<p>Apply represents a manifest to be applied.</p>
+<p>Apply represents a set of configurations or resources that
+should be applied during testing.</p>
 
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>Manifest to be applied.</p> |
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the</p> |
 
 ## `Assert`     {#chainsaw-kyverno-io-v1alpha1-Assert}
 
@@ -69,12 +70,13 @@ auto_generated: true
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
-<p>Error represents an assertion expected to succeed.</p>
+<p>Assert represents a test condition that is expected to hold true
+during the testing process.</p>
 
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>Assertion manifest.</p> |
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the assertion.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -106,12 +108,13 @@ auto_generated: true
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
-<p>Error represents an error condition.</p>
+<p>Error represents an anticipated error condition that may arise during testing.
+Instead of treating such an error as a test failure, it acknowledges it as expected.</p>
 
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>Error manifest.</p> |
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the expected error.</p> |
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
@@ -156,10 +159,13 @@ auto_generated: true
 - [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 
+<p>TestStepSpec defines the desired state and behavior for each test step.</p>
+
+
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | *No description provided.* |
-| `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | *No description provided.* |
-| `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | *No description provided.* |
+| `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents the assertions to be made for this test step. It checks whether the conditions specified in each assertion hold true.</p> |
+| `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
+| `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 
   
