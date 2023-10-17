@@ -175,6 +175,6 @@ auto_generated: true
 | `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | *No description provided.* |
 | `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | *No description provided.* |
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | *No description provided.* |
-| `delete` | [`[]ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) |  |  | <p>List of object that should be deleted before the test step is executed</p> |
+| `delete` | [`[]ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
 
   
