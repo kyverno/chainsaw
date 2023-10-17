@@ -24,7 +24,6 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 		return 0, nil
 	}
 	testing.Init()
-	// Set the verbose test flag to true since we are not using the regular go test CLI.
 	if err := flag.Set("test.v", "true"); err != nil {
 		return 0, err
 	}
@@ -146,6 +145,7 @@ func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestS
 			if err := ctx.namespacer.Apply(resource); err != nil {
 				t.Fatal(err)
 			}
+			t.Logf("=== APPLY[%s/%s] %s", resource.GetAPIVersion(), resource.GetKind(), client.ObjectName(resource))
 			err := client.CreateOrUpdate(context.Background(), c, resource)
 			if err != nil {
 				t.Fatal(err)
@@ -162,7 +162,7 @@ func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestS
 			if err := ctx.namespacer.Apply(resource); err != nil {
 				t.Fatal(err)
 			}
-			t.Logf("assert %s (%s/%s)", client.ObjectKey(resource), resource.GetAPIVersion(), resource.GetKind())
+			t.Logf("=== ASSERT[%s/%s] %s", resource.GetAPIVersion(), resource.GetKind(), client.ObjectName(resource))
 			if err := client.Assert(context.Background(), resources[i], c); err != nil {
 				t.Fatal(err)
 			}

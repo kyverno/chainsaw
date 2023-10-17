@@ -2,6 +2,7 @@ package client
 
 import (
 	"context"
+	"strings"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -78,5 +79,5 @@ func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts .
 
 func (c *runnerClient) log(op string, key ctrlclient.ObjectKey, obj ctrlclient.Object) {
 	gvk := obj.GetObjectKind().GroupVersionKind()
-	c.t.Logf("%s %s (%s/%s)", op, key, gvk.GroupVersion(), gvk.Kind)
+	c.t.Logf("%s[%s/%s] %s", strings.ToUpper(op), gvk.GroupVersion(), gvk.Kind, client.Name(key))
 }
