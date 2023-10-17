@@ -14,6 +14,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
@@ -72,14 +73,14 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, test
 		t.Fatal(err)
 	}
 	ctx := Context{
-		clientFactory: func(t *testing.T) client.Client {
+		clientFactory: func(t *testing.T, logger logging.Logger) client.Client {
 			t.Helper()
-			return runnerclient.New(t, c, !config.SkipDelete)
+			return runnerclient.New(t, logger, c, !config.SkipDelete)
 		},
 	}
 	if config.Namespace != "" {
 		namespace := client.Namespace(config.Namespace)
-		c := ctx.clientFactory(t)
+		c := ctx.clientFactory(t, logging.NewTestLogger(t))
 		if err := c.Get(context.Background(), client.ObjectKey(&namespace), nil); err != nil {
 			if errors.IsNotFound(err) {
 				if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
@@ -119,7 +120,7 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	t.Parallel()
 	if ctx.namespacer == nil {
 		namespace := client.PetNamespace()
-		c := ctx.clientFactory(t)
+		c := ctx.clientFactory(t, logging.NewTestLogger(t))
 		if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 			t.Fatal(err)
 		}
@@ -127,14 +128,13 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	}
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
-		t.Logf("step-%d", i+1)
-		executeStep(t, ctx, test.BasePath, step)
+		executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
 	}
 }
 
-func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestStepSpec) {
+func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, step v1alpha1.TestStepSpec) {
 	t.Helper()
-	c := ctx.clientFactory(t)
+	c := ctx.clientFactory(t, logger)
 	for _, apply := range step.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, apply.File))
 		if err != nil {
@@ -145,7 +145,7 @@ func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestS
 			if err := ctx.namespacer.Apply(resource); err != nil {
 				t.Fatal(err)
 			}
-			t.Logf("=== APPLY[%s/%s] %s", resource.GetAPIVersion(), resource.GetKind(), client.ObjectName(resource))
+			logging.ResourceOp(logger, "APPLY", client.ObjectKey(resource), resource)
 			err := client.CreateOrUpdate(context.Background(), c, resource)
 			if err != nil {
 				t.Fatal(err)
@@ -162,7 +162,7 @@ func executeStep(t *testing.T, ctx Context, basePath string, step v1alpha1.TestS
 			if err := ctx.namespacer.Apply(resource); err != nil {
 				t.Fatal(err)
 			}
-			t.Logf("=== ASSERT[%s/%s] %s", resource.GetAPIVersion(), resource.GetKind(), client.ObjectName(resource))
+			logging.ResourceOp(logger, "ASSERT", client.ObjectKey(resource), resource)
 			if err := client.Assert(context.Background(), resources[i], c); err != nil {
 				t.Fatal(err)
 			}

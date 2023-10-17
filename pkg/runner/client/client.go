@@ -2,19 +2,20 @@ package client
 
 import (
 	"context"
-	"strings"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func New(t *testing.T, inner client.Client, cleanup bool) client.Client {
+func New(t *testing.T, logger logging.Logger, inner client.Client, cleanup bool) client.Client {
 	t.Helper()
 	return &runnerClient{
 		t:       t,
+		logger:  logger,
 		inner:   inner,
 		cleanup: cleanup,
 	}
@@ -22,6 +23,7 @@ func New(t *testing.T, inner client.Client, cleanup bool) client.Client {
 
 type runnerClient struct {
 	t       *testing.T
+	logger  logging.Logger
 	inner   client.Client
 	cleanup bool
 }
@@ -78,6 +80,5 @@ func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts .
 }
 
 func (c *runnerClient) log(op string, key ctrlclient.ObjectKey, obj ctrlclient.Object) {
-	gvk := obj.GetObjectKind().GroupVersionKind()
-	c.t.Logf("%s[%s/%s] %s", strings.ToUpper(op), gvk.GroupVersion(), gvk.Kind, client.Name(key))
+	logging.ResourceOp(c.logger, op, key, obj)
 }
