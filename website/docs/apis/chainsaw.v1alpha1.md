@@ -161,5 +161,6 @@ auto_generated: true
 | `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | *No description provided.* |
 | `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | *No description provided.* |
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | *No description provided.* |
+| `delete` | [`[]core/v1.ObjectReference`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectreference-v1-core) |  |  | <p>List of object that should be deleted before the test step is executed</p> |
 
   
