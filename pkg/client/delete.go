@@ -7,7 +7,6 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	kerror "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -39,7 +38,7 @@ func BlockingDelete(ctx context.Context, client Client, obj ctrlclient.Object) e
 
 func DeleteResource(ctx context.Context, client Client, delete *unstructured.Unstructured) error {
 	err := client.Delete(context.TODO(), delete)
-	if err != nil && !kerror.IsNotFound(err) {
+	if err != nil && !errors.IsNotFound(err) {
 		return err
 	}
 	// Wait for resources to be deleted.
@@ -47,7 +46,7 @@ func DeleteResource(ctx context.Context, client Client, delete *unstructured.Uns
 		actual := &unstructured.Unstructured{}
 		actual.SetGroupVersionKind(delete.GetObjectKind().GroupVersionKind())
 		err = client.Get(context.TODO(), types.NamespacedName{Name: delete.GetName(), Namespace: delete.GetNamespace()}, actual)
-		if err == nil || !kerror.IsNotFound(err) {
+		if err == nil || !errors.IsNotFound(err) {
 			return false, err
 		}
 		return true, nil
