@@ -136,9 +136,9 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 		step := test.Spec.Steps[i]
 		executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
 		if t.Failed() {
-			*ctx.sumamry.FailedTest++
+			*ctx.summary.FailedTest++
 		} else {
-			*ctx.sumamry.PassedTest++
+			*ctx.summary.PassedTest++
 		}
 	}
 }
