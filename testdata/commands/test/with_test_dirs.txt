@@ -13,4 +13,9 @@ Loading default configuration...
 - ExcludeTestRegex ''
 Loading tests...
 Running tests...
+
+--- Test Summary ---
+Total Tests: 0
+Passed Tests: 0
+Failed Tests: 0
 Done.
