@@ -22,6 +22,7 @@ limitations under the License.
 package v1alpha1
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 )
@@ -244,6 +245,11 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 	if in.Error != nil {
 		in, out := &in.Error, &out.Error
 		*out = make([]Error, len(*in))
+		copy(*out, *in)
+	}
+	if in.Delete != nil {
+		in, out := &in.Delete, &out.Delete
+		*out = make([]corev1.ObjectReference, len(*in))
 		copy(*out, *in)
 	}
 	return

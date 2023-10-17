@@ -135,6 +135,19 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, step v1alpha1.TestStepSpec) {
 	t.Helper()
 	c := ctx.clientFactory(t, logger)
+
+	// Delete the Objects before the test step is executed
+	for _, delete := range step.Delete {
+		resource := client.NewResource(delete.APIVersion, delete.Kind, delete.Name, delete.Namespace)
+		// IF the namespace is not specified, then use the runner namespace
+		if err := ctx.namespacer.Apply(resource); err != nil {
+			t.Fatal(err)
+		}
+		t.Logf("=== DELETE %s/%s", delete.APIVersion, delete.Kind)
+		if err := client.DeleteResource(context.Background(), c, resource); err != nil {
+			t.Fatal(err)
+		}
+	}
 	for _, apply := range step.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, apply.File))
 		if err != nil {
