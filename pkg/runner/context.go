@@ -12,6 +12,5 @@ type Context struct {
 	clientFactory func(*testing.T, logging.Logger) client.Client
 	namespacer    namespacer.Namespacer
 
-	passedTests *int
-	failedTests *int
+	sumamry *Summary
 }
