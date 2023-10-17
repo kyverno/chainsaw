@@ -82,7 +82,7 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summ
 			t.Helper()
 			return runnerclient.New(t, logger, c, !config.SkipDelete)
 		},
-		sumamry: summary,
+		summary: summary,
 	}
 	if config.Namespace != "" {
 		namespace := client.Namespace(config.Namespace)
