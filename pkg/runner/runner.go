@@ -17,9 +17,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/client-go/rest"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, error) {
@@ -142,27 +140,14 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	for _, delete := range step.Delete {
 		// Use your dynamic listing logic if the name is not provided
 		if delete.Name == "" {
-			u := &unstructured.UnstructuredList{}
-			u.SetGroupVersionKind(delete.GetObjectKind().GroupVersionKind())
-
-			listOptions := []ctrlclient.ListOption{}
-			if delete.Labels != nil {
-				listOptions = append(listOptions, ctrlclient.MatchingLabels(delete.Labels))
-			}
-
-			if delete.Namespace != "" {
-				listOptions = append(listOptions, ctrlclient.InNamespace(delete.Namespace))
-			}
-
-			err := c.List(context.TODO(), u, listOptions...)
+			u, err := client.ListResourcesToDelete(c, delete)
 			if err != nil {
-				t.Fatalf("listing matching resources: %v", err)
+				t.Fatal(err)
 			}
-
-			for i := range u.Items {
-				item := &u.Items[i]
+			for _, item := range u.Items {
+				currentItem := item
 				t.Logf("=== DELETE %s/%s", delete.APIVersion, delete.Kind)
-				if err := client.DeleteResource(context.TODO(), c, item); err != nil {
+				if err := client.DeleteResource(context.TODO(), c, &currentItem); err != nil {
 					t.Fatal(err)
 				}
 			}

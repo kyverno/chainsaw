@@ -2,8 +2,10 @@ package client
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -69,4 +71,24 @@ func NewResource(apiVersion, kind, name, namespace string) *unstructured.Unstruc
 			"metadata":   meta,
 		},
 	}
+}
+
+func ListResourcesToDelete(c Client, delete v1alpha1.ObjectReference) (*unstructured.UnstructuredList, error) {
+	u := &unstructured.UnstructuredList{}
+	u.SetGroupVersionKind(delete.GetObjectKind().GroupVersionKind())
+
+	listOptions := []ctrlclient.ListOption{}
+	if delete.Labels != nil {
+		listOptions = append(listOptions, ctrlclient.MatchingLabels(delete.Labels))
+	}
+
+	if delete.Namespace != "" {
+		listOptions = append(listOptions, ctrlclient.InNamespace(delete.Namespace))
+	}
+
+	err := c.List(context.TODO(), u, listOptions...)
+	if err != nil {
+		return nil, fmt.Errorf("listing matching resources: %v", err)
+	}
+	return u, nil
 }
