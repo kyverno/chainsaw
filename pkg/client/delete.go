@@ -36,7 +36,6 @@ func BlockingDelete(ctx context.Context, client Client, obj ctrlclient.Object) e
 }
 
 func DeleteResource(ctx context.Context, client Client, delete *unstructured.Unstructured) error {
-
 	err := client.Delete(context.TODO(), delete)
 	if err != nil && !kerror.IsNotFound(err) {
 		return err
