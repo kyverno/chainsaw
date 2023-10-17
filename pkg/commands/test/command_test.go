@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/runner"
-
 	"github.com/stretchr/testify/assert"
 )
 
