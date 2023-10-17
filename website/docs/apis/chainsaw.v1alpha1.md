@@ -134,10 +134,13 @@ auto_generated: true
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
+<p>ObjectReference is a reference to an object that should be deleted</p>
+
+
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `labels` | `map[string]string` |  |  | *No description provided.* |
-| `ObjectReference` | [`core/v1.ObjectReference`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectreference-v1-core) |  | :white_check_mark: | *No description provided.* |
+| `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
+| `ObjectReference` | [`core/v1.ObjectReference`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectreference-v1-core) |  | :white_check_mark: | <p>Object reference to delete</p> |
 
 ## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 
