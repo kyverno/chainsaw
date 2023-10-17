@@ -1,7 +1,8 @@
 package v1alpha1
 
-// Error represents an assertion expected to succeed.
+// Assert represents a test condition that is expected to hold true
+// during the testing process.
 type Assert struct {
-	// Assertion manifest.
+	// FileRef provides a reference to the file containing the assertion.
 	FileRef `json:",inline"`
 }

@@ -1,7 +1,8 @@
 package v1alpha1
 
-// Apply represents a manifest to be applied.
+// Apply represents a set of configurations or resources that
+// should be applied during testing.
 type Apply struct {
-	// Manifest to be applied.
+	// FileRef provides a reference to the file containing the
 	FileRef `json:",inline"`
 }
