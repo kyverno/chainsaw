@@ -37,10 +37,17 @@ spec:
               steps:
                 description: Steps defining the test.
                 items:
+                  description: TestStepSpec defines the desired state and behavior
+                    for each test step.
                   properties:
                     apply:
+                      description: Apply lists the resources that should be applied
+                        for this test step. This can include things like configuration
+                        settings or any other resources that need to be available
+                        during the test.
                       items:
-                        description: Apply represents a manifest to be applied.
+                        description: Apply represents a set of configurations or resources
+                          that should be applied during testing.
                         properties:
                           file:
                             description: File is the path to the referenced file.
@@ -50,8 +57,12 @@ spec:
                         type: object
                       type: array
                     assert:
+                      description: Assert represents the assertions to be made for
+                        this test step. It checks whether the conditions specified
+                        in each assertion hold true.
                       items:
-                        description: Error represents an assertion expected to succeed.
+                        description: Assert represents a test condition that is expected
+                          to hold true during the testing process.
                         properties:
                           file:
                             description: File is the path to the referenced file.
@@ -61,8 +72,13 @@ spec:
                         type: object
                       type: array
                     error:
+                      description: Error lists the expected errors for this test step.
+                        If any of these errors occur, the test will consider them
+                        as expected; otherwise, they will be treated as test failures.
                       items:
-                        description: Error represents an error condition.
+                        description: Error represents an anticipated error condition
+                          that may arise during testing. Instead of treating such
+                          an error as a test failure, it acknowledges it as expected.
                         properties:
                           file:
                             description: File is the path to the referenced file.
