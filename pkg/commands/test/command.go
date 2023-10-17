@@ -138,10 +138,7 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			summary := &runner.Summary{
-				PassedTest: new(int),
-				FailedTest: new(int),
-			}
+			summary := &runner.Summary{}
 			if _, err = runner.Run(cfg, configuration.Spec, summary, tests...); err != nil {
 				return err
 			}
@@ -172,13 +169,13 @@ func Command() *cobra.Command {
 }
 
 func printSummary(summary *runner.Summary, out io.Writer) {
-	if summary == nil || summary.PassedTest == nil || summary.FailedTest == nil {
+	if summary == nil {
 		fmt.Fprintf(out, "Error: Invalid summary provided.")
 		return
 	}
-	totalTests := *summary.PassedTest + *summary.FailedTest
+	totalTests := summary.PassedTest + summary.FailedTest
 	fmt.Fprintf(out, "\n--- Test Summary ---\n")
 	fmt.Fprintf(out, "Total Tests: %d\n", totalTests)
-	fmt.Fprintf(out, "Passed Tests: %d\n", *summary.PassedTest)
-	fmt.Fprintf(out, "Failed Tests: %d\n", *summary.FailedTest)
+	fmt.Fprintf(out, "Passed Tests: %d\n", summary.PassedTest)
+	fmt.Fprintf(out, "Failed Tests: %d\n", summary.FailedTest)
 }

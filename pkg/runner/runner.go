@@ -21,8 +21,8 @@ import (
 )
 
 type Summary struct {
-	PassedTest *int
-	FailedTest *int
+	PassedTest int
+	FailedTest int
 }
 
 func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, summary *Summary, tests ...discovery.Test) (int, error) {
@@ -136,9 +136,9 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 		step := test.Spec.Steps[i]
 		executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
 		if t.Failed() {
-			*ctx.summary.FailedTest++
+			ctx.summary.FailedTest++
 		} else {
-			*ctx.summary.PassedTest++
+			ctx.summary.PassedTest++
 		}
 	}
 }
