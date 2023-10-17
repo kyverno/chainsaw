@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"io"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -137,9 +138,11 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if _, err := runner.Run(cfg, configuration.Spec, tests...); err != nil {
+			var passedTest, failedTest int
+			if _, err, passedTest, failedTest = runner.Run(cfg, configuration.Spec, tests...); err != nil {
 				return err
 			}
+			printSummary(passedTest, failedTest, out)
 			// done
 			fmt.Fprintln(out, "Done.")
 			return nil
@@ -163,4 +166,12 @@ func Command() *cobra.Command {
 		panic(err)
 	}
 	return cmd
+}
+
+func printSummary(passedTests, failedTests int, out io.Writer) {
+	totalTests := passedTests + failedTests
+	fmt.Fprintf(out, "\n--- Test Summary ---\n")
+	fmt.Fprintf(out, "Total Tests: %d\n", totalTests)
+	fmt.Fprintf(out, "Passed Tests: %d\n", passedTests)
+	fmt.Fprintf(out, "Failed Tests: %d\n", failedTests)
 }

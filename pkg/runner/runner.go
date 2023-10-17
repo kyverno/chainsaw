@@ -20,42 +20,44 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, error) {
+func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, error, int, int) {
 	if len(tests) == 0 {
-		return 0, nil
+		return 0, nil, 0, 0
 	}
 	testing.Init()
 	if err := flag.Set("test.v", "true"); err != nil {
-		return 0, err
+		return 0, err, 0, 0
 	}
 	if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
-		return 0, err
+		return 0, err, 0, 0
 	}
 	if err := flag.Set("test.timeout", config.Timeout.Duration.String()); err != nil {
-		return 0, err
+		return 0, err, 0, 0
 	}
 	if err := flag.Set("test.failfast", fmt.Sprint(config.FailFast)); err != nil {
-		return 0, err
+		return 0, err, 0, 0
 	}
 	if err := flag.Set("test.paniconexit0", "true"); err != nil {
-		return 0, err
+		return 0, err, 0, 0
 	}
 	if err := flag.Set("test.fullpath", "false"); err != nil {
-		return 0, err
+		return 0, err, 0, 0
 	}
 	if err := flag.Set("test.count", "1"); err != nil {
-		return 0, err
+		return 0, err, 0, 0
 	}
 	if err := flag.Set("test.run", config.IncludeTestRegex); err != nil {
-		return 0, err
+		return 0, err, 0, 0
 	}
 	if err := flag.Set("test.skip", config.ExcludeTestRegex); err != nil {
-		return 0, err
+		return 0, err, 0, 0
 	}
 	flag.Parse()
+	failedTest := new(int)
+	passedTest := new(int)
 	run := func(t *testing.T) {
 		t.Helper()
-		run(t, cfg, config, tests...)
+		run(t, cfg, config, passedTest, failedTest, tests...)
 	}
 	internalTest := []testing.InternalTest{{
 		Name: "chainsaw",
@@ -63,10 +65,10 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	}}
 	var testDeps testDeps
 	m := testing.MainStart(&testDeps, internalTest, nil, nil, nil)
-	return m.Run(), nil
+	return m.Run(), nil, *passedTest, *failedTest
 }
 
-func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) {
+func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, passedTest, failedTest *int, tests ...discovery.Test) {
 	t.Helper()
 	c, err := client.New(cfg)
 	if err != nil {
@@ -77,6 +79,8 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, test
 			t.Helper()
 			return runnerclient.New(t, logger, c, !config.SkipDelete)
 		},
+		passedTests: passedTest,
+		failedTests: failedTest,
 	}
 	if config.Namespace != "" {
 		namespace := client.Namespace(config.Namespace)
@@ -113,6 +117,7 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, test
 			runTest(t, ctx, test)
 		})
 	}
+	return *ctx.passedTests, *ctx.failedTests
 }
 
 func runTest(t *testing.T, ctx Context, test discovery.Test) {
@@ -129,6 +134,11 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
 		executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
+		if t.Failed() {
+			*ctx.failedTests++
+		} else {
+			*ctx.passedTests++
+		}
 	}
 }
 
