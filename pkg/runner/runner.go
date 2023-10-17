@@ -117,7 +117,6 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, pass
 			runTest(t, ctx, test)
 		})
 	}
-	return *ctx.passedTests, *ctx.failedTests
 }
 
 func runTest(t *testing.T, ctx Context, test discovery.Test) {
