@@ -17,7 +17,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/client-go/rest"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, error) {
@@ -138,14 +140,37 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 
 	// Delete the Objects before the test step is executed
 	for _, delete := range step.Delete {
-		resource := client.NewResource(delete.APIVersion, delete.Kind, delete.Name, delete.Namespace)
-		// IF the namespace is not specified, then use the runner namespace
-		if err := ctx.namespacer.Apply(resource); err != nil {
-			t.Fatal(err)
-		}
-		t.Logf("=== DELETE %s/%s", delete.APIVersion, delete.Kind)
-		if err := client.DeleteResource(context.Background(), c, resource); err != nil {
-			t.Fatal(err)
+		// Use your dynamic listing logic if the name is not provided
+		if delete.Name == "" {
+			u := &unstructured.UnstructuredList{}
+			u.SetGroupVersionKind(delete.GetObjectKind().GroupVersionKind())
+
+			listOptions := []ctrlclient.ListOption{}
+			if delete.Labels != nil {
+				listOptions = append(listOptions, ctrlclient.MatchingLabels(delete.Labels))
+			}
+
+			if delete.Namespace != "" {
+				listOptions = append(listOptions, ctrlclient.InNamespace(delete.Namespace))
+			}
+
+			err := c.List(context.TODO(), u, listOptions...)
+			if err != nil {
+				t.Fatalf("listing matching resources: %v", err)
+			}
+
+			for _, item := range u.Items {
+				t.Logf("=== DELETE %s/%s", delete.APIVersion, delete.Kind)
+				if err := client.DeleteResource(context.TODO(), c, &item); err != nil {
+					t.Fatal(err)
+				}
+			}
+		} else {
+			resource := client.NewResource(delete.APIVersion, delete.Kind, delete.Name, delete.Namespace)
+			t.Logf("=== DELETE %s/%s", delete.APIVersion, delete.Kind)
+			if err := client.DeleteResource(context.TODO(), c, resource); err != nil {
+				t.Fatal(err)
+			}
 		}
 	}
 	for _, apply := range step.Apply {

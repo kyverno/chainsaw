@@ -14,5 +14,12 @@ type TestStepSpec struct {
 
 	// List of object that should be deleted before the test step is executed
 	// +optional
-	Delete []v1.ObjectReference `json:"delete,omitempty"`
+	Delete []ObjectReference `json:"delete,omitempty"`
+}
+
+type ObjectReference struct {
+	// +optional
+	Labels map[string]string `json:"labels,omitempty"`
+	// +optional
+	v1.ObjectReference `json:",inline"`
 }

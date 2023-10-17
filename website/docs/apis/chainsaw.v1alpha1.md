@@ -128,6 +128,17 @@ auto_generated: true
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
 
+## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `labels` | `map[string]string` |  |  | *No description provided.* |
+| `ObjectReference` | [`core/v1.ObjectReference`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectreference-v1-core) |  | :white_check_mark: | *No description provided.* |
+
 ## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 
 (Alias of `string`)
@@ -161,6 +172,6 @@ auto_generated: true
 | `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | *No description provided.* |
 | `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | *No description provided.* |
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | *No description provided.* |
-| `delete` | [`[]core/v1.ObjectReference`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectreference-v1-core) |  |  | <p>List of object that should be deleted before the test step is executed</p> |
+| `delete` | [`[]ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) |  |  | <p>List of object that should be deleted before the test step is executed</p> |
 
   
