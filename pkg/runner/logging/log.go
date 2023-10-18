@@ -8,10 +8,10 @@ import (
 
 func Log(t *testing.T, prefix string, args ...interface{}) {
 	t.Helper()
-	args = append([]interface{}{
-		fmt.Sprintf("%s | %s |", time.Now().Format("15:04:05"), prefix),
-	}, args...)
-	t.Log(args...)
+	a := make([]interface{}, 0, len(args)+1)
+	a = append(a, fmt.Sprintf("%s | %s |", time.Now().Format("15:04:05"), prefix))
+	a = append(a, args...)
+	t.Log(a...)
 }
 
 func Logf(t *testing.T, prefix string, format string, args ...interface{}) {

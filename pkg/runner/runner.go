@@ -87,7 +87,7 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summ
 	if config.Namespace != "" {
 		namespace := client.Namespace(config.Namespace)
 		c := ctx.clientFactory(t, logging.NewTestLogger(t))
-		if err := c.Get(context.Background(), client.ObjectKey(&namespace), nil); err != nil {
+		if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 			if errors.IsNotFound(err) {
 				if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 					t.Fatal(err)
