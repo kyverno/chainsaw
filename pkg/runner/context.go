@@ -11,4 +11,6 @@ import (
 type Context struct {
 	clientFactory func(*testing.T, logging.Logger) client.Client
 	namespacer    namespacer.Namespacer
+
+	summary *Summary
 }

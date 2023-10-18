@@ -20,7 +20,12 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, error) {
+type Summary struct {
+	PassedTest int
+	FailedTest int
+}
+
+func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, summary *Summary, tests ...discovery.Test) (int, error) {
 	if len(tests) == 0 {
 		return 0, nil
 	}
@@ -55,7 +60,7 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	flag.Parse()
 	run := func(t *testing.T) {
 		t.Helper()
-		run(t, cfg, config, tests...)
+		run(t, cfg, config, summary, tests...)
 	}
 	internalTest := []testing.InternalTest{{
 		Name: "chainsaw",
@@ -66,7 +71,7 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	return m.Run(), nil
 }
 
-func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) {
+func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summary *Summary, tests ...discovery.Test) {
 	t.Helper()
 	c, err := client.New(cfg)
 	if err != nil {
@@ -77,6 +82,7 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, test
 			t.Helper()
 			return runnerclient.New(t, logger, c, !config.SkipDelete)
 		},
+		summary: summary,
 	}
 	if config.Namespace != "" {
 		namespace := client.Namespace(config.Namespace)
@@ -129,6 +135,11 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
 		executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
+		if t.Failed() {
+			ctx.summary.FailedTest++
+		} else {
+			ctx.summary.PassedTest++
+		}
 	}
 }
 
