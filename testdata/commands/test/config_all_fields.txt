@@ -4,6 +4,7 @@ Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)..
 - SkipDelete true
 - FailFast true
 - Parallel 5
+- RepeatCount 1
 - ReportFormat 'JSON'
 - ReportName 'custom-chainsaw-report'
 - Namespace 'test-namespace'
