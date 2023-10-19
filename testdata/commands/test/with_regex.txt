@@ -4,7 +4,6 @@ Loading default configuration...
 - SkipDelete false
 - FailFast false
 - Parallel 8
-- RepeatCount 1
 - ReportFormat ''
 - ReportName 'chainsaw-report'
 - Namespace ''
