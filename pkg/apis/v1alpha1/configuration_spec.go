@@ -71,5 +71,6 @@ type ConfigurationSpec struct {
 	// +kubebuilder:default:=1
 	// +kubebuilder:validation:Format:=int
 	// +kubebuilder:validation:Minimum:=1
+	// +optional
 	RepeatCount int `json:"repeatCount,omitempty"`
 }
