@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
+	"sync/atomic"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -20,47 +21,43 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-type Summary struct {
-	PassedTest int
-	FailedTest int
-}
-
-func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, summary *Summary, tests ...discovery.Test) (int, error) {
+func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, *Summary, error) {
 	if len(tests) == 0 {
-		return 0, nil
+		return 0, nil, nil
 	}
 	testing.Init()
 	if err := flag.Set("test.v", "true"); err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	if err := flag.Set("test.timeout", config.Timeout.Duration.String()); err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	if err := flag.Set("test.failfast", fmt.Sprint(config.FailFast)); err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	if err := flag.Set("test.paniconexit0", "true"); err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	if err := flag.Set("test.fullpath", "false"); err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	if err := flag.Set("test.count", "1"); err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	if err := flag.Set("test.run", config.IncludeTestRegex); err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	if err := flag.Set("test.skip", config.ExcludeTestRegex); err != nil {
-		return 0, err
+		return 0, nil, err
 	}
 	flag.Parse()
+	var summary Summary
 	run := func(t *testing.T) {
 		t.Helper()
-		run(t, cfg, config, summary, tests...)
+		run(t, cfg, config, &summary, tests...)
 	}
 	internalTest := []testing.InternalTest{{
 		Name: "chainsaw",
@@ -68,7 +65,7 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, summary *Summary, 
 	}}
 	var testDeps testDeps
 	m := testing.MainStart(&testDeps, internalTest, nil, nil, nil)
-	return m.Run(), nil
+	return m.Run(), &summary, nil
 }
 
 func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summary *Summary, tests ...discovery.Test) {
@@ -82,7 +79,6 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summ
 			t.Helper()
 			return runnerclient.New(t, logger, c, !config.SkipDelete)
 		},
-		summary: summary,
 	}
 	if config.Namespace != "" {
 		namespace := client.Namespace(config.Namespace)
@@ -114,9 +110,19 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summ
 				t.Error(err)
 			}
 		}
+		var failed, passed atomic.Int32
+		defer func() {
+			summary.FailedTest = failed.Load()
+			summary.PassedTest = passed.Load()
+		}()
 		t.Run(name, func(t *testing.T) {
 			t.Helper()
 			runTest(t, ctx, test)
+			if t.Failed() {
+				failed.Add(1)
+			} else {
+				passed.Add(1)
+			}
 		})
 	}
 }
@@ -135,18 +141,12 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
 		executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
-		if t.Failed() {
-			ctx.summary.FailedTest++
-		} else {
-			ctx.summary.PassedTest++
-		}
 	}
 }
 
 func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, step v1alpha1.TestStepSpec) {
 	t.Helper()
 	c := ctx.clientFactory(t, logger)
-
 	// Delete the Objects before the test step is executed
 	for _, delete := range step.Delete {
 		// Use your dynamic listing logic if the name is not provided

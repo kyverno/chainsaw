@@ -138,11 +138,11 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			summary := &runner.Summary{}
-			if _, err = runner.Run(cfg, configuration.Spec, summary, tests...); err != nil {
+			if _, summary, err := runner.Run(cfg, configuration.Spec, tests...); err != nil {
 				return err
+			} else {
+				printSummary(summary, out)
 			}
-			printSummary(summary, out)
 			// done
 			fmt.Fprintln(out, "Done.")
 			return nil
