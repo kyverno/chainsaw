@@ -76,7 +76,7 @@ func TestLoad(t *testing.T) {
 					SkipDelete:       true,
 					FailFast:         true,
 					Parallel:         4,
-					RepeatCount:      1,
+					RepeatCount:      10,
 					ReportFormat:     "JSON",
 					ReportName:       "custom-report",
 					FullName:         true,
