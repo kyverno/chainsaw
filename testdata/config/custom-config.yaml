@@ -7,6 +7,7 @@ spec:
   skipDelete: true
   failFast: true
   parallel: 4
+  repeatCount: 10
   reportFormat: "JSON"
   reportName: "custom-report"
   fullName: true
