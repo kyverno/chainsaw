@@ -116,12 +116,12 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summ
 		}
 		t.Run(name, func(t *testing.T) {
 			t.Helper()
-			runTest(t, ctx, test)
+			runTest(t, ctx, config, test)
 		})
 	}
 }
 
-func runTest(t *testing.T, ctx Context, test discovery.Test) {
+func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
 	t.Helper()
 	t.Parallel()
 	if ctx.namespacer == nil {
@@ -134,12 +134,22 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	}
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
-		executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
-		if t.Failed() {
-			ctx.summary.FailedTest++
-		} else {
-			ctx.summary.PassedTest++
-		}
+		t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
+			stepCtx, cancel := context.WithTimeout(context.Background(), config.Timeout.Duration)
+			defer cancel()
+			executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
+			select {
+			case <-stepCtx.Done():
+				t.Fatalf("Step %d timed out", i+1)
+			default:
+			}
+
+			if t.Failed() {
+				ctx.summary.FailedTest++
+			} else {
+				ctx.summary.PassedTest++
+			}
+		})
 	}
 }
 
