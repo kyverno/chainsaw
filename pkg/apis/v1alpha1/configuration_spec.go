@@ -68,7 +68,6 @@ type ConfigurationSpec struct {
 	IncludeTestRegex string `json:"includeTestRegex,omitempty"`
 
 	// RepeatCount indicates how many times the tests should be executed.
-	// +kubebuilder:default:=1
 	// +kubebuilder:validation:Format:=int
 	// +kubebuilder:validation:Minimum:=1
 	// +optional

@@ -60,7 +60,6 @@ spec:
                 format: int
                 type: integer
               repeatCount:
-                default: 1
                 description: RepeatCount indicates how many times the tests should
                   be executed.
                 format: int
