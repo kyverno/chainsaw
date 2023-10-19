@@ -35,6 +35,15 @@ func TestChainsawCommand(t *testing.T) {
 			out:     filepath.Join(basePath, "with_timeout.txt"),
 		},
 		{
+			name: "repeat count",
+			args: []string{
+				"--repeatCount",
+				"10",
+			},
+			wantErr: false,
+			out:     filepath.Join(basePath, "repeat_count.txt"),
+		},
+		{
 			name: "invalid timeout",
 			args: []string{
 				"--timeout",
