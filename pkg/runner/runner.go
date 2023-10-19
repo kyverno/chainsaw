@@ -45,7 +45,7 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	if err := flag.Set("test.fullpath", "false"); err != nil {
 		return 0, nil, err
 	}
-	if err := flag.Set("test.count", "1"); err != nil {
+	if err := flag.Set("test.count", strconv.Itoa(*config.RepeatCount)); err != nil {
 		return 0, nil, err
 	}
 	if err := flag.Set("test.run", config.IncludeTestRegex); err != nil {
@@ -56,25 +56,17 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	}
 	flag.Parse()
 
-	var err error
-	for i := 0; i < *config.RepeatCount; i++ {
-		run := func(t *testing.T) {
-			t.Helper()
-			t.Logf("Running test count: %d\n", i+1)
-			run(t, cfg, config, summary, tests...)
-		}
-		internalTest := []testing.InternalTest{{
-			Name: fmt.Sprintf("chainsaw-run-%d", i+1),
-			F:    run,
-		}}
-		var testDeps testDeps
-		m := testing.MainStart(&testDeps, internalTest, nil, nil, nil)
-		result := m.Run()
-		if result != 0 && err == nil {
-			err = fmt.Errorf("test run %d failed", i+1)
-		}
+	run := func(t *testing.T) {
+		t.Helper()
+		run(t, cfg, config, summary, tests...)
 	}
-	return 0, summary, err
+	internalTest := []testing.InternalTest{{
+		Name: "chainsaw",
+		F:    run,
+	}}
+	var testDeps testDeps
+	m := testing.MainStart(&testDeps, internalTest, nil, nil, nil)
+	return m.Run(), summary, nil
 }
 
 func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summary *Summary, tests ...discovery.Test) {

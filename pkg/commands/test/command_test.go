@@ -37,7 +37,7 @@ func TestChainsawCommand(t *testing.T) {
 		{
 			name: "repeat count",
 			args: []string{
-				"--repeatCount",
+				"--repeat-count",
 				"10",
 			},
 			wantErr: false,
