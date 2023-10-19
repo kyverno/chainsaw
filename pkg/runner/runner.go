@@ -72,16 +72,18 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 					},
 					namespacer: nspacer,
 				}
-				runTest(t, ctx, test)
-				if t.Skipped() {
-					skipped.Add(1)
-				} else {
-					if t.Failed() {
-						failed.Add(1)
+				t.Cleanup(func() {
+					if t.Skipped() {
+						skipped.Add(1)
 					} else {
-						passed.Add(1)
+						if t.Failed() {
+							failed.Add(1)
+						} else {
+							passed.Add(1)
+						}
 					}
-				}
+				})
+				runTest(t, ctx, test)
 			},
 		})
 	}
