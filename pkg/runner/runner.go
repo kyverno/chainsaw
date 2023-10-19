@@ -59,8 +59,8 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	var err error
 	for i := 0; i < *config.RepeatCount; i++ {
 		run := func(t *testing.T) {
-			t.Logf("Running test count: %d\n", i+1)
 			t.Helper()
+			t.Logf("Running test count: %d\n", i+1)
 			run(t, cfg, config, summary, tests...)
 		}
 		internalTest := []testing.InternalTest{{
