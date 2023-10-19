@@ -92,6 +92,12 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summ
 			}
 		}
 	}
+	var failed, passed, skipped atomic.Int32
+	t.Cleanup(func() {
+		summary.FailedTests = failed.Load()
+		summary.PassedTests = passed.Load()
+		summary.SkippedTests = skipped.Load()
+	})
 	for i := range tests {
 		test := tests[i]
 		name := test.GetName()
@@ -110,18 +116,17 @@ func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summ
 				t.Error(err)
 			}
 		}
-		var failed, passed atomic.Int32
-		defer func() {
-			summary.FailedTest = failed.Load()
-			summary.PassedTest = passed.Load()
-		}()
 		t.Run(name, func(t *testing.T) {
 			t.Helper()
 			runTest(t, ctx, test)
-			if t.Failed() {
-				failed.Add(1)
+			if t.Skipped() {
+				skipped.Add(1)
 			} else {
-				passed.Add(1)
+				if t.Failed() {
+					failed.Add(1)
+				} else {
+					passed.Add(1)
+				}
 			}
 		})
 	}

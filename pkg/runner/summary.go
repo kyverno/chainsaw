@@ -1,6 +1,7 @@
 package runner
 
 type Summary struct {
-	PassedTest int32
-	FailedTest int32
+	PassedTests  int32
+	FailedTests  int32
+	SkippedTests int32
 }
