@@ -22,9 +22,9 @@ import (
 )
 
 func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, *Summary, error) {
-	var summary Summary
+	summary := &Summary{}
 	if len(tests) == 0 {
-		return 0, &summary, nil
+		return 0, summary, nil
 	}
 	testing.Init()
 	if err := flag.Set("test.v", "true"); err != nil {
@@ -73,7 +73,7 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 			err = fmt.Errorf("test run %d failed", i+1)
 		}
 	}
-	return 0, err
+	return 0, summary, err
 }
 
 func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summary *Summary, tests ...discovery.Test) {
