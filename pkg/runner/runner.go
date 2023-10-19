@@ -22,8 +22,9 @@ import (
 )
 
 func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, *Summary, error) {
+	var summary Summary
 	if len(tests) == 0 {
-		return 0, nil, nil
+		return 0, &summary, nil
 	}
 	testing.Init()
 	if err := flag.Set("test.v", "true"); err != nil {
@@ -54,7 +55,6 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 		return 0, nil, err
 	}
 	flag.Parse()
-	var summary Summary
 	run := func(t *testing.T) {
 		t.Helper()
 		run(t, cfg, config, &summary, tests...)
