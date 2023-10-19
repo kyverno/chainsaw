@@ -7,6 +7,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/utils/pointer"
 )
 
 func TestLoad(t *testing.T) {
@@ -49,7 +50,7 @@ func TestLoad(t *testing.T) {
 					SkipDelete:       false,
 					FailFast:         false,
 					Parallel:         8,
-					RepeatCount:      1,
+					RepeatCount:      pointer.Int(1),
 					ReportFormat:     "",
 					ReportName:       "chainsaw-report",
 					FullName:         false,
@@ -76,7 +77,7 @@ func TestLoad(t *testing.T) {
 					SkipDelete:       true,
 					FailFast:         true,
 					Parallel:         4,
-					RepeatCount:      10,
+					RepeatCount:      pointer.Int(10),
 					ReportFormat:     "JSON",
 					ReportName:       "custom-report",
 					FullName:         true,
