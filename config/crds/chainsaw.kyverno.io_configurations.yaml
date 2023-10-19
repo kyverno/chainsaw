@@ -59,6 +59,13 @@ spec:
                 description: The maximum number of tests to run at once.
                 format: int
                 type: integer
+              repeatCount:
+                default: 1
+                description: RepeatCount indicates how many times the tests should
+                  be executed.
+                format: int
+                minimum: 1
+                type: integer
               reportFormat:
                 description: ReportFormat determines test report format (JSON|XML|nil)
                   nil == no report. maps to report.Type, however we don't want generated.deepcopy

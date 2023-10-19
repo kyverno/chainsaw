@@ -101,6 +101,7 @@ during the testing process.</p>
 | `fullName` | `bool` |  |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
 | `excludeTestRegex` | `string` |  |  | <p>ExcludeTestRegex is used to exclude tests based on a regular expression.</p> |
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
+| `repeatCount` | `int` | :white_check_mark: |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
 
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
 
