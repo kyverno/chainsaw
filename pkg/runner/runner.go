@@ -148,11 +148,15 @@ func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test 
 		t.Run(fmt.Sprintf("step-%d", i+1), func(t *testing.T) {
 			stepCtx, cancel := context.WithTimeout(context.Background(), config.Timeout.Duration)
 			defer cancel()
-			executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
+			done := make(chan bool)
+			go func() {
+				executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
+				done <- true
+			}()
 			select {
+			case <-done:
 			case <-stepCtx.Done():
 				t.Fatalf("Step %d timed out", i+1)
-			default:
 			}
 		})
 	}
