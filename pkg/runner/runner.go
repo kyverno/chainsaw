@@ -2,11 +2,8 @@ package runner
 
 import (
 	"context"
-	"flag"
 	"fmt"
-	"os"
 	"path/filepath"
-	"strconv"
 	"sync/atomic"
 	"testing"
 
@@ -26,110 +23,71 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	if len(tests) == 0 {
 		return 0, &summary, nil
 	}
-	testing.Init()
-	if err := flag.Set("test.v", "true"); err != nil {
+	if err := setupFlags(config); err != nil {
 		return 0, nil, err
 	}
-	if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
-		return 0, nil, err
-	}
-	if err := flag.Set("test.timeout", config.Timeout.Duration.String()); err != nil {
-		return 0, nil, err
-	}
-	if err := flag.Set("test.failfast", fmt.Sprint(config.FailFast)); err != nil {
-		return 0, nil, err
-	}
-	if err := flag.Set("test.paniconexit0", "true"); err != nil {
-		return 0, nil, err
-	}
-	if err := flag.Set("test.fullpath", "false"); err != nil {
-		return 0, nil, err
-	}
-	if err := flag.Set("test.count", "1"); err != nil {
-		return 0, nil, err
-	}
-	if err := flag.Set("test.run", config.IncludeTestRegex); err != nil {
-		return 0, nil, err
-	}
-	if err := flag.Set("test.skip", config.ExcludeTestRegex); err != nil {
-		return 0, nil, err
-	}
-	flag.Parse()
-	run := func(t *testing.T) {
-		t.Helper()
-		run(t, cfg, config, &summary, tests...)
-	}
-	internalTest := []testing.InternalTest{{
-		Name: "chainsaw",
-		F:    run,
-	}}
-	var testDeps testDeps
-	m := testing.MainStart(&testDeps, internalTest, nil, nil, nil)
-	return m.Run(), &summary, nil
-}
-
-func run(t *testing.T, cfg *rest.Config, config v1alpha1.ConfigurationSpec, summary *Summary, tests ...discovery.Test) {
-	t.Helper()
-	c, err := client.New(cfg)
-	if err != nil {
-		t.Fatal(err)
-	}
-	ctx := Context{
-		clientFactory: func(t *testing.T, logger logging.Logger) client.Client {
-			t.Helper()
-			return runnerclient.New(t, logger, c, !config.SkipDelete)
-		},
-	}
-	if config.Namespace != "" {
-		namespace := client.Namespace(config.Namespace)
-		c := ctx.clientFactory(t, logging.NewTestLogger(t))
-		if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
-			if errors.IsNotFound(err) {
-				if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
-					t.Fatal(err)
-				}
-				ctx.namespacer = namespacer.New(c, config.Namespace)
-			}
-		}
-	}
+	var internalTests []testing.InternalTest
 	var failed, passed, skipped atomic.Int32
-	t.Cleanup(func() {
+	defer func() {
 		summary.FailedTests = failed.Load()
 		summary.PassedTests = passed.Load()
 		summary.SkippedTests = skipped.Load()
-	})
+	}()
+	c, err := client.New(cfg)
+	if err != nil {
+		return 0, nil, err
+	}
+	var nspacer namespacer.Namespacer
+	if config.Namespace != "" {
+		nspacer = namespacer.New(c, config.Namespace)
+		namespace := client.Namespace(config.Namespace)
+		if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
+			if !errors.IsNotFound(err) {
+				return 0, nil, err
+			}
+			if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
+				return 0, nil, err
+			}
+			defer func() {
+				if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
+					panic(err)
+				}
+			}()
+		}
+	}
 	for i := range tests {
 		test := tests[i]
-		name := test.GetName()
-		if config.FullName {
-			if cwd, err := os.Getwd(); err == nil {
-				if abs, err := filepath.Abs(test.BasePath); err == nil {
-					if rel, err := filepath.Rel(cwd, abs); err == nil {
-						name = fmt.Sprintf("%s[%s]", rel, name)
-					} else {
-						t.Error(err)
-					}
-				} else {
-					t.Error(err)
-				}
-			} else {
-				t.Error(err)
-			}
+		name, err := testName(config, test)
+		if err != nil {
+			return 0, nil, err
 		}
-		t.Run(name, func(t *testing.T) {
-			t.Helper()
-			runTest(t, ctx, test)
-			if t.Skipped() {
-				skipped.Add(1)
-			} else {
-				if t.Failed() {
-					failed.Add(1)
-				} else {
-					passed.Add(1)
+		internalTests = append(internalTests, testing.InternalTest{
+			Name: name,
+			F: func(t *testing.T) {
+				t.Helper()
+				ctx := Context{
+					clientFactory: func(t *testing.T, logger logging.Logger) client.Client {
+						t.Helper()
+						return runnerclient.New(t, logger, c, !config.SkipDelete)
+					},
+					namespacer: nspacer,
 				}
-			}
+				runTest(t, ctx, test)
+				if t.Skipped() {
+					skipped.Add(1)
+				} else {
+					if t.Failed() {
+						failed.Add(1)
+					} else {
+						passed.Add(1)
+					}
+				}
+			},
 		})
 	}
+	var testDeps testDeps
+	m := testing.MainStart(&testDeps, internalTests, nil, nil, nil)
+	return m.Run(), &summary, nil
 }
 
 func runTest(t *testing.T, ctx Context, test discovery.Test) {
@@ -208,7 +166,6 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			}
 		}
 	}
-
 	for _, e := range step.Error {
 		resources, err := resource.Load(filepath.Join(basePath, e.File))
 		if err != nil {
@@ -220,7 +177,6 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 				t.Fatal(err)
 			}
 			logging.ResourceOp(logger, "ERROR", client.ObjectKey(resource), resource)
-
 			// Using the Error function to handle the error assertion
 			err := client.Error(context.Background(), resources[i], c)
 			if err != nil {
