@@ -16,4 +16,9 @@ type TestStepSpec struct {
 	// will consider them as expected; otherwise, they will be treated as test failures.
 	// +optional
 	Error []Error `json:"error,omitempty"`
+
+	// Delete provides a list of objects that should be deleted before this test step is executed.
+	// This helps in ensuring that the environment is set up correctly before the test step runs.
+	// +optional
+	Delete []ObjectReference `json:"delete,omitempty"`
 }
