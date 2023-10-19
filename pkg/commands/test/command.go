@@ -141,8 +141,9 @@ func Command() *cobra.Command {
 				return err
 			} else if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
-				fmt.Fprintln(out, "- Passed  tests", summary.PassedTests)
-				fmt.Fprintln(out, "- Failed  tests", summary.FailedTests)
+				fmt.Fprintln(out, "- Duration     ", summary.Duration)
+				fmt.Fprintln(out, "- Passed tests ", summary.PassedTests)
+				fmt.Fprintln(out, "- Failed tests ", summary.FailedTests)
 				fmt.Fprintln(out, "- Skipped tests", summary.SkippedTests)
 			}
 			// done

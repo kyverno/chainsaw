@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -20,6 +21,10 @@ import (
 
 func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, *Summary, error) {
 	var summary Summary
+	now := time.Now()
+	defer func() {
+		summary.Duration = time.Since(now)
+	}()
 	if len(tests) == 0 {
 		return 0, &summary, nil
 	}
