@@ -103,6 +103,23 @@ during the testing process.</p>
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
 | `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
 
+## `Delete`     {#chainsaw-kyverno-io-v1alpha1-Delete}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+<p>Delete is a reference to an object that should be deleted</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
+| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
+| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
+| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
+| `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
+
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
 
 **Appears in:**
@@ -131,20 +148,6 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
-
-## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
-
-**Appears in:**
-    
-- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
-
-<p>ObjectReference is a reference to an object that should be deleted</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
-| `ObjectReference` | [`core/v1.ObjectReference`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectreference-v1-core) |  | :white_check_mark: | <p>Object reference to delete</p> |
 
 ## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 
@@ -182,6 +185,6 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents the assertions to be made for this test step. It checks whether the conditions specified in each assertion hold true.</p> |
 | `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
-| `delete` | [`[]ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
+| `delete` | [`[]Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
 
   

@@ -22,6 +22,9 @@ func ObjectName(obj metav1.Object) string {
 
 func Name(key ctrlclient.ObjectKey) string {
 	name := key.Name
+	if name == "" {
+		name = "*"
+	}
 	if key.Namespace != "" {
 		name = key.Namespace + "/" + name
 	}
