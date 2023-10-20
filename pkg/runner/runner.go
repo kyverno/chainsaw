@@ -65,6 +65,7 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 			Name: name,
 			F: func(t *testing.T) {
 				t.Helper()
+				t.Parallel()
 				ctx := Context{
 					clientFactory: func(t *testing.T, logger logging.Logger) client.Client {
 						t.Helper()
@@ -94,7 +95,6 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 
 func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	t.Helper()
-	t.Parallel()
 	if ctx.namespacer == nil {
 		namespace := client.PetNamespace()
 		c := ctx.clientFactory(t, logging.NewTestLogger(t))
