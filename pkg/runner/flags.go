@@ -26,7 +26,11 @@ func setupFlags(config v1alpha1.ConfigurationSpec) error {
 	if err := flag.Set("test.fullpath", "false"); err != nil {
 		return err
 	}
-	if err := flag.Set("test.count", strconv.Itoa(*config.RepeatCount)); err != nil {
+	repeatCount := "1"
+	if config.RepeatCount != nil {
+		repeatCount = strconv.Itoa(*config.RepeatCount)
+	}
+	if err := flag.Set("test.count", repeatCount); err != nil {
 		return err
 	}
 	if err := flag.Set("test.run", config.IncludeTestRegex); err != nil {

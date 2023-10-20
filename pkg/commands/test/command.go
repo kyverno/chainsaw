@@ -39,7 +39,6 @@ type options struct {
 
 func Command() *cobra.Command {
 	var options options
-	// options.repeatCount = ptr.To(1)
 	cmd := &cobra.Command{
 		Use:          "test [flags]... [test directories]...",
 		Short:        "Stronger tool for e2e testing",
