@@ -66,4 +66,10 @@ type ConfigurationSpec struct {
 	// IncludeTestRegex is used to include tests based on a regular expression.
 	// +optional
 	IncludeTestRegex string `json:"includeTestRegex,omitempty"`
+
+	// RepeatCount indicates how many times the tests should be executed.
+	// +kubebuilder:validation:Format:=int
+	// +kubebuilder:validation:Minimum:=1
+	// +optional
+	RepeatCount *int `json:"repeatCount,omitempty"`
 }

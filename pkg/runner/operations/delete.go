@@ -17,26 +17,31 @@ func Delete(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 		}
 		return err
 	}
-	for _, candidate := range candidates {
-		err := c.Delete(ctx, &candidate)
-		if err != nil && !errors.IsNotFound(err) {
-			return err
+	for i := range candidates {
+		if candidates[i].GetName() != "kube-root-ca.crt" {
+			err := c.Delete(ctx, &candidates[i])
+			if err != nil && !errors.IsNotFound(err) {
+				return err
+			}
 		}
 	}
-	for _, candidate := range candidates {
-		if err := wait.PollUntilContextCancel(ctx, interval, true, func(ctx context.Context) (bool, error) {
-			var actual unstructured.Unstructured
-			actual.SetGroupVersionKind(candidate.GetObjectKind().GroupVersionKind())
-			err := c.Get(ctx, client.ObjectKey(&candidate), &actual)
-			if err != nil {
-				if errors.IsNotFound(err) {
-					return true, nil
+	gvk := expected.GetObjectKind().GroupVersionKind()
+	for i := range candidates {
+		if candidates[i].GetName() != "kube-root-ca.crt" {
+			if err := wait.PollUntilContextCancel(ctx, interval, true, func(ctx context.Context) (bool, error) {
+				var actual unstructured.Unstructured
+				actual.SetGroupVersionKind(gvk)
+				err := c.Get(ctx, client.ObjectKey(&candidates[i]), &actual)
+				if err != nil {
+					if errors.IsNotFound(err) {
+						return true, nil
+					}
+					return false, err
 				}
-				return false, err
+				return false, nil
+			}); err != nil {
+				return err
 			}
-			return false, nil
-		}); err != nil {
-			return err
 		}
 	}
 	return nil

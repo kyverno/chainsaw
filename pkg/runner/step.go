@@ -22,7 +22,6 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		defer cancel()
 		stepCtx = timeoutCtx
 	}
-	// Delete the Objects before the test step is executed
 	for _, delete := range step.Delete {
 		var resource unstructured.Unstructured
 		resource.SetAPIVersion(delete.APIVersion)
