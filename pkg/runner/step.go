@@ -89,7 +89,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			}
 			logging.ResourceOp(logger, "ERROR", client.ObjectKey(resource), resource)
 			// Using the Error function to handle the error assertion
-			err := client.Error(stepCtx, resources[i], c)
+			err := operations.Error(stepCtx, resources[i], c)
 			if err != nil {
 				t.Fatal(err)
 			}
