@@ -39,6 +39,7 @@ type options struct {
 
 func Command() *cobra.Command {
 	var options options
+	options.repeatCount = new(int)
 	cmd := &cobra.Command{
 		Use:          "test [flags]... [test directories]...",
 		Short:        "Stronger tool for e2e testing",
@@ -90,7 +91,7 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "parallel") {
 				configuration.Spec.Parallel = options.parallel
 			}
-			if flagutils.IsSet(flags, "repeat-count") && options.repeatCount != nil {
+			if flagutils.IsSet(flags, "repeat-count") {
 				configuration.Spec.RepeatCount = options.repeatCount
 			}
 			if flagutils.IsSet(flags, "report-format") {
@@ -163,9 +164,7 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests.")
 	cmd.Flags().BoolVar(&options.failFast, "stop-on-first-failure", false, "Stop the test upon encountering the first failure.")
 	cmd.Flags().IntVar(&options.parallel, "parallel", 8, "The maximum number of tests to run at once.")
-	if options.repeatCount != nil {
-		cmd.Flags().IntVar(options.repeatCount, "repeat-count", 1, "Number of times to repeat each test.")
-	}
+	cmd.Flags().IntVar(options.repeatCount, "repeat-count", 1, "Number of times to repeat each test.")
 	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil).")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create.")
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests.")
