@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 )
 
 func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, step v1alpha1.TestStepSpec) {
@@ -71,7 +72,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 				t.Fatal(err)
 			}
 			logging.ResourceOp(logger, "ASSERT", client.ObjectKey(resource), resource)
-			if err := client.Assert(stepCtx, resources[i], c); err != nil {
+			if err := operations.Assert(stepCtx, resources[i], c); err != nil {
 				t.Fatal(err)
 			}
 		}
