@@ -26,6 +26,7 @@ type options struct {
 	skipDelete          bool
 	failFast            bool
 	parallel            int
+	repeatCount         *int
 	reportFormat        string
 	reportName          string
 	namespace           string
@@ -38,6 +39,7 @@ type options struct {
 
 func Command() *cobra.Command {
 	var options options
+	// options.repeatCount = ptr.To(1)
 	cmd := &cobra.Command{
 		Use:          "test [flags]... [test directories]...",
 		Short:        "Stronger tool for e2e testing",
@@ -89,6 +91,9 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "parallel") {
 				configuration.Spec.Parallel = options.parallel
 			}
+			if flagutils.IsSet(flags, "repeat-count") && options.repeatCount != nil {
+				configuration.Spec.RepeatCount = options.repeatCount
+			}
 			if flagutils.IsSet(flags, "report-format") {
 				configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
 			}
@@ -115,6 +120,9 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
 			fmt.Fprintf(out, "- Parallel %v\n", configuration.Spec.Parallel)
+			if configuration.Spec.RepeatCount != nil {
+				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.RepeatCount)
+			}
 			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
 			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.ReportName)
 			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
@@ -156,6 +164,9 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests.")
 	cmd.Flags().BoolVar(&options.failFast, "stop-on-first-failure", false, "Stop the test upon encountering the first failure.")
 	cmd.Flags().IntVar(&options.parallel, "parallel", 8, "The maximum number of tests to run at once.")
+	if options.repeatCount != nil {
+		cmd.Flags().IntVar(options.repeatCount, "repeat-count", 1, "Number of times to repeat each test.")
+	}
 	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil).")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create.")
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests.")
