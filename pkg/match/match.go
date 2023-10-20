@@ -1,4 +1,4 @@
-package kubernetes
+package match
 
 import (
 	"fmt"
@@ -36,7 +36,7 @@ func (e *SubsetError) Error() string {
 
 // IsSubset checks to see if `expected` is a subset of `actual`. A "subset" is an object that is equivalent to
 // the other object, but where map keys found in actual that are not defined in expected are ignored.
-func IsSubset(expected, actual interface{}) error {
+func Match(expected, actual interface{}) error {
 	if reflect.TypeOf(expected) != reflect.TypeOf(actual) {
 		return &SubsetError{
 			message: fmt.Sprintf("type mismatch: %v != %v", reflect.TypeOf(expected), reflect.TypeOf(actual)),
@@ -53,7 +53,7 @@ func IsSubset(expected, actual interface{}) error {
 			}
 		}
 		for i := 0; i < reflect.ValueOf(expected).Len(); i++ {
-			if err := IsSubset(reflect.ValueOf(expected).Index(i).Interface(), reflect.ValueOf(actual).Index(i).Interface()); err != nil {
+			if err := Match(reflect.ValueOf(expected).Index(i).Interface(), reflect.ValueOf(actual).Index(i).Interface()); err != nil {
 				return err
 			}
 		}
@@ -67,7 +67,7 @@ func IsSubset(expected, actual interface{}) error {
 					message: "key is missing from map",
 				}
 			}
-			if err := IsSubset(iter.Value().Interface(), actualValue.Interface()); err != nil {
+			if err := Match(iter.Value().Interface(), actualValue.Interface()); err != nil {
 				subsetErr, ok := err.(*SubsetError)
 				if ok {
 					subsetErr.AppendPath(iter.Key().String())
