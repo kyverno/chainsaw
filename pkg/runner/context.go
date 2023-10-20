@@ -12,7 +12,7 @@ import (
 
 type Context struct {
 	config        v1alpha1.ConfigurationSpec
-	ctx           context.Context
+	ctx           context.Context //nolint:containedctx
 	clientFactory func(*testing.T, logging.Logger) client.Client
 	namespacer    namespacer.Namespacer
 }

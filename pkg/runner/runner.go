@@ -16,13 +16,13 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (int, *Summary, error) {
+func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*Summary, error) {
 	var summary Summary
 	if len(tests) == 0 {
-		return 0, &summary, nil
+		return &summary, nil
 	}
 	if err := setupFlags(config); err != nil {
-		return 0, nil, err
+		return nil, err
 	}
 	var internalTests []testing.InternalTest
 	var failed, passed, skipped atomic.Int32
@@ -33,7 +33,7 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	}()
 	c, err := client.New(cfg)
 	if err != nil {
-		return 0, nil, err
+		return nil, err
 	}
 	var nspacer namespacer.Namespacer
 	if config.Namespace != "" {
@@ -41,10 +41,10 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 		namespace := client.Namespace(config.Namespace)
 		if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
-				return 0, nil, err
+				return nil, err
 			}
 			if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
-				return 0, nil, err
+				return nil, err
 			}
 			defer func() {
 				if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
@@ -57,7 +57,7 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 		test := tests[i]
 		name, err := testName(config, test)
 		if err != nil {
-			return 0, nil, err
+			return nil, err
 		}
 		internalTests = append(internalTests, testing.InternalTest{
 			Name: name,
@@ -90,7 +90,12 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	}
 	var testDeps testDeps
 	m := testing.MainStart(&testDeps, internalTests, nil, nil, nil)
-	return m.Run(), &summary, nil
+	code := m.Run()
+	if code == 0 {
+		return &summary, nil
+	} else {
+		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
+	}
 }
 
 func runTest(t *testing.T, ctx Context, test discovery.Test) {
