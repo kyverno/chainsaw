@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, step v1alpha1.TestStepSpec) {
@@ -23,25 +24,18 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	}
 	// Delete the Objects before the test step is executed
 	for _, delete := range step.Delete {
-		// Use your dynamic listing logic if the name is not provided
-		if delete.Name == "" {
-			u, err := client.ListResourcesToDelete(c, delete)
-			if err != nil {
-				t.Fatal(err)
-			}
-			for _, item := range u.Items {
-				currentItem := item
-				t.Logf("=== DELETE %s/%s", delete.APIVersion, delete.Kind)
-				if err := client.DeleteResource(stepCtx, c, &currentItem); err != nil {
-					t.Fatal(err)
-				}
-			}
-		} else {
-			resource := client.NewResource(delete.APIVersion, delete.Kind, delete.Name, delete.Namespace)
-			t.Logf("=== DELETE %s/%s", delete.APIVersion, delete.Kind)
-			if err := client.DeleteResource(stepCtx, c, resource); err != nil {
-				t.Fatal(err)
-			}
+		var resource unstructured.Unstructured
+		resource.SetAPIVersion(delete.APIVersion)
+		resource.SetKind(delete.Kind)
+		resource.SetName(delete.Name)
+		resource.SetNamespace(delete.Namespace)
+		resource.SetLabels(delete.Labels)
+		if err := ctx.namespacer.Apply(&resource); err != nil {
+			t.Fatal(err)
+		}
+		logging.ResourceOp(logger, "DELETE", client.ObjectKey(&resource), &resource)
+		if err := operations.Delete(stepCtx, resource, c); err != nil {
+			t.Fatal(err)
 		}
 	}
 	for _, apply := range step.Apply {

@@ -4,4 +4,4 @@ import (
 	"time"
 )
 
-const interval = 1 * time.Second
+const interval = 50 * time.Millisecond
