@@ -1,0 +1,21 @@
+Loading default configuration...
+- Timeout 30s
+- TestDirs []
+- SkipDelete false
+- FailFast false
+- Parallel 8
+- RepeatCount 3
+- ReportFormat ''
+- ReportName 'chainsaw-report'
+- Namespace ''
+- Suppress []
+- FullName false
+- IncludeTestRegex ''
+- ExcludeTestRegex ''
+Loading tests...
+Running tests...
+Tests Summary...
+- Passed  tests 0
+- Failed  tests 0
+- Skipped tests 0
+Done.
