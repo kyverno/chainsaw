@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/kyverno/chainsaw/pkg/utils/kubernetes"
+	"github.com/kyverno/chainsaw/pkg/match"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -48,7 +48,7 @@ func Error(ctx context.Context, expected unstructured.Unstructured, client Clien
 
 	var unexpectedObjects []unstructured.Unstructured
 	for _, actual := range actuals {
-		if err := kubernetes.IsSubset(expected.UnstructuredContent(), actual.UnstructuredContent()); err == nil {
+		if err := match.Match(expected.UnstructuredContent(), actual.UnstructuredContent()); err == nil {
 			unexpectedObjects = append(unexpectedObjects, actual)
 		}
 	}

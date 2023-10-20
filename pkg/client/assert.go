@@ -3,7 +3,7 @@ package client
 import (
 	"context"
 
-	"github.com/kyverno/chainsaw/pkg/utils/kubernetes"
+	"github.com/kyverno/chainsaw/pkg/match"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -15,7 +15,7 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, client Clie
 	if err := client.Get(ctx, ctrlclient.ObjectKey{Name: expected.GetName(), Namespace: expected.GetNamespace()}, &actual); err != nil {
 		return err
 	}
-	if err := kubernetes.IsSubset(expected.UnstructuredContent(), actual.UnstructuredContent()); err != nil {
+	if err := match.Match(expected.UnstructuredContent(), actual.UnstructuredContent()); err != nil {
 		return err
 	}
 	return nil
