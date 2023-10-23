@@ -75,14 +75,14 @@ $(PACKAGE_SHIM): $(GOPATH_SHIM)
 codegen-register: $(PACKAGE_SHIM) $(REGISTER_GEN) ## Generate types registrations
 	@echo Generate registration... >&2
 	@GOPATH=$(GOPATH_SHIM) $(REGISTER_GEN) \
-		--go-header-file=./hack/boilerplate.go.txt \
+		--go-header-file=./.hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS)
 
 .PHONY: codegen-deepcopy
 codegen-deepcopy: $(PACKAGE_SHIM) $(DEEPCOPY_GEN) ## Generate deep copy functions
 	@echo Generate deep copy functions... >&2
 	@GOPATH=$(GOPATH_SHIM) $(DEEPCOPY_GEN) \
-		--go-header-file=./hack/boilerplate.go.txt \
+		--go-header-file=./.hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS) \
 		--output-file-base=zz_generated.deepcopy
 
@@ -99,7 +99,7 @@ codegen-crds: $(CONTROLLER_GEN) ## Generate CRDs
 codegen-cli-docs: $(CLI_BIN) ## Generate CLI docs
 	@echo Generate cli docs... >&2
 	@rm -rf website/docs/commands
-	@go run ./hack/docs/cmd/main.go
+	@go run ./.hack/docs/cmd/main.go
 
 .PHONY: codegen-api-docs
 codegen-api-docs: $(REFERENCE_DOCS) ## Generate markdown API docs
