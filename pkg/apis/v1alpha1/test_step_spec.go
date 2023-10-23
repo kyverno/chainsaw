@@ -1,7 +1,15 @@
 package v1alpha1
 
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
 // TestStepSpec defines the desired state and behavior for each test step.
 type TestStepSpec struct {
+	// Timeout for the test step. Overrides the global timeout set in the Configuration and the timeout eventually set in the Test.
+	// +optional
+	Timeout *metav1.Duration `json:"timeout,omitempty"`
+
 	// Assert represents the assertions to be made for this test step. It checks whether the conditions
 	// specified in each assertion hold true.
 	// +optional

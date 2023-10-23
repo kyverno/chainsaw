@@ -110,6 +110,10 @@ spec:
                   - file
                   type: object
                 type: array
+              timeout:
+                description: Timeout for the test step. Overrides the global timeout
+                  set in the Configuration and the timeout eventually set in the Test.
+                type: string
             type: object
         required:
         - spec
