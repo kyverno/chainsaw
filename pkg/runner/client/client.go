@@ -39,7 +39,8 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 		c.t.Cleanup(func() {
 			obj.GetObjectKind().SetGroupVersionKind(gvk)
 			if err := client.BlockingDelete(context.Background(), c, obj); err != nil {
-				c.t.Fatal(err)
+				c.logger.Log(err)
+				c.t.FailNow()
 			}
 		})
 	}
