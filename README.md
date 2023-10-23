@@ -3,6 +3,8 @@
 [![Lint](https://github.com/kyverno/chainsaw/actions/workflows/lint.yaml/badge.svg)](https://github.com/kyverno/chainsaw/actions/workflows/lint.yaml)
 [![Tests](https://github.com/kyverno/chainsaw/actions/workflows/tests.yaml/badge.svg)](https://github.com/kyverno/chainsaw/actions/workflows/tests.yaml)
 [![Code QL](https://github.com/kyverno/chainsaw/actions/workflows/codeql.yaml/badge.svg)](https://github.com/kyverno/chainsaw/actions/workflows/codeql.yaml)
+[![Deploy](https://github.com/kyverno/chainsaw/actions/workflows/deploy.yaml/badge.svg)](https://github.com/kyverno/chainsaw/actions/workflows/deploy.yaml)
+[![Release](https://github.com/kyverno/chainsaw/actions/workflows/release.yaml/badge.svg)](https://github.com/kyverno/chainsaw/actions/workflows/release.yaml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/chainsaw)](https://goreportcard.com/report/github.com/kyverno/chainsaw)
 [![License: Apache-2.0](https://img.shields.io/github/license/kyverno/chainsaw?color=blue)](https://github.com/kyverno/chainsaw/blob/main/LICENSE)
 [![codecov](https://codecov.io/gh/kyverno/chainsaw/branch/main/graph/badge.svg)](https://app.codecov.io/gh/kyverno/chainsaw/branch/main)
