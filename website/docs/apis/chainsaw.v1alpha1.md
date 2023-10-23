@@ -89,7 +89,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout per test step.</p> |
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Global timeout configuration. Applies to all tests/test steps if not overridden.</p> |
 | `testDirs` | `[]string` |  |  | <p>Directories containing test cases to run.</p> |
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running the tests (implies SkipClusterDelete).</p> |
 | `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
@@ -168,6 +168,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the test. Overrides the global timeout set in the Configuration.</p> |
 | `steps` | [`[]TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: |  | <p>Steps defining the test.</p> |
 
 ## `TestStepSpec`     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}
@@ -182,6 +183,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the test step. Overrides the global timeout set in the Configuration and the timeout eventually set in the Test.</p> |
 | `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents the assertions to be made for this test step. It checks whether the conditions specified in each assertion hold true.</p> |
 | `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |

@@ -67,8 +67,6 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				t.Parallel()
 				ctx := Context{
 					clock:      clock,
-					config:     config,
-					ctx:        context.Background(),
 					namespacer: nspacer,
 					clientFactory: func(t *testing.T, logger logging.Logger) client.Client {
 						t.Helper()
@@ -86,7 +84,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						}
 					}
 				})
-				runTest(t, ctx, test)
+				runTest(t, ctx, config, test)
 			},
 		})
 	}
@@ -98,7 +96,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	return &summary, nil
 }
 
-func runTest(t *testing.T, ctx Context, test discovery.Test) {
+func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
 	t.Helper()
 	if ctx.namespacer == nil {
 		namespace := client.PetNamespace()
@@ -112,6 +110,6 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	}
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
-		executeStep(t, logging.NewStepLogger(t, ctx.clock, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
+		executeStep(t, logging.NewStepLogger(t, ctx.clock, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, config, test.Spec, step)
 	}
 }

@@ -14,7 +14,7 @@ const (
 
 // ConfigurationSpec contains the configuration used to run tests.
 type ConfigurationSpec struct {
-	// Timeout per test step.
+	// Global timeout configuration. Applies to all tests/test steps if not overridden.
 	// +optional
 	// +kubebuilder:default:="30s"
 	Timeout *metav1.Duration `json:"timeout,omitempty"`

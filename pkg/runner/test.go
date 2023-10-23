@@ -18,11 +18,11 @@ func testName(config v1alpha1.ConfigurationSpec, test discovery.Test) (string, e
 		return "", err
 	}
 	abs, err := filepath.Abs(test.BasePath)
-	if err == nil {
+	if err != nil {
 		return "", err
 	}
 	rel, err := filepath.Rel(cwd, abs)
-	if err == nil {
+	if err != nil {
 		return "", err
 	}
 	return fmt.Sprintf("%s[%s]", rel, test.GetName()), nil

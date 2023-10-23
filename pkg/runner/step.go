@@ -13,12 +13,12 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, step v1alpha1.TestStepSpec) {
+func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) {
 	t.Helper()
 	c := ctx.clientFactory(t, logger)
-	stepCtx := ctx.ctx
-	if ctx.config.Timeout != nil {
-		timeoutCtx, cancel := context.WithTimeout(stepCtx, ctx.config.Timeout.Duration)
+	stepCtx := context.Background()
+	if timeout := timeout(config, test, step); timeout != nil {
+		timeoutCtx, cancel := context.WithTimeout(stepCtx, *timeout)
 		defer cancel()
 		stepCtx = timeoutCtx
 	}
