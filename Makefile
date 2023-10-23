@@ -15,6 +15,7 @@ REFERENCE_DOCS_VERSION             := latest
 KIND                               := $(TOOLS_DIR)/kind
 KIND_VERSION                       := v0.20.0
 TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(REFERENCE_DOCS) $(KIND)
+PIP                                ?= "pip"
 ifeq ($(GOOS), darwin)
 SED                                := gsed
 else
@@ -59,7 +60,7 @@ PACKAGE                     ?= github.com/$(ORG)/chainsaw
 GOPATH_SHIM                 := ${PWD}/.gopath
 PACKAGE_SHIM                := $(GOPATH_SHIM)/src/$(PACKAGE)
 INPUT_DIRS                  := $(PACKAGE)/pkg/apis/v1alpha1
-CRDS_PATH                   := ${PWD}/config/crds
+CRDS_PATH                   := ${PWD}/.crds
 
 $(GOPATH_SHIM):
 	@echo Create gopath shim... >&2
@@ -92,7 +93,7 @@ codegen-crds: $(CONTROLLER_GEN) ## Generate CRDs
 	@$(CONTROLLER_GEN) crd paths=./pkg/apis/... crd:crdVersions=v1 output:dir=$(CRDS_PATH)
 	@echo Copy generated CRDs to embed in the CLI... >&2
 	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
-	@cp config/crds/* pkg/data/crds
+	@cp $(CRDS_PATH)/* pkg/data/crds
 
 .PHONY: codegen-cli-docs
 codegen-cli-docs: $(CLI_BIN) ## Generate CLI docs
@@ -109,9 +110,9 @@ codegen-api-docs: $(REFERENCE_DOCS) ## Generate markdown API docs
 .PHONY: codegen-mkdocs
 codegen-mkdocs: codegen-cli-docs codegen-api-docs ## Generate mkdocs website
 	@echo Generate mkdocs website... >&2
-	@pip install mkdocs
-	@pip install --upgrade pip
-	@pip install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin
+	@$(PIP) install mkdocs
+	@$(PIP) install --upgrade pip
+	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin
 	@mkdocs build -f ./website/mkdocs.yaml
 
 .PHONY: codegen
@@ -132,9 +133,9 @@ verify-codegen: codegen ## Verify all generated code and docs are up to date
 .PHONY: mkdocs-serve
 mkdocs-serve: ## Generate and serve mkdocs website
 	@echo Generate and servemkdocs website... >&2
-	@pip install mkdocs
-	@pip install --upgrade pip
-	@pip install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin
+	@$(PIP) install mkdocs
+	@$(PIP) install --upgrade pip
+	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin
 	@mkdocs serve -f ./website/mkdocs.yaml
 
 #########
