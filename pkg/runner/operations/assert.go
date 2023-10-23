@@ -3,6 +3,7 @@ package operations
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/match"
@@ -42,14 +43,17 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 
 	// Handle context timeout
 	if err != nil && ctx.Err() == context.DeadlineExceeded {
-		fmt.Printf("Context timeout. Successful matches: %d. Remaining unchecked candidates: %d.\n",
-			successfulMatches, len(candidates)-totalCandidatesChecked)
+		var sb strings.Builder
+		sb.WriteString(fmt.Sprintf("Context timeout. Successful matches: %d. Remaining unchecked candidates: %d.\n",
+			successfulMatches, len(candidates)-totalCandidatesChecked))
 
 		if successfulMatches == 0 {
 			for _, diff := range differences {
-				fmt.Println(diff)
+				sb.WriteString(diff)
+				sb.WriteString("\n")
 			}
 		}
+		return fmt.Errorf(sb.String())
 	}
 	return err
 }
