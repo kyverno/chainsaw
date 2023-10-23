@@ -33,8 +33,12 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 				totalCandidatesChecked++
 				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err != nil {
 					resourceString := fmt.Sprintf("%v", candidate.UnstructuredContent())
+					diffStr, err := getDifference(expected.UnstructuredContent(), candidate.UnstructuredContent())
+					if err != nil {
+						return false, err
+					}
 					if _, exists := printedDifferences[resourceString]; !exists {
-						differences = append(differences, getDifference(expected.UnstructuredContent(), candidate.UnstructuredContent()))
+						differences = append(differences, diffStr)
 						printedDifferences[resourceString] = true
 					}
 				} else {
@@ -63,10 +67,15 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 	return err
 }
 
-func getDifference(expectedContent, candidateContent map[string]interface{}) string {
-	expectedContentBytes, _ := yaml.Marshal(expectedContent)
-	candidateContentBytes, _ := yaml.Marshal(candidateContent)
-
+func getDifference(expectedContent, candidateContent map[string]interface{}) (string, error) {
+	expectedContentBytes, err := yaml.Marshal(expectedContent)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal expected content to YAML: %v", err)
+	}
+	candidateContentBytes, err := yaml.Marshal(candidateContent)
+	if err != nil {
+		return "", fmt.Errorf("failed to marshal candidate content to YAML: %v", err)
+	}
 	diff := difflib.UnifiedDiff{
 		A:        difflib.SplitLines(string(expectedContentBytes)),
 		B:        difflib.SplitLines(string(candidateContentBytes)),
@@ -74,6 +83,9 @@ func getDifference(expectedContent, candidateContent map[string]interface{}) str
 		ToFile:   "Actual",
 		Context:  3,
 	}
-	diffStr, _ := difflib.GetUnifiedDiffString(diff)
-	return diffStr
+	diffStr, err := difflib.GetUnifiedDiffString(diff)
+	if err != nil {
+		return "", fmt.Errorf("failed to generate unified diff string: %v", err)
+	}
+	return diffStr, nil
 }
