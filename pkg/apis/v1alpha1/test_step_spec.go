@@ -20,5 +20,5 @@ type TestStepSpec struct {
 	// Delete provides a list of objects that should be deleted before this test step is executed.
 	// This helps in ensuring that the environment is set up correctly before the test step runs.
 	// +optional
-	Delete []ObjectReference `json:"delete,omitempty"`
+	Delete []Delete `json:"delete,omitempty"`
 }
