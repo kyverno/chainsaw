@@ -1,6 +1,7 @@
 name: Deploy
 
-permissions: {}
+permissions:
+  pages: write
 
 on:
   push:
