@@ -15,13 +15,17 @@ import (
 )
 
 func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Client) error {
-	var differences []string
-	var successfulMatches int
-	var totalCandidatesChecked int
-	var candidates []unstructured.Unstructured
-	printedDifferences := make(map[string]bool)
+	var lastDifferences []string
+	var lastSuccessfulMatches int
+	var lastTotalCandidatesChecked int
+	var lastCandidates []unstructured.Unstructured
 
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
+		var differences []string
+		var successfulMatches int
+		var totalCandidatesChecked int
+		var candidates []unstructured.Unstructured
+
 		var err error
 		if candidates, err = read(ctx, expected, c); err != nil {
 			if errors.IsNotFound(err) {
@@ -32,21 +36,21 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 			for _, candidate := range candidates {
 				totalCandidatesChecked++
 				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err != nil {
-					resourceString := fmt.Sprintf("%v", candidate.UnstructuredContent())
 					diffStr, err := getDifference(expected.UnstructuredContent(), candidate.UnstructuredContent())
 					if err != nil {
 						return false, err
 					}
-					if _, exists := printedDifferences[resourceString]; !exists {
-						differences = append(differences, diffStr)
-						printedDifferences[resourceString] = true
-					}
+					differences = append(differences, diffStr)
 				} else {
 					// at least one match found
 					successfulMatches++
 					return true, nil
 				}
 			}
+			lastDifferences = differences
+			lastSuccessfulMatches = successfulMatches
+			lastTotalCandidatesChecked = totalCandidatesChecked
+			lastCandidates = candidates
 		}
 		return false, nil
 	})
@@ -55,10 +59,10 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 	if err != nil && ctx.Err() == context.DeadlineExceeded {
 		var sb strings.Builder
 		sb.WriteString(fmt.Sprintf("Context timeout. Successful matches: %d. Remaining unchecked candidates: %d.\n",
-			successfulMatches, len(candidates)-totalCandidatesChecked))
+			lastSuccessfulMatches, len(lastCandidates)-lastTotalCandidatesChecked))
 
-		if successfulMatches == 0 {
-			for _, diff := range differences {
+		if lastSuccessfulMatches == 0 {
+			for _, diff := range lastDifferences {
 				sb.WriteString(diff)
 			}
 		}
