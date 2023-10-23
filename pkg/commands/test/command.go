@@ -1,6 +1,7 @@
 package test
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -144,17 +145,22 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if summary, err := runner.Run(cfg, configuration.Spec, tests...); err != nil {
-				return err
-			} else if summary != nil {
+			summary, err := runner.Run(cfg, configuration.Spec, tests...)
+			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Passed  tests", summary.PassedTests)
 				fmt.Fprintln(out, "- Failed  tests", summary.FailedTests)
 				fmt.Fprintln(out, "- Skipped tests", summary.SkippedTests)
 			}
-			// done
-			fmt.Fprintln(out, "Done.")
-			return nil
+			if err != nil {
+				fmt.Fprintln(out, "Done with error.")
+			} else if summary != nil && summary.FailedTests > 0 {
+				fmt.Fprintln(out, "Done with failures.")
+				err = errors.New("some tests failed")
+			} else {
+				fmt.Fprintln(out, "Done.")
+			}
+			return err
 		},
 	}
 	cmd.Flags().DurationVar(&options.timeout.Duration, "timeout", 30*time.Second, "The timeout to use as default for configuration.")

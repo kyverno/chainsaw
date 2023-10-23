@@ -84,4 +84,37 @@ We finished writing our first test, now we can run Chainsaw to verify the test r
 
 ```bash
 chainsaw test --test-dir .
+
+Loading default configuration...
+- Timeout 30s
+- TestDirs [.]
+- SkipDelete false
+- FailFast false
+- Parallel 8
+- ReportFormat ''
+- ReportName 'chainsaw-report'
+- Namespace ''
+- Suppress []
+- FullName false
+- IncludeTestRegex ''
+- ExcludeTestRegex ''
+Loading tests...
+- quick-start (.)
+Running tests...
+=== RUN   quick-start
+=== PAUSE quick-start
+=== CONT  quick-start
+    logger.go:17: 12:31:16 | quick-start | CREATE[v1/Namespace] chainsaw-feasible-thrush
+    logger.go:17: 12:31:16 | quick-start/step-1 | APPLY[v1/ConfigMap] chainsaw-feasible-thrush/chainsaw-quick-start
+    logger.go:17: 12:31:16 | quick-start/step-1 | CREATE[v1/ConfigMap] chainsaw-feasible-thrush/chainsaw-quick-start
+    logger.go:17: 12:31:16 | quick-start/step-2 | ASSERT[v1/ConfigMap] chainsaw-feasible-thrush/chainsaw-quick-start
+    logger.go:17: 12:31:16 | quick-start/step-1 | DELETE[v1/ConfigMap] chainsaw-feasible-thrush/chainsaw-quick-start
+    logger.go:17: 12:31:16 | quick-start | DELETE[v1/Namespace] chainsaw-feasible-thrush
+--- PASS: quick-start (5.22s)
+PASS
+Tests Summary...
+- Passed  tests 1
+- Failed  tests 0
+- Skipped tests 0
+Done.
 ```

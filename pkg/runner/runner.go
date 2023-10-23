@@ -90,12 +90,10 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 	}
 	var testDeps testDeps
 	m := testing.MainStart(&testDeps, internalTests, nil, nil, nil)
-	code := m.Run()
-	if code == 0 {
-		return &summary, nil
-	} else {
+	if code := m.Run(); code > 1 {
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
+	return &summary, nil
 }
 
 func runTest(t *testing.T, ctx Context, test discovery.Test) {
