@@ -48,7 +48,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 				t.Fatal(err)
 			}
 			logging.ResourceOp(logger, "APPLY", client.ObjectKey(resource), resource)
-			err := client.CreateOrUpdate(stepCtx, c, resource)
+			err := operations.Apply(stepCtx, resource, c)
 			if err != nil {
 				t.Fatal(err)
 			}
