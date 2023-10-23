@@ -27,7 +27,7 @@ type options struct {
 	skipDelete          bool
 	failFast            bool
 	parallel            int
-	repeatCount         int
+	repeat              int
 	reportFormat        string
 	reportName          string
 	namespace           string
@@ -89,10 +89,10 @@ func Command() *cobra.Command {
 				configuration.Spec.FailFast = options.failFast
 			}
 			if flagutils.IsSet(flags, "parallel") {
-				configuration.Spec.Parallel = options.parallel
+				configuration.Spec.Parallel = &options.parallel
 			}
-			if flagutils.IsSet(flags, "repeat-count") {
-				configuration.Spec.RepeatCount = &options.repeatCount
+			if flagutils.IsSet(flags, "repeat") {
+				configuration.Spec.Repeat = &options.repeat
 			}
 			// if flagutils.IsSet(flags, "report-format") {
 			// 	configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
@@ -119,9 +119,11 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
-			fmt.Fprintf(out, "- Parallel %v\n", configuration.Spec.Parallel)
-			if configuration.Spec.RepeatCount != nil {
-				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.RepeatCount)
+			if configuration.Spec.Parallel != nil {
+				fmt.Fprintf(out, "- Parallel %v\n", configuration.Spec.Parallel)
+			}
+			if configuration.Spec.Repeat != nil {
+				fmt.Fprintf(out, "- Repeat %v\n", *configuration.Spec.Repeat)
 			}
 			if configuration.Spec.Report != nil {
 				fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
@@ -171,7 +173,7 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests.")
 	cmd.Flags().BoolVar(&options.failFast, "stop-on-first-failure", false, "Stop the test upon encountering the first failure.")
 	cmd.Flags().IntVar(&options.parallel, "parallel", 8, "The maximum number of tests to run at once.")
-	cmd.Flags().IntVar(&options.repeatCount, "repeat-count", 1, "Number of times to repeat each test.")
+	cmd.Flags().IntVar(&options.repeat, "repeat", 1, "Number of times to repeat each test.")
 	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil).")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create.")
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests.")

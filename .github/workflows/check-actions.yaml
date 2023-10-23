@@ -1,12 +1,15 @@
 name: Check actions
 
-# permissions: {}
+permissions: {}
 
 on:
   pull_request:
     branches:
       - 'main'
-      - 'release*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   required:

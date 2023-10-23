@@ -89,18 +89,18 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `testDirs` | `[]string` |  |  | <p>Directories containing test cases to run.</p> |
+| `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
+| `parallel` | `int` |  |  | <p>The maximum number of tests to run at once.</p> |
+| `repeat` | `int` |  |  | <p>Repeat indicates how many times the tests should be executed.</p> |
 | `report` | [`ReportConfigSpec`](#chainsaw-kyverno-io-v1alpha1-ReportConfigSpec) |  |  | <p>Report configuration.</p> |
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout per test step.</p> |
-| `testDirs` | `[]string` |  |  | <p>Directories containing test cases to run.</p> |
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running the tests (implies SkipClusterDelete).</p> |
-| `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
-| `parallel` | `int` | :white_check_mark: |  | <p>The maximum number of tests to run at once.</p> |
 | `namespace` | `string` |  |  | <p>Namespace defines the namespace to use for tests.</p> |
 | `suppress` | `[]string` |  |  | <p>Suppress is used to suppress logs.</p> |
 | `fullName` | `bool` |  |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
 | `excludeTestRegex` | `string` |  |  | <p>ExcludeTestRegex is used to exclude tests based on a regular expression.</p> |
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
-| `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
 
 ## `Delete`     {#chainsaw-kyverno-io-v1alpha1-Delete}
 
@@ -169,6 +169,9 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 **Appears in:**
     
 - [ReportConfigSpec](#chainsaw-kyverno-io-v1alpha1-ReportConfigSpec)
+
+<p>ReportFormatType defines supported report formats.</p>
+
 
 ## `TestSpec`     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
 

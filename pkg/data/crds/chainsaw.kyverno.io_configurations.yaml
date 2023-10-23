@@ -55,13 +55,12 @@ spec:
                 description: Namespace defines the namespace to use for tests.
                 type: string
               parallel:
-                default: 8
                 description: The maximum number of tests to run at once.
                 format: int
+                minimum: 1
                 type: integer
-              repeatCount:
-                description: RepeatCount indicates how many times the tests should
-                  be executed.
+              repeat:
+                description: Repeat indicates how many times the tests should be executed.
                 format: int
                 minimum: 1
                 type: integer

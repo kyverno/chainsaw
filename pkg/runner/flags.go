@@ -2,7 +2,6 @@ package runner
 
 import (
 	"flag"
-	"fmt"
 	"strconv"
 	"testing"
 
@@ -14,20 +13,22 @@ func setupFlags(config v1alpha1.ConfigurationSpec) error {
 	if err := flag.Set("test.v", "true"); err != nil {
 		return err
 	}
-	if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
-		return err
-	}
-	if err := flag.Set("test.failfast", fmt.Sprint(config.FailFast)); err != nil {
-		return err
-	}
 	if err := flag.Set("test.paniconexit0", "true"); err != nil {
 		return err
 	}
 	if err := flag.Set("test.fullpath", "false"); err != nil {
 		return err
 	}
-	if config.RepeatCount != nil {
-		if err := flag.Set("test.count", strconv.Itoa(*config.RepeatCount)); err != nil {
+	if err := flag.Set("test.failfast", strconv.FormatBool(config.FailFast)); err != nil {
+		return err
+	}
+	if config.Parallel != nil {
+		if err := flag.Set("test.parallel", strconv.Itoa(*config.Parallel)); err != nil {
+			return err
+		}
+	}
+	if config.Repeat != nil {
+		if err := flag.Set("test.count", strconv.Itoa(*config.Repeat)); err != nil {
 			return err
 		}
 	}
