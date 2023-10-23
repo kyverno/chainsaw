@@ -18,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/utils/clock"
 )
 
 type options struct {
@@ -45,6 +46,7 @@ func Command() *cobra.Command {
 		Short:        "Stronger tool for e2e testing",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
 			var configuration v1alpha1.Configuration
 			// if no config file was provided, give a chance to the default config name
@@ -145,7 +147,7 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			summary, err := runner.Run(cfg, configuration.Spec, tests...)
+			summary, err := runner.Run(cfg, clock, configuration.Spec, tests...)
 			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Passed  tests", summary.PassedTests)
