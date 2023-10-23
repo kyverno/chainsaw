@@ -32,26 +32,26 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 				return false, nil
 			}
 			return false, err
-		} else {
-			for _, candidate := range candidates {
-				totalCandidatesChecked++
-				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err != nil {
-					diffStr, err := getDifference(expected.UnstructuredContent(), candidate.UnstructuredContent())
-					if err != nil {
-						return false, err
-					}
-					differences = append(differences, diffStr)
-				} else {
-					// at least one match found
-					successfulMatches++
-					return true, nil
-				}
-			}
-			lastDifferences = differences
-			lastSuccessfulMatches = successfulMatches
-			lastTotalCandidatesChecked = totalCandidatesChecked
-			lastCandidates = candidates
 		}
+		for _, candidate := range candidates {
+			totalCandidatesChecked++
+			if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err != nil {
+				diffStr, err := getDifference(expected.UnstructuredContent(), candidate.UnstructuredContent())
+				if err != nil {
+					return false, err
+				}
+				differences = append(differences, diffStr)
+			} else {
+				// at least one match found
+				lastSuccessfulMatches = successfulMatches + 1
+				return true, nil
+			}
+		}
+		lastDifferences = differences
+		lastSuccessfulMatches = successfulMatches
+		lastTotalCandidatesChecked = totalCandidatesChecked
+		lastCandidates = candidates
+
 		return false, nil
 	})
 
