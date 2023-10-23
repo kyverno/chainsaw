@@ -4,6 +4,7 @@ name: Deploy
 
 permissions:
   deployments: write
+  pages: write
 
 on:
   push:
