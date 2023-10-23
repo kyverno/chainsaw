@@ -15,10 +15,13 @@ import (
 
 func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Client) error {
 	var lastErrs []error
-	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
+	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (done bool, err error) {
 		var errs []error
 		defer func() {
-			lastErrs = errs
+			// record last errors only if there was no real error
+			if err == nil {
+				lastErrs = errs
+			}
 		}()
 		if candidates, err := read(ctx, expected, c); err != nil {
 			if kerrors.IsNotFound(err) {
@@ -35,7 +38,7 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 					if err != nil {
 						return false, err
 					}
-					errs = append(errs, fmt.Errorf("actual resource doesn't match: %s", diffStr))
+					errs = append(errs, fmt.Errorf("actual resource doesn't match expectation\n%s", diffStr))
 				} else {
 					// at least one match found
 					return true, nil

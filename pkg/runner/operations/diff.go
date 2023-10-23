@@ -2,6 +2,7 @@ package operations
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/pmezard/go-difflib/difflib"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -11,11 +12,11 @@ import (
 func diff(expected, actual unstructured.Unstructured) (string, error) {
 	expectedBytes, err := yaml.Marshal(expected)
 	if err != nil {
-		return "", fmt.Errorf("failed to marshal expected content to YAML: %v", err)
+		return "", fmt.Errorf("failed to marshal expected content to YAML: %w", err)
 	}
 	candidateBytes, err := yaml.Marshal(actual)
 	if err != nil {
-		return "", fmt.Errorf("failed to marshal candidate content to YAML: %v", err)
+		return "", fmt.Errorf("failed to marshal candidate content to YAML: %w", err)
 	}
 	diff := difflib.UnifiedDiff{
 		A:        difflib.SplitLines(string(expectedBytes)),
@@ -26,7 +27,7 @@ func diff(expected, actual unstructured.Unstructured) (string, error) {
 	}
 	diffStr, err := difflib.GetUnifiedDiffString(diff)
 	if err != nil {
-		return "", fmt.Errorf("failed to generate unified diff string: %v", err)
+		return "", fmt.Errorf("failed to generate unified diff string: %w", err)
 	}
-	return diffStr, nil
+	return strings.TrimSpace(diffStr), nil
 }
