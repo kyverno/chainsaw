@@ -14,9 +14,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
+	"k8s.io/utils/clock"
 )
 
-func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*Summary, error) {
+func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*Summary, error) {
 	var summary Summary
 	if len(tests) == 0 {
 		return &summary, nil
@@ -65,6 +66,7 @@ func Run(cfg *rest.Config, config v1alpha1.ConfigurationSpec, tests ...discovery
 				t.Helper()
 				t.Parallel()
 				ctx := Context{
+					clock:      clock,
 					config:     config,
 					ctx:        context.Background(),
 					namespacer: nspacer,
@@ -100,7 +102,7 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	t.Helper()
 	if ctx.namespacer == nil {
 		namespace := client.PetNamespace()
-		logger := logging.NewTestLogger(t)
+		logger := logging.NewTestLogger(t, ctx.clock)
 		c := ctx.clientFactory(t, logger)
 		if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 			logger.Log(err)
@@ -110,6 +112,6 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	}
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
-		executeStep(t, logging.NewStepLogger(t, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
+		executeStep(t, logging.NewStepLogger(t, ctx.clock, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, step)
 	}
 }
