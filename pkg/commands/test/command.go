@@ -94,12 +94,12 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "repeat-count") {
 				configuration.Spec.RepeatCount = &options.repeatCount
 			}
-			if flagutils.IsSet(flags, "report-format") {
-				configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
-			}
-			if flagutils.IsSet(flags, "report-name") {
-				configuration.Spec.ReportName = options.reportName
-			}
+			// if flagutils.IsSet(flags, "report-format") {
+			// 	configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
+			// }
+			// if flagutils.IsSet(flags, "report-name") {
+			// 	configuration.Spec.ReportName = options.reportName
+			// }
 			if flagutils.IsSet(flags, "namespace") {
 				configuration.Spec.Namespace = options.namespace
 			}
@@ -123,8 +123,10 @@ func Command() *cobra.Command {
 			if configuration.Spec.RepeatCount != nil {
 				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.RepeatCount)
 			}
-			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
-			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.ReportName)
+			if configuration.Spec.Report != nil {
+				fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
+				fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.Report.Name)
+			}
 			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
 			fmt.Fprintf(out, "- Suppress %v\n", configuration.Spec.Suppress)
 			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)

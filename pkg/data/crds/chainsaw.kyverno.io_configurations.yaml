@@ -65,19 +65,19 @@ spec:
                 format: int
                 minimum: 1
                 type: integer
-              reportFormat:
-                description: ReportFormat determines test report format (JSON|XML|nil)
-                  nil == no report. maps to report.Type, however we don't want generated.deepcopy
-                  to have reference to it.
-                enum:
-                - JSON
-                - XML
-                type: string
-              reportName:
-                default: chainsaw-report
-                description: ReportName defines the name of report to create. It defaults
-                  to "chainsaw-report".
-                type: string
+              report:
+                description: Report configuration.
+                properties:
+                  reportFormat:
+                    description: Format determines test report format (JSON|XML).
+                    enum:
+                    - JSON
+                    - XML
+                    type: string
+                  reportName:
+                    description: Name defines the name of report to create.
+                    type: string
+                type: object
               skipDelete:
                 description: If set, do not delete the resources after running the
                   tests (implies SkipClusterDelete).

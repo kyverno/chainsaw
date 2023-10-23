@@ -4,16 +4,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type ReportFormatType string
-
-const (
-	JSONFormat ReportFormatType = "JSON"
-	XMLFormat  ReportFormatType = "XML"
-	NoReport   ReportFormatType = ""
-)
-
 // ConfigurationSpec contains the configuration used to run tests.
 type ConfigurationSpec struct {
+	// Report configuration.
+	// +optional
+	Report *ReportConfigSpec `json:"report,omitempty"`
+
 	// Timeout per test step.
 	// +optional
 	// +kubebuilder:default:="30s"
@@ -35,17 +31,6 @@ type ConfigurationSpec struct {
 	// +kubebuilder:default:=8
 	// +kubebuilder:validation:Format:=int
 	Parallel int `json:"parallel,omitempty"`
-
-	// ReportFormat determines test report format (JSON|XML|nil) nil == no report.
-	// maps to report.Type, however we don't want generated.deepcopy to have reference to it.
-	// +optional
-	// +kubebuilder:validation:Enum=JSON;XML;
-	ReportFormat ReportFormatType `json:"reportFormat,omitempty"`
-
-	// ReportName defines the name of report to create. It defaults to "chainsaw-report".
-	// +optional
-	// +kubebuilder:default:="chainsaw-report"
-	ReportName string `json:"reportName,omitempty"`
 
 	// Namespace defines the namespace to use for tests.
 	// +optional
