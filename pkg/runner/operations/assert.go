@@ -19,7 +19,7 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 	var successfulMatches int
 	var totalCandidatesChecked int
 	var candidates []unstructured.Unstructured
-	printedDifferences := make(map[string]bool) // This will help us track which resources have had their differences printed
+	printedDifferences := make(map[string]bool)
 
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
 		var err error
