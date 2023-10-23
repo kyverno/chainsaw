@@ -1,0 +1,56 @@
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    binary: chainsaw
+    main: cmd/main.go
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X github.com/kyverno/chainsaw/pkg/version.BuildVersion={{ .Version }}
+
+signs:
+  - cmd: cosign
+    certificate: '${artifact}.pem'
+    args:
+      - sign-blob
+      - --output-certificate=${certificate}
+      - --output-signature=${signature}
+      - ${artifact}
+      - --yes
+    artifacts: all
+    output: true
+
+archives:
+  - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
+
+checksum:
+  name_template: checksums.txt
+
+source:
+  enabled: true
+
+sboms:
+  - artifacts: archive
+  - id: source
+    artifacts: source
+
+snapshot:
+  name_template: '{{ incpatch .Version }}-next'
+
+release:
+  prerelease: auto
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
