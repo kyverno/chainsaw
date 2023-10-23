@@ -8,29 +8,19 @@ nav:
   - quick-start.md
 - Writing tests:
   - tests/index.md
-  # - Basics:
-  #   - policies/api-version.md
-  #   - policies/match.md
-  #   - policies/assertion-trees.md
-  #   - policies/modifiers.md
-  #   - policies/explicit-bindings.md
-  #   - policies/escaping.md
+  - tests/configuration.md
+  - tests/with-manifests.md
+  - tests/with-test-steps.md
+  - tests/with-test.md
   - Command Line Usage:
     - commands/chainsaw.md
     - commands/chainsaw_test.md
     - commands/chainsaw_version.md
-  # - JMESPath:
-  #   - Overview: jp.md
-  #   - Functions: jp/functions.md
   - APIs:
     - v1alpha1: apis/chainsaw.v1alpha1.md
-# - Policy catalog:
-#   - catalog/index.md
-#   - tags.md
-#   - All:
-#     - catalog/policies/aws/policy-1.md
-#     - catalog/policies/ecs/policy-1.md
-# - Playground:
-#   - playground.md
+- More resources:
+  - more/events.md
+  - more/crds.md
+  - more/ide-completion.md
 - Blog:
   - blog/index.md

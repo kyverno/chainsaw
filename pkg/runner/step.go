@@ -30,61 +30,72 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		resource.SetNamespace(delete.Namespace)
 		resource.SetLabels(delete.Labels)
 		if err := ctx.namespacer.Apply(&resource); err != nil {
-			t.Fatal(err)
+			logger.Log(err)
+			t.FailNow()
 		}
 		logging.ResourceOp(logger, "DELETE", client.ObjectKey(&resource), &resource)
 		if err := operations.Delete(stepCtx, resource, c); err != nil {
-			t.Fatal(err)
+			logger.Log(err)
+			t.FailNow()
 		}
 	}
 	for _, apply := range step.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, apply.File))
 		if err != nil {
-			t.Fatal(err)
+			logger.Log(err)
+			t.FailNow()
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				t.Fatal(err)
+				logger.Log(err)
+				t.FailNow()
 			}
 			logging.ResourceOp(logger, "APPLY", client.ObjectKey(resource), resource)
 			err := operations.Apply(stepCtx, resource, c)
 			if err != nil {
-				t.Fatal(err)
+				logger.Log(err)
+				t.FailNow()
 			}
 		}
 	}
 	for _, assert := range step.Assert {
 		resources, err := resource.Load(filepath.Join(basePath, assert.File))
 		if err != nil {
-			t.Fatal(err)
+			logger.Log(err)
+			t.FailNow()
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				t.Fatal(err)
+				logger.Log(err)
+				t.FailNow()
 			}
 			logging.ResourceOp(logger, "ASSERT", client.ObjectKey(resource), resource)
 			if err := operations.Assert(stepCtx, resources[i], c); err != nil {
-				t.Fatal(err)
+				logger.Log(err)
+				t.FailNow()
 			}
 		}
 	}
 	for _, e := range step.Error {
 		resources, err := resource.Load(filepath.Join(basePath, e.File))
 		if err != nil {
-			t.Fatal(err)
+			logger.Log(err)
+			t.FailNow()
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				t.Fatal(err)
+				logger.Log(err)
+				t.FailNow()
 			}
 			logging.ResourceOp(logger, "ERROR", client.ObjectKey(resource), resource)
 			// Using the Error function to handle the error assertion
 			err := operations.Error(stepCtx, resources[i], c)
 			if err != nil {
-				t.Fatal(err)
+				logger.Log(err)
+				t.FailNow()
 			}
 		}
 	}

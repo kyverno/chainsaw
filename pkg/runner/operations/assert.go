@@ -2,29 +2,59 @@ package operations
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/match"
-	"k8s.io/apimachinery/pkg/api/errors"
+	"go.uber.org/multierr"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
 func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Client) error {
-	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
+	var lastErrs []error
+	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (done bool, err error) {
+		var errs []error
+		defer func() {
+			// record last errors only if there was no real error
+			if err == nil {
+				lastErrs = errs
+			}
+		}()
 		if candidates, err := read(ctx, expected, c); err != nil {
-			if errors.IsNotFound(err) {
+			if kerrors.IsNotFound(err) {
+				errs = append(errs, errors.New("actual resource not found"))
 				return false, nil
 			}
 			return false, err
+		} else if len(candidates) == 0 {
+			errs = append(errs, errors.New("no actual resource found"))
 		} else {
 			for _, candidate := range candidates {
-				// at least one must match
-				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err == nil {
+				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err != nil {
+					diffStr, err := diff(expected, candidate)
+					if err != nil {
+						return false, err
+					}
+					errs = append(errs, fmt.Errorf("actual resource doesn't match expectation\n%s", diffStr))
+				} else {
+					// at least one match found
 					return true, nil
 				}
 			}
 		}
 		return false, nil
 	})
+	// if no error, return success
+	if err == nil {
+		return nil
+	}
+	// if we have a context timeout, eventually return a combination of last errors
+	if errors.Is(err, context.DeadlineExceeded) && len(lastErrs) != 0 {
+		return multierr.Combine(lastErrs...)
+	}
+	// return received error
+	return err
 }

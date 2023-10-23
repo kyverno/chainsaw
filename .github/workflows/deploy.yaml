@@ -1,11 +1,16 @@
 name: Deploy
 
-# permissions: {}
+permissions:
+  pages: write
 
 on:
   push:
     branches:
       - 'main'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   docs:

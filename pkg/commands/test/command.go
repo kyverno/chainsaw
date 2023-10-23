@@ -1,6 +1,7 @@
 package test
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -17,6 +18,7 @@ import (
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/utils/clock"
 )
 
 type options struct {
@@ -44,6 +46,7 @@ func Command() *cobra.Command {
 		Short:        "Stronger tool for e2e testing",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
 			var configuration v1alpha1.Configuration
 			// if no config file was provided, give a chance to the default config name
@@ -144,18 +147,23 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			if summary, err := runner.Run(cfg, configuration.Spec, tests...); err != nil {
-				return err
-			} else if summary != nil {
+			summary, err := runner.Run(cfg, clock, configuration.Spec, tests...)
+			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Duration     ", summary.Duration)
 				fmt.Fprintln(out, "- Passed tests ", summary.PassedTests)
 				fmt.Fprintln(out, "- Failed tests ", summary.FailedTests)
 				fmt.Fprintln(out, "- Skipped tests", summary.SkippedTests)
 			}
-			// done
-			fmt.Fprintln(out, "Done.")
-			return nil
+			if err != nil {
+				fmt.Fprintln(out, "Done with error.")
+			} else if summary != nil && summary.FailedTests > 0 {
+				fmt.Fprintln(out, "Done with failures.")
+				err = errors.New("some tests failed")
+			} else {
+				fmt.Fprintln(out, "Done.")
+			}
+			return err
 		},
 	}
 	cmd.Flags().DurationVar(&options.timeout.Duration, "timeout", 30*time.Second, "The timeout to use as default for configuration.")
