@@ -3,7 +3,7 @@
 name: Deploy
 
 permissions:
-  pages: write
+  deployments: write
 
 on:
   push:
