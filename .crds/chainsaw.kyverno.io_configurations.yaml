@@ -95,7 +95,7 @@ spec:
               timeout:
                 default: 30s
                 description: Global timeout configuration. Applies to all tests/test
-                  steps if not overriden.
+                  steps if not overridden.
                 type: string
             type: object
         required:
