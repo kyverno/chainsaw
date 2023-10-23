@@ -39,6 +39,11 @@ type FilterConfigSpec struct {
 
 // ConfigurationSpec contains the configuration used to run tests.
 type ConfigurationSpec struct {
+	// Global timeout configuration. Applies to all tests/test steps if not overridden.
+	// +optional
+	// +kubebuilder:default:="30s"
+	Timeout *metav1.Duration `json:"timeout,omitempty"`
+
 	// Directories containing test cases to run.
 	// +optional
 	TestDirs []string `json:"testDirs,omitempty"`
@@ -58,11 +63,6 @@ type ConfigurationSpec struct {
 	// +kubebuilder:validation:Minimum:=1
 	// +optional
 	Repeat *int `json:"repeat,omitempty"`
-
-	// Timeout per test step.
-	// +optional
-	// +kubebuilder:default:="30s"
-	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
 	// Report configuration.
 	// +optional
