@@ -93,14 +93,13 @@ during the testing process.</p>
 | `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
 | `parallel` | `int` |  |  | <p>The maximum number of tests to run at once.</p> |
 | `repeat` | `int` |  |  | <p>Repeat indicates how many times the tests should be executed.</p> |
-| `report` | [`ReportConfigSpec`](#chainsaw-kyverno-io-v1alpha1-ReportConfigSpec) |  |  | <p>Report configuration.</p> |
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout per test step.</p> |
+| `report` | [`ReportConfigSpec`](#chainsaw-kyverno-io-v1alpha1-ReportConfigSpec) |  |  | <p>Report configuration.</p> |
+| `filter` | [`FilterConfigSpec`](#chainsaw-kyverno-io-v1alpha1-FilterConfigSpec) |  |  | <p>Filter configuration.</p> |
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running the tests (implies SkipClusterDelete).</p> |
 | `namespace` | `string` |  |  | <p>Namespace defines the namespace to use for tests.</p> |
 | `suppress` | `[]string` |  |  | <p>Suppress is used to suppress logs.</p> |
 | `fullName` | `bool` |  |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
-| `excludeTestRegex` | `string` |  |  | <p>ExcludeTestRegex is used to exclude tests based on a regular expression.</p> |
-| `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
 
 ## `Delete`     {#chainsaw-kyverno-io-v1alpha1-Delete}
 
@@ -147,6 +146,20 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
+
+## `FilterConfigSpec`     {#chainsaw-kyverno-io-v1alpha1-FilterConfigSpec}
+
+**Appears in:**
+    
+- [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
+
+<p>FilterConfigSpec contains tests to include or exclude.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `include` | `string` |  |  | <p>Include is used to include tests based on a regular expression.</p> |
+| `exclude` | `string` |  |  | <p>Exclude is used to exclude tests based on a regular expression.</p> |
 
 ## `ReportConfigSpec`     {#chainsaw-kyverno-io-v1alpha1-ReportConfigSpec}
 

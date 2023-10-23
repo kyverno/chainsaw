@@ -94,6 +94,7 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "repeat") {
 				configuration.Spec.Repeat = &options.repeat
 			}
+			// TODO
 			// if flagutils.IsSet(flags, "report-format") {
 			// 	configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
 			// }
@@ -109,18 +110,26 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "full-name") {
 				configuration.Spec.FullName = options.fullName
 			}
-			if flagutils.IsSet(flags, "include-test-regex") {
-				configuration.Spec.IncludeTestRegex = options.includeTestRegex
-			}
-			if flagutils.IsSet(flags, "exclude-test-regex") {
-				configuration.Spec.ExcludeTestRegex = options.excludeTestRegex
-			}
+			// TODO
+			// if flagutils.IsSet(flags, "include-test-regex") {
+			// 	configuration.Spec.IncludeTestRegex = options.includeTestRegex
+			// }
+			// if flagutils.IsSet(flags, "exclude-test-regex") {
+			// 	configuration.Spec.ExcludeTestRegex = options.excludeTestRegex
+			// }
 			fmt.Fprintf(out, "- Timeout %v\n", configuration.Spec.Timeout.Duration)
 			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
+			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
+			fmt.Fprintf(out, "- Suppress %v\n", configuration.Spec.Suppress)
+			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
+			if configuration.Spec.Filter != nil {
+				fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.Filter.Include)
+				fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.Filter.Exclude)
+			}
 			if configuration.Spec.Parallel != nil {
-				fmt.Fprintf(out, "- Parallel %v\n", configuration.Spec.Parallel)
+				fmt.Fprintf(out, "- Parallel %v\n", *configuration.Spec.Parallel)
 			}
 			if configuration.Spec.Repeat != nil {
 				fmt.Fprintf(out, "- Repeat %v\n", *configuration.Spec.Repeat)
@@ -129,11 +138,6 @@ func Command() *cobra.Command {
 				fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
 				fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.Report.Name)
 			}
-			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
-			fmt.Fprintf(out, "- Suppress %v\n", configuration.Spec.Suppress)
-			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
-			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.IncludeTestRegex)
-			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.ExcludeTestRegex)
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
 			tests, err := discovery.DiscoverTests("chainsaw-test.yaml", configuration.Spec.TestDirs...)

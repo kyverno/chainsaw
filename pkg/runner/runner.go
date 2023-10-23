@@ -100,9 +100,11 @@ func runTest(t *testing.T, ctx Context, test discovery.Test) {
 	t.Helper()
 	if ctx.namespacer == nil {
 		namespace := client.PetNamespace()
-		c := ctx.clientFactory(t, logging.NewTestLogger(t))
+		logger := logging.NewTestLogger(t)
+		c := ctx.clientFactory(t, logger)
 		if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
-			t.Fatal(err)
+			logger.Log(err)
+			t.FailNow()
 		}
 		ctx.namespacer = namespacer.New(c, namespace.Name)
 	}

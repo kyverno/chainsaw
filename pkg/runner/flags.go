@@ -32,11 +32,13 @@ func setupFlags(config v1alpha1.ConfigurationSpec) error {
 			return err
 		}
 	}
-	if err := flag.Set("test.run", config.IncludeTestRegex); err != nil {
-		return err
-	}
-	if err := flag.Set("test.skip", config.ExcludeTestRegex); err != nil {
-		return err
+	if config.Filter != nil {
+		if err := flag.Set("test.run", config.Filter.Include); err != nil {
+			return err
+		}
+		if err := flag.Set("test.skip", config.Filter.Exclude); err != nil {
+			return err
+		}
 	}
 	flag.Parse()
 	return nil

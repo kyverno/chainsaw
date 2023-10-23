@@ -8,10 +8,10 @@ import (
 type ReportFormatType string
 
 const (
-	// JSONFormat indicates a report in json format.
-	JSONFormat ReportFormatType = "JSON"
-	// XMLFormat indicates a report in xml format.
-	XMLFormat ReportFormatType = "XML"
+	// JsonFormat indicates a report in json format.
+	JsonFormat ReportFormatType = "JSON"
+	// XmlFormat indicates a report in xml format.
+	XmlFormat ReportFormatType = "XML"
 )
 
 // ReportConfigSpec contains the configuration related to reports.
@@ -24,6 +24,17 @@ type ReportConfigSpec struct {
 	// Name defines the name of report to create.
 	// +optional
 	Name string `json:"reportName,omitempty"`
+}
+
+// FilterConfigSpec contains tests to include or exclude.
+type FilterConfigSpec struct {
+	// Include is used to include tests based on a regular expression.
+	// +optional
+	Include string `json:"include,omitempty"`
+
+	// Exclude is used to exclude tests based on a regular expression.
+	// +optional
+	Exclude string `json:"exclude,omitempty"`
 }
 
 // ConfigurationSpec contains the configuration used to run tests.
@@ -48,14 +59,18 @@ type ConfigurationSpec struct {
 	// +optional
 	Repeat *int `json:"repeat,omitempty"`
 
-	// Report configuration.
-	// +optional
-	Report *ReportConfigSpec `json:"report,omitempty"`
-
 	// Timeout per test step.
 	// +optional
 	// +kubebuilder:default:="30s"
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
+
+	// Report configuration.
+	// +optional
+	Report *ReportConfigSpec `json:"report,omitempty"`
+
+	// Filter configuration.
+	// +optional
+	Filter *FilterConfigSpec `json:"filter,omitempty"`
 
 	// If set, do not delete the resources after running the tests (implies SkipClusterDelete).
 	// +optional
@@ -72,12 +87,4 @@ type ConfigurationSpec struct {
 	// FullName makes use of the full test case folder path instead of the folder name.
 	// +optional
 	FullName bool `json:"fullName,omitempty"`
-
-	// ExcludeTestRegex is used to exclude tests based on a regular expression.
-	// +optional
-	ExcludeTestRegex string `json:"excludeTestRegex,omitempty"`
-
-	// IncludeTestRegex is used to include tests based on a regular expression.
-	// +optional
-	IncludeTestRegex string `json:"includeTestRegex,omitempty"`
 }
