@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/match"
 	"github.com/pmezard/go-difflib/difflib"
+	"gopkg.in/yaml.v2"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -18,6 +19,8 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 	var successfulMatches int
 	var totalCandidatesChecked int
 	var candidates []unstructured.Unstructured
+	printedDifferences := make(map[string]bool) // This will help us track which resources have had their differences printed
+
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
 		var err error
 		if candidates, err = read(ctx, expected, c); err != nil {
@@ -29,8 +32,11 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 			for _, candidate := range candidates {
 				totalCandidatesChecked++
 				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err != nil {
-					// Store the difference for this failed match
-					differences = append(differences, getDifference(expected.UnstructuredContent(), candidate.UnstructuredContent()))
+					resourceString := fmt.Sprintf("%v", candidate.UnstructuredContent())
+					if _, exists := printedDifferences[resourceString]; !exists {
+						differences = append(differences, getDifference(expected.UnstructuredContent(), candidate.UnstructuredContent()))
+						printedDifferences[resourceString] = true
+					}
 				} else {
 					// at least one match found
 					successfulMatches++
@@ -50,7 +56,6 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 		if successfulMatches == 0 {
 			for _, diff := range differences {
 				sb.WriteString(diff)
-				sb.WriteString("\n")
 			}
 		}
 		return fmt.Errorf(sb.String())
@@ -59,14 +64,14 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 }
 
 func getDifference(expectedContent, candidateContent map[string]interface{}) string {
-	expectedContentStr := fmt.Sprintf("%v", expectedContent)
-	candidateContentStr := fmt.Sprintf("%v", candidateContent)
+	expectedContentBytes, _ := yaml.Marshal(expectedContent)
+	candidateContentBytes, _ := yaml.Marshal(candidateContent)
 
 	diff := difflib.UnifiedDiff{
-		A:        difflib.SplitLines(expectedContentStr),
-		B:        difflib.SplitLines(candidateContentStr),
+		A:        difflib.SplitLines(string(expectedContentBytes)),
+		B:        difflib.SplitLines(string(candidateContentBytes)),
 		FromFile: "Expected",
-		ToFile:   "Candidate",
+		ToFile:   "Actual",
 		Context:  3,
 	}
 	diffStr, _ := difflib.GetUnifiedDiffString(diff)
