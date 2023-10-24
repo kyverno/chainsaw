@@ -34,6 +34,9 @@ spec:
           spec:
             description: Test spec.
             properties:
+              skip:
+                description: Skip determines whether the test should skipped.
+                type: boolean
               steps:
                 description: Steps defining the test.
                 items:
