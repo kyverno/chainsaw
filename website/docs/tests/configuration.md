@@ -2,21 +2,28 @@
 
 Chainsaw is a comprehensive tool designed to facilitate end-to-end (e2e) testing in Kubernetes. This documentation will focus on providing a breakdown of its configuration structure and how to use it.
 
-## Configuration Spec (v1alpha1)
+Chainsaw can be configured in two ways:
 
-## 1. Overview:
+- Using a configuration file
+- Overriding configuration with command-line flags
+
+If both are specified, **command-line flags will take precedence** over configuration coming from a configuration file.
+
+## Configuration file
+
+### Overview
 
 Chainsaw is described as a "Stronger tool for e2e testing". With its versatile configuration options, you can customize the testing process to fit your needs.
 
-## 2. Configuration Loading Process:
+### Configuration loading process
 
 Chainsaw prioritizes its configuration in the following order:
 
-1. **User-Specified Configuration**: If you explicitly provide a configuration file using a command-line flag.
-2. **Default Configuration File**: If no configuration is specified, Chainsaw will look for a default file named `.chainsaw.yaml` in the current directory.
-3. **Internal Default Configuration**: In the absence of both the above, Chainsaw will use its built-in default configuration.
+1. **User-specified configuration**: If you explicitly provide a configuration file using a command-line flag.
+1. **Default configuration file**: If no configuration is specified, Chainsaw will look for a default file named `.chainsaw.yaml` in the current working directory.
+1. **Internal default configuration**: In the absence of both the above, Chainsaw will use a default configuration file embedded in the Chainsaw binary.
 
-### How to Specify a Configuration:
+### How to specify a configuration
 
 To use a custom configuration file:
 
@@ -24,61 +31,68 @@ To use a custom configuration file:
 chainsaw test --config path/to/your/config.yaml
 ```
 
-If you don't specify any configuration, Chainsaw will look for the default configuration file in the current directory. If that's not found, it will fall back to its internal default settings.
+If you don't specify any configuration, Chainsaw will look for the default configuration file `.chainsaw.yaml` in the current working directory. If that's not found, it will fall back to its internal default configuration.
 
-### Overriding with Flags:
+
+### Example
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Configuration
+metadata:
+  name: custom-config
+spec:
+  timeout: 45s
+  skipDelete: false
+  failFast: true
+  parallel: 4
+  // ....
+```
+
+The full structure of the configuration file is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Configuration)
+
+### Default configuration
+
+The default configuration below is used by Chainsaw when no configuration file was provided and the default file `.chainsaw.yaml` does not exist.
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Configuration
+metadata:
+  name: default
+spec: {}
+```
+
+## Overriding with flags
 
 Even after a configuration is loaded, you can override specific settings using command-line flags:
 
 ```bash
-chainsaw test --timeout 45s
+chainsaw test                           \
+    --config path/to/your/config.yaml   \
+    --test-dir path/to/test/dir         \
+    --timeout 45s                       \
+    --skip-delete false                 \
+    --fail-fast true                    \
+    --parallel 4                        \
+    ...
 ```
 
-In this example, the timeout configuration will be set to 45 seconds, regardless of the value in the loaded configuration file.
+In this example, Chainsaw will load a configuration file but the timeout configuration and other settings will be overridden by the values set in the flags, regardless of the value in the loaded configuration file.
 
-### Fields
+Supported command line flags are documented [here](../commands/chainsaw_test.md#options)
 
-| **Field**            | **Description**                                              | **Default**                   |
-|----------------------|--------------------------------------------------------------|-------------------------------|
-| Timeout              | Global timeout for tests.                                    | 30 seconds                    |
-| TestDirs             | Directories containing test cases.                           |                               |
-| SkipDelete           | Prevents resource deletion post-testing.                     | false                         |
-| FailFast             | Stops test execution on first failure.                       | false                         |
-| Parallel             | Max number of simultaneous tests.                            | 8                             |
-| RepeatCount          | How many times tests should be executed.                     | 1                             |
-| ReportFormat         | Test report format (`JSON`, `XML`, or none).                 |                               |
-| ReportName           | Name of the report.                                          | "chainsaw-report"             |
-| Namespace            | Namespace for tests.                                         |                               |
-| Suppress             | Suppress specific logs.                                      |                               |
-| FullName             | Use full test case folder path for representation.           | false                         |
-| ExcludeTestRegex     | Exclude tests using regex.                                   |                               |
-| IncludeTestRegex     | Include tests using regex.                                   |                               |
-
----
-
-### Flags
-
-| **Flag**                   | **Description**                                              | **Default**            |
-|----------------------------|--------------------------------------------------------------|------------------------|
-| `--timeout`                | Default timeout for the configuration.                        | 30 seconds             |
-| `--config`                 | Chainsaw configuration file.                                  | -                      |
-| `--test-dir`               | Directories containing test cases to run.                     | -                      |
-| `--skip-delete`            | Prevents resource deletion post-testing.                     | -                      |
-| `--stop-on-first-failure`  | Stops test execution on first failure.                       | -                      |
-| `--parallel`               | Max number of tests running concurrently.                    | 8                      |
-| `--repeat-count`           | Number of times to repeat each test.                          | -                      |
-| `--report-format`          | Test report format (`JSON`, `XML`, or none).                 | -                      |
-| `--report-name`            | Name for the test report.                                    | "chainsaw-report"      |
-| `--namespace`              | Namespace for tests.                                         | -                      |
-| `--suppress`               | Lists the logs to suppress.                                  | -                      |
-| `--full-name`              | Use the full test case folder path instead of folder name.   | -                      |
-| `--include-test-regex`     | Regex to include specific tests.                             | -                      |
-| `--exclude-test-regex`     | Regex to exclude specific tests.                             | -                      |
-
-### Usage Example
+## Usage example
 
 ```bash
 chainsaw test --config my-config.yaml --test-dir /path/to/tests --parallel 10
 ```
 
-This command will run tests using the configuration from my-config.yaml, taking tests from /path/to/tests, and running a maximum of 10 tests simultaneously.
+This command will run tests using the configuration from `my-config.yaml`, taking tests from `/path/to/tests`, and running a maximum of `10` tests simultaneously.
+
+## Reference
+
+Refer to the reference documentations for details about supported fields in the configuration file and/or supported flags in the `test` command.
+
+- [Configuration API reference](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Configuration)
+- [Chainsaw test command reference](../commands/chainsaw_test.md#options)
