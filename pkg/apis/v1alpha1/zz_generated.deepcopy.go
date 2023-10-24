@@ -100,11 +100,6 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
-	if in.Suppress != nil {
-		in, out := &in.Suppress, &out.Suppress
-		*out = make([]string, len(*in))
-		copy(*out, *in)
-	}
 	if in.RepeatCount != nil {
 		in, out := &in.RepeatCount, &out.RepeatCount
 		*out = new(int)

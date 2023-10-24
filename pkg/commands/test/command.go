@@ -32,7 +32,6 @@ type options struct {
 	reportFormat        string
 	reportName          string
 	namespace           string
-	suppress            []string
 	fullName            bool
 	excludeTestRegex    string
 	includeTestRegex    string
@@ -105,9 +104,6 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "namespace") {
 				configuration.Spec.Namespace = options.namespace
 			}
-			if flagutils.IsSet(flags, "suppress") {
-				configuration.Spec.Suppress = options.suppress
-			}
 			if flagutils.IsSet(flags, "full-name") {
 				configuration.Spec.FullName = options.fullName
 			}
@@ -128,7 +124,6 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
 			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.ReportName)
 			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
-			fmt.Fprintf(out, "- Suppress %v\n", configuration.Spec.Suppress)
 			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
 			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.IncludeTestRegex)
 			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.ExcludeTestRegex)
@@ -175,7 +170,6 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil).")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create.")
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests.")
-	cmd.Flags().StringArrayVar(&options.suppress, "suppress", []string{}, "Logs to suppress.")
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name.")
 	cmd.Flags().StringVar(&options.includeTestRegex, "include-test-regex", "", "Regular expression to include tests.")
 	cmd.Flags().StringVar(&options.excludeTestRegex, "exclude-test-regex", "", "Regular expression to exclude tests.")
