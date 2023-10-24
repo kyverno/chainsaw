@@ -1,32 +1,40 @@
-# Configuration
+# Chainsaw Tool Configuration
+
+Chainsaw is a comprehensive tool designed to facilitate end-to-end (e2e) testing in Kubernetes. This documentation will focus on providing a breakdown of its configuration structure and how to use it.
 
 Chainsaw can be configured in two ways:
 
 - Using a configuration file
-- Using command line flags
+- Overriding configuration with command-line flags
 
-If both are specified, **command line flags will take precedence** over configuration coming from a configuration file.
+If both are specified, **command-line flags will take precedence** over configuration coming from a configuration file.
 
-## Using a configuration file
+## Configuration file
 
-You can provide a configuration file when invoking Chainsaw with the `--config <path to config file>` flag.
+### Overview
 
-The config file is structured as a Kubernetes manifest with:
+Chainsaw is described as a "Stronger tool for e2e testing". With its versatile configuration options, you can customize the testing process to fit your needs.
 
-- `apiversion`: `chainsaw.kyverno.io/v1alpha1`
-- `kind`: `Configuration`
+### Configuration loading process
 
-The structure of the configuration files is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Configuration)
+Chainsaw prioritizes its configuration in the following order:
 
-Note that **Chainsaw will always load a configuration file** and use the logic below to determine the file to load:
+1. **User-specified configuration**: If you explicitly provide a configuration file using a command-line flag.
+1. **Default configuration file**: If no configuration is specified, Chainsaw will look for a default file named `.chainsaw.yaml` in the current working directory.
+1. **Internal default configuration**: In the absence of both the above, Chainsaw will use a default configuration file embedded in the Chainsaw binary.
 
-1. If the `--config` flag is present, use the specified configuration file
-1. If the `--config` flag is NOT present, try with the [default](#default-configuration) `.chainsaw.yaml` file name in the current working directory
-1. Load a default configuration file embedded in the Chainsaw binary
+### How to specify a configuration
 
-It works this way because Chainsaw uses an advanced resource loading mechanism and supports most validation and defaulting markers.
+To use a custom configuration file:
 
-**Example:**
+```bash
+chainsaw test --config path/to/your/config.yaml
+```
+
+If you don't specify any configuration, Chainsaw will look for the default configuration file `.chainsaw.yaml` in the current working directory. If that's not found, it will fall back to its internal default configuration.
+
+
+### Example
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -41,6 +49,8 @@ spec:
   // ....
 ```
 
+The full structure of the configuration file is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Configuration)
+
 ### Default configuration
 
 The default configuration below is used by Chainsaw when no configuration file was provided and the default file `.chainsaw.yaml` does not exist.
@@ -53,17 +63,14 @@ metadata:
 spec: {}
 ```
 
-## Using command line flags
+## Overriding with flags
 
-All config elements can also be specified using command line flags.
-
-You can provide a combination of flags when invoking Chainsaw, and even combine a configuration file with flags, in this case flags will take precedence over configuration elements coming from the config file.
-
-**Example:**
+Even after a configuration is loaded, you can override specific settings using command-line flags:
 
 ```bash
 chainsaw test                           \
-    --test-dir ./path/to/test/folder    \
+    --config path/to/your/config.yaml   \
+    --test-dir path/to/test/dir         \
     --timeout 45s                       \
     --skip-delete false                 \
     --fail-fast true                    \
@@ -71,10 +78,21 @@ chainsaw test                           \
     ...
 ```
 
+In this example, Chainsaw will load a configuration file but the timeout configuration and other settings will be overridden by the values set in the flags, regardless of the value in the loaded configuration file.
+
 Supported command line flags are documented [here](../commands/chainsaw_test.md#options)
 
-## Per test (or step) options
+## Usage example
 
-The configuration options documented here are considered the global configuration.
+```bash
+chainsaw test --config my-config.yaml --test-dir /path/to/tests --parallel 10
+```
 
-Some of them can be overridden at the test or test step level and will be discussed in the next sections.
+This command will run tests using the configuration from `my-config.yaml`, taking tests from `/path/to/tests`, and running a maximum of `10` tests simultaneously.
+
+## Reference
+
+Refer to the reference documentations for details about supported fields in the configuration file and/or supported flags in the `test` command.
+
+- [Configuration API reference](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Configuration)
+- [Chainsaw test command reference](../commands/chainsaw_test.md#options)
