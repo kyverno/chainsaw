@@ -51,10 +51,6 @@ type ConfigurationSpec struct {
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 
-	// Suppress is used to suppress logs.
-	// +optional
-	Suppress []string `json:"suppress,omitempty"`
-
 	// FullName makes use of the full test case folder path instead of the folder name.
 	// +optional
 	FullName bool `json:"fullName,omitempty"`

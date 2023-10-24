@@ -69,15 +69,6 @@ func TestChainsawCommand(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "suppress logs",
-			args: []string{
-				"--suppress",
-				"warning,error",
-			},
-			wantErr: false,
-			out:     filepath.Join(basePath, "with_suppress.txt"),
-		},
-		{
 			name: "skip test with regex",
 			args: []string{
 				"--include-test-regex",

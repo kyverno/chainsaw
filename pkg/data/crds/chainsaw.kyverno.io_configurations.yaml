@@ -82,11 +82,6 @@ spec:
                 description: If set, do not delete the resources after running the
                   tests (implies SkipClusterDelete).
                 type: boolean
-              suppress:
-                description: Suppress is used to suppress logs.
-                items:
-                  type: string
-                type: array
               testDirs:
                 description: Directories containing test cases to run.
                 items:
