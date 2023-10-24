@@ -70,9 +70,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 					namespacer: nspacer,
 					clientFactory: func(t *testing.T, logger logging.Logger) client.Client {
 						t.Helper()
-						return runnerclient.New(t, logger, c, func() bool {
-							return !config.SkipDelete
-						})
+						return runnerclient.New(logger, c)
 					},
 				}
 				t.Cleanup(func() {
@@ -113,24 +111,8 @@ func runTest(t *testing.T, ctx *Context, c client.Client, config v1alpha1.Config
 		}
 		ctx.namespacer = namespacer.New(c, namespace.Name)
 	}
-	if test.Spec.SkipDelete != nil && *test.Spec.SkipDelete {
-		ctx.clientFactory = func(t *testing.T, logger logging.Logger) client.Client {
-			t.Helper()
-			return runnerclient.New(t, logger, c, func() bool {
-				return !*test.Spec.SkipDelete
-			})
-		}
-	}
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
-		if step.Spec.SkipDelete != nil && *step.Spec.SkipDelete {
-			ctx.clientFactory = func(t *testing.T, logger logging.Logger) client.Client {
-				t.Helper()
-				return runnerclient.New(t, logger, c, func() bool {
-					return !*step.Spec.SkipDelete
-				})
-			}
-		}
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
