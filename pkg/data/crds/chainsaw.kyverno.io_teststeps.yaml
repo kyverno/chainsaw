@@ -111,8 +111,9 @@ spec:
                   type: object
                 type: array
               skipDelete:
-                description: Skip determines whether the resource should be deleted
-                  after the test step is executed.
+                description: SkipDelete determines whether the test should be deleted
+                  after it has been run. determines whether the resource should be
+                  deleted after the test step is executed.
                 type: boolean
               timeout:
                 description: Timeout for the test step. Overrides the global timeout
