@@ -68,13 +68,15 @@ metadata:
 spec:
   steps:
   # first step applies the config map
-  - apply:
-    # file is relative to the test folder
-    - file: configmap.yaml
+  - spec:
+      apply:
+      # file is relative to the test folder
+      - file: configmap.yaml
   # second step verifies the config map exists and contains the expected data
-  - assert:
-    # file is relative to the test folder
-    - file: configmap.yaml
+  - spec:
+      assert:
+      # file is relative to the test folder
+      - file: configmap.yaml
 EOF
 ```
 
