@@ -221,6 +221,11 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.SkipDelete != nil {
+		in, out := &in.SkipDelete, &out.SkipDelete
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
@@ -284,6 +289,11 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 	if in.Timeout != nil {
 		in, out := &in.Timeout, &out.Timeout
 		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.SkipDelete != nil {
+		in, out := &in.SkipDelete, &out.SkipDelete
+		*out = new(bool)
 		**out = **in
 	}
 	if in.Assert != nil {

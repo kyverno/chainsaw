@@ -70,7 +70,9 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 					namespacer: nspacer,
 					clientFactory: func(t *testing.T, logger logging.Logger) client.Client {
 						t.Helper()
-						return runnerclient.New(t, logger, c, !config.SkipDelete)
+						return runnerclient.New(t, logger, c, func() bool {
+							return !config.SkipDelete
+						})
 					},
 				}
 				t.Cleanup(func() {
@@ -84,7 +86,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						}
 					}
 				})
-				runTest(t, ctx, config, test)
+				runTest(t, &ctx, c, config, test)
 			},
 		})
 	}
@@ -96,7 +98,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	return &summary, nil
 }
 
-func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
+func runTest(t *testing.T, ctx *Context, c client.Client, config v1alpha1.ConfigurationSpec, test discovery.Test) {
 	t.Helper()
 	if test.Spec.Skip {
 		t.SkipNow()
@@ -111,8 +113,24 @@ func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test 
 		}
 		ctx.namespacer = namespacer.New(c, namespace.Name)
 	}
+	if test.Spec.SkipDelete != nil && *test.Spec.SkipDelete {
+		ctx.clientFactory = func(t *testing.T, logger logging.Logger) client.Client {
+			t.Helper()
+			return runnerclient.New(t, logger, c, func() bool {
+				return !*test.Spec.SkipDelete
+			})
+		}
+	}
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
+		if step.Spec.SkipDelete != nil && *step.Spec.SkipDelete {
+			ctx.clientFactory = func(t *testing.T, logger logging.Logger) client.Client {
+				t.Helper()
+				return runnerclient.New(t, logger, c, func() bool {
+					return !*step.Spec.SkipDelete
+				})
+			}
+		}
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)

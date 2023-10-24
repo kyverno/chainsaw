@@ -16,4 +16,6 @@ type TestSpec struct {
 
 	// Steps defining the test.
 	Steps []TestSpecStep `json:"steps"`
+
+	SkipDelete *bool `json:"skipDelete,omitempty"`
 }

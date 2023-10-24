@@ -37,6 +37,8 @@ spec:
               skip:
                 description: Skip determines whether the test should skipped.
                 type: boolean
+              skipDelete:
+                type: boolean
               steps:
                 description: Steps defining the test.
                 items:
@@ -129,6 +131,10 @@ spec:
                             - file
                             type: object
                           type: array
+                        skipDelete:
+                          description: Skip determines whether the resource should
+                            be deleted after the test step is executed.
+                          type: boolean
                         timeout:
                           description: Timeout for the test step. Overrides the global
                             timeout set in the Configuration and the timeout eventually
