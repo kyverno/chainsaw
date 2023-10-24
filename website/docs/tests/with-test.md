@@ -1,4 +1,4 @@
-# Writing a Test using Chainsaw
+# `Test`s based syntax
 
 Chainsaw offers a flexible and precise way to define tests, especially tailored for Kubernetes-related operations. This guide assists in illustrating how to craft tests using Chainsaw's API.
 

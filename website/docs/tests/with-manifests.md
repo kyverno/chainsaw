@@ -1,4 +1,4 @@
-# Manifests based
+# Manifests based syntax
 
 This is the simplest and less verbose supported syntax, you provide bare Kubernetes resource manifests and Chainsaw will use those manifests to create, update, or assert expectations against a cluster.
 
