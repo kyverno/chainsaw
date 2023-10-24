@@ -7,15 +7,21 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/match"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Client) error {
+func Assert(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
+	attempts := 0
+	defer func() {
+		logging.ResourceOp(logger, "ASSERT", client.ObjectKey(&expected), &expected, attempts, _err)
+	}()
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (done bool, err error) {
+		attempts++
 		var errs []error
 		defer func() {
 			// record last errors only if there was no real error
