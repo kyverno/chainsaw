@@ -73,7 +73,7 @@ data:
   lorem: ipsum
 ```
 
-### Conclusion
+## Conclusion
 
 This test will first create a config map, then assert the content of the config map contains the `foo: bar` data, and then verify that the configmap does not contain the `lorem: ipsum` data.
 

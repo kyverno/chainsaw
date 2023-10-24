@@ -11,7 +11,7 @@ On the other hand it doesn't suffer the unsupported deletion limitation and can 
 
 ## The `TestStep` resource
 
-A `TestStep`, like any Kubernetes resource has an `apiVersion`, `kind` and `metadata` section.
+A `TestStep` resource, like any Kubernetes resource has an `apiVersion`, `kind` and `metadata` section.
 
 It also comes with a `spec` section used to declaratively represent the [step operations](what-is-a-test.md#operations) and other configuration elements belonging to the step being defined:
 
@@ -43,7 +43,7 @@ apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: TestStep
 metadata:
   name: test-step-name
-steps:
+spec:
   # this timeout applies only to the step
   # it would not be possible to override the timeout
   # with a manifests based approach
@@ -82,7 +82,7 @@ apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: TestStep
 metadata:
   name: test-step-name
-steps:
+spec:
   # this timeout applies only to the step
   # it would not be possible to override the timeout
   # with a manifests based approach
@@ -93,7 +93,7 @@ steps:
   - file: ../resources/configmap-error.yaml
 ```
 
-### Conclusion
+## Conclusion
 
 This test will create a config map in the first step.
 The second step will both assert that the content of the config map contains the `foo: bar` data, and verify that the configmap does not contain the `lorem: ipsum` data.
