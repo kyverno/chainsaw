@@ -14,9 +14,6 @@ spec:
   reportFormat: "JSON"
   reportName: "custom-chainsaw-report"
   namespace: "test-namespace"
-  suppress:
-    - "logTypeA"
-    - "logTypeB"
   fullName: true
   includeTestRegex: "^include-.*"
   excludeTestRegex: "^exclude-.*"
