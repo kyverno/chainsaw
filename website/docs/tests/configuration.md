@@ -1,4 +1,4 @@
-# Chainsaw Tool Configuration
+# Configuration
 
 Chainsaw is a comprehensive tool designed to facilitate end-to-end (e2e) testing in Kubernetes. This documentation will focus on providing a breakdown of its configuration structure and how to use it.
 
