@@ -11,5 +11,5 @@ type TestSpec struct {
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
 	// Steps defining the test.
-	Steps []TestStepSpec `json:"steps"`
+	Steps []TestSpecStep `json:"steps"`
 }

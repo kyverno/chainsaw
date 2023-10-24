@@ -4,7 +4,11 @@ metadata:
   name: chainsaw-quick-start
 spec:
   steps:
-  - apply:
-    - file: configmap.yaml
-  - assert:
-    - file: configmap.yaml
+  - name: create configmap
+    spec:
+      apply:
+      - file: configmap.yaml
+  - name: assert configmap
+    spec:
+      assert:
+      - file: configmap.yaml

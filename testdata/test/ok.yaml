@@ -4,7 +4,9 @@ metadata:
   name: test-1
 spec:
   steps:
-  - apply:
-    - file: foo.yaml
-  - assert:
-    - file: bar.yaml
+  - spec:
+      apply:
+      - file: foo.yaml
+  - spec:
+      assert:
+      - file: bar.yaml

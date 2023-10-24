@@ -67,7 +67,7 @@ func DiscoverTests(fileName string, paths ...string) ([]Test, error) {
 							Name: filepath.Base(folder),
 						},
 					}
-					stepsMap := map[string]v1alpha1.TestStepSpec{}
+					stepsMap := map[string]v1alpha1.TestSpecStep{}
 					for _, stepFile := range stepFiles {
 						groups := stepFileName.FindStringSubmatch(stepFile)
 						if steps, err := step.Load(filepath.Join(folder, stepFile)); err != nil {
@@ -76,19 +76,23 @@ func DiscoverTests(fileName string, paths ...string) ([]Test, error) {
 							}
 							step, ok := stepsMap[groups[1]]
 							if !ok {
-								step = v1alpha1.TestStepSpec{}
+								step = v1alpha1.TestSpecStep{}
+							}
+							if step.Name == "" {
+								step.Name = groups[2]
 							}
 							switch groups[2] {
 							case "assert":
-								step.Assert = append(step.Assert, v1alpha1.Assert{
+								step.Spec.Assert = append(step.Spec.Assert, v1alpha1.Assert{
 									FileRef: fileRef,
 								})
 							case "error":
-								step.Error = append(step.Error, v1alpha1.Error{
+								step.Spec.Error = append(step.Spec.Error, v1alpha1.Error{
 									FileRef: fileRef,
 								})
 							default:
-								step.Apply = append(step.Apply, v1alpha1.Apply{
+								step.Name = groups[2]
+								step.Spec.Apply = append(step.Spec.Apply, v1alpha1.Apply{
 									FileRef: fileRef,
 								})
 							}
@@ -97,7 +101,10 @@ func DiscoverTests(fileName string, paths ...string) ([]Test, error) {
 							if len(steps) != 1 {
 								return nil, fmt.Errorf("more than one test step found in %s", filepath.Join(folder, stepFile))
 							}
-							stepsMap[groups[1]] = steps[0].Spec
+							stepsMap[groups[1]] = v1alpha1.TestSpecStep{
+								Name: steps[0].Name,
+								Spec: steps[0].Spec,
+							}
 						}
 					}
 					keys := make([]string, 0, len(stepsMap))

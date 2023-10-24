@@ -110,6 +110,10 @@ func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test 
 	}
 	for i := range test.Spec.Steps {
 		step := test.Spec.Steps[i]
-		executeStep(t, logging.NewStepLogger(t, ctx.clock, fmt.Sprintf("step-%d", i+1)), ctx, test.BasePath, config, test.Spec, step)
+		name := step.Name
+		if name == "" {
+			name = fmt.Sprintf("step-%d", i+1)
+		}
+		executeStep(t, logging.NewStepLogger(t, ctx.clock, name), ctx, test.BasePath, config, test.Spec, step)
 	}
 }
