@@ -109,6 +109,11 @@ func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test 
 			logger.Log(err)
 			t.FailNow()
 		}
+		defer func() {
+			if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
+				panic(err)
+			}
+		}()
 		ctx.namespacer = namespacer.New(c, namespace.Name)
 	}
 	for i := range test.Spec.Steps {
