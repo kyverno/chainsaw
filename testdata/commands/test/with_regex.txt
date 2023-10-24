@@ -7,7 +7,6 @@ Loading default configuration...
 - ReportFormat ''
 - ReportName 'chainsaw-report'
 - Namespace ''
-- Suppress []
 - FullName false
 - IncludeTestRegex 'test[4-6]'
 - ExcludeTestRegex 'test[1-3]'
