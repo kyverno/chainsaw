@@ -170,14 +170,28 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the test. Overrides the global timeout set in the Configuration.</p> |
 | `skip` | `bool` |  |  | <p>Skip determines whether the test should skipped.</p> |
-| `steps` | [`[]TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: |  | <p>Steps defining the test.</p> |
+| `steps` | [`[]TestSpecStep`](#chainsaw-kyverno-io-v1alpha1-TestSpecStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
+
+## `TestSpecStep`     {#chainsaw-kyverno-io-v1alpha1-TestSpecStep}
+
+**Appears in:**
+    
+- [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
+
+<p>TestSpecStep contains the test step definition used in a test spec.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `name` | `string` |  |  | <p>Name of the step.</p> |
+| `spec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: |  | <p>Spec of the step.</p> |
 
 ## `TestStepSpec`     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}
 
 **Appears in:**
     
 - [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
-- [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
+- [TestSpecStep](#chainsaw-kyverno-io-v1alpha1-TestSpecStep)
 
 <p>TestStepSpec defines the desired state and behavior for each test step.</p>
 

@@ -13,16 +13,16 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) {
+func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
 	t.Helper()
 	c := ctx.clientFactory(t, logger)
 	stepCtx := context.Background()
-	if timeout := timeout(config, test, step); timeout != nil {
+	if timeout := timeout(config, test, step.Spec); timeout != nil {
 		timeoutCtx, cancel := context.WithTimeout(stepCtx, *timeout)
 		defer cancel()
 		stepCtx = timeoutCtx
 	}
-	for _, delete := range step.Delete {
+	for _, delete := range step.Spec.Delete {
 		var resource unstructured.Unstructured
 		resource.SetAPIVersion(delete.APIVersion)
 		resource.SetKind(delete.Kind)
@@ -39,7 +39,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			t.FailNow()
 		}
 	}
-	for _, apply := range step.Apply {
+	for _, apply := range step.Spec.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, apply.File))
 		if err != nil {
 			logger.Log(err)
@@ -59,7 +59,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			}
 		}
 	}
-	for _, assert := range step.Assert {
+	for _, assert := range step.Spec.Assert {
 		resources, err := resource.Load(filepath.Join(basePath, assert.File))
 		if err != nil {
 			logger.Log(err)
@@ -78,7 +78,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			}
 		}
 	}
-	for _, e := range step.Error {
+	for _, e := range step.Spec.Error {
 		resources, err := resource.Load(filepath.Join(basePath, e.File))
 		if err != nil {
 			logger.Log(err)

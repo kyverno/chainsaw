@@ -15,5 +15,5 @@ type TestSpec struct {
 	Skip bool `json:"skip,omitempty"`
 
 	// Steps defining the test.
-	Steps []TestStepSpec `json:"steps"`
+	Steps []TestSpecStep `json:"steps"`
 }
