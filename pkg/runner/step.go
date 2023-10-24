@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"context"
 	"path/filepath"
 	"testing"
 
@@ -11,17 +10,14 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
 	t.Helper()
 	c := ctx.clientFactory(t, logger)
-	stepCtx := context.Background()
-	if timeout := timeout(config, test, step.Spec); timeout != nil {
-		timeoutCtx, cancel := context.WithTimeout(stepCtx, *timeout)
-		defer cancel()
-		stepCtx = timeoutCtx
-	}
+	stepCtx, cancel := timeoutCtx(config, test, step.Spec)
+	defer cancel()
 	for _, delete := range step.Spec.Delete {
 		var resource unstructured.Unstructured
 		resource.SetAPIVersion(delete.APIVersion)
@@ -34,9 +30,22 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			t.FailNow()
 		}
 		logging.ResourceOp(logger, "DELETE", client.ObjectKey(&resource), &resource)
-		if err := operations.Delete(stepCtx, resource, c); err != nil {
+		if err := operations.Delete(stepCtx, &resource, c); err != nil {
 			logger.Log(err)
 			t.FailNow()
+		}
+	}
+	var cleanup operations.CleanupFunc
+	if skip := skipDelete(config, test, step.Spec); skip == nil || !*skip {
+		cleanup = func(obj ctrlclient.Object, c client.Client) {
+			t.Cleanup(func() {
+				cleanupCtx, cancel := timeoutCtx(config, test, step.Spec)
+				defer cancel()
+				if err := operations.Delete(cleanupCtx, obj, c); err != nil {
+					logger.Log(err)
+					t.FailNow()
+				}
+			})
 		}
 	}
 	for _, apply := range step.Spec.Apply {
@@ -52,7 +61,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 				t.FailNow()
 			}
 			logging.ResourceOp(logger, "APPLY", client.ObjectKey(resource), resource)
-			err := operations.Apply(stepCtx, resource, c)
+			err := operations.Apply(stepCtx, resource, c, cleanup)
 			if err != nil {
 				logger.Log(err)
 				t.FailNow()
@@ -91,8 +100,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 				t.FailNow()
 			}
 			logging.ResourceOp(logger, "ERROR", client.ObjectKey(resource), resource)
-			// Using the Error function to handle the error assertion
-			err := operations.Error(stepCtx, resources[i], c)
+			err := operations.Error(stepCtx, &resources[i], c)
 			if err != nil {
 				logger.Log(err)
 				t.FailNow()

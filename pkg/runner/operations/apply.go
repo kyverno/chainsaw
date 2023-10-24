@@ -11,7 +11,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Apply(ctx context.Context, obj ctrlclient.Object, c client.Client) error {
+func Apply(ctx context.Context, obj ctrlclient.Object, c client.Client, cleanup CleanupFunc) error {
 	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
@@ -27,6 +27,9 @@ func Apply(ctx context.Context, obj ctrlclient.Object, c client.Client) error {
 		} else if errors.IsNotFound(err) {
 			if err := c.Create(ctx, obj); err != nil {
 				return false, err
+			}
+			if cleanup != nil {
+				cleanup(obj, c)
 			}
 		}
 		return true, nil

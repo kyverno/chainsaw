@@ -7,9 +7,10 @@ import (
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Delete(ctx context.Context, expected unstructured.Unstructured, c client.Client) error {
+func Delete(ctx context.Context, expected ctrlclient.Object, c client.Client) error {
 	candidates, err := read(ctx, expected, c)
 	if err != nil {
 		if errors.IsNotFound(err) {

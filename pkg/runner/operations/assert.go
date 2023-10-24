@@ -23,7 +23,7 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 				lastErrs = errs
 			}
 		}()
-		if candidates, err := read(ctx, expected, c); err != nil {
+		if candidates, err := read(ctx, &expected, c); err != nil {
 			if kerrors.IsNotFound(err) {
 				errs = append(errs, errors.New("actual resource not found"))
 				return false, nil
@@ -32,9 +32,10 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 		} else if len(candidates) == 0 {
 			errs = append(errs, errors.New("no actual resource found"))
 		} else {
-			for _, candidate := range candidates {
+			for i := range candidates {
+				candidate := candidates[i]
 				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err != nil {
-					diffStr, err := diff(expected, candidate)
+					diffStr, err := diff(&expected, &candidate)
 					if err != nil {
 						return false, err
 					}
