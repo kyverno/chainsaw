@@ -84,7 +84,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						}
 					}
 				})
-				runTest(t, &ctx, c, config, test)
+				runTest(t, ctx, config, test)
 			},
 		})
 	}
@@ -96,7 +96,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	return &summary, nil
 }
 
-func runTest(t *testing.T, ctx *Context, c client.Client, config v1alpha1.ConfigurationSpec, test discovery.Test) {
+func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
 	t.Helper()
 	if test.Spec.Skip {
 		t.SkipNow()
