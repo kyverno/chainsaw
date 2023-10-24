@@ -10,7 +10,8 @@ type TestStepSpec struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
-	// Skip determines whether the resource should be deleted after the test step is executed.
+	// SkipDelete determines whether the test should be deleted after it has been run. determines whether the resource should be deleted after the test step is executed.
+	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
 
 	// Assert represents the assertions to be made for this test step. It checks whether the conditions

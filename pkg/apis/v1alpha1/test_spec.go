@@ -17,5 +17,7 @@ type TestSpec struct {
 	// Steps defining the test.
 	Steps []TestSpecStep `json:"steps"`
 
+	// SkipDelete determines whether the test should be deleted after it has been run.
+	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
 }
