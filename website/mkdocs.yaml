@@ -9,9 +9,11 @@ nav:
 - Writing tests:
   - tests/index.md
   - tests/configuration.md
-  - tests/with-manifests.md
-  - tests/with-test-steps.md
-  - tests/with-test.md
+  - Test definition:
+    - tests/what-is-a-test.md
+    - tests/with-manifests.md
+    - tests/with-test-steps.md
+    - tests/with-test.md
   - Command Line Usage:
     - commands/chainsaw.md
     - commands/chainsaw_test.md
