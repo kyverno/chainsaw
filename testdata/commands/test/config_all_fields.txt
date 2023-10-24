@@ -7,7 +7,6 @@ Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)..
 - ReportFormat 'JSON'
 - ReportName 'custom-chainsaw-report'
 - Namespace 'test-namespace'
-- Suppress [logTypeA logTypeB]
 - FullName true
 - IncludeTestRegex '^include-.*'
 - ExcludeTestRegex '^exclude-.*'
