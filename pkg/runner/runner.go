@@ -98,6 +98,9 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 
 func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
 	t.Helper()
+	if test.Spec.Skip {
+		t.SkipNow()
+	}
 	if ctx.namespacer == nil {
 		namespace := client.PetNamespace()
 		logger := logging.NewTestLogger(t, ctx.clock)

@@ -10,6 +10,10 @@ type TestSpec struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Skip determines whether the test should skipped.
+	// +optional
+	Skip bool `json:"skip,omitempty"`
+
 	// Steps defining the test.
 	Steps []TestSpecStep `json:"steps"`
 }
