@@ -40,7 +40,6 @@ chainsaw test [flags]... [test directories]...
       --report-name string                  The name of the report to create. (default "chainsaw-report")
       --skip-delete                         If set, do not delete the resources after running the tests.
       --stop-on-first-failure               Stop the test upon encountering the first failure.
-      --suppress stringArray                Logs to suppress.
       --test-dir stringArray                Directories containing test cases to run.
       --timeout duration                    The timeout to use as default for configuration. (default 30s)
 ```
