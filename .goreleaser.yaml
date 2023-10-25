@@ -17,17 +17,17 @@ builds:
     ldflags:
       - -s -w -X github.com/kyverno/chainsaw/pkg/version.BuildVersion={{ .Version }}
 
-kos:
-  - build: chainsaw
-    repository: ghcr.io/kyverno/chainsaw
-    tags:
-      - '{{.Tag}}'
-      - '{{ if not .Prerelease }}latest{{ end }}' 
-    bare: true
-    preserve_import_paths: false
-    sbom: none
-    platforms:
-      - all
+# kos:
+#   - build: chainsaw
+#     repository: ghcr.io/kyverno/chainsaw
+#     tags:
+#       - '{{.Tag}}'
+#       - '{{ if not .Prerelease }}latest{{ end }}' 
+#     bare: true
+#     preserve_import_paths: false
+#     sbom: none
+#     platforms:
+#       - all
 
 signs:
   - cmd: cosign
@@ -41,14 +41,14 @@ signs:
     artifacts: all
     output: true
 
-docker_signs:
-  - cmd: cosign
-    artifacts: all
-    output: true
-    args:
-      - sign
-      - ${artifact}
-      - --yes
+# docker_signs:
+#   - cmd: cosign
+#     artifacts: all
+#     output: true
+#     args:
+#       - sign
+#       - ${artifact}
+#       - --yes
 
 archives:
   - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
