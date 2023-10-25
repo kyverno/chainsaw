@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -11,38 +10,23 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func New(t *testing.T, logger logging.Logger, inner client.Client, cleanup bool) client.Client {
-	t.Helper()
+func New(logger logging.Logger, inner client.Client) client.Client {
 	return &runnerClient{
-		t:       t,
-		logger:  logger,
-		inner:   inner,
-		cleanup: cleanup,
+		logger: logger,
+		inner:  inner,
 	}
 }
 
 type runnerClient struct {
-	t       *testing.T
-	logger  logging.Logger
-	inner   client.Client
-	cleanup bool
+	logger logging.Logger
+	inner  client.Client
 }
 
 func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
 	c.log("create", client.ObjectKey(obj), obj)
-	gvk := obj.GetObjectKind().GroupVersionKind()
 	err := c.inner.Create(ctx, obj, opts...)
 	if err != nil {
 		return err
-	}
-	if c.cleanup {
-		c.t.Cleanup(func() {
-			obj.GetObjectKind().SetGroupVersionKind(gvk)
-			if err := client.BlockingDelete(context.Background(), c, obj); err != nil {
-				c.logger.Log(err)
-				c.t.FailNow()
-			}
-		})
 	}
 	return nil
 }
@@ -81,5 +65,5 @@ func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts .
 }
 
 func (c *runnerClient) log(op string, key ctrlclient.ObjectKey, obj ctrlclient.Object) {
-	logging.ResourceOp(c.logger, op, key, obj)
+	logging.ResourceOp(c.logger, op, key, obj, 1, nil)
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
@@ -11,8 +12,13 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Apply(ctx context.Context, obj ctrlclient.Object, c client.Client) error {
+func Apply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, cleanup CleanupFunc) (_err error) {
+	attempts := 0
+	defer func() {
+		logging.ResourceOp(logger, "APPLY", client.ObjectKey(obj), obj, attempts, _err)
+	}()
 	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
+		attempts++
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 		err := c.Get(ctx, client.ObjectKey(obj), &actual)
@@ -27,6 +33,9 @@ func Apply(ctx context.Context, obj ctrlclient.Object, c client.Client) error {
 		} else if errors.IsNotFound(err) {
 			if err := c.Create(ctx, obj); err != nil {
 				return false, err
+			}
+			if cleanup != nil {
+				cleanup(obj, c)
 			}
 		}
 		return true, nil

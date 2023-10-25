@@ -6,15 +6,21 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/match"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func Error(ctx context.Context, expected unstructured.Unstructured, c client.Client) error {
+func Error(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
+	attempts := 0
+	defer func() {
+		logging.ResourceOp(logger, "ERROR", client.ObjectKey(&expected), &expected, attempts, _err)
+	}()
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (_ bool, err error) {
+		attempts++
 		var errs []error
 		defer func() {
 			// record last errors only if there was no real error
@@ -22,7 +28,7 @@ func Error(ctx context.Context, expected unstructured.Unstructured, c client.Cli
 				lastErrs = errs
 			}
 		}()
-		if candidates, err := read(ctx, expected, c); err != nil {
+		if candidates, err := read(ctx, &expected, c); err != nil {
 			if kerrors.IsNotFound(err) {
 				return true, nil
 			}
