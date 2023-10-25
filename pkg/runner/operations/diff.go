@@ -5,11 +5,11 @@ import (
 	"strings"
 
 	"github.com/pmezard/go-difflib/difflib"
-	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/yaml"
 )
 
-func diff(expected, actual unstructured.Unstructured) (string, error) {
+func diff(expected, actual ctrlclient.Object) (string, error) {
 	expectedBytes, err := yaml.Marshal(expected)
 	if err != nil {
 		return "", fmt.Errorf("failed to marshal expected content to YAML: %w", err)

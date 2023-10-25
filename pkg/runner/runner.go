@@ -12,6 +12,7 @@ import (
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
@@ -25,7 +26,6 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	if err := setupFlags(config); err != nil {
 		return nil, err
 	}
-	var internalTests []testing.InternalTest
 	var failed, passed, skipped atomic.Int32
 	defer func() {
 		summary.FailedTests = failed.Load()
@@ -48,12 +48,13 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				return nil, err
 			}
 			defer func() {
-				if err := client.BlockingDelete(context.Background(), c, &namespace); err != nil {
+				if err := operations.Delete(context.Background(), nil, &namespace, c); err != nil {
 					panic(err)
 				}
 			}()
 		}
 	}
+	var internalTests []testing.InternalTest
 	for i := range tests {
 		test := tests[i]
 		name, err := testName(config, test)
@@ -70,7 +71,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 					namespacer: nspacer,
 					clientFactory: func(t *testing.T, logger logging.Logger) client.Client {
 						t.Helper()
-						return runnerclient.New(t, logger, c, !config.SkipDelete)
+						return runnerclient.New(logger, c)
 					},
 				}
 				t.Cleanup(func() {
@@ -88,8 +89,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 			},
 		})
 	}
-	var testDeps testDeps
-	m := testing.MainStart(&testDeps, internalTests, nil, nil, nil)
+	m := testing.MainStart(&testDeps{}, internalTests, nil, nil, nil)
 	if code := m.Run(); code > 1 {
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
@@ -109,6 +109,12 @@ func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test 
 			logger.Log(err)
 			t.FailNow()
 		}
+		t.Cleanup(func() {
+			if err := operations.Delete(context.Background(), logger, &namespace, c); err != nil {
+				logger.Log(err)
+				t.FailNow()
+			}
+		})
 		ctx.namespacer = namespacer.New(c, namespace.Name)
 	}
 	for i := range test.Spec.Steps {
