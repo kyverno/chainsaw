@@ -69,7 +69,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				ctx := Context{
 					clock:      clock,
 					namespacer: nspacer,
-					clientFactory: func(t *testing.T, logger logging.Logger) client.Client {
+					clientFactory: func(logger logging.Logger) client.Client {
 						t.Helper()
 						return runnerclient.New(logger, c)
 					},
@@ -104,7 +104,7 @@ func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test 
 	if ctx.namespacer == nil {
 		namespace := client.PetNamespace()
 		logger := logging.NewTestLogger(t, ctx.clock)
-		c := ctx.clientFactory(t, logger)
+		c := ctx.clientFactory(logger)
 		if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 			logger.Log(err)
 			t.FailNow()

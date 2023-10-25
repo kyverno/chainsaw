@@ -11,11 +11,8 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Delete(ctx context.Context, logger logging.Logger, expected ctrlclient.Object, c client.Client) (_err error) {
-	attempts := 0
-	defer func() {
-		logging.ResourceOp(logger, "DELETE", client.ObjectKey(expected), expected, attempts, _err)
-	}()
+func Delete(ctx context.Context, logger logging.Logger, expected ctrlclient.Object, c client.Client) error {
+	logging.ResourceOp(logger, "DELETE", client.ObjectKey(expected), expected)
 	candidates, _err := read(ctx, expected, c)
 	if _err != nil {
 		if errors.IsNotFound(_err) {
@@ -32,7 +29,6 @@ func Delete(ctx context.Context, logger logging.Logger, expected ctrlclient.Obje
 	gvk := expected.GetObjectKind().GroupVersionKind()
 	for i := range candidates {
 		if err := wait.PollUntilContextCancel(ctx, interval, true, func(ctx context.Context) (bool, error) {
-			attempts++
 			var actual unstructured.Unstructured
 			actual.SetGroupVersionKind(gvk)
 			err := c.Get(ctx, client.ObjectKey(&candidates[i]), &actual)

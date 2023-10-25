@@ -14,14 +14,10 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func Assert(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
-	attempts := 0
-	defer func() {
-		logging.ResourceOp(logger, "ASSERT", client.ObjectKey(&expected), &expected, attempts, _err)
-	}()
+func Assert(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) error {
+	logging.ResourceOp(logger, "ASSERT", client.ObjectKey(&expected), &expected)
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (_ bool, err error) {
-		attempts++
 		var errs []error
 		defer func() {
 			// record last errors only if there was no real error

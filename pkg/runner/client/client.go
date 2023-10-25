@@ -32,17 +32,14 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 }
 
 func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-	c.log("delete", client.ObjectKey(obj), obj)
 	return c.inner.Delete(ctx, obj, opts...)
 }
 
 func (c *runnerClient) DeleteAllOf(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteAllOfOption) error {
-	c.log("deleteAllOf", client.ObjectKey(obj), obj)
 	return c.inner.DeleteAllOf(ctx, obj, opts...)
 }
 
 func (c *runnerClient) Get(ctx context.Context, key types.NamespacedName, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-	// c.log("get", key, obj)
 	return c.inner.Get(ctx, key, obj, opts...)
 }
 
@@ -65,5 +62,5 @@ func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts .
 }
 
 func (c *runnerClient) log(op string, key ctrlclient.ObjectKey, obj ctrlclient.Object) {
-	logging.ResourceOp(c.logger, op, key, obj, 1, nil)
+	logging.ResourceOp(c.logger, op, key, obj)
 }
