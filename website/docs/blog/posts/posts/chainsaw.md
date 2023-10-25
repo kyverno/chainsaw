@@ -1,3 +1,12 @@
+---
+date: 2023-10-16
+slug: How-to-Perform-Efficient-E2E-Testing-with-Chainsaw
+categories:
+  - Writing Tests
+authors:
+  - shubham-cmyk
+---
+
 # How to Perform Efficient E2E Testing with Chainsaw
 
 <p align="center">
