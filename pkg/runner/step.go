@@ -95,7 +95,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 				logger.Log(err)
 				t.FailNow()
 			}
-			if err := operations.Error(stepCtx, logger, &resources[i], c); err != nil {
+			if err := operations.Error(stepCtx, logger, resources[i], c); err != nil {
 				logger.Log(err)
 				t.FailNow()
 			}
