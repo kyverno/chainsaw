@@ -3,7 +3,8 @@ before:
     - go mod tidy
 
 builds:
-  - env:
+  - id: chainsaw
+    env:
       - CGO_ENABLED=0
     goos:
       - linux
@@ -17,7 +18,8 @@ builds:
       - -s -w -X github.com/kyverno/chainsaw/pkg/version.BuildVersion={{ .Version }}
 
 kos:
-  - repository: ghcr.io/kyverno/chainsaw
+  - build: chainsaw
+    repository: ghcr.io/kyverno/chainsaw
     tags:
       - '{{.Tag}}'
       - '{{ if not .Prerelease }}latest{{ end }}' 
@@ -26,10 +28,6 @@ kos:
     sbom: none
     platforms:
       - all
-    flags:
-      - -trimpath
-    ldflags:
-      - -s -w
 
 signs:
   - cmd: cosign
