@@ -34,6 +34,10 @@ spec:
           spec:
             description: Test spec.
             properties:
+              concurrent:
+                description: Concurrent determines whether the test should run concurrently
+                  with other tests.
+                type: boolean
               skip:
                 description: Skip determines whether the test should skipped.
                 type: boolean

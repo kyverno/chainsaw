@@ -12,12 +12,16 @@ type TestSpec struct {
 
 	// Skip determines whether the test should skipped.
 	// +optional
-	Skip bool `json:"skip,omitempty"`
+	Skip *bool `json:"skip,omitempty"`
 
-	// Steps defining the test.
-	Steps []TestSpecStep `json:"steps"`
+	// Concurrent determines whether the test should run concurrently with other tests.
+	// +optional
+	Concurrent *bool `json:"concurrent,omitempty"`
 
 	// SkipDelete determines whether the test should be deleted after it has been run.
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
+
+	// Steps defining the test.
+	Steps []TestSpecStep `json:"steps"`
 }

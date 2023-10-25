@@ -169,8 +169,9 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the test. Overrides the global timeout set in the Configuration.</p> |
 | `skip` | `bool` |  |  | <p>Skip determines whether the test should skipped.</p> |
-| `steps` | [`[]TestSpecStep`](#chainsaw-kyverno-io-v1alpha1-TestSpecStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
+| `concurrent` | `bool` |  |  | <p>Concurrent determines whether the test should run concurrently with other tests.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the test should be deleted after it has been run.</p> |
+| `steps` | [`[]TestSpecStep`](#chainsaw-kyverno-io-v1alpha1-TestSpecStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
 
 ## `TestSpecStep`     {#chainsaw-kyverno-io-v1alpha1-TestSpecStep}
 
