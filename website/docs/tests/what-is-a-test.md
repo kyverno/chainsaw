@@ -37,25 +37,59 @@ However, using `TestStep`s based syntax only is debatable. In this case, `Test` 
 Chainsaw supports the following operations, executed in this specific order for a given test step:
 
 1. [Delete operations](#delete)
-1. [Apply operations](#apply)
-1. [Assert operations](#assert)
-1. [Error operations](#error)
+2. [Apply operations](#apply)
+3. [Assert operations](#assert)
+4. [Error operations](#error)
 
 ### Delete operations   {#delete}
 
-TODO
+The delete operation allows you to specify resources that should be deleted from the Kubernetes cluster before a particular test step is executed.
+
+#### Fields Description
+
+| Field       | Type                | Notes   |
+|-------------|---------------------|---------|
+| APIVersion  | String              |         |
+| Kind        | String              |         |
+| Namespace   | String              | Optional|
+| Name        | String              | Optional|
+| Labels      | Map (String:String) | Optional|
+
+```yaml
+Delete:
+  - apiVersion: v1
+    kind: Pod
+    namespace: default
+    name: my-test-pod
+```
 
 ### Apply operations    {#apply}
 
-TODO
+The apply operation lets you define resources that should be applied to the Kubernetes cluster during the test step. These can be configurations, deployments, services, or any other Kubernetes resource.
+
+```yaml
+Apply:
+  - file: path/to/deployment.yaml
+  - file: path/to/service.yaml
+```
 
 ### Assert operations   {#assert}
 
-TODO
+The assert operation allows you to specify conditions that should hold true for a successful test. For example, after applying certain resources, you might want to ensure that a particular pod is running or a service is accessible.
+
+```yaml
+Assert:
+  - file: path/to/assertions.yaml  
+```
 
 ### Error operations    {#error}
 
-TODO
+The error operation lets you define a set of expected errors for a test step. If any of these errors occur during the test, they are treated as expected outcomes. However, if an error that's not on this list occurs, it will be treated as a test failure.
+
+```yaml
+Error:
+  - file: path/to/expected-errors.yaml
+```
 
 ## Cleanup
 
