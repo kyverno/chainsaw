@@ -12,7 +12,8 @@ import (
 )
 
 func Delete(ctx context.Context, logger logging.Logger, expected ctrlclient.Object, c client.Client) error {
-	logging.ResourceOp(logger, "DELETE", client.ObjectKey(expected), expected)
+	logger = logger.WithName("DELETE").WithResource(client.ObjectKey(expected), expected)
+	logger.Log("executing...")
 	candidates, _err := read(ctx, expected, c)
 	if _err != nil {
 		if errors.IsNotFound(_err) {

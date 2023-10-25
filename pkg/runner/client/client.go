@@ -62,5 +62,5 @@ func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts .
 }
 
 func (c *runnerClient) log(op string, key ctrlclient.ObjectKey, obj ctrlclient.Object) {
-	logging.ResourceOp(c.logger, op, key, obj)
+	// logging.ResourceOp(c.logger, op, key, obj)
 }

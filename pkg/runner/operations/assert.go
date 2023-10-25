@@ -15,7 +15,8 @@ import (
 )
 
 func Assert(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) error {
-	logging.ResourceOp(logger, "ASSERT", client.ObjectKey(&expected), &expected)
+	logger = logger.WithName("ASSERT").WithResource(client.ObjectKey(&expected), &expected)
+	logger.Log("executing...")
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
