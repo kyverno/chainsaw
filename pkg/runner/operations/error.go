@@ -2,31 +2,58 @@ package operations
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/match"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	"k8s.io/apimachinery/pkg/api/errors"
+	"go.uber.org/multierr"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Error(ctx context.Context, logger logging.Logger, expected ctrlclient.Object, c client.Client) (_err error) {
+func Error(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
 	attempts := 0
 	defer func() {
-		logging.ResourceOp(logger, "ERROR", client.ObjectKey(expected), expected, attempts, _err)
+		logging.ResourceOp(logger, "ERROR", client.ObjectKey(&expected), &expected, attempts, _err)
 	}()
-	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
+	var lastErrs []error
+	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (_ bool, err error) {
 		attempts++
-		candidates, err := read(ctx, expected, c)
-		if err != nil {
-			if errors.IsNotFound(err) {
+		var errs []error
+		defer func() {
+			// record last errors only if there was no real error
+			if err == nil {
+				lastErrs = errs
+			}
+		}()
+		if candidates, err := read(ctx, &expected, c); err != nil {
+			if kerrors.IsNotFound(err) {
 				return true, nil
 			}
 			return false, err
-		}
-		if len(candidates) == 0 {
+		} else if len(candidates) == 0 {
 			return true, nil
+		} else {
+			for i := range candidates {
+				candidate := candidates[i]
+				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err == nil {
+					// at least one match found
+					errs = append(errs, fmt.Errorf("found an actual resource matching expectation (%s/%s %s)", candidate.GetAPIVersion(), candidate.GetKind(), client.ObjectKey(&candidate)))
+				}
+			}
+			return len(errs) == 0, nil
 		}
-		return false, nil
 	})
+	// if no error, return success
+	if err == nil {
+		return nil
+	}
+	// eventually return a combination of last errors
+	if len(lastErrs) != 0 {
+		return multierr.Combine(lastErrs...)
+	}
+	// return received error
+	return err
 }
