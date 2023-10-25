@@ -15,7 +15,7 @@ import (
 
 func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Client) error {
 	var lastErrs []error
-	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (done bool, err error) {
+	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
 		defer func() {
 			// record last errors only if there was no real error
@@ -51,8 +51,8 @@ func Assert(ctx context.Context, expected unstructured.Unstructured, c client.Cl
 	if err == nil {
 		return nil
 	}
-	// if we have a context timeout, eventually return a combination of last errors
-	if errors.Is(err, context.DeadlineExceeded) && len(lastErrs) != 0 {
+	// eventually return a combination of last errors
+	if len(lastErrs) != 0 {
 		return multierr.Combine(lastErrs...)
 	}
 	// return received error
