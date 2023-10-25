@@ -1,6 +1,8 @@
 # How to Perform Efficient E2E Testing with Chainsaw
 
-![chainsaw](../img/chainsaw.png)
+<p align="center">
+  <img src="../img/chainsaw.png" />
+</p>
 
 ## Introduction
 
