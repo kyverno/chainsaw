@@ -65,7 +65,9 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 			Name: name,
 			F: func(t *testing.T) {
 				t.Helper()
-				t.Parallel()
+				if test.Spec.Concurrent == nil || *test.Spec.Concurrent {
+					t.Parallel()
+				}
 				ctx := Context{
 					clock:      clock,
 					namespacer: nspacer,
@@ -98,7 +100,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 
 func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
 	t.Helper()
-	if test.Spec.Skip {
+	if test.Spec.Skip != nil && *test.Spec.Skip {
 		t.SkipNow()
 	}
 	if ctx.namespacer == nil {

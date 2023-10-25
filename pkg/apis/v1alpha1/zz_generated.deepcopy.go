@@ -209,17 +209,27 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.Skip != nil {
+		in, out := &in.Skip, &out.Skip
+		*out = new(bool)
+		**out = **in
+	}
+	if in.Concurrent != nil {
+		in, out := &in.Concurrent, &out.Concurrent
+		*out = new(bool)
+		**out = **in
+	}
+	if in.SkipDelete != nil {
+		in, out := &in.SkipDelete, &out.SkipDelete
+		*out = new(bool)
+		**out = **in
+	}
 	if in.Steps != nil {
 		in, out := &in.Steps, &out.Steps
 		*out = make([]TestSpecStep, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
-	}
-	if in.SkipDelete != nil {
-		in, out := &in.SkipDelete, &out.SkipDelete
-		*out = new(bool)
-		**out = **in
 	}
 	return
 }
