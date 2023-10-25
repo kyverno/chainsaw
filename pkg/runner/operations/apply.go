@@ -13,7 +13,8 @@ import (
 )
 
 func Apply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, cleanup CleanupFunc) error {
-	logging.ResourceOp(logger, "APPLY", client.ObjectKey(obj), obj)
+	logger = logger.WithName("APPLY").WithResource(client.ObjectKey(obj), obj)
+	logger.Log("executing...")
 	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())

@@ -40,7 +40,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
-			logger := logging.NewTestLogger(t, clock)
+			logger := logging.NewOperationLogger(t, clock)
 			ctx := Context{
 				clock: clock,
 				clientFactory: func(logger logging.Logger) client.Client {
@@ -106,7 +106,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 					if test.Spec.Skip != nil && *test.Spec.Skip {
 						t.SkipNow()
 					}
-					logger := logging.NewTestLogger(t, ctx.clock)
+					logger := logging.NewOperationLogger(t, clock, test.Name)
 					ctx := ctx
 					if ctx.namespacer == nil {
 						namespace := client.PetNamespace()
@@ -142,6 +142,7 @@ func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test 
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		executeStep(t, logging.NewStepLogger(t, ctx.clock, name), ctx, test.BasePath, config, test.Spec, step)
+		logger := logging.NewOperationLogger(t, ctx.clock, test.Name, name)
+		executeStep(t, logger, ctx, test.BasePath, config, test.Spec, step)
 	}
 }
