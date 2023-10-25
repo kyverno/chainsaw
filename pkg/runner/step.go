@@ -15,7 +15,7 @@ import (
 
 func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
 	t.Helper()
-	c := ctx.clientFactory(t, logger)
+	c := ctx.clientFactory(logger)
 	stepCtx, cancel := timeoutCtx(config, test, step.Spec)
 	defer cancel()
 	for _, delete := range step.Spec.Delete {

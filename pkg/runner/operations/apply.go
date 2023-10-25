@@ -12,13 +12,9 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Apply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, cleanup CleanupFunc) (_err error) {
-	attempts := 0
-	defer func() {
-		logging.ResourceOp(logger, "APPLY", client.ObjectKey(obj), obj, attempts, _err)
-	}()
+func Apply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, cleanup CleanupFunc) error {
+	logging.ResourceOp(logger, "APPLY", client.ObjectKey(obj), obj)
 	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
-		attempts++
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 		err := c.Get(ctx, client.ObjectKey(obj), &actual)

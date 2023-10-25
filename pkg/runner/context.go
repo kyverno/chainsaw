@@ -1,8 +1,6 @@
 package runner
 
 import (
-	"testing"
-
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -11,6 +9,6 @@ import (
 
 type Context struct {
 	clock         clock.PassiveClock
-	clientFactory func(*testing.T, logging.Logger) client.Client
+	clientFactory func(logging.Logger) client.Client
 	namespacer    namespacer.Namespacer
 }

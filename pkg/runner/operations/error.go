@@ -13,14 +13,10 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func Error(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
-	attempts := 0
-	defer func() {
-		logging.ResourceOp(logger, "ERROR", client.ObjectKey(&expected), &expected, attempts, _err)
-	}()
+func Error(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) error {
+	logging.ResourceOp(logger, "ERROR", client.ObjectKey(&expected), &expected)
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (_ bool, err error) {
-		attempts++
 		var errs []error
 		defer func() {
 			// record last errors only if there was no real error
@@ -40,7 +36,7 @@ func Error(ctx context.Context, logger logging.Logger, expected unstructured.Uns
 				candidate := candidates[i]
 				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err == nil {
 					// at least one match found
-					errs = append(errs, fmt.Errorf("found an actual resource matching expectation (%s/%s %s)", candidate.GetAPIVersion(), candidate.GetKind(), client.ObjectKey(&candidate)))
+					errs = append(errs, fmt.Errorf("found an actual resource matching expectation (%s/%s / %s)", candidate.GetAPIVersion(), candidate.GetKind(), client.ObjectKey(&candidate)))
 				}
 			}
 			return len(errs) == 0, nil
