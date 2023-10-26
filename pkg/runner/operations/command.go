@@ -1,7 +1,6 @@
 package operations
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"os"
@@ -11,19 +10,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 )
-
-type CommandOutput struct {
-	stdout bytes.Buffer
-	stderr bytes.Buffer
-}
-
-func (c *CommandOutput) Out() string {
-	return strings.TrimSpace(c.stdout.String())
-}
-
-func (c *CommandOutput) Err() string {
-	return strings.TrimSpace(c.stderr.String())
-}
 
 func Command(ctx context.Context, logger logging.Logger, command v1alpha1.Command, namespace string) (*CommandOutput, error) {
 	logger = logger.WithName("CMD   ")
