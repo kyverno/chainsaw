@@ -18,7 +18,7 @@ type TestSpec struct {
 	// +optional
 	Concurrent *bool `json:"concurrent,omitempty"`
 
-	// SkipDelete determines whether the test should be deleted after it has been run.
+	// SkipDelete determines whether the resources created by the test should be deleted after the test is executed.
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
 
