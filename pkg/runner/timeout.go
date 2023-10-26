@@ -23,14 +23,14 @@ func timeout(config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1a
 func cancelNoOp() {}
 
 func timeoutCtx(config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) (context.Context, context.CancelFunc) {
-	background := context.Background()
+	ctx := context.Background()
 	if timeout := timeout(config, test, step); timeout != nil {
-		return context.WithTimeout(background, *timeout)
+		return context.WithTimeout(ctx, *timeout)
 	}
-	return background, cancelNoOp
+	return ctx, cancelNoOp
 }
 
-func cmdtimeoutCtx(cmd v1alpha1.Command, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) (context.Context, context.CancelFunc) {
+func timeoutCmdCtx(cmd v1alpha1.Command, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) (context.Context, context.CancelFunc) {
 	if cmd.Timeout != nil && cmd.Timeout.Abs() > 0 {
 		return context.WithTimeout(context.Background(), cmd.Timeout.Duration)
 	} else {

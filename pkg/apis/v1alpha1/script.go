@@ -4,15 +4,15 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// Command describes a command to run as a part of a test step.
-type Command struct {
+// Script describes a script to run as a part of a test step.
+type Script struct {
 	// Timeout for the command. Overrides the global timeout set in the Configuration.
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
-	// Command is the command and argument to run as a string.
+	// Script defines a shell script (run with "sh -c ...").
 	// +optional
-	Command string `json:"command,omitempty"`
+	Script string `json:"script,omitempty"`
 
 	// SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.
 	// +optional

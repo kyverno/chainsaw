@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"context"
 	"path/filepath"
 	"testing"
 
@@ -25,6 +26,35 @@ func fail(t *testing.T, continueOnError *bool) {
 func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
 	t.Helper()
 	c := ctx.clientFactory(logger)
+	defer func() {
+		t.Cleanup(func() {
+			if !t.Failed() {
+				return
+			}
+			if step.Spec.OnFailure == nil {
+				return
+			}
+			for _, collector := range step.Spec.OnFailure.Collect {
+				for _, collector := range collectors(collector) {
+					cmd := v1alpha1.Command{
+						Command: collector,
+					}
+					output, err := operations.Command(context.Background(), logger, cmd, ctx.namespacer.GetNamespace())
+					if err != nil {
+						logger.Log(err)
+					}
+					if output != nil {
+						if out := output.Out(); out != "" {
+							logger.WithName("STDOUT").Log(out)
+						}
+						if err := output.Err(); err != "" {
+							logger.WithName("STDERR").Log(err)
+						}
+					}
+				}
+			}
+		})
+	}()
 	stepCtx, cancel := timeoutCtx(config, test, step.Spec)
 	defer cancel()
 	for _, operation := range step.Spec.Delete {
@@ -56,15 +86,23 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			})
 		}
 	}
-	if step.Spec.Command != nil {
-		namespace := ctx.namespacer.GetNamespace()
-		for _, command := range step.Spec.Command {
-			cmdCtx, cancel := cmdtimeoutCtx(command, config, test, step.Spec)
-			defer cancel()
-			if err := operations.ExecuteCommand(cmdCtx, command, namespace); err != nil {
-				logger.Logf("command failed: %s", err)
-				fail(t, command.ContinueOnError)
+	for _, operation := range step.Spec.Command {
+		cmdCtx, cancel := timeoutCmdCtx(operation, config, test, step.Spec)
+		defer cancel()
+		output, err := operations.Command(cmdCtx, logger, operation, ctx.namespacer.GetNamespace())
+		if err != nil {
+			logger.Log(err)
+		}
+		if output != nil {
+			if out := output.Out(); out != "" {
+				logger.WithName("STDOUT").Log(out)
 			}
+			if err := output.Err(); err != "" {
+				logger.WithName("STDERR").Log(err)
+			}
+		}
+		if err != nil {
+			fail(t, operation.ContinueOnError)
 		}
 	}
 	for _, operation := range step.Spec.Apply {

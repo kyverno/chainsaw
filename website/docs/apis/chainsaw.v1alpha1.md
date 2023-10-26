@@ -80,23 +80,35 @@ during the testing process.</p>
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the assertion.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
+## `Collector`     {#chainsaw-kyverno-io-v1alpha1-Collector}
+
+**Appears in:**
+    
+- [OnFailure](#chainsaw-kyverno-io-v1alpha1-OnFailure)
+
+<p>Collector defines a set of collectors.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `podLogs` | [`PodLogsCollector`](#chainsaw-kyverno-io-v1alpha1-PodLogsCollector) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
+| `events` | [`EventsCollector`](#chainsaw-kyverno-io-v1alpha1-EventsCollector) |  |  | <p>Events determines the events collector to execute.</p> |
+
 ## `Command`     {#chainsaw-kyverno-io-v1alpha1-Command}
 
 **Appears in:**
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
-<p>Command describes a command to run as a part of a test step or suite.</p>
+<p>Command describes a command to run as a part of a test step.</p>
 
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `command` | `string` |  |  | <p>The command and argument to run as a string.</p> |
-| `namespaced` | `bool` |  |  | <p>If set, the `--namespace` flag will be appended to the command with the namespace to use.</p> |
-| `script` | `string` |  |  | <p>Ability to run a shell script from TestStep (without a script file) namespaced and command should not be used with script.</p> |
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the command. Overrides the global timeout set in the Configuration.</p> |
+| `command` | `string` |  |  | <p>Command is the command and argument to run as a string.</p> |
+| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Override the Test/TestStep timeout for this command (in seconds).</p> |
-| `skipLogOutput` | `bool` |  |  | <p>If set, the output from the command is NOT logged.  Useful for sensitive logs or to reduce noise.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -133,11 +145,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
-| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
-| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
-| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
-| `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
+| `ObjectReference` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: | :white_check_mark: | <p>ObjectReference determines objects to be deleted.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
@@ -155,6 +163,21 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the expected error.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
+## `EventsCollector`     {#chainsaw-kyverno-io-v1alpha1-EventsCollector}
+
+**Appears in:**
+    
+- [Collector](#chainsaw-kyverno-io-v1alpha1-Collector)
+
+<p>EventsCollector defines how to collects events.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
+| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
+| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
 **Appears in:**
@@ -169,6 +192,70 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
+
+## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
+
+**Appears in:**
+    
+- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
+
+<p>ObjectReference represents one or more objects with a specific apiVersion and kind.
+For a single object name and namespace are used to identify the object.
+For multiple objects use labels.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ObjectSelector` | [`ObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectSelector determines the selection process of referenced objects.</p> |
+| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
+| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
+
+## `ObjectSelector`     {#chainsaw-kyverno-io-v1alpha1-ObjectSelector}
+
+**Appears in:**
+    
+- [ObjectReference](#chainsaw-kyverno-io-v1alpha1-ObjectReference)
+
+<p>ObjectSelector represents a strategy to select objects.
+For a single object name and namespace are used to identify the object.
+For multiple objects use labels.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
+| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
+| `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
+
+## `OnFailure`     {#chainsaw-kyverno-io-v1alpha1-OnFailure}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+<p>OnFailure defines actions to be executed on failure.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `collect` | [`[]Collector`](#chainsaw-kyverno-io-v1alpha1-Collector) |  |  | <p>Collect define the collectors to run.</p> |
+
+## `PodLogsCollector`     {#chainsaw-kyverno-io-v1alpha1-PodLogsCollector}
+
+**Appears in:**
+    
+- [Collector](#chainsaw-kyverno-io-v1alpha1-Collector)
+
+<p>PodLogsCollector defines how to collects pod logs.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
+| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
+| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+| `container` | `string` |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
+| `tail` | `int` |  |  | <p>Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.</p> |
 
 ## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 
@@ -229,5 +316,6 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 | `delete` | [`[]Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
 | `command` | [`[]Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command provides a list of commands that should be executed as a part of this test step.</p> |
+| `onFailure` | [`OnFailure`](#chainsaw-kyverno-io-v1alpha1-OnFailure) |  |  | <p>OnFailure defines actions to be executed in case of step failure.</p> |
 
   
