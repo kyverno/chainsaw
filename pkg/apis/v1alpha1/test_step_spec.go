@@ -33,4 +33,8 @@ type TestStepSpec struct {
 	// This helps in ensuring that the environment is set up correctly before the test step runs.
 	// +optional
 	Delete []Delete `json:"delete,omitempty"`
+
+	// Command provides a list of commands that should be executed as a part of this test step.
+	// +optional
+	Command []Command `json:"command,omitempty"`
 }

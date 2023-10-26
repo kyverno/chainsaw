@@ -80,6 +80,24 @@ during the testing process.</p>
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the assertion.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
+## `Command`     {#chainsaw-kyverno-io-v1alpha1-Command}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+<p>Command describes a command to run as a part of a test step or suite.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `command` | `string` |  |  | <p>The command and argument to run as a string.</p> |
+| `namespaced` | `bool` |  |  | <p>If set, the `--namespace` flag will be appended to the command with the namespace to use.</p> |
+| `script` | `string` |  |  | <p>Ability to run a shell script from TestStep (without a script file) namespaced and command should not be used with script.</p> |
+| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Override the Test/TestStep timeout for this command (in seconds).</p> |
+| `skipLogOutput` | `bool` |  |  | <p>If set, the output from the command is NOT logged.  Useful for sensitive logs or to reduce noise.</p> |
+
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
 **Appears in:**
@@ -210,5 +228,6 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 | `delete` | [`[]Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
+| `command` | [`[]Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command provides a list of commands that should be executed as a part of this test step.</p> |
 
   

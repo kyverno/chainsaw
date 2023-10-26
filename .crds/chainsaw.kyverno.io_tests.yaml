@@ -104,6 +104,43 @@ spec:
                             - file
                             type: object
                           type: array
+                        command:
+                          description: Command provides a list of commands that should
+                            be executed as a part of this test step.
+                          items:
+                            description: Command describes a command to run as a part
+                              of a test step or suite.
+                            properties:
+                              command:
+                                description: The command and argument to run as a
+                                  string.
+                                type: string
+                              continueOnError:
+                                description: ContinueOnError determines whether a
+                                  test should continue or not in case the operation
+                                  was not successful. Even if the test continues executing,
+                                  it will still be reported as failed.
+                                type: boolean
+                              namespaced:
+                                description: If set, the `--namespace` flag will be
+                                  appended to the command with the namespace to use.
+                                type: boolean
+                              script:
+                                description: Ability to run a shell script from TestStep
+                                  (without a script file) namespaced and command should
+                                  not be used with script.
+                                type: string
+                              skipLogOutput:
+                                description: If set, the output from the command is
+                                  NOT logged.  Useful for sensitive logs or to reduce
+                                  noise.
+                                type: boolean
+                              timeout:
+                                description: Override the Test/TestStep timeout for
+                                  this command (in seconds).
+                                type: string
+                            type: object
+                          type: array
                         delete:
                           description: Delete provides a list of objects that should
                             be deleted before this test step is executed. This helps
