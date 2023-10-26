@@ -11,13 +11,14 @@ type Command struct {
 	// +optional
 	Namespaced bool `json:"namespaced,omitempty"`
 	// Ability to run a shell script from TestStep (without a script file)
-	// namespaced and command should not be used with script.  namespaced is ignored and command is an error.
+	// namespaced and command should not be used with script.
 	// +optional
 	Script string `json:"script,omitempty"`
-	// If set, exit failures (`exec.ExitError`) will be ignored. `exec.Error` are NOT ignored.
+	// ContinueOnError determines whether a test should continue or not in case the operation was not successful.
+	// Even if the test continues executing, it will still be reported as failed.
 	// +optional
 	ContinueOnError *bool `json:"continueOnError,omitempty"`
-	// Override the TestSuite timeout for this command (in seconds).
+	// Override the Test/TestStep timeout for this command (in seconds).
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 	// If set, the output from the command is NOT logged.  Useful for sensitive logs or to reduce noise.

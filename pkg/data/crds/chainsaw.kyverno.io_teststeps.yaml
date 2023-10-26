@@ -88,8 +88,10 @@ spec:
                       description: The command and argument to run as a string.
                       type: string
                     continueOnError:
-                      description: If set, exit failures (`exec.ExitError`) will be
-                        ignored. `exec.Error` are NOT ignored.
+                      description: ContinueOnError determines whether a test should
+                        continue or not in case the operation was not successful.
+                        Even if the test continues executing, it will still be reported
+                        as failed.
                       type: boolean
                     namespaced:
                       description: If set, the `--namespace` flag will be appended
@@ -98,14 +100,14 @@ spec:
                     script:
                       description: Ability to run a shell script from TestStep (without
                         a script file) namespaced and command should not be used with
-                        script.  namespaced is ignored and command is an error.
+                        script.
                       type: string
                     skipLogOutput:
                       description: If set, the output from the command is NOT logged.  Useful
                         for sensitive logs or to reduce noise.
                       type: boolean
                     timeout:
-                      description: Override the TestSuite timeout for this command
+                      description: Override the Test/TestStep timeout for this command
                         (in seconds).
                       type: string
                   type: object
