@@ -165,6 +165,56 @@ spec:
                             - file
                             type: object
                           type: array
+                        onFailure:
+                          description: OnFailure defines actions to be executed in
+                            case of step failure.
+                          properties:
+                            collect:
+                              description: Collect define the collectors to run.
+                              items:
+                                description: Collector defines a set of collectors.
+                                properties:
+                                  events:
+                                    description: Events determines the events collector
+                                      to execute.
+                                    properties:
+                                      labels:
+                                        additionalProperties:
+                                          type: string
+                                        description: Label selector to match objects
+                                          to delete
+                                        type: object
+                                      name:
+                                        description: 'Name of the referent. More info:
+                                          https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                        type: string
+                                      namespace:
+                                        description: 'Namespace of the referent. More
+                                          info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                        type: string
+                                    type: object
+                                  podLogs:
+                                    description: PodLogs determines the pod logs collector
+                                      to execute.
+                                    properties:
+                                      labels:
+                                        additionalProperties:
+                                          type: string
+                                        description: Label selector to match objects
+                                          to delete
+                                        type: object
+                                      name:
+                                        description: 'Name of the referent. More info:
+                                          https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                        type: string
+                                      namespace:
+                                        description: 'Namespace of the referent. More
+                                          info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                        type: string
+                                    type: object
+                                type: object
+                              type: array
+                          type: object
                         skipDelete:
                           description: SkipDelete determines whether the resources
                             created by the step should be deleted after the test step

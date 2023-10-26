@@ -33,4 +33,8 @@ type TestStepSpec struct {
 	// This helps in ensuring that the environment is set up correctly before the test step runs.
 	// +optional
 	Delete []Delete `json:"delete,omitempty"`
+
+	// OnFailure defines actions to be executed in case of step failure.
+	// +optional
+	OnFailure *OnFailure `json:"onFailure,omitempty"`
 }

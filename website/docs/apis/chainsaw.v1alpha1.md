@@ -80,6 +80,20 @@ during the testing process.</p>
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the assertion.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
+## `Collector`     {#chainsaw-kyverno-io-v1alpha1-Collector}
+
+**Appears in:**
+    
+- [OnFailure](#chainsaw-kyverno-io-v1alpha1-OnFailure)
+
+<p>Collector defines a set of collectors.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `podLogs` | [`PodLogsCollector`](#chainsaw-kyverno-io-v1alpha1-PodLogsCollector) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
+| `events` | [`EventsCollector`](#chainsaw-kyverno-io-v1alpha1-EventsCollector) |  |  | <p>Events determines the events collector to execute.</p> |
+
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
 **Appears in:**
@@ -115,11 +129,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
-| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
-| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
-| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
-| `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
+| `ObjectReference` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: | :white_check_mark: | <p>ObjectReference determines objects to be deleted.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
@@ -137,6 +147,19 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the expected error.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
+## `EventsCollector`     {#chainsaw-kyverno-io-v1alpha1-EventsCollector}
+
+**Appears in:**
+    
+- [Collector](#chainsaw-kyverno-io-v1alpha1-Collector)
+
+<p>EventsCollector defines how to collects events.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ObjectSelector` | [`ObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectSelector determines the selection process of events to collect.</p> |
+
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
 **Appears in:**
@@ -151,6 +174,68 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
+
+## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
+
+**Appears in:**
+    
+- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
+
+<p>ObjectReference represents one or more objects with a specific apiVersion and kind.
+For a single object name and namespace are used to identify the object.
+For multiple objects use labels.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ObjectSelector` | [`ObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectSelector determines the selection process of referenced objects.</p> |
+| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
+| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
+
+## `ObjectSelector`     {#chainsaw-kyverno-io-v1alpha1-ObjectSelector}
+
+**Appears in:**
+    
+- [EventsCollector](#chainsaw-kyverno-io-v1alpha1-EventsCollector)
+- [ObjectReference](#chainsaw-kyverno-io-v1alpha1-ObjectReference)
+- [PodLogsCollector](#chainsaw-kyverno-io-v1alpha1-PodLogsCollector)
+
+<p>ObjectSelector represents a strategy to select objects.
+For a single object name and namespace are used to identify the object.
+For multiple objects use labels.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
+| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
+| `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
+
+## `OnFailure`     {#chainsaw-kyverno-io-v1alpha1-OnFailure}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+<p>OnFailure defines actions to be executed on failure.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `collect` | [`[]Collector`](#chainsaw-kyverno-io-v1alpha1-Collector) |  |  | <p>Collect define the collectors to run.</p> |
+
+## `PodLogsCollector`     {#chainsaw-kyverno-io-v1alpha1-PodLogsCollector}
+
+**Appears in:**
+    
+- [Collector](#chainsaw-kyverno-io-v1alpha1-Collector)
+
+<p>PodLogsCollector defines how to collects pod logs.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ObjectSelector` | [`ObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectSelector determines the selection process of pods to collect logs from.</p> |
 
 ## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 
@@ -210,5 +295,6 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 | `delete` | [`[]Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
+| `onFailure` | [`OnFailure`](#chainsaw-kyverno-io-v1alpha1-OnFailure) |  |  | <p>OnFailure defines actions to be executed in case of step failure.</p> |
 
   

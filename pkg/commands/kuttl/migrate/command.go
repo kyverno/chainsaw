@@ -170,11 +170,15 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 	}
 	for _, operation := range from.Delete {
 		to.Spec.Delete = append(to.Spec.Delete, v1alpha1.Delete{
-			APIVersion: operation.APIVersion,
-			Kind:       operation.Kind,
-			Namespace:  operation.Namespace,
-			Name:       operation.Name,
-			Labels:     operation.Labels,
+			ObjectReference: v1alpha1.ObjectReference{
+				APIVersion: operation.APIVersion,
+				Kind:       operation.Kind,
+				ObjectSelector: v1alpha1.ObjectSelector{
+					Namespace: operation.Namespace,
+					Name:      operation.Name,
+					Labels:    operation.Labels,
+				},
+			},
 		})
 	}
 	return to, nil

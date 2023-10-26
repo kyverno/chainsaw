@@ -25,6 +25,21 @@ func fail(t *testing.T, continueOnError *bool) {
 func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
 	t.Helper()
 	c := ctx.clientFactory(logger)
+	defer func() {
+		t.Cleanup(func() {
+			if !t.Failed() {
+				return
+			}
+			if step.Spec.OnFailure == nil {
+				return
+			}
+			for _, collector := range step.Spec.OnFailure.Collect {
+				for _, collector := range collectors(collector) {
+					t.Log(collector)
+				}
+			}
+		})
+	}()
 	stepCtx, cancel := timeoutCtx(config, test, step.Spec)
 	defer cancel()
 	for _, operation := range step.Spec.Delete {
