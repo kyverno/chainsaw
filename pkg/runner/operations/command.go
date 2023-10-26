@@ -42,7 +42,7 @@ func ExecuteCommand(ctx context.Context, cmdSpec v1alpha1.Command, namespace str
 		out, err = command.CombinedOutput()
 		if err != nil {
 			if ctx.Err() == context.DeadlineExceeded {
-				return fmt.Errorf("command timed out after %d seconds", cmdSpec.Timeout)
+				return err
 			}
 			return fmt.Errorf("command failed: %s\n%s", err, out)
 		}
@@ -51,7 +51,7 @@ func ExecuteCommand(ctx context.Context, cmdSpec v1alpha1.Command, namespace str
 		err = command.Run()
 		if err != nil {
 			if ctx.Err() == context.DeadlineExceeded {
-				return fmt.Errorf("command timed out after %d seconds", cmdSpec.Timeout)
+				return err
 			}
 			return err
 		}
