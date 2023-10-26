@@ -1,6 +1,6 @@
 ## chainsaw test
 
-Stronger tool for e2e testing
+Run tests
 
 ```
 chainsaw test [flags]... [test directories]...
@@ -46,5 +46,5 @@ chainsaw test [flags]... [test directories]...
 
 ### SEE ALSO
 
-* [chainsaw](chainsaw.md)	 - 
+* [chainsaw](chainsaw.md)	 - Stronger tool for e2e testing
 

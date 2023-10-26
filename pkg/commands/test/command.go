@@ -42,7 +42,7 @@ func Command() *cobra.Command {
 	var options options
 	cmd := &cobra.Command{
 		Use:          "test [flags]... [test directories]...",
-		Short:        "Stronger tool for e2e testing",
+		Short:        "Run tests",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			clock := clock.RealClock{}

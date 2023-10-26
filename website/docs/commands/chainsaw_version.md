@@ -1,6 +1,6 @@
 ## chainsaw version
 
-
+Print the version informations
 
 ```
 chainsaw version [flags]
@@ -14,5 +14,5 @@ chainsaw version [flags]
 
 ### SEE ALSO
 
-* [chainsaw](chainsaw.md)	 - 
+* [chainsaw](chainsaw.md)	 - Stronger tool for e2e testing
 
