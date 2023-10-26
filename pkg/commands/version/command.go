@@ -10,6 +10,7 @@ import (
 func Command() *cobra.Command {
 	return &cobra.Command{
 		Use:          "version",
+		Short:        "Print the version informations",
 		Args:         cobra.NoArgs,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {

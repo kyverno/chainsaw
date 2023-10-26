@@ -15,3 +15,7 @@ Release notes for `TODO`.
 
 ## :guitar: Misc :guitar:
 -->
+
+## :books: Misc :guitar:
+
+- Improved CLI docs

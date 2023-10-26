@@ -96,10 +96,11 @@ codegen-crds: $(CONTROLLER_GEN) ## Generate CRDs
 	@cp $(CRDS_PATH)/* pkg/data/crds
 
 .PHONY: codegen-cli-docs
-codegen-cli-docs: $(CLI_BIN) ## Generate CLI docs
+codegen-cli-docs: build ## Generate CLI docs
 	@echo Generate cli docs... >&2
-	@rm -rf website/docs/commands
-	@go run ./hack/docs/cmd/main.go
+	@rm -rf website/docs/commands && mkdir -p website/docs/commands
+	@rm -rf docs/user/commands && mkdir -p docs/user/commands
+	@./$(CLI_BIN) docs -o website/docs/commands --autogenTag=false
 
 .PHONY: codegen-api-docs
 codegen-api-docs: $(REFERENCE_DOCS) ## Generate markdown API docs
@@ -162,6 +163,7 @@ vet: ## Run go vet
 	@echo Go vet... >&2
 	@go vet ./...
 
+.PHONY: $(CLI_BIN)
 $(CLI_BIN): fmt vet
 	@echo Build cli binary... >&2
 	@CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) go build -o ./$(CLI_BIN) -ldflags=$(LD_FLAGS) ./$(CMD_FOLDER)

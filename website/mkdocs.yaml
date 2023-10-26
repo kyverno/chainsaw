@@ -16,6 +16,12 @@ nav:
     - tests/with-test.md
   - Command Line Usage:
     - commands/chainsaw.md
+    - commands/chainsaw_completion.md
+    - commands/chainsaw_completion_bash.md
+    - commands/chainsaw_completion_fish.md
+    - commands/chainsaw_completion_powershell.md
+    - commands/chainsaw_completion_zsh.md
+    - commands/chainsaw_docs.md
     - commands/chainsaw_test.md
     - commands/chainsaw_version.md
   - APIs:
