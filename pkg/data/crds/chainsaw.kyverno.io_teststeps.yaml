@@ -43,6 +43,12 @@ spec:
                   description: Apply represents a set of configurations or resources
                     that should be applied during testing.
                   properties:
+                    continueOnError:
+                      description: ContinueOnError determines whether a test should
+                        continue or not in case the operation was not successful.
+                        Even if the test continues executing, it will still be reported
+                        as failed.
+                      type: boolean
                     file:
                       description: File is the path to the referenced file.
                       type: string
@@ -58,6 +64,12 @@ spec:
                   description: Assert represents a test condition that is expected
                     to hold true during the testing process.
                   properties:
+                    continueOnError:
+                      description: ContinueOnError determines whether a test should
+                        continue or not in case the operation was not successful.
+                        Even if the test continues executing, it will still be reported
+                        as failed.
+                      type: boolean
                     file:
                       description: File is the path to the referenced file.
                       type: string
@@ -75,6 +87,12 @@ spec:
                     apiVersion:
                       description: API version of the referent.
                       type: string
+                    continueOnError:
+                      description: ContinueOnError determines whether a test should
+                        continue or not in case the operation was not successful.
+                        Even if the test continues executing, it will still be reported
+                        as failed.
+                      type: boolean
                     kind:
                       description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                       type: string
@@ -103,6 +121,12 @@ spec:
                     may arise during testing. Instead of treating such an error as
                     a test failure, it acknowledges it as expected.
                   properties:
+                    continueOnError:
+                      description: ContinueOnError determines whether a test should
+                        continue or not in case the operation was not successful.
+                        Even if the test continues executing, it will still be reported
+                        as failed.
+                      type: boolean
                     file:
                       description: File is the path to the referenced file.
                       type: string
@@ -111,9 +135,8 @@ spec:
                   type: object
                 type: array
               skipDelete:
-                description: SkipDelete determines whether the test should be deleted
-                  after it has been run. determines whether the resource should be
-                  deleted after the test step is executed.
+                description: SkipDelete determines whether the resources created by
+                  the step should be deleted after the test step is executed.
                 type: boolean
               timeout:
                 description: Timeout for the test step. Overrides the global timeout

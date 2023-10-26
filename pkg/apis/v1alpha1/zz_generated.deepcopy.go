@@ -30,6 +30,11 @@ import (
 func (in *Apply) DeepCopyInto(out *Apply) {
 	*out = *in
 	out.FileRef = in.FileRef
+	if in.ContinueOnError != nil {
+		in, out := &in.ContinueOnError, &out.ContinueOnError
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
@@ -47,6 +52,11 @@ func (in *Apply) DeepCopy() *Apply {
 func (in *Assert) DeepCopyInto(out *Assert) {
 	*out = *in
 	out.FileRef = in.FileRef
+	if in.ContinueOnError != nil {
+		in, out := &in.ContinueOnError, &out.ContinueOnError
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
@@ -128,6 +138,11 @@ func (in *Delete) DeepCopyInto(out *Delete) {
 			(*out)[key] = val
 		}
 	}
+	if in.ContinueOnError != nil {
+		in, out := &in.ContinueOnError, &out.ContinueOnError
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
@@ -145,6 +160,11 @@ func (in *Delete) DeepCopy() *Delete {
 func (in *Error) DeepCopyInto(out *Error) {
 	*out = *in
 	out.FileRef = in.FileRef
+	if in.ContinueOnError != nil {
+		in, out := &in.ContinueOnError, &out.ContinueOnError
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
@@ -304,17 +324,23 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 	if in.Assert != nil {
 		in, out := &in.Assert, &out.Assert
 		*out = make([]Assert, len(*in))
-		copy(*out, *in)
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	if in.Apply != nil {
 		in, out := &in.Apply, &out.Apply
 		*out = make([]Apply, len(*in))
-		copy(*out, *in)
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	if in.Error != nil {
 		in, out := &in.Error, &out.Error
 		*out = make([]Error, len(*in))
-		copy(*out, *in)
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	if in.Delete != nil {
 		in, out := &in.Delete, &out.Delete
