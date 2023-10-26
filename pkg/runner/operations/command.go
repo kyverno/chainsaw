@@ -19,7 +19,7 @@ func ExecuteCommand(ctx context.Context, cmdSpec v1alpha1.Command, namespace str
 	}
 
 	// Append namespace flag if necessary
-	if cmdSpec.Namespaced {
+	if cmdSpec.Namespaced && !isScript {
 		cmdStr = fmt.Sprintf("%s --namespace %s", cmdStr, namespace)
 	}
 
