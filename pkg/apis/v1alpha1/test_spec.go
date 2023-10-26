@@ -22,6 +22,10 @@ type TestSpec struct {
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
 
+	// Namespace determines whether the test should run in a random ephemeral namespace or not.
+	// +optional
+	Namespace string `json:"namespace,omitempty"`
+
 	// Steps defining the test.
 	Steps []TestSpecStep `json:"steps"`
 }

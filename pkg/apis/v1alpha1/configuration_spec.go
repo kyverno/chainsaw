@@ -48,6 +48,8 @@ type ConfigurationSpec struct {
 	ReportName string `json:"reportName,omitempty"`
 
 	// Namespace defines the namespace to use for tests.
+	// If not specified, every test will execute in a random ephemeral namespace
+	// unless the namespace is overridden in a the test spec.
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 

@@ -75,14 +75,14 @@ $(PACKAGE_SHIM): $(GOPATH_SHIM)
 codegen-register: $(PACKAGE_SHIM) $(REGISTER_GEN) ## Generate types registrations
 	@echo Generate registration... >&2
 	@GOPATH=$(GOPATH_SHIM) $(REGISTER_GEN) \
-		--go-header-file=./hack/boilerplate.go.txt \
+		--go-header-file=./.hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS)
 
 .PHONY: codegen-deepcopy
 codegen-deepcopy: $(PACKAGE_SHIM) $(DEEPCOPY_GEN) ## Generate deep copy functions
 	@echo Generate deep copy functions... >&2
 	@GOPATH=$(GOPATH_SHIM) $(DEEPCOPY_GEN) \
-		--go-header-file=./hack/boilerplate.go.txt \
+		--go-header-file=./.hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS) \
 		--output-file-base=zz_generated.deepcopy
 

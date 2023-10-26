@@ -1,0 +1,8 @@
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Configuration
+metadata:
+  creationTimestamp: null
+spec:
+  parallel: 4
+  timeout: 5m0s

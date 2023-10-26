@@ -23,7 +23,7 @@ type runnerClient struct {
 }
 
 func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-	c.log("create", client.ObjectKey(obj), obj)
+	c.log("CREATE", client.ObjectKey(obj), obj)
 	err := c.inner.Create(ctx, obj, opts...)
 	if err != nil {
 		return err
@@ -52,15 +52,15 @@ func (c *runnerClient) List(ctx context.Context, list ctrlclient.ObjectList, opt
 }
 
 func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
-	c.log("patch", client.ObjectKey(obj), obj)
+	c.log("PATCH", client.ObjectKey(obj), obj)
 	return c.inner.Patch(ctx, obj, patch, opts...)
 }
 
 func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-	c.log("update", client.ObjectKey(obj), obj)
+	c.log("UPDATE", client.ObjectKey(obj), obj)
 	return c.inner.Update(ctx, obj, opts...)
 }
 
 func (c *runnerClient) log(op string, key ctrlclient.ObjectKey, obj ctrlclient.Object) {
-	// logging.ResourceOp(c.logger, op, key, obj)
+	c.logger.WithName(op).WithResource(key, obj).Log("executing...")
 }
