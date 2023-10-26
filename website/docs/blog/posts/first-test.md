@@ -17,7 +17,7 @@ First test run !
 
 <!-- more -->
 
-The [quick start](../../../quick-start.md) test is passing :tada:
+The [quick start](../../quick-start.md) test is passing :tada:
 
 ```bash
 # define kind image

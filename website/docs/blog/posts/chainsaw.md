@@ -9,9 +9,7 @@ authors:
 
 # How to Perform Efficient E2E Testing with Chainsaw
 
-<p align="center">
-  <img src="../img/chainsaw.png" />
-</p>
+![chainsaw](../img/chainsaw.png)
 
 ## Introduction
 
@@ -61,21 +59,21 @@ Once you've downloaded the appropriate .tar.gz file for your system, you can pro
 
 - **Extract the Tarball**:
   
-  ```bash
-   tar -xzf chainsaw_<your_version_and_architecture>.tar.gz
-  ```
+```bash
+tar -xzf chainsaw_<your_version_and_architecture>.tar.gz
+```
 
 - **Move the Extracted Binary**:
   
-  ```bash
-  sudo mv chainsaw /usr/local/bin/
-  ```
+```bash
+sudo mv chainsaw /usr/local/bin/
+```
 
 - **Verify the Installation**:
   
-  ```bash
-    chainsaw --version
-  ```
+```bash
+chainsaw --version
+```
 
 ### Section 2: Writing Configurations
 
@@ -159,15 +157,15 @@ Creating tests in Chainsaw requires a clear understanding of the test definition
 
    **Example**:
 
-   ```yaml
-   # 00-configmap.yaml
-   apiVersion: v1
-   kind: ConfigMap
-   metadata:
-     name: chainsaw-example
-   data:
-     key: value
-    ```
+```yaml
+# 00-configmap.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chainsaw-example
+data:
+  key: value
+```
 
 2. **Using TestSteps based syntax**
 
@@ -175,30 +173,30 @@ Creating tests in Chainsaw requires a clear understanding of the test definition
 
    **Example**:
 
-    ```yaml!
-    # 01-test-step.yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: apply-configmap-step
-    spec:
-      apply:
-      - file: /resources/configmap.yaml
-    ```
+```yaml
+# 01-test-step.yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: TestStep
+metadata:
+  name: apply-configmap-step
+spec:
+  apply:
+  - file: /resources/configmap.yaml
+```
 
   > *You can combine TestStep resources with raw Kubernetes manifests. For instance, a TestStep might apply a resource, while a separate manifest file makes assertions about that resource.*
 
   **Example**:
 
-   ```yaml
-   # 02-assert.yaml
-    apiVersion: v1
-    kind: ConfigMap
-    metadata:
-      name: chainsaw-example
-    data:
-      key: value
-   ```
+```yaml
+# 02-assert.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chainsaw-example
+data:
+  key: value
+```
 
 3. **Using Test based syntax**
 
@@ -206,22 +204,22 @@ Creating tests in Chainsaw requires a clear understanding of the test definition
 
   **Example**:
 
-   ```yaml
-    # chainsaw-test.yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: Test
-    metadata:
-      name: full-test-example
-    spec:
-      timeout: 10s
-      steps:
-      - spec:
-          apply:
-          - file: /resources/configmap.yaml
-      - spec:
-          assert:
-          - file: /resources/configmap-assert.yaml
-   ```
+```yaml
+# chainsaw-test.yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: full-test-example
+spec:
+  timeout: 10s
+  steps:
+  - spec:
+      apply:
+      - file: /resources/configmap.yaml
+  - spec:
+      assert:
+      - file: /resources/configmap-assert.yaml
+```
 
 > *Chainsaw processes the test by executing each step in sequence, ensuring that your Kubernetes environment meets the defined conditions.*
 
@@ -241,15 +239,15 @@ Once you're set up, running tests in Chainsaw is straightforward:
 
 1. **Navigate to the Test Directory**:
 
-   ```bash
-   cd path/to/your/test/directory
-   ```
+```bash
+cd path/to/your/test/directory
+```
 
 2. **Run the Tests**:
 
-   ```bash
-   chainsaw test
-   ```
+```bash
+chainsaw test
+```
 
 > *This command will execute all tests in the current directory.*
 
@@ -257,7 +255,7 @@ Once you're set up, running tests in Chainsaw is straightforward:
 
 The output will resemble:
 
-```bash!
+```bash
 Loading default configuration...
 ...
 Running tests...
