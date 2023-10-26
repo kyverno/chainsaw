@@ -14,7 +14,7 @@ import (
 )
 
 func Error(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) error {
-	logger = logger.WithName("ERROR").WithResource(client.ObjectKey(&expected), &expected)
+	logger = logger.WithName("ERROR ").WithResource(client.ObjectKey(&expected), &expected)
 	logger.Log("executing...")
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (_ bool, err error) {
