@@ -27,33 +27,32 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	t.Helper()
 	c := ctx.clientFactory(logger)
 	defer func() {
-		t.Cleanup(func() {
-			if !t.Failed() {
-				return
-			}
-			if step.Spec.OnFailure == nil {
-				return
-			}
-			for _, collector := range step.Spec.OnFailure.Collect {
-				for _, collector := range collectors(collector) {
-					cmd := v1alpha1.Command{
-						Command: collector,
-					}
-					output, err := operations.Command(context.Background(), logger, cmd, ctx.namespacer.GetNamespace())
-					if err != nil {
-						logger.Log(err)
-					}
-					if output != nil {
-						if out := output.Out(); out != "" {
-							logger.WithName("STDOUT").Log(out)
+		if t.Failed() {
+			t.Cleanup(func() {
+				if step.Spec.OnFailure == nil {
+					return
+				}
+				for _, collector := range step.Spec.OnFailure.Collect {
+					for _, collector := range collectors(collector) {
+						cmd := v1alpha1.Command{
+							Command: collector,
 						}
-						if err := output.Err(); err != "" {
-							logger.WithName("STDERR").Log(err)
+						output, err := operations.Command(context.Background(), logger, cmd, ctx.namespacer.GetNamespace())
+						if err != nil {
+							logger.Log(err)
+						}
+						if output != nil {
+							if out := output.Out(); out != "" {
+								logger.WithName("STDOUT").Log(out)
+							}
+							if err := output.Err(); err != "" {
+								logger.WithName("STDERR").Log(err)
+							}
 						}
 					}
 				}
-			}
-		})
+			})
+		}
 	}()
 	stepCtx, cancel := timeoutCtx(config, test, step.Spec)
 	defer cancel()
@@ -87,23 +86,25 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		}
 	}
 	for _, operation := range step.Spec.Command {
-		cmdCtx, cancel := timeoutCmdCtx(operation, config, test, step.Spec)
-		defer cancel()
-		output, err := operations.Command(cmdCtx, logger, operation, ctx.namespacer.GetNamespace())
-		if err != nil {
-			logger.Log(err)
-		}
-		if output != nil {
-			if out := output.Out(); out != "" {
-				logger.WithName("STDOUT").Log(out)
+		func() {
+			cmdCtx, cancel := timeoutCmdCtx(operation, config, test, step.Spec)
+			defer cancel()
+			output, err := operations.Command(cmdCtx, logger, operation, ctx.namespacer.GetNamespace())
+			if err != nil {
+				logger.Log(err)
 			}
-			if err := output.Err(); err != "" {
-				logger.WithName("STDERR").Log(err)
+			if output != nil {
+				if out := output.Out(); out != "" {
+					logger.WithName("STDOUT").Log(out)
+				}
+				if err := output.Err(); err != "" {
+					logger.WithName("STDERR").Log(err)
+				}
 			}
-		}
-		if err != nil {
-			fail(t, operation.ContinueOnError)
-		}
+			if err != nil {
+				fail(t, operation.ContinueOnError)
+			}
+		}()
 	}
 	for _, operation := range step.Spec.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
