@@ -370,8 +370,8 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.Commands != nil {
-		in, out := &in.Commands, &out.Commands
+	if in.Command != nil {
+		in, out := &in.Command, &out.Command
 		*out = make([]Command, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])

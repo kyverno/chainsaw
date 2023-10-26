@@ -5,12 +5,11 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
-	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
 
-func ExecuteCommand(cmdSpec v1alpha1.Command, namespace string) error {
+func ExecuteCommand(ctx context.Context, cmdSpec v1alpha1.Command, namespace string) error {
 	isScript := cmdSpec.Script != ""
 	var cmdStr string
 	if isScript {
@@ -22,14 +21,6 @@ func ExecuteCommand(cmdSpec v1alpha1.Command, namespace string) error {
 	// Append namespace flag if necessary
 	if cmdSpec.Namespaced {
 		cmdStr = fmt.Sprintf("%s --namespace %s", cmdStr, namespace)
-	}
-
-	// Setup context for timeout
-	ctx := context.Background()
-	if cmdSpec.Timeout > 0 {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithTimeout(ctx, time.Duration(cmdSpec.Timeout)*time.Second)
-		defer cancel()
 	}
 
 	// Create the appropriate command based on the input

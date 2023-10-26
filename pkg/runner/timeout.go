@@ -29,3 +29,11 @@ func timeoutCtx(config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step 
 	}
 	return background, cancelNoOp
 }
+
+func cmdtimeoutCtx(cmd v1alpha1.Command, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) (context.Context, context.CancelFunc) {
+	if cmd.Timeout != nil && cmd.Timeout.Abs() > 0 {
+		return context.WithTimeout(context.Background(), cmd.Timeout.Duration)
+	} else {
+		return timeoutCtx(config, test, step)
+	}
+}

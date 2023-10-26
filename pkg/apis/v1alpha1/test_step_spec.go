@@ -36,5 +36,5 @@ type TestStepSpec struct {
 
 	// Command provides a list of commands that should be executed as a part of this test step.
 	// +optional
-	Commands []Command `json:"command,omitempty"`
+	Command []Command `json:"command,omitempty"`
 }
