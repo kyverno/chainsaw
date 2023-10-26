@@ -52,7 +52,9 @@ spec:
                   regular expression.
                 type: string
               namespace:
-                description: Namespace defines the namespace to use for tests.
+                description: Namespace defines the namespace to use for tests. If
+                  not specified, every test will execute in a random ephemeral namespace
+                  unless the namespace is overridden in a the test spec.
                 type: string
               parallel:
                 default: 8
