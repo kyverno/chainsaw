@@ -8,6 +8,7 @@ Available Commands:
   completion  Generate the autocompletion script for the specified shell
   docs        Generate reference documentation
   help        Help about any command
+  kuttl       Work with KUTTL tests
   test        Run tests
   version     Print the version informations
 

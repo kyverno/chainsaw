@@ -1,0 +1,16 @@
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: TestStep
+metadata:
+  creationTimestamp: null
+spec:
+  delete:
+  - apiVersion: v1
+    kind: Pod
+    name: my-pod
+  - apiVersion: v1
+    kind: Pod
+    labels:
+      app: nginx
+  - apiVersion: v1
+    kind: Pod

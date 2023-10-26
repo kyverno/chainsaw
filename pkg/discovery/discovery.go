@@ -2,7 +2,6 @@ package discovery
 
 import (
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -10,12 +9,12 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/step"
 	"github.com/kyverno/chainsaw/pkg/test"
+	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	"golang.org/x/exp/slices"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/util/sets"
 )
 
-var stepFileName = regexp.MustCompile(`^(\d\d)-(.*)\.(?:yaml|yml)$`)
+var StepFileName = regexp.MustCompile(`^(\d\d)-(.*)\.(?:yaml|yml)$`)
 
 type Test struct {
 	*v1alpha1.Test
@@ -23,7 +22,7 @@ type Test struct {
 }
 
 func DiscoverTests(fileName string, paths ...string) ([]Test, error) {
-	folders, err := discoverFolders(paths...)
+	folders, err := fsutils.DiscoverFolders(paths...)
 	if err != nil {
 		return nil, err
 	}
@@ -50,7 +49,7 @@ func DiscoverTests(fileName string, paths ...string) ([]Test, error) {
 				for _, file := range files {
 					fileName := file.Name()
 					if !file.IsDir() {
-						if stepFileName.MatchString(fileName) {
+						if StepFileName.MatchString(fileName) {
 							stepFiles = append(stepFiles, fileName)
 						}
 					}
@@ -69,7 +68,7 @@ func DiscoverTests(fileName string, paths ...string) ([]Test, error) {
 					}
 					stepsMap := map[string]v1alpha1.TestSpecStep{}
 					for _, stepFile := range stepFiles {
-						groups := stepFileName.FindStringSubmatch(stepFile)
+						groups := StepFileName.FindStringSubmatch(stepFile)
 						if steps, err := step.Load(filepath.Join(folder, stepFile)); err != nil {
 							fileRef := v1alpha1.FileRef{
 								File: stepFile,
@@ -124,25 +123,4 @@ func DiscoverTests(fileName string, paths ...string) ([]Test, error) {
 		}
 	}
 	return tests, nil
-}
-
-func discoverFolders(paths ...string) ([]string, error) {
-	folders := sets.New[string]()
-	for _, path := range paths {
-		if _, err := os.Lstat(path); err == nil {
-			err := filepath.Walk(path, func(file string, info fs.FileInfo, err error) error {
-				if err != nil {
-					return err
-				}
-				if info.IsDir() {
-					folders.Insert(file)
-				}
-				return nil
-			})
-			if err != nil {
-				return nil, err
-			}
-		}
-	}
-	return sets.List(folders), nil
 }

@@ -4,6 +4,7 @@ go 1.21.1
 
 require (
 	github.com/dustinkirkland/golang-petname v0.0.0-20231002161417-6a283f1aaaf2
+	github.com/kudobuilder/kuttl v0.15.0
 	github.com/pmezard/go-difflib v1.0.0
 	github.com/spf13/cobra v1.7.0
 	github.com/spf13/pflag v1.0.5
