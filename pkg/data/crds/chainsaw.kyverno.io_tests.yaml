@@ -123,9 +123,7 @@ spec:
                                 description: Ability to run a shell script from TestStep
                                   (without a script file) namespaced and command should
                                   not be used with script.  namespaced is ignored
-                                  and command is an error. env expansion is depended
-                                  upon the shell but ENV is passed to the runtime
-                                  env.
+                                  and command is an error.
                                 type: string
                               skipLogOutput:
                                 description: If set, the output from the command is
