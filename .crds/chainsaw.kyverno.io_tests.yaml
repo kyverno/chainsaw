@@ -38,6 +38,10 @@ spec:
                 description: Concurrent determines whether the test should run concurrently
                   with other tests.
                 type: boolean
+              namespace:
+                description: Namespace determines whether the test should run in a
+                  random ephemeral namespace or not.
+                type: string
               skip:
                 description: Skip determines whether the test should skipped.
                 type: boolean

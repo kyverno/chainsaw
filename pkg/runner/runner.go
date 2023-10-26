@@ -40,7 +40,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
-			logger := logging.NewLogger(t, clock)
+			mainLogger := logging.NewLogger(t, clock)
 			ctx := Context{
 				clock: clock,
 				clientFactory: func(logger logging.Logger) client.Client {
@@ -48,21 +48,21 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				},
 			}
 			if config.Namespace != "" {
-				c := ctx.clientFactory(logger)
+				c := ctx.clientFactory(mainLogger)
 				namespace := client.Namespace(config.Namespace)
 				if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 					if !errors.IsNotFound(err) {
-						logger.Log(err)
+						mainLogger.Log(err)
 						t.FailNow()
 					}
 					t.Cleanup(func() {
-						if err := operations.Delete(context.Background(), logger, &namespace, c); err != nil {
-							logger.Log(err)
+						if err := operations.Delete(context.Background(), mainLogger, &namespace, c); err != nil {
+							mainLogger.Log(err)
 							t.FailNow()
 						}
 					})
 					if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
-						logger.Log(err)
+						mainLogger.Log(err)
 						t.FailNow()
 					}
 				}
@@ -84,7 +84,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				test := tests[i]
 				name, err := testName(config, test)
 				if err != nil {
-					logger.Log(err)
+					mainLogger.Log(err)
 					t.FailNow()
 				}
 				t.Run(name, func(t *testing.T) {
@@ -106,30 +106,48 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 					if test.Spec.Skip != nil && *test.Spec.Skip {
 						t.SkipNow()
 					}
-					logger := logging.NewLogger(t, clock, test.Name)
+					testLogger := logging.NewLogger(t, clock, test.Name)
+					beginLogger := testLogger.WithName("@begin")
+					cleanLogger := testLogger.WithName("@clean")
+
 					ctx := ctx
-					if ctx.namespacer == nil {
-						namespace := client.PetNamespace()
-						{
-							logger := logger.WithName("@begin")
-							c := ctx.clientFactory(logger)
-							if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
-								logger.Log(err)
+					if test.Spec.Namespace != "" {
+						namespace := client.Namespace(test.Spec.Namespace)
+						c := ctx.clientFactory(beginLogger)
+						if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
+							if !errors.IsNotFound(err) {
+								beginLogger.Log(err)
 								t.FailNow()
 							}
-						}
-						{
-							logger := logger.WithName("@clean")
+							if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
+								beginLogger.Log(err)
+								t.FailNow()
+							}
 							t.Cleanup(func() {
-								if err := operations.Delete(context.Background(), logger, &namespace, c); err != nil {
-									logger.Log(err)
+								if err := operations.Delete(context.Background(), cleanLogger, &namespace, c); err != nil {
+									cleanLogger.Log(err)
 									t.FailNow()
 								}
 							})
 						}
+						ctx.namespacer = namespacer.New(c, test.Spec.Namespace)
+					}
+					if ctx.namespacer == nil {
+						namespace := client.PetNamespace()
+						c := ctx.clientFactory(beginLogger)
+						if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
+							beginLogger.Log(err)
+							t.FailNow()
+						}
+						t.Cleanup(func() {
+							if err := operations.Delete(context.Background(), cleanLogger, &namespace, c); err != nil {
+								cleanLogger.Log(err)
+								t.FailNow()
+							}
+						})
 						ctx.namespacer = namespacer.New(c, namespace.Name)
 					}
-					runTest(t, logger, ctx, config, test)
+					runTest(t, testLogger, ctx, config, test)
 				})
 			}
 		},
