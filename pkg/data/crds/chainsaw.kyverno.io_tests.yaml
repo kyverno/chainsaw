@@ -109,11 +109,11 @@ spec:
                             be executed as a part of this test step.
                           items:
                             description: Command describes a command to run as a part
-                              of a test step or suite.
+                              of a test step.
                             properties:
                               command:
-                                description: The command and argument to run as a
-                                  string.
+                                description: Command is the command and argument to
+                                  run as a string.
                                 type: string
                               continueOnError:
                                 description: ContinueOnError determines whether a
@@ -121,23 +121,14 @@ spec:
                                   was not successful. Even if the test continues executing,
                                   it will still be reported as failed.
                                 type: boolean
-                              namespaced:
-                                description: If set, the `--namespace` flag will be
-                                  appended to the command with the namespace to use.
-                                type: boolean
-                              script:
-                                description: Ability to run a shell script from TestStep
-                                  (without a script file) namespaced and command should
-                                  not be used with script.
-                                type: string
                               skipLogOutput:
-                                description: If set, the output from the command is
-                                  NOT logged.  Useful for sensitive logs or to reduce
+                                description: SkipLogOutput removes the output from
+                                  the command. Useful for sensitive logs or to reduce
                                   noise.
                                 type: boolean
                               timeout:
-                                description: Override the Test/TestStep timeout for
-                                  this command (in seconds).
+                                description: Timeout for the command. Overrides the
+                                  global timeout set in the Configuration.
                                 type: string
                             type: object
                           type: array
@@ -215,12 +206,6 @@ spec:
                                     description: Events determines the events collector
                                       to execute.
                                     properties:
-                                      labels:
-                                        additionalProperties:
-                                          type: string
-                                        description: Label selector to match objects
-                                          to delete
-                                        type: object
                                       name:
                                         description: 'Name of the referent. More info:
                                           https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -228,18 +213,19 @@ spec:
                                       namespace:
                                         description: 'Namespace of the referent. More
                                           info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                        type: string
+                                      selector:
+                                        description: Selector defines labels selector.
                                         type: string
                                     type: object
                                   podLogs:
                                     description: PodLogs determines the pod logs collector
                                       to execute.
                                     properties:
-                                      labels:
-                                        additionalProperties:
-                                          type: string
-                                        description: Label selector to match objects
-                                          to delete
-                                        type: object
+                                      container:
+                                        description: Container in pod to get logs
+                                          from else --all-containers is used.
+                                        type: string
                                       name:
                                         description: 'Name of the referent. More info:
                                           https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -248,6 +234,16 @@ spec:
                                         description: 'Namespace of the referent. More
                                           info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                                         type: string
+                                      selector:
+                                        description: Selector defines labels selector.
+                                        type: string
+                                      tail:
+                                        description: Tail is the number of last lines
+                                          to collect from pods. If omitted or zero,
+                                          then the default is 10 if you use a selector,
+                                          or -1 (all) if you use a pod name. This
+                                          matches default behavior of `kubectl logs`.
+                                        type: integer
                                     type: object
                                 type: object
                               type: array

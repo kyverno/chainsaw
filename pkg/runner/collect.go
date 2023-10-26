@@ -24,10 +24,9 @@ func eventsCollector(collector v1alpha1.EventsCollector) string {
 	if collector.Name != "" {
 		fmt.Fprintf(&b, " %s", collector.Name)
 	}
-	// TODO
-	// if len(tc.Selector) > 0 {
-	// 	fmt.Fprintf(&b, " -l %s", tc.Selector)
-	// }
+	if collector.Selector != "" {
+		fmt.Fprintf(&b, " -l %s", collector.Selector)
+	}
 	ns := collector.Namespace
 	// TODO
 	if collector.Namespace == "" {
@@ -43,30 +42,22 @@ func podLogsCollector(collector v1alpha1.PodLogsCollector) string {
 	if collector.Name != "" {
 		fmt.Fprintf(&b, " %s", collector.Name)
 	}
-	// TODO
-	// if len(tc.Selector) > 0 {
-	// 	fmt.Fprintf(&b, " -l %s", tc.Selector)
-	// }
+	if collector.Selector != "" {
+		fmt.Fprintf(&b, " -l %s", collector.Selector)
+	}
 	ns := collector.Namespace
 	// TODO
 	if collector.Namespace == "" {
 		ns = "$NAMESPACE"
 	}
 	fmt.Fprintf(&b, " -n %s", ns)
-	b.WriteString(" --all-containers")
-	// TODO
-	// if len(tc.Container) > 0 {
-	// 	fmt.Fprintf(&b, " -c %s", tc.Container)
-	// } else {
-	// 	b.WriteString(" --all-containers")
-	// }
-	// if tc.Tail == 0 {
-	// 	if len(tc.Selector) > 0 {
-	// 		tc.Tail = 10
-	// 	} else {
-	// 		tc.Tail = -1
-	// 	}
-	// }
-	// fmt.Fprintf(&b, " --tail=%d", tc.Tail)
+	if len(collector.Container) > 0 {
+		fmt.Fprintf(&b, " -c %s", collector.Container)
+	} else {
+		b.WriteString(" --all-containers")
+	}
+	if collector.Tail != nil {
+		fmt.Fprintf(&b, " --tail=%d", *collector.Tail)
+	}
 	return b.String()
 }

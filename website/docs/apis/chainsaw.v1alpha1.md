@@ -100,17 +100,15 @@ during the testing process.</p>
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
-<p>Command describes a command to run as a part of a test step or suite.</p>
+<p>Command describes a command to run as a part of a test step.</p>
 
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `command` | `string` |  |  | <p>The command and argument to run as a string.</p> |
-| `namespaced` | `bool` |  |  | <p>If set, the `--namespace` flag will be appended to the command with the namespace to use.</p> |
-| `script` | `string` |  |  | <p>Ability to run a shell script from TestStep (without a script file) namespaced and command should not be used with script.</p> |
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the command. Overrides the global timeout set in the Configuration.</p> |
+| `command` | `string` |  |  | <p>Command is the command and argument to run as a string.</p> |
+| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Override the Test/TestStep timeout for this command (in seconds).</p> |
-| `skipLogOutput` | `bool` |  |  | <p>If set, the output from the command is NOT logged.  Useful for sensitive logs or to reduce noise.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -176,7 +174,9 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `ObjectSelector` | [`ObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectSelector determines the selection process of events to collect.</p> |
+| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
+| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
+| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
@@ -214,9 +214,7 @@ For multiple objects use labels.</p>
 
 **Appears in:**
     
-- [EventsCollector](#chainsaw-kyverno-io-v1alpha1-EventsCollector)
 - [ObjectReference](#chainsaw-kyverno-io-v1alpha1-ObjectReference)
-- [PodLogsCollector](#chainsaw-kyverno-io-v1alpha1-PodLogsCollector)
 
 <p>ObjectSelector represents a strategy to select objects.
 For a single object name and namespace are used to identify the object.
@@ -253,7 +251,11 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `ObjectSelector` | [`ObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectSelector determines the selection process of pods to collect logs from.</p> |
+| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
+| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
+| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+| `container` | `string` |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
+| `tail` | `int` |  |  | <p>Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.</p> |
 
 ## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 

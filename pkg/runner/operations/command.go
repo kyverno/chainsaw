@@ -1,61 +1,50 @@
 package operations
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 )
 
-func ExecuteCommand(ctx context.Context, cmdSpec v1alpha1.Command, namespace string) error {
-	isScript := cmdSpec.Script != ""
-	var cmdStr string
-	if isScript {
-		cmdStr = cmdSpec.Script
-	} else {
-		cmdStr = cmdSpec.Command
+type CommandOutput struct {
+	stdout bytes.Buffer
+	stderr bytes.Buffer
+}
+
+func (c *CommandOutput) Out() string {
+	return strings.TrimSpace(c.stdout.String())
+}
+
+func (c *CommandOutput) Err() string {
+	return strings.TrimSpace(c.stderr.String())
+}
+
+func Command(ctx context.Context, logger logging.Logger, command v1alpha1.Command, namespace string) (*CommandOutput, error) {
+	logger = logger.WithName("CMD   ")
+	logger.Log(command.Command, "...")
+	args := strings.Fields(command.Command)
+	cmd := exec.CommandContext(ctx, args[0], args[1:]...) //nolint:gosec
+	var output *CommandOutput
+	if !command.SkipLogOutput {
+		output = &CommandOutput{}
+		cmd.Stdout = &output.stdout
+		cmd.Stderr = &output.stderr
 	}
-
-	// Append namespace flag if necessary
-	if cmdSpec.Namespaced && !isScript {
-		cmdStr = fmt.Sprintf("%s --namespace %s", cmdStr, namespace)
+	cwd, err := os.Getwd()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get current working directory (%w)", err)
 	}
-
-	// Create the appropriate command based on the input
-	var command *exec.Cmd
-	if isScript {
-		// #nosec
-		command = exec.CommandContext(ctx, "sh", "-c", cmdStr)
-	} else {
-		args := strings.Fields(cmdStr)
-		// #nosec
-		command = exec.CommandContext(ctx, args[0], args[1:]...)
-	}
-
-	// Execute and handle output
-	var out []byte
-	var err error
-
-	if !cmdSpec.SkipLogOutput {
-		out, err = command.CombinedOutput()
-		if err != nil {
-			if ctx.Err() == context.DeadlineExceeded {
-				return err
-			}
-			return fmt.Errorf("command failed: %s\n%s", err, out)
-		}
-		// fmt.Printf("Command output: %s\n", out)
-	} else {
-		err = command.Run()
-		if err != nil {
-			if ctx.Err() == context.DeadlineExceeded {
-				return err
-			}
-			return err
-		}
-	}
-
-	return nil
+	env := os.Environ()
+	env = append(env, fmt.Sprintf("NAMESPACE=%s", namespace))
+	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
+	// TODO
+	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
+	cmd.Env = env
+	return output, cmd.Run()
 }
