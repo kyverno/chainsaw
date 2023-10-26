@@ -92,11 +92,11 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `command` | `string` | :white_check_mark: |  | <p>The command and argument to run as a string.</p> |
-| `namespaced` | `bool` | :white_check_mark: |  | <p>If set, the `--namespace` flag will be appended to the command with the namespace to use.</p> |
+| `namespaced` | `bool` |  |  | <p>If set, the `--namespace` flag will be appended to the command with the namespace to use.</p> |
 | `script` | `string` | :white_check_mark: |  | <p>Ability to run a shell script from TestStep (without a script file) namespaced and command should not be used with script.  namespaced is ignored and command is an error. env expansion is depended upon the shell but ENV is passed to the runtime env.</p> |
-| `continueOnError` | `bool` | :white_check_mark: |  | <p>If set, exit failures (`exec.ExitError`) will be ignored. `exec.Error` are NOT ignored.</p> |
-| `timeout` | `int` | :white_check_mark: |  | <p>Override the TestSuite timeout for this command (in seconds).</p> |
-| `skipLogOutput` | `bool` | :white_check_mark: |  | <p>If set, the output from the command is NOT logged.  Useful for sensitive logs or to reduce noise.</p> |
+| `continueOnError` | `bool` |  |  | <p>If set, exit failures (`exec.ExitError`) will be ignored. `exec.Error` are NOT ignored.</p> |
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Override the TestSuite timeout for this command (in seconds).</p> |
+| `skipLogOutput` | `bool` |  |  | <p>If set, the output from the command is NOT logged.  Useful for sensitive logs or to reduce noise.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 

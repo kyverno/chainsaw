@@ -135,7 +135,7 @@ spec:
                               timeout:
                                 description: Override the TestSuite timeout for this
                                   command (in seconds).
-                                type: integer
+                                type: string
                             type: object
                           type: array
                         delete:

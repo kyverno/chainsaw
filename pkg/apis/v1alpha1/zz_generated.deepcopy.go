@@ -78,6 +78,11 @@ func (in *Command) DeepCopyInto(out *Command) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.Timeout != nil {
+		in, out := &in.Timeout, &out.Timeout
+		*out = new(v1.Duration)
+		**out = **in
+	}
 	return
 }
 
