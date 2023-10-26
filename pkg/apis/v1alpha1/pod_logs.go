@@ -1,7 +1,7 @@
 package v1alpha1
 
-// PodLogsCollector defines how to collects pod logs.
-type PodLogsCollector struct {
+// PodLogs defines how to collects pod logs.
+type PodLogs struct {
 	// Namespace of the referent.
 	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
 	// +optional

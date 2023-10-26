@@ -1,7 +1,7 @@
 package v1alpha1
 
-// EventsCollector defines how to collects events.
-type EventsCollector struct {
+// Events defines how to collects events.
+type Events struct {
 	// Namespace of the referent.
 	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
 	// +optional

@@ -4,5 +4,9 @@ package v1alpha1
 type OnFailure struct {
 	// Collect define the collectors to run.
 	// +optional
-	Collect []Collector `json:"collect,omitempty"`
+	Collect *Collect `json:"collect,omitempty"`
+
+	// Exec define the commands and/or scripts to run.
+	// +optional
+	Exec *Exec `json:"exec,omitempty"`
 }

@@ -104,34 +104,6 @@ spec:
                             - file
                             type: object
                           type: array
-                        command:
-                          description: Command provides a list of commands that should
-                            be executed as a part of this test step.
-                          items:
-                            description: Command describes a command to run as a part
-                              of a test step.
-                            properties:
-                              command:
-                                description: Command is the command and argument to
-                                  run as a string.
-                                type: string
-                              continueOnError:
-                                description: ContinueOnError determines whether a
-                                  test should continue or not in case the operation
-                                  was not successful. Even if the test continues executing,
-                                  it will still be reported as failed.
-                                type: boolean
-                              skipLogOutput:
-                                description: SkipLogOutput removes the output from
-                                  the command. Useful for sensitive logs or to reduce
-                                  noise.
-                                type: boolean
-                              timeout:
-                                description: Timeout for the command. Overrides the
-                                  global timeout set in the Configuration.
-                                type: string
-                            type: object
-                          type: array
                         delete:
                           description: Delete provides a list of objects that should
                             be deleted before this test step is executed. This helps
@@ -193,14 +165,59 @@ spec:
                             - file
                             type: object
                           type: array
+                        exec:
+                          description: Exec provides a list of commands and/or scripts
+                            that should be executed as a part of this test step.
+                          items:
+                            description: Exec describes a command and/or script operation.
+                            properties:
+                              command:
+                                description: Command defines a command to run.
+                                properties:
+                                  args:
+                                    description: Args is the command arguments.
+                                    items:
+                                      type: string
+                                    type: array
+                                  entryPoint:
+                                    description: EntryPoint is the command entry point
+                                      to run.
+                                    type: string
+                                type: object
+                              continueOnError:
+                                description: ContinueOnError determines whether a
+                                  test should continue or not in case the operation
+                                  was not successful. Even if the test continues executing,
+                                  it will still be reported as failed.
+                                type: boolean
+                              script:
+                                description: Script defines a script to run.
+                                properties:
+                                  content:
+                                    description: Content defines a shell script (run
+                                      with "sh -c ...").
+                                    type: string
+                                type: object
+                              skipLogOutput:
+                                description: SkipLogOutput removes the output from
+                                  the command. Useful for sensitive logs or to reduce
+                                  noise.
+                                type: boolean
+                              timeout:
+                                description: Timeout for the command. Overrides the
+                                  global timeout set in the Configuration.
+                                type: string
+                            type: object
+                          type: array
                         onFailure:
                           description: OnFailure defines actions to be executed in
                             case of step failure.
-                          properties:
-                            collect:
-                              description: Collect define the collectors to run.
-                              items:
-                                description: Collector defines a set of collectors.
+                          items:
+                            description: OnFailure defines actions to be executed
+                              on failure.
+                            properties:
+                              collect:
+                                description: Collect define the collectors to run.
                                 properties:
                                   events:
                                     description: Events determines the events collector
@@ -246,8 +263,38 @@ spec:
                                         type: integer
                                     type: object
                                 type: object
-                              type: array
-                          type: object
+                              exec:
+                                description: Exec define the commands and/or scripts
+                                  to run.
+                                properties:
+                                  command:
+                                    description: Command defines a command to run.
+                                    properties:
+                                      args:
+                                        description: Args is the command arguments.
+                                        items:
+                                          type: string
+                                        type: array
+                                      entryPoint:
+                                        description: EntryPoint is the command entry
+                                          point to run.
+                                        type: string
+                                    type: object
+                                  script:
+                                    description: Script defines a script to run.
+                                    properties:
+                                      content:
+                                        description: Content defines a shell script
+                                          (run with "sh -c ...").
+                                        type: string
+                                    type: object
+                                  timeout:
+                                    description: Timeout for the command. Overrides
+                                      the global timeout set in the Configuration.
+                                    type: string
+                                type: object
+                            type: object
+                          type: array
                         skipDelete:
                           description: SkipDelete determines whether the resources
                             created by the step should be deleted after the test step

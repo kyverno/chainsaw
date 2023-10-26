@@ -30,9 +30,9 @@ func timeoutCtx(config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step 
 	return ctx, cancelNoOp
 }
 
-func timeoutCmdCtx(cmd v1alpha1.Command, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) (context.Context, context.CancelFunc) {
-	if cmd.Timeout != nil && cmd.Timeout.Abs() > 0 {
-		return context.WithTimeout(context.Background(), cmd.Timeout.Duration)
+func timeoutExecCtx(exec v1alpha1.Exec, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) (context.Context, context.CancelFunc) {
+	if exec.Timeout != nil && exec.Timeout.Abs() > 0 {
+		return context.WithTimeout(context.Background(), exec.Timeout.Duration)
 	} else {
 		return timeoutCtx(config, test, step)
 	}
