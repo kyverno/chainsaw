@@ -35,9 +35,11 @@ func ExecuteCommand(cmdSpec v1alpha1.Command, namespace string) error {
 	// Create the appropriate command based on the input
 	var command *exec.Cmd
 	if isScript {
+		// #nosec
 		command = exec.CommandContext(ctx, "sh", "-c", cmdStr)
 	} else {
 		args := strings.Fields(cmdStr)
+		// #nosec
 		command = exec.CommandContext(ctx, args[0], args[1:]...)
 	}
 
@@ -53,7 +55,7 @@ func ExecuteCommand(cmdSpec v1alpha1.Command, namespace string) error {
 			}
 			return fmt.Errorf("command failed: %s\n%s", err, out)
 		}
-		fmt.Printf("Command output: %s\n", out)
+		// fmt.Printf("Command output: %s\n", out)
 	} else {
 		err = command.Run()
 		if err != nil {
