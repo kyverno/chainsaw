@@ -7,6 +7,7 @@ import (
 
 type Namespacer interface {
 	Apply(ctrlclient.Object) error
+	GetNamespace() string
 }
 
 type namespacer struct {
@@ -32,4 +33,8 @@ func (n *namespacer) Apply(resource ctrlclient.Object) error {
 		}
 	}
 	return nil
+}
+
+func (n *namespacer) GetNamespace() string {
+	return n.namespace
 }

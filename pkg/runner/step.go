@@ -56,6 +56,15 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			})
 		}
 	}
+	if step.Spec.Commands != nil {
+		namespace := ctx.namespacer.GetNamespace()
+		for _, command := range step.Spec.Commands {
+			if err := operations.ExecuteCommand(command, namespace); err != nil {
+				logger.Logf("command failed: %s", err)
+				fail(t, command.ContinueOnError)
+			}
+		}
+	}
 	for _, operation := range step.Spec.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
