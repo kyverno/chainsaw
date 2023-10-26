@@ -82,6 +82,10 @@ func execute(out io.Writer, save bool, paths ...string) error {
 						}
 						needsSave = true
 						converted = append(converted, step)
+					case "TestAssert":
+						fmt.Fprintf(out, "Converting %s in %s...\n", "TestAssert", path)
+						fmt.Fprintf(out, "  ERROR: not supported (%s)\n", path)
+						return fmt.Errorf("conversion not supported %s", resource.GetKind())
 					default:
 						fmt.Fprintf(out, "  ERROR: unknown kuttl resource (%s): %s\n", path, err)
 						return fmt.Errorf("unknown kuttl resource %s", resource.GetKind())
