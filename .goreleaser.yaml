@@ -11,27 +11,23 @@ builds:
       - windows
       - darwin
     binary: chainsaw
-    main: cmd/main.go
+    main: ./cmd
     flags:
       - -trimpath
     ldflags:
       - -s -w -X github.com/kyverno/chainsaw/pkg/version.BuildVersion={{ .Version }}
 
 kos:
-  - repository: ghcr.io/kyverno/chainsaw
+  - build: chainsaw
+    repository: ghcr.io/kyverno/chainsaw
     tags:
       - '{{.Tag}}'
       - '{{ if not .Prerelease }}latest{{ end }}' 
     bare: true
     preserve_import_paths: false
     sbom: none
-    main: cmd/main.go
     platforms:
       - all
-    flags:
-      - -trimpath
-    ldflags:
-      - -s -w -X github.com/kyverno/chainsaw/pkg/version.BuildVersion={{ .Version }}
 
 signs:
   - cmd: cosign
