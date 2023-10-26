@@ -1,12 +1,15 @@
+Stronger tool for e2e testing
+
 Usage:
   chainsaw [flags]
   chainsaw [command]
 
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
+  docs        Generate reference documentation
   help        Help about any command
-  test        Stronger tool for e2e testing
-  version     
+  test        Run tests
+  version     Print the version informations
 
 Flags:
   -h, --help   help for chainsaw
