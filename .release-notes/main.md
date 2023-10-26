@@ -15,6 +15,7 @@ Release notes for `TODO`.
 - Added support to continue on error in `Delete`, `Apply`, `Assert` and `Error` operations
 - Added support to specifify if a test should run concurrently or not at the `Test` level
 - Docker image is now released under `ghcr.io/kyverno/chainsaw`
+- Add support for overriding the namespace used at the `Test` level
 
 ## :sparkles: UI changes :sparkles:
 
