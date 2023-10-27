@@ -18,6 +18,7 @@ Release notes for `TODO`.
 - Added support for overriding the namespace used at the `Test` level
 - Added `Event` and `Pod` logs collectors support
 - Added `chainsaw kuttl migrate` command to migrate KUTTL tests to chainsaw
+- Added support for `Apply` operations to fail (when applying a resource is expected to return an error)
 - Docker image is now released under `ghcr.io/kyverno/chainsaw`
 
 ## :sparkles: UI changes :sparkles:
