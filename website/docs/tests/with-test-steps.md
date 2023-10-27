@@ -15,11 +15,14 @@ A `TestStep` resource, like any Kubernetes resource has an `apiVersion`, `kind` 
 
 It also comes with a `spec` section used to declaratively represent the [step operations](what-is-a-test.md#operations) and other configuration elements belonging to the step being defined:
 
-- **Timeout**: Dictates how long the test step should run before being marked as failed due to a timeout.
-- **Delete**: Points out resources that need to be removed before this step gets executed. It ensures the desired state of the environment before the step runs.
-- **Apply**: Denotes the Kubernetes resources or configurations that should be applied at this stage.
-- **Assert**: Specifies the conditions that must be true for the step to pass. Essentially, it's where you set your expectations.
-- **Error**: Lists the expected errors for this step. This is vital for cases where certain errors are anticipated and should be treated as part of the expected behavior.
+- **Timeout**: Sets how long the test step should run before being considered failed due to a timeout.
+- **SkipDelete**: Determines if the resources created by the step should be preserved post-execution.
+- **Delete**: Identifies resources to be removed before this step's execution. It ensures the desired state of the environment before the step runs.
+- **Apply**: Marks the Kubernetes resources or configurations to apply at this stage.
+- **Assert**: Outlines conditions that must be met for the step to pass.
+- **Error**: Details expected errors for this step, treating anticipated errors as expected behavior.
+- **Exec**: Lists commands or scripts that must be run as part of this test step.
+- **OnFailure**: Specifies actions to undertake in case of a step failure.
 
 The full structure of the `TestStep` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-TestStep)
 
@@ -48,6 +51,7 @@ spec:
   # it would not be possible to override the timeout
   # with a manifests based approach
   timeout: 10s
+  skipDelete: true
   # apply a configmap to the cluster
   # the path to the configmap is relative to the folder
   # containing the test, hence allow reusing manifests
@@ -91,6 +95,23 @@ spec:
   # present in the cluster
   error:
   - file: ../resources/configmap-error.yaml
+```
+
+### 02-assert-exec.yaml
+
+This manifest contains both an assertion and an exec operation, showing how you can mix operations in a single step.
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: TestStep
+metadata:
+  name: test-step-name-02
+spec:
+  assert:
+  - condition: ".data.foo == 'bar'"
+  exec:
+  - command: ["echo", "Hello Chainsaw"]
+
 ```
 
 ## Conclusion
