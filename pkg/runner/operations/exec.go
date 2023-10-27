@@ -1,29 +1,14 @@
 package operations
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 )
-
-type CommandOutput struct {
-	stdout bytes.Buffer
-	stderr bytes.Buffer
-}
-
-func (c *CommandOutput) Out() string {
-	return strings.TrimSpace(c.stdout.String())
-}
-
-func (c *CommandOutput) Err() string {
-	return strings.TrimSpace(c.stderr.String())
-}
 
 func Exec(ctx context.Context, logger logging.Logger, exec v1alpha1.Exec, namespace string) (CommandOutput, error) {
 	if exec.Command != nil {
