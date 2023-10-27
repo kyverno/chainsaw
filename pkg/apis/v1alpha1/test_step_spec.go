@@ -34,11 +34,11 @@ type TestStepSpec struct {
 	// +optional
 	Delete []Delete `json:"delete,omitempty"`
 
-	// Command provides a list of commands that should be executed as a part of this test step.
+	// Exec provides a list of commands and/or scripts that should be executed as a part of this test step.
 	// +optional
-	Command []Command `json:"command,omitempty"`
+	Exec []ExecOperation `json:"exec,omitempty"`
 
 	// OnFailure defines actions to be executed in case of step failure.
 	// +optional
-	OnFailure *OnFailure `json:"onFailure,omitempty"`
+	OnFailure []OnFailure `json:"onFailure,omitempty"`
 }

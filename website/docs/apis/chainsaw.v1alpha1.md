@@ -80,35 +80,33 @@ during the testing process.</p>
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the assertion.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
-## `Collector`     {#chainsaw-kyverno-io-v1alpha1-Collector}
+## `Collect`     {#chainsaw-kyverno-io-v1alpha1-Collect}
 
 **Appears in:**
     
 - [OnFailure](#chainsaw-kyverno-io-v1alpha1-OnFailure)
 
-<p>Collector defines a set of collectors.</p>
+<p>Collect defines a set of collectors.</p>
 
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `podLogs` | [`PodLogsCollector`](#chainsaw-kyverno-io-v1alpha1-PodLogsCollector) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
-| `events` | [`EventsCollector`](#chainsaw-kyverno-io-v1alpha1-EventsCollector) |  |  | <p>Events determines the events collector to execute.</p> |
+| `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
+| `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
 
 ## `Command`     {#chainsaw-kyverno-io-v1alpha1-Command}
 
 **Appears in:**
     
-- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+- [Exec](#chainsaw-kyverno-io-v1alpha1-Exec)
 
 <p>Command describes a command to run as a part of a test step.</p>
 
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the command. Overrides the global timeout set in the Configuration.</p> |
-| `command` | `string` |  |  | <p>Command is the command and argument to run as a string.</p> |
-| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
-| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
+| `entryPoint` | `string` |  |  | <p>EntryPoint is the command entry point to run.</p> |
+| `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -163,13 +161,13 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the expected error.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
-## `EventsCollector`     {#chainsaw-kyverno-io-v1alpha1-EventsCollector}
+## `Events`     {#chainsaw-kyverno-io-v1alpha1-Events}
 
 **Appears in:**
     
-- [Collector](#chainsaw-kyverno-io-v1alpha1-Collector)
+- [Collect](#chainsaw-kyverno-io-v1alpha1-Collect)
 
-<p>EventsCollector defines how to collects events.</p>
+<p>Events defines how to collects events.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -177,6 +175,37 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 | `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+
+## `Exec`     {#chainsaw-kyverno-io-v1alpha1-Exec}
+
+**Appears in:**
+    
+- [ExecOperation](#chainsaw-kyverno-io-v1alpha1-ExecOperation)
+- [OnFailure](#chainsaw-kyverno-io-v1alpha1-OnFailure)
+
+<p>Exec describes a command or script.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the command. Overrides the global timeout set in the Configuration.</p> |
+| `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
+| `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
+
+## `ExecOperation`     {#chainsaw-kyverno-io-v1alpha1-ExecOperation}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+<p>Exec describes a command and/or script operation.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `Exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  | :white_check_mark: | <p>Exec defines the command and/or script.</p> |
+| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
+| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
@@ -238,15 +267,16 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `collect` | [`[]Collector`](#chainsaw-kyverno-io-v1alpha1-Collector) |  |  | <p>Collect define the collectors to run.</p> |
+| `collect` | [`Collect`](#chainsaw-kyverno-io-v1alpha1-Collect) |  |  | <p>Collect define the collectors to run.</p> |
+| `exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  |  | <p>Exec define the commands and/or scripts to run.</p> |
 
-## `PodLogsCollector`     {#chainsaw-kyverno-io-v1alpha1-PodLogsCollector}
+## `PodLogs`     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 
 **Appears in:**
     
-- [Collector](#chainsaw-kyverno-io-v1alpha1-Collector)
+- [Collect](#chainsaw-kyverno-io-v1alpha1-Collect)
 
-<p>PodLogsCollector defines how to collects pod logs.</p>
+<p>PodLogs defines how to collects pod logs.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -264,6 +294,19 @@ For multiple objects use labels.</p>
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
+
+## `Script`     {#chainsaw-kyverno-io-v1alpha1-Script}
+
+**Appears in:**
+    
+- [Exec](#chainsaw-kyverno-io-v1alpha1-Exec)
+
+<p>Script describes a script to run as a part of a test step.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
 
 ## `TestSpec`     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
 
@@ -315,7 +358,7 @@ For multiple objects use labels.</p>
 | `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 | `delete` | [`[]Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
-| `command` | [`[]Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command provides a list of commands that should be executed as a part of this test step.</p> |
-| `onFailure` | [`OnFailure`](#chainsaw-kyverno-io-v1alpha1-OnFailure) |  |  | <p>OnFailure defines actions to be executed in case of step failure.</p> |
+| `exec` | [`[]ExecOperation`](#chainsaw-kyverno-io-v1alpha1-ExecOperation) |  |  | <p>Exec provides a list of commands and/or scripts that should be executed as a part of this test step.</p> |
+| `onFailure` | [`[]OnFailure`](#chainsaw-kyverno-io-v1alpha1-OnFailure) |  |  | <p>OnFailure defines actions to be executed in case of step failure.</p> |
 
   

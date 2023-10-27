@@ -32,21 +32,22 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 				if step.Spec.OnFailure == nil {
 					return
 				}
-				for _, collector := range step.Spec.OnFailure.Collect {
-					for _, collector := range collectors(collector) {
-						cmd := v1alpha1.Command{
-							Command: collector,
-						}
-						output, err := operations.Command(context.Background(), logger, cmd, ctx.namespacer.GetNamespace())
-						if err != nil {
-							logger.Log(err)
-						}
-						if output != nil {
+				for _, failures := range step.Spec.OnFailure {
+					if failures.Collect != nil {
+						for _, collector := range collect(*failures.Collect) {
+							cmd := collector
+							exec := v1alpha1.Exec{
+								Command: &cmd,
+							}
+							output, err := operations.Exec(context.Background(), logger, exec, ctx.namespacer.GetNamespace())
+							if err != nil {
+								logger.Log(err)
+							}
 							if out := output.Out(); out != "" {
-								logger.WithName("STDOUT").Log(out)
+								logger.WithName("STDOUT").Log("\n" + out)
 							}
 							if err := output.Err(); err != "" {
-								logger.WithName("STDERR").Log(err)
+								logger.WithName("STDERR").Log("\n" + err)
 							}
 						}
 					}
@@ -85,24 +86,24 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			})
 		}
 	}
-	for _, operation := range step.Spec.Command {
+	for _, operation := range step.Spec.Exec {
 		func() {
-			cmdCtx, cancel := timeoutCmdCtx(operation, config, test, step.Spec)
+			cmdCtx, cancel := timeoutExecCtx(operation.Exec, config, test, step.Spec)
 			defer cancel()
-			output, err := operations.Command(cmdCtx, logger, operation, ctx.namespacer.GetNamespace())
+			output, err := operations.Exec(cmdCtx, logger, operation.Exec, ctx.namespacer.GetNamespace())
 			if err != nil {
 				logger.Log(err)
 			}
-			if output != nil {
+			if !operation.SkipLogOutput {
 				if out := output.Out(); out != "" {
-					logger.WithName("STDOUT").Log(out)
+					logger.WithName("STDOUT").Log("\n" + out)
 				}
 				if err := output.Err(); err != "" {
-					logger.WithName("STDERR").Log(err)
+					logger.WithName("STDERR").Log("\n" + err)
 				}
-			}
-			if err != nil {
-				fail(t, operation.ContinueOnError)
+				if err != nil {
+					fail(t, operation.ContinueOnError)
+				}
 			}
 		}()
 	}

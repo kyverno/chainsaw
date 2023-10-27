@@ -2,62 +2,63 @@ package runner
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
 
-func collectors(collector v1alpha1.Collector) []string {
-	var commands []string
+func collect(collector v1alpha1.Collect) []v1alpha1.Command {
+	var commands []v1alpha1.Command
 	if collector.Events != nil {
-		commands = append(commands, eventsCollector(*collector.Events))
+		commands = append(commands, events(*collector.Events))
 	}
 	if collector.PodLogs != nil {
-		commands = append(commands, podLogsCollector(*collector.PodLogs))
+		commands = append(commands, podLogs(*collector.PodLogs))
 	}
 	return commands
 }
 
-func eventsCollector(collector v1alpha1.EventsCollector) string {
-	var b strings.Builder
-	b.WriteString("kubectl get events")
+func events(collector v1alpha1.Events) v1alpha1.Command {
+	cmd := v1alpha1.Command{
+		EntryPoint: "kubectl",
+		Args:       []string{"get", "events"},
+	}
 	if collector.Name != "" {
-		fmt.Fprintf(&b, " %s", collector.Name)
+		cmd.Args = append(cmd.Args, collector.Name)
 	}
 	if collector.Selector != "" {
-		fmt.Fprintf(&b, " -l %s", collector.Selector)
+		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
-	ns := collector.Namespace
-	// TODO
+	namespace := collector.Namespace
 	if collector.Namespace == "" {
-		ns = "$NAMESPACE"
+		namespace = "$NAMESPACE"
 	}
-	fmt.Fprintf(&b, " -n %s", ns)
-	return b.String()
+	cmd.Args = append(cmd.Args, "-n", namespace)
+	return cmd
 }
 
-func podLogsCollector(collector v1alpha1.PodLogsCollector) string {
-	var b strings.Builder
-	b.WriteString("kubectl logs --prefix")
+func podLogs(collector v1alpha1.PodLogs) v1alpha1.Command {
+	cmd := v1alpha1.Command{
+		EntryPoint: "kubectl",
+		Args:       []string{"logs", "--prefix"},
+	}
 	if collector.Name != "" {
-		fmt.Fprintf(&b, " %s", collector.Name)
+		cmd.Args = append(cmd.Args, collector.Name)
 	}
 	if collector.Selector != "" {
-		fmt.Fprintf(&b, " -l %s", collector.Selector)
+		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
-	ns := collector.Namespace
-	// TODO
+	namespace := collector.Namespace
 	if collector.Namespace == "" {
-		ns = "$NAMESPACE"
+		namespace = "$NAMESPACE"
 	}
-	fmt.Fprintf(&b, " -n %s", ns)
-	if len(collector.Container) > 0 {
-		fmt.Fprintf(&b, " -c %s", collector.Container)
+	cmd.Args = append(cmd.Args, "-n", namespace)
+	if collector.Container == "" {
+		cmd.Args = append(cmd.Args, "--all-containers")
 	} else {
-		b.WriteString(" --all-containers")
+		cmd.Args = append(cmd.Args, "-c", collector.Container)
 	}
 	if collector.Tail != nil {
-		fmt.Fprintf(&b, " --tail=%d", *collector.Tail)
+		cmd.Args = append(cmd.Args, "--tail", fmt.Sprint(*collector.Tail))
 	}
-	return b.String()
+	return cmd
 }
