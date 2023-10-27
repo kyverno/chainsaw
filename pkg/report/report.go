@@ -25,21 +25,21 @@ type StepReport struct {
 }
 
 // Function to serialize to JSON
-func (r *Report) ToJSON() (string, error) {
+func (r *Report) ToJSON() ([]byte, error) {
 	data, err := json.MarshalIndent(r, "", "  ")
 	if err != nil {
-		return "", err
+		return []byte(""), err
 	}
-	return string(data), nil
+	return data, nil
 }
 
 // Function to serialize to XML
-func (r *Report) ToXML() (string, error) {
+func (r *Report) ToXML() ([]byte, error) {
 	data, err := xml.MarshalIndent(r, "", "  ")
 	if err != nil {
-		return "", err
+		return []byte(""), err
 	}
-	return string(data), nil
+	return data, nil
 }
 
 func (report *Report) SaveReportAsJSON(filePath string) error {
@@ -47,7 +47,7 @@ func (report *Report) SaveReportAsJSON(filePath string) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filePath, []byte(jsonData), 0644)
+	return os.WriteFile(filePath, jsonData, 0644)
 }
 
 func (report *Report) SaveReportAsXML(filePath string) error {
@@ -55,5 +55,5 @@ func (report *Report) SaveReportAsXML(filePath string) error {
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filePath, []byte(xmlData), 0644)
+	return os.WriteFile(filePath, xmlData, 0644)
 }
