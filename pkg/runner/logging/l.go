@@ -32,11 +32,11 @@ func NewLogger(t *testing.T, clock clock.PassiveClock, test string, step string)
 func (l *logger) Log(operation string, args ...interface{}) {
 	a := make([]interface{}, 0, len(args)+1)
 	if l.resource == nil {
-		a = append(a, fmt.Sprintf("%s%s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), l.test, l.step, operation))
+		a = append(a, fmt.Sprintf("%s%s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), operation, l.test, l.step))
 	} else {
 		gvk := l.resource.GetObjectKind().GroupVersionKind()
 		name := client.Name(client.ObjectKey(l.resource))
-		a = append(a, fmt.Sprintf("%s%s | %s | %s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), l.test, l.step, operation, fmt.Sprintf("%s/%s", gvk.GroupVersion(), gvk.Kind), name))
+		a = append(a, fmt.Sprintf("%s%s | %s | %s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), operation, l.test, l.step, fmt.Sprintf("%s/%s", gvk.GroupVersion(), gvk.Kind), name))
 	}
 	a = append(a, args...)
 	l.t.Log(a...)

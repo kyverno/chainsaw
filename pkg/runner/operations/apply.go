@@ -5,6 +5,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
@@ -15,12 +16,12 @@ import (
 func Apply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, cleanup CleanupFunc) (_err error) {
 	const operation = "APPLY "
 	logger = logger.WithResource(obj)
-	logger.Log(operation, "RUNNING...")
+	logger.Log(color.BoldFgCyan.Sprint(operation), "RUNNING...")
 	defer func() {
 		if _err == nil {
-			logger.Log(operation, "DONE")
+			logger.Log(color.BoldGreen.Sprint(operation), "DONE")
 		} else {
-			logger.Log(operation, "ERROR", _err)
+			logger.Log(color.BoldRed.Sprint(operation), "ERROR", _err)
 		}
 	}()
 	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
