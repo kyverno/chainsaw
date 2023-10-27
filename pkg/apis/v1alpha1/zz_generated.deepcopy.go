@@ -30,6 +30,11 @@ import (
 func (in *Apply) DeepCopyInto(out *Apply) {
 	*out = *in
 	out.FileRef = in.FileRef
+	if in.ShouldFail != nil {
+		in, out := &in.ShouldFail, &out.ShouldFail
+		*out = new(bool)
+		**out = **in
+	}
 	if in.ContinueOnError != nil {
 		in, out := &in.ContinueOnError, &out.ContinueOnError
 		*out = new(bool)
@@ -156,6 +161,11 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		in, out := &in.TestDirs, &out.TestDirs
 		*out = make([]string, len(*in))
 		copy(*out, *in)
+	}
+	if in.Parallel != nil {
+		in, out := &in.Parallel, &out.Parallel
+		*out = new(int)
+		**out = **in
 	}
 	if in.RepeatCount != nil {
 		in, out := &in.RepeatCount, &out.RepeatCount

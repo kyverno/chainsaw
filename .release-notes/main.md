@@ -13,17 +13,19 @@ Release notes for `TODO`.
 ## :dizzy: New features :dizzy:
 
 - Added `Command` and `Script` operations
-- Added support to continue on error in `Delete`, `Apply`, `Assert` and `Error` operations
+- Added support to continue on error in `Delete`, `Apply`, `Assert`, `Error`, `Command` and `Script` operations
 - Added support to specifify if a test should run concurrently or not at the `Test` level
 - Added support for overriding the namespace used at the `Test` level
 - Added `Event` and `Pod` logs collectors support
 - Added `chainsaw kuttl migrate` command to migrate KUTTL tests to chainsaw
+- Added support for `Apply` operations to fail (when applying a resource is expected to return an error)
 - Docker image is now released under `ghcr.io/kyverno/chainsaw`
 
 ## :sparkles: UI changes :sparkles:
 
 - Improved logging of running tests
 - Added coloured logs
+- Made `Parallel` in `Configuration` optional (delegates default to the testing package)
 
 ## :books: Docs :books:
 

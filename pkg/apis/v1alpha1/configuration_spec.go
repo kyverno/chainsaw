@@ -32,9 +32,10 @@ type ConfigurationSpec struct {
 	FailFast bool `json:"failFast,omitempty"`
 
 	// The maximum number of tests to run at once.
-	// +kubebuilder:default:=8
 	// +kubebuilder:validation:Format:=int
-	Parallel int `json:"parallel,omitempty"`
+	// +kubebuilder:validation:Minimum:=1
+	// +optional
+	Parallel *int `json:"parallel,omitempty"`
 
 	// ReportFormat determines test report format (JSON|XML|nil) nil == no report.
 	// maps to report.Type, however we don't want generated.deepcopy to have reference to it.
