@@ -51,7 +51,7 @@ The delete operation allows you to specify resources that should be deleted from
 The full structure of the `Delete` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
 
 ```yaml
-Delete:
+delete:
   - apiVersion: v1
     kind: Pod
     namespace: default
@@ -65,7 +65,7 @@ The apply operation lets you define resources that should be applied to the Kube
 The full structure of the `Apply` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
 
 ```yaml
-Apply:
+apply:
   - file: path/to/deployment.yaml
   - file: path/to/service.yaml
 ```
@@ -77,7 +77,7 @@ The assert operation allows you to specify conditions that should hold true for 
 The full structure of the `Assert` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
 
 ```yaml
-Assert:
+assert:
   - file: path/to/assertions.yaml  
 ```
 
@@ -88,7 +88,7 @@ The error operation lets you define a set of expected errors for a test step. If
 The full structure of the `Error` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
 
 ```yaml
-Error:
+error:
   - file: path/to/expected-errors.yaml
 ```
 
@@ -103,7 +103,7 @@ The full structure of the `Exec` is documented [here](../apis/chainsaw.v1alpha1.
 To run a command:
 
 ```yaml
-Exec:
+exec:
   timeout: "5m"
   command:
     some-command-to-run-parameters
@@ -112,7 +112,7 @@ Exec:
 To execute a script:
 
 ```yaml
-Exec:
+exec:
   timeout: "10m"
   script:
     path/to/script.sh
