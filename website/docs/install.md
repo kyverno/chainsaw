@@ -14,6 +14,20 @@ go install github.com/kyverno/chainsaw@latest
 
 Download the pre-compiled binaries from the [releases page](https://github.com/kyverno/chainsaw/releases) and copy them to the desired location.
 
+## Install using Docker
+
+Chainsaw is also available as a Docker image which you can pull and run:
+
+```bash
+docker pull ghcr.io/kyverno/chainsaw:v0.0.2
+```
+
+> Note: Since Chainsaw relies on files for its operation (like test definitions), you will need to bind mount the necessary directories when running it via Docker.
+
+```bash
+docker run --rm -v /path/on/host:/path/in/container ghcr.io/kyverno/chainsaw:v0.0.2 <chainsaw-command>
+```
+
 ## Compile from sources
 
 **clone:**

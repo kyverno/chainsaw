@@ -9,8 +9,9 @@ chainsaw kuttl migrate [flags]
 ### Options
 
 ```
-  -h, --help   help for migrate
-      --save   If set, converted files will be saved.
+  -h, --help        help for migrate
+      --overwrite   If set, overwrites original file.
+      --save        If set, converted files will be saved.
 ```
 
 ### SEE ALSO

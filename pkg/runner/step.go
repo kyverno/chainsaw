@@ -92,13 +92,14 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			logger.Log(color.BoldRed.Sprint("LOAD  "), err)
 			fail(t, operation.ContinueOnError)
 		}
+		shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
 				logger.Log(color.BoldRed.Sprint("LOAD  "), err)
 				fail(t, operation.ContinueOnError)
 			}
-			if err := operations.Apply(stepCtx, logger, resource, c, cleanup); err != nil {
+			if err := operations.Apply(stepCtx, logger, resource, c, shouldFail, cleanup); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
