@@ -48,10 +48,7 @@ The delete operation allows you to specify resources that should be deleted from
 
 #### Fields Description
 
-| Field          | Type            | Notes                                                                                       |
-|----------------|-----------------|---------------------------------------------------------------------------------------------|
-| ObjectReference| ObjectReference | Determines objects to be deleted.                                                           |
-| ContinueOnError| Bool            | Optional. Determines if the test should continue when the operation isn't successful.       |
+The full structure of the `Delete` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
 
 ```yaml
 Delete:
@@ -65,12 +62,7 @@ Delete:
 
 The apply operation lets you define resources that should be applied to the Kubernetes cluster during the test step. These can be configurations, deployments, services, or any other Kubernetes resource.
 
-#### Fields Description
-
-| Field          | Type      | Notes                                                                                       |
-|----------------|-----------|---------------------------------------------------------------------------------------------|
-| FileRef        | FileRef   | Provides a reference to the file containing the configurations or resources.                 |
-| ContinueOnError| Bool      | Optional. Determines if the test should continue when the operation isn't successful.       |
+The full structure of the `Apply` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
 
 ```yaml
 Apply:
@@ -82,12 +74,7 @@ Apply:
 
 The assert operation allows you to specify conditions that should hold true for a successful test. For example, after applying certain resources, you might want to ensure that a particular pod is running or a service is accessible.
 
-#### Fields Description
-
-| Field          | Type      | Notes                                                                                       |
-|----------------|-----------|---------------------------------------------------------------------------------------------|
-| FileRef        | FileRef   | Provides a reference to the file containing the assertion.                                  |
-| ContinueOnError| Bool      | Optional. Determines if the test should continue when the operation isn't successful.       |
+The full structure of the `Assert` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
 
 ```yaml
 Assert:
@@ -98,12 +85,7 @@ Assert:
 
 The error operation lets you define a set of expected errors for a test step. If any of these errors occur during the test, they are treated as expected outcomes. However, if an error that's not on this list occurs, it will be treated as a test failure.
 
-#### Fields Description
-
-| Field          | Type      | Notes                                                                                       |
-|----------------|-----------|---------------------------------------------------------------------------------------------|
-| FileRef        | FileRef   | Provides a reference to the file containing the expected error.                             |
-| ContinueOnError| Bool      | Optional. Determines if the test should continue when the operation isn't successful.       |
+The full structure of the `Error` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
 
 ```yaml
 Error:
@@ -114,13 +96,7 @@ Error:
 
 The `Exec` operation provides a means to either execute a specific command or run a script during the test step. For each `Exec` entry, you must specify either a `Command` or a `Script`, but not both.
 
-#### Fields Description
-
-| Field    | Type                | Notes                                                              |
-|----------|---------------------|--------------------------------------------------------------------|
-| Timeout  | `metav1.Duration`   | Optional. Overrides the global timeout set in the Configuration.   |
-| Command  | `Command`           | Optional. Defines a specific command to be run.                    |
-| Script   | `Script`            | Optional. Defines a specific script to be executed.                |
+The full structure of the `Exec` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
 
 #### Usage
 
