@@ -40,7 +40,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
-			mainLogger := logging.NewLogger(t, clock)
+			mainLogger := logging.NewLogger(t, clock, t.Name(), "@init")
 			ctx := Context{
 				clock: clock,
 				clientFactory: func(logger logging.Logger) client.Client {
@@ -52,17 +52,16 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				namespace := client.Namespace(config.Namespace)
 				if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 					if !errors.IsNotFound(err) {
-						mainLogger.Log(err)
+						// Get doesn't log
+						mainLogger.Log("GET   ", err)
 						t.FailNow()
 					}
 					t.Cleanup(func() {
 						if err := operations.Delete(context.Background(), mainLogger, &namespace, c); err != nil {
-							mainLogger.Log(err)
 							t.FailNow()
 						}
 					})
 					if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
-						mainLogger.Log(err)
 						t.FailNow()
 					}
 				}
@@ -84,7 +83,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				test := tests[i]
 				name, err := testName(config, test)
 				if err != nil {
-					mainLogger.Log(err)
+					mainLogger.Log("INTERN", err)
 					t.FailNow()
 				}
 				t.Run(name, func(t *testing.T) {
@@ -106,26 +105,23 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 					if test.Spec.Skip != nil && *test.Spec.Skip {
 						t.SkipNow()
 					}
-					testLogger := logging.NewLogger(t, clock, test.Name)
-					beginLogger := testLogger.WithName("@begin")
-					cleanLogger := testLogger.WithName("@clean")
-
+					beginLogger := logging.NewLogger(t, clock, test.Name, "@begin")
+					cleanLogger := logging.NewLogger(t, clock, test.Name, "@clean")
 					ctx := ctx
 					if test.Spec.Namespace != "" {
 						namespace := client.Namespace(test.Spec.Namespace)
 						c := ctx.clientFactory(beginLogger)
 						if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 							if !errors.IsNotFound(err) {
-								beginLogger.Log(err)
+								// Get doesn't log
+								beginLogger.Log("GET   ", err)
 								t.FailNow()
 							}
 							if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
-								beginLogger.Log(err)
 								t.FailNow()
 							}
 							t.Cleanup(func() {
-								if err := operations.Delete(context.Background(), cleanLogger, &namespace, c); err != nil {
-									cleanLogger.Log(err)
+								if err := operations.Delete(context.Background(), cleanLogger, &namespace, ctx.clientFactory(cleanLogger)); err != nil {
 									t.FailNow()
 								}
 							})
@@ -134,20 +130,17 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 					}
 					if ctx.namespacer == nil {
 						namespace := client.PetNamespace()
-						c := ctx.clientFactory(beginLogger)
-						if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
-							beginLogger.Log(err)
+						if err := ctx.clientFactory(beginLogger).Create(context.Background(), namespace.DeepCopy()); err != nil {
 							t.FailNow()
 						}
 						t.Cleanup(func() {
-							if err := operations.Delete(context.Background(), cleanLogger, &namespace, c); err != nil {
-								cleanLogger.Log(err)
+							if err := operations.Delete(context.Background(), cleanLogger, &namespace, ctx.clientFactory(cleanLogger)); err != nil {
 								t.FailNow()
 							}
 						})
 						ctx.namespacer = namespacer.New(c, namespace.Name)
 					}
-					runTest(t, testLogger, ctx, config, test)
+					runTest(t, ctx, config, test)
 				})
 			}
 		},
@@ -159,13 +152,14 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	return &summary, nil
 }
 
-func runTest(t *testing.T, logger logging.Logger, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
+func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
 	t.Helper()
 	for i, step := range test.Spec.Steps {
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		executeStep(t, logger.WithName(name), ctx, test.BasePath, config, test.Spec, step)
+		logger := logging.NewLogger(t, ctx.clock, test.Name, name)
+		executeStep(t, logger, ctx, test.BasePath, config, test.Spec, step)
 	}
 }
