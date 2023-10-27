@@ -3,14 +3,13 @@ Loading default configuration...
 - TestDirs []
 - SkipDelete false
 - FailFast false
-- Parallel 8
-- RepeatCount 3
 - ReportFormat ''
 - ReportName 'chainsaw-report'
 - Namespace ''
 - FullName false
 - IncludeTestRegex ''
 - ExcludeTestRegex ''
+- RepeatCount 3
 Loading tests...
 Running tests...
 Tests Summary...

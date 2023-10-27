@@ -3,7 +3,6 @@ Loading default configuration...
 - TestDirs [dir1,dir2,dir3]
 - SkipDelete false
 - FailFast false
-- Parallel 8
 - ReportFormat ''
 - ReportName 'chainsaw-report'
 - Namespace ''
