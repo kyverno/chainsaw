@@ -13,6 +13,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
+	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
@@ -53,7 +54,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 					if !errors.IsNotFound(err) {
 						// Get doesn't log
-						mainLogger.Log("GET   ", err)
+						mainLogger.Log(color.BoldRed.Sprint("GET   "), err)
 						t.FailNow()
 					}
 					t.Cleanup(func() {
@@ -83,7 +84,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				test := tests[i]
 				name, err := testName(config, test)
 				if err != nil {
-					mainLogger.Log("INTERN", err)
+					mainLogger.Log(color.BoldRed.Sprint("INTERN"), err)
 					t.FailNow()
 				}
 				t.Run(name, func(t *testing.T) {
@@ -114,7 +115,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 							if !errors.IsNotFound(err) {
 								// Get doesn't log
-								beginLogger.Log("GET   ", err)
+								beginLogger.Log(color.BoldRed.Sprint("GET   "), err)
 								t.FailNow()
 							}
 							if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {

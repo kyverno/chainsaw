@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/match"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/kyverno/ext/output/color"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -16,12 +17,12 @@ import (
 func Error(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
 	const operation = "ERROR "
 	logger = logger.WithResource(&expected)
-	logger.Log(operation, "RUNNING...")
+	logger.Log(color.BoldFgCyan.Sprint(operation), "RUNNING...")
 	defer func() {
 		if _err == nil {
-			logger.Log(operation, "DONE")
+			logger.Log(color.BoldGreen.Sprint(operation), "DONE")
 		} else {
-			logger.Log(operation, "ERROR", _err)
+			logger.Log(color.BoldRed.Sprint(operation), "ERROR", _err)
 		}
 	}()
 	var lastErrs []error

@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
+	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -88,13 +89,13 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	for _, operation := range step.Spec.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
-			logger.Log("LOAD  ", err)
+			logger.Log(color.BoldRed.Sprint("LOAD  "), err)
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				logger.Log("LOAD  ", err)
+				logger.Log(color.BoldRed.Sprint("LOAD  "), err)
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Apply(stepCtx, logger, resource, c, cleanup); err != nil {
@@ -105,13 +106,13 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	for _, operation := range step.Spec.Assert {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
-			logger.Log("LOAD  ", err)
+			logger.Log(color.BoldRed.Sprint("LOAD  "), err)
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				logger.Log("LOAD  ", err)
+				logger.Log(color.BoldRed.Sprint("LOAD  "), err)
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Assert(stepCtx, logger, resources[i], c); err != nil {
@@ -122,13 +123,13 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	for _, operation := range step.Spec.Error {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
-			logger.Log("LOAD  ", err)
+			logger.Log(color.BoldRed.Sprint("LOAD  "), err)
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				logger.Log("LOAD  ", err)
+				logger.Log(color.BoldRed.Sprint("LOAD  "), err)
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Error(stepCtx, logger, resources[i], c); err != nil {

@@ -23,6 +23,7 @@ Release notes for `TODO`.
 ## :sparkles: UI changes :sparkles:
 
 - Improved logging of running tests
+- Added coloured logs
 
 ## :books: Docs :books:
 

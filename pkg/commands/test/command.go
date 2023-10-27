@@ -15,6 +15,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
+	"github.com/kyverno/kyverno/ext/output/color"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/clientcmd"
@@ -35,6 +36,7 @@ type options struct {
 	fullName            bool
 	excludeTestRegex    string
 	includeTestRegex    string
+	noColor             bool
 	kubeConfigOverrides clientcmd.ConfigOverrides
 }
 
@@ -45,6 +47,7 @@ func Command() *cobra.Command {
 		Short:        "Run tests",
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
+			color.Init(options.noColor)
 			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
 			var configuration v1alpha1.Configuration
@@ -173,6 +176,7 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name.")
 	cmd.Flags().StringVar(&options.includeTestRegex, "include-test-regex", "", "Regular expression to include tests.")
 	cmd.Flags().StringVar(&options.excludeTestRegex, "exclude-test-regex", "", "Regular expression to exclude tests.")
+	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors.")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
