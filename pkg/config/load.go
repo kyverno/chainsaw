@@ -10,7 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/utils/convert"
 	"github.com/kyverno/chainsaw/pkg/utils/loader"
-	yamlutils "github.com/kyverno/chainsaw/pkg/utils/yaml"
+	"github.com/kyverno/kyverno/ext/yaml"
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
 )
 
@@ -47,7 +47,7 @@ func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
 }
 
 func Parse(content []byte) ([]*v1alpha1.Configuration, error) {
-	documents, err := yamlutils.SplitDocuments(content)
+	documents, err := yaml.SplitDocuments(content)
 	if err != nil {
 		return nil, err
 	}

@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	yamlutils "github.com/kyverno/chainsaw/pkg/utils/yaml"
+	extyaml "github.com/kyverno/kyverno/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
@@ -26,7 +26,7 @@ func Load(path string) ([]unstructured.Unstructured, error) {
 }
 
 func Parse(content []byte) ([]unstructured.Unstructured, error) {
-	documents, err := yamlutils.SplitDocuments(content)
+	documents, err := extyaml.SplitDocuments(content)
 	if err != nil {
 		return nil, err
 	}
