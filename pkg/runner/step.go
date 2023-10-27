@@ -39,15 +39,8 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 							exec := v1alpha1.Exec{
 								Command: &cmd,
 							}
-							output, err := operations.Exec(context.Background(), logger, exec, ctx.namespacer.GetNamespace())
-							if err != nil {
-								logger.Log(err)
-							}
-							if out := output.Out(); out != "" {
-								logger.WithName("STDOUT").Log("\n" + out)
-							}
-							if err := output.Err(); err != "" {
-								logger.WithName("STDERR").Log("\n" + err)
+							if err := operations.Exec(context.Background(), logger, exec, true, ctx.namespacer.GetNamespace()); err != nil {
+								t.Fail()
 							}
 						}
 					}
@@ -65,11 +58,9 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		resource.SetNamespace(operation.Namespace)
 		resource.SetLabels(operation.Labels)
 		if err := ctx.namespacer.Apply(&resource); err != nil {
-			logger.Log(err)
 			fail(t, operation.ContinueOnError)
 		}
 		if err := operations.Delete(stepCtx, logger, &resource, c); err != nil {
-			logger.Log(err)
 			fail(t, operation.ContinueOnError)
 		}
 	}
@@ -80,7 +71,6 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 				cleanupCtx, cancel := timeoutCtx(config, test, step.Spec)
 				defer cancel()
 				if err := operations.Delete(cleanupCtx, logger, obj, c); err != nil {
-					logger.Log(err)
 					t.Fail()
 				}
 			})
@@ -90,37 +80,24 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		func() {
 			cmdCtx, cancel := timeoutExecCtx(operation.Exec, config, test, step.Spec)
 			defer cancel()
-			output, err := operations.Exec(cmdCtx, logger, operation.Exec, ctx.namespacer.GetNamespace())
-			if err != nil {
-				logger.Log(err)
-			}
-			if !operation.SkipLogOutput {
-				if out := output.Out(); out != "" {
-					logger.WithName("STDOUT").Log("\n" + out)
-				}
-				if err := output.Err(); err != "" {
-					logger.WithName("STDERR").Log("\n" + err)
-				}
-				if err != nil {
-					fail(t, operation.ContinueOnError)
-				}
+			if err := operations.Exec(cmdCtx, logger, operation.Exec, !operation.SkipLogOutput, ctx.namespacer.GetNamespace()); err != nil {
+				fail(t, operation.ContinueOnError)
 			}
 		}()
 	}
 	for _, operation := range step.Spec.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
-			logger.Log(err)
+			logger.Log("LOAD  ", err)
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				logger.Log(err)
+				logger.Log("LOAD  ", err)
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Apply(stepCtx, logger, resource, c, cleanup); err != nil {
-				logger.Log(err)
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -128,17 +105,16 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	for _, operation := range step.Spec.Assert {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
-			logger.Log(err)
+			logger.Log("LOAD  ", err)
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				logger.Log(err)
+				logger.Log("LOAD  ", err)
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Assert(stepCtx, logger, resources[i], c); err != nil {
-				logger.Log(err)
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -146,17 +122,16 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	for _, operation := range step.Spec.Error {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
-			logger.Log(err)
+			logger.Log("LOAD  ", err)
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				logger.Log(err)
+				logger.Log("LOAD  ", err)
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Error(stepCtx, logger, resources[i], c); err != nil {
-				logger.Log(err)
 				fail(t, operation.ContinueOnError)
 			}
 		}
