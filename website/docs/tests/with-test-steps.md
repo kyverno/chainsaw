@@ -108,7 +108,7 @@ metadata:
   name: test-step-name-02
 spec:
   assert:
-  - condition: ".data.foo == 'bar'"
+  - file: ../resources/configmap-assert.yaml
   exec:
   - command: ["echo", "Hello Chainsaw"]
 
