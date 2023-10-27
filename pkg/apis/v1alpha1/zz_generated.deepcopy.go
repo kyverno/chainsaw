@@ -30,6 +30,11 @@ import (
 func (in *Apply) DeepCopyInto(out *Apply) {
 	*out = *in
 	out.FileRef = in.FileRef
+	if in.ShouldFail != nil {
+		in, out := &in.ShouldFail, &out.ShouldFail
+		*out = new(bool)
+		**out = **in
+	}
 	if in.ContinueOnError != nil {
 		in, out := &in.ContinueOnError, &out.ContinueOnError
 		*out = new(bool)

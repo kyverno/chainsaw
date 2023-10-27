@@ -63,6 +63,7 @@ should be applied during testing.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the</p> |
+| `shouldFail` | `bool` |  |  | <p>ShouldFail determines whether applying the file is expected to fail.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `Assert`     {#chainsaw-kyverno-io-v1alpha1-Assert}

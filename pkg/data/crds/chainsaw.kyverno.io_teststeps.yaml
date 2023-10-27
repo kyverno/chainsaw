@@ -52,6 +52,10 @@ spec:
                     file:
                       description: File is the path to the referenced file.
                       type: string
+                    shouldFail:
+                      description: ShouldFail determines whether applying the file
+                        is expected to fail.
+                      type: boolean
                   required:
                   - file
                   type: object
