@@ -2,7 +2,6 @@ package logging
 
 import (
 	"fmt"
-	"strings"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -10,43 +9,45 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+const eraser = "\b\b\b\b\b\b\b\b\b"
+
 type logger struct {
-	t      *testing.T
-	clock  clock.PassiveClock
-	prefix string
+	t        *testing.T
+	clock    clock.PassiveClock
+	test     string
+	step     string
+	resource ctrlclient.Object
 }
 
-func NewLogger(t *testing.T, clock clock.PassiveClock, prefixes ...string) Logger {
+func NewLogger(t *testing.T, clock clock.PassiveClock, test string, step string) Logger {
 	t.Helper()
 	return &logger{
-		t:      t,
-		clock:  clock,
-		prefix: strings.Join(prefixes, " | "),
+		t:     t,
+		clock: clock,
+		test:  test,
+		step:  step,
 	}
 }
 
-func (l *logger) Log(args ...interface{}) {
-	Log(l.t, l.clock, l.prefix, args...)
-}
-
-func (l *logger) Logf(format string, args ...interface{}) {
-	Logf(l.t, l.clock, l.prefix, format, args...)
-}
-
-func (l *logger) WithName(prefix string) Logger {
-	return &logger{
-		t:      l.t,
-		clock:  l.clock,
-		prefix: strings.Join([]string{l.prefix, prefix}, " | "),
+func (l *logger) Log(operation string, args ...interface{}) {
+	a := make([]interface{}, 0, len(args)+1)
+	if l.resource == nil {
+		a = append(a, fmt.Sprintf("%s%s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), l.test, l.step, operation))
+	} else {
+		gvk := l.resource.GetObjectKind().GroupVersionKind()
+		name := client.Name(client.ObjectKey(l.resource))
+		a = append(a, fmt.Sprintf("%s%s | %s | %s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), l.test, l.step, operation, fmt.Sprintf("%s/%s", gvk.GroupVersion(), gvk.Kind), name))
 	}
+	a = append(a, args...)
+	l.t.Log(a...)
 }
 
-func (l *logger) WithResource(key ctrlclient.ObjectKey, obj ctrlclient.Object) Logger {
-	gvk := obj.GetObjectKind().GroupVersionKind()
-	name := client.Name(key)
+func (l *logger) WithResource(resource ctrlclient.Object) Logger {
 	return &logger{
-		t:      l.t,
-		clock:  l.clock,
-		prefix: strings.Join([]string{l.prefix, fmt.Sprintf("%s/%s", gvk.GroupVersion(), gvk.Kind), name}, " | "),
+		t:        l.t,
+		clock:    l.clock,
+		test:     l.test,
+		step:     l.step,
+		resource: resource,
 	}
 }

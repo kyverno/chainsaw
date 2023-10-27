@@ -14,9 +14,17 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func Assert(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) error {
-	logger = logger.WithName("ASSERT").WithResource(client.ObjectKey(&expected), &expected)
-	logger.Log("executing...")
+func Assert(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
+	const operation = "ASSERT"
+	logger = logger.WithResource(&expected)
+	logger.Log(operation, "RUNNING...")
+	defer func() {
+		if _err == nil {
+			logger.Log(operation, "DONE")
+		} else {
+			logger.Log(operation, "ERROR", _err)
+		}
+	}()
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
