@@ -3,10 +3,12 @@ package runner
 import (
 	"context"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -23,8 +25,9 @@ func fail(t *testing.T, continueOnError *bool) {
 	}
 }
 
-func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
+func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) *report.StepReport {
 	t.Helper()
+	var messages []string
 	c := ctx.clientFactory(logger)
 	defer func() {
 		if t.Failed() {
@@ -45,9 +48,11 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 							}
 							if out := output.Out(); out != "" {
 								logger.WithName("STDOUT").Log("\n" + out)
+								messages = append(messages, "STDOUT: "+out)
 							}
-							if err := output.Err(); err != "" {
-								logger.WithName("STDERR").Log("\n" + err)
+							if errStr := output.Err(); errStr != "" {
+								logger.WithName("STDERR").Log("\n" + errStr)
+								messages = append(messages, "STDERR: "+errStr)
 							}
 						}
 					}
@@ -66,10 +71,12 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		resource.SetLabels(operation.Labels)
 		if err := ctx.namespacer.Apply(&resource); err != nil {
 			logger.Log(err)
+			messages = append(messages, err.Error())
 			fail(t, operation.ContinueOnError)
 		}
 		if err := operations.Delete(stepCtx, logger, &resource, c); err != nil {
 			logger.Log(err)
+			messages = append(messages, err.Error())
 			fail(t, operation.ContinueOnError)
 		}
 	}
@@ -102,6 +109,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 					logger.WithName("STDERR").Log("\n" + err)
 				}
 				if err != nil {
+					messages = append(messages, err.Error())
 					fail(t, operation.ContinueOnError)
 				}
 			}
@@ -111,16 +119,19 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
 			logger.Log(err)
+			messages = append(messages, err.Error())
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
 				logger.Log(err)
+				messages = append(messages, err.Error())
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Apply(stepCtx, logger, resource, c, cleanup); err != nil {
 				logger.Log(err)
+				messages = append(messages, err.Error())
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -129,16 +140,19 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
 			logger.Log(err)
+			messages = append(messages, err.Error())
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
 				logger.Log(err)
+				messages = append(messages, err.Error())
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Assert(stepCtx, logger, resources[i], c); err != nil {
 				logger.Log(err)
+				messages = append(messages, err.Error())
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -147,18 +161,30 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
 			logger.Log(err)
+			messages = append(messages, err.Error())
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
 				logger.Log(err)
+				messages = append(messages, err.Error())
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Error(stepCtx, logger, resources[i], c); err != nil {
 				logger.Log(err)
+				messages = append(messages, err.Error())
 				fail(t, operation.ContinueOnError)
 			}
 		}
+	}
+	result := "Passed"
+	if t.Failed() {
+		result = "Failed"
+	}
+	return &report.StepReport{
+		Name:    step.Name,
+		Result:  result,
+		Message: strings.Join(messages, "; "),
 	}
 }

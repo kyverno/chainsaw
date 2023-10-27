@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"sync/atomic"
 	"testing"
+	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -18,17 +20,18 @@ import (
 	"k8s.io/utils/clock"
 )
 
-func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*Summary, error) {
+func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*Summary, *report.Report, error) {
 	var summary Summary
+	var rep report.Report
 	if len(tests) == 0 {
-		return &summary, nil
+		return &summary, &rep, nil
 	}
 	if err := setupFlags(config); err != nil {
-		return nil, err
+		return nil, &rep, err
 	}
 	c, err := client.New(cfg)
 	if err != nil {
-		return nil, err
+		return nil, &rep, err
 	}
 	var failed, passed, skipped atomic.Int32
 	defer func() {
@@ -147,25 +150,33 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						})
 						ctx.namespacer = namespacer.New(c, namespace.Name)
 					}
-					runTest(t, testLogger, ctx, config, test)
+					// Initialize a new TestReport for this test
+					testReport := &report.TestReport{
+						Name:      test.Name,
+						StartTime: time.Now(),
+					}
+					runTest(t, testLogger, ctx, config, test, testReport)
+					rep.Tests = append(rep.Tests, *testReport)
 				})
 			}
 		},
 	}}
 	m := testing.MainStart(&testDeps{}, internalTests, nil, nil, nil)
 	if code := m.Run(); code > 1 {
-		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
+		return &summary, &rep, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
-	return &summary, nil
+	return &summary, &rep, nil
 }
 
-func runTest(t *testing.T, logger logging.Logger, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
+func runTest(t *testing.T, logger logging.Logger, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test, testReport *report.TestReport) {
 	t.Helper()
 	for i, step := range test.Spec.Steps {
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		executeStep(t, logger.WithName(name), ctx, test.BasePath, config, test.Spec, step)
+		stepReport := executeStep(t, logger.WithName(name), ctx, test.BasePath, config, test.Spec, step)
+		testReport.Steps = append(testReport.Steps, *stepReport)
 	}
+	testReport.EndTime = time.Now()
 }

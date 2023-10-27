@@ -142,7 +142,7 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			summary, err := runner.Run(cfg, clock, configuration.Spec, tests...)
+			summary, report, err := runner.Run(cfg, clock, configuration.Spec, tests...)
 			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Passed  tests", summary.PassedTests)
@@ -156,6 +156,17 @@ func Command() *cobra.Command {
 				err = errors.New("some tests failed")
 			} else {
 				fmt.Fprintln(out, "Done.")
+			}
+			if configuration.Spec.ReportFormat == "json" {
+				err := report.SaveReportAsJSON(configuration.Spec.ReportName + ".json")
+				if err != nil {
+					return err
+				}
+			} else if configuration.Spec.ReportFormat == "xml" {
+				err := report.SaveReportAsXML(configuration.Spec.ReportName + ".xml")
+				if err != nil {
+					return err
+				}
 			}
 			return err
 		},
