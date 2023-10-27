@@ -13,7 +13,7 @@ Release notes for `TODO`.
 ## :dizzy: New features :dizzy:
 
 - Added `Command` and `Script` operations
-- Added support to continue on error in `Delete`, `Apply`, `Assert` and `Error` operations
+- Added support to continue on error in `Delete`, `Apply`, `Assert`, `Error`, `Command` and `Script` operations
 - Added support to specifify if a test should run concurrently or not at the `Test` level
 - Added support for overriding the namespace used at the `Test` level
 - Added `Event` and `Pod` logs collectors support
