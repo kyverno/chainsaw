@@ -38,7 +38,7 @@ On invocation, the command:
 
   > **Note**: If the file contains a `TestAssert`, an error is reported since its conversion isn't currently supported.
 
-- **Save Converted Tests**: If the `--save` flag is provided, the converted tests will be saved as new `.chainsaw.yaml` files in the source directory.
+- **Save Converted Tests**: If the `--save` flag is provided and if any resource within the YAML file needs saving (as determined by the migration process), the converted tests are saved. The file path for saving is determined by the `--overwrite` flag; if it is set, the original file will be overwritten, else a new `.chainsaw.yaml` file will be created
 
 ### SEE ALSO
 
