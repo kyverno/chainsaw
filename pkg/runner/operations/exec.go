@@ -10,25 +10,39 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 )
 
-func Exec(ctx context.Context, logger logging.Logger, exec v1alpha1.Exec, namespace string) (CommandOutput, error) {
+func Exec(ctx context.Context, logger logging.Logger, exec v1alpha1.Exec, log bool, namespace string) error {
 	if exec.Command != nil {
-		return command(ctx, logger, *exec.Command, namespace)
+		return command(ctx, logger, *exec.Command, log, namespace)
 	} else if exec.Script != nil {
-		return script(ctx, logger, *exec.Script, namespace)
+		return script(ctx, logger, *exec.Script, log, namespace)
 	}
-	return CommandOutput{}, nil
+	return nil
 }
 
-func command(ctx context.Context, logger logging.Logger, command v1alpha1.Command, namespace string) (CommandOutput, error) {
+func command(ctx context.Context, logger logging.Logger, command v1alpha1.Command, log bool, namespace string) (_err error) {
+	const operation = "CMD   "
+	var output CommandOutput
+	defer func() {
+		if _err == nil {
+			logger.Log(operation, "DONE")
+		} else {
+			logger.Log(operation, "ERROR", _err)
+		}
+	}()
+	if log {
+		defer func() {
+			if out := output.Out(); out != "" {
+				logger.Log("STDOUT", "output...\n"+out)
+			}
+			if err := output.Err(); err != "" {
+				logger.Log("STDERR", "output...\n"+err)
+			}
+		}()
+	}
 	cmd := exec.CommandContext(ctx, command.EntryPoint, command.Args...) //nolint:gosec
-	logger = logger.WithName("CMD   ")
-	logger.Log(cmd, "...")
-	var output CommandOutput
-	cmd.Stdout = &output.stdout
-	cmd.Stderr = &output.stderr
 	cwd, err := os.Getwd()
 	if err != nil {
-		return output, fmt.Errorf("failed to get current working directory (%w)", err)
+		return fmt.Errorf("failed to get current working directory (%w)", err)
 	}
 	env := os.Environ()
 	env = append(env, fmt.Sprintf("NAMESPACE=%s", namespace))
@@ -36,19 +50,36 @@ func command(ctx context.Context, logger logging.Logger, command v1alpha1.Comman
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
-	return output, cmd.Run()
+	logger.Log(operation, cmd, "RUNNING...")
+	cmd.Stdout = &output.stdout
+	cmd.Stderr = &output.stderr
+	return cmd.Run()
 }
 
-func script(ctx context.Context, logger logging.Logger, script v1alpha1.Script, namespace string) (CommandOutput, error) {
-	logger = logger.WithName("SCRIPT")
-	logger.Log("executing...")
-	cmd := exec.CommandContext(ctx, "sh", "-c", script.Content) //nolint:gosec
+func script(ctx context.Context, logger logging.Logger, script v1alpha1.Script, log bool, namespace string) (_err error) {
+	const operation = "SCRIPT"
 	var output CommandOutput
-	cmd.Stdout = &output.stdout
-	cmd.Stderr = &output.stderr
+	defer func() {
+		if _err == nil {
+			logger.Log(operation, "DONE")
+		} else {
+			logger.Log(operation, "ERROR", _err)
+		}
+	}()
+	if log {
+		defer func() {
+			if out := output.Out(); out != "" {
+				logger.Log("STDOUT", "output...\n"+out)
+			}
+			if err := output.Err(); err != "" {
+				logger.Log("STDERR", "output...\n"+err)
+			}
+		}()
+	}
+	cmd := exec.CommandContext(ctx, "sh", "-c", script.Content) //nolint:gosec
 	cwd, err := os.Getwd()
 	if err != nil {
-		return output, fmt.Errorf("failed to get current working directory (%w)", err)
+		return fmt.Errorf("failed to get current working directory (%w)", err)
 	}
 	env := os.Environ()
 	env = append(env, fmt.Sprintf("NAMESPACE=%s", namespace))
@@ -56,5 +87,8 @@ func script(ctx context.Context, logger logging.Logger, script v1alpha1.Script, 
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
-	return output, cmd.Run()
+	logger.Log(operation, "RUNNING...")
+	cmd.Stdout = &output.stdout
+	cmd.Stderr = &output.stderr
+	return cmd.Run()
 }

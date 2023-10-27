@@ -22,8 +22,16 @@ type runnerClient struct {
 	inner  client.Client
 }
 
-func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-	c.log("CREATE", client.ObjectKey(obj), obj)
+func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) (_err error) {
+	gvk := obj.GetObjectKind().GroupVersionKind()
+	defer func() {
+		obj.GetObjectKind().SetGroupVersionKind(gvk)
+		if _err == nil {
+			c.log("CREATE", obj, "OK")
+		} else {
+			c.log("CREATE", obj, "ERROR", _err)
+		}
+	}()
 	err := c.inner.Create(ctx, obj, opts...)
 	if err != nil {
 		return err
@@ -31,7 +39,16 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 	return nil
 }
 
-func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) (_err error) {
+	gvk := obj.GetObjectKind().GroupVersionKind()
+	defer func() {
+		obj.GetObjectKind().SetGroupVersionKind(gvk)
+		if _err == nil {
+			c.log("DELETE", obj, "OK")
+		} else {
+			c.log("DELETE", obj, "ERROR", _err)
+		}
+	}()
 	return c.inner.Delete(ctx, obj, opts...)
 }
 
@@ -47,20 +64,36 @@ func (c *runnerClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 	return c.inner.IsObjectNamespaced(obj)
 }
 
-func (c *runnerClient) List(ctx context.Context, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+func (c *runnerClient) List(ctx context.Context, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) (_err error) {
 	return c.inner.List(ctx, list, opts...)
 }
 
-func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
-	c.log("PATCH", client.ObjectKey(obj), obj)
+func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) (_err error) {
+	gvk := obj.GetObjectKind().GroupVersionKind()
+	defer func() {
+		obj.GetObjectKind().SetGroupVersionKind(gvk)
+		if _err == nil {
+			c.log("PATCH", obj, "OK")
+		} else {
+			c.log("PATCH", obj, "ERROR", _err)
+		}
+	}()
 	return c.inner.Patch(ctx, obj, patch, opts...)
 }
 
-func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-	c.log("UPDATE", client.ObjectKey(obj), obj)
+func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) (_err error) {
+	gvk := obj.GetObjectKind().GroupVersionKind()
+	defer func() {
+		obj.GetObjectKind().SetGroupVersionKind(gvk)
+		if _err == nil {
+			c.log("UPDATE", obj, "OK")
+		} else {
+			c.log("UPDATE", obj, "ERROR", _err)
+		}
+	}()
 	return c.inner.Update(ctx, obj, opts...)
 }
 
-func (c *runnerClient) log(op string, key ctrlclient.ObjectKey, obj ctrlclient.Object) {
-	c.logger.WithName(op).WithResource(key, obj).Log("executing...")
+func (c *runnerClient) log(op string, obj ctrlclient.Object, args ...interface{}) {
+	c.logger.WithResource(obj).Log(op, args...)
 }
