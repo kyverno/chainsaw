@@ -143,7 +143,6 @@ mkdocs-serve: ## Generate and serve mkdocs website
 # BUILD #
 #########
 
-CMD_FOLDER     := cmd
 CLI_BIN        := chainsaw
 CGO_ENABLED    ?= 0
 GOOS           ?= $(shell go env GOOS)
@@ -166,7 +165,7 @@ vet: ## Run go vet
 .PHONY: $(CLI_BIN)
 $(CLI_BIN): fmt vet
 	@echo Build cli binary... >&2
-	@CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) go build -o ./$(CLI_BIN) -ldflags=$(LD_FLAGS) ./$(CMD_FOLDER)
+	@CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) go build -o ./$(CLI_BIN) -ldflags=$(LD_FLAGS) .
 
 build: $(CLI_BIN) ## Build
 
