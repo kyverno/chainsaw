@@ -25,7 +25,7 @@ docker pull ghcr.io/kyverno/chainsaw:v0.0.2
 > Note: Since Chainsaw relies on files for its operation (like test definitions), you will need to bind mount the necessary directories when running it via Docker.
 
 ```bash
-docker run -d -v /path/on/host:/path/in/container ghcr.io/kyverno/chainsaw:v0.0.2 <chainsaw-command>
+docker run --rm -v /path/on/host:/path/in/container ghcr.io/kyverno/chainsaw:v0.0.2 <chainsaw-command>
 ```
 
 ## Compile from sources
