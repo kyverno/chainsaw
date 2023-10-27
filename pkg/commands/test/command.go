@@ -93,7 +93,7 @@ func Command() *cobra.Command {
 				configuration.Spec.FailFast = options.failFast
 			}
 			if flagutils.IsSet(flags, "parallel") {
-				configuration.Spec.Parallel = options.parallel
+				configuration.Spec.Parallel = &options.parallel
 			}
 			if flagutils.IsSet(flags, "repeat-count") {
 				configuration.Spec.RepeatCount = &options.repeatCount
@@ -120,16 +120,18 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
-			fmt.Fprintf(out, "- Parallel %v\n", configuration.Spec.Parallel)
-			if configuration.Spec.RepeatCount != nil {
-				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.RepeatCount)
-			}
 			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
 			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.ReportName)
 			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
 			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
 			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.IncludeTestRegex)
 			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.ExcludeTestRegex)
+			if configuration.Spec.Parallel != nil && *configuration.Spec.Parallel > 0 {
+				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Parallel)
+			}
+			if configuration.Spec.RepeatCount != nil {
+				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.RepeatCount)
+			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
 			tests, err := discovery.DiscoverTests("chainsaw-test.yaml", configuration.Spec.TestDirs...)
@@ -168,7 +170,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run.")
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests.")
 	cmd.Flags().BoolVar(&options.failFast, "stop-on-first-failure", false, "Stop the test upon encountering the first failure.")
-	cmd.Flags().IntVar(&options.parallel, "parallel", 8, "The maximum number of tests to run at once.")
+	cmd.Flags().IntVar(&options.parallel, "parallel", 0, "The maximum number of tests to run at once.")
 	cmd.Flags().IntVar(&options.repeatCount, "repeat-count", 1, "Number of times to repeat each test.")
 	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil).")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create.")

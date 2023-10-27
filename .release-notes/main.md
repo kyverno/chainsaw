@@ -24,6 +24,7 @@ Release notes for `TODO`.
 
 - Improved logging of running tests
 - Added coloured logs
+- Made `Parallel` in `Configuration` optional (delegates default to the testing package)
 
 ## :books: Docs :books:
 

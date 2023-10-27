@@ -14,8 +14,10 @@ func setupFlags(config v1alpha1.ConfigurationSpec) error {
 	if err := flag.Set("test.v", "true"); err != nil {
 		return err
 	}
-	if err := flag.Set("test.parallel", strconv.Itoa(config.Parallel)); err != nil {
-		return err
+	if config.Parallel != nil {
+		if err := flag.Set("test.parallel", strconv.Itoa(*config.Parallel)); err != nil {
+			return err
+		}
 	}
 	if err := flag.Set("test.failfast", fmt.Sprint(config.FailFast)); err != nil {
 		return err

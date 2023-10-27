@@ -35,7 +35,7 @@ chainsaw test [flags]... [test directories]...
       --kube-username string                Username for basic authentication to the API server
       --namespace string                    Namespace to use for tests.
       --no-color                            Removes output colors.
-      --parallel int                        The maximum number of tests to run at once. (default 8)
+      --parallel int                        The maximum number of tests to run at once.
       --repeat-count int                    Number of times to repeat each test. (default 1)
       --report-format string                Test report format (JSON|XML|nil).
       --report-name string                  The name of the report to create. (default "chainsaw-report")
