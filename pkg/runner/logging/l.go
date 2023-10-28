@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/fatih/color"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/utils/clock"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )

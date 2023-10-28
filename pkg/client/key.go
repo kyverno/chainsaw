@@ -1,7 +1,7 @@
 package client
 
 import (
-	"github.com/fatih/color"
+	"github.com/kyverno/kyverno/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
