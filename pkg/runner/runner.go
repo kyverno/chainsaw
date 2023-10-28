@@ -54,7 +54,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 					if !errors.IsNotFound(err) {
 						// Get doesn't log
-						mainLogger.Log(color.BoldRed.Sprint("GET   "), err)
+						mainLogger.Log("GET   ", color.BoldRed, err)
 						t.FailNow()
 					}
 					t.Cleanup(func() {
@@ -94,7 +94,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				}
 				name, err := testName(config, test)
 				if err != nil {
-					mainLogger.Log(color.BoldRed.Sprint("INTERN"), err)
+					mainLogger.Log("INTERN", color.BoldRed, err)
 					t.FailNow()
 				}
 				t.Run(name, func(t *testing.T) {
@@ -125,7 +125,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 							if !errors.IsNotFound(err) {
 								// Get doesn't log
-								beginLogger.Log(color.BoldRed.Sprint("GET   "), err)
+								beginLogger.Log("GET   ", color.BoldRed, err)
 								t.FailNow()
 							}
 							if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
