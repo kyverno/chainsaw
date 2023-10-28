@@ -12,6 +12,9 @@ It also comes with a `spec` section used to declaratively represent the steps of
 
 - **Timeout**: Determines how long the test should run before being marked as failed due to a timeout.
 - **Skip**: A simple flag to decide if a particular test should be ignored during the test run.
+- **Concurrent**: Determines whether the test should run concurrently with other tests.
+- **SkipDelete**: Determines whether the resources created by the test should be deleted after the test is executed.
+- **Namespace**: Specifies whether the test should run in a random ephemeral namespace or use the given namespace.
 - **Steps**: An ordered collection of test steps to be executed during the test.
 
 The full structure of the `Test` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
@@ -38,6 +41,9 @@ metadata:
 spec:
   # this timeout applies only to the test (and test steps if not overridden)
   timeout: 10s
+  skip: false
+  concurrent: false
+  skipDelete: false
   steps:
   # first step
   # apply a configmap to the cluster
