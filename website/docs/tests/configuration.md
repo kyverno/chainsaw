@@ -49,7 +49,7 @@ spec:
   // ....
 ```
 
-The full structure of the configuration file is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Configuration)
+The full structure of the configuration file is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Configuration).
 
 ### Default configuration
 
@@ -80,7 +80,7 @@ chainsaw test                           \
 
 In this example, Chainsaw will load a configuration file but the timeout configuration and other settings will be overridden by the values set in the flags, regardless of the value in the loaded configuration file.
 
-Supported command line flags are documented [here](../commands/chainsaw_test.md#options)
+Supported command line flags are documented [here](../commands/chainsaw_test.md#options).
 
 ## Usage example
 
