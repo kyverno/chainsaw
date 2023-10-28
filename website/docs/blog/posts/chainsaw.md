@@ -13,7 +13,7 @@ authors:
 
 ## Introduction
 
-Chainsaw is a powerful tool that enables efficient end-to-end (E2E) testing, making it an essential asset for software developers. Built to be stronger and more cohesive than kuttl, Chainsaw offers a superior suite of features for Kubernetes (k8s) operators and objects. In this blog post, we will explore how to leverage Chainsaw for efficient E2E testing and enhance your overall testing workflow. Let's dive in!
+Chainsaw is a powerful tool that enables efficient end-to-end (E2E) testing, making it an essential asset for software developers. Built to be stronger and more cohesive than KUTTL, Chainsaw offers a superior suite of features for Kubernetes (k8s) operators and objects. In this blog post, we will explore how to leverage Chainsaw for efficient E2E testing and enhance your overall testing workflow. Let's dive in!
 
 ## Table of Contents
 
