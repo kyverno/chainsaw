@@ -1,7 +1,7 @@
 package logging
 
 import (
-	"github.com/fatih/color"
+	"github.com/kyverno/kyverno/ext/output/color"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 

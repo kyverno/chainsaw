@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/fatih/color"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	colors "github.com/kyverno/kyverno/ext/output/color"
+	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -30,9 +29,9 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log("CREATE", obj, colors.BoldGreen, "OK")
+			c.log("CREATE", obj, color.BoldGreen, "OK")
 		} else {
-			c.log("CREATE", obj, colors.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.log("CREATE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	err := c.inner.Create(ctx, obj, opts...)
@@ -47,9 +46,9 @@ func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log("DELETE", obj, colors.BoldGreen, "OK")
+			c.log("DELETE", obj, color.BoldGreen, "OK")
 		} else {
-			c.log("DELETE", obj, colors.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.log("DELETE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return c.inner.Delete(ctx, obj, opts...)
@@ -76,9 +75,9 @@ func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch c
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log("PATCH", obj, colors.BoldGreen, "OK")
+			c.log("PATCH", obj, color.BoldGreen, "OK")
 		} else {
-			c.log("PATCH", obj, colors.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.log("PATCH", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return c.inner.Patch(ctx, obj, patch, opts...)
@@ -89,9 +88,9 @@ func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log("UPDATE", obj, colors.BoldGreen, "OK")
+			c.log("UPDATE", obj, color.BoldGreen, "OK")
 		} else {
-			c.log("UPDATE", obj, colors.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.log("UPDATE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return c.inner.Update(ctx, obj, opts...)

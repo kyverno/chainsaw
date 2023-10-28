@@ -48,7 +48,7 @@ func Command() *cobra.Command {
 		Args:         cobra.NoArgs,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			color.Init(options.noColor)
+			color.Init(options.noColor, true)
 			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
 			var configuration v1alpha1.Configuration
