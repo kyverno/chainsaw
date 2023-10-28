@@ -17,13 +17,13 @@ While developing [Kyverno](https://kyverno.io) we needed to run end to end tests
 1. Check that Kyverno acted as expected
 1. Cleanup and move to the next test
 
-We started with another tool called [Kuttl](https://kuttl.dev). While [Kuttl](https://kuttl.dev) is great we identified some limitations and forked the tool to add the features we needed.
+We started with another tool called [KUTTL](https://kuttl.dev). While [KUTTL](https://kuttl.dev) is great we identified some limitations and forked the tool to add the features we needed.
 
-At some point we needed more flexibility than what [Kuttl](https://kuttl.dev) offered and we designed a new assertion model.
+At some point we needed more flexibility than what [KUTTL](https://kuttl.dev) offered and we designed a new assertion model.
 
-This was simpler to start from scratch than continuing making changes in our [Kuttl](https://kuttl.dev) fork.
+This was simpler to start from scratch than continuing making changes in our [KUTTL](https://kuttl.dev) fork.
 
-Migrating from [Kuttl](https://kuttl.dev) to Chainsaw should be easy, the assertion model used in Kuttl is compatible with Chainsaw.
+Migrating from [KUTTL](https://kuttl.dev) to Chainsaw should be easy, the assertion model used in KUTTL is compatible with Chainsaw. We provide a `chainsaw kuttl migrate` command to help with the migration, see [Migration from KUTTL](./more/kuttl-migration.md) for details.
 
 ## Use cases
 
