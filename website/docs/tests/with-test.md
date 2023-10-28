@@ -41,10 +41,9 @@ metadata:
 spec:
   # this timeout applies only to the test (and test steps if not overridden)
   timeout: 10s
-  skip: true
+  skip: false
   concurrent: false
-  skipDelete: true
-  namespace: custom-namespace
+  skipDelete: false
   steps:
   # first step
   # apply a configmap to the cluster
