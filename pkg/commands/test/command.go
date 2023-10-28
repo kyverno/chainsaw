@@ -45,15 +45,10 @@ func Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "test [flags]... [test directories]...",
 		Short:        "Run tests",
+		Args:         cobra.NoArgs,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			color.Init(options.noColor)
-			if !options.noColor {
-				color.BoldGreen.EnableColor()
-				color.BoldRed.EnableColor()
-				color.BoldYellow.EnableColor()
-				color.BoldFgCyan.EnableColor()
-			}
 			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
 			var configuration v1alpha1.Configuration
