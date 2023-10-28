@@ -40,6 +40,7 @@ Chainsaw supports the following operations, executed in this specific order for 
 2. [Apply operations](#apply)
 3. [Assert operations](#assert)
 4. [Error operations](#error)
+5. [Exec operations](#exec)
 
 ### Delete operations   {#delete}
 
@@ -47,16 +48,10 @@ The delete operation allows you to specify resources that should be deleted from
 
 #### Fields Description
 
-| Field       | Type                | Notes   |
-|-------------|---------------------|---------|
-| APIVersion  | String              |         |
-| Kind        | String              |         |
-| Namespace   | String              | Optional|
-| Name        | String              | Optional|
-| Labels      | Map (String:String) | Optional|
+The full structure of the `Delete` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
 
 ```yaml
-Delete:
+delete:
   - apiVersion: v1
     kind: Pod
     namespace: default
@@ -67,8 +62,10 @@ Delete:
 
 The apply operation lets you define resources that should be applied to the Kubernetes cluster during the test step. These can be configurations, deployments, services, or any other Kubernetes resource.
 
+The full structure of the `Apply` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Apply)
+
 ```yaml
-Apply:
+apply:
   - file: path/to/deployment.yaml
   - file: path/to/service.yaml
 ```
@@ -77,8 +74,10 @@ Apply:
 
 The assert operation allows you to specify conditions that should hold true for a successful test. For example, after applying certain resources, you might want to ensure that a particular pod is running or a service is accessible.
 
+The full structure of the `Assert` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Assert)
+
 ```yaml
-Assert:
+assert:
   - file: path/to/assertions.yaml  
 ```
 
@@ -86,10 +85,40 @@ Assert:
 
 The error operation lets you define a set of expected errors for a test step. If any of these errors occur during the test, they are treated as expected outcomes. However, if an error that's not on this list occurs, it will be treated as a test failure.
 
+The full structure of the `Error` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Error)
+
 ```yaml
-Error:
+error:
   - file: path/to/expected-errors.yaml
 ```
+
+### Exec operations {#exec}
+
+The `Exec` operation provides a means to either execute a specific command or run a script during the test step. For each `Exec` entry, you must specify either a `Command` or a `Script`, but not both.
+
+The full structure of the `Exec` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Exec)
+
+#### Usage
+
+To run a command:
+
+```yaml
+exec:
+  timeout: "5m"
+  command:
+    some-command-to-run-parameters
+```
+
+To execute a script:
+
+```yaml
+exec:
+  timeout: "10m"
+  script:
+    path/to/script.sh
+```
+
+> Make sure you're selecting either `Command` or `Script` for each `Exec` entry, and not both simultaneously.
 
 ## Cleanup
 
@@ -110,4 +139,3 @@ The [Namespacer interface](https://github.com/kyverno/chainsaw/blob/main/pkg/run
 
 - **Automated Namespacing**: Automatically assign namespaces to resources that don't have one.
 - **Ephemeral Namespaces**: Handles temporary namespaces for specific tasks.
- 
