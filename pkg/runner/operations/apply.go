@@ -3,6 +3,7 @@ package operations
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -17,12 +18,12 @@ import (
 func Apply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, shouldFail bool, cleanup CleanupFunc) (_err error) {
 	const operation = "APPLY "
 	logger = logger.WithResource(obj)
-	logger.Log(color.BoldFgCyan.Sprint(operation), "RUNNING...")
+	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
-			logger.Log(color.BoldGreen.Sprint(operation), "DONE")
+			logger.Log(operation, color.BoldGreen, "DONE")
 		} else {
-			logger.Log(color.BoldRed.Sprint(operation), "ERROR", _err)
+			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {

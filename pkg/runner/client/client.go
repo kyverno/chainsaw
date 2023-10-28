@@ -2,10 +2,12 @@ package client
 
 import (
 	"context"
+	"fmt"
 
+	"github.com/fatih/color"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	"github.com/kyverno/kyverno/ext/output/color"
+	colors "github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -28,9 +30,9 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log(color.BoldGreen.Sprint("CREATE"), obj, "OK")
+			c.log("CREATE", obj, colors.BoldGreen, "OK")
 		} else {
-			c.log(color.BoldRed.Sprint("CREATE"), obj, "ERROR", _err)
+			c.log("CREATE", obj, colors.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	err := c.inner.Create(ctx, obj, opts...)
@@ -45,9 +47,9 @@ func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log(color.BoldGreen.Sprint("DELETE"), obj, "OK")
+			c.log("DELETE", obj, colors.BoldGreen, "OK")
 		} else {
-			c.log(color.BoldRed.Sprint("DELETE"), obj, "ERROR", _err)
+			c.log("DELETE", obj, colors.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return c.inner.Delete(ctx, obj, opts...)
@@ -74,9 +76,9 @@ func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch c
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log(color.BoldGreen.Sprint("PATCH"), obj, "OK")
+			c.log("PATCH", obj, colors.BoldGreen, "OK")
 		} else {
-			c.log(color.BoldRed.Sprint("PATCH"), obj, "ERROR", _err)
+			c.log("PATCH", obj, colors.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return c.inner.Patch(ctx, obj, patch, opts...)
@@ -87,14 +89,14 @@ func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log(color.BoldGreen.Sprint("UPDATE"), obj, "OK")
+			c.log("UPDATE", obj, colors.BoldGreen, "OK")
 		} else {
-			c.log(color.BoldRed.Sprint("UPDATE"), obj, "ERROR", _err)
+			c.log("UPDATE", obj, colors.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return c.inner.Update(ctx, obj, opts...)
 }
 
-func (c *runnerClient) log(op string, obj ctrlclient.Object, args ...interface{}) {
-	c.logger.WithResource(obj).Log(op, args...)
+func (c *runnerClient) log(op string, obj ctrlclient.Object, color *color.Color, args ...interface{}) {
+	c.logger.WithResource(obj).Log(op, color, args...)
 }

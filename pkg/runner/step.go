@@ -89,14 +89,14 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	for _, operation := range step.Spec.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
-			logger.Log(color.BoldRed.Sprint("LOAD  "), err)
+			logger.Log("LOAD  ", color.BoldRed, err)
 			fail(t, operation.ContinueOnError)
 		}
 		shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				logger.Log(color.BoldRed.Sprint("LOAD  "), err)
+				logger.Log("LOAD  ", color.BoldRed, err)
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Apply(stepCtx, logger, resource, c, shouldFail, cleanup); err != nil {
@@ -107,13 +107,13 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	for _, operation := range step.Spec.Assert {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
-			logger.Log(color.BoldRed.Sprint("LOAD  "), err)
+			logger.Log("LOAD  ", color.BoldRed, err)
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				logger.Log(color.BoldRed.Sprint("LOAD  "), err)
+				logger.Log("LOAD  ", color.BoldRed, err)
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Assert(stepCtx, logger, resources[i], c); err != nil {
@@ -124,13 +124,13 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	for _, operation := range step.Spec.Error {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
-			logger.Log(color.BoldRed.Sprint("LOAD  "), err)
+			logger.Log("LOAD  ", color.BoldRed, err)
 			fail(t, operation.ContinueOnError)
 		}
 		for i := range resources {
 			resource := &resources[i]
 			if err := ctx.namespacer.Apply(resource); err != nil {
-				logger.Log(color.BoldRed.Sprint("LOAD  "), err)
+				logger.Log("LOAD  ", color.BoldRed, err)
 				fail(t, operation.ContinueOnError)
 			}
 			if err := operations.Error(stepCtx, logger, resources[i], c); err != nil {

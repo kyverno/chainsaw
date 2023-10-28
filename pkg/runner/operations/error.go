@@ -17,12 +17,12 @@ import (
 func Error(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
 	const operation = "ERROR "
 	logger = logger.WithResource(&expected)
-	logger.Log(color.BoldFgCyan.Sprint(operation), "RUNNING...")
+	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
-			logger.Log(color.BoldGreen.Sprint(operation), "DONE")
+			logger.Log(operation, color.BoldGreen, "DONE")
 		} else {
-			logger.Log(color.BoldRed.Sprint(operation), "ERROR", _err)
+			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	var lastErrs []error

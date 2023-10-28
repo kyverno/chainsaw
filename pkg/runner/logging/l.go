@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/fatih/color"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"k8s.io/utils/clock"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -29,15 +30,15 @@ func NewLogger(t *testing.T, clock clock.PassiveClock, test string, step string)
 	}
 }
 
-func (l *logger) Log(operation string, args ...interface{}) {
+func (l *logger) Log(operation string, color *color.Color, args ...interface{}) {
 	a := make([]interface{}, 0, len(args)+1)
-	if l.resource == nil {
-		a = append(a, fmt.Sprintf("%s%s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), operation, l.test, l.step))
-	} else {
+	prefix := fmt.Sprintf("%s%s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), color.Sprint(l.test), color.Sprint(l.step), color.Sprint(operation))
+	if l.resource != nil {
 		gvk := l.resource.GetObjectKind().GroupVersionKind()
-		name := client.Name(client.ObjectKey(l.resource))
-		a = append(a, fmt.Sprintf("%s%s | %s | %s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), operation, l.test, l.step, fmt.Sprintf("%s/%s", gvk.GroupVersion(), gvk.Kind), name))
+		key := client.ObjectKey(l.resource)
+		prefix = fmt.Sprintf("%s %s/%s | %s |", prefix, color.Sprint(gvk.GroupVersion()), color.Sprint(gvk.Kind), client.ColouredName(key, color))
 	}
+	a = append(a, prefix)
 	a = append(a, args...)
 	l.t.Log(a...)
 }
