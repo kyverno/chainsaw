@@ -30,7 +30,7 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 		if _err == nil {
 			c.log(color.BoldGreen.Sprint("CREATE"), obj, "OK")
 		} else {
-			c.log(color.BoldRed.Sprint("CREATE"), obj, "ERROR", _err)
+			c.log(color.BoldYellow.Sprint("CREATE"), obj, "ERROR\n", _err)
 		}
 	}()
 	err := c.inner.Create(ctx, obj, opts...)
@@ -47,7 +47,7 @@ func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts .
 		if _err == nil {
 			c.log(color.BoldGreen.Sprint("DELETE"), obj, "OK")
 		} else {
-			c.log(color.BoldRed.Sprint("DELETE"), obj, "ERROR", _err)
+			c.log(color.BoldYellow.Sprint("DELETE"), obj, "ERROR", _err)
 		}
 	}()
 	return c.inner.Delete(ctx, obj, opts...)
@@ -76,7 +76,7 @@ func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch c
 		if _err == nil {
 			c.log(color.BoldGreen.Sprint("PATCH"), obj, "OK")
 		} else {
-			c.log(color.BoldRed.Sprint("PATCH"), obj, "ERROR", _err)
+			c.log(color.BoldYellow.Sprint("PATCH"), obj, "ERROR", _err)
 		}
 	}()
 	return c.inner.Patch(ctx, obj, patch, opts...)
@@ -89,7 +89,7 @@ func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts .
 		if _err == nil {
 			c.log(color.BoldGreen.Sprint("UPDATE"), obj, "OK")
 		} else {
-			c.log(color.BoldRed.Sprint("UPDATE"), obj, "ERROR", _err)
+			c.log(color.BoldYellow.Sprint("UPDATE"), obj, "ERROR", _err)
 		}
 	}()
 	return c.inner.Update(ctx, obj, opts...)

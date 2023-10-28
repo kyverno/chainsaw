@@ -45,6 +45,7 @@ func Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "test [flags]... [test directories]...",
 		Short:        "Run tests",
+		Args:         cobra.NoArgs,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
 			color.Init(options.noColor)

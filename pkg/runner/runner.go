@@ -82,6 +82,16 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 			// })
 			for i := range tests {
 				test := tests[i]
+				size := 0
+				for i, step := range test.Spec.Steps {
+					name := step.Name
+					if name == "" {
+						name = fmt.Sprintf("step-%d", i+1)
+					}
+					if size < len(name) {
+						size = len(name)
+					}
+				}
 				name, err := testName(config, test)
 				if err != nil {
 					mainLogger.Log(color.BoldRed.Sprint("INTERN"), err)
@@ -106,8 +116,8 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 					if test.Spec.Skip != nil && *test.Spec.Skip {
 						t.SkipNow()
 					}
-					beginLogger := logging.NewLogger(t, clock, test.Name, "@begin")
-					cleanLogger := logging.NewLogger(t, clock, test.Name, "@clean")
+					beginLogger := logging.NewLogger(t, clock, test.Name, fmt.Sprintf("%-*s", size, "@begin"))
+					cleanLogger := logging.NewLogger(t, clock, test.Name, fmt.Sprintf("%-*s", size, "@clean"))
 					ctx := ctx
 					if test.Spec.Namespace != "" {
 						namespace := client.Namespace(test.Spec.Namespace)
@@ -141,7 +151,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						})
 						ctx.namespacer = namespacer.New(c, namespace.Name)
 					}
-					runTest(t, ctx, config, test)
+					runTest(t, ctx, config, test, size)
 				})
 			}
 		},
@@ -153,14 +163,14 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	return &summary, nil
 }
 
-func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test) {
+func runTest(t *testing.T, ctx Context, config v1alpha1.ConfigurationSpec, test discovery.Test, size int) {
 	t.Helper()
 	for i, step := range test.Spec.Steps {
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		logger := logging.NewLogger(t, ctx.clock, test.Name, name)
+		logger := logging.NewLogger(t, ctx.clock, test.Name, fmt.Sprintf("%-*s", size, name))
 		executeStep(t, logger, ctx, test.BasePath, config, test.Spec, step)
 	}
 }
