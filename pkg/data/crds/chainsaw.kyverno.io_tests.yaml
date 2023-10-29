@@ -183,10 +183,12 @@ spec:
                                     items:
                                       type: string
                                     type: array
-                                  entryPoint:
-                                    description: EntryPoint is the command entry point
+                                  entrypoint:
+                                    description: Entrypoint is the command entry point
                                       to run.
                                     type: string
+                                required:
+                                - entrypoint
                                 type: object
                               continueOnError:
                                 description: ContinueOnError determines whether a
@@ -279,10 +281,12 @@ spec:
                                         items:
                                           type: string
                                         type: array
-                                      entryPoint:
-                                        description: EntryPoint is the command entry
+                                      entrypoint:
+                                        description: Entrypoint is the command entry
                                           point to run.
                                         type: string
+                                    required:
+                                    - entrypoint
                                     type: object
                                   script:
                                     description: Script defines a script to run.

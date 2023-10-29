@@ -42,7 +42,7 @@ func command(ctx context.Context, logger logging.Logger, command v1alpha1.Comman
 	} else {
 		logger.Log("STDXXX", color.BoldYellow, "suppressed logs")
 	}
-	cmd := exec.CommandContext(ctx, command.EntryPoint, command.Args...) //nolint:gosec
+	cmd := exec.CommandContext(ctx, command.Entrypoint, command.Args...) //nolint:gosec
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get current working directory (%w)", err)

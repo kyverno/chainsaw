@@ -15,11 +15,24 @@ Collection can occur from:
 - Namespace events
 - Or the output of a custom command or script
 
+## Collectors lifecycle
+
+The collectors are executed **after** the step failed, and **before** the step cleanup happens.
+
+!!! info "Collectors lifecycle"
+
+    1. The step starts executing
+    1. An operation fails (**before collectors are executed**)
+    1. Collectors are executed
+    1. The step cleanup executes (**after collectors are executed**)
+
+This is important that collectors run before cleanup so that they have a chance to collect logs from pods responsible for the step failure.
+
 ## Configuration
 
 Collectors are a per step configuration and are registered under the `onFailure` section of a test step spec.
 
-!!! note "Collect pod logs"
+!!! example "Collect pod logs"
 
     ```yaml
         onFailure:
@@ -29,7 +42,7 @@ Collectors are a per step configuration and are registered under the `onFailure`
     ```
     See [Pod logs](pod-logs.md) for details and supported configurations.
 
-!!! note "Collect events"
+!!! example "Collect events"
 
     ```yaml
         onFailure:
@@ -38,12 +51,12 @@ Collectors are a per step configuration and are registered under the `onFailure`
     ```
     See [Events](events.md) for details and supported configurations.
 
-!!! note "Execute a custom command"
+!!! example "Execute a custom command"
 
     ```yaml
         - exec:
             command:
-              entryPoint: kubectl
+              entrypoint: kubectl
               args:
               - get
               - pod
@@ -52,7 +65,7 @@ Collectors are a per step configuration and are registered under the `onFailure`
     ```
     See [Commands](commands.md) for details and supported configurations.
 
-!!! note "Execute a custom script"
+!!! example "Execute a custom script"
 
     ```yaml
         - exec:

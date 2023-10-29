@@ -19,7 +19,7 @@ func collect(collector v1alpha1.Collect) []v1alpha1.Command {
 
 func events(collector v1alpha1.Events) v1alpha1.Command {
 	cmd := v1alpha1.Command{
-		EntryPoint: "kubectl",
+		Entrypoint: "kubectl",
 		Args:       []string{"get", "events"},
 	}
 	if collector.Name != "" {
@@ -38,7 +38,7 @@ func events(collector v1alpha1.Events) v1alpha1.Command {
 
 func podLogs(collector v1alpha1.PodLogs) v1alpha1.Command {
 	cmd := v1alpha1.Command{
-		EntryPoint: "kubectl",
+		Entrypoint: "kubectl",
 		Args:       []string{"logs", "--prefix"},
 	}
 	if collector.Name != "" {

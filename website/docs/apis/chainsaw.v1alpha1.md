@@ -106,7 +106,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `entryPoint` | `string` |  |  | <p>EntryPoint is the command entry point to run.</p> |
+| `entrypoint` | `string` | :white_check_mark: |  | <p>Entrypoint is the command entry point to run.</p> |
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
