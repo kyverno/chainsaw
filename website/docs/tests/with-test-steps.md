@@ -24,7 +24,7 @@ It also comes with a `spec` section used to declaratively represent the [step op
 - **Exec**: Lists commands or scripts that must be run as part of this test step.
 - **OnFailure**: Specifies actions to undertake in case of a step failure.
 
-The full structure of the `TestStep` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-TestStep)
+The full structure of the `TestStep` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-TestStep).
 
 ## `TestStep` loading process
 

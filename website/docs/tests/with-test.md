@@ -17,7 +17,7 @@ It also comes with a `spec` section used to declaratively represent the steps of
 - **Namespace**: Specifies whether the test should run in a random ephemeral namespace or use the given namespace.
 - **Steps**: An ordered collection of test steps to be executed during the test.
 
-The full structure of the `Test` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test)
+The full structure of the `Test` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test).
 
 ## `Test` loading process
 

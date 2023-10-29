@@ -9,11 +9,17 @@ nav:
 - Writing tests:
   - tests/index.md
   - tests/configuration.md
-  - Test definition:
+  - Tests:
     - tests/what-is-a-test.md
     - tests/with-manifests.md
     - tests/with-test-steps.md
     - tests/with-test.md
+  - Collectors:
+    - tests/collectors/index.md
+    - tests/collectors/pod-logs.md
+    - tests/collectors/events.md
+    - tests/collectors/commands.md
+    - tests/collectors/scripts.md
   - Command Line Usage:
     - commands/chainsaw.md
     - commands/chainsaw_completion.md
