@@ -118,7 +118,8 @@ exec:
     path/to/script.sh
 ```
 
-> Make sure you're selecting either `Command` or `Script` for each `Exec` entry, and not both simultaneously.
+!!! warning
+    Make sure you're selecting either `Command` or `Script` for each `Exec` entry, and not both simultaneously.
 
 ## Cleanup
 
