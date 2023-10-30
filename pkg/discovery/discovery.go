@@ -5,12 +5,12 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"slices"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/step"
 	"github.com/kyverno/chainsaw/pkg/test"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
-	"golang.org/x/exp/slices"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
