@@ -1,6 +1,8 @@
 package namespacer
 
 import (
+	"errors"
+
 	"github.com/kyverno/chainsaw/pkg/client"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -23,6 +25,10 @@ func New(c client.Client, namespace string) Namespacer {
 }
 
 func (n *namespacer) Apply(resource ctrlclient.Object) error {
+	if resource == nil {
+		return errors.New("resource is nil")
+	}
+
 	if resource.GetNamespace() == "" {
 		namespaced, err := n.c.IsObjectNamespaced(resource)
 		if err != nil {

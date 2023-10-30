@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 func TestLoad(t *testing.T) {
@@ -35,13 +36,47 @@ func TestLoad(t *testing.T) {
 func TestParse(t *testing.T) {
 	baseDir := filepath.Join("..", "..", "testdata", "resource")
 	tests := []struct {
-		fileName    string
-		expectError bool
-		expectedLen int
+		fileName          string
+		expectError       bool
+		expectedLen       int
+		expectedResources []unstructured.Unstructured
 	}{
-		{filepath.Join(baseDir, "valid.yaml"), false, 2},
-		{filepath.Join(baseDir, "empty.yaml"), false, 0},
-		{filepath.Join(baseDir, "invalid.yaml"), true, 0},
+		{
+			fileName:    filepath.Join(baseDir, "valid.yaml"),
+			expectError: false,
+			expectedLen: 2,
+			expectedResources: []unstructured.Unstructured{
+				{
+					Object: map[string]interface{}{
+						"apiVersion": "v1",
+						"kind":       "Pod",
+						"metadata": map[string]interface{}{
+							"name": "test-pod",
+						},
+					},
+				},
+				{
+					Object: map[string]interface{}{
+						"apiVersion": "v1",
+						"kind":       "Service",
+						"metadata": map[string]interface{}{
+							"name": "test-service",
+						},
+					},
+				},
+			},
+		},
+		{
+			fileName:          filepath.Join(baseDir, "empty.yaml"),
+			expectError:       false,
+			expectedLen:       0,
+			expectedResources: []unstructured.Unstructured{},
+		},
+		{
+			fileName:    filepath.Join(baseDir, "invalid.yaml"),
+			expectError: true,
+			expectedLen: 0,
+		},
 	}
 
 	for _, tt := range tests {
@@ -52,6 +87,7 @@ func TestParse(t *testing.T) {
 		if !tt.expectError {
 			assert.NoError(t, err)
 			assert.Len(t, resources, tt.expectedLen)
+			assert.ElementsMatch(t, tt.expectedResources, resources)
 		} else {
 			assert.Error(t, err)
 		}

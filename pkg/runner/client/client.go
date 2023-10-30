@@ -54,10 +54,6 @@ func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts .
 	return c.inner.Delete(ctx, obj, opts...)
 }
 
-func (c *runnerClient) DeleteAllOf(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteAllOfOption) error {
-	return c.inner.DeleteAllOf(ctx, obj, opts...)
-}
-
 func (c *runnerClient) Get(ctx context.Context, key types.NamespacedName, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 	return c.inner.Get(ctx, key, obj, opts...)
 }
@@ -81,19 +77,6 @@ func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch c
 		}
 	}()
 	return c.inner.Patch(ctx, obj, patch, opts...)
-}
-
-func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) (_err error) {
-	gvk := obj.GetObjectKind().GroupVersionKind()
-	defer func() {
-		obj.GetObjectKind().SetGroupVersionKind(gvk)
-		if _err == nil {
-			c.log("UPDATE", obj, color.BoldGreen, "OK")
-		} else {
-			c.log("UPDATE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
-		}
-	}()
-	return c.inner.Update(ctx, obj, opts...)
 }
 
 func (c *runnerClient) log(op string, obj ctrlclient.Object, color *color.Color, args ...interface{}) {
