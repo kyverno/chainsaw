@@ -7,8 +7,8 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/data"
-	"github.com/kyverno/chainsaw/pkg/utils/loader"
 	"github.com/kyverno/kyverno/ext/resource/convert"
+	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/kyverno/kyverno/ext/yaml"
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
 )
