@@ -269,10 +269,30 @@ spec:
                 description: SkipDelete determines whether the resources created by
                   the step should be deleted after the test step is executed.
                 type: boolean
-              timeout:
-                description: Timeout for the test step. Overrides the global timeout
-                  set in the Configuration and the timeout eventually set in the Test.
-                type: string
+              timeouts:
+                description: Timeouts for the test step. Overrides the global timeouts
+                  set in the Configuration and the timeouts eventually set in the
+                  Test.
+                properties:
+                  apply:
+                    description: Apply defines the timeout for the apply operation
+                    type: string
+                  assert:
+                    description: Assert defines the timeout for the assert operation
+                    type: string
+                  cleanup:
+                    description: Cleanup defines the timeout for the cleanup operation
+                    type: string
+                  delete:
+                    description: Delete defines the timeout for the delete operation
+                    type: string
+                  error:
+                    description: Error defines the timeout for the error operation
+                    type: string
+                  exec:
+                    description: Exec defines the timeout for exec operations
+                    type: string
+                type: object
             type: object
         required:
         - spec

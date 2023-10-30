@@ -1,9 +1,5 @@
 package v1alpha1
 
-import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
 type ReportFormatType string
 
 const (
@@ -14,10 +10,9 @@ const (
 
 // ConfigurationSpec contains the configuration used to run tests.
 type ConfigurationSpec struct {
-	// Global timeout configuration. Applies to all tests/test steps if not overridden.
+	// Global timeouts configuration. Applies to all tests/test steps if not overridden.
 	// +optional
-	// +kubebuilder:default:="30s"
-	Timeout *metav1.Duration `json:"timeout,omitempty"`
+	Timeouts Timeouts `json:"timeouts"`
 
 	// Directories containing test cases to run.
 	// +optional

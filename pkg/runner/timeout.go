@@ -4,36 +4,35 @@ import (
 	"context"
 	"time"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func timeout(config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) *time.Duration {
-	if step.Timeout != nil {
-		return &step.Timeout.Duration
+const (
+	defaultApplyTimeout   = 5 * time.Second
+	defaultAssertTimeout  = 30 * time.Second
+	defaultErrorTimeout   = 30 * time.Second
+	defaultDeleteTimeout  = 15 * time.Second
+	defaultCleanupTimeout = 30 * time.Second
+	defaultExecTimeout    = 5 * time.Second
+)
+
+func timeout(fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) time.Duration {
+	if operation != nil {
+		return operation.Duration
 	}
-	if test.Timeout != nil {
-		return &test.Timeout.Duration
+	if step != nil {
+		return step.Duration
 	}
-	if config.Timeout != nil {
-		return &config.Timeout.Duration
+	if test != nil {
+		return test.Duration
 	}
-	return nil
+	if config != nil {
+		return config.Duration
+	}
+	return fallback
 }
 
-func cancelNoOp() {}
-
-func timeoutCtx(config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) (context.Context, context.CancelFunc) {
-	ctx := context.Background()
-	if timeout := timeout(config, test, step); timeout != nil {
-		return context.WithTimeout(ctx, *timeout)
-	}
-	return ctx, cancelNoOp
-}
-
-func timeoutExecCtx(exec v1alpha1.Exec, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) (context.Context, context.CancelFunc) {
-	if exec.Timeout != nil && exec.Timeout.Abs() > 0 {
-		return context.WithTimeout(context.Background(), exec.Timeout.Duration)
-	} else {
-		return timeoutCtx(config, test, step)
-	}
+func timeoutCtx(fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) (context.Context, context.CancelFunc) {
+	timeout := timeout(fallback, config, test, step, operation)
+	return context.WithTimeout(context.Background(), timeout)
 }

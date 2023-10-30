@@ -1,5 +1,4 @@
 Loading default configuration...
-- Timeout 30s
 - TestDirs []
 - SkipDelete false
 - FailFast false

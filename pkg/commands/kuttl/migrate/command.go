@@ -147,11 +147,17 @@ func testSuite(in unstructured.Unstructured) (*v1alpha1.Configuration, error) {
 	if err != nil {
 		return nil, err
 	}
-	timeout := &metav1.Duration{
-		Duration: time.Second * 30,
-	}
+	var timeouts v1alpha1.Timeouts
 	if from.Timeout != 0 {
-		timeout.Duration = time.Second * time.Duration(from.Timeout)
+		d := metav1.Duration{Duration: time.Second * time.Duration(from.Timeout)}
+		timeouts = v1alpha1.Timeouts{
+			Apply:   &d,
+			Assert:  &d,
+			Error:   &d,
+			Delete:  &d,
+			Cleanup: &d,
+			Exec:    &d,
+		}
 	}
 	to := &v1alpha1.Configuration{
 		TypeMeta: metav1.TypeMeta{
@@ -160,7 +166,7 @@ func testSuite(in unstructured.Unstructured) (*v1alpha1.Configuration, error) {
 		},
 		ObjectMeta: from.ObjectMeta,
 		Spec: v1alpha1.ConfigurationSpec{
-			Timeout:      timeout,
+			Timeouts:     timeouts,
 			TestDirs:     from.TestDirs,
 			SkipDelete:   from.SkipDelete,
 			ReportFormat: v1alpha1.ReportFormatType(from.ReportFormat),

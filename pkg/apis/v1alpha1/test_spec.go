@@ -1,14 +1,10 @@
 package v1alpha1
 
-import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
 // TestSpec contains the test spec.
 type TestSpec struct {
-	// Timeout for the test. Overrides the global timeout set in the Configuration.
+	// Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.
 	// +optional
-	Timeout *metav1.Duration `json:"timeout,omitempty"`
+	Timeouts Timeouts `json:"timeouts,omitempty"`
 
 	// Skip determines whether the test should skipped.
 	// +optional
