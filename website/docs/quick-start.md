@@ -92,7 +92,6 @@ Loading default configuration...
 - TestDirs [.]
 - SkipDelete false
 - FailFast false
-- Parallel 8
 - ReportFormat ''
 - ReportName 'chainsaw-report'
 - Namespace ''
@@ -102,16 +101,24 @@ Loading default configuration...
 Loading tests...
 - quick-start (.)
 Running tests...
-=== RUN   quick-start
-=== PAUSE quick-start
-=== CONT  quick-start
-    logger.go:17: 12:31:16 | quick-start | CREATE[v1/Namespace] chainsaw-feasible-thrush
-    logger.go:17: 12:31:16 | quick-start/step-1 | APPLY[v1/ConfigMap] chainsaw-feasible-thrush/chainsaw-quick-start
-    logger.go:17: 12:31:16 | quick-start/step-1 | CREATE[v1/ConfigMap] chainsaw-feasible-thrush/chainsaw-quick-start
-    logger.go:17: 12:31:16 | quick-start/step-2 | ASSERT[v1/ConfigMap] chainsaw-feasible-thrush/chainsaw-quick-start
-    logger.go:17: 12:31:16 | quick-start/step-1 | DELETE[v1/ConfigMap] chainsaw-feasible-thrush/chainsaw-quick-start
-    logger.go:17: 12:31:16 | quick-start | DELETE[v1/Namespace] chainsaw-feasible-thrush
---- PASS: quick-start (5.22s)
+=== RUN   chainsaw
+=== RUN   chainsaw/quick-start
+=== PAUSE chainsaw/quick-start
+=== CONT  chainsaw/quick-start
+    12:15:31 | quick-start | @begin | CREATE | v1/Namespace | chainsaw-awake-dane | OK
+    12:15:31 | quick-start | step-1 | APPLY  | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | RUNNING...
+    12:15:31 | quick-start | step-1 | CREATE | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | OK
+    12:15:31 | quick-start | step-1 | APPLY  | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | DONE
+    12:15:31 | quick-start | step-2 | ASSERT | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | RUNNING...
+    12:15:31 | quick-start | step-2 | ASSERT | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | DONE
+    12:15:31 | quick-start | step-1 | DELETE | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | RUNNING...
+    12:15:31 | quick-start | step-1 | DELETE | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | OK
+    12:15:31 | quick-start | step-1 | DELETE | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | DONE
+    12:15:31 | quick-start | @clean | DELETE | v1/Namespace | chainsaw-awake-dane | RUNNING...
+    12:15:31 | quick-start | @clean | DELETE | v1/Namespace | chainsaw-awake-dane | OK
+    12:15:36 | quick-start | @clean | DELETE | v1/Namespace | chainsaw-awake-dane | DONE
+--- PASS: chainsaw (0.00s)
+    --- PASS: chainsaw/quick-start (5.28s)
 PASS
 Tests Summary...
 - Passed  tests 1

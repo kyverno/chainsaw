@@ -10,7 +10,7 @@ const (
 	vcsRevision = "vcs.revision"
 )
 
-// BuildVersion is provided by govvv at compile-time
+// BuildVersion is provided at compile-time
 var BuildVersion string
 
 func Version() string {
