@@ -58,10 +58,6 @@ func (c *runnerClient) Get(ctx context.Context, key types.NamespacedName, obj ct
 	return c.inner.Get(ctx, key, obj, opts...)
 }
 
-func (c *runnerClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
-	return c.inner.IsObjectNamespaced(obj)
-}
-
 func (c *runnerClient) List(ctx context.Context, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) (_err error) {
 	return c.inner.List(ctx, list, opts...)
 }
@@ -77,6 +73,10 @@ func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch c
 		}
 	}()
 	return c.inner.Patch(ctx, obj, patch, opts...)
+}
+
+func (c *runnerClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
+	return c.inner.IsObjectNamespaced(obj)
 }
 
 func (c *runnerClient) log(op string, obj ctrlclient.Object, color *color.Color, args ...interface{}) {
