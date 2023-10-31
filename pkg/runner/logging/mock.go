@@ -10,7 +10,6 @@ import (
 // test resource for testing
 type testResource struct {
 	ctrlclient.Object
-	objectKind
 	name      string
 	namespace string
 	gvk       schema.GroupVersionKind
@@ -25,20 +24,21 @@ func (f *testResource) GetNamespace() string {
 }
 
 func (f *testResource) GetObjectKind() schema.ObjectKind {
-	return f.objectKind
+	return &objectKind{
+		gvk: f.gvk,
+	}
 }
 
-func (f *testResource) SetGroupVersionKind(kind schema.GroupVersionKind) {
-	f.gvk = kind
+type objectKind struct {
+	gvk schema.GroupVersionKind
 }
 
-func (f *testResource) GroupVersionKind() schema.GroupVersionKind {
-	return f.gvk
+func (o *objectKind) GroupVersionKind() schema.GroupVersionKind {
+	return o.gvk
 }
 
-type objectKind interface {
-	SetGroupVersionKind(kind schema.GroupVersionKind)
-	GroupVersionKind() schema.GroupVersionKind
+func (o *objectKind) SetGroupVersionKind(kind schema.GroupVersionKind) {
+	o.gvk = kind
 }
 
 // This is a mock clock for testing purposes

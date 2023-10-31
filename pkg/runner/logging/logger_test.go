@@ -8,11 +8,11 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type testLogger struct {
-	t        *testing.T
 	messages []string
 }
 
@@ -41,9 +41,9 @@ func TestNewLogger(t *testing.T) {
 
 func TestLog(t *testing.T) {
 	fakeClock := &mockClock{time: time.Now()}
-	mockT := &testLogger{t: t}
+	mockT := &testLogger{}
 
-	fakeLogger := NewLogger(mockT.t, fakeClock, "testName", "stepName").(*logger)
+	fakeLogger := NewLogger(mockT, fakeClock, "testName", "stepName").(*logger)
 	col := color.New(color.FgBlue)
 
 	testCases := []struct {
@@ -62,15 +62,19 @@ func TestLog(t *testing.T) {
 				"testName", "stepName", "OPERATION", "arg1", "arg2",
 			},
 		},
-		// {
-		// 	name:      "With Resource",
-		// 	resource:  &testResource{name: "testResource"},
-		// 	operation: "OPERATION",
-		// 	args:      []interface{}{"arg1", "arg2"},
-		// 	expectContains: []string{
-		// 		"testName", "stepName", "OPERATION", "testResource", "arg1", "arg2",
-		// 	},
-		// },
+		{
+			name: "With Resource",
+			resource: &testResource{
+				name:      "testResource",
+				namespace: "default",
+				gvk:       schema.GroupVersionKind{Group: "testGroup", Version: "v1", Kind: "testKind"},
+			},
+			operation: "OPERATION",
+			args:      []interface{}{"arg1", "arg2"},
+			expectContains: []string{
+				"testName", "stepName", "OPERATION", "default/testResource", "testGroup/v1/testKind", "arg1", "arg2",
+			},
+		},
 	}
 
 	for _, tt := range testCases {
