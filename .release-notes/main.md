@@ -3,8 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## :dizzy: New features :dizzy:
-
 ## :sparkles: UI changes :sparkles:
 
 ## :star: Examples :star:
@@ -15,6 +13,11 @@ Release notes for `TODO`.
 
 ## :books: Docs :books:
 -->
+
+## :dizzy: New features :dizzy:
+
+- We now have a [logo](https://github.com/kyverno/chainsaw/blob/main/.assets/kyverno-chainsaw-horizontal.png) :tada:
+- Timeouts are now managed per operation rather than per step
 
 ## :guitar: Misc :guitar:
 
