@@ -44,9 +44,6 @@ func TestLoad(t *testing.T) {
 					Name: "default",
 				},
 				Spec: v1alpha1.ConfigurationSpec{
-					Timeout: &metav1.Duration{
-						Duration: 30 * time.Second,
-					},
 					SkipDelete:       false,
 					FailFast:         false,
 					ReportFormat:     "",
@@ -69,8 +66,13 @@ func TestLoad(t *testing.T) {
 					Name: "custom-config",
 				},
 				Spec: v1alpha1.ConfigurationSpec{
-					Timeout: &metav1.Duration{
-						Duration: 45 * time.Second,
+					Timeouts: v1alpha1.Timeouts{
+						Apply:   &metav1.Duration{Duration: 5 * time.Second},
+						Assert:  &metav1.Duration{Duration: 10 * time.Second},
+						Error:   &metav1.Duration{Duration: 10 * time.Second},
+						Delete:  &metav1.Duration{Duration: 5 * time.Second},
+						Cleanup: &metav1.Duration{Duration: 5 * time.Second},
+						Exec:    &metav1.Duration{Duration: 10 * time.Second},
 					},
 					SkipDelete:       true,
 					FailFast:         true,

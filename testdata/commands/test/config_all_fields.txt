@@ -1,5 +1,4 @@
 Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)...
-- Timeout 10s
 - TestDirs [/path/to/testdir1 /path/to/testdir2]
 - SkipDelete true
 - FailFast true
@@ -10,6 +9,12 @@ Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)..
 - IncludeTestRegex '^include-.*'
 - ExcludeTestRegex '^exclude-.*'
 - Parallel 5
+- ApplyTimeout 5s
+- AssertTimeout 10s
+- ErrorTimeout 10s
+- DeleteTimeout 5s
+- CleanupTimeout 5s
+- ExecTimeout 10s
 Loading tests...
 Running tests...
 Tests Summary...

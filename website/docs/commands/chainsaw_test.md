@@ -9,8 +9,14 @@ chainsaw test [flags]... [test directories]...
 ### Options
 
 ```
+      --apply-timeout duration              The apply timeout to use as default for configuration.
+      --assert-timeout duration             The assert timeout to use as default for configuration.
+      --cleanup-timeout duration            The cleanup timeout to use as default for configuration.
       --config string                       Chainsaw configuration file.
+      --delete-timeout duration             The delete timeout to use as default for configuration.
+      --error-timeout duration              The error timeout to use as default for configuration.
       --exclude-test-regex string           Regular expression to exclude tests.
+      --exec-timeout duration               The exec timeout to use as default for configuration.
       --full-name                           Use full test case folder path instead of folder name.
   -h, --help                                help for test
       --include-test-regex string           Regular expression to include tests.
@@ -42,7 +48,6 @@ chainsaw test [flags]... [test directories]...
       --skip-delete                         If set, do not delete the resources after running the tests.
       --stop-on-first-failure               Stop the test upon encountering the first failure.
       --test-dir stringArray                Directories containing test cases to run.
-      --timeout duration                    The timeout to use as default for configuration. (default 30s)
 ```
 
 ### SEE ALSO

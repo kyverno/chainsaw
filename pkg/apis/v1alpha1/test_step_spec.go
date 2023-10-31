@@ -1,14 +1,10 @@
 package v1alpha1
 
-import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
 // TestStepSpec defines the desired state and behavior for each test step.
 type TestStepSpec struct {
-	// Timeout for the test step. Overrides the global timeout set in the Configuration and the timeout eventually set in the Test.
+	// Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.
 	// +optional
-	Timeout *metav1.Duration `json:"timeout,omitempty"`
+	Timeouts Timeouts `json:"timeouts,omitempty"`
 
 	// SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.
 	// +optional

@@ -2,7 +2,6 @@ package logging
 
 import (
 	"fmt"
-	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -13,14 +12,14 @@ import (
 const eraser = "\b\b\b\b\b\b\b\b\b"
 
 type logger struct {
-	t        *testing.T
+	t        LoggerInterface
 	clock    clock.PassiveClock
 	test     string
 	step     string
 	resource ctrlclient.Object
 }
 
-func NewLogger(t *testing.T, clock clock.PassiveClock, test string, step string) Logger {
+func NewLogger(t LoggerInterface, clock clock.PassiveClock, test string, step string) Logger {
 	t.Helper()
 	return &logger{
 		t:     t,
