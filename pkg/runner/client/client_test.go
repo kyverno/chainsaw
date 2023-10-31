@@ -97,7 +97,7 @@ func Test_runnerClient_Get(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				get: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
 					t.Helper()
 					return errors.New("test")
@@ -120,7 +120,7 @@ func Test_runnerClient_Get(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				get: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
 					t.Helper()
 					return nil
@@ -143,7 +143,7 @@ func Test_runnerClient_Get(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				get: func(_ context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 					t.Helper()
 					assert.Equal(t, types.NamespacedName{Namespace: "foo", Name: "bar"}, key)
@@ -169,7 +169,7 @@ func Test_runnerClient_Get(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				get: func(_ context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 					t.Helper()
 					assert.Equal(t, types.NamespacedName{Namespace: "foo", Name: "bar"}, key)
@@ -229,7 +229,7 @@ func Test_runnerClient_Create(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				create: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
 					t.Helper()
 					return errors.New("test")
@@ -252,7 +252,7 @@ func Test_runnerClient_Create(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				create: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
 					t.Helper()
 					return nil
@@ -309,7 +309,7 @@ func Test_runnerClient_Delete(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				delete: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
 					t.Helper()
 					return errors.New("test")
@@ -332,7 +332,7 @@ func Test_runnerClient_Delete(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				delete: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
 					t.Helper()
 					return nil
@@ -389,7 +389,7 @@ func Test_runnerClient_List(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				list: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectList, _ ...ctrlclient.ListOption) error {
 					t.Helper()
 					return errors.New("test")
@@ -412,7 +412,7 @@ func Test_runnerClient_List(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				list: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectList, _ ...ctrlclient.ListOption) error {
 					t.Helper()
 					return nil
@@ -470,7 +470,7 @@ func Test_runnerClient_Patch(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				patch: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
 					t.Helper()
 					return errors.New("test")
@@ -493,7 +493,7 @@ func Test_runnerClient_Patch(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				patch: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
 					t.Helper()
 					return nil
@@ -550,7 +550,7 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				IsNamespaced: func(t *testing.T, _ runtime.Object) (bool, error) {
 					t.Helper()
 					return false, errors.New("test")
@@ -572,7 +572,7 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				IsNamespaced: func(t *testing.T, _ runtime.Object) (bool, error) {
 					t.Helper()
 					return false, nil
@@ -595,7 +595,7 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		inner: func(t *testing.T) *FakeClient {
 			t.Helper()
 			return &FakeClient{
-				t: t,
+				T: t,
 				IsNamespaced: func(t *testing.T, _ runtime.Object) (bool, error) {
 					t.Helper()
 					return true, nil

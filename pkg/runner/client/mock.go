@@ -9,7 +9,7 @@ import (
 )
 
 type FakeClient struct {
-	t            *testing.T
+	T            *testing.T
 	ClientErr    error
 	get          func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error
 	create       func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error
@@ -22,27 +22,27 @@ type FakeClient struct {
 
 func (f *FakeClient) Get(ctx context.Context, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 	defer func() { f.NumCalls++ }()
-	return f.get(ctx, f.t, key, obj, opts...)
+	return f.get(ctx, f.T, key, obj, opts...)
 }
 
 func (f *FakeClient) List(ctx context.Context, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
 	defer func() { f.NumCalls++ }()
-	return f.list(ctx, f.t, list, opts...)
+	return f.list(ctx, f.T, list, opts...)
 }
 
 func (f *FakeClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
 	defer func() { f.NumCalls++ }()
-	return f.create(ctx, f.t, obj, opts...)
+	return f.create(ctx, f.T, obj, opts...)
 }
 
 func (f *FakeClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
 	defer func() { f.NumCalls++ }()
-	return f.delete(ctx, f.t, obj, opts...)
+	return f.delete(ctx, f.T, obj, opts...)
 }
 
 func (f *FakeClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
 	defer func() { f.NumCalls++ }()
-	return f.patch(ctx, f.t, obj, patch, opts...)
+	return f.patch(ctx, f.T, obj, patch, opts...)
 }
 
 func (f *FakeClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
@@ -50,5 +50,5 @@ func (f *FakeClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 	if f.ClientErr != nil {
 		return false, f.ClientErr
 	}
-	return f.IsNamespaced(f.t, obj)
+	return f.IsNamespaced(f.T, obj)
 }
