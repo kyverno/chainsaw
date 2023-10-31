@@ -12,7 +12,6 @@ import (
 
 type mockClient struct {
 	t            *testing.T
-	namespaced   bool
 	clientErr    error
 	get          func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error
 	create       func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error
@@ -101,7 +100,6 @@ func TestNamespacer(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mock := &mockClient{
-				namespaced: tt.namespaced,
 				isNamespaced: func(t *testing.T, obj runtime.Object) (bool, error) {
 					return tt.namespaced, nil
 				},
