@@ -9,7 +9,7 @@
 [![License: Apache-2.0](https://img.shields.io/github/license/kyverno/chainsaw?color=blue)](https://github.com/kyverno/chainsaw/blob/main/LICENSE)
 [![codecov](https://codecov.io/gh/kyverno/chainsaw/branch/main/graph/badge.svg)](https://app.codecov.io/gh/kyverno/chainsaw/branch/main)
 
-<a href="https://kyverno.github.io/chainsaw" rel="https://kyverno.github.io/chainsaw">![logo](website/docs/static/kyverno-chainsaw-horizontal.png)</a>
+<a href="https://kyverno.github.io/chainsaw" rel="https://kyverno.github.io/chainsaw">![logo](.assets/kyverno-chainsaw-horizontal.png)</a>
 
 Chainsaw provides a declarative approach to test [Kubernetes](https://kubernetes.io) operators and controllers.
 

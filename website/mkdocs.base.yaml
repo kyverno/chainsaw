@@ -24,7 +24,7 @@ theme:
   name: material
   custom_dir: docs/overrides
   language: en
-  logo: static/Kyverno_320x320.png
+  logo: static/kyverno-chainsaw-logo.png
   favicon: static/favicon.ico
   include_search_page: false
   search_index_only: true
