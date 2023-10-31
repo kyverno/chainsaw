@@ -1,8 +1,6 @@
 package logging
 
 import (
-	"time"
-
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -39,17 +37,4 @@ func (o *objectKind) GroupVersionKind() schema.GroupVersionKind {
 
 func (o *objectKind) SetGroupVersionKind(kind schema.GroupVersionKind) {
 	o.gvk = kind
-}
-
-// This is a mock clock for testing purposes
-type mockClock struct {
-	time time.Time
-}
-
-func (m *mockClock) Now() time.Time {
-	return m.time
-}
-
-func (m *mockClock) Since(time.Time) time.Duration {
-	return 0
 }
