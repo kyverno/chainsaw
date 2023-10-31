@@ -4,7 +4,7 @@ package v1alpha1
 type TestStepSpec struct {
 	// Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.
 	// +optional
-	Timeouts Timeouts `json:"timeouts,omitempty"`
+	Timeouts Timeouts `json:"timeouts"`
 
 	// SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.
 	// +optional
