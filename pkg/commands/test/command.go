@@ -6,7 +6,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
@@ -24,7 +23,12 @@ import (
 
 type options struct {
 	config              string
-	timeout             metav1.Duration
+	applyTimeout        metav1.Duration
+	assertTimeout       metav1.Duration
+	errorTimeout        metav1.Duration
+	deleteTimeout       metav1.Duration
+	cleanupTimeout      metav1.Duration
+	execTimeout         metav1.Duration
 	testDirs            []string
 	skipDelete          bool
 	failFast            bool
@@ -81,8 +85,23 @@ func Command() *cobra.Command {
 			}
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
-			if flagutils.IsSet(flags, "timeout") {
-				configuration.Spec.Timeout = &options.timeout
+			if flagutils.IsSet(flags, "apply-timeout") {
+				configuration.Spec.Timeouts.Apply = &options.applyTimeout
+			}
+			if flagutils.IsSet(flags, "assert-timeout") {
+				configuration.Spec.Timeouts.Assert = &options.assertTimeout
+			}
+			if flagutils.IsSet(flags, "error-timeout") {
+				configuration.Spec.Timeouts.Error = &options.errorTimeout
+			}
+			if flagutils.IsSet(flags, "delete-timeout") {
+				configuration.Spec.Timeouts.Delete = &options.deleteTimeout
+			}
+			if flagutils.IsSet(flags, "cleanup-timeout") {
+				configuration.Spec.Timeouts.Cleanup = &options.cleanupTimeout
+			}
+			if flagutils.IsSet(flags, "exec-timeout") {
+				configuration.Spec.Timeouts.Exec = &options.execTimeout
 			}
 			if flagutils.IsSet(flags, "test-dir") {
 				configuration.Spec.TestDirs = options.testDirs
@@ -117,7 +136,6 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "exclude-test-regex") {
 				configuration.Spec.ExcludeTestRegex = options.excludeTestRegex
 			}
-			fmt.Fprintf(out, "- Timeout %v\n", configuration.Spec.Timeout.Duration)
 			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
@@ -132,6 +150,24 @@ func Command() *cobra.Command {
 			}
 			if configuration.Spec.RepeatCount != nil {
 				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.RepeatCount)
+			}
+			if configuration.Spec.Timeouts.Apply != nil {
+				fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.Apply.Duration)
+			}
+			if configuration.Spec.Timeouts.Assert != nil {
+				fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.Assert.Duration)
+			}
+			if configuration.Spec.Timeouts.Error != nil {
+				fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.Error.Duration)
+			}
+			if configuration.Spec.Timeouts.Delete != nil {
+				fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.Delete.Duration)
+			}
+			if configuration.Spec.Timeouts.Cleanup != nil {
+				fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.Cleanup.Duration)
+			}
+			if configuration.Spec.Timeouts.Exec != nil {
+				fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.Exec.Duration)
 			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
@@ -166,7 +202,12 @@ func Command() *cobra.Command {
 			return err
 		},
 	}
-	cmd.Flags().DurationVar(&options.timeout.Duration, "timeout", 30*time.Second, "The timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", 0, "The apply timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", 0, "The assert timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", 0, "The error timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", 0, "The delete timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", 0, "The cleanup timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", 0, "The exec timeout to use as default for configuration.")
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file.")
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run.")
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests.")

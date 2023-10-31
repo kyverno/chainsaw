@@ -4,16 +4,22 @@ metadata:
   name: valid
   namespace: kyverno
 spec:
-  timeout: "60s"
+  timeouts:
+    apply: 5s
+    assert: 10s
+    error: 10s
+    delete: 5s
+    cleanup: 5s
+    exec: 10s
   testDirs:
-    - "/path/to/testdir1"
-    - "/path/to/testdir2"
+    - /path/to/testdir1
+    - /path/to/testdir2
   skipDelete: true
   failFast: true
   parallel: 5
-  reportFormat: "JSON"
-  reportName: "custom-chainsaw-report"
-  namespace: "test-namespace"
+  reportFormat: JSON
+  reportName: custom-chainsaw-report
+  namespace: test-namespace
   fullName: true
-  includeTestRegex: "^include-.*"
-  excludeTestRegex: "^exclude-.*"
+  includeTestRegex: ^include-.*
+  excludeTestRegex: ^exclude-.*

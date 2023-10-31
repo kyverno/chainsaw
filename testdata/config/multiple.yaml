@@ -9,4 +9,5 @@ kind: Configuration
 metadata:
   name: timeout-1m
 spec:
-  timeout: 1m
+  timeouts:
+    assert: 1m

@@ -3,7 +3,13 @@ kind: Configuration
 metadata:
   name: custom-config
 spec:
-  timeout: 45s
+  timeouts:
+    apply: 5s
+    assert: 10s
+    error: 10s
+    delete: 5s
+    cleanup: 5s
+    exec: 10s
   skipDelete: true
   failFast: true
   parallel: 4

@@ -89,11 +89,29 @@ spec:
                 items:
                   type: string
                 type: array
-              timeout:
-                default: 30s
-                description: Global timeout configuration. Applies to all tests/test
+              timeouts:
+                description: Global timeouts configuration. Applies to all tests/test
                   steps if not overridden.
-                type: string
+                properties:
+                  apply:
+                    description: Apply defines the timeout for the apply operation
+                    type: string
+                  assert:
+                    description: Assert defines the timeout for the assert operation
+                    type: string
+                  cleanup:
+                    description: Cleanup defines the timeout for the cleanup operation
+                    type: string
+                  delete:
+                    description: Delete defines the timeout for the delete operation
+                    type: string
+                  error:
+                    description: Error defines the timeout for the error operation
+                    type: string
+                  exec:
+                    description: Exec defines the timeout for exec operations
+                    type: string
+                type: object
             type: object
         required:
         - spec
