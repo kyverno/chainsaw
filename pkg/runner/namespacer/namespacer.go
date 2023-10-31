@@ -28,7 +28,6 @@ func (n *namespacer) Apply(resource ctrlclient.Object) error {
 	if resource == nil {
 		return errors.New("resource is nil")
 	}
-
 	if resource.GetNamespace() == "" {
 		namespaced, err := n.c.IsObjectNamespaced(resource)
 		if err != nil {

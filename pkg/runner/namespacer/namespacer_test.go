@@ -6,11 +6,15 @@ import (
 
 	mock "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestNamespacer(t *testing.T) {
+	var nsNotSet unstructured.Unstructured
+	var nsSet unstructured.Unstructured
+	nsSet.SetNamespace("already-set")
 	tests := []struct {
 		name          string
 		resource      ctrlclient.Object
@@ -27,45 +31,45 @@ func TestNamespacer(t *testing.T) {
 		},
 		{
 			name:          "namespaced with no NS set",
-			resource:      &testResource{},
+			resource:      nsNotSet.DeepCopy(),
 			namespaced:    true,
 			expectNS:      "test-namespace",
 			expectedCalls: 1,
 		},
 		{
 			name:          "non-namespaced resource",
-			resource:      &testResource{},
+			namespaced:    false,
+			resource:      nsNotSet.DeepCopy(),
 			expectNS:      "",
 			expectedCalls: 1,
 		},
 		{
 			name:     "resource with namespace set",
-			resource: &testResource{namespace: "already-set"},
+			resource: nsSet.DeepCopy(),
 			expectNS: "already-set",
 		},
 		{
 			name:          "error scenario",
-			resource:      &testResource{},
+			resource:      nsNotSet.DeepCopy(),
 			clientErr:     errors.New("mock error"),
 			expectErr:     true,
 			expectedCalls: 1,
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mock := &mock.FakeClient{
 				T: t,
 				IsNamespaced: func(t *testing.T, obj runtime.Object) (bool, error) {
 					t.Helper()
+					if tt.clientErr != nil {
+						return false, tt.clientErr
+					}
 					return tt.namespaced, nil
 				},
-				ClientErr: tt.clientErr,
 			}
-
 			n := New(mock, "test-namespace")
 			err := n.Apply(tt.resource)
-
 			if tt.expectErr {
 				assert.Error(t, err)
 			} else {
@@ -75,24 +79,9 @@ func TestNamespacer(t *testing.T) {
 			}
 		})
 	}
-
 	t.Run("test GetNamespace", func(t *testing.T) {
 		n := New(&mock.FakeClient{}, "test-namespace")
 		ns := n.GetNamespace()
 		assert.Equal(t, "test-namespace", ns)
 	})
-}
-
-// Mock the ctrlclient.Object for testing purposes.
-type testResource struct {
-	ctrlclient.Object
-	namespace string
-}
-
-func (t *testResource) GetNamespace() string {
-	return t.namespace
-}
-
-func (t *testResource) SetNamespace(ns string) {
-	t.namespace = ns
 }

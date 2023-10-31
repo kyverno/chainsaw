@@ -9,6 +9,7 @@ import (
 	"github.com/fatih/color"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	clock "k8s.io/utils/clock/testing"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -25,7 +26,7 @@ func (tl *testLogger) Log(args ...interface{}) {
 func (tl *testLogger) Helper() {}
 
 func TestNewLogger(t *testing.T) {
-	fakeClock := &mockClock{time: time.Now()}
+	fakeClock := clock.NewFakePassiveClock(time.Now())
 	testName := "testName"
 	stepName := "stepName"
 	logger, ok := NewLogger(t, fakeClock, testName, stepName).(*logger)
@@ -40,7 +41,7 @@ func TestNewLogger(t *testing.T) {
 }
 
 func TestLog(t *testing.T) {
-	fakeClock := &mockClock{time: time.Now()}
+	fakeClock := clock.NewFakePassiveClock(time.Now())
 	mockT := &testLogger{}
 
 	fakeLogger := NewLogger(mockT, fakeClock, "testName", "stepName").(*logger)
@@ -111,7 +112,7 @@ func TestWithResource(t *testing.T) {
 
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			fakeClock := &mockClock{time: time.Now()}
+			fakeClock := clock.NewFakePassiveClock(time.Now())
 			fakeLogger := logger{
 				t:     t,
 				clock: fakeClock,

@@ -10,7 +10,6 @@ import (
 
 type FakeClient struct {
 	T            *testing.T
-	ClientErr    error
 	get          func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error
 	create       func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error
 	delete       func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error
@@ -47,8 +46,5 @@ func (f *FakeClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctr
 
 func (f *FakeClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 	defer func() { f.NumCalls++ }()
-	if f.ClientErr != nil {
-		return false, f.ClientErr
-	}
 	return f.IsNamespaced(f.T, obj)
 }
