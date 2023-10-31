@@ -1,6 +1,8 @@
 package client
 
 import (
+	"fmt"
+
 	"github.com/kyverno/kyverno/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -33,13 +35,17 @@ func Name(key ctrlclient.ObjectKey) string {
 }
 
 func ColouredName(key ctrlclient.ObjectKey, color *color.Color) string {
+	sprint := fmt.Sprint
+	if color != nil {
+		sprint = color.Sprint
+	}
 	name := key.Name
 	if name == "" {
 		name = "*"
 	}
-	name = color.Sprint(name)
+	name = sprint(name)
 	if key.Namespace != "" {
-		name = color.Sprint(key.Namespace) + "/" + name
+		name = sprint(key.Namespace) + "/" + name
 	}
 	return name
 }

@@ -30,12 +30,16 @@ func NewLogger(t LoggerInterface, clock clock.PassiveClock, test string, step st
 }
 
 func (l *logger) Log(operation string, color *color.Color, args ...interface{}) {
+	sprint := fmt.Sprint
+	if color != nil {
+		sprint = color.Sprint
+	}
 	a := make([]interface{}, 0, len(args)+1)
-	prefix := fmt.Sprintf("%s%s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), color.Sprint(l.test), color.Sprint(l.step), color.Sprint(operation))
+	prefix := fmt.Sprintf("%s%s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), sprint(l.test), sprint(l.step), sprint(operation))
 	if l.resource != nil {
 		gvk := l.resource.GetObjectKind().GroupVersionKind()
 		key := client.ObjectKey(l.resource)
-		prefix = fmt.Sprintf("%s %s/%s | %s |", prefix, color.Sprint(gvk.GroupVersion()), color.Sprint(gvk.Kind), client.ColouredName(key, color))
+		prefix = fmt.Sprintf("%s %s/%s | %s |", prefix, sprint(gvk.GroupVersion()), sprint(gvk.Kind), client.ColouredName(key, color))
 	}
 	a = append(a, prefix)
 	a = append(a, args...)
