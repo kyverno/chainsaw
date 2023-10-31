@@ -57,6 +57,7 @@ func TestNamespacer(t *testing.T) {
 			t.Helper()
 			mock := &mock.FakeClient{
 				IsNamespaced: func(t *testing.T, obj runtime.Object) (bool, error) {
+					t.Helper()
 					return tt.namespaced, nil
 				},
 				ClientErr: tt.clientErr,
