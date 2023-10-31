@@ -9,8 +9,6 @@ Release notes for `TODO`.
 
 ## :boat: Tutorials :boat:
 
-## :wrench: Fixes :wrench:
-
 ## :books: Docs :books:
 -->
 
@@ -18,6 +16,10 @@ Release notes for `TODO`.
 
 - We now have a [logo](https://github.com/kyverno/chainsaw/blob/main/.assets/kyverno-chainsaw-horizontal.png) :tada:
 - Timeouts are now managed per operation rather than per step
+
+## :wrench: Fixes :wrench:
+
+- Fixed `Exec` collectors not invoked
 
 ## :guitar: Misc :guitar:
 
