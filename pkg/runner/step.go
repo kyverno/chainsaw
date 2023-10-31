@@ -30,21 +30,22 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	defer func() {
 		if t.Failed() {
 			t.Cleanup(func() {
-				if step.Spec.OnFailure == nil {
-					return
-				}
-				for _, failures := range step.Spec.OnFailure {
-					if failures.Collect != nil {
-						for _, collector := range collect(*failures.Collect) {
-							cmd := collector
+				for _, handler := range step.Spec.OnFailure {
+					collectors, err := collect(handler.Collect)
+					if err != nil {
+						logger.Log("COLLEC", color.BoldRed, err)
+						t.Fail()
+					} else {
+						for _, collector := range collectors {
 							exec := v1alpha1.Exec{
-								Command: &cmd,
+								Command: collector,
 							}
 							if err := operations.Exec(context.Background(), logger, exec, true, ctx.namespacer.GetNamespace()); err != nil {
 								t.Fail()
 							}
 						}
 					}
+					// TODO .Exec handlers
 				}
 			})
 		}
@@ -68,7 +69,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		}()
 	}
 	var cleanup operations.CleanupFunc
-	if skip := skipDelete(config, test, step.Spec); skip == nil || !*skip {
+	if !skipDelete(config.SkipDelete, test.SkipDelete, step.Spec.SkipDelete) {
 		cleanup = func(obj ctrlclient.Object, c client.Client) {
 			t.Cleanup(func() {
 				cleanupCtx, cancel := timeoutCtx(defaultCleanupTimeout, config.Timeouts.Cleanup, test.Timeouts.Cleanup, step.Spec.Timeouts.Cleanup, nil)
