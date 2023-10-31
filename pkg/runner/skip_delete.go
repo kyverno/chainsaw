@@ -1,15 +1,11 @@
 package runner
 
-import (
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-)
-
-func skipDelete(config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestStepSpec) *bool {
-	if step.SkipDelete != nil {
-		return step.SkipDelete
+func skipDelete(config bool, test *bool, step *bool) bool {
+	if step != nil {
+		return *step
 	}
-	if test.SkipDelete != nil {
-		return test.SkipDelete
+	if test != nil {
+		return *test
 	}
-	return &config.SkipDelete
+	return config
 }
