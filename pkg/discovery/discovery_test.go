@@ -16,18 +16,18 @@ func TestDiscoverTests(t *testing.T) {
 		want     []Test
 		wantErr  bool
 	}{{
-		name:     "quick start",
+		name:     "test",
 		fileName: "chainsaw-test.yaml",
-		paths:    []string{"../../testdata/tests/quick-start"},
+		paths:    []string{"../../testdata/discovery/test"},
 		want: []Test{{
-			BasePath: "../../testdata/tests/quick-start",
+			BasePath: "../../testdata/discovery/test",
 			Test: &v1alpha1.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
 				},
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "chainsaw-quick-start",
+					Name: "test",
 				},
 				Spec: v1alpha1.TestSpec{
 					Steps: []v1alpha1.TestSpecStep{{
@@ -54,22 +54,22 @@ func TestDiscoverTests(t *testing.T) {
 		}},
 		wantErr: false,
 	}, {
-		name:     "manifests based",
+		name:     "manifests",
 		fileName: "chainsaw-test.yaml",
-		paths:    []string{"../../testdata/tests/manifests-based"},
+		paths:    []string{"../../testdata/discovery/manifests"},
 		want: []Test{{
-			BasePath: "../../testdata/tests/manifests-based",
+			BasePath: "../../testdata/discovery/manifests",
 			Test: &v1alpha1.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
 				},
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "manifests-based",
+					Name: "manifests",
 				},
 				Spec: v1alpha1.TestSpec{
 					Steps: []v1alpha1.TestSpecStep{{
-						Name: "configmap",
+						Name: "assert",
 						Spec: v1alpha1.TestStepSpec{
 							Apply: []v1alpha1.Apply{{
 								FileRef: v1alpha1.FileRef{
@@ -81,6 +81,11 @@ func TestDiscoverTests(t *testing.T) {
 									File: "01-assert.yaml",
 								},
 							}},
+							Error: []v1alpha1.Error{{
+								FileRef: v1alpha1.FileRef{
+									File: "01-error.yaml",
+								},
+							}},
 						},
 					}},
 				},
@@ -88,18 +93,18 @@ func TestDiscoverTests(t *testing.T) {
 		}},
 		wantErr: false,
 	}, {
-		name:     "steps based",
+		name:     "steps",
 		fileName: "chainsaw-test.yaml",
-		paths:    []string{"../../testdata/tests/steps-based"},
+		paths:    []string{"../../testdata/discovery/steps"},
 		want: []Test{{
-			BasePath: "../../testdata/tests/steps-based",
+			BasePath: "../../testdata/discovery/steps",
 			Test: &v1alpha1.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
 				},
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "steps-based",
+					Name: "steps",
 				},
 				Spec: v1alpha1.TestSpec{
 					Steps: []v1alpha1.TestSpecStep{{
