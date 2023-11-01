@@ -65,8 +65,6 @@ func TestDelete(t *testing.T) {
 			expectedErr:  errors.NewInternalError(fmt.Errorf("failed to delete the pod")),
 			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [ERROR\nInternal error occurred: failed to delete the pod]"},
 		},
-		///
-
 	}
 
 	for _, tt := range tests {
