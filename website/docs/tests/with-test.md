@@ -39,8 +39,11 @@ kind: Test
 metadata:
   name: test-name
 spec:
-  # this timeout applies only to the test (and test steps if not overridden)
-  timeout: 10s
+  # these timeouts are applied per operation
+  timeouts:
+    apply: 10s
+    assert: 10s
+    error: 10s
   skip: false
   concurrent: false
   skipDelete: false
