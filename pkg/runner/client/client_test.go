@@ -471,7 +471,7 @@ func Test_runnerClient_Patch(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				patch: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+				PatchFake: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
 					t.Helper()
 					return errors.New("test")
 				},
@@ -494,7 +494,7 @@ func Test_runnerClient_Patch(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				patch: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+				PatchFake: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
 					t.Helper()
 					return nil
 				},
