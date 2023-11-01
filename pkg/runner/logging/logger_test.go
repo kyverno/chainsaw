@@ -1,7 +1,6 @@
 package logging
 
 import (
-	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -11,18 +10,6 @@ import (
 	clock "k8s.io/utils/clock/testing"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
-
-type testLogger struct {
-	messages []string
-}
-
-func (tl *testLogger) Log(args ...interface{}) {
-	for _, arg := range args {
-		tl.messages = append(tl.messages, fmt.Sprint(arg))
-	}
-}
-
-func (tl *testLogger) Helper() {}
 
 func TestNewLogger(t *testing.T) {
 	fakeClock := clock.NewFakePassiveClock(time.Now())
@@ -41,7 +28,7 @@ func TestNewLogger(t *testing.T) {
 
 func TestLog(t *testing.T) {
 	fakeClock := clock.NewFakePassiveClock(time.Now())
-	mockT := &testLogger{}
+	mockT := &TestLogger{}
 
 	fakeLogger := NewLogger(mockT, fakeClock, "testName", "stepName").(*logger)
 
