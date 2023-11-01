@@ -1,0 +1,10 @@
+Generate reference documentation
+
+Usage:
+  chainsaw docs [flags]
+
+Flags:
+      --autogenTag      Determines if the generated docs should contain a timestamp (default true)
+  -h, --help            help for docs
+  -o, --output string   Output path (default ".")
+      --website         Website version
