@@ -106,13 +106,7 @@ kind: Configuration
 metadata:
   name: custom-config
 spec:
-  timeouts:
-    apply: 45s
-    delete: 45s
-    assert: 45s
-    error: 45s
-    cleanup: 45s
-    exec: 45s
+  timeout: 45s
   skipDelete: false
   failFast: true
   parallel: 4
@@ -134,7 +128,7 @@ spec: {}
 You can also override specific configurations using command-line flags, even after loading a configuration file. For instance:
 
 ```bash
-chainsaw test --config path/to/your/config.yaml --apply-timeout 45s --parallel 4
+chainsaw test --config path/to/your/config.yaml --timeout 45s --parallel 4
 ```
 
 In this example, even if the configuration file specifies different values for `timeout` and `parallel`, the command-line flags will take precedence.
@@ -215,11 +209,9 @@ data:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: full-test-example 
+  name: full-test-example
 spec:
-  timeouts:
-    apply: 45s
-    assert: 45s
+  timeout: 10s
   steps:
   - spec:
       apply:

@@ -47,7 +47,7 @@ kind: TestStep
 metadata:
   name: test-step-name
 spec:
-  # these timeouts applies only to the step
+  # these timeouts are applied per operation
   # it would not be possible to override the timeouts
   # with a manifests based approach
   timeouts:
@@ -88,7 +88,7 @@ kind: TestStep
 metadata:
   name: test-step-name
 spec:
-  # these timeouts applies only to the step
+  # these timeouts are applied per operation
   # it would not be possible to override the timeouts
   # with a manifests based approach
   timeouts:
