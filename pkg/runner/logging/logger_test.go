@@ -6,7 +6,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/fatih/color"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	clock "k8s.io/utils/clock/testing"
@@ -45,7 +44,6 @@ func TestLog(t *testing.T) {
 	mockT := &testLogger{}
 
 	fakeLogger := NewLogger(mockT, fakeClock, "testName", "stepName").(*logger)
-	col := color.New(color.FgBlue)
 
 	testCases := []struct {
 		name           string
@@ -84,7 +82,7 @@ func TestLog(t *testing.T) {
 				fakeLogger = fakeLogger.WithResource(tt.resource).(*logger)
 			}
 
-			fakeLogger.Log(tt.operation, col, tt.args...)
+			fakeLogger.Log(tt.operation, nil, tt.args...)
 			for _, exp := range tt.expectContains {
 				found := false
 				for _, msg := range mockT.messages {
