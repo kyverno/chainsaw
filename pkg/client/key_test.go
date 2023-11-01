@@ -45,20 +45,20 @@ func TestName(t *testing.T) {
 	assert.Equal(t, "*", name)
 }
 
-// Getting a error here
-// func TestColouredName(t *testing.T) {
-// 	colour := color.BoldFgCyan
-
-// 	key := ctrlclient.ObjectKey{Name: "test-name"}
-// 	name := ColouredName(key, colour)
-// 	assert.Contains(t, name, "test-name")
-
-// 	key.Namespace = "test-namespace"
-// 	name = ColouredName(key, colour)
-// 	assert.Contains(t, name, "test-namespace")
-// 	assert.Contains(t, name, "test-name")
-
-// 	key = ctrlclient.ObjectKey{}
-// 	name = ColouredName(key, colour)
-// 	assert.Contains(t, name, "*")
-// }
+func TestColouredName(t *testing.T) {
+	{
+		key := ctrlclient.ObjectKey{Name: "test-name"}
+		name := ColouredName(key, nil)
+		assert.Equal(t, "test-name", name)
+	}
+	{
+		key := ctrlclient.ObjectKey{Name: "test-name", Namespace: "test-namespace"}
+		name := ColouredName(key, nil)
+		assert.Equal(t, "test-namespace/test-name", name)
+	}
+	{
+		key := ctrlclient.ObjectKey{}
+		name := ColouredName(key, nil)
+		assert.Equal(t, "*", name)
+	}
+}
