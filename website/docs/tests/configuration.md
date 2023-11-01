@@ -42,7 +42,13 @@ kind: Configuration
 metadata:
   name: custom-config
 spec:
-  timeout: 45s
+  timeouts:
+    apply: 45s
+    delete: 25s
+    assert: 20s
+    error: 10s
+    cleanup: 45s
+    exec: 45s
   skipDelete: false
   failFast: true
   parallel: 4
@@ -71,7 +77,7 @@ Even after a configuration is loaded, you can override specific settings using c
 chainsaw test                           \
     --config path/to/your/config.yaml   \
     --test-dir path/to/test/dir         \
-    --timeout 45s                       \
+    --apply-timeout 45s                       \
     --skip-delete false                 \
     --fail-fast true                    \
     --parallel 4                        \

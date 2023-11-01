@@ -47,10 +47,11 @@ kind: TestStep
 metadata:
   name: test-step-name
 spec:
-  # this timeout applies only to the step
-  # it would not be possible to override the timeout
+  # these timeouts applies only to the step
+  # it would not be possible to override the timeouts
   # with a manifests based approach
-  timeout: 10s
+  timeouts:
+    apply: 45s
   skipDelete: true
   # apply a configmap to the cluster
   # the path to the configmap is relative to the folder
@@ -87,10 +88,11 @@ kind: TestStep
 metadata:
   name: test-step-name
 spec:
-  # this timeout applies only to the step
-  # it would not be possible to override the timeout
+  # these timeouts applies only to the step
+  # it would not be possible to override the timeouts
   # with a manifests based approach
-  timeout: 20s
+  timeouts:
+    error: 20s
   # evaluate an error statement against resources
   # present in the cluster
   error:
