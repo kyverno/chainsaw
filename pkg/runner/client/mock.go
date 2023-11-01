@@ -11,8 +11,8 @@ import (
 type FakeClient struct {
 	T            *testing.T
 	GetFake      func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error
-	create       func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error
-	delete       func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error
+	CreateFake   func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error
+	DeleteFake   func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error
 	ListFake     func(ctx context.Context, t *testing.T, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error
 	PatchFake    func(ctx context.Context, t *testing.T, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error
 	IsNamespaced func(t *testing.T, obj runtime.Object) (bool, error)
@@ -31,12 +31,12 @@ func (f *FakeClient) List(ctx context.Context, list ctrlclient.ObjectList, opts 
 
 func (f *FakeClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
 	defer func() { f.NumCalls++ }()
-	return f.create(ctx, f.T, obj, opts...)
+	return f.CreateFake(ctx, f.T, obj, opts...)
 }
 
 func (f *FakeClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
 	defer func() { f.NumCalls++ }()
-	return f.delete(ctx, f.T, obj, opts...)
+	return f.DeleteFake(ctx, f.T, obj, opts...)
 }
 
 func (f *FakeClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {

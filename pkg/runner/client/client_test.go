@@ -230,7 +230,7 @@ func Test_runnerClient_Create(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				create: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				CreateFake: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
 					t.Helper()
 					return errors.New("test")
 				},
@@ -253,7 +253,7 @@ func Test_runnerClient_Create(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				create: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				CreateFake: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
 					t.Helper()
 					return nil
 				},
@@ -310,7 +310,7 @@ func Test_runnerClient_Delete(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				delete: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+				DeleteFake: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
 					t.Helper()
 					return errors.New("test")
 				},
@@ -333,7 +333,7 @@ func Test_runnerClient_Delete(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				delete: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+				DeleteFake: func(_ context.Context, t *testing.T, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
 					t.Helper()
 					return nil
 				},
