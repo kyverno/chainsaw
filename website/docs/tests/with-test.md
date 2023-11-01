@@ -40,7 +40,7 @@ metadata:
   name: test-name
 spec:
   # these timeouts are applied per operation
-  timeout:
+  timeouts:
     apply: 10s
     assert: 10s
     error: 10s
