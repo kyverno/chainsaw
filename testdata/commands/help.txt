@@ -1,0 +1,18 @@
+Stronger tool for e2e testing
+
+Usage:
+  chainsaw [flags]
+  chainsaw [command]
+
+Available Commands:
+  completion  Generate the autocompletion script for the specified shell
+  docs        Generate reference documentation
+  help        Help about any command
+  kuttl       Work with KUTTL tests
+  test        Run tests
+  version     Print the version informations
+
+Flags:
+  -h, --help   help for chainsaw
+
+Use "chainsaw [command] --help" for more information about a command.

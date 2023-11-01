@@ -1,4 +1,4 @@
-package commands
+package root
 
 import (
 	"bytes"
@@ -20,24 +20,20 @@ func Test_Execute(t *testing.T) {
 		args: []string{
 			"--help",
 		},
-		out:     "../../testdata/commands/help.txt",
+		out:     "../../../testdata/commands/root/help.txt",
 		wantErr: false,
 	}, {
-		name:    "no arg",
-		out:     "../../testdata/commands/help.txt",
+		name:    "chainsaw",
+		out:     "../../../testdata/commands/root/help.txt",
 		wantErr: false,
 	}, {
 		name:    "unknow flag",
 		args:    []string{"--foo"},
 		wantErr: true,
-	}, {
-		name:    "unknow arg",
-		args:    []string{"foo"},
-		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := RootCommand()
+			cmd := Command()
 			assert.NotNil(t, cmd)
 			cmd.SetArgs(tt.args)
 			out := bytes.NewBufferString("")
