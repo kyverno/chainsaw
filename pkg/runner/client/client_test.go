@@ -98,7 +98,7 @@ func Test_runnerClient_Get(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				get: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+				GetFake: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
 					t.Helper()
 					return errors.New("test")
 				},
@@ -121,7 +121,7 @@ func Test_runnerClient_Get(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				get: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+				GetFake: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
 					t.Helper()
 					return nil
 				},
@@ -144,7 +144,7 @@ func Test_runnerClient_Get(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				get: func(_ context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				GetFake: func(_ context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 					t.Helper()
 					assert.Equal(t, types.NamespacedName{Namespace: "foo", Name: "bar"}, key)
 					assert.Equal(t, &unstructured.Unstructured{}, obj)
@@ -170,7 +170,7 @@ func Test_runnerClient_Get(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				get: func(_ context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				GetFake: func(_ context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 					t.Helper()
 					assert.Equal(t, types.NamespacedName{Namespace: "foo", Name: "bar"}, key)
 					assert.Equal(t, &unstructured.Unstructured{}, obj)
@@ -390,7 +390,7 @@ func Test_runnerClient_List(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				list: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectList, _ ...ctrlclient.ListOption) error {
+				ListFake: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectList, _ ...ctrlclient.ListOption) error {
 					t.Helper()
 					return errors.New("test")
 				},
@@ -413,7 +413,7 @@ func Test_runnerClient_List(t *testing.T) {
 			t.Helper()
 			return &FakeClient{
 				T: t,
-				list: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectList, _ ...ctrlclient.ListOption) error {
+				ListFake: func(_ context.Context, t *testing.T, _ ctrlclient.ObjectList, _ ...ctrlclient.ListOption) error {
 					t.Helper()
 					return nil
 				},
