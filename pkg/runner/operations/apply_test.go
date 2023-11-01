@@ -111,6 +111,7 @@ func TestApply(t *testing.T) {
 			logger := fakeLogger.NewLogger(&fakeLogger.TestLogger{}, fakeClock, "testName", "stepName")
 			tt.client.T = t
 			tt.client.GetFake = func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				t.Helper()
 				if tt.shouldFail {
 					return tt.expectedErr
 				}
@@ -120,12 +121,14 @@ func TestApply(t *testing.T) {
 				return nil
 			}
 			tt.client.PatchFake = func(ctx context.Context, t *testing.T, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
+				t.Helper()
 				if tt.initialState != nil {
 					*obj.(*unstructured.Unstructured) = *tt.initialState
 				}
 				return nil
 			}
 			tt.client.CreateFake = func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+				t.Helper()
 				return nil
 			}
 
