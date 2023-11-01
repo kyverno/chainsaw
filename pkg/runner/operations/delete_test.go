@@ -2,6 +2,7 @@ package operations
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	fakeClient "github.com/kyverno/chainsaw/pkg/runner/client"
@@ -42,6 +43,30 @@ func TestDelete(t *testing.T) {
 			expectedErr:  nil,
 			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [DONE]"},
 		},
+		{
+			name: "Failed delete",
+			object: &unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiVersion": "v1",
+					"kind":       "Pod",
+					"metadata": map[string]interface{}{
+						"name": "bad-test-pod",
+					},
+				},
+			},
+			client: &fakeClient.FakeClient{
+				GetFake: func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return nil
+				},
+				DeleteFake: func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+					return errors.NewInternalError(fmt.Errorf("failed to delete the pod"))
+				},
+			},
+			expectedErr:  errors.NewInternalError(fmt.Errorf("failed to delete the pod")),
+			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [ERROR\nInternal error occurred: failed to delete the pod]"},
+		},
+		///
+
 	}
 
 	for _, tt := range tests {
