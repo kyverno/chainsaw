@@ -37,6 +37,7 @@ func TestDelete(t *testing.T) {
 					return errors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 				},
 				DeleteFake: func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+					t.Helper()
 					return nil
 				},
 			},
