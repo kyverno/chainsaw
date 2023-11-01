@@ -83,6 +83,20 @@ func Test_collect(t *testing.T) {
 			},
 		},
 		wantErr: true,
+	}, {
+		name: "with error",
+		collector: &v1alpha1.Collect{
+			PodLogs: &v1alpha1.PodLogs{
+				Name:     "foo",
+				Selector: "foo=bar",
+			},
+			Events: &v1alpha1.Events{
+				Name:      "foo",
+				Selector:  "foo=bar",
+				Namespace: "bar",
+			},
+		},
+		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
