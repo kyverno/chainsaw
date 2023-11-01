@@ -1,43 +1,84 @@
 package client
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+	mock "k8s.io/apimachinery/pkg/runtime/testing"
 )
 
 func TestPatchObject(t *testing.T) {
-	actualObj := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"apiVersion": "v1",
-			"kind":       "Pod",
-			"metadata": map[string]interface{}{
-				"name":            "test-pod",
-				"resourceVersion": "12345",
+	tests := []struct {
+		name     string
+		actual   runtime.Object
+		expected runtime.Object
+		want     runtime.Object
+		wantErr  bool
+	}{{
+		name:     "acutal nil",
+		actual:   nil,
+		expected: &unstructured.Unstructured{},
+		wantErr:  true,
+	}, {
+		name:     "expected nil",
+		actual:   &unstructured.Unstructured{},
+		expected: nil,
+		wantErr:  true,
+	}, {
+		name: "ok",
+		actual: &unstructured.Unstructured{
+			Object: map[string]interface{}{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]interface{}{
+					"name":            "test-pod",
+					"resourceVersion": "12345",
+				},
 			},
 		},
-	}
-
-	expectedObj := &unstructured.Unstructured{
-		Object: map[string]interface{}{
-			"apiVersion": "v1",
-			"kind":       "Pod",
-			"metadata": map[string]interface{}{
-				"name": "modified-pod",
+		expected: &unstructured.Unstructured{
+			Object: map[string]interface{}{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]interface{}{
+					"name": "test-pod",
+				},
+				"foo": "bar",
 			},
 		},
+		want: &unstructured.Unstructured{
+			Object: map[string]interface{}{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]interface{}{
+					"name":            "test-pod",
+					"resourceVersion": "12345",
+				},
+				"foo": "bar",
+			},
+		},
+	}, {
+		name:     "actual not meta",
+		actual:   &mock.InternalSimple{},
+		expected: &unstructured.Unstructured{},
+		wantErr:  true,
+	}, {
+		name:     "expected not meta",
+		actual:   &unstructured.Unstructured{},
+		expected: &mock.InternalSimple{},
+		wantErr:  true,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := PatchObject(tt.actual, tt.expected)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.want, got)
+			}
+		})
 	}
-
-	patchBytes, err := PatchObject(actualObj, expectedObj)
-
-	assert.Nil(t, err)
-
-	var patchedMap map[string]interface{}
-	err = json.Unmarshal(patchBytes, &patchedMap)
-	assert.Nil(t, err)
-
-	assert.Equal(t, "12345", patchedMap["metadata"].(map[string]interface{})["resourceVersion"])
-	assert.Equal(t, "modified-pod", patchedMap["metadata"].(map[string]interface{})["name"])
 }

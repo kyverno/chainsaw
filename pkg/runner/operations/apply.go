@@ -2,6 +2,7 @@ package operations
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -31,7 +32,11 @@ func Apply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c 
 		actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 		err := c.Get(ctx, client.ObjectKey(obj), &actual)
 		if err == nil {
-			bytes, err := client.PatchObject(&actual, obj)
+			patched, err := client.PatchObject(&actual, obj)
+			if err != nil {
+				return false, err
+			}
+			bytes, err := json.Marshal(patched)
 			if err != nil {
 				return false, err
 			}
