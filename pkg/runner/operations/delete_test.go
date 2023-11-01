@@ -33,7 +33,9 @@ func TestDelete(t *testing.T) {
 				},
 			},
 			client: &fakeClient.FakeClient{
+				T: &testing.T{},
 				GetFake: func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					t.Helper()
 					return errors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 				},
 				DeleteFake: func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
@@ -56,10 +58,13 @@ func TestDelete(t *testing.T) {
 				},
 			},
 			client: &fakeClient.FakeClient{
+				T: &testing.T{},
 				GetFake: func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					t.Helper()
 					return nil
 				},
 				DeleteFake: func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+					t.Helper()
 					return errors.NewInternalError(fmt.Errorf("failed to delete the pod"))
 				},
 			},
