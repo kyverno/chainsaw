@@ -33,7 +33,7 @@ docker run --rm -v /path/on/host:/path/in/container ghcr.io/kyverno/chainsaw:v0.
 **clone:**
 
 ```bash
-git clone github.com/kyverno/chainsaw
+git clone https://github.com/kyverno/chainsaw.git
 ```
 
 **get the dependencies:**

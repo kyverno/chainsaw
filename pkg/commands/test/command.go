@@ -208,12 +208,12 @@ func Command() *cobra.Command {
 			return err
 		},
 	}
-	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", 0, "The apply timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", 0, "The assert timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", 0, "The error timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", 0, "The delete timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", 0, "The cleanup timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", 0, "The exec timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", runner.DefaultApplyTimeout, "The apply timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", runner.DefaultAssertTimeout, "The assert timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", runner.DefaultErrorTimeout, "The error timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", runner.DefaultDeleteTimeout, "The delete timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", runner.DefaultCleanupTimeout, "The cleanup timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", runner.DefaultExecTimeout, "The exec timeout to use as default for configuration.")
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file.")
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run.")
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests.")

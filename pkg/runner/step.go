@@ -65,7 +65,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			if err := ctx.namespacer.Apply(&resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
-			operationCtx, cancel := timeoutCtx(defaultDeleteTimeout, config.Timeouts.Delete, test.Timeouts.Delete, step.Spec.Timeouts.Delete, nil)
+			operationCtx, cancel := timeoutCtx(DefaultDeleteTimeout, config.Timeouts.Delete, test.Timeouts.Delete, step.Spec.Timeouts.Delete, nil)
 			defer cancel()
 			if err := operations.Delete(operationCtx, logger, &resource, c); err != nil {
 				fail(t, operation.ContinueOnError)
@@ -76,7 +76,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	if !skipDelete(config.SkipDelete, test.SkipDelete, step.Spec.SkipDelete) {
 		cleanup = func(obj ctrlclient.Object, c client.Client) {
 			t.Cleanup(func() {
-				cleanupCtx, cancel := timeoutCtx(defaultCleanupTimeout, config.Timeouts.Cleanup, test.Timeouts.Cleanup, step.Spec.Timeouts.Cleanup, nil)
+				cleanupCtx, cancel := timeoutCtx(DefaultCleanupTimeout, config.Timeouts.Cleanup, test.Timeouts.Cleanup, step.Spec.Timeouts.Cleanup, nil)
 				defer cancel()
 				if err := operations.Delete(cleanupCtx, logger, obj, c); err != nil {
 					t.Fail()
@@ -86,7 +86,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	}
 	for _, operation := range step.Spec.Exec {
 		func() {
-			operationCtx, cancel := timeoutCtx(defaultExecTimeout, config.Timeouts.Exec, test.Timeouts.Exec, step.Spec.Timeouts.Exec, operation.Timeout)
+			operationCtx, cancel := timeoutCtx(DefaultExecTimeout, config.Timeouts.Exec, test.Timeouts.Exec, step.Spec.Timeouts.Exec, operation.Timeout)
 			defer cancel()
 			if err := operations.Exec(operationCtx, logger, operation.Exec, !operation.SkipLogOutput, ctx.namespacer.GetNamespace()); err != nil {
 				fail(t, operation.ContinueOnError)
@@ -107,7 +107,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 					logger.Log("LOAD  ", color.BoldRed, err)
 					fail(t, operation.ContinueOnError)
 				}
-				operationCtx, cancel := timeoutCtx(defaultApplyTimeout, config.Timeouts.Apply, test.Timeouts.Apply, step.Spec.Timeouts.Apply, nil)
+				operationCtx, cancel := timeoutCtx(DefaultApplyTimeout, config.Timeouts.Apply, test.Timeouts.Apply, step.Spec.Timeouts.Apply, nil)
 				defer cancel()
 				if err := operations.Apply(operationCtx, logger, resource, c, shouldFail, cleanup); err != nil {
 					fail(t, operation.ContinueOnError)
@@ -128,7 +128,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 					logger.Log("LOAD  ", color.BoldRed, err)
 					fail(t, operation.ContinueOnError)
 				}
-				operationCtx, cancel := timeoutCtx(defaultAssertTimeout, config.Timeouts.Assert, test.Timeouts.Assert, step.Spec.Timeouts.Assert, nil)
+				operationCtx, cancel := timeoutCtx(DefaultAssertTimeout, config.Timeouts.Assert, test.Timeouts.Assert, step.Spec.Timeouts.Assert, nil)
 				defer cancel()
 				if err := operations.Assert(operationCtx, logger, resources[i], c); err != nil {
 					fail(t, operation.ContinueOnError)
@@ -149,7 +149,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 					logger.Log("LOAD  ", color.BoldRed, err)
 					fail(t, operation.ContinueOnError)
 				}
-				operationCtx, cancel := timeoutCtx(defaultErrorTimeout, config.Timeouts.Error, test.Timeouts.Error, step.Spec.Timeouts.Error, nil)
+				operationCtx, cancel := timeoutCtx(DefaultErrorTimeout, config.Timeouts.Error, test.Timeouts.Error, step.Spec.Timeouts.Error, nil)
 				defer cancel()
 				if err := operations.Error(operationCtx, logger, resources[i], c); err != nil {
 					fail(t, operation.ContinueOnError)
