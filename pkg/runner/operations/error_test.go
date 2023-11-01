@@ -32,10 +32,13 @@ func TestError(t *testing.T) {
 				},
 			},
 			client: &fakeClient.FakeClient{
+				T: &testing.T{},
 				ListFake: func(ctx context.Context, t *testing.T, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+					t.Helper()
 					return errors.NewNotFound(list.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), "test-pod")
 				},
 				GetFake: func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					t.Helper()
 					return errors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), "test-pod")
 				},
 			},
@@ -54,6 +57,7 @@ func TestError(t *testing.T) {
 		// 		},
 		// 	},
 		// 	client: &fakeClient.FakeClient{
+		// 		T: &testing.T{},
 		// 		ListFake: func(ctx context.Context, t *testing.T, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
 		// 			return nil
 		// 		},
