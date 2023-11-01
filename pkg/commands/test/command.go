@@ -175,8 +175,14 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			var testToRun []discovery.Test
 			for _, test := range tests {
-				fmt.Fprintf(out, "- %s (%s)\n", test.Name, test.BasePath)
+				if test.Err != nil {
+					fmt.Fprintf(out, "- %s (%s) - (%s)\n", test.Name, test.BasePath, test.Err)
+				} else {
+					fmt.Fprintf(out, "- %s (%s)\n", test.Name, test.BasePath)
+					testToRun = append(testToRun, test)
+				}
 			}
 			// run tests
 			fmt.Fprintln(out, "Running tests...")
@@ -184,7 +190,7 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
-			summary, err := runner.Run(cfg, clock, configuration.Spec, tests...)
+			summary, err := runner.Run(cfg, clock, configuration.Spec, testToRun...)
 			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Passed  tests", summary.PassedTests)
