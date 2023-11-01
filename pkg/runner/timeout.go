@@ -8,12 +8,12 @@ import (
 )
 
 const (
-	defaultApplyTimeout   = 5 * time.Second
-	defaultAssertTimeout  = 30 * time.Second
-	defaultErrorTimeout   = 30 * time.Second
-	defaultDeleteTimeout  = 15 * time.Second
-	defaultCleanupTimeout = 30 * time.Second
-	defaultExecTimeout    = 5 * time.Second
+	DefaultApplyTimeout   = 5 * time.Second
+	DefaultAssertTimeout  = 30 * time.Second
+	DefaultErrorTimeout   = 30 * time.Second
+	DefaultDeleteTimeout  = 15 * time.Second
+	DefaultCleanupTimeout = 30 * time.Second
+	DefaultExecTimeout    = 5 * time.Second
 )
 
 func timeout(fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) time.Duration {
