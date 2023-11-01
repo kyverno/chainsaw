@@ -60,7 +60,6 @@ func TestAssert(t *testing.T) {
 			}
 
 			assert.Equal(t, tt.expectedLogs, mockLogger.Logs)
-
 		})
 	}
 }
