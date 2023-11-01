@@ -32,7 +32,7 @@ func TestExec(t *testing.T) {
 		log       bool
 		namespace string
 		expected  []string
-		err       error
+		wantErr   bool
 	}{
 		{
 			name: "Command execution",
@@ -67,14 +67,18 @@ func TestExec(t *testing.T) {
 			log:       true,
 			namespace: "test-namespace",
 			expected:  nil,
+			wantErr:   false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &fakeLogger.MockLogger{}
-			Exec(ctx, logger, tt.exec, tt.log, tt.namespace)
+			err := Exec(ctx, logger, tt.exec, tt.log, tt.namespace)
 			assert.ElementsMatch(t, tt.expected, logger.Logs)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("Exec() error = %v, wantErr %v", err, tt.wantErr)
+			}
 		})
 	}
 }
