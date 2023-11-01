@@ -45,7 +45,11 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 							}
 						}
 					}
-					// TODO .Exec handlers
+					if handler.Exec != nil {
+						if err := operations.Exec(context.Background(), logger, *handler.Exec, true, ctx.namespacer.GetNamespace()); err != nil {
+							t.Fail()
+						}
+					}
 				}
 			})
 		}
