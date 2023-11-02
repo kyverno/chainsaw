@@ -117,15 +117,15 @@ func LoadTest(fileName string, path string) (*Test, error) {
 				}
 				switch groups[2] {
 				case "assert":
-					step.Spec.Assert = append(step.Spec.Assert, v1alpha1.Assert{
+					step.Spec.Operations.Assert = append(step.Spec.Operations.Assert, v1alpha1.Assert{
 						FileRef: fileRef,
 					})
 				case "error":
-					step.Spec.Error = append(step.Spec.Error, v1alpha1.Error{
+					step.Spec.Operations.Error = append(step.Spec.Operations.Error, v1alpha1.Error{
 						FileRef: fileRef,
 					})
 				default:
-					step.Spec.Apply = append(step.Spec.Apply, v1alpha1.Apply{
+					step.Spec.Operations.Apply = append(step.Spec.Operations.Apply, v1alpha1.Apply{
 						FileRef: fileRef,
 					})
 				}

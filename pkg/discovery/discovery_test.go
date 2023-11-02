@@ -33,20 +33,24 @@ func TestDiscoverTests(t *testing.T) {
 					Steps: []v1alpha1.TestSpecStep{{
 						Name: "create configmap",
 						Spec: v1alpha1.TestStepSpec{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "configmap.yaml",
-								},
-							}},
+							Operations: v1alpha1.Operations{
+								Apply: []v1alpha1.Apply{{
+									FileRef: v1alpha1.FileRef{
+										File: "configmap.yaml",
+									},
+								}},
+							},
 						},
 					}, {
 						Name: "assert configmap",
 						Spec: v1alpha1.TestStepSpec{
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "configmap.yaml",
-								},
-							}},
+							Operations: v1alpha1.Operations{
+								Assert: []v1alpha1.Assert{{
+									FileRef: v1alpha1.FileRef{
+										File: "configmap.yaml",
+									},
+								}},
+							},
 						},
 					}},
 				},
@@ -71,21 +75,23 @@ func TestDiscoverTests(t *testing.T) {
 					Steps: []v1alpha1.TestSpecStep{{
 						Name: "assert",
 						Spec: v1alpha1.TestStepSpec{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "01-configmap.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "01-assert.yaml",
-								},
-							}},
-							Error: []v1alpha1.Error{{
-								FileRef: v1alpha1.FileRef{
-									File: "01-error.yaml",
-								},
-							}},
+							Operations: v1alpha1.Operations{
+								Apply: []v1alpha1.Apply{{
+									FileRef: v1alpha1.FileRef{
+										File: "01-configmap.yaml",
+									},
+								}},
+								Assert: []v1alpha1.Assert{{
+									FileRef: v1alpha1.FileRef{
+										File: "01-assert.yaml",
+									},
+								}},
+								Error: []v1alpha1.Error{{
+									FileRef: v1alpha1.FileRef{
+										File: "01-error.yaml",
+									},
+								}},
+							},
 						},
 					}},
 				},
@@ -110,16 +116,18 @@ func TestDiscoverTests(t *testing.T) {
 					Steps: []v1alpha1.TestSpecStep{{
 						Name: "test-1",
 						Spec: v1alpha1.TestStepSpec{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "foo.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
-								},
-							}},
+							Operations: v1alpha1.Operations{
+								Apply: []v1alpha1.Apply{{
+									FileRef: v1alpha1.FileRef{
+										File: "foo.yaml",
+									},
+								}},
+								Assert: []v1alpha1.Assert{{
+									FileRef: v1alpha1.FileRef{
+										File: "bar.yaml",
+									},
+								}},
+							},
 						},
 					}},
 				},

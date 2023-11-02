@@ -54,19 +54,23 @@ func TestLoad(t *testing.T) {
 			Spec: v1alpha1.TestSpec{
 				Steps: []v1alpha1.TestSpecStep{{
 					Spec: v1alpha1.TestStepSpec{
-						Apply: []v1alpha1.Apply{{
-							FileRef: v1alpha1.FileRef{
-								File: "foo.yaml",
-							},
-						}},
+						Operations: v1alpha1.Operations{
+							Apply: []v1alpha1.Apply{{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
+							}},
+						},
 					},
 				}, {
 					Spec: v1alpha1.TestStepSpec{
-						Assert: []v1alpha1.Assert{{
-							FileRef: v1alpha1.FileRef{
-								File: "bar.yaml",
-							},
-						}},
+						Operations: v1alpha1.Operations{
+							Assert: []v1alpha1.Assert{{
+								FileRef: v1alpha1.FileRef{
+									File: "bar.yaml",
+								},
+							}},
+						},
 					},
 				}},
 			},

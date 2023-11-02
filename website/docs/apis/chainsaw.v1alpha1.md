@@ -54,7 +54,7 @@ auto_generated: true
 
 **Appears in:**
     
-- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+- [Operations](#chainsaw-kyverno-io-v1alpha1-Operations)
 
 <p>Apply represents a set of configurations or resources that
 should be applied during testing.</p>
@@ -71,7 +71,7 @@ should be applied during testing.</p>
 
 **Appears in:**
     
-- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+- [Operations](#chainsaw-kyverno-io-v1alpha1-Operations)
 
 <p>Assert represents a test condition that is expected to hold true
 during the testing process.</p>
@@ -139,7 +139,7 @@ during the testing process.</p>
 
 **Appears in:**
     
-- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+- [Operations](#chainsaw-kyverno-io-v1alpha1-Operations)
 
 <p>Delete is a reference to an object that should be deleted</p>
 
@@ -154,7 +154,7 @@ during the testing process.</p>
 
 **Appears in:**
     
-- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+- [Operations](#chainsaw-kyverno-io-v1alpha1-Operations)
 
 <p>Error represents an anticipated error condition that may arise during testing.
 Instead of treating such an error as a test failure, it acknowledges it as expected.</p>
@@ -201,7 +201,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 **Appears in:**
     
-- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+- [Operations](#chainsaw-kyverno-io-v1alpha1-Operations)
 
 <p>Exec describes a command and/or script operation.</p>
 
@@ -274,6 +274,20 @@ For multiple objects use labels.</p>
 |---|---|---|---|---|
 | `collect` | [`Collect`](#chainsaw-kyverno-io-v1alpha1-Collect) |  |  | <p>Collect define the collectors to run.</p> |
 | `exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  |  | <p>Exec define the commands and/or scripts to run.</p> |
+
+## `Operations`     {#chainsaw-kyverno-io-v1alpha1-Operations}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents the assertions to be made for this test step. It checks whether the conditions specified in each assertion hold true.</p> |
+| `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
+| `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
+| `delete` | [`[]Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
+| `exec` | [`[]ExecOperation`](#chainsaw-kyverno-io-v1alpha1-ExecOperation) |  |  | <p>Exec provides a list of commands and/or scripts that should be executed as a part of this test step.</p> |
 
 ## `PodLogs`     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 
@@ -359,11 +373,7 @@ For multiple objects use labels.</p>
 |---|---|---|---|---|
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
-| `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents the assertions to be made for this test step. It checks whether the conditions specified in each assertion hold true.</p> |
-| `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
-| `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
-| `delete` | [`[]Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
-| `exec` | [`[]ExecOperation`](#chainsaw-kyverno-io-v1alpha1-ExecOperation) |  |  | <p>Exec provides a list of commands and/or scripts that should be executed as a part of this test step.</p> |
+| `ordering` | [`Operations`](#chainsaw-kyverno-io-v1alpha1-Operations) |  |  | <p>Operations defines the order in which the test step should be executed.</p> |
 | `onFailure` | [`[]OnFailure`](#chainsaw-kyverno-io-v1alpha1-OnFailure) |  |  | <p>OnFailure defines actions to be executed in case of step failure.</p> |
 
 ## `Timeouts`     {#chainsaw-kyverno-io-v1alpha1-Timeouts}

@@ -63,7 +63,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			})
 		}
 	}()
-	for _, operation := range step.Spec.Delete {
+	for _, operation := range step.Spec.Operations.Delete {
 		var resource unstructured.Unstructured
 		resource.SetAPIVersion(operation.APIVersion)
 		resource.SetKind(operation.Kind)
@@ -84,12 +84,12 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			})
 		}
 	}
-	for _, operation := range step.Spec.Exec {
+	for _, operation := range step.Spec.Operations.Exec {
 		if err := operationsClient.Exec(operation.Exec, !operation.SkipLogOutput, ctx.namespacer.GetNamespace()); err != nil {
 			fail(t, operation.ContinueOnError)
 		}
 	}
-	for _, operation := range step.Spec.Apply {
+	for _, operation := range step.Spec.Operations.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
 			logger.Log("LOAD  ", color.BoldRed, err)
@@ -103,7 +103,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			}
 		}
 	}
-	for _, operation := range step.Spec.Assert {
+	for _, operation := range step.Spec.Operations.Assert {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
 			logger.Log("LOAD  ", color.BoldRed, err)
@@ -115,7 +115,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			}
 		}
 	}
-	for _, operation := range step.Spec.Error {
+	for _, operation := range step.Spec.Operations.Error {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
 		if err != nil {
 			logger.Log("LOAD  ", color.BoldRed, err)
