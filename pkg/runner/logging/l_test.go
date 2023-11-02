@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/fatih/color"
 	. "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -30,18 +31,21 @@ func TestNewLogger(t *testing.T) {
 func TestLog(t *testing.T) {
 	fakeClock := clock.NewFakePassiveClock(time.Now())
 	mockT := &FakeLogger{}
-
 	fakeLogger := NewLogger(mockT, fakeClock, "testName", "stepName").(*logger)
-
+	disabled := color.New(color.FgBlue)
+	disabled.DisableColor()
+	enabled := color.New(color.FgBlue)
+	enabled.EnableColor()
 	testCases := []struct {
 		name           string
 		resource       ctrlclient.Object
 		operation      string
+		color          *color.Color
 		args           []interface{}
 		expectContains []string
 	}{
 		{
-			name:      "Without Resource",
+			name:      "without resource",
 			resource:  nil,
 			operation: "OPERATION",
 			args:      []interface{}{"arg1", "arg2"},
@@ -50,7 +54,17 @@ func TestLog(t *testing.T) {
 			},
 		},
 		{
-			name: "With Resource",
+			name:      "with color",
+			resource:  nil,
+			operation: "OPERATION",
+			color:     enabled,
+			args:      []interface{}{"arg1", "arg2"},
+			expectContains: []string{
+				"testName", "stepName", "OPERATION", "arg1", "arg2",
+			},
+		},
+		{
+			name: "with resource",
 			resource: func() ctrlclient.Object {
 				var r unstructured.Unstructured
 				r.SetName("testResource")
@@ -73,7 +87,7 @@ func TestLog(t *testing.T) {
 				fakeLogger = fakeLogger.WithResource(tt.resource).(*logger)
 			}
 
-			fakeLogger.Log(tt.operation, nil, tt.args...)
+			fakeLogger.Log(tt.operation, tt.color, tt.args...)
 			for _, exp := range tt.expectContains {
 				found := false
 				for _, msg := range mockT.Messages {

@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	fakeLogger "github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -73,7 +72,7 @@ func TestExec(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			logger := &fakeLogger.MockLogger{}
+			logger := &MockLogger{}
 			err := Exec(ctx, logger, tt.exec, tt.log, tt.namespace)
 			assert.ElementsMatch(t, tt.expected, logger.Logs)
 			if (err != nil) != tt.wantErr {
@@ -125,7 +124,7 @@ func TestCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			err := command(ctx, &fakeLogger.MockLogger{}, tt.command, tt.log, tt.namespace)
+			err := command(ctx, &MockLogger{}, tt.command, tt.log, tt.namespace)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("command() error = %v, wantErr %v", err, tt.wantErr)
 			}
@@ -173,7 +172,7 @@ func TestScript(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			err := script(ctx, &fakeLogger.MockLogger{}, tt.script, tt.log, tt.namespace)
+			err := script(ctx, &MockLogger{}, tt.script, tt.log, tt.namespace)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("script() error = %v, wantErr %v", err, tt.wantErr)
 			}
