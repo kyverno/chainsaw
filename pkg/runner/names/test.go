@@ -1,4 +1,4 @@
-package runner
+package names
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 )
 
-func testName(config v1alpha1.ConfigurationSpec, test discovery.Test) (string, error) {
+func Test(config v1alpha1.ConfigurationSpec, test discovery.Test) (string, error) {
 	if test.Test == nil {
 		return "", errors.New("test must not be nil")
 	}

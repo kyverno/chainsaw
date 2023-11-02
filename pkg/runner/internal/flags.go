@@ -1,4 +1,4 @@
-package runner
+package internal
 
 import (
 	"flag"
@@ -8,7 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/flags"
 )
 
-func setupFlags(config v1alpha1.ConfigurationSpec) error {
+func SetupFlags(config v1alpha1.ConfigurationSpec) error {
 	testing.Init()
 	for k, v := range flags.GetFlags(config) {
 		if err := flag.Set(k, v); err != nil {
