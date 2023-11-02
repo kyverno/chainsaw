@@ -3,8 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## :dizzy: New features :dizzy:
-
 ## :sparkles: UI changes :sparkles:
 
 ## :star: Examples :star:
@@ -17,3 +15,7 @@ Release notes for `TODO`.
 
 ## :guitar: Misc :guitar:
 -->
+
+## :dizzy: New features :dizzy:
+
+- Renamed flag `stop-on-first-failure` to `fail-fast` (**BREAKING CHANGE**)
