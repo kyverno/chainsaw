@@ -1,0 +1,6 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-invalid-structure
+invalidKey: thisShouldNotBeHere
+

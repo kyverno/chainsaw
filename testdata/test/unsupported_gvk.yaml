@@ -1,0 +1,12 @@
+apiVersion: unsupported.kyverno.io/v1
+kind: UnsupportedKind
+metadata:
+  name: test-unsupported-gvk
+spec:
+  steps:
+    - spec:
+      operations:
+        - apply:
+          - fileRef:
+            file: some_file.yaml
+

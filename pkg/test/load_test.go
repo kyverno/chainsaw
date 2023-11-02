@@ -41,71 +41,91 @@ func TestLoad(t *testing.T) {
 		path:    filepath.Join(basePath, "bad-step.yaml"),
 		wantErr: true,
 	}, {
-		name: "ok",
-		path: filepath.Join(basePath, "ok.yaml"),
-		want: []*v1alpha1.Test{{
-			TypeMeta: metav1.TypeMeta{
-				APIVersion: "chainsaw.kyverno.io/v1alpha1",
-				Kind:       "Test",
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "test-1",
-			},
-			Spec: v1alpha1.TestSpec{
-				Steps: []v1alpha1.TestSpecStep{{
-					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operation{
-							{
-								Apply: []v1alpha1.Apply{{
-									FileRef: v1alpha1.FileRef{
-										File: "foo.yaml",
-									},
-								}},
+		name:    "invalid yaml",
+		path:    filepath.Join(basePath, "invalid_yaml.yaml"),
+		wantErr: true,
+	},
+		{
+			name:    "invalid loader data",
+			path:    filepath.Join(basePath, "invalid_loader_data.yaml"),
+			wantErr: true,
+		},
+		{
+			name:    "invalid conversion data",
+			path:    filepath.Join(basePath, "invalid_structure.yaml"),
+			wantErr: true,
+		},
+		{
+			name:    "unsupported gvk",
+			path:    filepath.Join(basePath, "unsupported_gvk.yaml"),
+			wantErr: true,
+		},
+		{
+			name: "ok",
+			path: filepath.Join(basePath, "ok.yaml"),
+			want: []*v1alpha1.Test{{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Test",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-1",
+				},
+				Spec: v1alpha1.TestSpec{
+					Steps: []v1alpha1.TestSpecStep{{
+						Spec: v1alpha1.TestStepSpec{
+							Operations: []v1alpha1.Operation{
+								{
+									Apply: []v1alpha1.Apply{{
+										FileRef: v1alpha1.FileRef{
+											File: "foo.yaml",
+										},
+									}},
+								},
 							},
 						},
-					},
-				}, {
-					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operation{
-							{
-								Assert: []v1alpha1.Assert{{
-									FileRef: v1alpha1.FileRef{
-										File: "bar.yaml",
-									},
-								}},
+					}, {
+						Spec: v1alpha1.TestStepSpec{
+							Operations: []v1alpha1.Operation{
+								{
+									Assert: []v1alpha1.Assert{{
+										FileRef: v1alpha1.FileRef{
+											File: "bar.yaml",
+										},
+									}},
+								},
 							},
 						},
-					},
-				}},
-			},
-		}},
-	}, {
-		name: "multiple",
-		path: filepath.Join(basePath, "multiple.yaml"),
-		want: []*v1alpha1.Test{{
-			TypeMeta: metav1.TypeMeta{
-				APIVersion: "chainsaw.kyverno.io/v1alpha1",
-				Kind:       "Test",
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "test-1",
-			},
-			Spec: v1alpha1.TestSpec{
-				Steps: []v1alpha1.TestSpecStep{},
-			},
+					}},
+				},
+			}},
 		}, {
-			TypeMeta: metav1.TypeMeta{
-				APIVersion: "chainsaw.kyverno.io/v1alpha1",
-				Kind:       "Test",
-			},
-			ObjectMeta: metav1.ObjectMeta{
-				Name: "test-2",
-			},
-			Spec: v1alpha1.TestSpec{
-				Steps: []v1alpha1.TestSpecStep{},
-			},
-		}},
-	}}
+			name: "multiple",
+			path: filepath.Join(basePath, "multiple.yaml"),
+			want: []*v1alpha1.Test{{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Test",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-1",
+				},
+				Spec: v1alpha1.TestSpec{
+					Steps: []v1alpha1.TestSpecStep{},
+				},
+			}, {
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Test",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-2",
+				},
+				Spec: v1alpha1.TestSpec{
+					Steps: []v1alpha1.TestSpecStep{},
+				},
+			}},
+		}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Load(tt.path)
