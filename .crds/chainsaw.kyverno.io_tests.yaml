@@ -58,326 +58,305 @@ spec:
                     name:
                       description: Name of the step.
                       type: string
-                    spec:
-                      description: Spec of the step.
-                      properties:
-                        onFailure:
-                          description: OnFailure defines actions to be executed in
-                            case of step failure.
-                          items:
-                            description: OnFailure defines actions to be executed
-                              on failure.
+                    onFailure:
+                      description: OnFailure defines actions to be executed in case
+                        of step failure.
+                      items:
+                        description: OnFailure defines actions to be executed on failure.
+                        properties:
+                          collect:
+                            description: Collect define the collectors to run.
                             properties:
-                              collect:
-                                description: Collect define the collectors to run.
+                              events:
+                                description: Events determines the events collector
+                                  to execute.
                                 properties:
-                                  events:
-                                    description: Events determines the events collector
-                                      to execute.
-                                    properties:
-                                      name:
-                                        description: 'Name of the referent. More info:
-                                          https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
-                                        type: string
-                                      namespace:
-                                        description: 'Namespace of the referent. More
-                                          info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                                        type: string
-                                      selector:
-                                        description: Selector defines labels selector.
-                                        type: string
-                                    type: object
-                                  podLogs:
-                                    description: PodLogs determines the pod logs collector
-                                      to execute.
-                                    properties:
-                                      container:
-                                        description: Container in pod to get logs
-                                          from else --all-containers is used.
-                                        type: string
-                                      name:
-                                        description: 'Name of the referent. More info:
-                                          https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
-                                        type: string
-                                      namespace:
-                                        description: 'Namespace of the referent. More
-                                          info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                                        type: string
-                                      selector:
-                                        description: Selector defines labels selector.
-                                        type: string
-                                      tail:
-                                        description: Tail is the number of last lines
-                                          to collect from pods. If omitted or zero,
-                                          then the default is 10 if you use a selector,
-                                          or -1 (all) if you use a pod name. This
-                                          matches default behavior of `kubectl logs`.
-                                        type: integer
-                                    type: object
-                                type: object
-                              exec:
-                                description: Exec define the commands and/or scripts
-                                  to run.
-                                properties:
-                                  command:
-                                    description: Command defines a command to run.
-                                    properties:
-                                      args:
-                                        description: Args is the command arguments.
-                                        items:
-                                          type: string
-                                        type: array
-                                      entrypoint:
-                                        description: Entrypoint is the command entry
-                                          point to run.
-                                        type: string
-                                    required:
-                                    - entrypoint
-                                    type: object
-                                  script:
-                                    description: Script defines a script to run.
-                                    properties:
-                                      content:
-                                        description: Content defines a shell script
-                                          (run with "sh -c ...").
-                                        type: string
-                                    type: object
-                                  timeout:
-                                    description: Timeout for the command. Overrides
-                                      the global timeout set in the Configuration.
+                                  name:
+                                    description: 'Name of the referent. More info:
+                                      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                    type: string
+                                  namespace:
+                                    description: 'Namespace of the referent. More
+                                      info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                    type: string
+                                  selector:
+                                    description: Selector defines labels selector.
                                     type: string
                                 type: object
+                              podLogs:
+                                description: PodLogs determines the pod logs collector
+                                  to execute.
+                                properties:
+                                  container:
+                                    description: Container in pod to get logs from
+                                      else --all-containers is used.
+                                    type: string
+                                  name:
+                                    description: 'Name of the referent. More info:
+                                      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                    type: string
+                                  namespace:
+                                    description: 'Namespace of the referent. More
+                                      info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                    type: string
+                                  selector:
+                                    description: Selector defines labels selector.
+                                    type: string
+                                  tail:
+                                    description: Tail is the number of last lines
+                                      to collect from pods. If omitted or zero, then
+                                      the default is 10 if you use a selector, or
+                                      -1 (all) if you use a pod name. This matches
+                                      default behavior of `kubectl logs`.
+                                    type: integer
+                                type: object
                             type: object
-                          type: array
-                        operations:
-                          description: Operations defines the order in which the test
-                            step should be executed.
-                          items:
+                          exec:
+                            description: Exec define the commands and/or scripts to
+                              run.
                             properties:
-                              apply:
-                                description: Apply lists the resources that should
-                                  be applied for this test step. This can include
-                                  things like configuration settings or any other
-                                  resources that need to be available during the test.
-                                items:
-                                  description: Apply represents a set of configurations
-                                    or resources that should be applied during testing.
-                                  properties:
-                                    continueOnError:
-                                      description: ContinueOnError determines whether
-                                        a test should continue or not in case the
-                                        operation was not successful. Even if the
-                                        test continues executing, it will still be
-                                        reported as failed.
-                                      type: boolean
-                                    file:
-                                      description: File is the path to the referenced
-                                        file.
+                              command:
+                                description: Command defines a command to run.
+                                properties:
+                                  args:
+                                    description: Args is the command arguments.
+                                    items:
                                       type: string
-                                    shouldFail:
-                                      description: ShouldFail determines whether applying
-                                        the file is expected to fail.
-                                      type: boolean
-                                    timeout:
-                                      description: Timeout for the operation. Overrides
-                                        the global timeout set in the Configuration.
-                                      type: string
-                                  required:
-                                  - file
-                                  type: object
-                                type: array
-                              assert:
-                                description: Assert represents the assertions to be
-                                  made for this test step. It checks whether the conditions
-                                  specified in each assertion hold true.
-                                items:
-                                  description: Assert represents a test condition
-                                    that is expected to hold true during the testing
-                                    process.
-                                  properties:
-                                    continueOnError:
-                                      description: ContinueOnError determines whether
-                                        a test should continue or not in case the
-                                        operation was not successful. Even if the
-                                        test continues executing, it will still be
-                                        reported as failed.
-                                      type: boolean
-                                    file:
-                                      description: File is the path to the referenced
-                                        file.
-                                      type: string
-                                    timeout:
-                                      description: Timeout for the operation. Overrides
-                                        the global timeout set in the Configuration.
-                                      type: string
-                                  required:
-                                  - file
-                                  type: object
-                                type: array
-                              delete:
-                                description: Delete provides a list of objects that
-                                  should be deleted before this test step is executed.
-                                  This helps in ensuring that the environment is set
-                                  up correctly before the test step runs.
-                                items:
-                                  description: Delete is a reference to an object
-                                    that should be deleted
-                                  properties:
-                                    apiVersion:
-                                      description: API version of the referent.
-                                      type: string
-                                    continueOnError:
-                                      description: ContinueOnError determines whether
-                                        a test should continue or not in case the
-                                        operation was not successful. Even if the
-                                        test continues executing, it will still be
-                                        reported as failed.
-                                      type: boolean
-                                    kind:
-                                      description: 'Kind of the referent. More info:
-                                        https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-                                      type: string
-                                    labels:
-                                      additionalProperties:
-                                        type: string
-                                      description: Label selector to match objects
-                                        to delete
-                                      type: object
-                                    name:
-                                      description: 'Name of the referent. More info:
-                                        https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
-                                      type: string
-                                    namespace:
-                                      description: 'Namespace of the referent. More
-                                        info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                                      type: string
-                                    timeout:
-                                      description: Timeout for the operation. Overrides
-                                        the global timeout set in the Configuration.
-                                      type: string
-                                  required:
-                                  - apiVersion
-                                  - kind
-                                  type: object
-                                type: array
-                              error:
-                                description: Error lists the expected errors for this
-                                  test step. If any of these errors occur, the test
-                                  will consider them as expected; otherwise, they
-                                  will be treated as test failures.
-                                items:
-                                  description: Error represents an anticipated error
-                                    condition that may arise during testing. Instead
-                                    of treating such an error as a test failure, it
-                                    acknowledges it as expected.
-                                  properties:
-                                    continueOnError:
-                                      description: ContinueOnError determines whether
-                                        a test should continue or not in case the
-                                        operation was not successful. Even if the
-                                        test continues executing, it will still be
-                                        reported as failed.
-                                      type: boolean
-                                    file:
-                                      description: File is the path to the referenced
-                                        file.
-                                      type: string
-                                    timeout:
-                                      description: Timeout for the operation. Overrides
-                                        the global timeout set in the Configuration.
-                                      type: string
-                                  required:
-                                  - file
-                                  type: object
-                                type: array
-                              exec:
-                                description: Exec provides a list of commands and/or
-                                  scripts that should be executed as a part of this
-                                  test step.
-                                items:
-                                  description: Exec describes a command and/or script
-                                    operation.
-                                  properties:
-                                    command:
-                                      description: Command defines a command to run.
-                                      properties:
-                                        args:
-                                          description: Args is the command arguments.
-                                          items:
-                                            type: string
-                                          type: array
-                                        entrypoint:
-                                          description: Entrypoint is the command entry
-                                            point to run.
-                                          type: string
-                                      required:
-                                      - entrypoint
-                                      type: object
-                                    continueOnError:
-                                      description: ContinueOnError determines whether
-                                        a test should continue or not in case the
-                                        operation was not successful. Even if the
-                                        test continues executing, it will still be
-                                        reported as failed.
-                                      type: boolean
-                                    script:
-                                      description: Script defines a script to run.
-                                      properties:
-                                        content:
-                                          description: Content defines a shell script
-                                            (run with "sh -c ...").
-                                          type: string
-                                      type: object
-                                    skipLogOutput:
-                                      description: SkipLogOutput removes the output
-                                        from the command. Useful for sensitive logs
-                                        or to reduce noise.
-                                      type: boolean
-                                    timeout:
-                                      description: Timeout for the command. Overrides
-                                        the global timeout set in the Configuration.
-                                      type: string
-                                  type: object
-                                type: array
+                                    type: array
+                                  entrypoint:
+                                    description: Entrypoint is the command entry point
+                                      to run.
+                                    type: string
+                                required:
+                                - entrypoint
+                                type: object
+                              script:
+                                description: Script defines a script to run.
+                                properties:
+                                  content:
+                                    description: Content defines a shell script (run
+                                      with "sh -c ...").
+                                    type: string
+                                type: object
+                              timeout:
+                                description: Timeout for the command. Overrides the
+                                  global timeout set in the Configuration.
+                                type: string
                             type: object
-                          type: array
-                        skipDelete:
-                          description: SkipDelete determines whether the resources
-                            created by the step should be deleted after the test step
-                            is executed.
-                          type: boolean
-                        timeouts:
-                          description: Timeouts for the test step. Overrides the global
-                            timeouts set in the Configuration and the timeouts eventually
-                            set in the Test.
-                          properties:
-                            apply:
-                              description: Apply defines the timeout for the apply
-                                operation
-                              type: string
-                            assert:
-                              description: Assert defines the timeout for the assert
-                                operation
-                              type: string
-                            cleanup:
-                              description: Cleanup defines the timeout for the cleanup
-                                operation
-                              type: string
-                            delete:
-                              description: Delete defines the timeout for the delete
-                                operation
-                              type: string
-                            error:
-                              description: Error defines the timeout for the error
-                                operation
-                              type: string
-                            exec:
-                              description: Exec defines the timeout for exec operations
-                              type: string
-                          type: object
+                        type: object
+                      type: array
+                    operations:
+                      description: Operations defines the order in which the test
+                        step should be executed.
+                      items:
+                        properties:
+                          apply:
+                            description: Apply lists the resources that should be
+                              applied for this test step. This can include things
+                              like configuration settings or any other resources that
+                              need to be available during the test.
+                            items:
+                              description: Apply represents a set of configurations
+                                or resources that should be applied during testing.
+                              properties:
+                                continueOnError:
+                                  description: ContinueOnError determines whether
+                                    a test should continue or not in case the operation
+                                    was not successful. Even if the test continues
+                                    executing, it will still be reported as failed.
+                                  type: boolean
+                                file:
+                                  description: File is the path to the referenced
+                                    file.
+                                  type: string
+                                shouldFail:
+                                  description: ShouldFail determines whether applying
+                                    the file is expected to fail.
+                                  type: boolean
+                                timeout:
+                                  description: Timeout for the operation. Overrides
+                                    the global timeout set in the Configuration.
+                                  type: string
+                              required:
+                              - file
+                              type: object
+                            type: array
+                          assert:
+                            description: Assert represents the assertions to be made
+                              for this test step. It checks whether the conditions
+                              specified in each assertion hold true.
+                            items:
+                              description: Assert represents a test condition that
+                                is expected to hold true during the testing process.
+                              properties:
+                                continueOnError:
+                                  description: ContinueOnError determines whether
+                                    a test should continue or not in case the operation
+                                    was not successful. Even if the test continues
+                                    executing, it will still be reported as failed.
+                                  type: boolean
+                                file:
+                                  description: File is the path to the referenced
+                                    file.
+                                  type: string
+                                timeout:
+                                  description: Timeout for the operation. Overrides
+                                    the global timeout set in the Configuration.
+                                  type: string
+                              required:
+                              - file
+                              type: object
+                            type: array
+                          delete:
+                            description: Delete provides a list of objects that should
+                              be deleted before this test step is executed. This helps
+                              in ensuring that the environment is set up correctly
+                              before the test step runs.
+                            items:
+                              description: Delete is a reference to an object that
+                                should be deleted
+                              properties:
+                                apiVersion:
+                                  description: API version of the referent.
+                                  type: string
+                                continueOnError:
+                                  description: ContinueOnError determines whether
+                                    a test should continue or not in case the operation
+                                    was not successful. Even if the test continues
+                                    executing, it will still be reported as failed.
+                                  type: boolean
+                                kind:
+                                  description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                                  type: string
+                                labels:
+                                  additionalProperties:
+                                    type: string
+                                  description: Label selector to match objects to
+                                    delete
+                                  type: object
+                                name:
+                                  description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                  type: string
+                                namespace:
+                                  description: 'Namespace of the referent. More info:
+                                    https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                  type: string
+                                timeout:
+                                  description: Timeout for the operation. Overrides
+                                    the global timeout set in the Configuration.
+                                  type: string
+                              required:
+                              - apiVersion
+                              - kind
+                              type: object
+                            type: array
+                          error:
+                            description: Error lists the expected errors for this
+                              test step. If any of these errors occur, the test will
+                              consider them as expected; otherwise, they will be treated
+                              as test failures.
+                            items:
+                              description: Error represents an anticipated error condition
+                                that may arise during testing. Instead of treating
+                                such an error as a test failure, it acknowledges it
+                                as expected.
+                              properties:
+                                continueOnError:
+                                  description: ContinueOnError determines whether
+                                    a test should continue or not in case the operation
+                                    was not successful. Even if the test continues
+                                    executing, it will still be reported as failed.
+                                  type: boolean
+                                file:
+                                  description: File is the path to the referenced
+                                    file.
+                                  type: string
+                                timeout:
+                                  description: Timeout for the operation. Overrides
+                                    the global timeout set in the Configuration.
+                                  type: string
+                              required:
+                              - file
+                              type: object
+                            type: array
+                          exec:
+                            description: Exec provides a list of commands and/or scripts
+                              that should be executed as a part of this test step.
+                            items:
+                              description: Exec describes a command and/or script
+                                operation.
+                              properties:
+                                command:
+                                  description: Command defines a command to run.
+                                  properties:
+                                    args:
+                                      description: Args is the command arguments.
+                                      items:
+                                        type: string
+                                      type: array
+                                    entrypoint:
+                                      description: Entrypoint is the command entry
+                                        point to run.
+                                      type: string
+                                  required:
+                                  - entrypoint
+                                  type: object
+                                continueOnError:
+                                  description: ContinueOnError determines whether
+                                    a test should continue or not in case the operation
+                                    was not successful. Even if the test continues
+                                    executing, it will still be reported as failed.
+                                  type: boolean
+                                script:
+                                  description: Script defines a script to run.
+                                  properties:
+                                    content:
+                                      description: Content defines a shell script
+                                        (run with "sh -c ...").
+                                      type: string
+                                  type: object
+                                skipLogOutput:
+                                  description: SkipLogOutput removes the output from
+                                    the command. Useful for sensitive logs or to reduce
+                                    noise.
+                                  type: boolean
+                                timeout:
+                                  description: Timeout for the command. Overrides
+                                    the global timeout set in the Configuration.
+                                  type: string
+                              type: object
+                            type: array
+                        type: object
+                      type: array
+                    skipDelete:
+                      description: SkipDelete determines whether the resources created
+                        by the step should be deleted after the test step is executed.
+                      type: boolean
+                    timeouts:
+                      description: Timeouts for the test step. Overrides the global
+                        timeouts set in the Configuration and the timeouts eventually
+                        set in the Test.
+                      properties:
+                        apply:
+                          description: Apply defines the timeout for the apply operation
+                          type: string
+                        assert:
+                          description: Assert defines the timeout for the assert operation
+                          type: string
+                        cleanup:
+                          description: Cleanup defines the timeout for the cleanup
+                            operation
+                          type: string
+                        delete:
+                          description: Delete defines the timeout for the delete operation
+                          type: string
+                        error:
+                          description: Error defines the timeout for the error operation
+                          type: string
+                        exec:
+                          description: Exec defines the timeout for exec operations
+                          type: string
                       type: object
-                  required:
-                  - spec
                   type: object
                 type: array
               timeouts:
