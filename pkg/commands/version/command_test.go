@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/commands/root"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,26 +19,37 @@ func Test_Execute(t *testing.T) {
 	}{{
 		name: "help",
 		args: []string{
+			"version",
 			"--help",
 		},
 		out:     "../../../testdata/commands/version/help.txt",
 		wantErr: false,
 	}, {
-		name:    "version",
+		name: "version",
+		args: []string{
+			"version",
+		},
 		out:     "../../../testdata/commands/version/out.txt",
 		wantErr: false,
 	}, {
-		name:    "unknow flag",
-		args:    []string{"--foo"},
+		name: "unknow flag",
+		args: []string{
+			"version",
+			"--foo",
+		},
 		wantErr: true,
 	}, {
-		name:    "unknow arg",
-		args:    []string{"foo"},
+		name: "unknow arg",
+		args: []string{
+			"version",
+			"foo",
+		},
 		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cmd := Command()
+			cmd := root.Command()
+			cmd.AddCommand(Command())
 			assert.NotNil(t, cmd)
 			cmd.SetArgs(tt.args)
 			out := bytes.NewBufferString("")

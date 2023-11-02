@@ -1,7 +1,7 @@
 Print the version informations
 
 Usage:
-  version [flags]
+  chainsaw version [flags]
 
 Flags:
   -h, --help   help for version
