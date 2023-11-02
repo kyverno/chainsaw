@@ -103,61 +103,41 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		}()
 	}
 	for _, operation := range step.Spec.Apply {
-		func() {
-			resources, err := resource.Load(filepath.Join(basePath, operation.File))
-			if err != nil {
-				logger.Log("LOAD  ", color.BoldRed, err)
+		resources, err := resource.Load(filepath.Join(basePath, operation.File))
+		if err != nil {
+			logger.Log("LOAD  ", color.BoldRed, err)
+			fail(t, operation.ContinueOnError)
+		}
+		shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
+		for i := range resources {
+			resource := &resources[i]
+			if err := operationsClient.Apply(resource, shouldFail, cleanup); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
-			shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
-			for i := range resources {
-				resource := &resources[i]
-				if err := operationsClient.Apply(resource, shouldFail, cleanup); err != nil {
-					fail(t, operation.ContinueOnError)
-				}
-			}
-		}()
+		}
 	}
 	for _, operation := range step.Spec.Assert {
-		func() {
-			resources, err := resource.Load(filepath.Join(basePath, operation.File))
-			if err != nil {
-				logger.Log("LOAD  ", color.BoldRed, err)
+		resources, err := resource.Load(filepath.Join(basePath, operation.File))
+		if err != nil {
+			logger.Log("LOAD  ", color.BoldRed, err)
+			fail(t, operation.ContinueOnError)
+		}
+		for _, resource := range resources {
+			if err := operationsClient.Assert(resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
-			for i := range resources {
-				resource := &resources[i]
-				if err := ctx.namespacer.Apply(resource); err != nil {
-					logger.Log("LOAD  ", color.BoldRed, err)
-					fail(t, operation.ContinueOnError)
-				}
-				operationCtx, cancel := timeout.Context(timeout.DefaultAssertTimeout, config.Timeouts.Assert, test.Timeouts.Assert, step.Spec.Timeouts.Assert, operation.Timeout)
-				defer cancel()
-				if err := operations.Assert(operationCtx, logger, resources[i], c); err != nil {
-					fail(t, operation.ContinueOnError)
-				}
-			}
-		}()
+		}
 	}
 	for _, operation := range step.Spec.Error {
-		func() {
-			resources, err := resource.Load(filepath.Join(basePath, operation.File))
-			if err != nil {
-				logger.Log("LOAD  ", color.BoldRed, err)
+		resources, err := resource.Load(filepath.Join(basePath, operation.File))
+		if err != nil {
+			logger.Log("LOAD  ", color.BoldRed, err)
+			fail(t, operation.ContinueOnError)
+		}
+		for _, resource := range resources {
+			if err := operationsClient.Error(resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
-			for i := range resources {
-				resource := &resources[i]
-				if err := ctx.namespacer.Apply(resource); err != nil {
-					logger.Log("LOAD  ", color.BoldRed, err)
-					fail(t, operation.ContinueOnError)
-				}
-				operationCtx, cancel := timeout.Context(timeout.DefaultErrorTimeout, config.Timeouts.Error, test.Timeouts.Error, step.Spec.Timeouts.Error, operation.Timeout)
-				defer cancel()
-				if err := operations.Error(operationCtx, logger, resources[i], c); err != nil {
-					fail(t, operation.ContinueOnError)
-				}
-			}
-		}()
+		}
 	}
 }

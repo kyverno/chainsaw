@@ -11,7 +11,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func TestError(t *testing.T) {
+func Test_operationError(t *testing.T) {
 	tests := []struct {
 		name         string
 		expected     unstructured.Unstructured
@@ -85,7 +85,7 @@ func TestError(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &MockLogger{}
 
-			err := Error(context.TODO(), logger, tt.expected, tt.client)
+			err := operationError(context.TODO(), logger, tt.expected, tt.client)
 
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())

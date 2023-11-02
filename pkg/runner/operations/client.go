@@ -52,14 +52,20 @@ func (c *opClient) Apply(obj ctrlclient.Object, shouldFail bool, cleanup func(ct
 		c.logger.Log("LOAD  ", color.BoldRed, err)
 		// fail(t, operation.ContinueOnError)
 	}
-	operationCtx, cancel := timeout.Context(timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.step.Timeouts.Apply, nil /*c.operation.Timeout*/)
+	ctx, cancel := timeout.Context(timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.step.Timeouts.Apply, nil /*c.operation.Timeout*/)
 	defer cancel()
-	return apply(operationCtx, c.logger, obj, c.client, shouldFail, cleanup)
+	return operationApply(ctx, c.logger, obj, c.client, shouldFail, cleanup)
 }
 
 // Assert implements Client.
-func (*opClient) Assert(expected unstructured.Unstructured) (_err error) {
-	panic("unimplemented")
+func (c *opClient) Assert(expected unstructured.Unstructured) (_err error) {
+	if err := c.namespacer.Apply(&expected); err != nil {
+		c.logger.Log("LOAD  ", color.BoldRed, err)
+		// fail(t, operation.ContinueOnError)
+	}
+	ctx, cancel := timeout.Context(timeout.DefaultAssertTimeout, c.config.Timeouts.Assert, c.test.Timeouts.Assert, c.step.Timeouts.Assert, nil /*c.operation.Timeout*/)
+	defer cancel()
+	return operationAssert(ctx, c.logger, expected, c.client)
 }
 
 // Delete implements Client.
@@ -68,8 +74,14 @@ func (*opClient) Delete(expected ctrlclient.Object) error {
 }
 
 // Error implements Client.
-func (*opClient) Error(expected unstructured.Unstructured) (_err error) {
-	panic("unimplemented")
+func (c *opClient) Error(expected unstructured.Unstructured) (_err error) {
+	if err := c.namespacer.Apply(&expected); err != nil {
+		c.logger.Log("LOAD  ", color.BoldRed, err)
+		// fail(t, operation.ContinueOnError)
+	}
+	ctx, cancel := timeout.Context(timeout.DefaultErrorTimeout, c.config.Timeouts.Error, c.test.Timeouts.Error, c.step.Timeouts.Error, nil /*c.operation.Timeout*/)
+	defer cancel()
+	return operationError(ctx, c.logger, expected, c.client)
 }
 
 // Exec implements Client.

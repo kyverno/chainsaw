@@ -16,7 +16,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func apply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, shouldFail bool, cleanup CleanupFunc) (_err error) {
+func operationApply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, shouldFail bool, cleanup CleanupFunc) (_err error) {
 	const operation = "APPLY "
 	logger = logger.WithResource(obj)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")

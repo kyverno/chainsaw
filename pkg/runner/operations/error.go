@@ -14,7 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func Error(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
+func operationError(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
 	const operation = "ERROR "
 	logger = logger.WithResource(&expected)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")

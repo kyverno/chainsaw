@@ -15,7 +15,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func Assert(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
+func operationAssert(ctx context.Context, logger logging.Logger, expected unstructured.Unstructured, c client.Client) (_err error) {
 	const operation = "ASSERT"
 	logger = logger.WithResource(&expected)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")

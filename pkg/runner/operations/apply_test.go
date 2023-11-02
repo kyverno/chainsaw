@@ -133,7 +133,7 @@ func Test_apply(t *testing.T) {
 				return nil
 			}
 
-			err := apply(context.TODO(), logger, tt.object, tt.client, tt.shouldFail, nil)
+			err := operationApply(context.TODO(), logger, tt.object, tt.client, tt.shouldFail, nil)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
