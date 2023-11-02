@@ -1,4 +1,4 @@
-package runner
+package names
 
 import (
 	"os"
@@ -11,7 +11,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func Test_testName(t *testing.T) {
+func TestTest(t *testing.T) {
 	cwd, err := os.Getwd()
 	assert.NoError(t, err)
 	tests := []struct {
@@ -93,7 +93,7 @@ func Test_testName(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := testName(tt.config, tt.test)
+			got, err := Test(tt.config, tt.test)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

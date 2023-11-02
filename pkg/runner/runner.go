@@ -12,6 +12,7 @@ import (
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -24,7 +25,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	if len(tests) == 0 {
 		return &summary, nil
 	}
-	if err := setupFlags(config); err != nil {
+	if err := internal.SetupFlags(config); err != nil {
 		return nil, err
 	}
 	c, err := client.New(cfg)
@@ -41,7 +42,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
-			mainLogger := logging.NewLogger(t, clock, t.Name(), "@init")
+			mainLogger := logging.NewLogger(t, clock, t.Name(), "@main")
 			ctx := Context{
 				clock: clock,
 				clientFactory: func(logger logging.Logger) client.Client {
@@ -93,7 +94,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						size = len(name)
 					}
 				}
-				name, err := testName(config, test)
+				name, err := names.Test(config, test)
 				if err != nil {
 					mainLogger.Log("INTERN", color.BoldRed, err)
 					t.FailNow()
