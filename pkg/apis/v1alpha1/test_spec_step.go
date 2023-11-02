@@ -7,5 +7,5 @@ type TestSpecStep struct {
 	Name string `json:"name,omitempty"`
 
 	// Spec of the step.
-	Spec TestStepSpec `json:"spec"`
+	Spec TestStepSpec `json:",inline"`
 }

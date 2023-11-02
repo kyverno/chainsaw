@@ -4,5 +4,4 @@ metadata:
   name: test-1
 spec:
   steps:
-  - spec:
-      foo: bar
+  - foo: bar

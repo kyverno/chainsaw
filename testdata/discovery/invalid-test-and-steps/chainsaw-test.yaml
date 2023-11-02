@@ -5,12 +5,10 @@ metadata:
 spec:
   steps:
   - name: create configmap
-    spec:
-      operations:
-      - apply:
-        - file: configmap.yaml
+    operations:
+    - apply:
+      - file: configmap.yaml
   - name: assert configmap
-    spec:
-      operations:
-      - assert:
-        - file: configmap.yaml
+    operations:
+    - assert:
+      - file: configmap.yaml
