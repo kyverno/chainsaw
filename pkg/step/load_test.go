@@ -55,7 +55,7 @@ func TestLoad(t *testing.T) {
 						Name: "test-1",
 					},
 					Spec: v1alpha1.TestStepSpec{
-						Operations: v1alpha1.Operations{
+						Operations: []v1alpha1.Operations{{
 							Apply: []v1alpha1.Apply{{
 								FileRef: v1alpha1.FileRef{
 									File: "foo.yaml",
@@ -66,6 +66,7 @@ func TestLoad(t *testing.T) {
 									File: "bar.yaml",
 								},
 							}},
+						},
 						},
 					},
 				},
@@ -84,7 +85,7 @@ func TestLoad(t *testing.T) {
 						Name: "test-1",
 					},
 					Spec: v1alpha1.TestStepSpec{
-						Operations: v1alpha1.Operations{
+						Operations: []v1alpha1.Operations{{
 							Apply: []v1alpha1.Apply{{
 								FileRef: v1alpha1.FileRef{
 									File: "foo.yaml",
@@ -95,6 +96,7 @@ func TestLoad(t *testing.T) {
 									File: "bar.yaml",
 								},
 							}},
+						},
 						},
 					},
 				},
@@ -107,7 +109,7 @@ func TestLoad(t *testing.T) {
 						Name: "test-2",
 					},
 					Spec: v1alpha1.TestStepSpec{
-						Operations: v1alpha1.Operations{
+						Operations: []v1alpha1.Operations{{
 							Apply: []v1alpha1.Apply{{
 								FileRef: v1alpha1.FileRef{
 									File: "bar.yaml",
@@ -118,6 +120,7 @@ func TestLoad(t *testing.T) {
 									File: "foo.yaml",
 								},
 							}},
+						},
 						},
 					},
 				},
