@@ -33,6 +33,27 @@ chainsaw test --config path/to/your/config.yaml
 
 If you don't specify any configuration, Chainsaw will look for the default configuration file `.chainsaw.yaml` in the current working directory. If that's not found, it will fall back to its internal default configuration.
 
+### Timeouts
+
+Timeouts are specified per operation:
+
+- Apply    - when Chainsaw applies manifests in a cluster
+- Assert   - when Chainsaw validates resources in a cluster
+- Error    - when Chainsaw validates resources in a cluster
+- Delete   - when Chainsaw deletes resources from a cluster
+- Cleanup  - when Chainsaw removes resources from a cluster created for a test
+- Exec     - when Chainsaw executes arbitrary commands or scripts
+
+This is required because the timeout varies greatly depending on the nature of an operation.
+Applying a manifest in a cluster is expected to be reasonably fast, while validating a resource can be a long operation.
+
+!!! note "Overriding timeouts"
+
+    Each timeout can be overridden at the test level, test step level, or individual operation level.
+
+    Timeouts defined in the `Configuration` are used when not overridden.
+
+    See the [chainsaw test command line flags](../commands/chainsaw_test.md#options) for default timeout values.
 
 ### Example
 
@@ -77,7 +98,7 @@ Even after a configuration is loaded, you can override specific settings using c
 chainsaw test                           \
     --config path/to/your/config.yaml   \
     --test-dir path/to/test/dir         \
-    --apply-timeout 45s                       \
+    --apply-timeout 45s                 \
     --skip-delete false                 \
     --fail-fast true                    \
     --parallel 4                        \
