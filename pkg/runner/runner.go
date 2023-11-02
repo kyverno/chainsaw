@@ -3,7 +3,6 @@ package runner
 import (
 	"context"
 	"fmt"
-	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -13,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
+	"github.com/kyverno/chainsaw/pkg/runner/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/clock"
@@ -25,10 +25,9 @@ type testsRunner struct {
 	summary *summary.Summary
 }
 
-func (r *testsRunner) runTests(t *testing.T, tests ...discovery.Test) {
+func (r *testsRunner) runTests(goctx context.Context, tests ...discovery.Test) {
+	t := testing.FromContext(goctx)
 	t.Helper()
-	logger := logging.NewLogger(t, r.clock, t.Name(), "@main")
-	goctx := logging.IntoContext(context.Background(), logger)
 	ctx := Context{
 		clock:  r.clock,
 		client: runnerclient.New(r.client),
@@ -38,7 +37,7 @@ func (r *testsRunner) runTests(t *testing.T, tests ...discovery.Test) {
 		if err := ctx.client.Get(goctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
-				logger.Log("GET   ", color.BoldRed, err)
+				logging.Log(goctx, "GET   ", color.BoldRed, err)
 				t.FailNow()
 			}
 			// TODO
@@ -79,11 +78,12 @@ func (r *testsRunner) runTests(t *testing.T, tests ...discovery.Test) {
 		}
 		name, err := names.Test(r.config, test)
 		if err != nil {
-			logger.Log("INTERN", color.BoldRed, err)
+			logging.Log(goctx, "INTERN", color.BoldRed, err)
 			t.FailNow()
 		}
 		t.Run(name, func(t *testing.T) {
 			t.Helper()
+			goctx := testing.IntoContext(goctx, t)
 			if r.summary != nil {
 				t.Cleanup(func() {
 					if t.Skipped() {
@@ -139,7 +139,7 @@ func (r *testsRunner) runTests(t *testing.T, tests ...discovery.Test) {
 				})
 				ctx.namespacer = namespacer.New(r.client, namespace.Name)
 			}
-			runTest(t, goctx, ctx, r.config, test, size)
+			runTest(goctx, ctx, r.config, test, size)
 		})
 	}
 }

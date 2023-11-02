@@ -3,7 +3,6 @@ package runner
 import (
 	"context"
 	"path/filepath"
-	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -12,6 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/collect"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
+	"github.com/kyverno/chainsaw/pkg/runner/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -26,11 +26,11 @@ func fail(t *testing.T, continueOnError *bool) {
 	}
 }
 
-func executeStep(t *testing.T, goctx context.Context, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
+func executeStep(goctx context.Context, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
+	t := testing.FromContext(goctx)
 	t.Helper()
 	logger := logging.FromContext(goctx)
 	operationsClient := operations.NewClient(
-		logger,
 		ctx.namespacer,
 		ctx.client,
 		config,
@@ -66,11 +66,12 @@ func executeStep(t *testing.T, goctx context.Context, ctx Context, basePath stri
 	}()
 
 	for _, operation := range step.Spec.Operations {
-		executeOperation(t, goctx, ctx, basePath, config, test, step, operation, operationsClient)
+		executeOperation(goctx, ctx, basePath, config, test, step, operation, operationsClient)
 	}
 }
 
-func executeOperation(t *testing.T, goctx context.Context, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep, operation v1alpha1.Operation, operationsClient operations.Client) {
+func executeOperation(goctx context.Context, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep, operation v1alpha1.Operation, operationsClient operations.Client) {
+	t := testing.FromContext(goctx)
 	t.Helper()
 	// Handle Delete
 	if operation.Delete != nil {
