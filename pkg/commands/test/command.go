@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner"
+	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -208,12 +209,12 @@ func Command() *cobra.Command {
 			return err
 		},
 	}
-	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", runner.DefaultApplyTimeout, "The apply timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", runner.DefaultAssertTimeout, "The assert timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", runner.DefaultErrorTimeout, "The error timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", runner.DefaultDeleteTimeout, "The delete timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", runner.DefaultCleanupTimeout, "The cleanup timeout to use as default for configuration.")
-	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", runner.DefaultExecTimeout, "The exec timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", timeout.DefaultApplyTimeout, "The apply timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", timeout.DefaultAssertTimeout, "The assert timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", timeout.DefaultErrorTimeout, "The error timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", timeout.DefaultDeleteTimeout, "The delete timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", timeout.DefaultCleanupTimeout, "The cleanup timeout to use as default for configuration.")
+	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", timeout.DefaultExecTimeout, "The exec timeout to use as default for configuration.")
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file.")
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run.")
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests.")

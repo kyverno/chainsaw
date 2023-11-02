@@ -1,4 +1,4 @@
-package runner
+package timeout
 
 import (
 	"context"
@@ -16,7 +16,7 @@ const (
 	DefaultExecTimeout    = 5 * time.Second
 )
 
-func timeout(fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) time.Duration {
+func Get(fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) time.Duration {
 	if operation != nil {
 		return operation.Duration
 	}
@@ -32,7 +32,7 @@ func timeout(fallback time.Duration, config *metav1.Duration, test *metav1.Durat
 	return fallback
 }
 
-func timeoutCtx(fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) (context.Context, context.CancelFunc) {
-	timeout := timeout(fallback, config, test, step, operation)
+func Context(fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) (context.Context, context.CancelFunc) {
+	timeout := Get(fallback, config, test, step, operation)
 	return context.WithTimeout(context.Background(), timeout)
 }
