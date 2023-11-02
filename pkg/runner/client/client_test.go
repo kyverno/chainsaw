@@ -34,41 +34,23 @@ func (f *fakeLogger) WithResource(ctrlclient.Object) logging.Logger {
 
 func TestNew(t *testing.T) {
 	tests := []struct {
-		name   string
-		logger logging.Logger
-		inner  client.Client
-		want   client.Client
+		name  string
+		inner client.Client
+		want  client.Client
 	}{{
-		name:   "nil",
-		logger: nil,
-		inner:  nil,
-		want:   &runnerClient{},
+		name:  "nil",
+		inner: nil,
+		want:  &runnerClient{},
 	}, {
-		name:   "only logger",
-		logger: &fakeLogger{},
-		inner:  nil,
-		want: &runnerClient{
-			logger: &fakeLogger{},
-		},
-	}, {
-		name:   "only client",
-		logger: nil,
-		inner:  &FakeClient{},
+		name:  "not nil",
+		inner: &FakeClient{},
 		want: &runnerClient{
 			inner: &FakeClient{},
-		},
-	}, {
-		name:   "logger and client",
-		logger: &fakeLogger{},
-		inner:  &FakeClient{},
-		want: &runnerClient{
-			logger: &fakeLogger{},
-			inner:  &FakeClient{},
 		},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := New(tt.logger, tt.inner)
+			got := New(tt.inner)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -192,10 +174,10 @@ func Test_runnerClient_Get(t *testing.T) {
 			mockLogger := tt.logger(t)
 			mockClient := tt.inner(t)
 			c := &runnerClient{
-				logger: mockLogger,
-				inner:  mockClient,
+				inner: mockClient,
 			}
-			err := c.Get(context.TODO(), tt.args.key, tt.args.obj, tt.args.opts...)
+			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			err := c.Get(ctx, tt.args.key, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -272,10 +254,10 @@ func Test_runnerClient_Create(t *testing.T) {
 			mockLogger := tt.logger(t)
 			mockClient := tt.inner(t)
 			c := &runnerClient{
-				logger: mockLogger,
-				inner:  mockClient,
+				inner: mockClient,
 			}
-			err := c.Create(context.TODO(), tt.args.obj, tt.args.opts...)
+			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			err := c.Create(ctx, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -352,10 +334,10 @@ func Test_runnerClient_Delete(t *testing.T) {
 			mockLogger := tt.logger(t)
 			mockClient := tt.inner(t)
 			c := &runnerClient{
-				logger: mockLogger,
-				inner:  mockClient,
+				inner: mockClient,
 			}
-			err := c.Delete(context.TODO(), tt.args.obj, tt.args.opts...)
+			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			err := c.Delete(ctx, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -432,10 +414,10 @@ func Test_runnerClient_List(t *testing.T) {
 			mockLogger := tt.logger(t)
 			mockClient := tt.inner(t)
 			c := &runnerClient{
-				logger: mockLogger,
-				inner:  mockClient,
+				inner: mockClient,
 			}
-			err := c.List(context.TODO(), tt.args.obj, tt.args.opts...)
+			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			err := c.List(ctx, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -513,10 +495,10 @@ func Test_runnerClient_Patch(t *testing.T) {
 			mockLogger := tt.logger(t)
 			mockClient := tt.inner(t)
 			c := &runnerClient{
-				logger: mockLogger,
-				inner:  mockClient,
+				inner: mockClient,
 			}
-			err := c.Patch(context.TODO(), tt.args.obj, tt.args.patch, tt.args.opts...)
+			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			err := c.Patch(ctx, tt.args.obj, tt.args.patch, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -533,14 +515,13 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		obj runtime.Object
 	}
 	tests := []struct {
-		name        string
-		logger      func(t *testing.T) *fakeLogger
-		inner       func(t *testing.T) *FakeClient
-		args        args
-		want        bool
-		wantErr     bool
-		innerCalls  int
-		loggerCalls int
+		name       string
+		logger     func(t *testing.T) *fakeLogger
+		inner      func(t *testing.T) *FakeClient
+		args       args
+		want       bool
+		wantErr    bool
+		innerCalls int
 	}{{
 		name: "with error",
 		logger: func(t *testing.T) *fakeLogger {
@@ -560,9 +541,8 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		args: args{
 			obj: &unstructured.Unstructured{},
 		},
-		wantErr:     true,
-		loggerCalls: 0,
-		innerCalls:  1,
+		wantErr:    true,
+		innerCalls: 1,
 	}, {
 		name: "no error - false",
 		logger: func(t *testing.T) *fakeLogger {
@@ -582,10 +562,9 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		args: args{
 			obj: &unstructured.Unstructured{},
 		},
-		want:        false,
-		wantErr:     false,
-		loggerCalls: 0,
-		innerCalls:  1,
+		want:       false,
+		wantErr:    false,
+		innerCalls: 1,
 	}, {
 		name: "no error - true",
 		logger: func(t *testing.T) *fakeLogger {
@@ -605,18 +584,15 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		args: args{
 			obj: &unstructured.Unstructured{},
 		},
-		want:        true,
-		wantErr:     false,
-		loggerCalls: 0,
-		innerCalls:  1,
+		want:       true,
+		wantErr:    false,
+		innerCalls: 1,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockLogger := tt.logger(t)
 			mockClient := tt.inner(t)
 			c := &runnerClient{
-				logger: mockLogger,
-				inner:  mockClient,
+				inner: mockClient,
 			}
 			got, err := c.IsObjectNamespaced(tt.args.obj)
 			if tt.wantErr {
@@ -626,7 +602,6 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 				assert.Equal(t, tt.want, got)
 			}
 			assert.Equal(t, tt.innerCalls, mockClient.NumCalls)
-			assert.Equal(t, tt.loggerCalls, mockLogger.numCalls)
 		})
 	}
 }

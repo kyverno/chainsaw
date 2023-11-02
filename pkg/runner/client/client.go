@@ -12,16 +12,14 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func New(logger logging.Logger, inner client.Client) client.Client {
+func New(inner client.Client) client.Client {
 	return &runnerClient{
-		logger: logger,
-		inner:  inner,
+		inner: inner,
 	}
 }
 
 type runnerClient struct {
-	logger logging.Logger
-	inner  client.Client
+	inner client.Client
 }
 
 func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) (_err error) {
@@ -29,9 +27,9 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log("CREATE", obj, color.BoldGreen, "OK")
+			c.log(ctx, "CREATE", obj, color.BoldGreen, "OK")
 		} else {
-			c.log("CREATE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.log(ctx, "CREATE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	err := c.inner.Create(ctx, obj, opts...)
@@ -46,9 +44,9 @@ func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log("DELETE", obj, color.BoldGreen, "OK")
+			c.log(ctx, "DELETE", obj, color.BoldGreen, "OK")
 		} else {
-			c.log("DELETE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.log(ctx, "DELETE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return c.inner.Delete(ctx, obj, opts...)
@@ -67,9 +65,9 @@ func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch c
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log("PATCH", obj, color.BoldGreen, "OK")
+			c.log(ctx, "PATCH", obj, color.BoldGreen, "OK")
 		} else {
-			c.log("PATCH", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.log(ctx, "PATCH", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return c.inner.Patch(ctx, obj, patch, opts...)
@@ -79,6 +77,9 @@ func (c *runnerClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 	return c.inner.IsObjectNamespaced(obj)
 }
 
-func (c *runnerClient) log(op string, obj ctrlclient.Object, color *color.Color, args ...interface{}) {
-	c.logger.WithResource(obj).Log(op, color, args...)
+func (c *runnerClient) log(ctx context.Context, op string, obj ctrlclient.Object, color *color.Color, args ...interface{}) {
+	logger := logging.FromContext(ctx)
+	if logger != nil {
+		logger.WithResource(obj).Log(op, color, args...)
+	}
 }

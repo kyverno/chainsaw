@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"context"
 	"path/filepath"
 	"testing"
 
@@ -25,13 +26,13 @@ func fail(t *testing.T, continueOnError *bool) {
 	}
 }
 
-func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
+func executeStep(t *testing.T, goctx context.Context, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
 	t.Helper()
-	c := ctx.clientFactory(logger)
+	logger := logging.FromContext(goctx)
 	operationsClient := operations.NewClient(
 		logger,
 		ctx.namespacer,
-		c,
+		ctx.client,
 		config,
 		test,
 		step.Spec,
@@ -49,13 +50,13 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 							exec := v1alpha1.Exec{
 								Command: collector,
 							}
-							if err := operationsClient.Exec(exec, true, ctx.namespacer.GetNamespace()); err != nil {
+							if err := operationsClient.Exec(goctx, exec, true, ctx.namespacer.GetNamespace()); err != nil {
 								t.Fail()
 							}
 						}
 					}
 					if handler.Exec != nil {
-						if err := operationsClient.Exec(*handler.Exec, true, ctx.namespacer.GetNamespace()); err != nil {
+						if err := operationsClient.Exec(goctx, *handler.Exec, true, ctx.namespacer.GetNamespace()); err != nil {
 							t.Fail()
 						}
 					}
@@ -65,11 +66,11 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	}()
 
 	for _, operation := range step.Spec.Operations {
-		executeOperation(t, logger, ctx, basePath, config, test, step, operation, operationsClient)
+		executeOperation(t, goctx, ctx, basePath, config, test, step, operation, operationsClient)
 	}
 }
 
-func executeOperation(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep, operation v1alpha1.Operation, operationsClient operations.Client) {
+func executeOperation(t *testing.T, goctx context.Context, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep, operation v1alpha1.Operation, operationsClient operations.Client) {
 	t.Helper()
 	// Handle Delete
 	if operation.Delete != nil {
@@ -80,7 +81,7 @@ func executeOperation(t *testing.T, logger logging.Logger, ctx Context, basePath
 			resource.SetName(operation.Name)
 			resource.SetNamespace(operation.Namespace)
 			resource.SetLabels(operation.Labels)
-			if err := operationsClient.Delete(operation.Timeout, &resource); err != nil {
+			if err := operationsClient.Delete(goctx, operation.Timeout, &resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -89,7 +90,7 @@ func executeOperation(t *testing.T, logger logging.Logger, ctx Context, basePath
 	// Handle Exec
 	if operation.Exec != nil {
 		for _, operation := range operation.Exec {
-			if err := operationsClient.Exec(operation.Exec, !operation.SkipLogOutput, ctx.namespacer.GetNamespace()); err != nil {
+			if err := operationsClient.Exec(goctx, operation.Exec, !operation.SkipLogOutput, ctx.namespacer.GetNamespace()); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -99,7 +100,7 @@ func executeOperation(t *testing.T, logger logging.Logger, ctx Context, basePath
 	if !cleanup.Skip(config.SkipDelete, test.SkipDelete, step.Spec.SkipDelete) {
 		doCleanup = func(obj ctrlclient.Object, c client.Client) {
 			t.Cleanup(func() {
-				if err := operationsClient.Delete(nil, obj); err != nil {
+				if err := operationsClient.Delete(goctx, nil, obj); err != nil {
 					t.Fail()
 				}
 			})
@@ -110,13 +111,13 @@ func executeOperation(t *testing.T, logger logging.Logger, ctx Context, basePath
 		for _, operation := range operation.Apply {
 			resources, err := resource.Load(filepath.Join(basePath, operation.File))
 			if err != nil {
-				logger.Log("LOAD  ", color.BoldRed, err)
+				logging.FromContext(goctx).Log("LOAD  ", color.BoldRed, err)
 				fail(t, operation.ContinueOnError)
 			}
 			shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
 			for i := range resources {
 				resource := &resources[i]
-				if err := operationsClient.Apply(operation.Timeout, resource, shouldFail, doCleanup); err != nil {
+				if err := operationsClient.Apply(goctx, operation.Timeout, resource, shouldFail, doCleanup); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}
@@ -128,11 +129,11 @@ func executeOperation(t *testing.T, logger logging.Logger, ctx Context, basePath
 		for _, operation := range operation.Assert {
 			resources, err := resource.Load(filepath.Join(basePath, operation.File))
 			if err != nil {
-				logger.Log("LOAD  ", color.BoldRed, err)
+				logging.FromContext(goctx).Log("LOAD  ", color.BoldRed, err)
 				fail(t, operation.ContinueOnError)
 			}
 			for _, resource := range resources {
-				if err := operationsClient.Assert(operation.Timeout, resource); err != nil {
+				if err := operationsClient.Assert(goctx, operation.Timeout, resource); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}
@@ -144,11 +145,11 @@ func executeOperation(t *testing.T, logger logging.Logger, ctx Context, basePath
 		for _, operation := range operation.Error {
 			resources, err := resource.Load(filepath.Join(basePath, operation.File))
 			if err != nil {
-				logger.Log("LOAD  ", color.BoldRed, err)
+				logging.FromContext(goctx).Log("LOAD  ", color.BoldRed, err)
 				fail(t, operation.ContinueOnError)
 			}
 			for _, resource := range resources {
-				if err := operationsClient.Error(operation.Timeout, resource); err != nil {
+				if err := operationsClient.Error(goctx, operation.Timeout, resource); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}
