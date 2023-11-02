@@ -16,6 +16,7 @@ Release notes for `TODO`.
 
 - We now have a [logo](https://github.com/kyverno/chainsaw/blob/main/.assets/kyverno-chainsaw-horizontal.png) :tada:
 - Timeouts are now managed per operation rather than per step
+- Added timeout support at the operation level
 
 ## :wrench: Fixes :wrench:
 
