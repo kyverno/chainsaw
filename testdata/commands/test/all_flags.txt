@@ -1,0 +1,25 @@
+Loading default configuration...
+- TestDirs [.]
+- SkipDelete false
+- FailFast false
+- ReportFormat 'XML'
+- ReportName 'foo'
+- Namespace 'bar'
+- FullName true
+- IncludeTestRegex '^.*$'
+- ExcludeTestRegex '^.*$'
+- Parallel 24
+- RepeatCount 12
+- ApplyTimeout 1m40s
+- AssertTimeout 1m40s
+- ErrorTimeout 1m40s
+- DeleteTimeout 1m40s
+- CleanupTimeout 1m40s
+- ExecTimeout 1m40s
+Loading tests...
+Running tests...
+Tests Summary...
+- Passed  tests 0
+- Failed  tests 0
+- Skipped tests 0
+Done.
