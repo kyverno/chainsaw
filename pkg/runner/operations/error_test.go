@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	fakeClient "github.com/kyverno/chainsaw/pkg/runner/client"
-	fakeLogger "github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -84,7 +83,7 @@ func TestError(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			logger := &fakeLogger.MockLogger{}
+			logger := &MockLogger{}
 
 			err := Error(context.TODO(), logger, tt.expected, tt.client)
 

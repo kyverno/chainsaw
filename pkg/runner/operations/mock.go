@@ -1,9 +1,10 @@
-package logging
+package operations
 
 import (
 	"fmt"
 
 	"github.com/fatih/color"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -11,7 +12,7 @@ type MockLogger struct {
 	Logs []string
 }
 
-func (m *MockLogger) WithResource(resource ctrlclient.Object) Logger {
+func (m *MockLogger) WithResource(resource ctrlclient.Object) logging.Logger {
 	return m
 }
 
