@@ -22,10 +22,15 @@ Chainsaw is also available as a Docker image which you can pull and run:
 docker pull ghcr.io/kyverno/chainsaw:v0.0.2
 ```
 
-> Note: Since Chainsaw relies on files for its operation (like test definitions), you will need to bind mount the necessary directories when running it via Docker.
+!!! info
+
+    Since Chainsaw relies on files for its operation (like test definitions), you will need to bind mount the necessary directories when running it via Docker.
 
 ```bash
-docker run --rm -v /path/on/host:/path/in/container ghcr.io/kyverno/chainsaw:v0.0.2 <chainsaw-command>
+docker run --rm                         \
+    -v /path/on/host:/path/in/container \
+    ghcr.io/kyverno/chainsaw:v0.0.2     \
+    <chainsaw-command>
 ```
 
 ## Compile from sources
@@ -35,16 +40,11 @@ docker run --rm -v /path/on/host:/path/in/container ghcr.io/kyverno/chainsaw:v0.
 ```bash
 git clone https://github.com/kyverno/chainsaw.git
 ```
-
-**get the dependencies:**
+**build the binaries:**
 
 ```bash
+cd chainsaw
 go mod tidy
-```
-
-**build:**
-
-```bash
 make build
 ```
 
