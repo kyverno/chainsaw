@@ -4,11 +4,13 @@ metadata:
   name: test
 spec:
   steps:
-  - name: create configmap
-    spec:
-      apply:
-      - file: configmap.yaml
-  - name: assert configmap
-    spec:
-      assert:
-      - file: configmap.yaml
+    - name: create configmap
+      spec:
+        operations:
+          - apply:
+              - file: configmap.yaml
+    - name: assert configmap
+      spec:
+        operations:
+          - assert:
+              - file: configmap.yaml

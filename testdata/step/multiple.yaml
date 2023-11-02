@@ -3,10 +3,11 @@ kind: TestStep
 metadata:
   name: test-1
 spec:
-  apply:
-  - file: foo.yaml
-  assert:
-  - file: bar.yaml
+  operations:
+  - apply:
+    - file: foo.yaml
+    assert:
+    - file: bar.yaml
 
 ---
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -14,7 +15,8 @@ kind: TestStep
 metadata:
   name: test-2
 spec:
-  apply:
-  - file: bar.yaml
-  assert:
-  - file: foo.yaml
+  operations:
+  - apply:
+    - file: bar.yaml
+    assert:
+    - file: foo.yaml

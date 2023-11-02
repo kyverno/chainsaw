@@ -6,9 +6,11 @@ spec:
   steps:
   - name: create configmap
     spec:
-      apply:
-      - file: configmap.yaml
+      operations:
+      - apply:
+        - file: configmap.yaml
   - name: assert configmap
     spec:
-      assert:
-      - file: configmap.yaml
+      operations:
+      - assert:
+        - file: configmap.yaml

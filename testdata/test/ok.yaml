@@ -5,8 +5,10 @@ metadata:
 spec:
   steps:
   - spec:
-      apply:
-      - file: foo.yaml
+      operations:
+      - apply:
+        - file: foo.yaml
   - spec:
-      assert:
-      - file: bar.yaml
+      operations:
+      - assert:
+        - file: bar.yaml
