@@ -32,7 +32,7 @@ func Get(fallback time.Duration, config *metav1.Duration, test *metav1.Duration,
 	return fallback
 }
 
-func Context(fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) (context.Context, context.CancelFunc) {
+func Context(ctx context.Context, fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) (context.Context, context.CancelFunc) {
 	timeout := Get(fallback, config, test, step, operation)
-	return context.WithTimeout(context.Background(), timeout)
+	return context.WithTimeout(ctx, timeout)
 }

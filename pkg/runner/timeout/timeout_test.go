@@ -1,6 +1,7 @@
 package timeout
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -122,7 +123,7 @@ func TestContext(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, cancel := Context(tt.fallback, tt.config, tt.test, tt.step, tt.operation)
+			got, cancel := Context(context.Background(), tt.fallback, tt.config, tt.test, tt.step, tt.operation)
 			defer cancel()
 			assert.NotNil(t, got)
 			assert.NotNil(t, cancel)

@@ -27,33 +27,31 @@ type testsRunner struct {
 
 func (r *testsRunner) runTests(t *testing.T, tests ...discovery.Test) {
 	t.Helper()
-	mainLogger := logging.NewLogger(t, r.clock, t.Name(), "@main")
+	logger := logging.NewLogger(t, r.clock, t.Name(), "@main")
+	goctx := logging.IntoContext(context.Background(), logger)
 	ctx := Context{
-		clock: r.clock,
-		clientFactory: func(logger logging.Logger) client.Client {
-			return runnerclient.New(logger, r.client)
-		},
+		clock:  r.clock,
+		client: runnerclient.New(r.client),
 	}
 	if r.config.Namespace != "" {
-		c := ctx.clientFactory(mainLogger)
 		namespace := client.Namespace(r.config.Namespace)
-		if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
+		if err := ctx.client.Get(goctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
-				mainLogger.Log("GET   ", color.BoldRed, err)
+				logger.Log("GET   ", color.BoldRed, err)
 				t.FailNow()
 			}
 			// TODO
 			t.Cleanup(func() {
-				// if err := operations.Delete(context.Background(), mainLogger, &namespace, c); err != nil {
+				// if err := operations.Delete(goctx, mainLogger, &namespace, c); err != nil {
 				// 	t.FailNow()
 				// }
 			})
-			if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
+			if err := ctx.client.Create(goctx, namespace.DeepCopy()); err != nil {
 				t.FailNow()
 			}
 		}
-		ctx.namespacer = namespacer.New(c, r.config.Namespace)
+		ctx.namespacer = namespacer.New(ctx.client, r.config.Namespace)
 	}
 	// TODO: shall we precompute subtest names ?
 	// t.Cleanup(func() {
@@ -81,7 +79,7 @@ func (r *testsRunner) runTests(t *testing.T, tests ...discovery.Test) {
 		}
 		name, err := names.Test(r.config, test)
 		if err != nil {
-			mainLogger.Log("INTERN", color.BoldRed, err)
+			logger.Log("INTERN", color.BoldRed, err)
 			t.FailNow()
 		}
 		t.Run(name, func(t *testing.T) {
@@ -110,28 +108,27 @@ func (r *testsRunner) runTests(t *testing.T, tests ...discovery.Test) {
 			ctx := ctx
 			if test.Spec.Namespace != "" {
 				namespace := client.Namespace(test.Spec.Namespace)
-				c := ctx.clientFactory(beginLogger)
-				if err := c.Get(context.Background(), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
+				if err := ctx.client.Get(logging.IntoContext(goctx, beginLogger), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 					if !errors.IsNotFound(err) {
 						// Get doesn't log
 						beginLogger.Log("GET   ", color.BoldRed, err)
 						t.FailNow()
 					}
-					if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
+					if err := ctx.client.Create(logging.IntoContext(goctx, beginLogger), namespace.DeepCopy()); err != nil {
 						t.FailNow()
 					}
 					// TODO
 					t.Cleanup(func() {
-						// if err := operations.Delete(context.Background(), cleanLogger, &namespace, ctx.clientFactory(cleanLogger)); err != nil {
+						// if err := operations.Delete(logging.IntoContext(goctx, cleanLogger), cleanLogger, &namespace, ctx.clientFactory(cleanLogger)); err != nil {
 						// 	t.FailNow()
 						// }
 					})
 				}
-				ctx.namespacer = namespacer.New(c, test.Spec.Namespace)
+				ctx.namespacer = namespacer.New(ctx.client, test.Spec.Namespace)
 			}
 			if ctx.namespacer == nil {
 				namespace := client.PetNamespace()
-				if err := ctx.clientFactory(beginLogger).Create(context.Background(), namespace.DeepCopy()); err != nil {
+				if err := ctx.client.Create(logging.IntoContext(goctx, beginLogger), namespace.DeepCopy()); err != nil {
 					t.FailNow()
 				}
 				t.Cleanup(func() {
@@ -142,7 +139,7 @@ func (r *testsRunner) runTests(t *testing.T, tests ...discovery.Test) {
 				})
 				ctx.namespacer = namespacer.New(r.client, namespace.Name)
 			}
-			runTest(t, ctx, r.config, test, size)
+			runTest(t, goctx, ctx, r.config, test, size)
 		})
 	}
 }
