@@ -28,6 +28,14 @@ func fail(t *testing.T, continueOnError *bool) {
 func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
 	t.Helper()
 	c := ctx.clientFactory(logger)
+	operationsClient := operations.NewClient(
+		logger,
+		ctx.namespacer,
+		c,
+		config,
+		test,
+		step.Spec,
+	)
 	defer func() {
 		if t.Failed() {
 			t.Cleanup(func() {
@@ -104,13 +112,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
 			for i := range resources {
 				resource := &resources[i]
-				if err := ctx.namespacer.Apply(resource); err != nil {
-					logger.Log("LOAD  ", color.BoldRed, err)
-					fail(t, operation.ContinueOnError)
-				}
-				operationCtx, cancel := timeout.Context(timeout.DefaultApplyTimeout, config.Timeouts.Apply, test.Timeouts.Apply, step.Spec.Timeouts.Apply, operation.Timeout)
-				defer cancel()
-				if err := operations.Apply(operationCtx, logger, resource, c, shouldFail, cleanup); err != nil {
+				if err := operationsClient.Apply(resource, shouldFail, cleanup); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}

@@ -5,6 +5,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -22,13 +23,26 @@ type opClient struct {
 	logger     logging.Logger
 	namespacer namespacer.Namespacer
 	client     client.Client
+	config     v1alpha1.ConfigurationSpec
+	test       v1alpha1.TestSpec
+	step       v1alpha1.TestStepSpec
 }
 
-func NewClient(logger logging.Logger, namespacer namespacer.Namespacer, client client.Client) Client {
+func NewClient(
+	logger logging.Logger,
+	namespacer namespacer.Namespacer,
+	client client.Client,
+	config v1alpha1.ConfigurationSpec,
+	test v1alpha1.TestSpec,
+	step v1alpha1.TestStepSpec,
+) Client {
 	return &opClient{
 		logger:     logger,
 		namespacer: namespacer,
 		client:     client,
+		config:     config,
+		test:       test,
+		step:       step,
 	}
 }
 
@@ -38,9 +52,9 @@ func (c *opClient) Apply(obj ctrlclient.Object, shouldFail bool, cleanup func(ct
 		c.logger.Log("LOAD  ", color.BoldRed, err)
 		// fail(t, operation.ContinueOnError)
 	}
-	operationCtx, cancel := timeoutCtx(DefaultApplyTimeout, config.Timeouts.Apply, test.Timeouts.Apply, step.Spec.Timeouts.Apply, operation.Timeout)
+	operationCtx, cancel := timeout.Context(timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.step.Timeouts.Apply, nil /*c.operation.Timeout*/)
 	defer cancel()
-	return Apply(operationCtx, c.logger, obj, c.client, shouldFail, cleanup)
+	return apply(operationCtx, c.logger, obj, c.client, shouldFail, cleanup)
 }
 
 // Assert implements Client.

@@ -15,7 +15,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func TestApply(t *testing.T) {
+func Test_apply(t *testing.T) {
 	tests := []struct {
 		name         string
 		initialState *unstructured.Unstructured
@@ -133,7 +133,7 @@ func TestApply(t *testing.T) {
 				return nil
 			}
 
-			err := Apply(context.TODO(), logger, tt.object, tt.client, tt.shouldFail, nil)
+			err := apply(context.TODO(), logger, tt.object, tt.client, tt.shouldFail, nil)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
