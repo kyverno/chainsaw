@@ -3,26 +3,17 @@
 Release notes for `TODO`.
 
 <!--
+## :dizzy: New features :dizzy:
+
 ## :sparkles: UI changes :sparkles:
 
 ## :star: Examples :star:
 
 ## :boat: Tutorials :boat:
 
-## :books: Docs :books:
--->
-
-## :dizzy: New features :dizzy:
-
-- We now have a [logo](https://github.com/kyverno/chainsaw/blob/main/.assets/kyverno-chainsaw-horizontal.png) :tada:
-- Timeouts are now managed per operation rather than per step
-- Added timeout support at the operation level
-
 ## :wrench: Fixes :wrench:
 
-- Fixed `Exec` collectors not invoked
+## :books: Docs :books:
 
 ## :guitar: Misc :guitar:
-
-- Added a lot of unit tests
-- Improved error messages in a couple of places
+-->
