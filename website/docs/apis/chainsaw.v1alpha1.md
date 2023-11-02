@@ -373,7 +373,7 @@ For multiple objects use labels.</p>
 |---|---|---|---|---|
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
-| `ordering` | [`Operations`](#chainsaw-kyverno-io-v1alpha1-Operations) |  |  | <p>Operations defines the order in which the test step should be executed.</p> |
+| `operations` | [`[]Operations`](#chainsaw-kyverno-io-v1alpha1-Operations) |  |  | <p>Operations defines the order in which the test step should be executed.</p> |
 | `onFailure` | [`[]OnFailure`](#chainsaw-kyverno-io-v1alpha1-OnFailure) |  |  | <p>OnFailure defines actions to be executed in case of step failure.</p> |
 
 ## `Timeouts`     {#chainsaw-kyverno-io-v1alpha1-Timeouts}

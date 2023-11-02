@@ -603,7 +603,13 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 		*out = new(bool)
 		**out = **in
 	}
-	in.Operations.DeepCopyInto(&out.Operations)
+	if in.Operations != nil {
+		in, out := &in.Operations, &out.Operations
+		*out = make([]Operations, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	if in.OnFailure != nil {
 		in, out := &in.OnFailure, &out.OnFailure
 		*out = make([]OnFailure, len(*in))

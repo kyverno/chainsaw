@@ -5,14 +5,15 @@ metadata:
   creationTimestamp: null
   name: step
 spec:
-  delete:
-  - apiVersion: v1
-    kind: Pod
-    name: my-pod
-  - apiVersion: v1
-    kind: Pod
-    labels:
-      app: nginx
-  - apiVersion: v1
-    kind: Pod
+  operations:
+  - delete:
+    - apiVersion: v1
+      kind: Pod
+      name: my-pod
+    - apiVersion: v1
+      kind: Pod
+      labels:
+        app: nginx
+    - apiVersion: v1
+      kind: Pod
   timeouts: {}
