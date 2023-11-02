@@ -7,7 +7,8 @@ import (
 	"time"
 
 	fakeClient "github.com/kyverno/chainsaw/pkg/runner/client"
-	fakeLogger "github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	fakeLogger "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	clock "k8s.io/utils/clock/testing"
@@ -108,7 +109,7 @@ func TestApply(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fakeClock := clock.NewFakePassiveClock(time.Now())
-			logger := fakeLogger.NewLogger(&fakeLogger.TestLogger{}, fakeClock, "testName", "stepName")
+			logger := logging.NewLogger(&fakeLogger.FakeLogger{}, fakeClock, "testName", "stepName")
 			tt.client.T = t
 			tt.client.GetFake = func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				t.Helper()
