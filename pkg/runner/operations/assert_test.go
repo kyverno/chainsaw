@@ -10,7 +10,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func TestAssert(t *testing.T) {
+func Test_operationAssert(t *testing.T) {
 	tests := []struct {
 		name         string
 		expected     unstructured.Unstructured
@@ -50,7 +50,7 @@ func TestAssert(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockLogger := &MockLogger{}
-			err := Assert(context.TODO(), mockLogger, tt.expected, tt.fakeClient)
+			err := operationAssert(context.TODO(), mockLogger, tt.expected, tt.fakeClient)
 
 			if tt.expectErr {
 				assert.NotNil(t, err)

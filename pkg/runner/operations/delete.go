@@ -13,7 +13,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func Delete(ctx context.Context, logger logging.Logger, expected ctrlclient.Object, c client.Client) (_err error) {
+func operationDelete(ctx context.Context, logger logging.Logger, expected ctrlclient.Object, c client.Client) (_err error) {
 	const operation = "DELETE"
 	logger = logger.WithResource(expected)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")

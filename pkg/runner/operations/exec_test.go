@@ -22,7 +22,7 @@ func (c *FakeCommandOutput) Err() string {
 	return c.stderr.String()
 }
 
-func TestExec(t *testing.T) {
+func Test_operationExec(t *testing.T) {
 	ctx := context.TODO()
 
 	tests := []struct {
@@ -73,7 +73,7 @@ func TestExec(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &MockLogger{}
-			err := Exec(ctx, logger, tt.exec, tt.log, tt.namespace)
+			err := operationExec(ctx, logger, tt.exec, tt.log, tt.namespace)
 			assert.ElementsMatch(t, tt.expected, logger.Logs)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Exec() error = %v, wantErr %v", err, tt.wantErr)
