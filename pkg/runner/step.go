@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/resource"
+	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -72,9 +73,9 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			fail(t, operation.ContinueOnError)
 		}
 	}
-	var cleanup operations.CleanupFunc
-	if !skipDelete(config.SkipDelete, test.SkipDelete, step.Spec.SkipDelete) {
-		cleanup = func(obj ctrlclient.Object, c client.Client) {
+	var doCleanup operations.CleanupFunc
+	if !cleanup.Skip(config.SkipDelete, test.SkipDelete, step.Spec.SkipDelete) {
+		doCleanup = func(obj ctrlclient.Object, c client.Client) {
 			t.Cleanup(func() {
 				if err := operationsClient.Delete(nil, obj); err != nil {
 					t.Fail()
@@ -96,7 +97,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
 		for i := range resources {
 			resource := &resources[i]
-			if err := operationsClient.Apply(operation.Timeout, resource, shouldFail, cleanup); err != nil {
+			if err := operationsClient.Apply(operation.Timeout, resource, shouldFail, doCleanup); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}

@@ -1,12 +1,13 @@
-package runner
+package cleanup
 
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"k8s.io/utils/ptr"
 )
 
-func Test_skipDelete(t *testing.T) {
+func TestSkip(t *testing.T) {
 	tests := []struct {
 		name   string
 		config bool
@@ -46,9 +47,8 @@ func Test_skipDelete(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := skipDelete(tt.config, tt.test, tt.step); got != tt.want {
-				t.Errorf("skipDelete() = %v, want %v", got, tt.want)
-			}
+			got := Skip(tt.config, tt.test, tt.step)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
