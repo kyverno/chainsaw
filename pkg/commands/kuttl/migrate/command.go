@@ -192,17 +192,19 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 		},
 		ObjectMeta: from.ObjectMeta,
 	}
+
+	singleOperation := v1alpha1.Operations{}
 	for _, operation := range from.Apply {
-		to.Spec.Operations.Apply = append(to.Spec.Operations.Apply, v1alpha1.Apply{FileRef: v1alpha1.FileRef{File: operation}})
+		singleOperation.Apply = append(singleOperation.Apply, v1alpha1.Apply{FileRef: v1alpha1.FileRef{File: operation}})
 	}
 	for _, operation := range from.Assert {
-		to.Spec.Operations.Assert = append(to.Spec.Operations.Assert, v1alpha1.Assert{FileRef: v1alpha1.FileRef{File: operation}})
+		singleOperation.Assert = append(singleOperation.Assert, v1alpha1.Assert{FileRef: v1alpha1.FileRef{File: operation}})
 	}
 	for _, operation := range from.Error {
-		to.Spec.Operations.Error = append(to.Spec.Operations.Error, v1alpha1.Error{FileRef: v1alpha1.FileRef{File: operation}})
+		singleOperation.Error = append(singleOperation.Error, v1alpha1.Error{FileRef: v1alpha1.FileRef{File: operation}})
 	}
 	for _, operation := range from.Delete {
-		to.Spec.Operations.Delete = append(to.Spec.Operations.Delete, v1alpha1.Delete{
+		singleOperation.Delete = append(singleOperation.Delete, v1alpha1.Delete{
 			ObjectReference: v1alpha1.ObjectReference{
 				APIVersion: operation.APIVersion,
 				Kind:       operation.Kind,
@@ -214,5 +216,6 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 			},
 		})
 	}
+	to.Spec.Operations = append(to.Spec.Operations, singleOperation)
 	return to, nil
 }
