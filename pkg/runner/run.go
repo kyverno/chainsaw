@@ -1,14 +1,16 @@
 package runner
 
 import (
+	"context"
 	"fmt"
-	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
+	"github.com/kyverno/chainsaw/pkg/runner/testing"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 )
@@ -35,7 +37,9 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 				clock:   clock,
 				summary: &summary,
 			}
-			runner.runTests(t, tests...)
+			ctx := testing.IntoContext(context.Background(), t)
+			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
+			runner.runTests(ctx, tests...)
 		},
 	}}
 	deps := &internal.TestDeps{}

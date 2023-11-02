@@ -23,7 +23,6 @@ type Client interface {
 }
 
 type opClient struct {
-	logger     logging.Logger
 	namespacer namespacer.Namespacer
 	client     client.Client
 	config     v1alpha1.ConfigurationSpec
@@ -32,7 +31,6 @@ type opClient struct {
 }
 
 func NewClient(
-	logger logging.Logger,
 	namespacer namespacer.Namespacer,
 	client client.Client,
 	config v1alpha1.ConfigurationSpec,
@@ -40,7 +38,6 @@ func NewClient(
 	step v1alpha1.TestStepSpec,
 ) Client {
 	return &opClient{
-		logger:     logger,
 		namespacer: namespacer,
 		client:     client,
 		config:     config,
@@ -51,51 +48,55 @@ func NewClient(
 
 // Apply implements Client.
 func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, shouldFail bool, cleanup func(ctrlclient.Object, client.Client)) error {
+	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(obj); err != nil {
-		c.logger.Log("LOAD  ", color.BoldRed, err)
+		logger.Log("LOAD  ", color.BoldRed, err)
 		// fail(t, operation.ContinueOnError)
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.step.Timeouts.Apply, to)
 	defer cancel()
-	return operationApply(ctx, c.logger, obj, c.client, shouldFail, cleanup)
+	return operationApply(ctx, logger, obj, c.client, shouldFail, cleanup)
 }
 
 // Assert implements Client.
 func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) (_err error) {
+	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(&expected); err != nil {
-		c.logger.Log("LOAD  ", color.BoldRed, err)
+		logger.Log("LOAD  ", color.BoldRed, err)
 		// fail(t, operation.ContinueOnError)
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultAssertTimeout, c.config.Timeouts.Assert, c.test.Timeouts.Assert, c.step.Timeouts.Assert, to)
 	defer cancel()
-	return operationAssert(ctx, c.logger, expected, c.client)
+	return operationAssert(ctx, logger, expected, c.client)
 }
 
 // Delete implements Client.
 func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object) error {
+	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(obj); err != nil {
-		c.logger.Log("LOAD  ", color.BoldRed, err)
+		logger.Log("LOAD  ", color.BoldRed, err)
 		// fail(t, operation.ContinueOnError)
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultDeleteTimeout, c.config.Timeouts.Delete, c.test.Timeouts.Delete, c.step.Timeouts.Delete, to)
 	defer cancel()
-	return operationDelete(ctx, c.logger, obj, c.client)
+	return operationDelete(ctx, logger, obj, c.client)
 }
 
 // Error implements Client.
 func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) (_err error) {
+	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(&expected); err != nil {
-		c.logger.Log("LOAD  ", color.BoldRed, err)
+		logger.Log("LOAD  ", color.BoldRed, err)
 		// fail(t, operation.ContinueOnError)
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultErrorTimeout, c.config.Timeouts.Error, c.test.Timeouts.Error, c.step.Timeouts.Error, to)
 	defer cancel()
-	return operationError(ctx, c.logger, expected, c.client)
+	return operationError(ctx, logger, expected, c.client)
 }
 
 // Exec implements Client.
 func (c *opClient) Exec(ctx context.Context, exec v1alpha1.Exec, log bool, namespace string) error {
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.step.Timeouts.Exec, exec.Timeout)
 	defer cancel()
-	return operationExec(ctx, c.logger, exec, log, namespace)
+	return operationExec(ctx, logging.FromContext(ctx), exec, log, namespace)
 }
