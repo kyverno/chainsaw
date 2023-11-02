@@ -1,0 +1,9 @@
+Migrate KUTTL tests to Chainsaw
+
+Usage:
+  chainsaw migrate [flags]
+
+Flags:
+  -h, --help        help for migrate
+      --overwrite   If set, overwrites original file.
+      --save        If set, converted files will be saved.
