@@ -38,6 +38,21 @@ func TestLoad(t *testing.T) {
 			wantErr: true,
 		},
 		{
+			name:    "unsupported kind",
+			path:    filepath.Join(basePath, "unsupported-kind.yaml"),
+			wantErr: true,
+		},
+		{
+			name:    "invalid CRD data",
+			path:    filepath.Join(basePath, "valid-test-step.yaml"),
+			wantErr: true,
+		},
+		{
+			name:    "corrupted YAML",
+			path:    filepath.Join(basePath, "corrupted.yaml"),
+			wantErr: true,
+		},
+		{
 			name:    "invalid testStep",
 			path:    filepath.Join(basePath, "invalid.yaml"),
 			wantErr: true,
