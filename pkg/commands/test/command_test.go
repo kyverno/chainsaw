@@ -110,6 +110,29 @@ func TestChainsawCommand(t *testing.T) {
 		},
 		wantErr: false,
 		out:     filepath.Join(basePath, "config_all_fields.txt"),
+	}, {
+		name: "all flags",
+		args: []string{
+			"--apply-timeout=100s",
+			"--assert-timeout=100s",
+			"--error-timeout=100s",
+			"--delete-timeout=100s",
+			"--cleanup-timeout=100s",
+			"--exec-timeout=100s",
+			"--test-dir=.",
+			"--skip-delete=false",
+			"--stop-on-first-failure=false",
+			"--parallel=24",
+			"--repeat-count=12",
+			"--report-format=XML",
+			"--report-name=foo",
+			"--namespace=bar",
+			"--full-name=true",
+			"--include-test-regex=^.*$",
+			"--exclude-test-regex=^.*$",
+		},
+		wantErr: false,
+		out:     filepath.Join(basePath, "all_flags.txt"),
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
