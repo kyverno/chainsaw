@@ -55,18 +55,19 @@ func TestLoad(t *testing.T) {
 						Name: "test-1",
 					},
 					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operations{{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "foo.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
-								},
-							}},
-						},
+						Operations: []v1alpha1.Operations{
+							{
+								Apply: []v1alpha1.Apply{{
+									FileRef: v1alpha1.FileRef{
+										File: "foo.yaml",
+									},
+								}},
+								Assert: []v1alpha1.Assert{{
+									FileRef: v1alpha1.FileRef{
+										File: "bar.yaml",
+									},
+								}},
+							},
 						},
 					},
 				},
@@ -85,18 +86,19 @@ func TestLoad(t *testing.T) {
 						Name: "test-1",
 					},
 					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operations{{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "foo.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
-								},
-							}},
-						},
+						Operations: []v1alpha1.Operations{
+							{
+								Apply: []v1alpha1.Apply{{
+									FileRef: v1alpha1.FileRef{
+										File: "foo.yaml",
+									},
+								}},
+								Assert: []v1alpha1.Assert{{
+									FileRef: v1alpha1.FileRef{
+										File: "bar.yaml",
+									},
+								}},
+							},
 						},
 					},
 				},
@@ -109,18 +111,19 @@ func TestLoad(t *testing.T) {
 						Name: "test-2",
 					},
 					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operations{{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "foo.yaml",
-								},
-							}},
-						},
+						Operations: []v1alpha1.Operations{
+							{
+								Apply: []v1alpha1.Apply{{
+									FileRef: v1alpha1.FileRef{
+										File: "bar.yaml",
+									},
+								}},
+								Assert: []v1alpha1.Assert{{
+									FileRef: v1alpha1.FileRef{
+										File: "foo.yaml",
+									},
+								}},
+							},
 						},
 					},
 				},
