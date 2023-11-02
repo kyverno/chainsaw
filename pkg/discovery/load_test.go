@@ -18,62 +18,68 @@ func TestLoadTest(t *testing.T) {
 		path     string
 		want     *Test
 		wantErr  bool
-	}{{
-		name:     "invalid path",
-		fileName: "chainsaw-test.yaml",
-		path:     "/invalid",
-		want:     nil,
-		wantErr:  true,
-	}, {
-		name:     "no path",
-		fileName: "chainsaw-test.yaml",
-		path:     "",
-		want:     nil,
-		wantErr:  true,
-	}, {
-		name:     "test",
-		fileName: "chainsaw-test.yaml",
-		path:     filepath.Join(basePath, "test"),
-		want: &Test{
-			BasePath: "../../testdata/discovery/test",
-			Test: &v1alpha1.Test{
-				TypeMeta: metav1.TypeMeta{
-					APIVersion: "chainsaw.kyverno.io/v1alpha1",
-					Kind:       "Test",
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "test",
-				},
-				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestSpecStep{{
-						Name: "create configmap",
-						Spec: v1alpha1.TestStepSpec{
-							Operations: []v1alpha1.Operations{{
-								Apply: []v1alpha1.Apply{{
-									FileRef: v1alpha1.FileRef{
-										File: "configmap.yaml",
+	}{
+		{
+			name:     "invalid path",
+			fileName: "chainsaw-test.yaml",
+			path:     "/invalid",
+			want:     nil,
+			wantErr:  true,
+		},
+		{
+			name:     "no path",
+			fileName: "chainsaw-test.yaml",
+			path:     "",
+			want:     nil,
+			wantErr:  true,
+		},
+		{
+			name:     "test",
+			fileName: "chainsaw-test.yaml",
+			path:     filepath.Join(basePath, "test"),
+			want: &Test{
+				BasePath: "../../testdata/discovery/test",
+				Test: &v1alpha1.Test{
+					TypeMeta: metav1.TypeMeta{
+						APIVersion: "chainsaw.kyverno.io/v1alpha1",
+						Kind:       "Test",
+					},
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "test",
+					},
+					Spec: v1alpha1.TestSpec{
+						Steps: []v1alpha1.TestSpecStep{{
+							Name: "create configmap",
+							Spec: v1alpha1.TestStepSpec{
+								Operations: []v1alpha1.Operations{
+									{
+										Apply: []v1alpha1.Apply{{
+											FileRef: v1alpha1.FileRef{
+												File: "configmap.yaml",
+											},
+										}},
 									},
-								}},
+								},
 							},
-							},
-						},
-					}, {
-						Name: "assert configmap",
-						Spec: v1alpha1.TestStepSpec{
-							Operations: []v1alpha1.Operations{{
-								Assert: []v1alpha1.Assert{{
-									FileRef: v1alpha1.FileRef{
-										File: "configmap.yaml",
+						}, {
+							Name: "assert configmap",
+							Spec: v1alpha1.TestStepSpec{
+								Operations: []v1alpha1.Operations{
+									{
+										Assert: []v1alpha1.Assert{{
+											FileRef: v1alpha1.FileRef{
+												File: "configmap.yaml",
+											},
+										}},
 									},
-								}},
+								},
 							},
-							},
-						},
-					}},
+						}},
+					},
 				},
 			},
+			wantErr: false,
 		},
-		wantErr: false},
 		{
 			name:     "test",
 			fileName: "chainsaw-test.yaml",
@@ -92,25 +98,27 @@ func TestLoadTest(t *testing.T) {
 						Steps: []v1alpha1.TestSpecStep{{
 							Name: "create configmap",
 							Spec: v1alpha1.TestStepSpec{
-								Operations: []v1alpha1.Operations{{
-									Apply: []v1alpha1.Apply{{
-										FileRef: v1alpha1.FileRef{
-											File: "configmap.yaml",
-										},
-									}},
-								},
+								Operations: []v1alpha1.Operations{
+									{
+										Apply: []v1alpha1.Apply{{
+											FileRef: v1alpha1.FileRef{
+												File: "configmap.yaml",
+											},
+										}},
+									},
 								},
 							},
 						}, {
 							Name: "assert configmap",
 							Spec: v1alpha1.TestStepSpec{
-								Operations: []v1alpha1.Operations{{
-									Assert: []v1alpha1.Assert{{
-										FileRef: v1alpha1.FileRef{
-											File: "configmap.yaml",
-										},
-									}},
-								},
+								Operations: []v1alpha1.Operations{
+									{
+										Assert: []v1alpha1.Assert{{
+											FileRef: v1alpha1.FileRef{
+												File: "configmap.yaml",
+											},
+										}},
+									},
 								},
 							},
 						}},
@@ -139,18 +147,19 @@ func TestLoadTest(t *testing.T) {
 						Steps: []v1alpha1.TestSpecStep{{
 							Name: "test-1",
 							Spec: v1alpha1.TestStepSpec{
-								Operations: []v1alpha1.Operations{{
-									Apply: []v1alpha1.Apply{{
-										FileRef: v1alpha1.FileRef{
-											File: "foo.yaml",
-										},
-									}},
-									Assert: []v1alpha1.Assert{{
-										FileRef: v1alpha1.FileRef{
-											File: "bar.yaml",
-										},
-									}},
-								},
+								Operations: []v1alpha1.Operations{
+									{
+										Apply: []v1alpha1.Apply{{
+											FileRef: v1alpha1.FileRef{
+												File: "foo.yaml",
+											},
+										}},
+										Assert: []v1alpha1.Assert{{
+											FileRef: v1alpha1.FileRef{
+												File: "bar.yaml",
+											},
+										}},
+									},
 								},
 							},
 						}},
@@ -177,18 +186,19 @@ func TestLoadTest(t *testing.T) {
 						Steps: []v1alpha1.TestSpecStep{{
 							Name: "test-1",
 							Spec: v1alpha1.TestStepSpec{
-								Operations: []v1alpha1.Operations{{
-									Apply: []v1alpha1.Apply{{
-										FileRef: v1alpha1.FileRef{
-											File: "foo.yaml",
-										},
-									}},
-									Assert: []v1alpha1.Assert{{
-										FileRef: v1alpha1.FileRef{
-											File: "bar.yaml",
-										},
-									}},
-								},
+								Operations: []v1alpha1.Operations{
+									{
+										Apply: []v1alpha1.Apply{{
+											FileRef: v1alpha1.FileRef{
+												File: "foo.yaml",
+											},
+										}},
+										Assert: []v1alpha1.Assert{{
+											FileRef: v1alpha1.FileRef{
+												File: "bar.yaml",
+											},
+										}},
+									},
 								},
 							},
 						}},
@@ -291,11 +301,12 @@ func TestLoadTest(t *testing.T) {
 										}},
 									},
 									{
-										Error: []v1alpha1.Error{{
-											FileRef: v1alpha1.FileRef{
-												File: "01-error.yaml",
+										Error: []v1alpha1.Error{
+											{
+												FileRef: v1alpha1.FileRef{
+													File: "01-error.yaml",
+												},
 											},
-										},
 										},
 									},
 								},
