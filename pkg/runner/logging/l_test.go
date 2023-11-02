@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	clock "k8s.io/utils/clock/testing"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -28,7 +29,7 @@ func TestNewLogger(t *testing.T) {
 
 func TestLog(t *testing.T) {
 	fakeClock := clock.NewFakePassiveClock(time.Now())
-	mockT := &TestLogger{}
+	mockT := &FakeLogger{}
 
 	fakeLogger := NewLogger(mockT, fakeClock, "testName", "stepName").(*logger)
 
@@ -50,11 +51,14 @@ func TestLog(t *testing.T) {
 		},
 		{
 			name: "With Resource",
-			resource: &testResource{
-				name:      "testResource",
-				namespace: "default",
-				gvk:       schema.GroupVersionKind{Group: "testGroup", Version: "v1", Kind: "testKind"},
-			},
+			resource: func() ctrlclient.Object {
+				var r unstructured.Unstructured
+				r.SetName("testResource")
+				r.SetNamespace("default")
+				r.SetAPIVersion("testGroup/v1")
+				r.SetKind("testKind")
+				return &r
+			}(),
 			operation: "OPERATION",
 			args:      []interface{}{"arg1", "arg2"},
 			expectContains: []string{
@@ -72,15 +76,15 @@ func TestLog(t *testing.T) {
 			fakeLogger.Log(tt.operation, nil, tt.args...)
 			for _, exp := range tt.expectContains {
 				found := false
-				for _, msg := range mockT.messages {
+				for _, msg := range mockT.Messages {
 					if strings.Contains(msg, exp) {
 						found = true
 						break
 					}
 				}
-				assert.True(t, found, "Expected to find '%s' in logs, but didn't. Logs: %v", exp, mockT.messages)
+				assert.True(t, found, "Expected to find '%s' in logs, but didn't. Logs: %v", exp, mockT.Messages)
 			}
-			mockT.messages = []string{}
+			mockT.Messages = []string{}
 		})
 	}
 }
@@ -90,11 +94,19 @@ func TestWithResource(t *testing.T) {
 		name      string
 		resource  ctrlclient.Object
 		expectNil bool
-	}{
-		{"Valid Resource", &testResource{name: "testResource"}, false},
-		{"Nil Resource", nil, true},
-	}
-
+	}{{
+		name: "Valid Resource",
+		resource: func() ctrlclient.Object {
+			var r unstructured.Unstructured
+			r.SetName("testResource")
+			return &r
+		}(),
+		expectNil: false,
+	}, {
+		name:      "Nil Resource",
+		resource:  nil,
+		expectNil: true,
+	}}
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
 			fakeClock := clock.NewFakePassiveClock(time.Now())

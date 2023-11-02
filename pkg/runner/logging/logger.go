@@ -9,8 +9,3 @@ type Logger interface {
 	Log(string, *color.Color, ...interface{})
 	WithResource(ctrlclient.Object) Logger
 }
-
-type LoggerInterface interface {
-	Log(args ...interface{})
-	Helper()
-}
