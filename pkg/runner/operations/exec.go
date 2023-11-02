@@ -11,7 +11,7 @@ import (
 	"github.com/kyverno/kyverno/ext/output/color"
 )
 
-func Exec(ctx context.Context, logger logging.Logger, exec v1alpha1.Exec, log bool, namespace string) error {
+func operationExec(ctx context.Context, logger logging.Logger, exec v1alpha1.Exec, log bool, namespace string) error {
 	if exec.Command != nil {
 		return command(ctx, logger, *exec.Command, log, namespace)
 	} else if exec.Script != nil {

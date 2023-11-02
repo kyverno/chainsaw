@@ -1,7 +1,6 @@
 package runner
 
 import (
-	"context"
 	"path/filepath"
 	"testing"
 
@@ -10,7 +9,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -49,13 +47,13 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 							exec := v1alpha1.Exec{
 								Command: collector,
 							}
-							if err := operations.Exec(context.Background(), logger, exec, true, ctx.namespacer.GetNamespace()); err != nil {
+							if err := operationsClient.Exec(exec, true, ctx.namespacer.GetNamespace()); err != nil {
 								t.Fail()
 							}
 						}
 					}
 					if handler.Exec != nil {
-						if err := operations.Exec(context.Background(), logger, *handler.Exec, true, ctx.namespacer.GetNamespace()); err != nil {
+						if err := operationsClient.Exec(*handler.Exec, true, ctx.namespacer.GetNamespace()); err != nil {
 							t.Fail()
 						}
 					}
@@ -70,7 +68,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		resource.SetName(operation.Name)
 		resource.SetNamespace(operation.Namespace)
 		resource.SetLabels(operation.Labels)
-		if err := operationsClient.Delete(&resource); err != nil {
+		if err := operationsClient.Delete(operation.Timeout, &resource); err != nil {
 			fail(t, operation.ContinueOnError)
 		}
 	}
@@ -78,20 +76,16 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 	if !skipDelete(config.SkipDelete, test.SkipDelete, step.Spec.SkipDelete) {
 		cleanup = func(obj ctrlclient.Object, c client.Client) {
 			t.Cleanup(func() {
-				if err := operationsClient.Delete(obj); err != nil {
+				if err := operationsClient.Delete(nil, obj); err != nil {
 					t.Fail()
 				}
 			})
 		}
 	}
 	for _, operation := range step.Spec.Exec {
-		func() {
-			operationCtx, cancel := timeout.Context(timeout.DefaultExecTimeout, config.Timeouts.Exec, test.Timeouts.Exec, step.Spec.Timeouts.Exec, operation.Timeout)
-			defer cancel()
-			if err := operations.Exec(operationCtx, logger, operation.Exec, !operation.SkipLogOutput, ctx.namespacer.GetNamespace()); err != nil {
-				fail(t, operation.ContinueOnError)
-			}
-		}()
+		if err := operationsClient.Exec(operation.Exec, !operation.SkipLogOutput, ctx.namespacer.GetNamespace()); err != nil {
+			fail(t, operation.ContinueOnError)
+		}
 	}
 	for _, operation := range step.Spec.Apply {
 		resources, err := resource.Load(filepath.Join(basePath, operation.File))
@@ -102,7 +96,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
 		for i := range resources {
 			resource := &resources[i]
-			if err := operationsClient.Apply(resource, shouldFail, cleanup); err != nil {
+			if err := operationsClient.Apply(operation.Timeout, resource, shouldFail, cleanup); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -114,7 +108,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			fail(t, operation.ContinueOnError)
 		}
 		for _, resource := range resources {
-			if err := operationsClient.Assert(resource); err != nil {
+			if err := operationsClient.Assert(operation.Timeout, resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -126,7 +120,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			fail(t, operation.ContinueOnError)
 		}
 		for _, resource := range resources {
-			if err := operationsClient.Error(resource); err != nil {
+			if err := operationsClient.Error(operation.Timeout, resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
