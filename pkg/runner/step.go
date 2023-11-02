@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
+	"github.com/kyverno/chainsaw/pkg/runner/collect"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -39,7 +40,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		if t.Failed() {
 			t.Cleanup(func() {
 				for _, handler := range step.Spec.OnFailure {
-					collectors, err := collect(handler.Collect)
+					collectors, err := collect.Commands(handler.Collect)
 					if err != nil {
 						logger.Log("COLLEC", color.BoldRed, err)
 						t.Fail()
