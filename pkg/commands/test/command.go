@@ -109,7 +109,7 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "skip-delete") {
 				configuration.Spec.SkipDelete = options.skipDelete
 			}
-			if flagutils.IsSet(flags, "stop-on-first-failure") {
+			if flagutils.IsSet(flags, "fail-fast") {
 				configuration.Spec.FailFast = options.failFast
 			}
 			if flagutils.IsSet(flags, "parallel") {
@@ -217,7 +217,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file.")
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run.")
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests.")
-	cmd.Flags().BoolVar(&options.failFast, "stop-on-first-failure", false, "Stop the test upon encountering the first failure.")
+	cmd.Flags().BoolVar(&options.failFast, "fail-fast", false, "Stop the test upon encountering the first failure.")
 	cmd.Flags().IntVar(&options.parallel, "parallel", 0, "The maximum number of tests to run at once.")
 	cmd.Flags().IntVar(&options.repeatCount, "repeat-count", 1, "Number of times to repeat each test.")
 	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil).")

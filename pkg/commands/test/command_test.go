@@ -121,7 +121,7 @@ func TestChainsawCommand(t *testing.T) {
 			"--exec-timeout=100s",
 			"--test-dir=.",
 			"--skip-delete=false",
-			"--stop-on-first-failure=false",
+			"--fail-fast=false",
 			"--parallel=24",
 			"--repeat-count=12",
 			"--report-format=XML",
