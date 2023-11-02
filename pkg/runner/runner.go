@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
+	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -156,7 +157,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 			}
 		},
 	}}
-	m := testing.MainStart(&testDeps{}, internalTests, nil, nil, nil)
+	m := testing.MainStart(&internal.TestDeps{}, internalTests, nil, nil, nil)
 	if code := m.Run(); code > 1 {
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
