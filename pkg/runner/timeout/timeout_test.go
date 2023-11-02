@@ -1,4 +1,4 @@
-package runner
+package timeout
 
 import (
 	"testing"
@@ -8,7 +8,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func Test_timeout(t *testing.T) {
+func TestGet(t *testing.T) {
 	config := metav1.Duration{Duration: 1 * time.Minute}
 	test := metav1.Duration{Duration: 2 * time.Minute}
 	step := metav1.Duration{Duration: 3 * time.Minute}
@@ -65,13 +65,13 @@ func Test_timeout(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := timeout(tt.fallback, tt.config, tt.test, tt.step, tt.operation)
+			got := Get(tt.fallback, tt.config, tt.test, tt.step, tt.operation)
 			assert.Equal(t, tt.want, got)
 		})
 	}
 }
 
-func Test_timeoutCtx(t *testing.T) {
+func TestContext(t *testing.T) {
 	config := metav1.Duration{Duration: 1 * time.Minute}
 	test := metav1.Duration{Duration: 2 * time.Minute}
 	step := metav1.Duration{Duration: 3 * time.Minute}
@@ -122,7 +122,7 @@ func Test_timeoutCtx(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, cancel := timeoutCtx(tt.fallback, tt.config, tt.test, tt.step, tt.operation)
+			got, cancel := Context(tt.fallback, tt.config, tt.test, tt.step, tt.operation)
 			defer cancel()
 			assert.NotNil(t, got)
 			assert.NotNil(t, cancel)
