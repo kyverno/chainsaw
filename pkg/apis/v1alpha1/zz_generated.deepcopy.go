@@ -30,6 +30,11 @@ import (
 func (in *Apply) DeepCopyInto(out *Apply) {
 	*out = *in
 	out.FileRef = in.FileRef
+	if in.Timeout != nil {
+		in, out := &in.Timeout, &out.Timeout
+		*out = new(v1.Duration)
+		**out = **in
+	}
 	if in.ShouldFail != nil {
 		in, out := &in.ShouldFail, &out.ShouldFail
 		*out = new(bool)
@@ -57,6 +62,11 @@ func (in *Apply) DeepCopy() *Apply {
 func (in *Assert) DeepCopyInto(out *Assert) {
 	*out = *in
 	out.FileRef = in.FileRef
+	if in.Timeout != nil {
+		in, out := &in.Timeout, &out.Timeout
+		*out = new(v1.Duration)
+		**out = **in
+	}
 	if in.ContinueOnError != nil {
 		in, out := &in.ContinueOnError, &out.ContinueOnError
 		*out = new(bool)
@@ -185,6 +195,11 @@ func (in *ConfigurationSpec) DeepCopy() *ConfigurationSpec {
 func (in *Delete) DeepCopyInto(out *Delete) {
 	*out = *in
 	in.ObjectReference.DeepCopyInto(&out.ObjectReference)
+	if in.Timeout != nil {
+		in, out := &in.Timeout, &out.Timeout
+		*out = new(v1.Duration)
+		**out = **in
+	}
 	if in.ContinueOnError != nil {
 		in, out := &in.ContinueOnError, &out.ContinueOnError
 		*out = new(bool)
@@ -207,6 +222,11 @@ func (in *Delete) DeepCopy() *Delete {
 func (in *Error) DeepCopyInto(out *Error) {
 	*out = *in
 	out.FileRef = in.FileRef
+	if in.Timeout != nil {
+		in, out := &in.Timeout, &out.Timeout
+		*out = new(v1.Duration)
+		**out = **in
+	}
 	if in.ContinueOnError != nil {
 		in, out := &in.ContinueOnError, &out.ContinueOnError
 		*out = new(bool)

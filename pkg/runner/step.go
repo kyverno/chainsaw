@@ -65,7 +65,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 			if err := ctx.namespacer.Apply(&resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
-			operationCtx, cancel := timeoutCtx(DefaultDeleteTimeout, config.Timeouts.Delete, test.Timeouts.Delete, step.Spec.Timeouts.Delete, nil)
+			operationCtx, cancel := timeoutCtx(DefaultDeleteTimeout, config.Timeouts.Delete, test.Timeouts.Delete, step.Spec.Timeouts.Delete, operation.Timeout)
 			defer cancel()
 			if err := operations.Delete(operationCtx, logger, &resource, c); err != nil {
 				fail(t, operation.ContinueOnError)
@@ -107,7 +107,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 					logger.Log("LOAD  ", color.BoldRed, err)
 					fail(t, operation.ContinueOnError)
 				}
-				operationCtx, cancel := timeoutCtx(DefaultApplyTimeout, config.Timeouts.Apply, test.Timeouts.Apply, step.Spec.Timeouts.Apply, nil)
+				operationCtx, cancel := timeoutCtx(DefaultApplyTimeout, config.Timeouts.Apply, test.Timeouts.Apply, step.Spec.Timeouts.Apply, operation.Timeout)
 				defer cancel()
 				if err := operations.Apply(operationCtx, logger, resource, c, shouldFail, cleanup); err != nil {
 					fail(t, operation.ContinueOnError)
@@ -128,7 +128,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 					logger.Log("LOAD  ", color.BoldRed, err)
 					fail(t, operation.ContinueOnError)
 				}
-				operationCtx, cancel := timeoutCtx(DefaultAssertTimeout, config.Timeouts.Assert, test.Timeouts.Assert, step.Spec.Timeouts.Assert, nil)
+				operationCtx, cancel := timeoutCtx(DefaultAssertTimeout, config.Timeouts.Assert, test.Timeouts.Assert, step.Spec.Timeouts.Assert, operation.Timeout)
 				defer cancel()
 				if err := operations.Assert(operationCtx, logger, resources[i], c); err != nil {
 					fail(t, operation.ContinueOnError)
@@ -149,7 +149,7 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 					logger.Log("LOAD  ", color.BoldRed, err)
 					fail(t, operation.ContinueOnError)
 				}
-				operationCtx, cancel := timeoutCtx(DefaultErrorTimeout, config.Timeouts.Error, test.Timeouts.Error, step.Spec.Timeouts.Error, nil)
+				operationCtx, cancel := timeoutCtx(DefaultErrorTimeout, config.Timeouts.Error, test.Timeouts.Error, step.Spec.Timeouts.Error, operation.Timeout)
 				defer cancel()
 				if err := operations.Error(operationCtx, logger, resources[i], c); err != nil {
 					fail(t, operation.ContinueOnError)
