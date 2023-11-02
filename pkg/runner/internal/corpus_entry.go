@@ -1,4 +1,4 @@
-package runner
+package internal
 
 // corpusEntry is from the public go testing which references an internal structure.
 // corpusEntry is an alias to the same type as internal/fuzz.CorpusEntry.
