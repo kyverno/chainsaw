@@ -3,7 +3,6 @@ package runner
 import (
 	"context"
 	"fmt"
-	"sync/atomic"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -14,14 +13,15 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 )
 
-func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*Summary, error) {
-	var summary Summary
+func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*summary.Summary, error) {
+	var summary summary.Summary
 	if len(tests) == 0 {
 		return &summary, nil
 	}
@@ -32,12 +32,6 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	if err != nil {
 		return nil, err
 	}
-	var failed, passed, skipped atomic.Int32
-	defer func() {
-		summary.FailedTests = failed.Load()
-		summary.PassedTests = passed.Load()
-		summary.SkippedTests = skipped.Load()
-	}()
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
@@ -103,12 +97,12 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 					t.Helper()
 					t.Cleanup(func() {
 						if t.Skipped() {
-							skipped.Add(1)
+							summary.IncSkipped()
 						} else {
 							if t.Failed() {
-								failed.Add(1)
+								summary.IncFailed()
 							} else {
-								passed.Add(1)
+								summary.IncPassed()
 							}
 						}
 					})

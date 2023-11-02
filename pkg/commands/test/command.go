@@ -194,13 +194,13 @@ func Command() *cobra.Command {
 			summary, err := runner.Run(cfg, clock, configuration.Spec, testToRun...)
 			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
-				fmt.Fprintln(out, "- Passed  tests", summary.PassedTests)
-				fmt.Fprintln(out, "- Failed  tests", summary.FailedTests)
-				fmt.Fprintln(out, "- Skipped tests", summary.SkippedTests)
+				fmt.Fprintln(out, "- Passed  tests", summary.Passed())
+				fmt.Fprintln(out, "- Failed  tests", summary.Failed())
+				fmt.Fprintln(out, "- Skipped tests", summary.Skipped())
 			}
 			if err != nil {
 				fmt.Fprintln(out, "Done with error.")
-			} else if summary != nil && summary.FailedTests > 0 {
+			} else if summary != nil && summary.Failed() > 0 {
 				fmt.Fprintln(out, "Done with failures.")
 				err = errors.New("some tests failed")
 			} else {
