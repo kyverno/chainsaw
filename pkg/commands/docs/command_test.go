@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/commands/root"
@@ -11,6 +12,7 @@ import (
 )
 
 func Test_Execute(t *testing.T) {
+	basePath := "../../../testdata/commands/docs"
 	tests := []struct {
 		name    string
 		args    []string
@@ -22,14 +24,14 @@ func Test_Execute(t *testing.T) {
 			"docs",
 			"--help",
 		},
-		out:     "../../../testdata/commands/docs/help.txt",
+		out:     filepath.Join(basePath, "help.txt"),
 		wantErr: false,
 	}, {
 		name: "invalid output",
 		args: []string{
 			"docs",
 		},
-		out:     "../../../testdata/commands/docs/invalid-output.txt",
+		out:     filepath.Join(basePath, "invalid-output.txt"),
 		wantErr: true,
 	}, {
 		name: "docs",

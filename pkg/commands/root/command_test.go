@@ -4,12 +4,14 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_Execute(t *testing.T) {
+	basePath := "../../../testdata/commands/root"
 	tests := []struct {
 		name    string
 		args    []string
@@ -20,11 +22,11 @@ func Test_Execute(t *testing.T) {
 		args: []string{
 			"--help",
 		},
-		out:     "../../../testdata/commands/root/help.txt",
+		out:     filepath.Join(basePath, "help.txt"),
 		wantErr: false,
 	}, {
 		name:    "chainsaw",
-		out:     "../../../testdata/commands/root/help.txt",
+		out:     filepath.Join(basePath, "help.txt"),
 		wantErr: false,
 	}, {
 		name:    "unknow flag",

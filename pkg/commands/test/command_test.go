@@ -18,112 +18,99 @@ func TestChainsawCommand(t *testing.T) {
 		wantErr bool
 		out     string
 		err     string
-	}{
-		{
-			name:    "default",
-			args:    []string{},
-			wantErr: false,
-			out:     filepath.Join(basePath, "default.txt"),
+	}{{
+		name:    "default",
+		args:    []string{},
+		wantErr: false,
+		out:     filepath.Join(basePath, "default.txt"),
+	}, {
+		name: "with apply timeout",
+		args: []string{
+			"--apply-timeout",
+			"10s",
 		},
-		{
-			name: "with apply timeout",
-			args: []string{
-				"--apply-timeout",
-				"10s",
-			},
-			wantErr: false,
-			out:     filepath.Join(basePath, "with_timeout.txt"),
+		wantErr: false,
+		out:     filepath.Join(basePath, "with_timeout.txt"),
+	}, {
+		name: "with repeat count",
+		args: []string{
+			"--repeat-count",
+			"3",
 		},
-		{
-			name: "with repeat count",
-			args: []string{
-				"--repeat-count",
-				"3",
-			},
-			wantErr: false,
-			out:     filepath.Join(basePath, "with_repeat_count.txt"),
+		wantErr: false,
+		out:     filepath.Join(basePath, "with_repeat_count.txt"),
+	}, {
+		name: "invalid timeout",
+		args: []string{
+			"--timeout",
+			"invalid",
 		},
-		{
-			name: "invalid timeout",
-			args: []string{
-				"--timeout",
-				"invalid",
-			},
-			wantErr: true,
+		wantErr: true,
+	}, {
+		name: "test dirs specified",
+		args: []string{
+			"--test-dir",
+			"dir1,dir2,dir3",
 		},
-		{
-			name: "test dirs specified",
-			args: []string{
-				"--test-dir",
-				"dir1,dir2,dir3",
-			},
-			wantErr: false,
-			out:     filepath.Join(basePath, "with_test_dirs.txt"),
+		wantErr: false,
+		out:     filepath.Join(basePath, "with_test_dirs.txt"),
+	}, {
+		name: "nonexistent config file",
+		args: []string{
+			"--config",
+			"nonexistent.yaml",
 		},
-		{
-			name: "nonexistent config file",
-			args: []string{
-				"--config",
-				"nonexistent.yaml",
-			},
-			wantErr: true,
+		wantErr: true,
+	}, {
+		name: "skip test with regex",
+		args: []string{
+			"--include-test-regex",
+			"test[4-6]",
+			"--exclude-test-regex",
+			"test[1-3]",
 		},
-		{
-			name: "skip test with regex",
-			args: []string{
-				"--include-test-regex",
-				"test[4-6]",
-				"--exclude-test-regex",
-				"test[1-3]",
-			},
-			wantErr: false,
-			out:     filepath.Join(basePath, "with_regex.txt"),
+		wantErr: false,
+		out:     filepath.Join(basePath, "with_regex.txt"),
+	}, {
+		name: "empty config",
+		args: []string{
+			"--config",
+			filepath.Join(basePath, "config/empty_config.yaml"),
 		},
-		{
-			name: "empty config",
-			args: []string{
-				"--config",
-				filepath.Join(basePath, "config/empty_config.yaml"),
-			},
-			wantErr: true,
+		wantErr: true,
+	}, {
+		name: "nonexistent config",
+		args: []string{
+			"--config",
+			filepath.Join(basePath, "config/nonexistent_config.yaml"),
 		},
-		{
-			name: "nonexistent config",
-			args: []string{
-				"--config",
-				filepath.Join(basePath, "config/nonexistent_config.yaml"),
-			},
-			wantErr: true,
+		wantErr: true,
+	}, {
+		name: "misformatted config",
+		args: []string{
+			"--config",
+			filepath.Join(basePath, "config/wrong_format_config.yaml"),
 		},
-		{
-			name: "misformatted config",
-			args: []string{
-				"--config",
-				filepath.Join(basePath, "config/wrong_format_config.yaml"),
-			},
-			wantErr: true,
-			out:     filepath.Join(basePath, "wrong_format_config.txt"),
+		wantErr: true,
+		out:     filepath.Join(basePath, "wrong_format_config.txt"),
+	}, {
+		name: "wrong kind in config",
+		args: []string{
+			"--config",
+			filepath.Join(basePath, "config/wrong_kind_config.yaml"),
 		},
-		{
-			name: "wrong kind in config",
-			args: []string{
-				"--config",
-				filepath.Join(basePath, "config/wrong_kind_config.yaml"),
-			},
-			wantErr: true,
-			out:     filepath.Join(basePath, "wrong_kind_config.txt"),
-			err:     filepath.Join(basePath, "wrong_kind_config_err.txt"),
+		wantErr: true,
+		out:     filepath.Join(basePath, "wrong_kind_config.txt"),
+		err:     filepath.Join(basePath, "wrong_kind_config_err.txt"),
+	}, {
+		name: "config with all fields",
+		args: []string{
+			"--config",
+			filepath.Join(basePath, "config/config_all_fields.yaml"),
 		},
-		{
-			name: "config with all fields",
-			args: []string{
-				"--config",
-				filepath.Join(basePath, "config/config_all_fields.yaml"),
-			},
-			wantErr: false,
-			out:     filepath.Join(basePath, "config_all_fields.txt"),
-		},
-	}
+		wantErr: false,
+		out:     filepath.Join(basePath, "config_all_fields.txt"),
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := Command()

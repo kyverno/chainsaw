@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io"
 	"os"
+	"path/filepath"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/commands/root"
@@ -11,6 +12,7 @@ import (
 )
 
 func Test_Execute(t *testing.T) {
+	basePath := "../../../../testdata/commands/kuttl/migrate"
 	tests := []struct {
 		name    string
 		args    []string
@@ -22,7 +24,7 @@ func Test_Execute(t *testing.T) {
 			"migrate",
 			"--help",
 		},
-		out:     "../../../../testdata/commands/kuttl/migrate/help.txt",
+		out:     filepath.Join(basePath, "help.txt"),
 		wantErr: false,
 	}, {
 		name: "migrate",
@@ -30,7 +32,7 @@ func Test_Execute(t *testing.T) {
 			"migrate",
 			"../../../../testdata/kuttl",
 		},
-		out:     "../../../../testdata/commands/kuttl/migrate/out.txt",
+		out:     filepath.Join(basePath, "out.txt"),
 		wantErr: false,
 	}, {
 		name: "migrate save",
@@ -39,7 +41,7 @@ func Test_Execute(t *testing.T) {
 			"../../../../testdata/kuttl",
 			"--save",
 		},
-		out:     "../../../../testdata/commands/kuttl/migrate/out-save.txt",
+		out:     filepath.Join(basePath, "out-save.txt"),
 		wantErr: false,
 	}, {
 		name: "unknow flag",
