@@ -14,7 +14,7 @@ import (
 type Client interface {
 	Apply(obj ctrlclient.Object, shouldFail bool, cleanup CleanupFunc) (_err error)
 	Assert(expected unstructured.Unstructured) (_err error)
-	Delete(expected ctrlclient.Object) error
+	Delete(obj ctrlclient.Object) error
 	Error(expected unstructured.Unstructured) (_err error)
 	Exec(exec v1alpha1.Exec, log bool, namespace string) error
 }
@@ -69,8 +69,14 @@ func (c *opClient) Assert(expected unstructured.Unstructured) (_err error) {
 }
 
 // Delete implements Client.
-func (*opClient) Delete(expected ctrlclient.Object) error {
-	panic("unimplemented")
+func (c *opClient) Delete(obj ctrlclient.Object) error {
+	if err := c.namespacer.Apply(obj); err != nil {
+		c.logger.Log("LOAD  ", color.BoldRed, err)
+		// fail(t, operation.ContinueOnError)
+	}
+	ctx, cancel := timeout.Context(timeout.DefaultDeleteTimeout, c.config.Timeouts.Delete, c.test.Timeouts.Delete, c.step.Timeouts.Delete, nil /*c.operation.Timeout*/)
+	defer cancel()
+	return operationDelete(ctx, c.logger, obj, c.client)
 }
 
 // Error implements Client.

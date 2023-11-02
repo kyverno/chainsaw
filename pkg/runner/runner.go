@@ -13,7 +13,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/client-go/rest"
@@ -58,10 +57,11 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						mainLogger.Log("GET   ", color.BoldRed, err)
 						t.FailNow()
 					}
+					// TODO
 					t.Cleanup(func() {
-						if err := operations.Delete(context.Background(), mainLogger, &namespace, c); err != nil {
-							t.FailNow()
-						}
+						// if err := operations.Delete(context.Background(), mainLogger, &namespace, c); err != nil {
+						// 	t.FailNow()
+						// }
 					})
 					if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 						t.FailNow()
@@ -118,7 +118,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 						t.SkipNow()
 					}
 					beginLogger := logging.NewLogger(t, clock, test.Name, fmt.Sprintf("%-*s", size, "@begin"))
-					cleanLogger := logging.NewLogger(t, clock, test.Name, fmt.Sprintf("%-*s", size, "@clean"))
+					// cleanLogger := logging.NewLogger(t, clock, test.Name, fmt.Sprintf("%-*s", size, "@clean"))
 					ctx := ctx
 					if test.Spec.Namespace != "" {
 						namespace := client.Namespace(test.Spec.Namespace)
@@ -132,10 +132,11 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 							if err := c.Create(context.Background(), namespace.DeepCopy()); err != nil {
 								t.FailNow()
 							}
+							// TODO
 							t.Cleanup(func() {
-								if err := operations.Delete(context.Background(), cleanLogger, &namespace, ctx.clientFactory(cleanLogger)); err != nil {
-									t.FailNow()
-								}
+								// if err := operations.Delete(context.Background(), cleanLogger, &namespace, ctx.clientFactory(cleanLogger)); err != nil {
+								// 	t.FailNow()
+								// }
 							})
 						}
 						ctx.namespacer = namespacer.New(c, test.Spec.Namespace)
@@ -146,9 +147,10 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 							t.FailNow()
 						}
 						t.Cleanup(func() {
-							if err := operations.Delete(context.Background(), cleanLogger, &namespace, ctx.clientFactory(cleanLogger)); err != nil {
-								t.FailNow()
-							}
+							// TODO
+							// if err := operations.Delete(context.Background(), cleanLogger, &namespace, ctx.clientFactory(cleanLogger)); err != nil {
+							// 	t.FailNow()
+							// }
 						})
 						ctx.namespacer = namespacer.New(c, namespace.Name)
 					}

@@ -12,7 +12,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func TestDelete(t *testing.T) {
+func Test_operationDelete(t *testing.T) {
 	tests := []struct {
 		name         string
 		object       ctrlclient.Object
@@ -76,7 +76,7 @@ func TestDelete(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &MockLogger{}
 
-			err := Delete(context.TODO(), logger, tt.object, tt.client)
+			err := operationDelete(context.TODO(), logger, tt.object, tt.client)
 
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())

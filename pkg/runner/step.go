@@ -64,30 +64,21 @@ func executeStep(t *testing.T, logger logging.Logger, ctx Context, basePath stri
 		}
 	}()
 	for _, operation := range step.Spec.Delete {
-		func() {
-			var resource unstructured.Unstructured
-			resource.SetAPIVersion(operation.APIVersion)
-			resource.SetKind(operation.Kind)
-			resource.SetName(operation.Name)
-			resource.SetNamespace(operation.Namespace)
-			resource.SetLabels(operation.Labels)
-			if err := ctx.namespacer.Apply(&resource); err != nil {
-				fail(t, operation.ContinueOnError)
-			}
-			operationCtx, cancel := timeout.Context(timeout.DefaultDeleteTimeout, config.Timeouts.Delete, test.Timeouts.Delete, step.Spec.Timeouts.Delete, operation.Timeout)
-			defer cancel()
-			if err := operations.Delete(operationCtx, logger, &resource, c); err != nil {
-				fail(t, operation.ContinueOnError)
-			}
-		}()
+		var resource unstructured.Unstructured
+		resource.SetAPIVersion(operation.APIVersion)
+		resource.SetKind(operation.Kind)
+		resource.SetName(operation.Name)
+		resource.SetNamespace(operation.Namespace)
+		resource.SetLabels(operation.Labels)
+		if err := operationsClient.Delete(&resource); err != nil {
+			fail(t, operation.ContinueOnError)
+		}
 	}
 	var cleanup operations.CleanupFunc
 	if !skipDelete(config.SkipDelete, test.SkipDelete, step.Spec.SkipDelete) {
 		cleanup = func(obj ctrlclient.Object, c client.Client) {
 			t.Cleanup(func() {
-				cleanupCtx, cancel := timeout.Context(timeout.DefaultCleanupTimeout, config.Timeouts.Cleanup, test.Timeouts.Cleanup, step.Spec.Timeouts.Cleanup, nil)
-				defer cancel()
-				if err := operations.Delete(cleanupCtx, logger, obj, c); err != nil {
+				if err := operationsClient.Delete(obj); err != nil {
 					t.Fail()
 				}
 			})
