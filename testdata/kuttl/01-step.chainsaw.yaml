@@ -3,6 +3,7 @@ apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: TestStep
 metadata:
   creationTimestamp: null
+  name: step
 spec:
   delete:
   - apiVersion: v1
@@ -14,3 +15,4 @@ spec:
       app: nginx
   - apiVersion: v1
     kind: Pod
+  timeouts: {}
