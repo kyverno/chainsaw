@@ -15,51 +15,54 @@ func TestDiscoverTests(t *testing.T) {
 		paths    []string
 		want     []Test
 		wantErr  bool
-	}{{
-		name:     "test",
-		fileName: "chainsaw-test.yaml",
-		paths:    []string{"../../testdata/discovery/test"},
-		want: []Test{{
-			BasePath: "../../testdata/discovery/test",
-			Test: &v1alpha1.Test{
-				TypeMeta: metav1.TypeMeta{
-					APIVersion: "chainsaw.kyverno.io/v1alpha1",
-					Kind:       "Test",
-				},
-				ObjectMeta: metav1.ObjectMeta{
-					Name: "test",
-				},
-				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestSpecStep{{
-						Name: "create configmap",
-						Spec: v1alpha1.TestStepSpec{
-							Operations: []v1alpha1.Operations{{
-								Apply: []v1alpha1.Apply{{
-									FileRef: v1alpha1.FileRef{
-										File: "configmap.yaml",
+	}{
+		{
+			name:     "test",
+			fileName: "chainsaw-test.yaml",
+			paths:    []string{"../../testdata/discovery/test"},
+			want: []Test{{
+				BasePath: "../../testdata/discovery/test",
+				Test: &v1alpha1.Test{
+					TypeMeta: metav1.TypeMeta{
+						APIVersion: "chainsaw.kyverno.io/v1alpha1",
+						Kind:       "Test",
+					},
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "test",
+					},
+					Spec: v1alpha1.TestSpec{
+						Steps: []v1alpha1.TestSpecStep{{
+							Name: "create configmap",
+							Spec: v1alpha1.TestStepSpec{
+								Operations: []v1alpha1.Operations{
+									{
+										Apply: []v1alpha1.Apply{{
+											FileRef: v1alpha1.FileRef{
+												File: "configmap.yaml",
+											},
+										}},
 									},
-								}},
+								},
 							},
-							},
-						},
-					}, {
-						Name: "assert configmap",
-						Spec: v1alpha1.TestStepSpec{
-							Operations: []v1alpha1.Operations{{
-								Assert: []v1alpha1.Assert{{
-									FileRef: v1alpha1.FileRef{
-										File: "configmap.yaml",
+						}, {
+							Name: "assert configmap",
+							Spec: v1alpha1.TestStepSpec{
+								Operations: []v1alpha1.Operations{
+									{
+										Assert: []v1alpha1.Assert{{
+											FileRef: v1alpha1.FileRef{
+												File: "configmap.yaml",
+											},
+										}},
 									},
-								}},
+								},
 							},
-							},
-						},
-					}},
+						}},
+					},
 				},
-			},
-		}},
-		wantErr: false,
-	},
+			}},
+			wantErr: false,
+		},
 		{
 			name:     "manifests",
 			fileName: "chainsaw-test.yaml",
@@ -80,7 +83,6 @@ func TestDiscoverTests(t *testing.T) {
 							Spec: v1alpha1.TestStepSpec{
 								Operations: []v1alpha1.Operations{
 									{
-
 										Assert: []v1alpha1.Assert{{
 											FileRef: v1alpha1.FileRef{
 												File: "01-assert.yaml",
