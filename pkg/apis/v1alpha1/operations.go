@@ -1,6 +1,6 @@
 package v1alpha1
 
-type Operations struct {
+type Operation struct {
 	// Assert represents the assertions to be made for this test step. It checks whether the conditions
 	// specified in each assertion hold true.
 	// +optional

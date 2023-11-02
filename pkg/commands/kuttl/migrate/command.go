@@ -193,7 +193,7 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 		ObjectMeta: from.ObjectMeta,
 	}
 
-	singleOperation := v1alpha1.Operations{}
+	singleOperation := v1alpha1.Operation{}
 	for _, operation := range from.Apply {
 		singleOperation.Apply = append(singleOperation.Apply, v1alpha1.Apply{FileRef: v1alpha1.FileRef{File: operation}})
 	}

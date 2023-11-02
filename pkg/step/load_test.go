@@ -55,7 +55,7 @@ func TestLoad(t *testing.T) {
 						Name: "test-1",
 					},
 					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operations{
+						Operations: []v1alpha1.Operation{
 							{
 								Apply: []v1alpha1.Apply{{
 									FileRef: v1alpha1.FileRef{
@@ -86,7 +86,7 @@ func TestLoad(t *testing.T) {
 						Name: "test-1",
 					},
 					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operations{
+						Operations: []v1alpha1.Operation{
 							{
 								Apply: []v1alpha1.Apply{{
 									FileRef: v1alpha1.FileRef{
@@ -111,7 +111,7 @@ func TestLoad(t *testing.T) {
 						Name: "test-2",
 					},
 					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operations{
+						Operations: []v1alpha1.Operation{
 							{
 								Apply: []v1alpha1.Apply{{
 									FileRef: v1alpha1.FileRef{

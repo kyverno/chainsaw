@@ -12,7 +12,7 @@ type TestStepSpec struct {
 
 	// Operations defines the order in which the test step should be executed.
 	// +optional
-	Operations []Operations `json:"operations,omitempty"`
+	Operations []Operation `json:"operations,omitempty"`
 
 	// OnFailure defines actions to be executed in case of step failure.
 	// +optional
