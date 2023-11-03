@@ -57,20 +57,19 @@ func TestLoad(t *testing.T) {
 					Name: "test-1",
 				},
 				Spec: v1alpha1.TestStepSpec{
-					Try: []v1alpha1.Operation{
-						{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "foo.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
-								},
-							}},
+					Try: []v1alpha1.Operation{{
+						Apply: &v1alpha1.Apply{
+							FileRef: v1alpha1.FileRef{
+								File: "foo.yaml",
+							},
 						},
-					},
+					}, {
+						Assert: &v1alpha1.Assert{
+							FileRef: v1alpha1.FileRef{
+								File: "bar.yaml",
+							},
+						},
+					}},
 				},
 			},
 		},
@@ -87,20 +86,19 @@ func TestLoad(t *testing.T) {
 					Name: "test",
 				},
 				Spec: v1alpha1.TestStepSpec{
-					Try: []v1alpha1.Operation{
-						{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "foo.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
-								},
-							}},
+					Try: []v1alpha1.Operation{{
+						Apply: &v1alpha1.Apply{
+							FileRef: v1alpha1.FileRef{
+								File: "foo.yaml",
+							},
 						},
-					},
+					}, {
+						Assert: &v1alpha1.Assert{
+							FileRef: v1alpha1.FileRef{
+								File: "bar.yaml",
+							},
+						},
+					}},
 					Catch: []v1alpha1.Catch{{
 						Collect: &v1alpha1.Collect{
 							PodLogs: &v1alpha1.PodLogs{
@@ -142,20 +140,19 @@ func TestLoad(t *testing.T) {
 					Name: "test",
 				},
 				Spec: v1alpha1.TestStepSpec{
-					Try: []v1alpha1.Operation{
-						{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "foo.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
-								},
-							}},
+					Try: []v1alpha1.Operation{{
+						Apply: &v1alpha1.Apply{
+							FileRef: v1alpha1.FileRef{
+								File: "foo.yaml",
+							},
 						},
-					},
+					}, {
+						Assert: &v1alpha1.Assert{
+							FileRef: v1alpha1.FileRef{
+								File: "bar.yaml",
+							},
+						},
+					}},
 					Finally: []v1alpha1.Finally{{
 						Collect: &v1alpha1.Collect{
 							PodLogs: &v1alpha1.PodLogs{
@@ -197,20 +194,19 @@ func TestLoad(t *testing.T) {
 					Name: "test-1",
 				},
 				Spec: v1alpha1.TestStepSpec{
-					Try: []v1alpha1.Operation{
-						{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "foo.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
-								},
-							}},
+					Try: []v1alpha1.Operation{{
+						Apply: &v1alpha1.Apply{
+							FileRef: v1alpha1.FileRef{
+								File: "foo.yaml",
+							},
 						},
-					},
+					}, {
+						Assert: &v1alpha1.Assert{
+							FileRef: v1alpha1.FileRef{
+								File: "bar.yaml",
+							},
+						},
+					}},
 				},
 			},
 			{
@@ -222,20 +218,19 @@ func TestLoad(t *testing.T) {
 					Name: "test-2",
 				},
 				Spec: v1alpha1.TestStepSpec{
-					Try: []v1alpha1.Operation{
-						{
-							Apply: []v1alpha1.Apply{{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
-								},
-							}},
-							Assert: []v1alpha1.Assert{{
-								FileRef: v1alpha1.FileRef{
-									File: "foo.yaml",
-								},
-							}},
+					Try: []v1alpha1.Operation{{
+						Apply: &v1alpha1.Apply{
+							FileRef: v1alpha1.FileRef{
+								File: "bar.yaml",
+							},
 						},
-					},
+					}, {
+						Assert: &v1alpha1.Assert{
+							FileRef: v1alpha1.FileRef{
+								File: "foo.yaml",
+							},
+						},
+					}},
 				},
 			},
 		},

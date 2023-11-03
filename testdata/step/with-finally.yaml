@@ -5,9 +5,9 @@ metadata:
 spec:
   try: 
   - apply:
-    - file: foo.yaml
-    assert:
-    - file: bar.yaml
+      file: foo.yaml
+  - assert:
+      file: bar.yaml
   finally:
   - collect:
       podLogs:

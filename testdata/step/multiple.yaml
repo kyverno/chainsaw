@@ -5,9 +5,9 @@ metadata:
 spec:
   try:
   - apply:
-    - file: foo.yaml
-    assert:
-    - file: bar.yaml
+      file: foo.yaml
+  - assert:
+      file: bar.yaml
 
 ---
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -17,6 +17,6 @@ metadata:
 spec:
   try:
   - apply:
-    - file: bar.yaml
-    assert:
-    - file: foo.yaml
+      file: bar.yaml
+  - assert:
+      file: foo.yaml

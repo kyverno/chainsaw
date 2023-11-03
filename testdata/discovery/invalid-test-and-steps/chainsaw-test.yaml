@@ -7,8 +7,8 @@ spec:
   - name: create configmap
     try:
     - apply:
-      - file: configmap.yaml
+        file: configmap.yaml
   - name: assert configmap
     try:
     - assert:
-      - file: configmap.yaml
+        file: configmap.yaml
