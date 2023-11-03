@@ -20,6 +20,25 @@ func operationExec(ctx context.Context, logger logging.Logger, exec v1alpha1.Exe
 	return nil
 }
 
+func expand(env map[string]string, in ...string) []string {
+	var args []string
+	for _, arg := range in {
+		expanded := os.Expand(arg, func(key string) string {
+			expanded := env[key]
+			if expanded == "" {
+				expanded = os.Getenv(key)
+			}
+			return expanded
+		})
+		if expanded != "" {
+			args = append(args, expanded)
+		} else {
+			args = append(args, arg)
+		}
+	}
+	return args
+}
+
 func command(ctx context.Context, logger logging.Logger, command v1alpha1.Command, log bool, namespace string) (_err error) {
 	const operation = "CMD   "
 	var output CommandOutput
@@ -40,9 +59,10 @@ func command(ctx context.Context, logger logging.Logger, command v1alpha1.Comman
 			}
 		}()
 	} else {
-		logger.Log("STDXXX", color.BoldYellow, "suppressed logs")
+		logger.Log("STD___", color.BoldYellow, "suppressed logs")
 	}
-	cmd := exec.CommandContext(ctx, command.Entrypoint, command.Args...) //nolint:gosec
+	args := expand(map[string]string{"NAMESPACE": namespace}, command.Args...)
+	cmd := exec.CommandContext(ctx, command.Entrypoint, args...) //nolint:gosec
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get current working directory (%w)", err)
