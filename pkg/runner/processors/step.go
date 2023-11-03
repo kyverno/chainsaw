@@ -1,4 +1,4 @@
-package runner
+package processors
 
 import (
 	"context"
@@ -15,16 +15,29 @@ import (
 	"k8s.io/utils/clock"
 )
 
-type stepRunner struct {
+type StepProcessor interface {
+	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep)
+	// TODO
+	// CreateOperationProcessor(operation v1alpha1.Operation) OperationProcessor
+}
+
+func NewStepProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock) StepProcessor {
+	return &stepProcessor{
+		config: config,
+		client: client,
+		clock:  clock,
+	}
+}
+
+type stepProcessor struct {
 	config v1alpha1.ConfigurationSpec
 	client client.Client
 	clock  clock.PassiveClock
 }
 
-func (r *stepRunner) runStep(goctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep) {
-	t := testing.FromContext(goctx)
-	t.Helper()
-	logger := logging.FromContext(goctx)
+func (r *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep) {
+	t := testing.FromContext(ctx)
+	logger := logging.FromContext(ctx)
 	operationsClient := operations.NewClient(nspacer, r.client, r.config, test.Spec, step.Spec)
 	defer func() {
 		if t.Failed() {
@@ -39,13 +52,13 @@ func (r *stepRunner) runStep(goctx context.Context, nspacer namespacer.Namespace
 							exec := v1alpha1.Exec{
 								Command: collector,
 							}
-							if err := operationsClient.Exec(goctx, exec, true, nspacer.GetNamespace()); err != nil {
+							if err := operationsClient.Exec(ctx, exec, true, nspacer.GetNamespace()); err != nil {
 								t.Fail()
 							}
 						}
 					}
 					if handler.Exec != nil {
-						if err := operationsClient.Exec(goctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
+						if err := operationsClient.Exec(ctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
 							t.Fail()
 						}
 					}
@@ -54,11 +67,13 @@ func (r *stepRunner) runStep(goctx context.Context, nspacer namespacer.Namespace
 		}
 	}()
 	for _, operation := range step.Spec.Operations {
-		runner := operationRunner{
-			config: r.config,
-			client: operationsClient,
-			clock:  r.clock,
-		}
-		runner.executeOperation(goctx, nspacer, test, step, operation)
+		// TODO
+		runner := NewOperationProcessor(r.config, operationsClient, r.clock)
+		runner.Run(ctx, nspacer, test, step, operation)
 	}
 }
+
+// TODO
+// func (r *stepProcessor) CreateOperationProcessor(_ v1alpha1.Operation) OperationProcessor {
+// 	return NewOperationProcessor(r.config, operationsClient, r.clock)
+// }
