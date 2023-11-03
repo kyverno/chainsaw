@@ -7,7 +7,7 @@ permissions: {}
 on:
   pull_request:
     branches:
-      - 'main'
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
