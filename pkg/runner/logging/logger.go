@@ -1,11 +1,7 @@
 package logging
 
 import (
-	"github.com/kyverno/kyverno/ext/output/color"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
+	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 )
 
-type Logger interface {
-	Log(string, *color.Color, ...interface{})
-	WithResource(ctrlclient.Object) Logger
-}
+type Logger = tlogging.Logger

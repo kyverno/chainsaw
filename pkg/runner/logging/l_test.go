@@ -6,15 +6,15 @@ import (
 	"time"
 
 	"github.com/fatih/color"
-	. "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
+	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	clock "k8s.io/utils/clock/testing"
+	tclock "k8s.io/utils/clock/testing"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestNewLogger(t *testing.T) {
-	fakeClock := clock.NewFakePassiveClock(time.Now())
+	fakeClock := tclock.NewFakePassiveClock(time.Now())
 	testName := "testName"
 	stepName := "stepName"
 	logger, ok := NewLogger(t, fakeClock, testName, stepName).(*logger)
@@ -29,8 +29,8 @@ func TestNewLogger(t *testing.T) {
 }
 
 func TestLog(t *testing.T) {
-	fakeClock := clock.NewFakePassiveClock(time.Now())
-	mockT := &FakeLogger{}
+	fakeClock := tclock.NewFakePassiveClock(time.Now())
+	mockT := &tlogging.FakeTLogger{}
 	fakeLogger := NewLogger(mockT, fakeClock, "testName", "stepName").(*logger)
 	disabled := color.New(color.FgBlue)
 	disabled.DisableColor()
@@ -123,7 +123,7 @@ func TestWithResource(t *testing.T) {
 	}}
 	for _, tt := range testCases {
 		t.Run(tt.name, func(t *testing.T) {
-			fakeClock := clock.NewFakePassiveClock(time.Now())
+			fakeClock := tclock.NewFakePassiveClock(time.Now())
 			fakeLogger := logger{
 				t:     t,
 				clock: fakeClock,

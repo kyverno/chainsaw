@@ -1,17 +1,11 @@
 package testing
 
 import (
-	"fmt"
+	"github.com/fatih/color"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type FakeLogger struct {
-	Messages []string
+type Logger interface {
+	Log(string, *color.Color, ...interface{})
+	WithResource(ctrlclient.Object) Logger
 }
-
-func (tl *FakeLogger) Log(args ...interface{}) {
-	for _, arg := range args {
-		tl.Messages = append(tl.Messages, fmt.Sprint(arg))
-	}
-}
-
-func (tl *FakeLogger) Helper() {}
