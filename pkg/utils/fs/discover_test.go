@@ -29,3 +29,12 @@ func TestDiscoverFolders(t *testing.T) {
 
 	assert.ElementsMatch(t, expectedDirs, discovered)
 }
+
+func TestDiscoverFoldersWithError(t *testing.T) {
+	root := t.TempDir()
+	unreadableDir := filepath.Join(root, "unreadable")
+	assert.NoError(t, os.MkdirAll(unreadableDir, os.ModePerm))
+	assert.NoError(t, os.Chmod(unreadableDir, 0o000))
+	_, err := DiscoverFolders(root)
+	assert.Error(t, err)
+}
