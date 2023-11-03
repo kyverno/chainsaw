@@ -99,6 +99,22 @@ func (r *operationProcessor) Run(ctx context.Context, nspacer namespacer.Namespa
 		}
 	}
 
+	// Handle Create
+	if operation.Create != nil {
+		resources, err := resource.Load(filepath.Join(test.BasePath, operation.Create.File))
+		if err != nil {
+			logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
+			fail(t, operation.Create.ContinueOnError)
+		}
+		shouldFail := operation.Create.ShouldFail != nil && *operation.Create.ShouldFail
+		for i := range resources {
+			resource := &resources[i]
+			if err := r.client.Apply(ctx, operation.Create.Timeout, resource, shouldFail, doCleanup); err != nil {
+				fail(t, operation.Create.ContinueOnError)
+			}
+		}
+	}
+
 	// Handle Assert
 	if operation.Assert != nil {
 		for _, operation := range operation.Assert {

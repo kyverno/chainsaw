@@ -11,6 +11,10 @@ type Operation struct {
 	// +optional
 	Apply []Apply `json:"apply,omitempty"`
 
+	// Create represents a creation operation.
+	// +optional
+	Create *Create `json:"create,omitempty"`
+
 	// Error lists the expected errors for this test step. If any of these errors occur, the test
 	// will consider them as expected; otherwise, they will be treated as test failures.
 	// +optional

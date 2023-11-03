@@ -150,6 +150,23 @@ during the testing process.</p>
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
 | `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
 
+## `Create`     {#chainsaw-kyverno-io-v1alpha1-Create}
+
+**Appears in:**
+    
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
+
+<p>Create represents a set of resources that should be created.
+If a resource already exists in the cluster it will fail.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the</p> |
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `shouldFail` | `bool` |  |  | <p>ShouldFail determines whether applying the file is expected to fail.</p> |
+| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
+
 ## `Delete`     {#chainsaw-kyverno-io-v1alpha1-Delete}
 
 **Appears in:**
@@ -234,6 +251,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
     
 - [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
 - [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
 - [Error](#chainsaw-kyverno-io-v1alpha1-Error)
 
 <p>FileRef represents a file reference.</p>
@@ -301,6 +319,7 @@ For multiple objects use labels.</p>
 |---|---|---|---|---|
 | `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents the assertions to be made for this test step. It checks whether the conditions specified in each assertion hold true.</p> |
 | `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
+| `create` | [`Create`](#chainsaw-kyverno-io-v1alpha1-Create) |  |  | <p>Create represents a creation operation.</p> |
 | `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 | `delete` | [`[]Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
 | `exec` | [`[]ExecOperation`](#chainsaw-kyverno-io-v1alpha1-ExecOperation) |  |  | <p>Exec provides a list of commands and/or scripts that should be executed as a part of this test step.</p> |

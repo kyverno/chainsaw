@@ -323,6 +323,29 @@ spec:
                               - file
                               type: object
                             type: array
+                          create:
+                            description: Create represents a creation operation.
+                            properties:
+                              continueOnError:
+                                description: ContinueOnError determines whether a
+                                  test should continue or not in case the operation
+                                  was not successful. Even if the test continues executing,
+                                  it will still be reported as failed.
+                                type: boolean
+                              file:
+                                description: File is the path to the referenced file.
+                                type: string
+                              shouldFail:
+                                description: ShouldFail determines whether applying
+                                  the file is expected to fail.
+                                type: boolean
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            required:
+                            - file
+                            type: object
                           delete:
                             description: Delete provides a list of objects that should
                               be deleted before this test step is executed. This helps
