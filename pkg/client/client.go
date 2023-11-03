@@ -32,6 +32,9 @@ type Client interface {
 
 	// IsObjectNamespaced returns true if the GroupVersionKind of the object is namespaced.
 	IsObjectNamespaced(obj runtime.Object) (bool, error)
+	// Status knows how to create a client which can update status subresource
+	// for kubernetes objects.
+	Status() ctrlclient.SubResourceWriter
 }
 
 func New(cfg *rest.Config) (Client, error) {

@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/kyverno/ext/output/color"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -72,7 +73,22 @@ func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch c
 			c.log("PATCH", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
-	return c.inner.Patch(ctx, obj, patch, opts...)
+
+	err := c.inner.Patch(ctx, obj, patch, opts...)
+	if err != nil {
+		_err = err
+	}
+	err = c.inner.Status().Patch(ctx, obj, patch)
+	if err != nil {
+		if !errors.IsNotFound(err) {
+			_err = err
+		}
+	}
+	return _err
+}
+
+func (c *runnerClient) Status() ctrlclient.SubResourceWriter {
+	return c.inner.Status()
 }
 
 func (c *runnerClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {

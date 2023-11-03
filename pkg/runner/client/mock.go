@@ -39,6 +39,10 @@ func (f *FakeClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...
 	return f.DeleteFake(ctx, f.T, obj, opts...)
 }
 
+func (f *FakeClient) Status() ctrlclient.SubResourceWriter {
+	return f.Status()
+}
+
 func (f *FakeClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
 	defer func() { f.NumCalls++ }()
 	return f.PatchFake(ctx, f.T, obj, patch, opts...)
