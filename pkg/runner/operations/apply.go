@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -16,7 +17,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func operationApply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, shouldFail bool, cleanup CleanupFunc) (_err error) {
+func operationApply(ctx context.Context, logger logging.Logger, obj ctrlclient.Object, c client.Client, shouldFail bool, cleaner cleanup.Cleaner) (_err error) {
 	const operation = "APPLY "
 	logger = logger.WithResource(obj)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
@@ -55,8 +56,8 @@ func operationApply(ctx context.Context, logger logging.Logger, obj ctrlclient.O
 				}
 				return false, err
 			} else {
-				if cleanup != nil {
-					cleanup(obj, c)
+				if cleaner != nil {
+					cleaner(obj, c)
 				}
 				if shouldFail {
 					return false, errors.New("an error was expected but didn't happen")
