@@ -62,14 +62,12 @@ func TestLoad(t *testing.T) {
 			Spec: v1alpha1.TestSpec{
 				Steps: []v1alpha1.TestSpecStep{{
 					Spec: v1alpha1.TestStepSpec{
-						Try: []v1alpha1.Operation{
-							{
-								Apply: []v1alpha1.Apply{{
-									FileRef: v1alpha1.FileRef{
-										File: "foo.yaml",
-									},
-								}},
-							},
+						Try: []v1alpha1.Operation{{
+							Apply: &v1alpha1.Apply{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
+							}},
 						},
 						Catch: []v1alpha1.Catch{{
 							Collect: &v1alpha1.Collect{
@@ -99,14 +97,12 @@ func TestLoad(t *testing.T) {
 					},
 				}, {
 					Spec: v1alpha1.TestStepSpec{
-						Try: []v1alpha1.Operation{
-							{
-								Assert: []v1alpha1.Assert{{
-									FileRef: v1alpha1.FileRef{
-										File: "bar.yaml",
-									},
-								}},
-							},
+						Try: []v1alpha1.Operation{{
+							Assert: &v1alpha1.Assert{
+								FileRef: v1alpha1.FileRef{
+									File: "bar.yaml",
+								},
+							}},
 						},
 						Finally: []v1alpha1.Finally{{
 							Collect: &v1alpha1.Collect{

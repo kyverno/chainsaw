@@ -317,12 +317,12 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `assert` | [`[]Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents the assertions to be made for this test step. It checks whether the conditions specified in each assertion hold true.</p> |
-| `apply` | [`[]Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply lists the resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
+| `assert` | [`Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents an assertion to be made. It checks whether the conditions specified in the assertion hold true.</p> |
+| `apply` | [`Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply represents resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
 | `create` | [`Create`](#chainsaw-kyverno-io-v1alpha1-Create) |  |  | <p>Create represents a creation operation.</p> |
-| `error` | [`[]Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error lists the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
-| `delete` | [`[]Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete provides a list of objects that should be deleted before this test step is executed. This helps in ensuring that the environment is set up correctly before the test step runs.</p> |
-| `exec` | [`[]ExecOperation`](#chainsaw-kyverno-io-v1alpha1-ExecOperation) |  |  | <p>Exec provides a list of commands and/or scripts that should be executed as a part of this test step.</p> |
+| `error` | [`Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
+| `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a creation operation.</p> |
+| `exec` | [`ExecOperation`](#chainsaw-kyverno-io-v1alpha1-ExecOperation) |  |  | <p>Exec provides a command or script that should be executed as a part of this test step.</p> |
 
 ## `PodLogs`     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 

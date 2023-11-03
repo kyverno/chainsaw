@@ -459,17 +459,13 @@ func (in *Operation) DeepCopyInto(out *Operation) {
 	*out = *in
 	if in.Assert != nil {
 		in, out := &in.Assert, &out.Assert
-		*out = make([]Assert, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
+		*out = new(Assert)
+		(*in).DeepCopyInto(*out)
 	}
 	if in.Apply != nil {
 		in, out := &in.Apply, &out.Apply
-		*out = make([]Apply, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
+		*out = new(Apply)
+		(*in).DeepCopyInto(*out)
 	}
 	if in.Create != nil {
 		in, out := &in.Create, &out.Create
@@ -478,24 +474,18 @@ func (in *Operation) DeepCopyInto(out *Operation) {
 	}
 	if in.Error != nil {
 		in, out := &in.Error, &out.Error
-		*out = make([]Error, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
+		*out = new(Error)
+		(*in).DeepCopyInto(*out)
 	}
 	if in.Delete != nil {
 		in, out := &in.Delete, &out.Delete
-		*out = make([]Delete, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
+		*out = new(Delete)
+		(*in).DeepCopyInto(*out)
 	}
 	if in.Exec != nil {
 		in, out := &in.Exec, &out.Exec
-		*out = make([]ExecOperation, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
+		*out = new(ExecOperation)
+		(*in).DeepCopyInto(*out)
 	}
 	return
 }

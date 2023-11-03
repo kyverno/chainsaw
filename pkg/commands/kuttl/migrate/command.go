@@ -192,30 +192,30 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 		},
 		ObjectMeta: from.ObjectMeta,
 	}
-
-	singleOperation := v1alpha1.Operation{}
 	for _, operation := range from.Apply {
-		singleOperation.Apply = append(singleOperation.Apply, v1alpha1.Apply{FileRef: v1alpha1.FileRef{File: operation}})
+		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Apply: &v1alpha1.Apply{FileRef: v1alpha1.FileRef{File: operation}}})
 	}
 	for _, operation := range from.Assert {
-		singleOperation.Assert = append(singleOperation.Assert, v1alpha1.Assert{FileRef: v1alpha1.FileRef{File: operation}})
+		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Assert: &v1alpha1.Assert{FileRef: v1alpha1.FileRef{File: operation}}})
 	}
 	for _, operation := range from.Error {
-		singleOperation.Error = append(singleOperation.Error, v1alpha1.Error{FileRef: v1alpha1.FileRef{File: operation}})
+		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Error: &v1alpha1.Error{FileRef: v1alpha1.FileRef{File: operation}}})
 	}
 	for _, operation := range from.Delete {
-		singleOperation.Delete = append(singleOperation.Delete, v1alpha1.Delete{
-			ObjectReference: v1alpha1.ObjectReference{
-				APIVersion: operation.APIVersion,
-				Kind:       operation.Kind,
-				ObjectSelector: v1alpha1.ObjectSelector{
-					Namespace: operation.Namespace,
-					Name:      operation.Name,
-					Labels:    operation.Labels,
+		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{
+			Delete: &v1alpha1.Delete{
+				ObjectReference: v1alpha1.ObjectReference{
+					APIVersion: operation.APIVersion,
+					Kind:       operation.Kind,
+					ObjectSelector: v1alpha1.ObjectSelector{
+						Namespace: operation.Namespace,
+						Name:      operation.Name,
+						Labels:    operation.Labels,
+					},
 				},
 			},
 		})
 	}
-	to.Spec.Try = append(to.Spec.Try, singleOperation)
+	// TODO: commands
 	return to, nil
 }
