@@ -7,15 +7,23 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// TODO: not thread safe
 type FakeLogger struct {
-	Logs []string
+	Logs     []string
+	numCalls int
 }
 
-func (m *FakeLogger) WithResource(resource ctrlclient.Object) Logger {
-	return m
+func (f *FakeLogger) WithResource(resource ctrlclient.Object) Logger {
+	defer func() { f.numCalls++ }()
+	return f
 }
 
-func (m *FakeLogger) Log(operation string, color *color.Color, args ...interface{}) {
+func (f *FakeLogger) Log(operation string, color *color.Color, args ...interface{}) {
+	defer func() { f.numCalls++ }()
 	message := fmt.Sprintf("%s: %v", operation, args)
-	m.Logs = append(m.Logs, message)
+	f.Logs = append(f.Logs, message)
+}
+
+func (f *FakeLogger) NumCalls() int {
+	return f.numCalls
 }
