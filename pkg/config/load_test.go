@@ -259,7 +259,7 @@ metadata:
 	}
 }
 
-func TestParseDocumentsWithInvalidCRDFolder(t *testing.T) {
+func TestParseDocuments(t *testing.T) {
 	badCRDFolder := func(path string) string {
 		return "/invalid/path/" + path
 	}
