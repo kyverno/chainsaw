@@ -68,7 +68,7 @@ func TestNamespacer(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.expectNS, tt.resource.GetNamespace())
-				assert.Equal(t, tt.expectedCalls, mock.NumCalls)
+				assert.Equal(t, tt.expectedCalls, mock.NumCalls())
 			}
 		})
 	}
