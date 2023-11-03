@@ -56,7 +56,7 @@ func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclien
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
-	return operationApply(ctx, logger, obj, c.client, shouldFail, cleanup)
+	return operationApply(ctx, obj, c.client, shouldFail, cleanup)
 }
 
 func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) error {
@@ -67,7 +67,7 @@ func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected uns
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultAssertTimeout, c.config.Timeouts.Assert, c.test.Timeouts.Assert, c.stepTimeouts.Assert, to)
 	defer cancel()
-	return operationAssert(ctx, logger, expected, c.client)
+	return operationAssert(ctx, expected, c.client)
 }
 
 func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, shouldFail bool, cleanup func(ctrlclient.Object, client.Client)) error {
@@ -78,7 +78,7 @@ func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
-	return operationCreate(ctx, logger, obj, c.client, shouldFail, cleanup)
+	return operationCreate(ctx, obj, c.client, shouldFail, cleanup)
 }
 
 func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object) error {
@@ -89,7 +89,7 @@ func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultDeleteTimeout, c.config.Timeouts.Delete, c.test.Timeouts.Delete, c.stepTimeouts.Delete, to)
 	defer cancel()
-	return operationDelete(ctx, logger, obj, c.client)
+	return operationDelete(ctx, obj, c.client)
 }
 
 func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) error {
@@ -100,11 +100,11 @@ func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unst
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultErrorTimeout, c.config.Timeouts.Error, c.test.Timeouts.Error, c.stepTimeouts.Error, to)
 	defer cancel()
-	return operationError(ctx, logger, expected, c.client)
+	return operationError(ctx, expected, c.client)
 }
 
 func (c *opClient) Exec(ctx context.Context, exec v1alpha1.Exec, log bool, namespace string) error {
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, exec.Timeout)
 	defer cancel()
-	return operationExec(ctx, logging.FromContext(ctx), exec, log, namespace)
+	return operationExec(ctx, exec, log, namespace)
 }

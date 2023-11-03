@@ -11,11 +11,11 @@ import (
 	"github.com/kyverno/kyverno/ext/output/color"
 )
 
-func operationExec(ctx context.Context, logger logging.Logger, exec v1alpha1.Exec, log bool, namespace string) error {
+func operationExec(ctx context.Context, exec v1alpha1.Exec, log bool, namespace string) error {
 	if exec.Command != nil {
-		return command(ctx, logger, *exec.Command, log, namespace)
+		return command(ctx, *exec.Command, log, namespace)
 	} else if exec.Script != nil {
-		return script(ctx, logger, *exec.Script, log, namespace)
+		return script(ctx, *exec.Script, log, namespace)
 	}
 	return nil
 }
@@ -39,7 +39,8 @@ func expand(env map[string]string, in ...string) []string {
 	return args
 }
 
-func command(ctx context.Context, logger logging.Logger, command v1alpha1.Command, log bool, namespace string) (_err error) {
+func command(ctx context.Context, command v1alpha1.Command, log bool, namespace string) (_err error) {
+	logger := logging.FromContext(ctx)
 	const operation = "CMD   "
 	var output CommandOutput
 	defer func() {
@@ -79,7 +80,8 @@ func command(ctx context.Context, logger logging.Logger, command v1alpha1.Comman
 	return cmd.Run()
 }
 
-func script(ctx context.Context, logger logging.Logger, script v1alpha1.Script, log bool, namespace string) (_err error) {
+func script(ctx context.Context, script v1alpha1.Script, log bool, namespace string) (_err error) {
+	logger := logging.FromContext(ctx)
 	const operation = "SCRIPT"
 	var output CommandOutput
 	defer func() {

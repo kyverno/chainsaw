@@ -5,11 +5,11 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_operationExec(t *testing.T) {
-	ctx := context.TODO()
 	tests := []struct {
 		name      string
 		exec      v1alpha1.Exec
@@ -53,7 +53,8 @@ func Test_operationExec(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &MockLogger{}
-			err := operationExec(ctx, logger, tt.exec, tt.log, tt.namespace)
+			ctx := logging.IntoContext(context.TODO(), logger)
+			err := operationExec(ctx, tt.exec, tt.log, tt.namespace)
 			assert.ElementsMatch(t, tt.expected, logger.Logs)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -100,8 +101,8 @@ func TestCommand(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
-			err := command(ctx, &MockLogger{}, tt.command, tt.log, tt.namespace)
+			ctx := logging.IntoContext(context.TODO(), &MockLogger{})
+			err := command(ctx, tt.command, tt.log, tt.namespace)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -145,8 +146,8 @@ func TestScript(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
-			err := script(ctx, &MockLogger{}, tt.script, tt.log, tt.namespace)
+			ctx := logging.IntoContext(context.TODO(), &MockLogger{})
+			err := script(ctx, tt.script, tt.log, tt.namespace)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
