@@ -67,8 +67,8 @@ func TestLoad(t *testing.T) {
 								FileRef: v1alpha1.FileRef{
 									File: "foo.yaml",
 								},
-							}},
-						},
+							},
+						}},
 						Catch: []v1alpha1.Catch{{
 							Collect: &v1alpha1.Collect{
 								PodLogs: &v1alpha1.PodLogs{
@@ -102,8 +102,8 @@ func TestLoad(t *testing.T) {
 								FileRef: v1alpha1.FileRef{
 									File: "bar.yaml",
 								},
-							}},
-						},
+							},
+						}},
 						Finally: []v1alpha1.Finally{{
 							Collect: &v1alpha1.Collect{
 								PodLogs: &v1alpha1.PodLogs{

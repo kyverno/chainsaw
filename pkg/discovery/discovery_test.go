@@ -38,8 +38,8 @@ func TestDiscoverTests(t *testing.T) {
 									FileRef: v1alpha1.FileRef{
 										File: "configmap.yaml",
 									},
-								}},
-							},
+								},
+							}},
 						},
 					}, {
 						Name: "assert configmap",
