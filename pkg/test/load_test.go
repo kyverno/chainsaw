@@ -7,7 +7,7 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	tloader "github.com/kyverno/chainsaw/pkg/loader/testing"
+	tloader "github.com/kyverno/chainsaw/pkg/internal/loader/testing"
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

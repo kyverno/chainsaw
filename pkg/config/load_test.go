@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	tloader "github.com/kyverno/chainsaw/pkg/loader/testing"
+	tloader "github.com/kyverno/chainsaw/pkg/internal/loader/testing"
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
