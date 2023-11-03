@@ -10,7 +10,15 @@ import (
 	"github.com/kyverno/kyverno/ext/resource/convert"
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/kyverno/kyverno/ext/yaml"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/client-go/openapi"
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
+)
+
+type (
+	splitter      = func([]byte) ([][]byte, error)
+	loaderFactory = func(openapi.Client) (loader.Loader, error)
+	converter     = func(unstructured.Unstructured) (*v1alpha1.TestStep, error)
 )
 
 var testStep_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("TestStep")
@@ -31,13 +39,26 @@ func Load(path string) ([]*v1alpha1.TestStep, error) {
 }
 
 func Parse(content []byte) ([]*v1alpha1.TestStep, error) {
-	documents, err := yaml.SplitDocuments(content)
+	return parse(content, nil, nil, nil)
+}
+
+func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter) ([]*v1alpha1.TestStep, error) {
+	if splitter == nil {
+		splitter = yaml.SplitDocuments
+	}
+	if loaderFactory == nil {
+		loaderFactory = loader.New
+	}
+	if converter == nil {
+		converter = convert.To[v1alpha1.TestStep]
+	}
+	documents, err := splitter(content)
 	if err != nil {
 		return nil, err
 	}
 	var testSteps []*v1alpha1.TestStep
 	// TODO: no need to allocate a validator every time
-	loader, err := loader.New(openapiclient.NewLocalCRDFiles(data.Crds(), data.CrdsFolder))
+	loader, err := loaderFactory(openapiclient.NewLocalCRDFiles(data.Crds(), data.CrdsFolder))
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +69,7 @@ func Parse(content []byte) ([]*v1alpha1.TestStep, error) {
 		}
 		switch gvk {
 		case testStep_v1alpha1:
-			testStep, err := convert.To[v1alpha1.TestStep](untyped)
+			testStep, err := converter(untyped)
 			if err != nil {
 				return nil, err
 			}

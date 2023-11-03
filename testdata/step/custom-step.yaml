@@ -1,0 +1,34 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: TestStep
+metadata:
+  name: example-test-step
+spec:
+  skipDelete: false
+  try:
+    - assert:
+        - file: /assertions/verify-service.yaml
+          timeout: 30s
+          continueOnError: false
+    - apply:
+        - file: /configs/service-config.yaml
+          timeout: 45s
+          shouldFail: false
+          continueOnError: true
+    - error:
+        - file: /errors/expected-timeout-error.yaml
+          timeout: 15s
+          continueOnError: true
+    - delete:
+        - apiVersion: v1
+          kind: Pod
+          name: example-pod
+          namespace: test
+          timeout: 10s
+          continueOnError: false
+    - exec:
+        - command:
+            entrypoint: /bin/sh
+            args:
+            - echo "Executing script..."
+          skipLogOutput: false
+          continueOnError: true

@@ -1,12 +1,19 @@
 package step
 
 import (
+	"errors"
+	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/kyverno/ext/resource/loader"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/openapi"
 )
 
 func TestLoad(t *testing.T) {
@@ -241,6 +248,72 @@ func TestLoad(t *testing.T) {
 				require.NoError(t, err)
 			}
 			require.Equal(t, tt.want, got)
+		})
+	}
+}
+
+type fakeLoader struct{}
+
+func (fakeLoader) Load([]byte) (schema.GroupVersionKind, unstructured.Unstructured, error) {
+	return schema.GroupVersionKind{Group: "v1", Kind: "Something"}, unstructured.Unstructured{}, nil
+}
+
+func Test_parse(t *testing.T) {
+	content, err := os.ReadFile("../../testdata/step/custom-step.yaml")
+	assert.NoError(t, err)
+	tests := []struct {
+		name          string
+		splitter      splitter
+		loaderFactory loaderFactory
+		converter     converter
+		wantErr       bool
+	}{{
+		name:          "default",
+		splitter:      nil,
+		loaderFactory: nil,
+		converter:     nil,
+		wantErr:       false,
+	}, {
+		name: "splitter error",
+		splitter: func([]byte) ([][]byte, error) {
+			return nil, errors.New("splitter")
+		},
+		loaderFactory: nil,
+		converter:     nil,
+		wantErr:       true,
+	}, {
+		name:     "loader factory error",
+		splitter: nil,
+		loaderFactory: func(openapi.Client) (loader.Loader, error) {
+			return nil, errors.New("loader factory")
+		},
+		converter: nil,
+		wantErr:   true,
+	}, {
+		name:     "loader error",
+		splitter: nil,
+		loaderFactory: func(openapi.Client) (loader.Loader, error) {
+			return fakeLoader{}, nil
+		},
+		converter: nil,
+		wantErr:   true,
+	}, {
+		name:          "converter error",
+		splitter:      nil,
+		loaderFactory: nil,
+		converter: func(unstructured.Unstructured) (*v1alpha1.TestStep, error) {
+			return nil, errors.New("converter")
+		},
+		wantErr: true,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := parse(content, tt.splitter, tt.loaderFactory, tt.converter)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 		})
 	}
 }
