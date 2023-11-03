@@ -1,4 +1,4 @@
-package runner
+package processors
 
 import (
 	"context"
@@ -19,13 +19,25 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type operationRunner struct {
+type OperationProcessor interface {
+	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep, operation v1alpha1.Operation)
+}
+
+func NewOperationProcessor(config v1alpha1.ConfigurationSpec, client operations.Client, clock clock.PassiveClock) OperationProcessor {
+	return &operationProcessor{
+		config: config,
+		client: client,
+		clock:  clock,
+	}
+}
+
+type operationProcessor struct {
 	config v1alpha1.ConfigurationSpec
 	client operations.Client
 	clock  clock.PassiveClock
 }
 
-func (r *operationRunner) executeOperation(goctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep, operation v1alpha1.Operation) {
+func (r *operationProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep, operation v1alpha1.Operation) {
 	fail := func(t *testing.T, continueOnError *bool) {
 		t.Helper()
 		if continueOnError != nil && *continueOnError {
@@ -34,8 +46,7 @@ func (r *operationRunner) executeOperation(goctx context.Context, nspacer namesp
 			t.FailNow()
 		}
 	}
-	t := testing.FromContext(goctx)
-	t.Helper()
+	t := testing.FromContext(ctx)
 	// Handle Delete
 	if operation.Delete != nil {
 		for _, operation := range operation.Delete {
@@ -45,7 +56,7 @@ func (r *operationRunner) executeOperation(goctx context.Context, nspacer namesp
 			resource.SetName(operation.Name)
 			resource.SetNamespace(operation.Namespace)
 			resource.SetLabels(operation.Labels)
-			if err := r.client.Delete(goctx, operation.Timeout, &resource); err != nil {
+			if err := r.client.Delete(ctx, operation.Timeout, &resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -54,7 +65,7 @@ func (r *operationRunner) executeOperation(goctx context.Context, nspacer namesp
 	// Handle Exec
 	if operation.Exec != nil {
 		for _, operation := range operation.Exec {
-			if err := r.client.Exec(goctx, operation.Exec, !operation.SkipLogOutput, nspacer.GetNamespace()); err != nil {
+			if err := r.client.Exec(ctx, operation.Exec, !operation.SkipLogOutput, nspacer.GetNamespace()); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -64,7 +75,7 @@ func (r *operationRunner) executeOperation(goctx context.Context, nspacer namesp
 	if !cleanup.Skip(r.config.SkipDelete, test.Spec.SkipDelete, step.Spec.SkipDelete) {
 		doCleanup = func(obj ctrlclient.Object, c client.Client) {
 			t.Cleanup(func() {
-				if err := r.client.Delete(goctx, nil, obj); err != nil {
+				if err := r.client.Delete(ctx, nil, obj); err != nil {
 					t.Fail()
 				}
 			})
@@ -75,13 +86,13 @@ func (r *operationRunner) executeOperation(goctx context.Context, nspacer namesp
 		for _, operation := range operation.Apply {
 			resources, err := resource.Load(filepath.Join(test.BasePath, operation.File))
 			if err != nil {
-				logging.FromContext(goctx).Log("LOAD  ", color.BoldRed, err)
+				logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
 				fail(t, operation.ContinueOnError)
 			}
 			shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
 			for i := range resources {
 				resource := &resources[i]
-				if err := r.client.Apply(goctx, operation.Timeout, resource, shouldFail, doCleanup); err != nil {
+				if err := r.client.Apply(ctx, operation.Timeout, resource, shouldFail, doCleanup); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}
@@ -93,11 +104,11 @@ func (r *operationRunner) executeOperation(goctx context.Context, nspacer namesp
 		for _, operation := range operation.Assert {
 			resources, err := resource.Load(filepath.Join(test.BasePath, operation.File))
 			if err != nil {
-				logging.FromContext(goctx).Log("LOAD  ", color.BoldRed, err)
+				logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
 				fail(t, operation.ContinueOnError)
 			}
 			for _, resource := range resources {
-				if err := r.client.Assert(goctx, operation.Timeout, resource); err != nil {
+				if err := r.client.Assert(ctx, operation.Timeout, resource); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}
@@ -109,11 +120,11 @@ func (r *operationRunner) executeOperation(goctx context.Context, nspacer namesp
 		for _, operation := range operation.Error {
 			resources, err := resource.Load(filepath.Join(test.BasePath, operation.File))
 			if err != nil {
-				logging.FromContext(goctx).Log("LOAD  ", color.BoldRed, err)
+				logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
 				fail(t, operation.ContinueOnError)
 			}
 			for _, resource := range resources {
-				if err := r.client.Error(goctx, operation.Timeout, resource); err != nil {
+				if err := r.client.Error(ctx, operation.Timeout, resource); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}
