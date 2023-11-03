@@ -10,11 +10,14 @@ type TestStepSpec struct {
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
 
-	// Operations defines the order in which the test step should be executed.
-	// +optional
-	Operations []Operation `json:"operations,omitempty"`
+	// Try defines what the step will try to execute.
+	Try []Operation `json:"try"`
 
-	// OnFailure defines actions to be executed in case of step failure.
+	// Catch defines what the step will execute when an error happens.
 	// +optional
-	OnFailure []OnFailure `json:"onFailure,omitempty"`
+	Catch []Catch `json:"catch,omitempty"`
+
+	// Finally defines what the step will execute after the step is terminated.
+	// +optional
+	Finally []Finally `json:"finally,omitempty"`
 }

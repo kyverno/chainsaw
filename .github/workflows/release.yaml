@@ -17,6 +17,8 @@ jobs:
       packages: write
     outputs:
       hashes: ${{ steps.hash.outputs.hashes }}
+      image: ${{ steps.digest.outputs.image }}
+      digest: ${{ steps.digest.outputs.digest }}
     runs-on: ubuntu-latest
     steps:
       - name: Free disk space
@@ -80,6 +82,17 @@ jobs:
           checksum_file=$(echo "$ARTIFACTS" | jq -r '.[] | select (.type=="Checksum") | .path')
           hashes=$(cat $checksum_file | base64 -w0)
           echo "hashes=$hashes" >> $GITHUB_OUTPUT
+      - name: Image digest
+        id: digest
+        env:
+          ARTIFACTS: "${{ steps.goreleaser.outputs.artifacts }}"
+        run: |
+          set -euo pipefail
+          image_and_digest=$(echo "$ARTIFACTS" | jq -r '.[] | select (.type=="Docker Manifest") | .path')
+          image=$(echo "${image_and_digest}" | cut -d'@' -f1 | cut -d':' -f1)
+          digest=$(echo "${image_and_digest}" | cut -d'@' -f2)
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
 
   provenance:
     needs:
@@ -92,3 +105,18 @@ jobs:
     with:
       base64-subjects: "${{ needs.goreleaser.outputs.hashes }}"
       upload-assets: true
+
+  image-provenance:
+    needs:
+      - goreleaser
+    permissions:
+      actions: read
+      id-token: write
+      packages: write
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_container_slsa3.yml@v1.9.0
+    with:
+      image: ${{ needs.goreleaser.outputs.image }}
+      digest: ${{ needs.goreleaser.outputs.digest }}
+      registry-username: ${{ github.actor }}
+    secrets:
+      registry-password: ${{ secrets.GITHUB_TOKEN }}

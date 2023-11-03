@@ -3,7 +3,7 @@ kind: TestStep
 metadata:
   name: test-1
 spec:
-  operations:
+  try:
   - apply:
     - file: foo.yaml
     assert:
@@ -15,7 +15,7 @@ kind: TestStep
 metadata:
   name: test-2
 spec:
-  operations:
+  try:
   - apply:
     - file: bar.yaml
     assert:

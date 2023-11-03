@@ -40,9 +40,34 @@ func (r *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	logger := logging.FromContext(ctx)
 	operationsClient := operations.NewClient(nspacer, r.client, r.config, test.Spec, step.Spec)
 	defer func() {
+		t.Cleanup(func() {
+			for _, handler := range step.Spec.Finally {
+				collectors, err := collect.Commands(handler.Collect)
+				if err != nil {
+					logger.Log("COLLEC", color.BoldRed, err)
+					t.Fail()
+				} else {
+					for _, collector := range collectors {
+						exec := v1alpha1.Exec{
+							Command: collector,
+						}
+						if err := operationsClient.Exec(ctx, exec, true, nspacer.GetNamespace()); err != nil {
+							t.Fail()
+						}
+					}
+				}
+				if handler.Exec != nil {
+					if err := operationsClient.Exec(ctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
+						t.Fail()
+					}
+				}
+			}
+		})
+	}()
+	defer func() {
 		if t.Failed() {
 			t.Cleanup(func() {
-				for _, handler := range step.Spec.OnFailure {
+				for _, handler := range step.Spec.Catch {
 					collectors, err := collect.Commands(handler.Collect)
 					if err != nil {
 						logger.Log("COLLEC", color.BoldRed, err)
@@ -66,7 +91,7 @@ func (r *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			})
 		}
 	}()
-	for _, operation := range step.Spec.Operations {
+	for _, operation := range step.Spec.Try {
 		// TODO
 		runner := NewOperationProcessor(r.config, operationsClient, r.clock)
 		runner.Run(ctx, nspacer, test, step, operation)
