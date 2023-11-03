@@ -208,7 +208,7 @@ jobs:
     needs:
     - default
     - verify
-    # - release
+    - release
     - custom
     - wrong_version
     - custom_dir
