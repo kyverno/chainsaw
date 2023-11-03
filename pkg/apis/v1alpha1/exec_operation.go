@@ -9,9 +9,4 @@ type ExecOperation struct {
 	// SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.
 	// +optional
 	SkipLogOutput bool `json:"skipLogOutput,omitempty"`
-
-	// ContinueOnError determines whether a test should continue or not in case the operation was not successful.
-	// Even if the test continues executing, it will still be reported as failed.
-	// +optional
-	ContinueOnError *bool `json:"continueOnError,omitempty"`
 }

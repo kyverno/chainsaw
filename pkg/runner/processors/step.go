@@ -48,13 +48,13 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 						exec := v1alpha1.Exec{
 							Command: collector,
 						}
-						if err := p.client.Exec(ctx, exec, true, nspacer.GetNamespace()); err != nil {
+						if err := p.client.Exec(ctx, nil, exec, true, nspacer.GetNamespace()); err != nil {
 							t.Fail()
 						}
 					}
 				}
 				if handler.Exec != nil {
-					if err := p.client.Exec(ctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
+					if err := p.client.Exec(ctx, nil, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
 						t.Fail()
 					}
 				}
@@ -74,13 +74,13 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 							exec := v1alpha1.Exec{
 								Command: collector,
 							}
-							if err := p.client.Exec(ctx, exec, true, nspacer.GetNamespace()); err != nil {
+							if err := p.client.Exec(ctx, nil, exec, true, nspacer.GetNamespace()); err != nil {
 								t.Fail()
 							}
 						}
 					}
 					if handler.Exec != nil {
-						if err := p.client.Exec(ctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
+						if err := p.client.Exec(ctx, nil, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
 							t.Fail()
 						}
 					}
