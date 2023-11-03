@@ -98,6 +98,7 @@ func Test_time(t *testing.T) {
 		})
 	}
 }
+
 func TestHash(t *testing.T) {
 	require.Equal(t, "---", Hash())
 }

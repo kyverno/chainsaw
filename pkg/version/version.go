@@ -33,6 +33,7 @@ func version(reader buildInfoReader) string {
 func Time() string {
 	return time(debug.ReadBuildInfo)
 }
+
 func time(reader buildInfoReader) string {
 	bi, ok := reader()
 	if !ok {
@@ -44,6 +45,7 @@ func time(reader buildInfoReader) string {
 func Hash() string {
 	return hash(debug.ReadBuildInfo)
 }
+
 func hash(reader buildInfoReader) string {
 	bi, ok := reader()
 	if !ok {
