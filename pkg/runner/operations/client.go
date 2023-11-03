@@ -5,6 +5,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
@@ -15,20 +16,20 @@ import (
 )
 
 type Client interface {
-	Apply(ctx context.Context, timeout *metav1.Duration, obj ctrlclient.Object, shouldFail bool, cleanup CleanupFunc) (_err error)
-	Assert(ctx context.Context, timeout *metav1.Duration, expected unstructured.Unstructured) (_err error)
-	Create(ctx context.Context, timeout *metav1.Duration, obj ctrlclient.Object, shouldFail bool, cleanup CleanupFunc) (_err error)
-	Delete(ctx context.Context, timeout *metav1.Duration, obj ctrlclient.Object) error
-	Error(ctx context.Context, timeout *metav1.Duration, expected unstructured.Unstructured) (_err error)
-	Exec(ctx context.Context, exec v1alpha1.Exec, log bool, namespace string) error
+	Apply(context.Context, *metav1.Duration, ctrlclient.Object, bool, cleanup.Cleaner) error
+	Assert(context.Context, *metav1.Duration, unstructured.Unstructured) error
+	Create(context.Context, *metav1.Duration, ctrlclient.Object, bool, cleanup.Cleaner) error
+	Delete(context.Context, *metav1.Duration, ctrlclient.Object) error
+	Error(context.Context, *metav1.Duration, unstructured.Unstructured) error
+	Exec(context.Context, v1alpha1.Exec, bool, string) error
 }
 
 type opClient struct {
-	namespacer namespacer.Namespacer
-	client     client.Client
-	config     v1alpha1.ConfigurationSpec
-	test       v1alpha1.TestSpec
-	step       v1alpha1.TestStepSpec
+	namespacer   namespacer.Namespacer
+	client       client.Client
+	config       v1alpha1.ConfigurationSpec
+	test         v1alpha1.TestSpec
+	stepTimeouts v1alpha1.Timeouts
 }
 
 func NewClient(
@@ -36,14 +37,14 @@ func NewClient(
 	client client.Client,
 	config v1alpha1.ConfigurationSpec,
 	test v1alpha1.TestSpec,
-	step v1alpha1.TestStepSpec,
+	stepTimeouts v1alpha1.Timeouts,
 ) Client {
 	return &opClient{
-		namespacer: namespacer,
-		client:     client,
-		config:     config,
-		test:       test,
-		step:       step,
+		namespacer:   namespacer,
+		client:       client,
+		config:       config,
+		test:         test,
+		stepTimeouts: stepTimeouts,
 	}
 }
 
@@ -51,20 +52,20 @@ func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclien
 	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(obj); err != nil {
 		logger.Log("LOAD  ", color.BoldRed, err)
-		// fail(t, operation.ContinueOnError)
+		return err
 	}
-	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.step.Timeouts.Apply, to)
+	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
 	return operationApply(ctx, logger, obj, c.client, shouldFail, cleanup)
 }
 
-func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) (_err error) {
+func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) error {
 	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(&expected); err != nil {
 		logger.Log("LOAD  ", color.BoldRed, err)
-		// fail(t, operation.ContinueOnError)
+		return err
 	}
-	ctx, cancel := timeout.Context(ctx, timeout.DefaultAssertTimeout, c.config.Timeouts.Assert, c.test.Timeouts.Assert, c.step.Timeouts.Assert, to)
+	ctx, cancel := timeout.Context(ctx, timeout.DefaultAssertTimeout, c.config.Timeouts.Assert, c.test.Timeouts.Assert, c.stepTimeouts.Assert, to)
 	defer cancel()
 	return operationAssert(ctx, logger, expected, c.client)
 }
@@ -73,9 +74,9 @@ func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(obj); err != nil {
 		logger.Log("LOAD  ", color.BoldRed, err)
-		// fail(t, operation.ContinueOnError)
+		return err
 	}
-	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.step.Timeouts.Apply, to)
+	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
 	return operationCreate(ctx, logger, obj, c.client, shouldFail, cleanup)
 }
@@ -84,26 +85,26 @@ func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(obj); err != nil {
 		logger.Log("LOAD  ", color.BoldRed, err)
-		// fail(t, operation.ContinueOnError)
+		return err
 	}
-	ctx, cancel := timeout.Context(ctx, timeout.DefaultDeleteTimeout, c.config.Timeouts.Delete, c.test.Timeouts.Delete, c.step.Timeouts.Delete, to)
+	ctx, cancel := timeout.Context(ctx, timeout.DefaultDeleteTimeout, c.config.Timeouts.Delete, c.test.Timeouts.Delete, c.stepTimeouts.Delete, to)
 	defer cancel()
 	return operationDelete(ctx, logger, obj, c.client)
 }
 
-func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) (_err error) {
+func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) error {
 	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(&expected); err != nil {
 		logger.Log("LOAD  ", color.BoldRed, err)
-		// fail(t, operation.ContinueOnError)
+		return err
 	}
-	ctx, cancel := timeout.Context(ctx, timeout.DefaultErrorTimeout, c.config.Timeouts.Error, c.test.Timeouts.Error, c.step.Timeouts.Error, to)
+	ctx, cancel := timeout.Context(ctx, timeout.DefaultErrorTimeout, c.config.Timeouts.Error, c.test.Timeouts.Error, c.stepTimeouts.Error, to)
 	defer cancel()
 	return operationError(ctx, logger, expected, c.client)
 }
 
 func (c *opClient) Exec(ctx context.Context, exec v1alpha1.Exec, log bool, namespace string) error {
-	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.step.Timeouts.Exec, exec.Timeout)
+	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, exec.Timeout)
 	defer cancel()
 	return operationExec(ctx, logging.FromContext(ctx), exec, log, namespace)
 }
