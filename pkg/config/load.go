@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -12,6 +11,8 @@ import (
 	"github.com/kyverno/kyverno/ext/resource/convert"
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/kyverno/kyverno/ext/yaml"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/client-go/openapi"
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
 )
 
@@ -20,8 +21,9 @@ const (
 )
 
 type (
-	DocumentParser = func([]byte) ([][]byte, error)
-	crdFolder      = func(string) string
+	splitter      = func([]byte) ([][]byte, error)
+	loaderFactory = func(openapi.Client) (loader.Loader, error)
+	converter     = func(unstructured.Unstructured) (*v1alpha1.Configuration, error)
 )
 
 var configuration_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Configuration")
@@ -39,10 +41,7 @@ func Load(path string) (*v1alpha1.Configuration, error) {
 }
 
 func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
-	yamlDocumentParser := func(content []byte) ([][]byte, error) {
-		return yaml.SplitDocuments(content)
-	}
-	configs, err := Parse(content, yamlDocumentParser)
+	configs, err := Parse(content)
 	if err != nil {
 		return nil, err
 	}
@@ -55,44 +54,45 @@ func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
 	return configs[0], nil
 }
 
-func Parse(content []byte, yamlDocumentParser DocumentParser) ([]*v1alpha1.Configuration, error) {
-	documents, err := yamlDocumentParser(content)
+func Parse(content []byte) ([]*v1alpha1.Configuration, error) {
+	return parse(content, nil, nil, nil)
+}
+
+func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter) ([]*v1alpha1.Configuration, error) {
+	if splitter == nil {
+		splitter = yaml.SplitDocuments
+	}
+	if loaderFactory == nil {
+		loaderFactory = loader.New
+	}
+	if converter == nil {
+		converter = convert.To[v1alpha1.Configuration]
+	}
+	documents, err := splitter(content)
 	if err != nil {
 		return nil, err
 	}
-	crdFolder := func(_ string) string {
-		return data.CrdsFolder
-	}
-	return parseDocuments(documents, crdFolder)
-}
-
-func parseDocuments(documents [][]byte, crdfolder crdFolder) ([]*v1alpha1.Configuration, error) {
-	var configurations []*v1alpha1.Configuration
-	loader, err := newLoader(data.Crds(), crdfolder(""))
+	var policies []*v1alpha1.Configuration
+	// TODO: no need to allocate a validator every time
+	loader, err := loaderFactory(openapiclient.NewLocalCRDFiles(data.Crds(), data.CrdsFolder))
 	if err != nil {
 		return nil, err
 	}
 	for _, document := range documents {
-		configuration, err := parseDocument(loader, document)
+		gvk, untyped, err := loader.Load(document)
 		if err != nil {
 			return nil, err
 		}
-		configurations = append(configurations, configuration)
+		switch gvk {
+		case configuration_v1alpha1:
+			policy, err := converter(untyped)
+			if err != nil {
+				return nil, err
+			}
+			policies = append(policies, policy)
+		default:
+			return nil, fmt.Errorf("type not supported %s", gvk)
+		}
 	}
-	return configurations, nil
-}
-
-func newLoader(crds fs.FS, crdsFolder string) (loader.Loader, error) {
-	return loader.New(openapiclient.NewLocalCRDFiles(crds, crdsFolder))
-}
-
-func parseDocument(loader loader.Loader, document []byte) (*v1alpha1.Configuration, error) {
-	gvk, untyped, err := loader.Load(document)
-	if err != nil {
-		return nil, err
-	}
-	if gvk != configuration_v1alpha1 {
-		return nil, fmt.Errorf("type not supported %s", gvk)
-	}
-	return convert.To[v1alpha1.Configuration](untyped)
+	return policies, nil
 }
