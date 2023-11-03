@@ -83,11 +83,26 @@ during the testing process.</p>
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
+## `Catch`     {#chainsaw-kyverno-io-v1alpha1-Catch}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+<p>Catch defines actions to be executed on failure.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `collect` | [`Collect`](#chainsaw-kyverno-io-v1alpha1-Collect) |  |  | <p>Collect define the collectors to run.</p> |
+| `exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  |  | <p>Exec define the commands and/or scripts to run.</p> |
+
 ## `Collect`     {#chainsaw-kyverno-io-v1alpha1-Collect}
 
 **Appears in:**
     
-- [OnFailure](#chainsaw-kyverno-io-v1alpha1-OnFailure)
+- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
+- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
 
 <p>Collect defines a set of collectors.</p>
 
@@ -185,8 +200,9 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 **Appears in:**
     
+- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [ExecOperation](#chainsaw-kyverno-io-v1alpha1-ExecOperation)
-- [OnFailure](#chainsaw-kyverno-io-v1alpha1-OnFailure)
+- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
 
 <p>Exec describes a command or script.</p>
 
@@ -227,6 +243,20 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
 
+## `Finally`     {#chainsaw-kyverno-io-v1alpha1-Finally}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+<p>Finally defines actions to be executed at the end of a test.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `collect` | [`Collect`](#chainsaw-kyverno-io-v1alpha1-Collect) |  |  | <p>Collect define the collectors to run.</p> |
+| `exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  |  | <p>Exec define the commands and/or scripts to run.</p> |
+
 ## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
 
 **Appears in:**
@@ -260,20 +290,6 @@ For multiple objects use labels.</p>
 | `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 | `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
-
-## `OnFailure`     {#chainsaw-kyverno-io-v1alpha1-OnFailure}
-
-**Appears in:**
-    
-- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
-
-<p>OnFailure defines actions to be executed on failure.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `collect` | [`Collect`](#chainsaw-kyverno-io-v1alpha1-Collect) |  |  | <p>Collect define the collectors to run.</p> |
-| `exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  |  | <p>Exec define the commands and/or scripts to run.</p> |
 
 ## `Operation`     {#chainsaw-kyverno-io-v1alpha1-Operation}
 
@@ -373,8 +389,9 @@ For multiple objects use labels.</p>
 |---|---|---|---|---|
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
-| `operations` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) |  |  | <p>Operations defines the order in which the test step should be executed.</p> |
-| `onFailure` | [`[]OnFailure`](#chainsaw-kyverno-io-v1alpha1-OnFailure) |  |  | <p>OnFailure defines actions to be executed in case of step failure.</p> |
+| `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) | :white_check_mark: |  | <p>Try defines what the step will try to execute.</p> |
+| `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
+| `finally` | [`[]Finally`](#chainsaw-kyverno-io-v1alpha1-Finally) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
 
 ## `Timeouts`     {#chainsaw-kyverno-io-v1alpha1-Timeouts}
 

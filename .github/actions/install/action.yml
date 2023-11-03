@@ -1,0 +1,183 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-action.json
+
+name: chainsaw-installer
+
+author: kyverno
+
+description: Installs Chainsaw and includes it in your path
+
+branding:
+  icon: package
+  color: orange
+
+# This is pinned to the last major release, we have to bump it for each action version.
+inputs:
+  release:
+    description: Chainsaw release version to be installed
+    required: false
+    default: v0.0.3
+  install-dir:
+    description: Where to install the chainsaw binary
+    required: false
+    default: $HOME/.chainsaw
+  use-sudo:
+    description: Set to true if install-dir location requires sudo privs
+    required: false
+    default: 'false'
+  verify:
+    description: Set to true if you want to verify the archive with cosign
+    required: false
+    default: 'false'
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        #!/bin/bash
+
+        shopt -s expand_aliases
+
+        if [ -z "$NO_COLOR" ]; then
+          alias log_info="echo -e \"\033[1;32mINFO\033[0m:\""
+          alias log_error="echo -e \"\033[1;31mERROR\033[0m:\""
+        else
+          alias log_info="echo \"INFO:\""
+          alias log_error="echo \"ERROR:\""
+        fi
+
+        set -e
+
+        mkdir -p ${{ inputs.install-dir }}
+
+        # main
+        if [[ ${{ inputs.release }} == "main" ]]; then
+          log_info "installing via 'go install' from its main version"
+          GOBIN=$(go env GOPATH)/bin
+          go install github.com/kyverno/chainsaw@main
+          ln -s $GOBIN/chainsaw ${{ inputs.install-dir}}/chainsaw
+          exit 0
+        fi
+
+        trap "popd >/dev/null" EXIT
+
+        pushd ${{ inputs.install-dir }} > /dev/null
+
+        case ${{ runner.os }} in
+          Linux)
+            case ${{ runner.arch }} in
+              X64)
+                release_archive='linux_amd64.tar.gz'
+                ;;
+
+              ARM64)
+                release_archive='linux_arm64.tar.gz'
+                ;;
+
+              *)
+                log_error "unsupported architecture ${{ runner.arch }}"
+                exit 1
+                ;;
+            esac
+            ;;
+
+          macOS)
+            case ${{ runner.arch }} in
+              X64)
+                release_archive='darwin_amd64.tar.gz'
+                ;;
+
+              ARM64)
+                release_archive='darwin_arm64.tar.gz'
+                ;;
+
+              *)
+                log_error "unsupported architecture ${{ runner.arch }}"
+                exit 1
+                ;;
+            esac
+            ;;
+
+          Windows)
+            case ${{ runner.arch }} in
+              X64)
+                release_archive='windows_amd64.tar.gz'
+                ;;
+
+              *)
+                log_error "unsupported architecture ${{ runner.arch }}"
+                exit 1
+                ;;
+            esac
+            ;;
+
+          *)
+            log_error "unsupported os ${{ runner.os }}"
+            exit 1
+            ;;
+        esac
+
+        SUDO=
+        if [[ "${{ inputs.use-sudo }}" == "true" ]] && command -v sudo >/dev/null; then
+          SUDO=sudo
+        fi
+
+        semver='^v([0-9]+\.){0,2}(\*|[0-9]+)(-?r?c?)(\.[0-9]+)$'
+        if [[ ${{ inputs.release }} =~ $semver ]]; then
+          log_info "Custom version '${{ inputs.release }}' requested"
+        else
+          log_error "Unable to validate requested version: '${{ inputs.release }}'"
+          exit 1
+        fi
+
+        release_archive=chainsaw_${release_archive}
+        release_archive_url=https://github.com/kyverno/chainsaw/releases/download/${{ inputs.release }}/${release_archive}
+
+        log_info "Downloading Chainsaw version '${{ inputs.release }}'...\n      ${release_archive_url}"
+        $SUDO curl -sL ${release_archive_url} -o ${release_archive}
+
+        if [[ "${{ inputs.verify }}" == "true" ]]; then
+          $SUDO curl -sL ${release_archive_url}.sig -o ${release_archive}.sig
+          $SUDO curl -sL ${release_archive_url}.pem -o ${release_archive}.pem
+
+          cosign verify-blob \
+            --certificate ${release_archive}.pem \
+            --signature ${release_archive}.sig \
+            --certificate-identity=https://github.com/kyverno/chainsaw/.github/workflows/release.yaml@refs/tags/${{ inputs.release }} \
+            --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
+            ${release_archive}
+
+          $SUDO rm ${release_archive}.pem
+          $SUDO rm ${release_archive}.sig
+        fi
+
+        case ${{ runner.os }} in
+          Linux)
+            $SUDO tar -xvf ${release_archive} chainsaw
+            ;;
+
+          macOS)
+            $SUDO tar -xvf ${release_archive} chainsaw
+            ;;
+
+          Windows)
+            $SUDO tar -xvf ${release_archive} chainsaw.exe
+            ;;
+
+          *)
+            log_error "unsupported os ${{ runner.os }}"
+            exit 1
+            ;;
+        esac
+
+        $SUDO rm ${release_archive}
+        $SUDO chmod +x chainsaw
+
+        log_info "Installation complete!"
+
+    - if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+      run: echo "${{ inputs.install-dir }}" >> $GITHUB_PATH
+      shell: bash
+    - if: ${{ runner.os == 'Windows' }}
+      run: echo "${{ inputs.install-dir }}" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      shell: pwsh
