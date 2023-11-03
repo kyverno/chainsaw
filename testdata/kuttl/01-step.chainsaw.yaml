@@ -8,12 +8,14 @@ spec:
   timeouts: {}
   try:
   - delete:
-    - apiVersion: v1
+      apiVersion: v1
       kind: Pod
       name: my-pod
-    - apiVersion: v1
+  - delete:
+      apiVersion: v1
       kind: Pod
       labels:
         app: nginx
-    - apiVersion: v1
+  - delete:
+      apiVersion: v1
       kind: Pod

@@ -63,6 +63,7 @@ func TestLoad(t *testing.T) {
 								File: "foo.yaml",
 							},
 						},
+					}, {
 						Assert: &v1alpha1.Assert{
 							FileRef: v1alpha1.FileRef{
 								File: "bar.yaml",
@@ -91,6 +92,7 @@ func TestLoad(t *testing.T) {
 								File: "foo.yaml",
 							},
 						},
+					}, {
 						Assert: &v1alpha1.Assert{
 							FileRef: v1alpha1.FileRef{
 								File: "bar.yaml",
@@ -144,6 +146,7 @@ func TestLoad(t *testing.T) {
 								File: "foo.yaml",
 							},
 						},
+					}, {
 						Assert: &v1alpha1.Assert{
 							FileRef: v1alpha1.FileRef{
 								File: "bar.yaml",
@@ -197,6 +200,7 @@ func TestLoad(t *testing.T) {
 								File: "foo.yaml",
 							},
 						},
+					}, {
 						Assert: &v1alpha1.Assert{
 							FileRef: v1alpha1.FileRef{
 								File: "bar.yaml",
@@ -220,6 +224,7 @@ func TestLoad(t *testing.T) {
 								File: "bar.yaml",
 							},
 						},
+					}, {
 						Assert: &v1alpha1.Assert{
 							FileRef: v1alpha1.FileRef{
 								File: "foo.yaml",

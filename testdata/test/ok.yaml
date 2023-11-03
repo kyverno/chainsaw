@@ -6,7 +6,7 @@ spec:
   steps:
   - try:
     - apply:
-      - file: foo.yaml
+        file: foo.yaml
     catch:
     - collect:
         podLogs:
@@ -22,7 +22,7 @@ spec:
           content: echo "hello"
   - try:
     - assert:
-      - file: bar.yaml
+        file: bar.yaml
     finally:
     - collect:
         podLogs:
