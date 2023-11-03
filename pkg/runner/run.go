@@ -7,8 +7,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/runner/testing"
 	"k8s.io/client-go/rest"
@@ -27,19 +29,15 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	if err != nil {
 		return nil, err
 	}
+	client = runnerclient.New(client)
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
-			runner := &testsRunner{
-				config:  config,
-				client:  client,
-				clock:   clock,
-				summary: &summary,
-			}
+			processor := processors.NewTestsProcessor(config, client, clock, &summary)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
-			runner.runTests(ctx, tests...)
+			processor.Run(ctx, tests...)
 		},
 	}}
 	deps := &internal.TestDeps{}
