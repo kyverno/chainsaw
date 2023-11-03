@@ -129,7 +129,6 @@ func TestLoad(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	// Define your test cases
 	tests := []struct {
 		name       string
 		content    []byte
