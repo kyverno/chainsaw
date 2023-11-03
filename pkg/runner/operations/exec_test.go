@@ -1,7 +1,6 @@
 package operations
 
 import (
-	"bytes"
 	"context"
 	"testing"
 
@@ -9,22 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type FakeCommandOutput struct {
-	stdout bytes.Buffer
-	stderr bytes.Buffer
-}
-
-func (c *FakeCommandOutput) Out() string {
-	return c.stdout.String()
-}
-
-func (c *FakeCommandOutput) Err() string {
-	return c.stderr.String()
-}
-
 func Test_operationExec(t *testing.T) {
 	ctx := context.TODO()
-
 	tests := []struct {
 		name      string
 		exec      v1alpha1.Exec
@@ -32,51 +17,48 @@ func Test_operationExec(t *testing.T) {
 		namespace string
 		expected  []string
 		wantErr   bool
-	}{
-		{
-			name: "Command execution",
-			exec: v1alpha1.Exec{
-				Command: &v1alpha1.Command{
-					Entrypoint: "echo",
-					Args:       []string{"hello"},
-				},
-			},
-			log:       true,
-			namespace: "test-namespace",
-			expected: []string{
-				"CMD   : [/usr/bin/echo hello RUNNING...]",
-				"STDOUT: [LOGS...\nhello]",
-				"CMD   : [DONE]",
+	}{{
+		name: "Command execution",
+		exec: v1alpha1.Exec{
+			Command: &v1alpha1.Command{
+				Entrypoint: "echo",
+				Args:       []string{"hello"},
 			},
 		},
-		{
-			name: "Test with Script",
-			exec: v1alpha1.Exec{
-				Script: &v1alpha1.Script{
-					Content: "echo hello",
-				},
+		log:       true,
+		namespace: "test-namespace",
+		expected: []string{
+			"CMD   : [/usr/bin/echo hello RUNNING...]",
+			"STDOUT: [LOGS...\nhello]",
+			"CMD   : [DONE]",
+		},
+	}, {
+		name: "Test with Script",
+		exec: v1alpha1.Exec{
+			Script: &v1alpha1.Script{
+				Content: "echo hello",
 			},
-			log:       true,
-			namespace: "test-namespace",
-			expected:  []string{"SCRIPT: [RUNNING...]", "STDOUT: [LOGS...\nhello]", "SCRIPT: [DONE]"},
 		},
-		{
-			name:      "Test with nil Command and Script",
-			exec:      v1alpha1.Exec{},
-			log:       true,
-			namespace: "test-namespace",
-			expected:  nil,
-			wantErr:   false,
-		},
-	}
-
+		log:       true,
+		namespace: "test-namespace",
+		expected:  []string{"SCRIPT: [RUNNING...]", "STDOUT: [LOGS...\nhello]", "SCRIPT: [DONE]"},
+	}, {
+		name:      "Test with nil Command and Script",
+		exec:      v1alpha1.Exec{},
+		log:       true,
+		namespace: "test-namespace",
+		expected:  nil,
+		wantErr:   false,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &MockLogger{}
 			err := operationExec(ctx, logger, tt.exec, tt.log, tt.namespace)
 			assert.ElementsMatch(t, tt.expected, logger.Logs)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Exec() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
 		})
 	}
@@ -89,44 +71,41 @@ func TestCommand(t *testing.T) {
 		log       bool
 		namespace string
 		wantErr   bool
-	}{
-		{
-			name: "Test with valid Command",
-			command: v1alpha1.Command{
-				Entrypoint: "echo",
-				Args:       []string{"hello"},
-			},
-			log:       true,
-			namespace: "test-namespace",
-			wantErr:   false,
+	}{{
+		name: "Test with valid Command",
+		command: v1alpha1.Command{
+			Entrypoint: "echo",
+			Args:       []string{"hello"},
 		},
-		{
-			name: "Test with invalid Command",
-			command: v1alpha1.Command{
-				Entrypoint: "invalidCmd",
-			},
-			log:       true,
-			namespace: "test-namespace",
-			wantErr:   true,
+		log:       true,
+		namespace: "test-namespace",
+		wantErr:   false,
+	}, {
+		name: "Test with invalid Command",
+		command: v1alpha1.Command{
+			Entrypoint: "invalidCmd",
 		},
-		{
-			name: "Test without logging",
-			command: v1alpha1.Command{
-				Entrypoint: "echo",
-				Args:       []string{"silent"},
-			},
-			log:       false,
-			namespace: "test-namespace",
-			wantErr:   false,
+		log:       true,
+		namespace: "test-namespace",
+		wantErr:   true,
+	}, {
+		name: "Test without logging",
+		command: v1alpha1.Command{
+			Entrypoint: "echo",
+			Args:       []string{"silent"},
 		},
-	}
-
+		log:       false,
+		namespace: "test-namespace",
+		wantErr:   false,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
 			err := command(ctx, &MockLogger{}, tt.command, tt.log, tt.namespace)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("command() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
 		})
 	}
@@ -139,43 +118,70 @@ func TestScript(t *testing.T) {
 		log       bool
 		namespace string
 		wantErr   bool
-	}{
-		{
-			name: "Test with valid Script",
-			script: v1alpha1.Script{
-				Content: "echo hello",
-			},
-			log:       true,
-			namespace: "test-namespace",
-			wantErr:   false,
+	}{{
+		name: "Test with valid Script",
+		script: v1alpha1.Script{
+			Content: "echo hello",
 		},
-		{
-			name: "Test with invalid Script",
-			script: v1alpha1.Script{
-				Content: "invalidScriptCommand",
-			},
-			log:       true,
-			namespace: "test-namespace",
-			wantErr:   true,
+		log:       true,
+		namespace: "test-namespace",
+		wantErr:   false,
+	}, {
+		name: "Test with invalid Script",
+		script: v1alpha1.Script{
+			Content: "invalidScriptCommand",
 		},
-		{
-			name: "Test script without logging",
-			script: v1alpha1.Script{
-				Content: "echo silent",
-			},
-			log:       false,
-			namespace: "test-namespace",
-			wantErr:   false,
+		log:       true,
+		namespace: "test-namespace",
+		wantErr:   true,
+	}, {
+		name: "Test script without logging",
+		script: v1alpha1.Script{
+			Content: "echo silent",
 		},
-	}
-
+		log:       false,
+		namespace: "test-namespace",
+		wantErr:   false,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
 			err := script(ctx, &MockLogger{}, tt.script, tt.log, tt.namespace)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("script() error = %v, wantErr %v", err, tt.wantErr)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
+		})
+	}
+}
+
+func Test_expand(t *testing.T) {
+	tests := []struct {
+		name string
+		env  map[string]string
+		in   []string
+		want []string
+	}{{
+		name: "nil",
+		env:  nil,
+		in:   []string{"echo", "$NAMESPACE"},
+		want: []string{"echo", "$NAMESPACE"},
+	}, {
+		name: "empty",
+		env:  map[string]string{},
+		in:   []string{"echo", "$NAMESPACE"},
+		want: []string{"echo", "$NAMESPACE"},
+	}, {
+		name: "expand",
+		env:  map[string]string{"NAMESPACE": "foo"},
+		in:   []string{"echo", "$NAMESPACE"},
+		want: []string{"echo", "foo"},
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := expand(tt.env, tt.in...)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
