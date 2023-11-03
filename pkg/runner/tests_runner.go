@@ -6,7 +6,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
-	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -24,49 +23,46 @@ type testsRunner struct {
 	summary *summary.Summary
 }
 
-func (r *testsRunner) runTests(goctx context.Context, tests ...discovery.Test) {
-	t := testing.FromContext(goctx)
+func (r *testsRunner) runTests(ctx context.Context, tests ...discovery.Test) {
+	t := testing.FromContext(ctx)
 	t.Helper()
-	ctx := Context{
-		clock:  r.clock,
-		client: runnerclient.New(r.client),
-	}
+	var nspacer namespacer.Namespacer
 	if r.config.Namespace != "" {
 		namespace := client.Namespace(r.config.Namespace)
-		if err := ctx.client.Get(goctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
+		if err := r.client.Get(ctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
-				logging.Log(goctx, "GET   ", color.BoldRed, err)
+				logging.Log(ctx, "GET   ", color.BoldRed, err)
 				t.FailNow()
 			}
 			t.Cleanup(func() {
 				// TODO: wait
-				if err := ctx.client.Delete(goctx, &namespace); err != nil {
+				if err := r.client.Delete(ctx, &namespace); err != nil {
 					t.FailNow()
 				}
 			})
-			if err := ctx.client.Create(goctx, namespace.DeepCopy()); err != nil {
+			if err := r.client.Create(ctx, namespace.DeepCopy()); err != nil {
 				t.FailNow()
 			}
 		}
-		ctx.namespacer = namespacer.New(ctx.client, r.config.Namespace)
+		nspacer = namespacer.New(r.client, r.config.Namespace)
 	}
 	for _, test := range tests {
 		name, err := names.Test(r.config, test)
 		if err != nil {
-			logging.Log(goctx, "INTERN", color.BoldRed, err)
+			logging.Log(ctx, "INTERN", color.BoldRed, err)
 			t.FailNow()
 		}
 		t.Run(name, func(t *testing.T) {
 			t.Helper()
-			goctx := testing.IntoContext(goctx, t)
+			goctx := testing.IntoContext(ctx, t)
 			runner := testRunner{
 				config:  r.config,
 				client:  r.client,
 				clock:   r.clock,
 				summary: r.summary,
 			}
-			runner.runTest(goctx, ctx, test)
+			runner.runTest(goctx, nspacer, test)
 		})
 	}
 }

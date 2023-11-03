@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -24,7 +25,7 @@ type operationRunner struct {
 	clock  clock.PassiveClock
 }
 
-func (r *operationRunner) executeOperation(goctx context.Context, ctx Context, test discovery.Test, step v1alpha1.TestSpecStep, operation v1alpha1.Operation) {
+func (r *operationRunner) executeOperation(goctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep, operation v1alpha1.Operation) {
 	fail := func(t *testing.T, continueOnError *bool) {
 		t.Helper()
 		if continueOnError != nil && *continueOnError {
@@ -53,7 +54,7 @@ func (r *operationRunner) executeOperation(goctx context.Context, ctx Context, t
 	// Handle Exec
 	if operation.Exec != nil {
 		for _, operation := range operation.Exec {
-			if err := r.client.Exec(goctx, operation.Exec, !operation.SkipLogOutput, ctx.namespacer.GetNamespace()); err != nil {
+			if err := r.client.Exec(goctx, operation.Exec, !operation.SkipLogOutput, nspacer.GetNamespace()); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}

@@ -23,7 +23,7 @@ type testRunner struct {
 	summary *summary.Summary
 }
 
-func (r *testRunner) runTest(goctx context.Context, ctx Context, test discovery.Test) {
+func (r *testRunner) runTest(goctx context.Context, nspacer namespacer.Namespacer, test discovery.Test) {
 	t := testing.FromContext(goctx)
 	t.Helper()
 	size := 0
@@ -59,48 +59,48 @@ func (r *testRunner) runTest(goctx context.Context, ctx Context, test discovery.
 	cleanLogger := logging.NewLogger(t, r.clock, test.Name, fmt.Sprintf("%-*s", size, "@clean"))
 	if test.Spec.Namespace != "" {
 		namespace := client.Namespace(test.Spec.Namespace)
-		if err := ctx.client.Get(logging.IntoContext(goctx, beginLogger), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
+		if err := r.client.Get(logging.IntoContext(goctx, beginLogger), client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
 				beginLogger.Log("GET   ", color.BoldRed, err)
 				t.FailNow()
 			}
-			if err := ctx.client.Create(logging.IntoContext(goctx, beginLogger), namespace.DeepCopy()); err != nil {
+			if err := r.client.Create(logging.IntoContext(goctx, beginLogger), namespace.DeepCopy()); err != nil {
 				t.FailNow()
 			}
 			t.Cleanup(func() {
 				// TODO: wait
-				if err := ctx.client.Delete(logging.IntoContext(goctx, cleanLogger), &namespace); err != nil {
+				if err := r.client.Delete(logging.IntoContext(goctx, cleanLogger), &namespace); err != nil {
 					t.FailNow()
 				}
 			})
 		}
-		ctx.namespacer = namespacer.New(ctx.client, test.Spec.Namespace)
+		nspacer = namespacer.New(r.client, test.Spec.Namespace)
 	}
-	if ctx.namespacer == nil {
+	if nspacer == nil {
 		namespace := client.PetNamespace()
-		if err := ctx.client.Create(logging.IntoContext(goctx, beginLogger), namespace.DeepCopy()); err != nil {
+		if err := r.client.Create(logging.IntoContext(goctx, beginLogger), namespace.DeepCopy()); err != nil {
 			t.FailNow()
 		}
 		t.Cleanup(func() {
 			// TODO: wait
-			if err := ctx.client.Delete(logging.IntoContext(goctx, cleanLogger), &namespace); err != nil {
+			if err := r.client.Delete(logging.IntoContext(goctx, cleanLogger), &namespace); err != nil {
 				t.FailNow()
 			}
 		})
-		ctx.namespacer = namespacer.New(r.client, namespace.Name)
+		nspacer = namespacer.New(r.client, namespace.Name)
 	}
 	for i, step := range test.Spec.Steps {
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		goctx := logging.IntoContext(goctx, logging.NewLogger(t, ctx.clock, test.Name, fmt.Sprintf("%-*s", size, name)))
+		goctx := logging.IntoContext(goctx, logging.NewLogger(t, r.clock, test.Name, fmt.Sprintf("%-*s", size, name)))
 		runner := stepRunner{
 			config: r.config,
 			client: r.client,
 			clock:  r.clock,
 		}
-		runner.runStep(goctx, ctx, test, step)
+		runner.runStep(goctx, nspacer, test, step)
 	}
 }
