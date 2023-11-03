@@ -10,9 +10,11 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 )
 
-type workignDirInterface = func() (string, error)
-type absolutePathInterface = func(string) (string, error)
-type relativePathInterface = func(string, string) (string, error)
+type (
+	workignDirInterface   = func() (string, error)
+	absolutePathInterface = func(string) (string, error)
+	relativePathInterface = func(string, string) (string, error)
+)
 
 func Test(config v1alpha1.ConfigurationSpec, test discovery.Test) (string, error) {
 	if test.Test == nil {
