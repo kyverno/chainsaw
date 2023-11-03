@@ -13,9 +13,15 @@ const (
 // BuildVersion is provided at compile-time
 var BuildVersion string
 
+type buildInfoReader = func() (*debug.BuildInfo, bool)
+
 func Version() string {
+	return version(debug.ReadBuildInfo)
+}
+
+func version(reader buildInfoReader) string {
 	if BuildVersion == "" {
-		bi, ok := debug.ReadBuildInfo()
+		bi, ok := reader()
 		if !ok {
 			return notFound
 		}
@@ -25,7 +31,11 @@ func Version() string {
 }
 
 func Time() string {
-	bi, ok := debug.ReadBuildInfo()
+	return time(debug.ReadBuildInfo)
+}
+
+func time(reader buildInfoReader) string {
+	bi, ok := reader()
 	if !ok {
 		return notFound
 	}
@@ -33,7 +43,11 @@ func Time() string {
 }
 
 func Hash() string {
-	bi, ok := debug.ReadBuildInfo()
+	return hash(debug.ReadBuildInfo)
+}
+
+func hash(reader buildInfoReader) string {
+	bi, ok := reader()
 	if !ok {
 		return notFound
 	}
