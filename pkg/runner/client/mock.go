@@ -17,6 +17,7 @@ type FakeClient struct {
 	PatchFake    func(ctx context.Context, t *testing.T, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error
 	IsNamespaced func(t *testing.T, obj runtime.Object) (bool, error)
 	NumCalls     int
+	StatusFake   func() ctrlclient.SubResourceWriter
 }
 
 func (f *FakeClient) Get(ctx context.Context, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -40,7 +41,7 @@ func (f *FakeClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...
 }
 
 func (f *FakeClient) Status() ctrlclient.SubResourceWriter {
-	return f.Status()
+	return f.StatusFake()
 }
 
 func (f *FakeClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
