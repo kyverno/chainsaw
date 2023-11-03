@@ -54,7 +54,7 @@ func TestLoad(t *testing.T) {
 			Spec: v1alpha1.TestSpec{
 				Steps: []v1alpha1.TestSpecStep{{
 					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operation{
+						Try: []v1alpha1.Operation{
 							{
 								Apply: []v1alpha1.Apply{{
 									FileRef: v1alpha1.FileRef{
@@ -63,10 +63,35 @@ func TestLoad(t *testing.T) {
 								}},
 							},
 						},
+						Catch: []v1alpha1.Catch{{
+							Collect: &v1alpha1.Collect{
+								PodLogs: &v1alpha1.PodLogs{
+									Namespace: "foo",
+								},
+							},
+						}, {
+							Collect: &v1alpha1.Collect{
+								Events: &v1alpha1.Events{
+									Namespace: "foo",
+								},
+							},
+						}, {
+							Exec: &v1alpha1.Exec{
+								Command: &v1alpha1.Command{
+									Entrypoint: "time",
+								},
+							},
+						}, {
+							Exec: &v1alpha1.Exec{
+								Script: &v1alpha1.Script{
+									Content: `echo "hello"`,
+								},
+							},
+						}},
 					},
 				}, {
 					Spec: v1alpha1.TestStepSpec{
-						Operations: []v1alpha1.Operation{
+						Try: []v1alpha1.Operation{
 							{
 								Assert: []v1alpha1.Assert{{
 									FileRef: v1alpha1.FileRef{
@@ -75,6 +100,31 @@ func TestLoad(t *testing.T) {
 								}},
 							},
 						},
+						Finally: []v1alpha1.Finally{{
+							Collect: &v1alpha1.Collect{
+								PodLogs: &v1alpha1.PodLogs{
+									Namespace: "foo",
+								},
+							},
+						}, {
+							Collect: &v1alpha1.Collect{
+								Events: &v1alpha1.Events{
+									Namespace: "foo",
+								},
+							},
+						}, {
+							Exec: &v1alpha1.Exec{
+								Command: &v1alpha1.Command{
+									Entrypoint: "time",
+								},
+							},
+						}, {
+							Exec: &v1alpha1.Exec{
+								Script: &v1alpha1.Script{
+									Content: `echo "hello"`,
+								},
+							},
+						}},
 					},
 				}},
 			},

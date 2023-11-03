@@ -1,7 +1,7 @@
 package v1alpha1
 
-// OnFailure defines actions to be executed on failure.
-type OnFailure struct {
+// Catch defines actions to be executed on failure.
+type Catch struct {
 	// Collect define the collectors to run.
 	// +optional
 	Collect *Collect `json:"collect,omitempty"`

@@ -35,11 +35,11 @@ spec:
           spec:
             description: TestStep spec.
             properties:
-              onFailure:
-                description: OnFailure defines actions to be executed in case of step
-                  failure.
+              catch:
+                description: Catch defines what the step will execute when an error
+                  happens.
                 items:
-                  description: OnFailure defines actions to be executed on failure.
+                  description: Catch defines actions to be executed on failure.
                   properties:
                     collect:
                       description: Collect define the collectors to run.
@@ -118,9 +118,120 @@ spec:
                       type: object
                   type: object
                 type: array
-              operations:
-                description: Operations defines the order in which the test step should
-                  be executed.
+              finally:
+                description: Finally defines what the step will execute after the
+                  step is terminated.
+                items:
+                  description: Finally defines actions to be executed at the end of
+                    a test.
+                  properties:
+                    collect:
+                      description: Collect define the collectors to run.
+                      properties:
+                        events:
+                          description: Events determines the events collector to execute.
+                          properties:
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                              type: string
+                            namespace:
+                              description: 'Namespace of the referent. More info:
+                                https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                              type: string
+                            selector:
+                              description: Selector defines labels selector.
+                              type: string
+                          type: object
+                        podLogs:
+                          description: PodLogs determines the pod logs collector to
+                            execute.
+                          properties:
+                            container:
+                              description: Container in pod to get logs from else
+                                --all-containers is used.
+                              type: string
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                              type: string
+                            namespace:
+                              description: 'Namespace of the referent. More info:
+                                https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                              type: string
+                            selector:
+                              description: Selector defines labels selector.
+                              type: string
+                            tail:
+                              description: Tail is the number of last lines to collect
+                                from pods. If omitted or zero, then the default is
+                                10 if you use a selector, or -1 (all) if you use a
+                                pod name. This matches default behavior of `kubectl
+                                logs`.
+                              type: integer
+                          type: object
+                      type: object
+                    exec:
+                      description: Exec define the commands and/or scripts to run.
+                      properties:
+                        command:
+                          description: Command defines a command to run.
+                          properties:
+                            args:
+                              description: Args is the command arguments.
+                              items:
+                                type: string
+                              type: array
+                            entrypoint:
+                              description: Entrypoint is the command entry point to
+                                run.
+                              type: string
+                          required:
+                          - entrypoint
+                          type: object
+                        script:
+                          description: Script defines a script to run.
+                          properties:
+                            content:
+                              description: Content defines a shell script (run with
+                                "sh -c ...").
+                              type: string
+                          type: object
+                        timeout:
+                          description: Timeout for the command. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
+                      type: object
+                  type: object
+                type: array
+              skipDelete:
+                description: SkipDelete determines whether the resources created by
+                  the step should be deleted after the test step is executed.
+                type: boolean
+              timeouts:
+                description: Timeouts for the test step. Overrides the global timeouts
+                  set in the Configuration and the timeouts eventually set in the
+                  Test.
+                properties:
+                  apply:
+                    description: Apply defines the timeout for the apply operation
+                    type: string
+                  assert:
+                    description: Assert defines the timeout for the assert operation
+                    type: string
+                  cleanup:
+                    description: Cleanup defines the timeout for the cleanup operation
+                    type: string
+                  delete:
+                    description: Delete defines the timeout for the delete operation
+                    type: string
+                  error:
+                    description: Error defines the timeout for the error operation
+                    type: string
+                  exec:
+                    description: Exec defines the timeout for exec operations
+                    type: string
+                type: object
+              try:
+                description: Try defines what the step will try to execute.
                 items:
                   properties:
                     apply:
@@ -292,34 +403,8 @@ spec:
                       type: array
                   type: object
                 type: array
-              skipDelete:
-                description: SkipDelete determines whether the resources created by
-                  the step should be deleted after the test step is executed.
-                type: boolean
-              timeouts:
-                description: Timeouts for the test step. Overrides the global timeouts
-                  set in the Configuration and the timeouts eventually set in the
-                  Test.
-                properties:
-                  apply:
-                    description: Apply defines the timeout for the apply operation
-                    type: string
-                  assert:
-                    description: Assert defines the timeout for the assert operation
-                    type: string
-                  cleanup:
-                    description: Cleanup defines the timeout for the cleanup operation
-                    type: string
-                  delete:
-                    description: Delete defines the timeout for the delete operation
-                    type: string
-                  error:
-                    description: Error defines the timeout for the error operation
-                    type: string
-                  exec:
-                    description: Exec defines the timeout for exec operations
-                    type: string
-                type: object
+            required:
+            - try
             type: object
         required:
         - spec
