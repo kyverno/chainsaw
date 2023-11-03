@@ -3,8 +3,8 @@ kind: TestStep
 metadata:
   name: test-1
 spec:
-  operations:
-    - apply:
-        - file: foo.yaml
-    - assert:
-        - file: bar.yaml
+  try:
+  - apply:
+      file: foo.yaml
+  - assert:
+      file: bar.yaml
