@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -17,6 +18,17 @@ import (
 const (
 	DefaultFileName = ".chainsaw.yaml"
 )
+
+type DocumentParser interface {
+	SplitDocuments(content []byte) ([][]byte, error)
+}
+type yamlDocumentParser struct{}
+
+func (p yamlDocumentParser) SplitDocuments(content []byte) ([][]byte, error) {
+	return yaml.SplitDocuments(content)
+}
+
+type crdFolder = func(string) string
 
 var configuration_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Configuration")
 
@@ -33,7 +45,8 @@ func Load(path string) (*v1alpha1.Configuration, error) {
 }
 
 func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
-	configs, err := Parse(content)
+	yamlDocumentParser := yamlDocumentParser{}
+	configs, err := Parse(content, yamlDocumentParser)
 	if err != nil {
 		return nil, err
 	}
@@ -46,32 +59,44 @@ func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
 	return configs[0], nil
 }
 
-func Parse(content []byte) ([]*v1alpha1.Configuration, error) {
-	documents, err := yaml.SplitDocuments(content)
+func Parse(content []byte, yamlDocumentParser DocumentParser) ([]*v1alpha1.Configuration, error) {
+	documents, err := yamlDocumentParser.SplitDocuments(content)
 	if err != nil {
 		return nil, err
 	}
-	var policies []*v1alpha1.Configuration
-	// TODO: no need to allocate a validator every time
-	loader, err := loader.New(openapiclient.NewLocalCRDFiles(data.Crds(), data.CrdsFolder))
+	crdFolder := func(_ string) string {
+		return data.CrdsFolder
+	}
+	return parseDocuments(documents, crdFolder)
+}
+
+func parseDocuments(documents [][]byte, crdfolder crdFolder) ([]*v1alpha1.Configuration, error) {
+	var configurations []*v1alpha1.Configuration
+	loader, err := newLoader(data.Crds(), crdfolder(""))
 	if err != nil {
 		return nil, err
 	}
 	for _, document := range documents {
-		gvk, untyped, err := loader.Load(document)
+		configuration, err := parseDocument(loader, document)
 		if err != nil {
 			return nil, err
 		}
-		switch gvk {
-		case configuration_v1alpha1:
-			policy, err := convert.To[v1alpha1.Configuration](untyped)
-			if err != nil {
-				return nil, err
-			}
-			policies = append(policies, policy)
-		default:
-			return nil, fmt.Errorf("type not supported %s", gvk)
-		}
+		configurations = append(configurations, configuration)
 	}
-	return policies, nil
+	return configurations, nil
+}
+
+func newLoader(crds fs.FS, crdsFolder string) (loader.Loader, error) {
+	return loader.New(openapiclient.NewLocalCRDFiles(crds, crdsFolder))
+}
+
+func parseDocument(loader loader.Loader, document []byte) (*v1alpha1.Configuration, error) {
+	gvk, untyped, err := loader.Load(document)
+	if err != nil {
+		return nil, err
+	}
+	if gvk != configuration_v1alpha1 {
+		return nil, fmt.Errorf("type not supported %s", gvk)
+	}
+	return convert.To[v1alpha1.Configuration](untyped)
 }
