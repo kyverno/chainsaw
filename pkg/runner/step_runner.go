@@ -59,6 +59,11 @@ func (r *stepRunner) runStep(goctx context.Context, ctx Context, test discovery.
 		}
 	}()
 	for _, operation := range step.Spec.Operations {
-		executeOperation(goctx, ctx, test.BasePath, r.config, test.Spec, step, operation, operationsClient)
+		runner := operationRunner{
+			config: r.config,
+			client: operationsClient,
+			clock:  r.clock,
+		}
+		runner.executeOperation(goctx, ctx, test, step, operation)
 	}
 }
