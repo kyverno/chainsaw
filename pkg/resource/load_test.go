@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -91,5 +92,51 @@ func TestParse(t *testing.T) {
 		} else {
 			assert.Error(t, err)
 		}
+	}
+}
+
+func Test_parse(t *testing.T) {
+	content, err := os.ReadFile("../../testdata/resource/custom-resource.yaml")
+	assert.NoError(t, err)
+
+	tests := []struct {
+		name      string
+		splitter  splitter
+		converter converter
+		wantErr   bool
+	}{
+		{
+			name:      "default behavior",
+			splitter:  nil,
+			converter: nil,
+			wantErr:   false,
+		},
+		{
+			name: "splitter error",
+			splitter: func([]byte) ([][]byte, error) {
+				return nil, errors.New("splitter error")
+			},
+			converter: nil,
+			wantErr:   true,
+		},
+		{
+			name:     "converter error",
+			splitter: nil,
+			converter: func([]byte) ([]byte, error) {
+				return nil, errors.New("converter error")
+			},
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := parse(content, tt.splitter, tt.converter)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
 	}
 }
