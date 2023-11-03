@@ -216,6 +216,6 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 			},
 		})
 	}
-	to.Spec.Operations = append(to.Spec.Operations, singleOperation)
+	to.Spec.Try = append(to.Spec.Try, singleOperation)
 	return to, nil
 }

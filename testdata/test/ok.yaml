@@ -4,9 +4,35 @@ metadata:
   name: test-1
 spec:
   steps:
-  - operations:
+  - try:
     - apply:
       - file: foo.yaml
-  - operations:
+    catch:
+    - collect:
+        podLogs:
+          namespace: foo
+    - collect:
+        events:
+          namespace: foo
+    - exec:
+        command:
+          entrypoint: time
+    - exec:
+        script:
+          content: echo "hello"
+  - try:
     - assert:
       - file: bar.yaml
+    finally:
+    - collect:
+        podLogs:
+          namespace: foo
+    - collect:
+        events:
+          namespace: foo
+    - exec:
+        command:
+          entrypoint: time
+    - exec:
+        script:
+          content: echo "hello"
