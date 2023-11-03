@@ -1,0 +1,211 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: Action
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  default:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    permissions: {}
+    name: Install Chainsaw and test presence in path
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Install Chainsaw
+        uses: .github/actions/install
+      - name: Check install
+        run: chainsaw version
+      - name: Check root directory
+        shell: bash
+        run: |
+          if [[ $(git diff --stat) != '' ]]; then
+            echo 'should be clean'
+            exit 1
+          else
+            exit 0
+          fi
+
+  verify:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    permissions: {}
+    name: Install Chainsaw with cosign verification and test presence in path
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@11086d25041f77fe8fe7b9ea4e48e3b9192b8f19 # v3.1.2
+      - name: Install Chainsaw
+        uses: .github/actions/install
+        with:
+          verify: true
+      - name: Check install
+        run: chainsaw version
+      - name: Check root directory
+        shell: bash
+        run: |
+          if [[ $(git diff --stat) != '' ]]; then
+            echo 'should be clean'
+            exit 1
+          else
+            exit 0
+          fi
+
+  release:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    permissions: {}
+    name: Install Chainsaw and test presence in path from GitHub
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Install Chainsaw
+        uses: kyverno/action-install-cli@v0.2.0
+      - name: Check install
+        run: chainsaw version
+      - name: Check root directory
+        shell: bash
+        run: |
+          if [[ $(git diff --stat) != '' ]]; then
+            echo 'should be clean'
+            exit 1
+          else
+            exit 0
+          fi
+
+  custom:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    permissions: {}
+    name: Install Chainsaw and test presence in path
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Install Chainsaw
+        uses: .github/actions/install
+        with:
+          release: 'v1.9.5'
+      - name: Check install
+        run: chainsaw version
+      - name: Check root directory
+        shell: bash
+        run: |
+          if [[ $(git diff --stat) != '' ]]; then
+            echo 'should be clean'
+            exit 1
+          else
+            exit 0
+          fi
+
+  wrong_version:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    permissions: {}
+    name: Try to install a wrong version
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Install Chainsaw
+        uses: .github/actions/install
+        with:
+          release: honk
+        continue-on-error: true
+
+  custom_dir:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    permissions: {}
+    name: Install Chainsaw and test presence in path
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Install Chainsaw
+        uses: .github/actions/install
+        with:
+          install-dir: "$HOME/.chainsawtest"
+      - name: Check install
+        run: chainsaw version
+      - name: Check install dir
+        shell: bash
+        run: |
+          [[ $(dirname "$(which chainsaw)") == "$HOME/.chainsawtest" ]]
+      - name: Check root directory
+        shell: bash
+        run: |
+          [[ -z $(git diff --stat) ]]
+
+  custom_dir_root:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    permissions: {}
+    name: Install Chainsaw and test presence in path with custom root dir
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - name: Install Chainsaw
+        uses: .github/actions/install
+        with:
+          install-dir: /usr/bin
+          use-sudo: true
+      - name: Check install
+        run: chainsaw version
+      - name: Check install dir
+        shell: bash
+        run: |
+          [[ $(dirname "$(which chainsaw)") == /usr/bin ]]
+      - name: Check root directory
+        shell: bash
+        run: |
+          [[ -z $(git diff --stat) ]]
+
+  main:
+    permissions: {}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+        go_version:
+          - '1.21'
+    name: Try to install with go ${{ matrix.go_version }}
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
+      - uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
+        with:
+          go-version: ${{ matrix.go_version }}
+          check-latest: true
+      - name: Install Chainsaw
+        uses: .github/actions/install
+        with:
+          release: main
+      - name: Check install
+        run: chainsaw version
+
+  required:
+    needs:
+    - default
+    - verify
+    - release
+    - custom
+    - wrong_version
+    - custom_dir
+    - custom_dir_root
+    - main
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "Required jobs success!"
