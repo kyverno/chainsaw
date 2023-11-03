@@ -24,15 +24,6 @@ func (m *mockLoader) Load(document []byte) (schema.GroupVersionKind, unstructure
 	return m.LoadFunc(document)
 }
 
-// mockDocumentParser is our test implementation that satisfies the DocumentParser interface.
-type mockDocumentParser struct {
-	SplitDocumentsFunc func(content []byte) ([][]byte, error)
-}
-
-func (m *mockDocumentParser) SplitDocuments(content []byte) ([][]byte, error) {
-	return m.SplitDocumentsFunc(content)
-}
-
 func TestLoad(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -147,10 +138,8 @@ func TestParse(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockParser := &mockDocumentParser{
-				SplitDocumentsFunc: func(content []byte) ([][]byte, error) {
-					return tt.mockReturn, tt.mockErr
-				},
+			mockParser := func(content []byte) ([][]byte, error) {
+				return tt.mockReturn, tt.mockErr
 			}
 			_, err := Parse(tt.content, mockParser)
 			if tt.wantErr {

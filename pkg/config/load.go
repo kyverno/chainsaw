@@ -19,15 +19,7 @@ const (
 	DefaultFileName = ".chainsaw.yaml"
 )
 
-type DocumentParser interface {
-	SplitDocuments(content []byte) ([][]byte, error)
-}
-type yamlDocumentParser struct{}
-
-func (p yamlDocumentParser) SplitDocuments(content []byte) ([][]byte, error) {
-	return yaml.SplitDocuments(content)
-}
-
+type DocumentParser = func([]byte) ([][]byte, error)
 type crdFolder = func(string) string
 
 var configuration_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Configuration")
@@ -45,7 +37,9 @@ func Load(path string) (*v1alpha1.Configuration, error) {
 }
 
 func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
-	yamlDocumentParser := yamlDocumentParser{}
+	yamlDocumentParser := func(content []byte) ([][]byte, error) {
+		return yaml.SplitDocuments(content)
+	}
 	configs, err := Parse(content, yamlDocumentParser)
 	if err != nil {
 		return nil, err
@@ -60,7 +54,7 @@ func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
 }
 
 func Parse(content []byte, yamlDocumentParser DocumentParser) ([]*v1alpha1.Configuration, error) {
-	documents, err := yamlDocumentParser.SplitDocuments(content)
+	documents, err := yamlDocumentParser(content)
 	if err != nil {
 		return nil, err
 	}
