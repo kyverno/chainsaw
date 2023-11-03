@@ -19,8 +19,10 @@ const (
 	DefaultFileName = ".chainsaw.yaml"
 )
 
-type DocumentParser = func([]byte) ([][]byte, error)
-type crdFolder = func(string) string
+type (
+	DocumentParser = func([]byte) ([][]byte, error)
+	crdFolder      = func(string) string
+)
 
 var configuration_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Configuration")
 
