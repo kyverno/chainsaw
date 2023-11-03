@@ -10,6 +10,11 @@ import (
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
+type (
+	splitter  = func([]byte) ([][]byte, error)
+	converter = func([]byte) ([]byte, error)
+)
+
 func Load(path string) ([]unstructured.Unstructured, error) {
 	content, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
@@ -26,13 +31,24 @@ func Load(path string) ([]unstructured.Unstructured, error) {
 }
 
 func Parse(content []byte) ([]unstructured.Unstructured, error) {
-	documents, err := extyaml.SplitDocuments(content)
+	return parse(content, nil, nil)
+}
+
+func parse(content []byte, splitter splitter, converter converter) ([]unstructured.Unstructured, error) {
+	if splitter == nil {
+		splitter = extyaml.SplitDocuments
+	}
+	if converter == nil {
+		converter = yaml.ToJSON
+	}
+
+	documents, err := splitter(content)
 	if err != nil {
 		return nil, err
 	}
 	var resources []unstructured.Unstructured
 	for _, document := range documents {
-		jsonBytes, err := yaml.ToJSON(document)
+		jsonBytes, err := converter(document)
 		if err != nil {
 			return nil, err
 		}
