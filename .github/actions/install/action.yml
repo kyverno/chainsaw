@@ -67,7 +67,7 @@ runs:
           Linux)
             case ${{ runner.arch }} in
               X64)
-                release_archive='linux_x86_64.tar.gz'
+                release_archive='linux_amd64.tar.gz'
                 ;;
 
               ARM64)
@@ -84,7 +84,7 @@ runs:
           macOS)
             case ${{ runner.arch }} in
               X64)
-                release_archive='darwin_x86_64.tar.gz'
+                release_archive='darwin_amd64.tar.gz'
                 ;;
 
               ARM64)
@@ -101,7 +101,7 @@ runs:
           Windows)
             case ${{ runner.arch }} in
               X64)
-                release_archive='windows_x86_64.zip'
+                release_archive='windows_amd64.tar.gz'
                 ;;
 
               *)
@@ -130,7 +130,7 @@ runs:
           exit 1
         fi
 
-        release_archive=chainsaw_${{ inputs.release }}_${release_archive}
+        release_archive=chainsaw_${release_archive}
         release_archive_url=https://github.com/kyverno/chainsaw/releases/download/${{ inputs.release }}/${release_archive}
 
         log_info "Downloading Chainsaw version '${{ inputs.release }}'...\n      ${release_archive_url}"
@@ -161,7 +161,7 @@ runs:
             ;;
 
           Windows)
-            $SUDO unzip ${release_archive} chainsaw.exe
+            $SUDO tar -xvf ${release_archive} chainsaw.exe
             ;;
 
           *)
