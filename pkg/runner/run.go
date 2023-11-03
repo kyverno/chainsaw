@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
@@ -27,6 +28,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	if err != nil {
 		return nil, err
 	}
+	client = runnerclient.New(client)
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {

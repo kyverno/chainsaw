@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner/collect"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -20,17 +21,11 @@ type stepRunner struct {
 	clock  clock.PassiveClock
 }
 
-func (r *stepRunner) runStep(goctx context.Context, ctx Context, test discovery.Test, step v1alpha1.TestSpecStep) {
+func (r *stepRunner) runStep(goctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep) {
 	t := testing.FromContext(goctx)
 	t.Helper()
 	logger := logging.FromContext(goctx)
-	operationsClient := operations.NewClient(
-		ctx.namespacer,
-		ctx.client,
-		r.config,
-		test.Spec,
-		step.Spec,
-	)
+	operationsClient := operations.NewClient(nspacer, r.client, r.config, test.Spec, step.Spec)
 	defer func() {
 		if t.Failed() {
 			t.Cleanup(func() {
@@ -44,13 +39,13 @@ func (r *stepRunner) runStep(goctx context.Context, ctx Context, test discovery.
 							exec := v1alpha1.Exec{
 								Command: collector,
 							}
-							if err := operationsClient.Exec(goctx, exec, true, ctx.namespacer.GetNamespace()); err != nil {
+							if err := operationsClient.Exec(goctx, exec, true, nspacer.GetNamespace()); err != nil {
 								t.Fail()
 							}
 						}
 					}
 					if handler.Exec != nil {
-						if err := operationsClient.Exec(goctx, *handler.Exec, true, ctx.namespacer.GetNamespace()); err != nil {
+						if err := operationsClient.Exec(goctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
 							t.Fail()
 						}
 					}
@@ -64,6 +59,6 @@ func (r *stepRunner) runStep(goctx context.Context, ctx Context, test discovery.
 			client: operationsClient,
 			clock:  r.clock,
 		}
-		runner.executeOperation(goctx, ctx, test, step, operation)
+		runner.executeOperation(goctx, nspacer, test, step, operation)
 	}
 }
