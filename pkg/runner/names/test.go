@@ -10,6 +10,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 )
 
+type workignDirInterface = func() (string, error)
+type absolutePathInterface = func(string) (string, error)
+type relativePathInterface = func(string, string) (string, error)
+
 func Test(config v1alpha1.ConfigurationSpec, test discovery.Test) (string, error) {
 	if test.Test == nil {
 		return "", errors.New("test must not be nil")
@@ -17,15 +21,29 @@ func Test(config v1alpha1.ConfigurationSpec, test discovery.Test) (string, error
 	if !config.FullName {
 		return test.GetName(), nil
 	}
-	cwd, err := os.Getwd()
+	return helpTest(test, nil, nil, nil)
+}
+
+func helpTest(test discovery.Test, workingDir workignDirInterface, absolutePath absolutePathInterface, relativePath relativePathInterface) (string, error) {
+	if workingDir == nil {
+		workingDir = os.Getwd
+	}
+	if absolutePath == nil {
+		absolutePath = filepath.Abs
+	}
+	if relativePath == nil {
+		relativePath = filepath.Rel
+	}
+
+	cwd, err := workingDir()
 	if err != nil {
 		return "", fmt.Errorf("failed to get current working dir (%w)", err)
 	}
-	abs, err := filepath.Abs(test.BasePath)
+	abs, err := absolutePath(test.BasePath)
 	if err != nil {
 		return "", fmt.Errorf("failed to compute absolute path for %s (%w)", test.BasePath, err)
 	}
-	rel, err := filepath.Rel(cwd, abs)
+	rel, err := relativePath(cwd, abs)
 	if err != nil {
 		return "", fmt.Errorf("failed to compute relative path from %s to %s (%w)", cwd, abs, err)
 	}
