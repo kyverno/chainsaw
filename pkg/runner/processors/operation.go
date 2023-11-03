@@ -11,7 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	"github.com/kyverno/chainsaw/pkg/runner/testing"
+	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/clock"

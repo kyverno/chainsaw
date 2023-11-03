@@ -12,7 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
-	"github.com/kyverno/chainsaw/pkg/runner/testing"
+	"github.com/kyverno/chainsaw/pkg/testing"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 )

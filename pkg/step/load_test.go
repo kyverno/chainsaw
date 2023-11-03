@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	tloader "github.com/kyverno/chainsaw/pkg/internal/loader/testing"
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -252,12 +253,6 @@ func TestLoad(t *testing.T) {
 	}
 }
 
-type fakeLoader struct{}
-
-func (fakeLoader) Load([]byte) (schema.GroupVersionKind, unstructured.Unstructured, error) {
-	return schema.GroupVersionKind{Group: "v1", Kind: "Something"}, unstructured.Unstructured{}, nil
-}
-
 func Test_parse(t *testing.T) {
 	content, err := os.ReadFile("../../testdata/step/custom-step.yaml")
 	assert.NoError(t, err)
@@ -293,7 +288,11 @@ func Test_parse(t *testing.T) {
 		name:     "loader error",
 		splitter: nil,
 		loaderFactory: func(openapi.Client) (loader.Loader, error) {
-			return fakeLoader{}, nil
+			return &tloader.FakeLoader{
+				LoadFn: func(_ int, _ []byte) (schema.GroupVersionKind, unstructured.Unstructured, error) {
+					return schema.GroupVersionKind{Group: "v1", Kind: "Something"}, unstructured.Unstructured{}, nil
+				},
+			}, nil
 		},
 		converter: nil,
 		wantErr:   true,

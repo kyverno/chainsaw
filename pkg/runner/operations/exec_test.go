@@ -6,6 +6,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -52,7 +53,7 @@ func Test_operationExec(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			logger := &MockLogger{}
+			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
 			err := operationExec(ctx, tt.exec, tt.log, tt.namespace)
 			assert.ElementsMatch(t, tt.expected, logger.Logs)
@@ -101,7 +102,7 @@ func TestCommand(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := logging.IntoContext(context.TODO(), &MockLogger{})
+			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
 			err := command(ctx, tt.command, tt.log, tt.namespace)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -146,7 +147,7 @@ func TestScript(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := logging.IntoContext(context.TODO(), &MockLogger{})
+			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
 			err := script(ctx, tt.script, tt.log, tt.namespace)
 			if tt.wantErr {
 				assert.Error(t, err)

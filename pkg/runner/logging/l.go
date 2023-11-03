@@ -11,20 +11,15 @@ import (
 
 const eraser = "\b\b\b\b\b\b\b\b\b"
 
-type tLogger interface {
-	Log(args ...interface{})
-	Helper()
-}
-
 type logger struct {
-	t        tLogger
+	t        TLogger
 	clock    clock.PassiveClock
 	test     string
 	step     string
 	resource ctrlclient.Object
 }
 
-func NewLogger(t tLogger, clock clock.PassiveClock, test string, step string) Logger {
+func NewLogger(t TLogger, clock clock.PassiveClock, test string, step string) Logger {
 	t.Helper()
 	return &logger{
 		t:     t,

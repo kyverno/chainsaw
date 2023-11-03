@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	mock "k8s.io/apimachinery/pkg/runtime/testing"
+	truntime "k8s.io/apimachinery/pkg/runtime/testing"
 )
 
 func TestPatchObject(t *testing.T) {
@@ -61,13 +61,13 @@ func TestPatchObject(t *testing.T) {
 		},
 	}, {
 		name:     "actual not meta",
-		actual:   &mock.InternalSimple{},
+		actual:   &truntime.InternalSimple{},
 		expected: &unstructured.Unstructured{},
 		wantErr:  true,
 	}, {
 		name:     "expected not meta",
 		actual:   &unstructured.Unstructured{},
-		expected: &mock.InternalSimple{},
+		expected: &truntime.InternalSimple{},
 		wantErr:  true,
 	}}
 	for _, tt := range tests {
