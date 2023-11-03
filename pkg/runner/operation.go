@@ -8,7 +8,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
-	"github.com/kyverno/chainsaw/pkg/runner/collect"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/testing"
@@ -23,50 +22,6 @@ func fail(t *testing.T, continueOnError *bool) {
 		t.Fail()
 	} else {
 		t.FailNow()
-	}
-}
-
-func executeStep(goctx context.Context, ctx Context, basePath string, config v1alpha1.ConfigurationSpec, test v1alpha1.TestSpec, step v1alpha1.TestSpecStep) {
-	t := testing.FromContext(goctx)
-	t.Helper()
-	logger := logging.FromContext(goctx)
-	operationsClient := operations.NewClient(
-		ctx.namespacer,
-		ctx.client,
-		config,
-		test,
-		step.Spec,
-	)
-	defer func() {
-		if t.Failed() {
-			t.Cleanup(func() {
-				for _, handler := range step.Spec.OnFailure {
-					collectors, err := collect.Commands(handler.Collect)
-					if err != nil {
-						logger.Log("COLLEC", color.BoldRed, err)
-						t.Fail()
-					} else {
-						for _, collector := range collectors {
-							exec := v1alpha1.Exec{
-								Command: collector,
-							}
-							if err := operationsClient.Exec(goctx, exec, true, ctx.namespacer.GetNamespace()); err != nil {
-								t.Fail()
-							}
-						}
-					}
-					if handler.Exec != nil {
-						if err := operationsClient.Exec(goctx, *handler.Exec, true, ctx.namespacer.GetNamespace()); err != nil {
-							t.Fail()
-						}
-					}
-				}
-			})
-		}
-	}()
-
-	for _, operation := range step.Spec.Operations {
-		executeOperation(goctx, ctx, basePath, config, test, step, operation, operationsClient)
 	}
 }
 

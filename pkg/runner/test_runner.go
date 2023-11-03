@@ -96,6 +96,11 @@ func (r *testRunner) runTest(goctx context.Context, ctx Context, test discovery.
 			name = fmt.Sprintf("step-%d", i+1)
 		}
 		goctx := logging.IntoContext(goctx, logging.NewLogger(t, ctx.clock, test.Name, fmt.Sprintf("%-*s", size, name)))
-		executeStep(goctx, ctx, test.BasePath, r.config, test.Spec, step)
+		runner := stepRunner{
+			config: r.config,
+			client: r.client,
+			clock:  r.clock,
+		}
+		runner.runStep(goctx, ctx, test, step)
 	}
 }
