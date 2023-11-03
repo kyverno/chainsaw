@@ -37,5 +37,4 @@ func TestDiscoverFoldersWithError(t *testing.T) {
 	assert.NoError(t, os.Chmod(unreadableDir, 0o000))
 	_, err := DiscoverFolders(root)
 	assert.Error(t, err)
-	os.Chmod(unreadableDir, os.ModePerm)
 }
