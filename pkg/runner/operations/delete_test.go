@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	fakeClient "github.com/kyverno/chainsaw/pkg/runner/client"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -19,65 +20,60 @@ func Test_operationDelete(t *testing.T) {
 		client       *fakeClient.FakeClient
 		expectedErr  error
 		expectedLogs []string
-	}{
-		{
-			name: "Successful delete",
-			object: &unstructured.Unstructured{
-				Object: map[string]interface{}{
-					"apiVersion": "v1",
-					"kind":       "Pod",
-					"metadata": map[string]interface{}{
-						"name": "test-pod",
-					},
+	}{{
+		name: "Successful delete",
+		object: &unstructured.Unstructured{
+			Object: map[string]interface{}{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]interface{}{
+					"name": "test-pod",
 				},
 			},
-			client: &fakeClient.FakeClient{
-				T: &testing.T{},
-				GetFake: func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					t.Helper()
-					return errors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
-				},
-				DeleteFake: func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					t.Helper()
-					return nil
-				},
-			},
-			expectedErr:  nil,
-			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [DONE]"},
 		},
-		{
-			name: "Failed delete",
-			object: &unstructured.Unstructured{
-				Object: map[string]interface{}{
-					"apiVersion": "v1",
-					"kind":       "Pod",
-					"metadata": map[string]interface{}{
-						"name": "bad-test-pod",
-					},
-				},
+		client: &fakeClient.FakeClient{
+			T: &testing.T{},
+			GetFake: func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				t.Helper()
+				return errors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
-			client: &fakeClient.FakeClient{
-				T: &testing.T{},
-				GetFake: func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					t.Helper()
-					return nil
-				},
-				DeleteFake: func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					t.Helper()
-					return errors.NewInternalError(fmt.Errorf("failed to delete the pod"))
-				},
+			DeleteFake: func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+				t.Helper()
+				return nil
 			},
-			expectedErr:  errors.NewInternalError(fmt.Errorf("failed to delete the pod")),
-			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [ERROR\nInternal error occurred: failed to delete the pod]"},
 		},
-	}
-
+		expectedErr:  nil,
+		expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [DONE]"},
+	}, {
+		name: "Failed delete",
+		object: &unstructured.Unstructured{
+			Object: map[string]interface{}{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]interface{}{
+					"name": "bad-test-pod",
+				},
+			},
+		},
+		client: &fakeClient.FakeClient{
+			T: &testing.T{},
+			GetFake: func(ctx context.Context, t *testing.T, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				t.Helper()
+				return nil
+			},
+			DeleteFake: func(ctx context.Context, t *testing.T, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+				t.Helper()
+				return errors.NewInternalError(fmt.Errorf("failed to delete the pod"))
+			},
+		},
+		expectedErr:  errors.NewInternalError(fmt.Errorf("failed to delete the pod")),
+		expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [ERROR\nInternal error occurred: failed to delete the pod]"},
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &MockLogger{}
-
-			err := operationDelete(context.TODO(), logger, tt.object, tt.client)
-
+			ctx := logging.IntoContext(context.TODO(), logger)
+			err := operationDelete(ctx, tt.object, tt.client)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

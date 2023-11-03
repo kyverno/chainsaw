@@ -4,7 +4,6 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/runner/logging/internal"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/utils/clock"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -12,15 +11,20 @@ import (
 
 const eraser = "\b\b\b\b\b\b\b\b\b"
 
+type tLogger interface {
+	Log(args ...interface{})
+	Helper()
+}
+
 type logger struct {
-	t        internal.Logger
+	t        tLogger
 	clock    clock.PassiveClock
 	test     string
 	step     string
 	resource ctrlclient.Object
 }
 
-func NewLogger(t internal.Logger, clock clock.PassiveClock, test string, step string) Logger {
+func NewLogger(t tLogger, clock clock.PassiveClock, test string, step string) Logger {
 	t.Helper()
 	return &logger{
 		t:     t,
