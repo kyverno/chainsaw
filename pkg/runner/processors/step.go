@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner/collect"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -16,12 +15,11 @@ import (
 )
 
 type StepProcessor interface {
-	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep)
-	// TODO
-	// CreateOperationProcessor(operation v1alpha1.Operation) OperationProcessor
+	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec)
+	CreateOperationProcessor(operation v1alpha1.Operation) OperationProcessor
 }
 
-func NewStepProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock) StepProcessor {
+func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.Client, clock clock.PassiveClock) StepProcessor {
 	return &stepProcessor{
 		config: config,
 		client: client,
@@ -31,17 +29,16 @@ func NewStepProcessor(config v1alpha1.ConfigurationSpec, client client.Client, c
 
 type stepProcessor struct {
 	config v1alpha1.ConfigurationSpec
-	client client.Client
+	client operations.Client
 	clock  clock.PassiveClock
 }
 
-func (r *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep) {
+func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec) {
 	t := testing.FromContext(ctx)
 	logger := logging.FromContext(ctx)
-	operationsClient := operations.NewClient(nspacer, r.client, r.config, test.Spec, step.Spec)
 	defer func() {
 		t.Cleanup(func() {
-			for _, handler := range step.Spec.Finally {
+			for _, handler := range step.Finally {
 				collectors, err := collect.Commands(handler.Collect)
 				if err != nil {
 					logger.Log("COLLEC", color.BoldRed, err)
@@ -51,13 +48,13 @@ func (r *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 						exec := v1alpha1.Exec{
 							Command: collector,
 						}
-						if err := operationsClient.Exec(ctx, exec, true, nspacer.GetNamespace()); err != nil {
+						if err := p.client.Exec(ctx, exec, true, nspacer.GetNamespace()); err != nil {
 							t.Fail()
 						}
 					}
 				}
 				if handler.Exec != nil {
-					if err := operationsClient.Exec(ctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
+					if err := p.client.Exec(ctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
 						t.Fail()
 					}
 				}
@@ -67,7 +64,7 @@ func (r *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	defer func() {
 		if t.Failed() {
 			t.Cleanup(func() {
-				for _, handler := range step.Spec.Catch {
+				for _, handler := range step.Catch {
 					collectors, err := collect.Commands(handler.Collect)
 					if err != nil {
 						logger.Log("COLLEC", color.BoldRed, err)
@@ -77,13 +74,13 @@ func (r *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 							exec := v1alpha1.Exec{
 								Command: collector,
 							}
-							if err := operationsClient.Exec(ctx, exec, true, nspacer.GetNamespace()); err != nil {
+							if err := p.client.Exec(ctx, exec, true, nspacer.GetNamespace()); err != nil {
 								t.Fail()
 							}
 						}
 					}
 					if handler.Exec != nil {
-						if err := operationsClient.Exec(ctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
+						if err := p.client.Exec(ctx, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
 							t.Fail()
 						}
 					}
@@ -91,14 +88,12 @@ func (r *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			})
 		}
 	}()
-	for _, operation := range step.Spec.Try {
-		// TODO
-		runner := NewOperationProcessor(r.config, operationsClient, r.clock)
-		runner.Run(ctx, nspacer, test, step, operation)
+	for _, operation := range step.Try {
+		processor := p.CreateOperationProcessor(operation)
+		processor.Run(ctx, nspacer.GetNamespace(), test, step, operation)
 	}
 }
 
-// TODO
-// func (r *stepProcessor) CreateOperationProcessor(_ v1alpha1.Operation) OperationProcessor {
-// 	return NewOperationProcessor(r.config, operationsClient, r.clock)
-// }
+func (p *stepProcessor) CreateOperationProcessor(_ v1alpha1.Operation) OperationProcessor {
+	return NewOperationProcessor(p.config, p.client, p.clock)
+}

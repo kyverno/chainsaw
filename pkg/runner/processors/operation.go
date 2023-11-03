@@ -10,7 +10,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -20,7 +19,7 @@ import (
 )
 
 type OperationProcessor interface {
-	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep, operation v1alpha1.Operation)
+	Run(ctx context.Context, namespace string, test discovery.Test, step v1alpha1.TestStepSpec, operation v1alpha1.Operation)
 }
 
 func NewOperationProcessor(config v1alpha1.ConfigurationSpec, client operations.Client, clock clock.PassiveClock) OperationProcessor {
@@ -37,7 +36,7 @@ type operationProcessor struct {
 	clock  clock.PassiveClock
 }
 
-func (r *operationProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestSpecStep, operation v1alpha1.Operation) {
+func (p *operationProcessor) Run(ctx context.Context, namespace string, test discovery.Test, step v1alpha1.TestStepSpec, operation v1alpha1.Operation) {
 	fail := func(t *testing.T, continueOnError *bool) {
 		t.Helper()
 		if continueOnError != nil && *continueOnError {
@@ -56,7 +55,7 @@ func (r *operationProcessor) Run(ctx context.Context, nspacer namespacer.Namespa
 			resource.SetName(operation.Name)
 			resource.SetNamespace(operation.Namespace)
 			resource.SetLabels(operation.Labels)
-			if err := r.client.Delete(ctx, operation.Timeout, &resource); err != nil {
+			if err := p.client.Delete(ctx, operation.Timeout, &resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -65,17 +64,17 @@ func (r *operationProcessor) Run(ctx context.Context, nspacer namespacer.Namespa
 	// Handle Exec
 	if operation.Exec != nil {
 		for _, operation := range operation.Exec {
-			if err := r.client.Exec(ctx, operation.Exec, !operation.SkipLogOutput, nspacer.GetNamespace()); err != nil {
+			if err := p.client.Exec(ctx, operation.Exec, !operation.SkipLogOutput, namespace); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
 	}
 
-	var doCleanup operations.CleanupFunc
-	if !cleanup.Skip(r.config.SkipDelete, test.Spec.SkipDelete, step.Spec.SkipDelete) {
-		doCleanup = func(obj ctrlclient.Object, c client.Client) {
+	var cleaner cleanup.Cleaner
+	if !cleanup.Skip(p.config.SkipDelete, test.Spec.SkipDelete, step.SkipDelete) {
+		cleaner = func(obj ctrlclient.Object, c client.Client) {
 			t.Cleanup(func() {
-				if err := r.client.Delete(ctx, nil, obj); err != nil {
+				if err := p.client.Delete(ctx, nil, obj); err != nil {
 					t.Fail()
 				}
 			})
@@ -92,7 +91,7 @@ func (r *operationProcessor) Run(ctx context.Context, nspacer namespacer.Namespa
 			shouldFail := operation.ShouldFail != nil && *operation.ShouldFail
 			for i := range resources {
 				resource := &resources[i]
-				if err := r.client.Apply(ctx, operation.Timeout, resource, shouldFail, doCleanup); err != nil {
+				if err := p.client.Apply(ctx, operation.Timeout, resource, shouldFail, cleaner); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}
@@ -109,7 +108,7 @@ func (r *operationProcessor) Run(ctx context.Context, nspacer namespacer.Namespa
 		shouldFail := operation.Create.ShouldFail != nil && *operation.Create.ShouldFail
 		for i := range resources {
 			resource := &resources[i]
-			if err := r.client.Apply(ctx, operation.Create.Timeout, resource, shouldFail, doCleanup); err != nil {
+			if err := p.client.Apply(ctx, operation.Create.Timeout, resource, shouldFail, cleaner); err != nil {
 				fail(t, operation.Create.ContinueOnError)
 			}
 		}
@@ -124,7 +123,7 @@ func (r *operationProcessor) Run(ctx context.Context, nspacer namespacer.Namespa
 				fail(t, operation.ContinueOnError)
 			}
 			for _, resource := range resources {
-				if err := r.client.Assert(ctx, operation.Timeout, resource); err != nil {
+				if err := p.client.Assert(ctx, operation.Timeout, resource); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}
@@ -140,7 +139,7 @@ func (r *operationProcessor) Run(ctx context.Context, nspacer namespacer.Namespa
 				fail(t, operation.ContinueOnError)
 			}
 			for _, resource := range resources {
-				if err := r.client.Error(ctx, operation.Timeout, resource); err != nil {
+				if err := p.client.Error(ctx, operation.Timeout, resource); err != nil {
 					fail(t, operation.ContinueOnError)
 				}
 			}
