@@ -162,6 +162,7 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
 func TestNewLoader(t *testing.T) {
 	_, err := newLoader(data.Crds(), data.CrdsFolder)
 	if err != nil {
@@ -197,7 +198,8 @@ metadata:
 							"name": "test-configuration",
 						},
 						"spec": map[string]interface{}{},
-					}}
+					},
+				}
 				return configuration_v1alpha1, *u, nil
 			},
 			expectedConfiguration: &v1alpha1.Configuration{
