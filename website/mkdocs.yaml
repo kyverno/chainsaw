@@ -5,6 +5,7 @@ nav:
 - Getting Started:
   - intro.md
   - install.md
+  - gh-action.md
   - quick-start.md
 - Writing tests:
   - tests/index.md
@@ -14,12 +15,12 @@ nav:
     - tests/with-manifests.md
     - tests/with-test-steps.md
     - tests/with-test.md
-  - Collectors:
-    - tests/collectors/index.md
-    - tests/collectors/pod-logs.md
-    - tests/collectors/events.md
-    - tests/collectors/commands.md
-    - tests/collectors/scripts.md
+  - Catch and Finally:
+    - tests/catch-finally/index.md
+    - tests/catch-finally/pod-logs.md
+    - tests/catch-finally/events.md
+    - tests/catch-finally/commands.md
+    - tests/catch-finally/scripts.md
   - Command Line Usage:
     - commands/chainsaw.md
     - commands/chainsaw_completion.md

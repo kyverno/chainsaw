@@ -5,29 +5,29 @@ metadata:
 spec:
   skipDelete: false
   try:
-    - assert:
-        file: /assertions/verify-service.yaml
-      timeout: 30s
-      continueOnError: false
-    - apply:
-        file: /configs/service-config.yaml
-        shouldFail: false
-      timeout: 45s
-      continueOnError: true
-    - error:
-        file: /errors/expected-timeout-error.yaml
-      timeout: 15s
-      continueOnError: true
-    - delete:
-        apiVersion: v1
-        kind: Pod
-        name: example-pod
-        namespace: test
-      timeout: 10s
-      continueOnError: false
-    - command:
-        skipLogOutput: false
-        entrypoint: /bin/sh
-        args:
-        - echo "Executing script..."
-      continueOnError: true
+  - assert:
+      file: /assertions/verify-service.yaml
+    timeout: 30s
+    continueOnError: false
+  - apply:
+      file: /configs/service-config.yaml
+      shouldFail: false
+    timeout: 45s
+    continueOnError: true
+  - error:
+      file: /errors/expected-timeout-error.yaml
+    timeout: 15s
+    continueOnError: true
+  - delete:
+      apiVersion: v1
+      kind: Pod
+      name: example-pod
+      namespace: test
+    timeout: 10s
+    continueOnError: false
+  - command:
+      skipLogOutput: false
+      entrypoint: /bin/sh
+      args:
+      - echo "Executing script..."
+    continueOnError: true

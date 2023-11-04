@@ -4,10 +4,10 @@ In a nutshell, a test can be represented as **an ordered sequence of test steps*
 
 A test step can consist in **one or more operations**:
 
-1. To delete resources present in a cluster
-1. To create or update resources in a cluster
-1. To assert one or more resources in a cluster meet the expectations (or the opposite)
-1. To run arbitrary commands (will be supported soon)
+- To delete resources present in a cluster
+- To create or update resources in a cluster
+- To assert one or more resources in a cluster meet the expectations (or the opposite)
+- To run arbitrary commands (will be supported soon)
 
 ## Different syntaxes
 
@@ -36,38 +36,62 @@ However, using `TestStep`s based syntax only is debatable. In this case, `Test` 
 
 Chainsaw supports the following operations, executed in this specific order for a given test step:
 
-1. [Delete operations](#delete)
-2. [Apply operations](#apply)
-3. [Assert operations](#assert)
-4. [Error operations](#error)
-5. [Exec operations](#exec)
+- [Delete operations](#delete)
+- [Apply operations](#apply)
+- [Create operations](#create)
+- [Assert operations](#assert)
+- [Error operations](#error)
+- [Command operations](#command)
+- [Script operations](#script)
+
+### Common fields
+
+All operations share some configuration fields.
+
+- **Timeout:** A timeout for the operation.
+- **ContinueOnError:** Determines whether a test step should continue or not in case the operation was not successful.
+  Even if the test continues executing, it will still be reported as failed.
+
+The full structure of the `Operation` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Operation).
 
 ### Delete operations   {#delete}
 
 The delete operation allows you to specify resources that should be deleted from the Kubernetes cluster before a particular test step is executed.
 
-#### Fields Description
-
 The full structure of the `Delete` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
 
 ```yaml
 delete:
-  - apiVersion: v1
-    kind: Pod
-    namespace: default
-    name: my-test-pod
+  apiVersion: v1
+  kind: Pod
+  namespace: default
+  name: my-test-pod
 ```
 
 ### Apply operations    {#apply}
 
-The apply operation lets you define resources that should be applied to the Kubernetes cluster during the test step. These can be configurations, deployments, services, or any other Kubernetes resource.
+The apply operation lets you define resources that should be applied to the Kubernetes cluster during the test step.
+These can be configurations, deployments, services, or any other Kubernetes resource.
 
 The full structure of the `Apply` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Apply).
 
 ```yaml
 apply:
-  - file: path/to/deployment.yaml
-  - file: path/to/service.yaml
+  file: path/to/deployment.yaml
+```
+
+### Create operations    {#creatye}
+
+The create operation lets you define resources that should be created in the Kubernetes cluster during the test step.
+These can be configurations, deployments, services, or any other Kubernetes resource.
+
+If the resource to be created already exists in the cluster, the step will fail.
+
+The full structure of the `Create` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
+
+```yaml
+create:
+  file: path/to/deployment.yaml
 ```
 
 ### Assert operations   {#assert}
@@ -78,7 +102,7 @@ The full structure of the `Assert` is documented [here](../apis/chainsaw.v1alpha
 
 ```yaml
 assert:
-  - file: path/to/assertions.yaml  
+  file: path/to/assertions.yaml  
 ```
 
 ### Error operations    {#error}
@@ -89,37 +113,33 @@ The full structure of the `Error` is documented [here](../apis/chainsaw.v1alpha1
 
 ```yaml
 error:
-  - file: path/to/expected-errors.yaml
+  file: path/to/expected-errors.yaml
 ```
 
-### Exec operations {#exec}
+### Command operations {#command}
 
-The `Exec` operation provides a means to either execute a specific command or run a script during the test step. For each `Exec` entry, you must specify either a `Command` or a `Script`, but not both.
+The `Command` operation provides a means to execute a specific command during the test step.
 
-The full structure of the `Exec` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Exec).
-
-#### Usage
-
-To run a command:
+The full structure of the `Command` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
 
 ```yaml
-exec:
-  timeout: "5m"
-  command:
-    some-command-to-run-parameters
+command:
+  entrypoint: echo
+  args:
+  - hello chainsaw
 ```
 
-To execute a script:
+### Script operations {#script}
+
+The `Script` operation provides a means to run a script during the test step.
+
+The full structure of the `Script` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Script).
 
 ```yaml
-exec:
-  timeout: "10m"
-  script:
-    path/to/script.sh
+script:
+  content: |
+    echo "hello chainsaw"
 ```
-
-!!! warning
-    Make sure you're selecting either `Command` or `Script` for each `Exec` entry, and not both simultaneously.
 
 ## Cleanup
 

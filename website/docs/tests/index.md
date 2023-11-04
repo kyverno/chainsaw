@@ -4,7 +4,7 @@
 
 Chainsaw provides a **declarative approach** to testing production-grade Kubernetes [operators](https://kubernetes.io/docs/concepts/extend-kubernetes/operator/) and controllers.
 
-It provides a way to inject an operator (subject under test) during the setup and allows tests to be standard YAML files.
+It provides a way to inject an operator (*subject under test*) during the setup and allows tests to be standard YAML files.
 
 Test assertions are often partial YAML documents which assert the state defined is true.
 

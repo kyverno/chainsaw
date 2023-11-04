@@ -19,15 +19,14 @@ If a `name` is specified, Chainsaw will retrieve the specified event in the test
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              events:
-                name: my-event
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - events:
+            name: my-event
     ```
 
 If a `namespace` is specified, Chainsaw will retrieve the specified event in the specified namespace.
@@ -41,16 +40,15 @@ If a `namespace` is specified, Chainsaw will retrieve the specified event in the
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              events:
-                name: my-event
-                namespace: foo
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - events:
+            name: my-event
+            namespace: foo
     ```
 
 ### All events
@@ -66,14 +64,13 @@ If no `name` and `namespace` is specified, Chainsaw will retrieve all events in 
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              events: {}
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - events: {}
     ```
 
 On the other hand, if a `namespace` is specified, Chainsaw will retrieve all events in the specified namespace.
@@ -87,15 +84,14 @@ On the other hand, if a `namespace` is specified, Chainsaw will retrieve all eve
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              events:
-                namespace: foo
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - events:
+            namespace: foo
     ```
 
 ### Label selector
@@ -111,15 +107,14 @@ An optional [label selector](https://kubernetes.io/docs/concepts/overview/workin
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              events:
-                selector: app=my-app
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - events:
+            selector: app=my-app
     ```
 
 If a `namespace` is specified, Chainsaw will retrieve events using the specified namespace.
@@ -133,14 +128,13 @@ If a `namespace` is specified, Chainsaw will retrieve events using the specified
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              events:
-                selector: app=my-app
-                namespace: foo
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - events:
+            selector: app=my-app
+            namespace: foo
     ```

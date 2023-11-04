@@ -23,16 +23,15 @@ A `Script` must have a `content` defined.
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - exec:
-              script:
-                content: |
-                  echo "an error has occured"
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - script:
+            content: |
+              echo "an error has occured"
     ```
 
 ### Timeout
@@ -40,7 +39,7 @@ A `Script` must have a `content` defined.
 An optional `timeout` can be configured.
 
 !!! note
-    Note that the `timeout` lives at the `exec` level, not at the `script` level.
+    Note that the `timeout` lives at the operation level, not at the `script` level.
 
 !!! example "Timeout example"
 
@@ -51,15 +50,14 @@ An optional `timeout` can be configured.
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - exec:
-              timeout: 30s
-              script:
-                content: |
-                  echo "an error has occured"
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - script:
+            content: |
+              echo "an error has occured"
+          timeout: 30s
     ```

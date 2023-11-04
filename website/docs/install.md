@@ -19,7 +19,7 @@ Download the pre-compiled binaries from the [releases page](https://github.com/k
 Chainsaw is also available as a Docker image which you can pull and run:
 
 ```bash
-docker pull ghcr.io/kyverno/chainsaw:v0.0.2
+docker pull ghcr.io/kyverno/chainsaw:<version>
 ```
 
 !!! info
@@ -29,7 +29,7 @@ docker pull ghcr.io/kyverno/chainsaw:v0.0.2
 ```bash
 docker run --rm                         \
     -v /path/on/host:/path/in/container \
-    ghcr.io/kyverno/chainsaw:v0.0.2     \
+    ghcr.io/kyverno/chainsaw:<version>  \
     <chainsaw-command>
 ```
 

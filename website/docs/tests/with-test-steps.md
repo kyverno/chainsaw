@@ -13,16 +13,7 @@ On the other hand it doesn't suffer the unsupported deletion limitation and can 
 
 A `TestStep` resource, like any Kubernetes resource has an `apiVersion`, `kind` and `metadata` section.
 
-It also comes with a `spec` section used to declaratively represent the [step operations](what-is-a-test.md#operations) and other configuration elements belonging to the step being defined:
-
-- **Timeout**: Dictates how long the test step should run before being marked as failed due to a timeout.
-- **Delete**: Points out resources that need to be removed before this step gets executed. It ensures the desired state of the environment before the step runs.
-- **Apply**: Denotes the Kubernetes resources or configurations that should be applied at this stage.
-- **Assert**: Specifies the conditions that must be true for the step to pass. Essentially, it's where you set your expectations.
-- **Error**: Lists the expected errors for this step. This is vital for cases where certain errors are anticipated and should be treated as part of the expected behavior.
-- **SkipDelete**: Determines if the resources created by the step should be preserved post-execution.
-- **Exec**: Lists commands or scripts that must be run as part of this test step.
-- **OnFailure**: Specifies actions to undertake in case of a step failure.
+It also comes with a `spec` section used to declaratively represent the [step operations](what-is-a-test.md#operations) and other configuration elements belonging to the step being defined.
 
 The full structure of the `TestStep` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-TestStep).
 
@@ -47,18 +38,19 @@ kind: TestStep
 metadata:
   name: test-step-name
 spec:
+  skipDelete: true
   # these timeouts are applied per operation
   # it would not be possible to override the timeouts
   # with a manifests based approach
   timeouts:
     apply: 45s
-  skipDelete: true
+  try:
   # apply a configmap to the cluster
   # the path to the configmap is relative to the folder
   # containing the test, hence allow reusing manifests
   # across multiple tests
-  apply:
-  - file: ../resources/configmap.yaml
+  - apply:
+      file: ../resources/configmap.yaml
 ```
 
 ### 02-assert.yaml
@@ -93,10 +85,11 @@ spec:
   # with a manifests based approach
   timeouts:
     error: 20s
+  try:
   # evaluate an error statement against resources
   # present in the cluster
-  error:
-  - file: ../resources/configmap-error.yaml
+  - error:
+      file: ../resources/configmap-error.yaml
 ```
 
 ### 02-assert-exec.yaml
@@ -109,10 +102,13 @@ kind: TestStep
 metadata:
   name: test-step-name-02
 spec:
-  assert:
-  - file: ../resources/configmap-assert.yaml
-  exec:
-  - command: ["echo", "Hello Chainsaw"]
+  try:
+  - assert:
+      file: ../resources/configmap-assert.yaml
+  - command:
+      entrypoint: "echo"
+      args:
+      - "Hello Chainsaw"
 
 ```
 
