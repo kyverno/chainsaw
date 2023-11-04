@@ -3,6 +3,10 @@
 Release notes for `TODO`.
 
 <!--
+## :bangbang: Breaking chages :bangbang:
+
+## :dizzy: New features :dizzy:
+
 ## :sparkles: UI changes :sparkles:
 
 ## :star: Examples :star:
@@ -15,24 +19,3 @@ Release notes for `TODO`.
 
 ## :guitar: Misc :guitar:
 -->
-
-## :bangbang: Breaking chages :bangbang:
-
-- Renamed flag `stop-on-first-failure` to `fail-fast`
-- Lots of API changes to allow more flexibility while making the syntax simpler
-- Commands accepting a file now expect a single file, list of files are not supported anymore
-
-## :dizzy: New features :dizzy:
-
-- Added provenance for released images
-- Added a GitHub action to install Chainsaw
-- Added a new `Create` operation
-- Steps changed to follow a Try / Catch / Finally model
-
-## :wrench: Fixes :wrench:
-
-- Fixed a bug where environment variables were not expanded correctly in command arguments
-
-## :guitar: Misc :guitar:
-
-- Switched to contextual logging
