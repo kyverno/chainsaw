@@ -25,10 +25,9 @@ spec:
         namespace: test
       timeout: 10s
       continueOnError: false
-    - exec:
+    - command:
         skipLogOutput: false
-        command:
-          entrypoint: /bin/sh
-          args:
-          - echo "Executing script..."
+        entrypoint: /bin/sh
+        args:
+        - echo "Executing script..."
       continueOnError: true

@@ -36,7 +36,11 @@ type Operation struct {
 	// +optional
 	Delete *Delete `json:"delete,omitempty"`
 
-	// Exec provides a command or script that should be executed as a part of this test step.
+	// Command defines a command to run.
 	// +optional
-	Exec *ExecOperation `json:"exec,omitempty"`
+	Command *Command `json:"command,omitempty"`
+
+	// Script defines a script to run.
+	// +optional
+	Script *Script `json:"script,omitempty"`
 }

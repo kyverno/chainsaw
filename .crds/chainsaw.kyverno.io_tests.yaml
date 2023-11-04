@@ -61,80 +61,79 @@ spec:
                       items:
                         description: Catch defines actions to be executed on failure.
                         properties:
-                          collect:
-                            description: Collect define the collectors to run.
+                          command:
+                            description: Command defines a command to run.
                             properties:
-                              events:
-                                description: Events determines the events collector
-                                  to execute.
-                                properties:
-                                  name:
-                                    description: 'Name of the referent. More info:
-                                      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
-                                    type: string
-                                  namespace:
-                                    description: 'Namespace of the referent. More
-                                      info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                                    type: string
-                                  selector:
-                                    description: Selector defines labels selector.
-                                    type: string
-                                type: object
-                              podLogs:
-                                description: PodLogs determines the pod logs collector
-                                  to execute.
-                                properties:
-                                  container:
-                                    description: Container in pod to get logs from
-                                      else --all-containers is used.
-                                    type: string
-                                  name:
-                                    description: 'Name of the referent. More info:
-                                      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
-                                    type: string
-                                  namespace:
-                                    description: 'Namespace of the referent. More
-                                      info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                                    type: string
-                                  selector:
-                                    description: Selector defines labels selector.
-                                    type: string
-                                  tail:
-                                    description: Tail is the number of last lines
-                                      to collect from pods. If omitted or zero, then
-                                      the default is 10 if you use a selector, or
-                                      -1 (all) if you use a pod name. This matches
-                                      default behavior of `kubectl logs`.
-                                    type: integer
-                                type: object
+                              args:
+                                description: Args is the command arguments.
+                                items:
+                                  type: string
+                                type: array
+                              entrypoint:
+                                description: Entrypoint is the command entry point
+                                  to run.
+                                type: string
+                              skipLogOutput:
+                                description: SkipLogOutput removes the output from
+                                  the command. Useful for sensitive logs or to reduce
+                                  noise.
+                                type: boolean
+                            required:
+                            - entrypoint
                             type: object
-                          exec:
-                            description: Exec define the commands and/or scripts to
-                              run.
+                          events:
+                            description: Events determines the events collector to
+                              execute.
                             properties:
-                              command:
-                                description: Command defines a command to run.
-                                properties:
-                                  args:
-                                    description: Args is the command arguments.
-                                    items:
-                                      type: string
-                                    type: array
-                                  entrypoint:
-                                    description: Entrypoint is the command entry point
-                                      to run.
-                                    type: string
-                                required:
-                                - entrypoint
-                                type: object
-                              script:
-                                description: Script defines a script to run.
-                                properties:
-                                  content:
-                                    description: Content defines a shell script (run
-                                      with "sh -c ...").
-                                    type: string
-                                type: object
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                type: string
+                              namespace:
+                                description: 'Namespace of the referent. More info:
+                                  https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                            type: object
+                          podLogs:
+                            description: PodLogs determines the pod logs collector
+                              to execute.
+                            properties:
+                              container:
+                                description: Container in pod to get logs from else
+                                  --all-containers is used.
+                                type: string
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                type: string
+                              namespace:
+                                description: 'Namespace of the referent. More info:
+                                  https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              tail:
+                                description: Tail is the number of last lines to collect
+                                  from pods. If omitted or zero, then the default
+                                  is 10 if you use a selector, or -1 (all) if you
+                                  use a pod name. This matches default behavior of
+                                  `kubectl logs`.
+                                type: integer
+                            type: object
+                          script:
+                            description: Script defines a script to run.
+                            properties:
+                              content:
+                                description: Content defines a shell script (run with
+                                  "sh -c ...").
+                                type: string
+                              skipLogOutput:
+                                description: SkipLogOutput removes the output from
+                                  the command. Useful for sensitive logs or to reduce
+                                  noise.
+                                type: boolean
                             type: object
                         type: object
                       type: array
@@ -145,80 +144,79 @@ spec:
                         description: Finally defines actions to be executed at the
                           end of a test.
                         properties:
-                          collect:
-                            description: Collect define the collectors to run.
+                          command:
+                            description: Command defines a command to run.
                             properties:
-                              events:
-                                description: Events determines the events collector
-                                  to execute.
-                                properties:
-                                  name:
-                                    description: 'Name of the referent. More info:
-                                      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
-                                    type: string
-                                  namespace:
-                                    description: 'Namespace of the referent. More
-                                      info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                                    type: string
-                                  selector:
-                                    description: Selector defines labels selector.
-                                    type: string
-                                type: object
-                              podLogs:
-                                description: PodLogs determines the pod logs collector
-                                  to execute.
-                                properties:
-                                  container:
-                                    description: Container in pod to get logs from
-                                      else --all-containers is used.
-                                    type: string
-                                  name:
-                                    description: 'Name of the referent. More info:
-                                      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
-                                    type: string
-                                  namespace:
-                                    description: 'Namespace of the referent. More
-                                      info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                                    type: string
-                                  selector:
-                                    description: Selector defines labels selector.
-                                    type: string
-                                  tail:
-                                    description: Tail is the number of last lines
-                                      to collect from pods. If omitted or zero, then
-                                      the default is 10 if you use a selector, or
-                                      -1 (all) if you use a pod name. This matches
-                                      default behavior of `kubectl logs`.
-                                    type: integer
-                                type: object
+                              args:
+                                description: Args is the command arguments.
+                                items:
+                                  type: string
+                                type: array
+                              entrypoint:
+                                description: Entrypoint is the command entry point
+                                  to run.
+                                type: string
+                              skipLogOutput:
+                                description: SkipLogOutput removes the output from
+                                  the command. Useful for sensitive logs or to reduce
+                                  noise.
+                                type: boolean
+                            required:
+                            - entrypoint
                             type: object
-                          exec:
-                            description: Exec define the commands and/or scripts to
-                              run.
+                          events:
+                            description: Events determines the events collector to
+                              execute.
                             properties:
-                              command:
-                                description: Command defines a command to run.
-                                properties:
-                                  args:
-                                    description: Args is the command arguments.
-                                    items:
-                                      type: string
-                                    type: array
-                                  entrypoint:
-                                    description: Entrypoint is the command entry point
-                                      to run.
-                                    type: string
-                                required:
-                                - entrypoint
-                                type: object
-                              script:
-                                description: Script defines a script to run.
-                                properties:
-                                  content:
-                                    description: Content defines a shell script (run
-                                      with "sh -c ...").
-                                    type: string
-                                type: object
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                type: string
+                              namespace:
+                                description: 'Namespace of the referent. More info:
+                                  https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                            type: object
+                          podLogs:
+                            description: PodLogs determines the pod logs collector
+                              to execute.
+                            properties:
+                              container:
+                                description: Container in pod to get logs from else
+                                  --all-containers is used.
+                                type: string
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                type: string
+                              namespace:
+                                description: 'Namespace of the referent. More info:
+                                  https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              tail:
+                                description: Tail is the number of last lines to collect
+                                  from pods. If omitted or zero, then the default
+                                  is 10 if you use a selector, or -1 (all) if you
+                                  use a pod name. This matches default behavior of
+                                  `kubectl logs`.
+                                type: integer
+                            type: object
+                          script:
+                            description: Script defines a script to run.
+                            properties:
+                              content:
+                                description: Content defines a shell script (run with
+                                  "sh -c ...").
+                                type: string
+                              skipLogOutput:
+                                description: SkipLogOutput removes the output from
+                                  the command. Useful for sensitive logs or to reduce
+                                  noise.
+                                type: boolean
                             type: object
                         type: object
                       type: array
@@ -285,6 +283,26 @@ spec:
                             required:
                             - file
                             type: object
+                          command:
+                            description: Command defines a command to run.
+                            properties:
+                              args:
+                                description: Args is the command arguments.
+                                items:
+                                  type: string
+                                type: array
+                              entrypoint:
+                                description: Entrypoint is the command entry point
+                                  to run.
+                                type: string
+                              skipLogOutput:
+                                description: SkipLogOutput removes the output from
+                                  the command. Useful for sensitive logs or to reduce
+                                  noise.
+                                type: boolean
+                            required:
+                            - entrypoint
+                            type: object
                           continueOnError:
                             description: ContinueOnError determines whether a test
                               should continue or not in case the operation was not
@@ -341,33 +359,13 @@ spec:
                             required:
                             - file
                             type: object
-                          exec:
-                            description: Exec provides a command or script that should
-                              be executed as a part of this test step.
+                          script:
+                            description: Script defines a script to run.
                             properties:
-                              command:
-                                description: Command defines a command to run.
-                                properties:
-                                  args:
-                                    description: Args is the command arguments.
-                                    items:
-                                      type: string
-                                    type: array
-                                  entrypoint:
-                                    description: Entrypoint is the command entry point
-                                      to run.
-                                    type: string
-                                required:
-                                - entrypoint
-                                type: object
-                              script:
-                                description: Script defines a script to run.
-                                properties:
-                                  content:
-                                    description: Content defines a shell script (run
-                                      with "sh -c ...").
-                                    type: string
-                                type: object
+                              content:
+                                description: Content defines a shell script (run with
+                                  "sh -c ...").
+                                type: string
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce

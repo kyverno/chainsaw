@@ -8,7 +8,7 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-func Test_podLogs(t *testing.T) {
+func TestPodLogs(t *testing.T) {
 	tests := []struct {
 		name      string
 		collector *v1alpha1.PodLogs
@@ -118,7 +118,7 @@ func Test_podLogs(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := podLogs(tt.collector)
+			got, err := PodLogs(tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

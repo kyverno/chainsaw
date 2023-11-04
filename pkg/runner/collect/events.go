@@ -6,7 +6,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
 
-func events(collector *v1alpha1.Events) (*v1alpha1.Command, error) {
+func Events(collector *v1alpha1.Events) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, nil
 	}

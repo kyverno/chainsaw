@@ -8,31 +8,23 @@ spec:
     - apply:
         file: foo.yaml
     catch:
-    - collect:
-        podLogs:
-          namespace: foo
-    - collect:
-        events:
-          namespace: foo
-    - exec:
-        command:
-          entrypoint: time
-    - exec:
-        script:
-          content: echo "hello"
+    - podLogs:
+        namespace: foo
+    - events:
+        namespace: foo
+    - command:
+        entrypoint: time
+    - script:
+        content: echo "hello"
   - try:
     - assert:
         file: bar.yaml
     finally:
-    - collect:
-        podLogs:
-          namespace: foo
-    - collect:
-        events:
-          namespace: foo
-    - exec:
-        command:
-          entrypoint: time
-    - exec:
-        script:
-          content: echo "hello"
+    - podLogs:
+        namespace: foo
+    - events:
+        namespace: foo
+    - command:
+        entrypoint: time
+    - script:
+        content: echo "hello"

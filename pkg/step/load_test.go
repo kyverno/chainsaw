@@ -100,28 +100,20 @@ func TestLoad(t *testing.T) {
 						},
 					}},
 					Catch: []v1alpha1.Catch{{
-						Collect: &v1alpha1.Collect{
-							PodLogs: &v1alpha1.PodLogs{
-								Namespace: "foo",
-							},
+						PodLogs: &v1alpha1.PodLogs{
+							Namespace: "foo",
 						},
 					}, {
-						Collect: &v1alpha1.Collect{
-							Events: &v1alpha1.Events{
-								Namespace: "foo",
-							},
+						Events: &v1alpha1.Events{
+							Namespace: "foo",
 						},
 					}, {
-						Exec: &v1alpha1.Exec{
-							Command: &v1alpha1.Command{
-								Entrypoint: "time",
-							},
+						Command: &v1alpha1.Command{
+							Entrypoint: "time",
 						},
 					}, {
-						Exec: &v1alpha1.Exec{
-							Script: &v1alpha1.Script{
-								Content: `echo "hello"`,
-							},
+						Script: &v1alpha1.Script{
+							Content: `echo "hello"`,
 						},
 					}},
 				},
@@ -154,28 +146,20 @@ func TestLoad(t *testing.T) {
 						},
 					}},
 					Finally: []v1alpha1.Finally{{
-						Collect: &v1alpha1.Collect{
-							PodLogs: &v1alpha1.PodLogs{
-								Namespace: "foo",
-							},
+						PodLogs: &v1alpha1.PodLogs{
+							Namespace: "foo",
 						},
 					}, {
-						Collect: &v1alpha1.Collect{
-							Events: &v1alpha1.Events{
-								Namespace: "foo",
-							},
+						Events: &v1alpha1.Events{
+							Namespace: "foo",
 						},
 					}, {
-						Exec: &v1alpha1.Exec{
-							Command: &v1alpha1.Command{
-								Entrypoint: "time",
-							},
+						Command: &v1alpha1.Command{
+							Entrypoint: "time",
 						},
 					}, {
-						Exec: &v1alpha1.Exec{
-							Script: &v1alpha1.Script{
-								Content: `echo "hello"`,
-							},
+						Script: &v1alpha1.Script{
+							Content: `echo "hello"`,
 						},
 					}},
 				},

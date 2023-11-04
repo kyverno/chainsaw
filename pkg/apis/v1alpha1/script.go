@@ -5,4 +5,8 @@ type Script struct {
 	// Content defines a shell script (run with "sh -c ...").
 	// +optional
 	Content string `json:"content,omitempty"`
+
+	// SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.
+	// +optional
+	SkipLogOutput bool `json:"skipLogOutput,omitempty"`
 }
