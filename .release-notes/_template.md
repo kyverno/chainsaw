@@ -3,6 +3,8 @@
 Release notes for `TODO`.
 
 <!--
+## :bangbang: Breaking chages :bangbang:
+
 ## :dizzy: New features :dizzy:
 
 ## :sparkles: UI changes :sparkles:
