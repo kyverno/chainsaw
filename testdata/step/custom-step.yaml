@@ -7,28 +7,28 @@ spec:
   try:
     - assert:
         file: /assertions/verify-service.yaml
-        timeout: 30s
-        continueOnError: false
+      timeout: 30s
+      continueOnError: false
     - apply:
         file: /configs/service-config.yaml
-        timeout: 45s
         shouldFail: false
-        continueOnError: true
+      timeout: 45s
+      continueOnError: true
     - error:
         file: /errors/expected-timeout-error.yaml
-        timeout: 15s
-        continueOnError: true
+      timeout: 15s
+      continueOnError: true
     - delete:
         apiVersion: v1
         kind: Pod
         name: example-pod
         namespace: test
-        timeout: 10s
-        continueOnError: false
+      timeout: 10s
+      continueOnError: false
     - exec:
+        skipLogOutput: false
         command:
           entrypoint: /bin/sh
           args:
           - echo "Executing script..."
-        skipLogOutput: false
-        continueOnError: true
+      continueOnError: true

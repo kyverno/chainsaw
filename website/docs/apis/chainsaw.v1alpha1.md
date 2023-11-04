@@ -63,9 +63,7 @@ should be applied during testing.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the</p> |
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `shouldFail` | `bool` |  |  | <p>ShouldFail determines whether applying the file is expected to fail.</p> |
-| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `Assert`     {#chainsaw-kyverno-io-v1alpha1-Assert}
 
@@ -80,8 +78,6 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the assertion.</p> |
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `Catch`     {#chainsaw-kyverno-io-v1alpha1-Catch}
 
@@ -163,9 +159,7 @@ If a resource already exists in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the</p> |
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `shouldFail` | `bool` |  |  | <p>ShouldFail determines whether applying the file is expected to fail.</p> |
-| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `Delete`     {#chainsaw-kyverno-io-v1alpha1-Delete}
 
@@ -179,8 +173,6 @@ If a resource already exists in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `ObjectReference` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: | :white_check_mark: | <p>ObjectReference determines objects to be deleted.</p> |
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
 
@@ -195,8 +187,6 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the expected error.</p> |
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `Events`     {#chainsaw-kyverno-io-v1alpha1-Events}
 
@@ -226,7 +216,6 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the command. Overrides the global timeout set in the Configuration.</p> |
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 
@@ -243,7 +232,6 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 |---|---|---|---|---|
 | `Exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  | :white_check_mark: | <p>Exec defines the command and/or script.</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
-| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
@@ -317,6 +305,8 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 | `assert` | [`Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents an assertion to be made. It checks whether the conditions specified in the assertion hold true.</p> |
 | `apply` | [`Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply represents resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
 | `create` | [`Create`](#chainsaw-kyverno-io-v1alpha1-Create) |  |  | <p>Create represents a creation operation.</p> |

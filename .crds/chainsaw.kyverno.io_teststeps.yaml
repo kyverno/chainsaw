@@ -111,10 +111,6 @@ spec:
                                 "sh -c ...").
                               type: string
                           type: object
-                        timeout:
-                          description: Timeout for the command. Overrides the global
-                            timeout set in the Configuration.
-                          type: string
                       type: object
                   type: object
                 type: array
@@ -195,10 +191,6 @@ spec:
                                 "sh -c ...").
                               type: string
                           type: object
-                        timeout:
-                          description: Timeout for the command. Overrides the global
-                            timeout set in the Configuration.
-                          type: string
                       type: object
                   type: object
                 type: array
@@ -240,12 +232,6 @@ spec:
                         settings or any other resources that need to be available
                         during the test.
                       properties:
-                        continueOnError:
-                          description: ContinueOnError determines whether a test should
-                            continue or not in case the operation was not successful.
-                            Even if the test continues executing, it will still be
-                            reported as failed.
-                          type: boolean
                         file:
                           description: File is the path to the referenced file.
                           type: string
@@ -253,10 +239,6 @@ spec:
                           description: ShouldFail determines whether applying the
                             file is expected to fail.
                           type: boolean
-                        timeout:
-                          description: Timeout for the operation. Overrides the global
-                            timeout set in the Configuration.
-                          type: string
                       required:
                       - file
                       type: object
@@ -264,31 +246,21 @@ spec:
                       description: Assert represents an assertion to be made. It checks
                         whether the conditions specified in the assertion hold true.
                       properties:
-                        continueOnError:
-                          description: ContinueOnError determines whether a test should
-                            continue or not in case the operation was not successful.
-                            Even if the test continues executing, it will still be
-                            reported as failed.
-                          type: boolean
                         file:
                           description: File is the path to the referenced file.
-                          type: string
-                        timeout:
-                          description: Timeout for the operation. Overrides the global
-                            timeout set in the Configuration.
                           type: string
                       required:
                       - file
                       type: object
+                    continueOnError:
+                      description: ContinueOnError determines whether a test should
+                        continue or not in case the operation was not successful.
+                        Even if the test continues executing, it will still be reported
+                        as failed.
+                      type: boolean
                     create:
                       description: Create represents a creation operation.
                       properties:
-                        continueOnError:
-                          description: ContinueOnError determines whether a test should
-                            continue or not in case the operation was not successful.
-                            Even if the test continues executing, it will still be
-                            reported as failed.
-                          type: boolean
                         file:
                           description: File is the path to the referenced file.
                           type: string
@@ -296,10 +268,6 @@ spec:
                           description: ShouldFail determines whether applying the
                             file is expected to fail.
                           type: boolean
-                        timeout:
-                          description: Timeout for the operation. Overrides the global
-                            timeout set in the Configuration.
-                          type: string
                       required:
                       - file
                       type: object
@@ -309,12 +277,6 @@ spec:
                         apiVersion:
                           description: API version of the referent.
                           type: string
-                        continueOnError:
-                          description: ContinueOnError determines whether a test should
-                            continue or not in case the operation was not successful.
-                            Even if the test continues executing, it will still be
-                            reported as failed.
-                          type: boolean
                         kind:
                           description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                           type: string
@@ -329,10 +291,6 @@ spec:
                         namespace:
                           description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                           type: string
-                        timeout:
-                          description: Timeout for the operation. Overrides the global
-                            timeout set in the Configuration.
-                          type: string
                       required:
                       - apiVersion
                       - kind
@@ -343,18 +301,8 @@ spec:
                         them as expected; otherwise, they will be treated as test
                         failures.
                       properties:
-                        continueOnError:
-                          description: ContinueOnError determines whether a test should
-                            continue or not in case the operation was not successful.
-                            Even if the test continues executing, it will still be
-                            reported as failed.
-                          type: boolean
                         file:
                           description: File is the path to the referenced file.
-                          type: string
-                        timeout:
-                          description: Timeout for the operation. Overrides the global
-                            timeout set in the Configuration.
                           type: string
                       required:
                       - file
@@ -378,12 +326,6 @@ spec:
                           required:
                           - entrypoint
                           type: object
-                        continueOnError:
-                          description: ContinueOnError determines whether a test should
-                            continue or not in case the operation was not successful.
-                            Even if the test continues executing, it will still be
-                            reported as failed.
-                          type: boolean
                         script:
                           description: Script defines a script to run.
                           properties:
@@ -396,11 +338,11 @@ spec:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
                           type: boolean
-                        timeout:
-                          description: Timeout for the command. Overrides the global
-                            timeout set in the Configuration.
-                          type: string
                       type: object
+                    timeout:
+                      description: Timeout for the operation. Overrides the global
+                        timeout set in the Configuration.
+                      type: string
                   type: object
                 type: array
             required:
