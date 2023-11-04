@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_events(t *testing.T) {
+func TestEvents(t *testing.T) {
 	tests := []struct {
 		name      string
 		collector *v1alpha1.Events
@@ -89,7 +89,7 @@ func Test_events(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := events(tt.collector)
+			got, err := Events(tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

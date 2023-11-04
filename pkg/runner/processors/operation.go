@@ -60,8 +60,13 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 	}
 
 	// Handle Exec
-	if operation.Exec != nil {
-		if err := p.client.Exec(ctx, operation.Timeout, operation.Exec.Exec, !operation.Exec.SkipLogOutput, namespace); err != nil {
+	if operation.Command != nil {
+		if err := p.client.Command(ctx, operation.Timeout, *operation.Command); err != nil {
+			fail(t, operation.ContinueOnError)
+		}
+	}
+	if operation.Script != nil {
+		if err := p.client.Script(ctx, operation.Timeout, *operation.Script); err != nil {
 			fail(t, operation.ContinueOnError)
 		}
 	}

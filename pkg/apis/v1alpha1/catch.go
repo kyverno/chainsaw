@@ -2,11 +2,19 @@ package v1alpha1
 
 // Catch defines actions to be executed on failure.
 type Catch struct {
-	// Collect define the collectors to run.
+	// PodLogs determines the pod logs collector to execute.
 	// +optional
-	Collect *Collect `json:"collect,omitempty"`
+	PodLogs *PodLogs `json:"podLogs,omitempty"`
 
-	// Exec define the commands and/or scripts to run.
+	// Events determines the events collector to execute.
 	// +optional
-	Exec *Exec `json:"exec,omitempty"`
+	Events *Events `json:"events,omitempty"`
+
+	// Command defines a command to run.
+	// +optional
+	Command *Command `json:"command,omitempty"`
+
+	// Script defines a script to run.
+	// +optional
+	Script *Script `json:"script,omitempty"`
 }

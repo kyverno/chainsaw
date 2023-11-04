@@ -90,29 +90,18 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `collect` | [`Collect`](#chainsaw-kyverno-io-v1alpha1-Collect) |  |  | <p>Collect define the collectors to run.</p> |
-| `exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  |  | <p>Exec define the commands and/or scripts to run.</p> |
-
-## `Collect`     {#chainsaw-kyverno-io-v1alpha1-Collect}
-
-**Appears in:**
-    
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
-
-<p>Collect defines a set of collectors.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
 | `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
+| `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
+| `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 
 ## `Command`     {#chainsaw-kyverno-io-v1alpha1-Command}
 
 **Appears in:**
     
-- [Exec](#chainsaw-kyverno-io-v1alpha1-Exec)
+- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
+- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Command describes a command to run as a part of a test step.</p>
 
@@ -121,6 +110,7 @@ during the testing process.</p>
 |---|---|---|---|---|
 | `entrypoint` | `string` | :white_check_mark: |  | <p>Entrypoint is the command entry point to run.</p> |
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
+| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -192,7 +182,8 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 **Appears in:**
     
-- [Collect](#chainsaw-kyverno-io-v1alpha1-Collect)
+- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
+- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
 
 <p>Events defines how to collects events.</p>
 
@@ -202,36 +193,6 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 | `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
-
-## `Exec`     {#chainsaw-kyverno-io-v1alpha1-Exec}
-
-**Appears in:**
-    
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [ExecOperation](#chainsaw-kyverno-io-v1alpha1-ExecOperation)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
-
-<p>Exec describes a command or script.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
-| `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
-
-## `ExecOperation`     {#chainsaw-kyverno-io-v1alpha1-ExecOperation}
-
-**Appears in:**
-    
-- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
-
-<p>Exec describes a command and/or script operation.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `Exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  | :white_check_mark: | <p>Exec defines the command and/or script.</p> |
-| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
@@ -260,8 +221,10 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `collect` | [`Collect`](#chainsaw-kyverno-io-v1alpha1-Collect) |  |  | <p>Collect define the collectors to run.</p> |
-| `exec` | [`Exec`](#chainsaw-kyverno-io-v1alpha1-Exec) |  |  | <p>Exec define the commands and/or scripts to run.</p> |
+| `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
+| `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
+| `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
+| `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 
 ## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
 
@@ -312,13 +275,15 @@ For multiple objects use labels.</p>
 | `create` | [`Create`](#chainsaw-kyverno-io-v1alpha1-Create) |  |  | <p>Create represents a creation operation.</p> |
 | `error` | [`Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 | `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a creation operation.</p> |
-| `exec` | [`ExecOperation`](#chainsaw-kyverno-io-v1alpha1-ExecOperation) |  |  | <p>Exec provides a command or script that should be executed as a part of this test step.</p> |
+| `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
+| `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 
 ## `PodLogs`     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 
 **Appears in:**
     
-- [Collect](#chainsaw-kyverno-io-v1alpha1-Collect)
+- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
+- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
 
 <p>PodLogs defines how to collects pod logs.</p>
 
@@ -343,7 +308,9 @@ For multiple objects use labels.</p>
 
 **Appears in:**
     
-- [Exec](#chainsaw-kyverno-io-v1alpha1-Exec)
+- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
+- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Script describes a script to run as a part of a test step.</p>
 
@@ -351,6 +318,7 @@ For multiple objects use labels.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
+| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 
 ## `TestSpec`     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
 

@@ -7,7 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
 
-func podLogs(collector *v1alpha1.PodLogs) (*v1alpha1.Command, error) {
+func PodLogs(collector *v1alpha1.PodLogs) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, nil
 	}

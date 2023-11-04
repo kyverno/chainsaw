@@ -21,7 +21,8 @@ type Client interface {
 	Create(context.Context, *metav1.Duration, ctrlclient.Object, bool, cleanup.Cleaner) error
 	Delete(context.Context, *metav1.Duration, ctrlclient.Object) error
 	Error(context.Context, *metav1.Duration, unstructured.Unstructured) error
-	Exec(context.Context, *metav1.Duration, v1alpha1.Exec, bool, string) error
+	Command(context.Context, *metav1.Duration, v1alpha1.Command) error
+	Script(context.Context, *metav1.Duration, v1alpha1.Script) error
 }
 
 type opClient struct {
@@ -103,8 +104,14 @@ func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unst
 	return operationError(ctx, expected, c.client)
 }
 
-func (c *opClient) Exec(ctx context.Context, to *metav1.Duration, exec v1alpha1.Exec, log bool, namespace string) error {
+func (c *opClient) Command(ctx context.Context, to *metav1.Duration, exec v1alpha1.Command) error {
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
 	defer cancel()
-	return operationExec(ctx, exec, log, namespace)
+	return operationCommand(ctx, exec, !exec.SkipLogOutput, c.namespacer.GetNamespace())
+}
+
+func (c *opClient) Script(ctx context.Context, to *metav1.Duration, exec v1alpha1.Script) error {
+	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
+	defer cancel()
+	return operationScript(ctx, exec, !exec.SkipLogOutput, c.namespacer.GetNamespace())
 }

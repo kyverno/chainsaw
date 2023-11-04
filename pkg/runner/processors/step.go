@@ -39,22 +39,31 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	defer func() {
 		t.Cleanup(func() {
 			for _, handler := range step.Finally {
-				collectors, err := collect.Commands(handler.Collect)
-				if err != nil {
-					logger.Log("COLLEC", color.BoldRed, err)
-					t.Fail()
-				} else {
-					for _, collector := range collectors {
-						exec := v1alpha1.Exec{
-							Command: collector,
-						}
-						if err := p.client.Exec(ctx, nil, exec, true, nspacer.GetNamespace()); err != nil {
-							t.Fail()
-						}
+				if handler.PodLogs != nil {
+					cmd, err := collect.PodLogs(handler.PodLogs)
+					if err != nil {
+						logger.Log("COLLEC", color.BoldRed, err)
+						t.Fail()
+					} else if err := p.client.Command(ctx, nil, *cmd); err != nil {
+						t.Fail()
 					}
 				}
-				if handler.Exec != nil {
-					if err := p.client.Exec(ctx, nil, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
+				if handler.Events != nil {
+					cmd, err := collect.Events(handler.Events)
+					if err != nil {
+						logger.Log("COLLEC", color.BoldRed, err)
+						t.Fail()
+					} else if err := p.client.Command(ctx, nil, *cmd); err != nil {
+						t.Fail()
+					}
+				}
+				if handler.Command != nil {
+					if err := p.client.Command(ctx, nil, *handler.Command); err != nil {
+						t.Fail()
+					}
+				}
+				if handler.Script != nil {
+					if err := p.client.Script(ctx, nil, *handler.Script); err != nil {
 						t.Fail()
 					}
 				}
@@ -65,22 +74,31 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		if t.Failed() {
 			t.Cleanup(func() {
 				for _, handler := range step.Catch {
-					collectors, err := collect.Commands(handler.Collect)
-					if err != nil {
-						logger.Log("COLLEC", color.BoldRed, err)
-						t.Fail()
-					} else {
-						for _, collector := range collectors {
-							exec := v1alpha1.Exec{
-								Command: collector,
-							}
-							if err := p.client.Exec(ctx, nil, exec, true, nspacer.GetNamespace()); err != nil {
-								t.Fail()
-							}
+					if handler.PodLogs != nil {
+						cmd, err := collect.PodLogs(handler.PodLogs)
+						if err != nil {
+							logger.Log("COLLEC", color.BoldRed, err)
+							t.Fail()
+						} else if err := p.client.Command(ctx, nil, *cmd); err != nil {
+							t.Fail()
 						}
 					}
-					if handler.Exec != nil {
-						if err := p.client.Exec(ctx, nil, *handler.Exec, true, nspacer.GetNamespace()); err != nil {
+					if handler.Events != nil {
+						cmd, err := collect.Events(handler.Events)
+						if err != nil {
+							logger.Log("COLLEC", color.BoldRed, err)
+							t.Fail()
+						} else if err := p.client.Command(ctx, nil, *cmd); err != nil {
+							t.Fail()
+						}
+					}
+					if handler.Command != nil {
+						if err := p.client.Command(ctx, nil, *handler.Command); err != nil {
+							t.Fail()
+						}
+					}
+					if handler.Script != nil {
+						if err := p.client.Script(ctx, nil, *handler.Script); err != nil {
 							t.Fail()
 						}
 					}
