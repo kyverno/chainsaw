@@ -19,15 +19,14 @@ A `Command` must have at least the `entrypoint` defined.
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - exec:
-              command:
-                entrypoint: time
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - command:
+            entrypoint: time
     ```
 
 ### Command with arguments
@@ -43,20 +42,19 @@ A `Command` must have at least the `entrypoint` defined.
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - exec:
-              command:
-                entrypoint: kubectl
-                args:
-                - get
-                - pod
-                - -n
-                - $NAMESPACE
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - command:
+            entrypoint: kubectl
+            args:
+            - get
+            - pod
+            - -n
+            - $NAMESPACE
     ```
 
 ### Timeout
@@ -64,7 +62,7 @@ A `Command` must have at least the `entrypoint` defined.
 An optional `timeout` can be configured.
 
 !!! note
-    Note that the `timeout` lives at the `exec` level, not at the `script` level.
+    Note that the `timeout` lives at the operation level, not at the `script` level.
 
 !!! example "Timeout example"
 
@@ -75,19 +73,18 @@ An optional `timeout` can be configured.
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - exec:
-              command:
-                timeout: 30s
-                entrypoint: kubectl
-                args:
-                - get
-                - pod
-                - -n
-                - $NAMESPACE
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - command:
+            entrypoint: kubectl
+            args:
+            - get
+            - pod
+            - -n
+            - $NAMESPACE
+          timeout: 30s
     ```

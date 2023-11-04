@@ -19,15 +19,14 @@ If a pod `name` is specified, Chainsaw will retrieve logs from this specific pod
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              podLogs:
-                name: my-pod
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - podLogs:
+            name: my-pod
     ```
 
 If a `namespace` is specified, Chainsaw will retrieve logs from this specific pod in the specified namespace.
@@ -41,16 +40,15 @@ If a `namespace` is specified, Chainsaw will retrieve logs from this specific po
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              podLogs:
-                name: my-pod
-                namespace: foo
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - podLogs:
+            name: my-pod
+            namespace: foo
     ```
 
 ### All pods
@@ -66,14 +64,13 @@ If no pod `name` and `namespace` is specified, Chainsaw will retrieve logs from 
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              podLogs: {}
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - podLogs: {}
     ```
 
 On the other hand, if a `namespace` is specified, Chainsaw will retrieve logs from all pods in the specified namespace.
@@ -87,15 +84,14 @@ On the other hand, if a `namespace` is specified, Chainsaw will retrieve logs fr
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              podLogs:
-                namespace: foo
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - podLogs:
+            namespace: foo
     ```
 
 ### Label selector
@@ -111,15 +107,14 @@ An optional [label selector](https://kubernetes.io/docs/concepts/overview/workin
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              podLogs:
-                selector: app=my-app
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - podLogs:
+            selector: app=my-app
     ```
 
 If a `namespace` is specified, Chainsaw will retrieve pod logs using the specified namespace.
@@ -133,16 +128,15 @@ If a `namespace` is specified, Chainsaw will retrieve pod logs using the specifi
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              podLogs:
-                selector: app=my-app
-                namespace: foo
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - podLogs:
+            selector: app=my-app
+            namespace: foo
     ```
 
 ### Tail
@@ -161,17 +155,16 @@ The `tail` field can be used to limit the amount of log lines retrieved when que
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              podLogs:
-                selector: app=my-app
-                namespace: foo
-                tail: 30
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - podLogs:
+            selector: app=my-app
+            namespace: foo
+            tail: 30
     ```
 
 ### Container
@@ -191,15 +184,14 @@ The `container` field can be used to retrieve logs from a specific container in 
       name: example
     spec:
       steps:
-      - spec:
-          apply:
-          - file: my-pod.yaml
-          assert:
-          - file: my-pod-assert.yaml
-          onFailure:
-          - collect:
-              podLogs:
-                selector: app=my-app
-                namespace: foo
-                container: nginx
+      - try:
+        - apply:
+            file: my-pod.yaml
+        - assert:
+            file: my-pod-assert.yaml
+        catch:
+        - podLogs:
+            selector: app=my-app
+            namespace: foo
+            container: nginx
     ```
