@@ -108,6 +108,20 @@ func Test_apply(t *testing.T) {
 			shouldFail:  false,
 			expectedErr: errors.New("patch failed"),
 		},
+		{
+			name:   "Fail to create non-existing resource",
+			object: podv1.DeepCopy(),
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+				},
+				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+					return errors.New("create failed")
+				},
+			},
+			shouldFail:  false,
+			expectedErr: errors.New("create failed"),
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
