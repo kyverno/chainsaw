@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/match"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -44,10 +44,19 @@ func operationError(ctx context.Context, expected unstructured.Unstructured, c c
 		} else {
 			for i := range candidates {
 				candidate := candidates[i]
-				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err == nil {
-					// at least one match found
-					errs = append(errs, fmt.Errorf("found an actual resource matching expectation (%s/%s / %s)", candidate.GetAPIVersion(), candidate.GetKind(), client.ObjectKey(&candidate)))
+				_errs, err := assert.Validate(ctx, expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
+				if err != nil {
+					return false, err
 				}
+				if len(_errs) == 0 {
+					for _, _err := range _errs {
+						errs = append(errs, _err)
+					}
+				}
+				// if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err == nil {
+				// 	// at least one match found
+				// 	errs = append(errs, fmt.Errorf("found an actual resource matching expectation (%s/%s / %s)", candidate.GetAPIVersion(), candidate.GetKind(), client.ObjectKey(&candidate)))
+				// }
 			}
 			return len(errs) == 0, nil
 		}

@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/match"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -46,12 +46,14 @@ func operationAssert(ctx context.Context, expected unstructured.Unstructured, c 
 		} else {
 			for i := range candidates {
 				candidate := candidates[i]
-				if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err != nil {
-					diffStr, err := diff(&expected, &candidate)
-					if err != nil {
-						return false, err
+				_errs, err := assert.Validate(ctx, expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
+				if err != nil {
+					return false, err
+				}
+				if len(_errs) != 0 {
+					for _, _err := range _errs {
+						errs = append(errs, _err)
 					}
-					errs = append(errs, fmt.Errorf("actual resource doesn't match expectation\n%s", diffStr))
 				} else {
 					// at least one match found
 					return true, nil
