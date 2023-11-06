@@ -2,7 +2,7 @@ package operations
 
 import (
 	"context"
-	"fmt"
+	"errors"
 	"testing"
 	"time"
 
@@ -10,7 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/apimachinery/pkg/api/errors"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -37,7 +37,7 @@ func Test_operationDelete(t *testing.T) {
 			object: pod,
 			client: &tclient.FakeClient{
 				GetFn: func(_ context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
-					return errors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 				},
 				DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
 					return nil
@@ -51,13 +51,13 @@ func Test_operationDelete(t *testing.T) {
 			object: pod.DeepCopy(),
 			client: &tclient.FakeClient{
 				GetFn: func(_ context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
-					return errors.NewInternalError(fmt.Errorf("failed to get the pod"))
+					return kerrors.NewInternalError(errors.New("failed to get the pod"))
 				},
 				DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
 					return nil
 				},
 			},
-			expectedErr:  errors.NewInternalError(fmt.Errorf("failed to get the pod")),
+			expectedErr:  kerrors.NewInternalError(errors.New("failed to get the pod")),
 			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [ERROR\nInternal error occurred: failed to get the pod]"},
 		},
 		{
@@ -68,10 +68,10 @@ func Test_operationDelete(t *testing.T) {
 					return nil
 				},
 				DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
-					return errors.NewInternalError(fmt.Errorf("failed to delete the pod"))
+					return kerrors.NewInternalError(errors.New("failed to delete the pod"))
 				},
 			},
-			expectedErr:  errors.NewInternalError(fmt.Errorf("failed to delete the pod")),
+			expectedErr:  kerrors.NewInternalError(errors.New("failed to delete the pod")),
 			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [ERROR\nInternal error occurred: failed to delete the pod]"},
 		},
 		{
@@ -82,7 +82,7 @@ func Test_operationDelete(t *testing.T) {
 					if call < 10 {
 						return nil
 					}
-					return errors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 				},
 				DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
 					return nil
