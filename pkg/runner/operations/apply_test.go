@@ -92,7 +92,23 @@ func Test_apply(t *testing.T) {
 		},
 		shouldFail:  true,
 		expectedErr: errors.New("some arbitrary error"),
-	}}
+	},
+		{
+			name:   "Fail to patch existing resource",
+			object: podv2.DeepCopy(),
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+					*obj.(*unstructured.Unstructured) = *podv1.DeepCopy()
+					return nil
+				},
+				PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+					return errors.New("patch failed")
+				},
+			},
+			shouldFail:  false,
+			expectedErr: errors.New("patch failed"),
+		},
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
