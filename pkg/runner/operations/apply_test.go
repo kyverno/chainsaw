@@ -55,44 +55,47 @@ func Test_apply(t *testing.T) {
 		client      *tclient.FakeClient
 		shouldFail  bool
 		expectedErr error
-	}{{
-		name:   "Resource already exists, patch it",
-		object: podv2.DeepCopy(),
-		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
-				*obj.(*unstructured.Unstructured) = *podv1.DeepCopy()
-				return nil
+	}{
+		{
+			name:   "Resource already exists, patch it",
+			object: podv2.DeepCopy(),
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+					*obj.(*unstructured.Unstructured) = *podv1.DeepCopy()
+					return nil
+				},
+				PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+					return nil
+				},
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
-				return nil
-			},
+			shouldFail:  false,
+			expectedErr: nil,
 		},
-		shouldFail:  false,
-		expectedErr: nil,
-	}, {
-		name:   "Resource does not exist, create it",
-		object: podv1,
-		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+		{
+			name:   "Resource does not exist, create it",
+			object: podv1,
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+				},
+				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+					return nil
+				},
 			},
-			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
-				return nil
-			},
+			shouldFail:  false,
+			expectedErr: nil,
 		},
-		shouldFail:  false,
-		expectedErr: nil,
-	}, {
-		name:   "Error while getting resource",
-		object: podv1.DeepCopy(),
-		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
-				return errors.New("some arbitrary error")
+		{
+			name:   "Error while getting resource",
+			object: podv1.DeepCopy(),
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+					return errors.New("some arbitrary error")
+				},
 			},
+			shouldFail:  true,
+			expectedErr: errors.New("some arbitrary error"),
 		},
-		shouldFail:  true,
-		expectedErr: errors.New("some arbitrary error"),
-	},
 		{
 			name:   "Fail to patch existing resource",
 			object: podv2.DeepCopy(),
