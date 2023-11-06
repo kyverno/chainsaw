@@ -23,32 +23,33 @@ func Test_operationAssert(t *testing.T) {
 		client       *tclient.FakeClient
 		expectedLogs []string
 		expectErr    bool
-	}{{
-		name: "Successful match using Get",
-		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
-				"apiVersion": "v1",
-				"kind":       "Pod",
-				"metadata": map[string]interface{}{
-					"name": "test-pod",
-				},
-			},
-		},
-		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-				t.Helper()
-				obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+	}{
+		{
+			name: "Successful match using Get",
+			expected: unstructured.Unstructured{
+				Object: map[string]interface{}{
 					"apiVersion": "v1",
 					"kind":       "Pod",
 					"metadata": map[string]interface{}{
 						"name": "test-pod",
 					},
-				}
-				return nil
+				},
 			},
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					t.Helper()
+					obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+						"apiVersion": "v1",
+						"kind":       "Pod",
+						"metadata": map[string]interface{}{
+							"name": "test-pod",
+						},
+					}
+					return nil
+				},
+			},
+			expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [DONE]"},
 		},
-		expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [DONE]"},
-	},
 		{
 			name: "Failed match using Get",
 			expected: unstructured.Unstructured{
@@ -141,7 +142,8 @@ func Test_operationAssert(t *testing.T) {
 									"app": "my-app",
 								},
 							},
-						}})
+						},
+					})
 					return nil
 				},
 			},

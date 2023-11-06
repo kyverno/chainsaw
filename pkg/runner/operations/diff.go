@@ -9,8 +9,10 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-type diffLibInterface = func(difflib.UnifiedDiff) (string, error)
-type yamlMarshaler func(obj interface{}) ([]byte, error)
+type (
+	diffLibInterface = func(difflib.UnifiedDiff) (string, error)
+	yamlMarshaler    func(obj interface{}) ([]byte, error)
+)
 
 func diff(expected, actual ctrlclient.Object) (string, error) {
 	return diffHelper(expected, actual, nil, nil, nil)
