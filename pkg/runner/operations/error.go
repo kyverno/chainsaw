@@ -49,9 +49,7 @@ func operationError(ctx context.Context, expected unstructured.Unstructured, c c
 					return false, err
 				}
 				if len(_errs) == 0 {
-					for _, _err := range _errs {
-						errs = append(errs, _err)
-					}
+					errs = append(errs, fmt.Errorf("found an actual resource matching expectation (%s/%s / %s)", candidate.GetAPIVersion(), candidate.GetKind(), client.ObjectKey(&candidate)))
 				}
 				// if err := match.Match(expected.UnstructuredContent(), candidate.UnstructuredContent()); err == nil {
 				// 	// at least one match found
