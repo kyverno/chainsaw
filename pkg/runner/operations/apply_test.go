@@ -5,7 +5,9 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
+	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
@@ -49,10 +51,16 @@ func Test_apply(t *testing.T) {
 			},
 		},
 	}
+	var cleanerCalled bool
+	testCleaner := func(obj ctrlclient.Object, c client.Client) {
+		cleanerCalled = true
+	}
+
 	tests := []struct {
 		name        string
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
+		cleaner     cleanup.Cleaner
 		shouldFail  bool
 		expectedErr error
 	}{
@@ -183,16 +191,35 @@ func Test_apply(t *testing.T) {
 			shouldFail:  true,
 			expectedErr: nil,
 		},
+		{
+			name:   "Resource does not exist, create it and call cleaner",
+			object: podv1.DeepCopy(),
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pods").GroupResource(), key.Name)
+				},
+				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+					return nil
+				},
+			},
+			cleaner:     testCleaner,
+			shouldFail:  false,
+			expectedErr: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			cleanerCalled = false
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
-			err := operationApply(ctx, tt.object, tt.client, tt.shouldFail, nil)
+			err := operationApply(ctx, tt.object, tt.client, tt.shouldFail, tt.cleaner)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
+			}
+			if tt.cleaner != nil {
+				assert.True(t, cleanerCalled, "cleaner was not called when expected")
 			}
 		})
 	}
