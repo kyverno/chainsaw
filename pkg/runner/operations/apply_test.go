@@ -151,6 +151,35 @@ func Test_apply(t *testing.T) {
 			shouldFail:  true,
 			expectedErr: errors.New("an error was expected but didn't happen"),
 		},
+		{
+			name:   "Expected patch failure",
+			object: podv2.DeepCopy(),
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+					*obj.(*unstructured.Unstructured) = *podv1.DeepCopy()
+					return nil
+				},
+				PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+					return errors.New("expected patch failure")
+				},
+			},
+			shouldFail:  true,
+			expectedErr: nil,
+		},
+		{
+			name:   "Expected create failure",
+			object: podv1.DeepCopy(),
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pods").GroupResource(), key.Name)
+				},
+				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+					return errors.New("expected create failure")
+				},
+			},
+			shouldFail:  true,
+			expectedErr: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
