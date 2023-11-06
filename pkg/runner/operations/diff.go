@@ -29,11 +29,11 @@ func diffHelper(expected, actual interface{}, expectedMarshaler, actualMarshaler
 
 	expectedBytes, err := expectedMarshaler(expected)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to marshal expected content to YAML: %w", err)
 	}
 	candidateBytes, err := actualMarshaler(actual)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to marshal candidate content to YAML: %w", err)
 	}
 
 	diff := difflib.UnifiedDiff{

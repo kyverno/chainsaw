@@ -80,7 +80,7 @@ func TestDiff(t *testing.T) {
 	}
 }
 
-func Test_diffHelper(t *testing.T) {
+func Test_diffHelper_Error(t *testing.T) {
 	mockData := &unstructured.Unstructured{}
 
 	testCases := []struct {
