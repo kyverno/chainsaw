@@ -147,31 +147,39 @@ func Test_operationAssert(t *testing.T) {
 			},
 			expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [DONE]"},
 		},
-		// {
-		// 	name: "No resources found using List",
-		// 	expected: unstructured.Unstructured{
-		// 		Object: map[string]interface{}{
-		// 			"apiVersion": "apps/v1",
-		// 			"kind":       "Deployment",
-		// 			"metadata": map[string]interface{}{
-		// 				"namespace": "test-ns",
-		// 				"labels": map[string]interface{}{
-		// 					"app": "my-app",
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// 	client: &tclient.FakeClient{
-		// 		ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
-		// 			t.Helper()
-		// 			uList := list.(*unstructured.UnstructuredList)
-		// 			uList.Items = []unstructured.Unstructured{}
-		// 			return nil
-		// 		},
-		// 	},
-		// 	expectErr:    true,
-		// 	expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [ERROR\nno actual resource found]"},
-		// },
+		{
+			name: "No resources found using List",
+			expected: unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiVersion": "v1",
+					"kind":       "Pod",
+					"metadata": map[string]interface{}{
+						"namespace": "test-ns",
+						"labels": map[string]interface{}{
+							"app": "my-app",
+						},
+					},
+					"spec": map[string]interface{}{
+						"containers": []interface{}{
+							map[string]interface{}{
+								"name":  "test-container",
+								"image": "test-image",
+							},
+						},
+					},
+				},
+			},
+			client: &tclient.FakeClient{
+				ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+					t.Helper()
+					uList := list.(*unstructured.UnstructuredList)
+					uList.Items = nil
+					return nil
+				},
+			},
+			expectErr:    true,
+			expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [ERROR\nno actual resource found]"},
+		},
 		{
 			name: "List operation fails",
 			expected: unstructured.Unstructured{
