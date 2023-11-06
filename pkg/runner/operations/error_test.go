@@ -2,6 +2,7 @@ package operations
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"testing"
 	"time"
@@ -10,7 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/apimachinery/pkg/api/errors"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -38,14 +39,28 @@ func Test_operationError(t *testing.T) {
 			expected: expected,
 			client: &tclient.FakeClient{
 				ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
-					return errors.NewNotFound(list.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), "test-pod")
+					return kerrors.NewNotFound(list.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), "test-pod")
 				},
 				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return errors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), "test-pod")
+					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), "test-pod")
 				},
 			},
 			expectedErr:  nil,
 			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [DONE]"},
+		},
+		{
+			name:     "Internal error",
+			expected: expected,
+			client: &tclient.FakeClient{
+				ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+					return errors.New("internal error")
+				},
+				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return errors.New("internal error")
+				},
+			},
+			expectedErr:  errors.New("internal error"),
+			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [ERROR\ninternal error]"},
 		},
 		{
 			name:     "Resource matches actual",
