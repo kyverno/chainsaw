@@ -90,8 +90,11 @@ func Test_operationAssert(t *testing.T) {
 					return nil
 				},
 			},
-			expectErr:    true,
-			expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [ERROR\nactual resource doesn't match expectation\n--- Expected\n+++ Actual\n@@ -4,6 +4,6 @@\n   name: test-pod\n spec:\n   containers:\n-  - image: test-image\n-    name: test-container\n+  - image: fake-image\n+    name: fake-container]"},
+			expectErr: true,
+			expectedLogs: []string{
+				"ASSERT: [RUNNING...]",
+				"ASSERT: [ERROR\nresource test-pod doesn't match expectation:\n    spec.containers[0].name: Invalid value: \"fake-container\": Expected value: \"test-container\"\n    spec.containers[0].image: Invalid value: \"fake-image\": Expected value: \"test-image\"]",
+			},
 		},
 		{
 			name: "Not found using Get",
@@ -209,7 +212,7 @@ func Test_operationAssert(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
-			ctxt, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+			ctxt, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 			ctx := logging.IntoContext(ctxt, logger)
 			err := operationAssert(ctx, tt.expected, tt.client)
