@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -51,9 +52,11 @@ func operationAssert(ctx context.Context, expected unstructured.Unstructured, c 
 					return false, err
 				}
 				if len(_errs) != 0 {
+					var output []string
 					for _, _err := range _errs {
-						errs = append(errs, _err)
+						output = append(output, "    "+_err.Error())
 					}
+					errs = append(errs, fmt.Errorf("resource %s doesn't match expectation:\n%s", client.Name(client.ObjectKey(&candidate)), strings.Join(output, "\n")))
 				} else {
 					// at least one match found
 					return true, nil
