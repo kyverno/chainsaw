@@ -1,8 +1,10 @@
 package operations
 
 import (
+	"fmt"
 	"testing"
 
+	"github.com/pmezard/go-difflib/difflib"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -74,6 +76,49 @@ func TestDiff(t *testing.T) {
 			}
 
 			assert.EqualValues(t, tt.expectedDiff, gotDiff)
+		})
+	}
+}
+
+func Test_diffHelper_Error(t *testing.T) {
+	mockData := &unstructured.Unstructured{}
+
+	testCases := []struct {
+		name              string
+		expected          interface{}
+		actual            interface{}
+		expectedMarshaler yamlMarshaler
+		actualMarshaler   yamlMarshaler
+		getDiffString     diffLibInterface
+	}{
+		{
+			name:     "error in expected marshaler",
+			expected: mockData,
+			actual:   mockData,
+			expectedMarshaler: func(obj interface{}) ([]byte, error) {
+				return nil, fmt.Errorf("expected marshal error")
+			},
+		},
+		{
+			name:     "error in actual marshaler",
+			expected: mockData,
+			actual:   mockData,
+			actualMarshaler: func(obj interface{}) ([]byte, error) {
+				return nil, fmt.Errorf("actual marshal error")
+			},
+		},
+		{
+			name:          "error in getting diff string",
+			expected:      mockData,
+			actual:        mockData,
+			getDiffString: func(diff difflib.UnifiedDiff) (string, error) { return "", fmt.Errorf("diff string error") },
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := diffHelper(tc.expected, tc.actual, tc.expectedMarshaler, tc.actualMarshaler, tc.getDiffString)
+			assert.Error(t, err)
 		})
 	}
 }
