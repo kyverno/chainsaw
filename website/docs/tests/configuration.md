@@ -98,7 +98,7 @@ Even after a configuration is loaded, you can override specific settings using c
 chainsaw test                           \
     --config path/to/your/config.yaml   \
     --test-dir path/to/test/dir         \
-    --apply-timeout 45s                 \
+    --assert-timeout 45s                \
     --skip-delete false                 \
     --fail-fast true                    \
     --parallel 4                        \
