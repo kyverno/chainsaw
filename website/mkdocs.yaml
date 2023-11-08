@@ -15,6 +15,15 @@ nav:
     - tests/with-manifests.md
     - tests/with-test-steps.md
     - tests/with-test.md
+  - Operations:
+    - tests/operations/index.md
+    - tests/operations/apply.md
+    - tests/operations/create.md
+    - tests/operations/delete.md
+    - tests/operations/assert.md
+    - tests/operations/error.md
+    - tests/operations/command.md
+    - tests/operations/script.md
   - Catch and Finally:
     - tests/catch-finally/index.md
     - tests/catch-finally/pod-logs.md
