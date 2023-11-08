@@ -49,6 +49,18 @@ func operationApply(ctx context.Context, obj ctrlclient.Object, c client.Client,
 			} else if shouldFail {
 				return false, errors.New("an error was expected but didn't happen")
 			}
+			statusBytes, err := json.Marshal(obj)
+			if err != nil {
+				return false, err
+			}
+			if err := c.Status().Patch(ctx, obj, ctrlclient.RawPatch(types.MergePatchType, statusBytes)); err != nil {
+				if shouldFail {
+					return true, nil
+				}
+				return false, err
+			} else if shouldFail {
+				return false, errors.New("an error was expected but didn't happen")
+			}
 		} else if kerrors.IsNotFound(err) {
 			if err := c.Create(ctx, obj); err != nil {
 				if shouldFail {

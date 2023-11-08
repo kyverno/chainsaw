@@ -2,6 +2,7 @@ package operations
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/wait"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -39,6 +41,21 @@ func operationCreate(ctx context.Context, obj ctrlclient.Object, c client.Client
 				}
 				return false, err
 			} else {
+				if obj.GetGeneration() != 0 {
+					statusBytes, err := json.Marshal(obj)
+					if err != nil {
+						return false, err
+					}
+					if err := c.Status().Patch(ctx, obj, ctrlclient.RawPatch(types.MergePatchType, statusBytes)); err != nil {
+						if shouldFail {
+							return true, nil
+						}
+						return false, err
+					} else if shouldFail {
+						return false, errors.New("an error was expected but didn't happen")
+					}
+				}
+
 				if cleaner != nil {
 					cleaner(obj, c)
 				}
