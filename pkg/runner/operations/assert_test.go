@@ -93,7 +93,7 @@ func Test_operationAssert(t *testing.T) {
 			expectErr: true,
 			expectedLogs: []string{
 				"ASSERT: [RUNNING...]",
-				"ASSERT: [ERROR\nresource test-pod doesn't match expectation:\n    spec.containers[0].name: Invalid value: \"fake-container\": Expected value: \"test-container\"\n    spec.containers[0].image: Invalid value: \"fake-image\": Expected value: \"test-image\"]",
+				"ASSERT: [ERROR\nresource test-pod doesn't match expectation:\n    spec.containers[0].image: Invalid value: \"fake-image\": Expected value: \"test-image\"\n    spec.containers[0].name: Invalid value: \"fake-container\": Expected value: \"test-container\"]",
 			},
 		},
 		{
