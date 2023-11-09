@@ -68,6 +68,7 @@ type ConfigurationSpec struct {
 	RepeatCount *int `json:"repeatCount,omitempty"`
 
 	// TestFile is the name of the file containing the test to run.
+	// +kubebuilder:default:="chainsaw-test.yaml"
 	// +optional
 	TestFile string `json:"testFile,omitempty"`
 }

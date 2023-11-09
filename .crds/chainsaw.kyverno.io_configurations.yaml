@@ -89,6 +89,11 @@ spec:
                 items:
                   type: string
                 type: array
+              testFile:
+                default: chainsaw-test.yaml
+                description: TestFile is the name of the file containing the test
+                  to run.
+                type: string
               timeouts:
                 description: Global timeouts configuration. Applies to all tests/test
                   steps if not overridden.
