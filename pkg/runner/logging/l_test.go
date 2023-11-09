@@ -28,7 +28,7 @@ func TestNewLogger(t *testing.T) {
 	assert.Nil(t, logger.resource)
 }
 
-func TestLog(t *testing.T) {
+func Test_logger_Log(t *testing.T) {
 	fakeClock := tclock.NewFakePassiveClock(time.Now())
 	mockT := &tlogging.FakeTLogger{}
 	fakeLogger := NewLogger(mockT, fakeClock, "testName", "stepName").(*logger)
@@ -86,7 +86,6 @@ func TestLog(t *testing.T) {
 			if tt.resource != nil {
 				fakeLogger = fakeLogger.WithResource(tt.resource).(*logger)
 			}
-
 			fakeLogger.Log(tt.operation, tt.color, tt.args...)
 			for _, exp := range tt.expectContains {
 				found := false
@@ -103,7 +102,7 @@ func TestLog(t *testing.T) {
 	}
 }
 
-func TestWithResource(t *testing.T) {
+func Test_logger_WithResource(t *testing.T) {
 	testCases := []struct {
 		name      string
 		resource  ctrlclient.Object
