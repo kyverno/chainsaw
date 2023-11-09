@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -56,6 +57,7 @@ func operationAssert(ctx context.Context, expected unstructured.Unstructured, c 
 					for _, _err := range _errs {
 						output = append(output, "    "+_err.Error())
 					}
+					slices.Sort(output)
 					errs = append(errs, fmt.Errorf("resource %s doesn't match expectation:\n%s", client.Name(client.ObjectKey(&candidate)), strings.Join(output, "\n")))
 				} else {
 					// at least one match found
