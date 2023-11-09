@@ -11,6 +11,7 @@ spec:
     cleanup: 5s
     exec: 10s
   skipDelete: true
+  testFile: custom-test.yaml
   failFast: true
   parallel: 4
   reportFormat: "JSON"
