@@ -135,6 +135,7 @@ during the testing process.</p>
 | `excludeTestRegex` | `string` |  |  | <p>ExcludeTestRegex is used to exclude tests based on a regular expression.</p> |
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
 | `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
+| `testFile` | `string` |  |  | <p>TestFile is the name of the file containing the test to run.</p> |
 
 ## `Create`     {#chainsaw-kyverno-io-v1alpha1-Create}
 

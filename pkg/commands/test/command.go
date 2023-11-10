@@ -24,6 +24,7 @@ import (
 
 type options struct {
 	config              string
+	testFile            string
 	applyTimeout        metav1.Duration
 	assertTimeout       metav1.Duration
 	errorTimeout        metav1.Duration
@@ -86,6 +87,9 @@ func Command() *cobra.Command {
 			}
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
+			if flagutils.IsSet(flags, "test-file") {
+				configuration.Spec.TestFile = options.testFile
+			}
 			if flagutils.IsSet(flags, "apply-timeout") {
 				configuration.Spec.Timeouts.Apply = &options.applyTimeout
 			}
@@ -137,6 +141,7 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "exclude-test-regex") {
 				configuration.Spec.ExcludeTestRegex = options.excludeTestRegex
 			}
+			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.TestFile)
 			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
@@ -172,7 +177,7 @@ func Command() *cobra.Command {
 			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
-			tests, err := discovery.DiscoverTests("chainsaw-test.yaml", configuration.Spec.TestDirs...)
+			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, configuration.Spec.TestDirs...)
 			if err != nil {
 				return err
 			}
@@ -209,6 +214,7 @@ func Command() *cobra.Command {
 			return err
 		},
 	}
+	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test.yaml", "Name of the test file.")
 	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", timeout.DefaultApplyTimeout, "The apply timeout to use as default for configuration.")
 	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", timeout.DefaultAssertTimeout, "The assert timeout to use as default for configuration.")
 	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", timeout.DefaultErrorTimeout, "The error timeout to use as default for configuration.")

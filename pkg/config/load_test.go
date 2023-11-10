@@ -48,6 +48,7 @@ func TestLoad(t *testing.T) {
 				Name: "default",
 			},
 			Spec: v1alpha1.ConfigurationSpec{
+				TestFile:         "chainsaw-test.yaml",
 				SkipDelete:       false,
 				FailFast:         false,
 				ReportFormat:     "",
@@ -77,6 +78,7 @@ func TestLoad(t *testing.T) {
 					Cleanup: &metav1.Duration{Duration: 5 * time.Second},
 					Exec:    &metav1.Duration{Duration: 10 * time.Second},
 				},
+				TestFile:         "custom-test.yaml",
 				SkipDelete:       true,
 				FailFast:         true,
 				Parallel:         ptr.To(4),
