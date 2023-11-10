@@ -9,13 +9,13 @@ import (
 
 // TODO: not thread safe
 type FakeClient struct {
-	GetFn          func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error
-	CreateFn       func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error
-	DeleteFn       func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error
-	ListFn         func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error
-	PatchFn        func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error
-	IsNamespacedFn func(call int, obj runtime.Object) (bool, error)
-	numCalls       int
+	GetFn                func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error
+	CreateFn             func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error
+	DeleteFn             func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error
+	ListFn               func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error
+	PatchFn              func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error
+	IsObjectNamespacedFn func(call int, obj runtime.Object) (bool, error)
+	numCalls             int
 }
 
 func (c *FakeClient) Get(ctx context.Context, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -45,7 +45,7 @@ func (c *FakeClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctr
 
 func (c *FakeClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 	defer func() { c.numCalls++ }()
-	return c.IsNamespacedFn(c.numCalls, obj)
+	return c.IsObjectNamespacedFn(c.numCalls, obj)
 }
 
 func (c *FakeClient) NumCalls() int {
