@@ -491,7 +491,7 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				IsNamespacedFn: func(_ int, _ runtime.Object) (bool, error) {
+				IsObjectNamespacedFn: func(_ int, _ runtime.Object) (bool, error) {
 					return false, errors.New("test")
 				},
 			}
@@ -510,7 +510,7 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				IsNamespacedFn: func(_ int, _ runtime.Object) (bool, error) {
+				IsObjectNamespacedFn: func(_ int, _ runtime.Object) (bool, error) {
 					return false, nil
 				},
 			}
@@ -530,7 +530,7 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				IsNamespacedFn: func(_ int, _ runtime.Object) (bool, error) {
+				IsObjectNamespacedFn: func(_ int, _ runtime.Object) (bool, error) {
 					return true, nil
 				},
 			}

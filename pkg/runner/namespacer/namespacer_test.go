@@ -53,7 +53,7 @@ func TestNamespacer(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mock := &tclient.FakeClient{
-				IsNamespacedFn: func(_ int, obj runtime.Object) (bool, error) {
+				IsObjectNamespacedFn: func(_ int, obj runtime.Object) (bool, error) {
 					t.Helper()
 					if tt.clientErr != nil {
 						return false, tt.clientErr
