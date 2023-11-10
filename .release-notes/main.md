@@ -13,9 +13,11 @@ Release notes for `TODO`.
 
 ## :boat: Tutorials :boat:
 
-## :wrench: Fixes :wrench:
-
 ## :books: Docs :books:
 
 ## :guitar: Misc :guitar:
 -->
+
+## :wrench: Fixes :wrench:
+
+- Sort error messages to get predictable output
