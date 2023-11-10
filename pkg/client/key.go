@@ -15,23 +15,8 @@ func ObjectKey(obj metav1.Object) ctrlclient.ObjectKey {
 	}
 }
 
-func ObjectName(obj metav1.Object) string {
-	name := obj.GetName()
-	if ns := obj.GetNamespace(); ns != "" {
-		name = ns + "/" + name
-	}
-	return name
-}
-
 func Name(key ctrlclient.ObjectKey) string {
-	name := key.Name
-	if name == "" {
-		name = "*"
-	}
-	if key.Namespace != "" {
-		name = key.Namespace + "/" + name
-	}
-	return name
+	return ColouredName(key, nil)
 }
 
 func ColouredName(key ctrlclient.ObjectKey, color *color.Color) string {
