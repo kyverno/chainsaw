@@ -14,7 +14,7 @@
             "args": [
                 "test",
                 "--test-dir",
-                "./quick-start/fail",
+                "./quick-start/pass",
             ]
         }
     ]

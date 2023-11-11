@@ -59,8 +59,10 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "foo.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
 							},
 						},
 					}, {
@@ -88,8 +90,10 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "foo.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
 							},
 						},
 					}, {
@@ -134,8 +138,10 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "foo.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
 							},
 						},
 					}, {
@@ -180,8 +186,10 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "foo.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
 							},
 						},
 					}, {
@@ -204,8 +212,10 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "bar.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "bar.yaml",
+								},
 							},
 						},
 					}, {
