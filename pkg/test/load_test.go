@@ -19,6 +19,11 @@ import (
 
 func TestLoad(t *testing.T) {
 	basePath := "../../testdata/test"
+	cm := unstructured.Unstructured{}
+	cm.SetAPIVersion("v1")
+	cm.SetKind("ConfigMap")
+	cm.SetName("chainsaw-quick-start")
+	assert.NoError(t, unstructured.SetNestedStringMap(cm.Object, map[string]string{"foo": "bar"}, "data"))
 	tests := []struct {
 		name    string
 		path    string
@@ -143,6 +148,41 @@ func TestLoad(t *testing.T) {
 			},
 			Spec: v1alpha1.TestSpec{
 				Steps: []v1alpha1.TestSpecStep{},
+			},
+		}},
+	}, {
+		name: "raw",
+		path: filepath.Join(basePath, "raw-resource.yaml"),
+		want: []*v1alpha1.Test{{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "chainsaw.kyverno.io/v1alpha1",
+				Kind:       "Test",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "test-1",
+			},
+			Spec: v1alpha1.TestSpec{
+				Steps: []v1alpha1.TestSpecStep{{
+					Spec: v1alpha1.TestStepSpec{
+						Try: []v1alpha1.Operation{{
+							Apply: &v1alpha1.Apply{
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									Resource: &cm,
+								},
+							},
+						}},
+					},
+				}, {
+					Spec: v1alpha1.TestStepSpec{
+						Try: []v1alpha1.Operation{{
+							Create: &v1alpha1.Create{
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									Resource: &cm,
+								},
+							},
+						}},
+					},
+				}},
 			},
 		}},
 	}}

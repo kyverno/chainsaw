@@ -316,6 +316,11 @@ spec:
                               file:
                                 description: File is the path to the referenced file.
                                 type: string
+                              resource:
+                                description: Resource provides a resource to be applied.
+                                type: object
+                                x-kubernetes-embedded-resource: true
+                                x-kubernetes-preserve-unknown-fields: true
                               shouldFail:
                                 description: ShouldFail determines whether applying
                                   the file is expected to fail.

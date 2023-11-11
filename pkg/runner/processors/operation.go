@@ -103,14 +103,21 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 	}
 	// Handle Create
 	if operation.Create != nil {
-		resources, err := resource.Load(filepath.Join(test.BasePath, operation.Create.File))
-		if err != nil {
-			logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
-			fail(t, operation.ContinueOnError)
+		var resources []ctrlclient.Object
+		if operation.Create.Resource != nil {
+			resources = append(resources, operation.Create.Resource)
+		} else {
+			loaded, err := resource.Load(filepath.Join(test.BasePath, operation.Create.File))
+			if err != nil {
+				logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
+				fail(t, operation.ContinueOnError)
+			}
+			for i := range loaded {
+				resources = append(resources, &loaded[i])
+			}
 		}
 		shouldFail := operation.Create.ShouldFail != nil && *operation.Create.ShouldFail
-		for i := range resources {
-			resource := &resources[i]
+		for _, resource := range resources {
 			if err := p.client.Apply(ctx, operation.Timeout, resource, shouldFail, cleaner); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
