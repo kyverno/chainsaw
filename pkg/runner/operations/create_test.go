@@ -44,6 +44,7 @@ func Test_create(t *testing.T) {
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
 		shouldFail  bool
+		dryrun      bool
 		expectedErr error
 	}{
 		{
@@ -145,7 +146,7 @@ func Test_create(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
-			err := operationCreate(ctx, tt.object, tt.client, tt.shouldFail, tt.cleaner)
+			err := operationCreate(ctx, tt.object, tt.client, tt.shouldFail, tt.dryrun, tt.cleaner)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

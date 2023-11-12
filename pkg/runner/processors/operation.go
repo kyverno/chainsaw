@@ -96,7 +96,7 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 		}
 		shouldFail := operation.Apply.ShouldFail != nil && *operation.Apply.ShouldFail
 		for _, resource := range resources {
-			if err := p.client.Apply(ctx, operation.Timeout, resource, shouldFail, cleaner); err != nil {
+			if err := p.client.Apply(ctx, operation.Timeout, resource, shouldFail, operation.Apply.DryRun, cleaner); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -118,7 +118,7 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 		}
 		shouldFail := operation.Create.ShouldFail != nil && *operation.Create.ShouldFail
 		for _, resource := range resources {
-			if err := p.client.Apply(ctx, operation.Timeout, resource, shouldFail, cleaner); err != nil {
+			if err := p.client.Create(ctx, operation.Timeout, resource, shouldFail, operation.Create.DryRun, cleaner); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}

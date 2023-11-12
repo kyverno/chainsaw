@@ -62,6 +62,7 @@ func Test_apply(t *testing.T) {
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
 		shouldFail  bool
+		dryRun      bool
 		expectedErr error
 	}{
 		{
@@ -212,7 +213,7 @@ func Test_apply(t *testing.T) {
 			cleanerCalled = false
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
-			err := operationApply(ctx, tt.object, tt.client, tt.shouldFail, tt.cleaner)
+			err := operationApply(ctx, tt.object, tt.client, tt.shouldFail, tt.dryRun, tt.cleaner)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

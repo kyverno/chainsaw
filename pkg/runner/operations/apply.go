@@ -17,9 +17,28 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func operationApply(ctx context.Context, obj ctrlclient.Object, c client.Client, shouldFail bool, cleaner cleanup.Cleaner) (_err error) {
+func operationApply(ctx context.Context, obj ctrlclient.Object, c client.Client, shouldFail bool, dryRun bool, cleaner cleanup.Cleaner) (_err error) {
 	const operation = "APPLY "
 	logger := logging.FromContext(ctx).WithResource(obj)
+
+	if dryRun {
+		logger.Log(operation, color.BoldFgCyan, "DRY RUN INITIATED")
+
+		var actual unstructured.Unstructured
+		actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
+		err := c.Get(ctx, client.ObjectKey(obj), &actual)
+		if err == nil {
+			logger.Log(operation, color.BoldYellow, "DRY RUN: Resource exists, would apply changes")
+		} else if kerrors.IsNotFound(err) {
+			logger.Log(operation, color.BoldYellow, "DRY RUN: Resource not found, would create new resource")
+		} else {
+			logger.Log(operation, color.BoldYellow, fmt.Sprintf("DRY RUN: Error checking resource existence: %s", err))
+		}
+
+		logger.Log(operation, color.BoldFgCyan, "DRY RUN COMPLETED")
+		return nil
+	}
+
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
