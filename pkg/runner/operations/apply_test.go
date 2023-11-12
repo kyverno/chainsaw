@@ -81,6 +81,22 @@ func Test_apply(t *testing.T) {
 			expectedErr: nil,
 		},
 		{
+			name:   "Dry Run Resource already exists, patch it",
+			object: podv2.DeepCopy(),
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+					*obj.(*unstructured.Unstructured) = *podv1.DeepCopy()
+					return nil
+				},
+				PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+					return nil
+				},
+			},
+			shouldFail:  false,
+			expectedErr: nil,
+			dryRun:      true,
+		},
+		{
 			name:   "Resource does not exist, create it",
 			object: podv1,
 			client: &tclient.FakeClient{
@@ -93,6 +109,21 @@ func Test_apply(t *testing.T) {
 			},
 			shouldFail:  false,
 			expectedErr: nil,
+		},
+		{
+			name:   "Dry Run Resource does not exist, create it",
+			object: podv1,
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+				},
+				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+					return nil
+				},
+			},
+			shouldFail:  false,
+			expectedErr: nil,
+			dryRun:      true,
 		},
 		{
 			name:   "Error while getting resource",
