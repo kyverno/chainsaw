@@ -19,6 +19,11 @@ import (
 
 func TestLoad(t *testing.T) {
 	basePath := "../../testdata/step"
+	cm := unstructured.Unstructured{}
+	cm.SetAPIVersion("v1")
+	cm.SetKind("ConfigMap")
+	cm.SetName("chainsaw-quick-start")
+	assert.NoError(t, unstructured.SetNestedStringMap(cm.Object, map[string]string{"foo": "bar"}, "data"))
 	tests := []struct {
 		name    string
 		path    string
@@ -59,8 +64,10 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "foo.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
 							},
 						},
 					}, {
@@ -88,8 +95,10 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "foo.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
 							},
 						},
 					}, {
@@ -134,8 +143,10 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "foo.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
 							},
 						},
 					}, {
@@ -180,8 +191,10 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "foo.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "foo.yaml",
+								},
 							},
 						},
 					}, {
@@ -204,14 +217,45 @@ func TestLoad(t *testing.T) {
 				Spec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{{
 						Apply: &v1alpha1.Apply{
-							FileRef: v1alpha1.FileRef{
-								File: "bar.yaml",
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: v1alpha1.FileRef{
+									File: "bar.yaml",
+								},
 							},
 						},
 					}, {
 						Assert: &v1alpha1.Assert{
 							FileRef: v1alpha1.FileRef{
 								File: "foo.yaml",
+							},
+						},
+					}},
+				},
+			},
+		},
+	}, {
+		name: "raw resource",
+		path: filepath.Join(basePath, "raw-resource.yaml"),
+		want: []*v1alpha1.TestStep{
+			{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "TestStep",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test",
+				},
+				Spec: v1alpha1.TestStepSpec{
+					Try: []v1alpha1.Operation{{
+						Apply: &v1alpha1.Apply{
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								Resource: &cm,
+							},
+						},
+					}, {
+						Create: &v1alpha1.Create{
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								Resource: &cm,
 							},
 						},
 					}},

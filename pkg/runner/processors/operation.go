@@ -58,7 +58,6 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 			fail(t, operation.ContinueOnError)
 		}
 	}
-
 	// Handle Exec
 	if operation.Command != nil {
 		if err := p.client.Command(ctx, operation.Timeout, *operation.Command); err != nil {
@@ -70,7 +69,6 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 			fail(t, operation.ContinueOnError)
 		}
 	}
-
 	var cleaner cleanup.Cleaner
 	if !cleanup.Skip(p.config.SkipDelete, test.Spec.SkipDelete, step.SkipDelete) {
 		cleaner = func(obj ctrlclient.Object, c client.Client) {
@@ -83,36 +81,48 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 	}
 	// Handle Apply
 	if operation.Apply != nil {
-		resources, err := resource.Load(filepath.Join(test.BasePath, operation.Apply.File))
-		if err != nil {
-			logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
-			fail(t, operation.ContinueOnError)
+		var resources []ctrlclient.Object
+		if operation.Apply.Resource != nil {
+			resources = append(resources, operation.Apply.Resource)
+		} else {
+			loaded, err := resource.Load(filepath.Join(test.BasePath, operation.Apply.File))
+			if err != nil {
+				logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
+				fail(t, operation.ContinueOnError)
+			}
+			for i := range loaded {
+				resources = append(resources, &loaded[i])
+			}
 		}
 		shouldFail := operation.Apply.ShouldFail != nil && *operation.Apply.ShouldFail
-		for i := range resources {
-			resource := &resources[i]
+		for _, resource := range resources {
 			if err := p.client.Apply(ctx, operation.Timeout, resource, shouldFail, cleaner); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
 	}
-
 	// Handle Create
 	if operation.Create != nil {
-		resources, err := resource.Load(filepath.Join(test.BasePath, operation.Create.File))
-		if err != nil {
-			logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
-			fail(t, operation.ContinueOnError)
+		var resources []ctrlclient.Object
+		if operation.Create.Resource != nil {
+			resources = append(resources, operation.Create.Resource)
+		} else {
+			loaded, err := resource.Load(filepath.Join(test.BasePath, operation.Create.File))
+			if err != nil {
+				logging.FromContext(ctx).Log("LOAD  ", color.BoldRed, err)
+				fail(t, operation.ContinueOnError)
+			}
+			for i := range loaded {
+				resources = append(resources, &loaded[i])
+			}
 		}
 		shouldFail := operation.Create.ShouldFail != nil && *operation.Create.ShouldFail
-		for i := range resources {
-			resource := &resources[i]
+		for _, resource := range resources {
 			if err := p.client.Apply(ctx, operation.Timeout, resource, shouldFail, cleaner); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
 	}
-
 	// Handle Assert
 	if operation.Assert != nil {
 		resources, err := resource.Load(filepath.Join(test.BasePath, operation.Assert.File))
@@ -126,7 +136,6 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 			}
 		}
 	}
-
 	// Handle Error
 	if operation.Error != nil {
 		resources, err := resource.Load(filepath.Join(test.BasePath, operation.Error.File))

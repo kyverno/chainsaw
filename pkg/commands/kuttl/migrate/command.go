@@ -193,7 +193,18 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 		ObjectMeta: from.ObjectMeta,
 	}
 	for _, operation := range from.Apply {
-		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Apply: &v1alpha1.Apply{FileRef: v1alpha1.FileRef{File: operation}}})
+		to.Spec.Try = append(
+			to.Spec.Try,
+			v1alpha1.Operation{
+				Apply: &v1alpha1.Apply{
+					FileRefOrResource: v1alpha1.FileRefOrResource{
+						FileRef: v1alpha1.FileRef{
+							File: operation,
+						},
+					},
+				},
+			},
+		)
 	}
 	for _, operation := range from.Assert {
 		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Assert: &v1alpha1.Assert{FileRef: v1alpha1.FileRef{File: operation}}})

@@ -62,7 +62,7 @@ should be applied during testing.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the</p> |
+| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be applied.</p> |
 | `shouldFail` | `bool` |  |  | <p>ShouldFail determines whether applying the file is expected to fail.</p> |
 
 ## `Assert`     {#chainsaw-kyverno-io-v1alpha1-Assert}
@@ -149,7 +149,7 @@ If a resource already exists in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the</p> |
+| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be created.</p> |
 | `shouldFail` | `bool` |  |  | <p>ShouldFail determines whether applying the file is expected to fail.</p> |
 
 ## `Delete`     {#chainsaw-kyverno-io-v1alpha1-Delete}
@@ -199,10 +199,9 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 **Appears in:**
     
-- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
 - [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
-- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
 - [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+- [FileRefOrResource](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource)
 
 <p>FileRef represents a file reference.</p>
 
@@ -210,6 +209,21 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
+
+## `FileRefOrResource`     {#chainsaw-kyverno-io-v1alpha1-FileRefOrResource}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+
+<p>FileRefOrResource represents a file reference or resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
+| `resource` | [`meta/v1/unstructured.Unstructured`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#unstructured-unstructured-v1) |  |  | <p>Resource provides a resource to be applied.</p> |
 
 ## `Finally`     {#chainsaw-kyverno-io-v1alpha1-Finally}
 

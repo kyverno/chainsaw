@@ -131,7 +131,9 @@ func LoadTest(fileName string, path string) (*Test, error) {
 				default:
 					step.Spec.Try = append(step.Spec.Try, v1alpha1.Operation{
 						Apply: &v1alpha1.Apply{
-							FileRef: fileRef,
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: fileRef,
+							},
 						},
 					})
 				}
