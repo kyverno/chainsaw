@@ -44,6 +44,7 @@ func Test_create(t *testing.T) {
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
 		shouldFail  bool
+		dryrun      bool
 		expectedErr error
 	}{
 		{
@@ -59,6 +60,19 @@ func Test_create(t *testing.T) {
 			expectedErr: errors.New("the resource already exists in the cluster"),
 		},
 		{
+			name:   "Dry Run Resource already exists",
+			object: pod,
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+					*obj.(*unstructured.Unstructured) = *pod.DeepCopy()
+					return nil
+				},
+			},
+			shouldFail:  false,
+			expectedErr: errors.New("the resource already exists in the cluster"),
+			dryrun:      true,
+		},
+		{
 			name:   "Resource does not exist, create it",
 			object: pod,
 			client: &tclient.FakeClient{
@@ -71,6 +85,21 @@ func Test_create(t *testing.T) {
 			},
 			shouldFail:  false,
 			expectedErr: nil,
+		},
+		{
+			name:   "Dry Run Resource does not exist, create it",
+			object: pod,
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+				},
+				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+					return nil
+				},
+			},
+			shouldFail:  false,
+			expectedErr: nil,
+			dryrun:      true,
 		},
 		{
 			name:   "failed get",
@@ -145,7 +174,7 @@ func Test_create(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
-			err := operationCreate(ctx, tt.object, tt.client, tt.shouldFail, tt.cleaner)
+			err := operationCreate(ctx, tt.object, tt.client, tt.shouldFail, tt.dryrun, tt.cleaner)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

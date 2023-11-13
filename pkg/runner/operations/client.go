@@ -16,9 +16,9 @@ import (
 )
 
 type Client interface {
-	Apply(context.Context, *metav1.Duration, ctrlclient.Object, bool, cleanup.Cleaner) error
+	Apply(context.Context, *metav1.Duration, ctrlclient.Object, bool, bool, cleanup.Cleaner) error
 	Assert(context.Context, *metav1.Duration, unstructured.Unstructured) error
-	Create(context.Context, *metav1.Duration, ctrlclient.Object, bool, cleanup.Cleaner) error
+	Create(context.Context, *metav1.Duration, ctrlclient.Object, bool, bool, cleanup.Cleaner) error
 	Delete(context.Context, *metav1.Duration, ctrlclient.Object) error
 	Error(context.Context, *metav1.Duration, unstructured.Unstructured) error
 	Command(context.Context, *metav1.Duration, v1alpha1.Command) error
@@ -49,7 +49,7 @@ func NewClient(
 	}
 }
 
-func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, shouldFail bool, cleanup func(ctrlclient.Object, client.Client)) error {
+func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, shouldFail bool, dryRun bool, cleanup func(ctrlclient.Object, client.Client)) error {
 	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(obj); err != nil {
 		logger.Log("LOAD  ", color.BoldRed, err)
@@ -57,7 +57,7 @@ func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclien
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
-	return operationApply(ctx, obj, c.client, shouldFail, cleanup)
+	return operationApply(ctx, obj, c.client, shouldFail, dryRun, cleanup)
 }
 
 func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) error {
@@ -71,7 +71,7 @@ func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected uns
 	return operationAssert(ctx, expected, c.client)
 }
 
-func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, shouldFail bool, cleanup func(ctrlclient.Object, client.Client)) error {
+func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, shouldFail bool, dryRun bool, cleanup func(ctrlclient.Object, client.Client)) error {
 	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(obj); err != nil {
 		logger.Log("LOAD  ", color.BoldRed, err)
@@ -79,7 +79,7 @@ func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
-	return operationCreate(ctx, obj, c.client, shouldFail, cleanup)
+	return operationCreate(ctx, obj, c.client, shouldFail, dryRun, cleanup)
 }
 
 func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object) error {

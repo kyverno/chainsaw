@@ -15,9 +15,10 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func operationCreate(ctx context.Context, obj ctrlclient.Object, c client.Client, shouldFail bool, cleaner cleanup.Cleaner) (_err error) {
+func operationCreate(ctx context.Context, obj ctrlclient.Object, c client.Client, shouldFail bool, dryRun bool, cleaner cleanup.Cleaner) (_err error) {
 	const operation = "CREATE"
 	logger := logging.FromContext(ctx).WithResource(obj)
+
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -26,6 +27,7 @@ func operationCreate(ctx context.Context, obj ctrlclient.Object, c client.Client
 			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
+
 	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
@@ -33,17 +35,24 @@ func operationCreate(ctx context.Context, obj ctrlclient.Object, c client.Client
 		if err == nil {
 			return false, errors.New("the resource already exists in the cluster")
 		} else if kerrors.IsNotFound(err) {
-			if err := c.Create(ctx, obj); err != nil {
+			var createOptions []ctrlclient.CreateOption
+			if dryRun {
+				createOptions = append(createOptions, ctrlclient.DryRunAll)
+			}
+			if err := c.Create(ctx, obj, createOptions...); err != nil {
 				if shouldFail {
 					return true, nil
 				}
 				return false, err
 			} else {
-				if cleaner != nil {
+				if cleaner != nil && !dryRun {
 					cleaner(obj, c)
 				}
 				if shouldFail {
 					return false, errors.New("an error was expected but didn't happen")
+				}
+				if dryRun {
+					logger.Log(operation, color.BoldYellow, "DRY RUN: Resource creation simulated")
 				}
 			}
 		} else {

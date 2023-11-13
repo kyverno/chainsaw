@@ -30,6 +30,11 @@ import (
 func (in *Apply) DeepCopyInto(out *Apply) {
 	*out = *in
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
+	if in.DryRun != nil {
+		in, out := &in.DryRun, &out.DryRun
+		*out = new(bool)
+		**out = **in
+	}
 	if in.ShouldFail != nil {
 		in, out := &in.ShouldFail, &out.ShouldFail
 		*out = new(bool)
@@ -185,6 +190,11 @@ func (in *ConfigurationSpec) DeepCopy() *ConfigurationSpec {
 func (in *Create) DeepCopyInto(out *Create) {
 	*out = *in
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
+	if in.DryRun != nil {
+		in, out := &in.DryRun, &out.DryRun
+		*out = new(bool)
+		**out = **in
+	}
 	if in.ShouldFail != nil {
 		in, out := &in.ShouldFail, &out.ShouldFail
 		*out = new(bool)

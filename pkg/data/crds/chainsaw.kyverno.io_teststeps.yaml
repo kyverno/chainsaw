@@ -222,6 +222,10 @@ spec:
                         settings or any other resources that need to be available
                         during the test.
                       properties:
+                        dryRun:
+                          description: DryRun determines whether the file should be
+                            applied in dry run mode.
+                          type: boolean
                         file:
                           description: File is the path to the referenced file.
                           type: string
@@ -270,6 +274,10 @@ spec:
                     create:
                       description: Create represents a creation operation.
                       properties:
+                        dryRun:
+                          description: DryRun determines whether the file should be
+                            applied in dry run mode.
+                          type: boolean
                         file:
                           description: File is the path to the referenced file.
                           type: string
