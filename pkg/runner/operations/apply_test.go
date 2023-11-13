@@ -244,7 +244,15 @@ func Test_apply(t *testing.T) {
 			cleanerCalled = false
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
-			err := operationApply(ctx, tt.object, tt.client, tt.shouldFail, tt.dryRun, tt.cleaner)
+			operationApply := &ApplyOperation{
+				BaseOperation: BaseOperation{
+					client:  tt.client,
+					obj:     tt.object,
+					dryRun:  tt.dryRun,
+					cleaner: tt.cleaner,
+				},
+			}
+			err := execOperation(ctx, operationApply)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

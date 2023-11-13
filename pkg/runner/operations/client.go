@@ -57,7 +57,15 @@ func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclien
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
-	return operationApply(ctx, obj, c.client, shouldFail, dryRun, cleanup)
+	applyOp := &ApplyOperation{
+		BaseOperation: BaseOperation{
+			client:  c.client,
+			obj:     obj,
+			dryRun:  dryRun,
+			cleaner: cleanup,
+		},
+	}
+	return execOperation(ctx, applyOp)
 }
 
 func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) error {
