@@ -35,7 +35,7 @@ func operationCreate(ctx context.Context, obj ctrlclient.Object, c client.Client
 		if err == nil {
 			return false, errors.New("the resource already exists in the cluster")
 		} else if kerrors.IsNotFound(err) {
-			createOptions := []ctrlclient.CreateOption{}
+			var createOptions []ctrlclient.CreateOption
 			if dryRun {
 				createOptions = append(createOptions, ctrlclient.DryRunAll)
 			}

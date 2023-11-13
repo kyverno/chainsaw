@@ -61,7 +61,7 @@ func operationApply(ctx context.Context, obj ctrlclient.Object, c client.Client,
 				logger.Log(operation, color.BoldYellow, "DRY RUN: Resource patch simulated")
 			}
 		} else if kerrors.IsNotFound(err) {
-			createOptions := []ctrlclient.CreateOption{}
+			var createOptions []ctrlclient.CreateOption
 			if dryRun {
 				createOptions = append(createOptions, ctrlclient.DryRunAll)
 			}

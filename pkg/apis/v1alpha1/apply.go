@@ -7,7 +7,8 @@ type Apply struct {
 	FileRefOrResource `json:",inline"`
 
 	// DryRun determines whether the file should be applied in dry run mode.
-	DryRun bool `json:"dryRun,omitempty"`
+	// +optional
+	DryRun *bool `json:"dryRun,omitempty"`
 
 	// ShouldFail determines whether applying the file is expected to fail.
 	// +optional
