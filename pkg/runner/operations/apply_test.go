@@ -246,10 +246,11 @@ func Test_apply(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), logger)
 			operationApply := &ApplyOperation{
 				BaseOperation: BaseOperation{
-					client:  tt.client,
-					obj:     tt.object,
-					dryRun:  tt.dryRun,
-					cleaner: tt.cleaner,
+					client:     tt.client,
+					obj:        tt.object,
+					dryRun:     tt.dryRun,
+					cleaner:    tt.cleaner,
+					shouldFail: tt.shouldFail,
 				},
 			}
 			err := execOperation(ctx, operationApply)
