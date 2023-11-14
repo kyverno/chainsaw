@@ -46,9 +46,9 @@ func Test_operationScript(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
 			scriptOp := &ScriptOperation{
-				script:        tt.script,
-				skipLogOutput: tt.log,
-				namespace:     tt.namespace,
+				script:    tt.script,
+				log:       tt.log,
+				namespace: tt.namespace,
 			}
 			err := execOperation(ctx, scriptOp)
 			if tt.wantErr {

@@ -143,9 +143,9 @@ func (c *opClient) Command(ctx context.Context, to *metav1.Duration, exec v1alph
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
 	defer cancel()
 	commandOp := &CommandOperation{
-		command:       exec,
-		skipLogOutput: !exec.SkipLogOutput,
-		namespace:     c.namespacer.GetNamespace(),
+		command:   exec,
+		log:       !exec.SkipLogOutput,
+		namespace: c.namespacer.GetNamespace(),
 	}
 	return execOperation(ctx, commandOp)
 }
@@ -154,9 +154,9 @@ func (c *opClient) Script(ctx context.Context, to *metav1.Duration, exec v1alpha
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
 	defer cancel()
 	scriptOp := &ScriptOperation{
-		script:        exec,
-		skipLogOutput: !exec.SkipLogOutput,
-		namespace:     c.namespacer.GetNamespace(),
+		script:    exec,
+		log:       !exec.SkipLogOutput,
+		namespace: c.namespacer.GetNamespace(),
 	}
 	return execOperation(ctx, scriptOp)
 }

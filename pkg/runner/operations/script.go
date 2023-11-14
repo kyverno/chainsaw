@@ -12,9 +12,9 @@ import (
 )
 
 type ScriptOperation struct {
-	script        v1alpha1.Script
-	skipLogOutput bool
-	namespace     string
+	script    v1alpha1.Script
+	log       bool
+	namespace string
 }
 
 func (s *ScriptOperation) Name() string {
@@ -32,7 +32,7 @@ func (s *ScriptOperation) Exec(ctx context.Context) (_err error) {
 			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
-	if s.skipLogOutput {
+	if s.log {
 		defer func() {
 			if out := output.Out(); out != "" {
 				logger.Log("STDOUT", color.BoldFgCyan, "LOGS...\n"+out)
