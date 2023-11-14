@@ -24,6 +24,13 @@ type operation struct {
 	dryRun     bool
 	cleaner    cleanup.Cleaner
 	shouldFail bool
+	created    bool
+}
+
+func (a *operation) Cleanup() {
+	if a.cleaner != nil && a.created && !a.dryRun {
+		a.cleaner(a.obj, a.client)
+	}
 }
 
 func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, shouldFail bool) *operation {
@@ -87,9 +94,7 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 				}
 				return false, err
 			} else {
-				if a.cleaner != nil && !a.dryRun {
-					a.cleaner(a.obj, a.client)
-				}
+				a.created = true
 				if a.shouldFail {
 					return false, errors.New("an error was expected but didn't happen")
 				}

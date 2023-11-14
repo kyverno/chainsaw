@@ -26,6 +26,8 @@ func New(script v1alpha1.Script, namespace string, log bool) *operation {
 	}
 }
 
+func (s *operation) Cleanup() {}
+
 func (s *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
 	const operation = "SCRIPT"
