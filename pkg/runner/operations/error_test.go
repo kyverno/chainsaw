@@ -45,13 +45,8 @@ func Test_operationError(t *testing.T) {
 					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), "test-pod")
 				},
 			},
-			expectedErr: nil,
-			expectedLogs: []string{
-				"Starting operation %s : [ERROR]",
-				"ERROR : [RUNNING...]",
-				"ERROR : [DONE]",
-				"Operation %s completed successfully: [ERROR]",
-			},
+			expectedErr:  nil,
+			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [DONE]"},
 		},
 		{
 			name:     "Internal error",
@@ -64,13 +59,8 @@ func Test_operationError(t *testing.T) {
 					return errors.New("internal error")
 				},
 			},
-			expectedErr: errors.New("internal error"),
-			expectedLogs: []string{
-				"Starting operation %s : [ERROR]",
-				"ERROR : [RUNNING...]",
-				"ERROR : [ERROR\ninternal error]",
-				"Operation %s failed with error %s: [ERROR internal error]",
-			},
+			expectedErr:  errors.New("internal error"),
+			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [ERROR\ninternal error]"},
 		},
 		{
 			name:     "Resource matches actual",
@@ -88,13 +78,8 @@ func Test_operationError(t *testing.T) {
 					return nil
 				},
 			},
-			expectedErr: fmt.Errorf("found an actual resource matching expectation (v1/Pod / foo/test-pod)"),
-			expectedLogs: []string{
-				"Starting operation %s : [ERROR]",
-				"ERROR : [RUNNING...]",
-				"ERROR : [ERROR\nfound an actual resource matching expectation (v1/Pod / foo/test-pod)]",
-				"Operation %s failed with error %s: [ERROR found an actual resource matching expectation (v1/Pod / foo/test-pod)]",
-			},
+			expectedErr:  fmt.Errorf("found an actual resource matching expectation (v1/Pod / foo/test-pod)"),
+			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [ERROR\nfound an actual resource matching expectation (v1/Pod / foo/test-pod)]"},
 		},
 		{
 			name: "No resources found using List",
@@ -126,13 +111,8 @@ func Test_operationError(t *testing.T) {
 					return nil
 				},
 			},
-			expectedErr: nil,
-			expectedLogs: []string{
-				"Starting operation %s : [ERROR]",
-				"ERROR : [RUNNING...]",
-				"ERROR : [DONE]",
-				"Operation %s completed successfully: [ERROR]",
-			},
+			expectedErr:  nil,
+			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [DONE]"},
 		},
 	}
 	for _, tt := range tests {
