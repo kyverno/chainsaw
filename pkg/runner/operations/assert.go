@@ -22,10 +22,6 @@ type AssertOperation struct {
 	expected unstructured.Unstructured
 }
 
-func (a *AssertOperation) Name() string {
-	return "ASSERT"
-}
-
 func (a *AssertOperation) Exec(ctx context.Context) (_err error) {
 	const operation = "ASSERT"
 	logger := logging.FromContext(ctx).WithResource(&a.expected)

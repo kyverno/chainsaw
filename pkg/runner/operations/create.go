@@ -23,10 +23,6 @@ type CreateOperation struct {
 	shouldFail bool
 }
 
-func (c *CreateOperation) Name() string {
-	return "CREATE"
-}
-
 func (c *CreateOperation) Exec(ctx context.Context) (_err error) {
 	const operation = "CREATE"
 	logger := logging.FromContext(ctx).WithResource(c.obj)

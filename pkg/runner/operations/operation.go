@@ -8,7 +8,6 @@ import (
 
 type Operation interface {
 	Exec(ctx context.Context) error
-	Name() string
 }
 
 type baseOperation struct {

@@ -18,10 +18,6 @@ type DeleteOperation struct {
 	obj ctrlclient.Object
 }
 
-func (d *DeleteOperation) Name() string {
-	return "DELETE"
-}
-
 func (d *DeleteOperation) Exec(ctx context.Context) (_err error) {
 	const operation = "DELETE"
 	logger := logging.FromContext(ctx).WithResource(d.obj)

@@ -17,10 +17,6 @@ type ScriptOperation struct {
 	namespace string
 }
 
-func (s *ScriptOperation) Name() string {
-	return "SCRIPT"
-}
-
 func (s *ScriptOperation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
 	const operation = "SCRIPT"

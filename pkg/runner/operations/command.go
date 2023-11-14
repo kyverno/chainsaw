@@ -17,10 +17,6 @@ type CommandOperation struct {
 	log       bool
 }
 
-func (c *CommandOperation) Name() string {
-	return "COMMAND"
-}
-
 func (c *CommandOperation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
 	const operation = "CMD   "

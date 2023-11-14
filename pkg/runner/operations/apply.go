@@ -25,10 +25,6 @@ type ApplyOperation struct {
 	shouldFail bool
 }
 
-func (a *ApplyOperation) Name() string {
-	return "APPLY"
-}
-
 func (a *ApplyOperation) Exec(ctx context.Context) (_err error) {
 	const operation = "APPLY"
 	logger := logging.FromContext(ctx).WithResource(a.obj)

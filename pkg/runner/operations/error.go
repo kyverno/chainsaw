@@ -19,10 +19,6 @@ type ErrorOperation struct {
 	expected unstructured.Unstructured
 }
 
-func (e *ErrorOperation) Name() string {
-	return "ERROR"
-}
-
 func (e *ErrorOperation) Exec(ctx context.Context) (_err error) {
 	const operation = "ERROR "
 	logger := logging.FromContext(ctx).WithResource(&e.expected)
