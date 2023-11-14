@@ -121,7 +121,7 @@ func Test_operationError(t *testing.T) {
 			ctx, cancel := context.WithTimeout(logging.IntoContext(context.TODO(), logger), 1*time.Second)
 			defer cancel()
 			errorOp := &ErrorOperation{
-				BaseOperation: BaseOperation{
+				baseOperation: baseOperation{
 					client: tt.client,
 				},
 				expected: tt.expected,

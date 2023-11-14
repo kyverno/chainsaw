@@ -58,7 +58,7 @@ func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclien
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
 	applyOp := &ApplyOperation{
-		BaseOperation: BaseOperation{
+		baseOperation: baseOperation{
 			client: c.client,
 		},
 		obj:     obj,
@@ -77,7 +77,7 @@ func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected uns
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultAssertTimeout, c.config.Timeouts.Assert, c.test.Timeouts.Assert, c.stepTimeouts.Assert, to)
 	defer cancel()
 	assertOp := &AssertOperation{
-		BaseOperation: BaseOperation{
+		baseOperation: baseOperation{
 			client: c.client,
 		},
 		expected: expected,
@@ -94,7 +94,7 @@ func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
 	createOp := &CreateOperation{
-		BaseOperation: BaseOperation{
+		baseOperation: baseOperation{
 			client: c.client,
 		},
 		obj:        obj,
@@ -114,7 +114,7 @@ func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultDeleteTimeout, c.config.Timeouts.Delete, c.test.Timeouts.Delete, c.stepTimeouts.Delete, to)
 	defer cancel()
 	deleteOp := &DeleteOperation{
-		BaseOperation: BaseOperation{
+		baseOperation: baseOperation{
 			client: c.client,
 		},
 		obj: obj,
@@ -131,7 +131,7 @@ func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unst
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultErrorTimeout, c.config.Timeouts.Error, c.test.Timeouts.Error, c.stepTimeouts.Error, to)
 	defer cancel()
 	errorOp := &ErrorOperation{
-		BaseOperation: BaseOperation{
+		baseOperation: baseOperation{
 			client: c.client,
 		},
 		expected: expected,

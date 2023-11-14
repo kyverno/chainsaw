@@ -216,7 +216,7 @@ func Test_operationAssert(t *testing.T) {
 			defer cancel()
 			ctx := logging.IntoContext(ctxt, logger)
 			assertOp := &AssertOperation{
-				BaseOperation: BaseOperation{
+				baseOperation: baseOperation{
 					client: tt.client,
 				},
 				expected: tt.expected,

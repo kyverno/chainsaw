@@ -15,7 +15,7 @@ import (
 )
 
 type ErrorOperation struct {
-	BaseOperation
+	baseOperation
 	expected unstructured.Unstructured
 }
 

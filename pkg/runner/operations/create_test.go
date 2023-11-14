@@ -175,7 +175,7 @@ func Test_create(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
 			createOp := &CreateOperation{
-				BaseOperation: BaseOperation{
+				baseOperation: baseOperation{
 					client: tt.client,
 				},
 				obj:        tt.object,

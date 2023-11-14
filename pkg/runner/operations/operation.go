@@ -11,7 +11,7 @@ type Operation interface {
 	Name() string
 }
 
-type BaseOperation struct {
+type baseOperation struct {
 	client client.Client
 }
 

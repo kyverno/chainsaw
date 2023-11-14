@@ -14,7 +14,7 @@ import (
 )
 
 type DeleteOperation struct {
-	BaseOperation
+	baseOperation
 	obj ctrlclient.Object
 }
 

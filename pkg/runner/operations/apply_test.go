@@ -245,7 +245,7 @@ func Test_apply(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
 			operationApply := &ApplyOperation{
-				BaseOperation: BaseOperation{
+				baseOperation: baseOperation{
 					client: tt.client,
 				},
 				obj:        tt.object,

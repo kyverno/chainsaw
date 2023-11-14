@@ -113,7 +113,7 @@ func Test_operationDelete(t *testing.T) {
 			defer cancel()
 			ctx := logging.IntoContext(ctxt, logger)
 			deleteOp := &DeleteOperation{
-				BaseOperation: BaseOperation{
+				baseOperation: baseOperation{
 					client: tt.client,
 				},
 				obj: tt.object,

@@ -16,7 +16,7 @@ import (
 )
 
 type CreateOperation struct {
-	BaseOperation
+	baseOperation
 	obj        ctrlclient.Object
 	dryRun     bool
 	cleaner    cleanup.Cleaner

@@ -18,7 +18,7 @@ import (
 )
 
 type AssertOperation struct {
-	BaseOperation
+	baseOperation
 	expected unstructured.Unstructured
 }
 
