@@ -29,8 +29,10 @@ func New(client client.Client, expected unstructured.Unstructured) *operation {
 		expected: expected,
 	}
 }
+func (a *operation) Cleanup() {}
 
 func (a *operation) Exec(ctx context.Context) (_err error) {
+
 	const operation = "ASSERT"
 	logger := logging.FromContext(ctx).WithResource(&a.expected)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")

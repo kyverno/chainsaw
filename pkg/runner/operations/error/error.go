@@ -26,6 +26,7 @@ func New(client client.Client, expected unstructured.Unstructured) *operation {
 		expected: expected,
 	}
 }
+func (e *operation) Cleanup() {}
 
 func (e *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "ERROR "

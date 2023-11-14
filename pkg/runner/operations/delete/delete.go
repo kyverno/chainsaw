@@ -25,8 +25,10 @@ func New(client client.Client, obj ctrlclient.Object) *operation {
 		obj:    obj,
 	}
 }
+func (d *operation) Cleanup() {}
 
 func (d *operation) Exec(ctx context.Context) (_err error) {
+
 	const operation = "DELETE"
 	logger := logging.FromContext(ctx).WithResource(d.obj)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")

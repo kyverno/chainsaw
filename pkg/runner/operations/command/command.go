@@ -26,7 +26,10 @@ func New(command v1alpha1.Command, namespace string, log bool) *operation {
 	}
 }
 
+func (c *operation) Cleanup() {}
+
 func (c *operation) Exec(ctx context.Context) (_err error) {
+
 	logger := logging.FromContext(ctx)
 	const operation = "CMD   "
 	var output internal.CommandOutput
