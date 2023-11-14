@@ -4,10 +4,8 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/kyverno/ext/output/color"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type Operation interface {
@@ -16,11 +14,7 @@ type Operation interface {
 }
 
 type BaseOperation struct {
-	client     client.Client
-	obj        ctrlclient.Object
-	dryRun     bool
-	cleaner    cleanup.Cleaner
-	shouldFail bool
+	client client.Client
 }
 
 func execOperation(ctx context.Context, operation Operation) error {

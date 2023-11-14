@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -18,6 +19,10 @@ import (
 
 type ApplyOperation struct {
 	BaseOperation
+	obj        ctrlclient.Object
+	dryRun     bool
+	cleaner    cleanup.Cleaner
+	shouldFail bool
 }
 
 func (a *ApplyOperation) Name() string {

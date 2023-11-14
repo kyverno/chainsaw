@@ -59,11 +59,11 @@ func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclien
 	defer cancel()
 	applyOp := &ApplyOperation{
 		BaseOperation: BaseOperation{
-			client:  c.client,
-			obj:     obj,
-			dryRun:  dryRun,
-			cleaner: cleanup,
+			client: c.client,
 		},
+		obj:     obj,
+		dryRun:  dryRun,
+		cleaner: cleanup,
 	}
 	return execOperation(ctx, applyOp)
 }
@@ -76,7 +76,13 @@ func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected uns
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultAssertTimeout, c.config.Timeouts.Assert, c.test.Timeouts.Assert, c.stepTimeouts.Assert, to)
 	defer cancel()
-	return operationAssert(ctx, expected, c.client)
+	assertOp := &AssertOperation{
+		BaseOperation: BaseOperation{
+			client: c.client,
+		},
+		expected: expected,
+	}
+	return execOperation(ctx, assertOp)
 }
 
 func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, shouldFail bool, dryRun bool, cleanup func(ctrlclient.Object, client.Client)) error {
@@ -87,7 +93,16 @@ func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
-	return operationCreate(ctx, obj, c.client, shouldFail, dryRun, cleanup)
+	createOp := &CreateOperation{
+		BaseOperation: BaseOperation{
+			client: c.client,
+		},
+		obj:        obj,
+		dryRun:     dryRun,
+		cleaner:    cleanup,
+		shouldFail: shouldFail,
+	}
+	return execOperation(ctx, createOp)
 }
 
 func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object) error {
@@ -98,7 +113,13 @@ func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultDeleteTimeout, c.config.Timeouts.Delete, c.test.Timeouts.Delete, c.stepTimeouts.Delete, to)
 	defer cancel()
-	return operationDelete(ctx, obj, c.client)
+	deleteOp := &DeleteOperation{
+		BaseOperation: BaseOperation{
+			client: c.client,
+		},
+		obj: obj,
+	}
+	return execOperation(ctx, deleteOp)
 }
 
 func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) error {
@@ -109,17 +130,33 @@ func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unst
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultErrorTimeout, c.config.Timeouts.Error, c.test.Timeouts.Error, c.stepTimeouts.Error, to)
 	defer cancel()
-	return operationError(ctx, expected, c.client)
+	errorOp := &ErrorOperation{
+		BaseOperation: BaseOperation{
+			client: c.client,
+		},
+		expected: expected,
+	}
+	return execOperation(ctx, errorOp)
 }
 
 func (c *opClient) Command(ctx context.Context, to *metav1.Duration, exec v1alpha1.Command) error {
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
 	defer cancel()
-	return operationCommand(ctx, exec, !exec.SkipLogOutput, c.namespacer.GetNamespace())
+	commandOp := &CommandOperation{
+		command:       exec,
+		skipLogOutput: !exec.SkipLogOutput,
+		namespace:     c.namespacer.GetNamespace(),
+	}
+	return execOperation(ctx, commandOp)
 }
 
 func (c *opClient) Script(ctx context.Context, to *metav1.Duration, exec v1alpha1.Script) error {
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
 	defer cancel()
-	return operationScript(ctx, exec, !exec.SkipLogOutput, c.namespacer.GetNamespace())
+	scriptOp := &ScriptOperation{
+		script:        exec,
+		skipLogOutput: !exec.SkipLogOutput,
+		namespace:     c.namespacer.GetNamespace(),
+	}
+	return execOperation(ctx, scriptOp)
 }

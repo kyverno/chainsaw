@@ -112,7 +112,13 @@ func Test_operationDelete(t *testing.T) {
 			ctxt, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
 			ctx := logging.IntoContext(ctxt, logger)
-			err := operationDelete(ctx, tt.object, tt.client)
+			deleteOp := &DeleteOperation{
+				BaseOperation: BaseOperation{
+					client: tt.client,
+				},
+				obj: tt.object,
+			}
+			err := execOperation(ctx, deleteOp)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

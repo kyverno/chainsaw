@@ -11,7 +11,17 @@ import (
 	"github.com/kyverno/kyverno/ext/output/color"
 )
 
-func operationScript(ctx context.Context, script v1alpha1.Script, log bool, namespace string) (_err error) {
+type ScriptOperation struct {
+	script        v1alpha1.Script
+	skipLogOutput bool
+	namespace     string
+}
+
+func (s *ScriptOperation) Name() string {
+	return "SCRIPT"
+}
+
+func (s *ScriptOperation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
 	const operation = "SCRIPT"
 	var output CommandOutput
@@ -22,7 +32,7 @@ func operationScript(ctx context.Context, script v1alpha1.Script, log bool, name
 			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
-	if log {
+	if s.skipLogOutput {
 		defer func() {
 			if out := output.Out(); out != "" {
 				logger.Log("STDOUT", color.BoldFgCyan, "LOGS...\n"+out)
@@ -34,13 +44,13 @@ func operationScript(ctx context.Context, script v1alpha1.Script, log bool, name
 	} else {
 		logger.Log("STDXXX", color.BoldYellow, "suppressed logs")
 	}
-	cmd := exec.CommandContext(ctx, "sh", "-c", script.Content) //nolint:gosec
+	cmd := exec.CommandContext(ctx, "sh", "-c", s.script.Content) //nolint:gosec
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get current working directory (%w)", err)
 	}
 	env := os.Environ()
-	env = append(env, fmt.Sprintf("NAMESPACE=%s", namespace))
+	env = append(env, fmt.Sprintf("NAMESPACE=%s", s.namespace))
 	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))

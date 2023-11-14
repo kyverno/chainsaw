@@ -17,9 +17,18 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func operationAssert(ctx context.Context, expected unstructured.Unstructured, c client.Client) (_err error) {
+type AssertOperation struct {
+	BaseOperation
+	expected unstructured.Unstructured
+}
+
+func (a *AssertOperation) Name() string {
+	return "ASSERT"
+}
+
+func (a *AssertOperation) Exec(ctx context.Context) (_err error) {
 	const operation = "ASSERT"
-	logger := logging.FromContext(ctx).WithResource(&expected)
+	logger := logging.FromContext(ctx).WithResource(&a.expected)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -37,7 +46,7 @@ func operationAssert(ctx context.Context, expected unstructured.Unstructured, c 
 				lastErrs = errs
 			}
 		}()
-		if candidates, err := read(ctx, &expected, c); err != nil {
+		if candidates, err := read(ctx, &a.expected, a.client); err != nil {
 			if kerrors.IsNotFound(err) {
 				errs = append(errs, errors.New("actual resource not found"))
 				return false, nil
@@ -48,7 +57,7 @@ func operationAssert(ctx context.Context, expected unstructured.Unstructured, c 
 		} else {
 			for i := range candidates {
 				candidate := candidates[i]
-				_errs, err := assert.Validate(ctx, expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
+				_errs, err := assert.Validate(ctx, a.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
 				if err != nil {
 					return false, err
 				}

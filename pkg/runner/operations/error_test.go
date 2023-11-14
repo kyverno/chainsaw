@@ -120,7 +120,13 @@ func Test_operationError(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx, cancel := context.WithTimeout(logging.IntoContext(context.TODO(), logger), 1*time.Second)
 			defer cancel()
-			err := operationError(ctx, tt.expected, tt.client)
+			errorOp := &ErrorOperation{
+				BaseOperation: BaseOperation{
+					client: tt.client,
+				},
+				expected: tt.expected,
+			}
+			err := execOperation(ctx, errorOp)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

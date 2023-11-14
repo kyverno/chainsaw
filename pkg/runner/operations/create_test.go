@@ -174,7 +174,16 @@ func Test_create(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
-			err := operationCreate(ctx, tt.object, tt.client, tt.shouldFail, tt.dryrun, tt.cleaner)
+			createOp := &CreateOperation{
+				BaseOperation: BaseOperation{
+					client: tt.client,
+				},
+				obj:        tt.object,
+				dryRun:     tt.dryrun,
+				cleaner:    tt.cleaner,
+				shouldFail: tt.shouldFail,
+			}
+			err := createOp.Exec(ctx)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
