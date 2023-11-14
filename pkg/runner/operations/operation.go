@@ -20,12 +20,6 @@ type BaseOperation struct {
 func execOperation(ctx context.Context, operation Operation) error {
 	logger := logging.FromContext(ctx)
 	logger.Log("Starting operation %s ", color.BoldFgCyan, operation.Name())
-	err := operation.Exec(ctx)
-	if err != nil {
-		logger.Log("Operation %s failed with error %s", color.BoldRed, operation.Name(), err)
-	} else {
-		logger.Log("Operation %s completed successfully", color.BoldGreen, operation.Name())
-	}
 
-	return err
+	return operation.Exec(ctx)
 }
