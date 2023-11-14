@@ -64,6 +64,7 @@ func Test_apply(t *testing.T) {
 		shouldFail  bool
 		dryRun      bool
 		expectedErr error
+		created     bool
 	}{
 		{
 			name:   "Resource already exists, patch it",
@@ -109,6 +110,7 @@ func Test_apply(t *testing.T) {
 			},
 			shouldFail:  false,
 			expectedErr: nil,
+			created:     true,
 		},
 		{
 			name:   "Dry Run Resource does not exist, create it",
@@ -124,6 +126,7 @@ func Test_apply(t *testing.T) {
 			shouldFail:  false,
 			expectedErr: nil,
 			dryRun:      true,
+			created:     true,
 		},
 		{
 			name:   "Error while getting resource",
@@ -237,6 +240,7 @@ func Test_apply(t *testing.T) {
 			cleaner:     testCleaner,
 			shouldFail:  false,
 			expectedErr: nil,
+			created:     true,
 		},
 	}
 	for _, tt := range tests {
@@ -250,6 +254,7 @@ func Test_apply(t *testing.T) {
 				dryRun:     tt.dryRun,
 				cleaner:    tt.cleaner,
 				shouldFail: tt.shouldFail,
+				created:    tt.created,
 			}
 			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {
