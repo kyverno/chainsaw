@@ -11,7 +11,13 @@ import (
 	"github.com/kyverno/kyverno/ext/output/color"
 )
 
-func operationCommand(ctx context.Context, command v1alpha1.Command, log bool, namespace string) (_err error) {
+type CommandOperation struct {
+	command   v1alpha1.Command
+	namespace string
+	log       bool
+}
+
+func (c *CommandOperation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
 	const operation = "CMD   "
 	var output CommandOutput
@@ -22,7 +28,7 @@ func operationCommand(ctx context.Context, command v1alpha1.Command, log bool, n
 			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
-	if log {
+	if c.log {
 		defer func() {
 			if out := output.Out(); out != "" {
 				logger.Log("STDOUT", color.BoldFgCyan, "LOGS...\n"+out)
@@ -34,14 +40,14 @@ func operationCommand(ctx context.Context, command v1alpha1.Command, log bool, n
 	} else {
 		logger.Log("STD___", color.BoldYellow, "suppressed logs")
 	}
-	args := expand(map[string]string{"NAMESPACE": namespace}, command.Args...)
-	cmd := exec.CommandContext(ctx, command.Entrypoint, args...) //nolint:gosec
+	args := expand(map[string]string{"NAMESPACE": c.namespace}, c.command.Args...)
+	cmd := exec.CommandContext(ctx, c.command.Entrypoint, args...) //nolint:gosec
 	cwd, err := os.Getwd()
 	if err != nil {
 		return fmt.Errorf("failed to get current working directory (%w)", err)
 	}
 	env := os.Environ()
-	env = append(env, fmt.Sprintf("NAMESPACE=%s", namespace))
+	env = append(env, fmt.Sprintf("NAMESPACE=%s", c.namespace))
 	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))

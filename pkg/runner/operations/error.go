@@ -14,9 +14,14 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-func operationError(ctx context.Context, expected unstructured.Unstructured, c client.Client) (_err error) {
+type ErrorOperation struct {
+	baseOperation
+	expected unstructured.Unstructured
+}
+
+func (e *ErrorOperation) Exec(ctx context.Context) (_err error) {
 	const operation = "ERROR "
-	logger := logging.FromContext(ctx).WithResource(&expected)
+	logger := logging.FromContext(ctx).WithResource(&e.expected)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -34,7 +39,7 @@ func operationError(ctx context.Context, expected unstructured.Unstructured, c c
 				lastErrs = errs
 			}
 		}()
-		if candidates, err := read(ctx, &expected, c); err != nil {
+		if candidates, err := read(ctx, &e.expected, e.client); err != nil {
 			if kerrors.IsNotFound(err) {
 				return true, nil
 			}
@@ -44,7 +49,7 @@ func operationError(ctx context.Context, expected unstructured.Unstructured, c c
 		} else {
 			for i := range candidates {
 				candidate := candidates[i]
-				_errs, err := assert.Validate(ctx, expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
+				_errs, err := assert.Validate(ctx, e.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
 				if err != nil {
 					return false, err
 				}

@@ -47,7 +47,12 @@ func Test_operationCommand(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
-			err := operationCommand(ctx, tt.command, tt.log, tt.namespace)
+			commandOp := &CommandOperation{
+				command:   tt.command,
+				log:       tt.log,
+				namespace: tt.namespace,
+			}
+			err := execOperation(ctx, commandOp)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

@@ -13,9 +13,14 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func operationDelete(ctx context.Context, expected ctrlclient.Object, c client.Client) (_err error) {
+type DeleteOperation struct {
+	baseOperation
+	obj ctrlclient.Object
+}
+
+func (d *DeleteOperation) Exec(ctx context.Context) (_err error) {
 	const operation = "DELETE"
-	logger := logging.FromContext(ctx).WithResource(expected)
+	logger := logging.FromContext(ctx).WithResource(d.obj)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -24,7 +29,7 @@ func operationDelete(ctx context.Context, expected ctrlclient.Object, c client.C
 			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
-	candidates, _err := read(ctx, expected, c)
+	candidates, _err := read(ctx, d.obj, d.client)
 	if _err != nil {
 		if errors.IsNotFound(_err) {
 			return nil
@@ -32,17 +37,17 @@ func operationDelete(ctx context.Context, expected ctrlclient.Object, c client.C
 		return _err
 	}
 	for i := range candidates {
-		err := c.Delete(ctx, &candidates[i])
+		err := d.client.Delete(ctx, &candidates[i])
 		if err != nil && !errors.IsNotFound(err) {
 			return err
 		}
 	}
-	gvk := expected.GetObjectKind().GroupVersionKind()
+	gvk := d.obj.GetObjectKind().GroupVersionKind()
 	for i := range candidates {
 		if err := wait.PollUntilContextCancel(ctx, interval, true, func(ctx context.Context) (bool, error) {
 			var actual unstructured.Unstructured
 			actual.SetGroupVersionKind(gvk)
-			err := c.Get(ctx, client.ObjectKey(&candidates[i]), &actual)
+			err := d.client.Get(ctx, client.ObjectKey(&candidates[i]), &actual)
 			if err != nil {
 				if errors.IsNotFound(err) {
 					return true, nil

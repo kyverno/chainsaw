@@ -15,9 +15,17 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func operationCreate(ctx context.Context, obj ctrlclient.Object, c client.Client, shouldFail bool, dryRun bool, cleaner cleanup.Cleaner) (_err error) {
+type CreateOperation struct {
+	baseOperation
+	obj        ctrlclient.Object
+	dryRun     bool
+	cleaner    cleanup.Cleaner
+	shouldFail bool
+}
+
+func (c *CreateOperation) Exec(ctx context.Context) (_err error) {
 	const operation = "CREATE"
-	logger := logging.FromContext(ctx).WithResource(obj)
+	logger := logging.FromContext(ctx).WithResource(c.obj)
 
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
@@ -30,28 +38,28 @@ func operationCreate(ctx context.Context, obj ctrlclient.Object, c client.Client
 
 	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
-		actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
-		err := c.Get(ctx, client.ObjectKey(obj), &actual)
+		actual.SetGroupVersionKind(c.obj.GetObjectKind().GroupVersionKind())
+		err := c.client.Get(ctx, client.ObjectKey(c.obj), &actual)
 		if err == nil {
 			return false, errors.New("the resource already exists in the cluster")
 		} else if kerrors.IsNotFound(err) {
 			var createOptions []ctrlclient.CreateOption
-			if dryRun {
+			if c.dryRun {
 				createOptions = append(createOptions, ctrlclient.DryRunAll)
 			}
-			if err := c.Create(ctx, obj, createOptions...); err != nil {
-				if shouldFail {
+			if err := c.client.Create(ctx, c.obj, createOptions...); err != nil {
+				if c.shouldFail {
 					return true, nil
 				}
 				return false, err
 			} else {
-				if cleaner != nil && !dryRun {
-					cleaner(obj, c)
+				if c.cleaner != nil && !c.dryRun {
+					c.cleaner(c.obj, c.client)
 				}
-				if shouldFail {
+				if c.shouldFail {
 					return false, errors.New("an error was expected but didn't happen")
 				}
-				if dryRun {
+				if c.dryRun {
 					logger.Log(operation, color.BoldYellow, "DRY RUN: Resource creation simulated")
 				}
 			}
