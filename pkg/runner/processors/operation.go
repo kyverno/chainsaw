@@ -22,18 +22,18 @@ type OperationProcessor interface {
 	Run(ctx context.Context, namespace string, test discovery.Test, step v1alpha1.TestStepSpec, operation v1alpha1.Operation)
 }
 
-func NewOperationProcessor(config v1alpha1.ConfigurationSpec, client operations.Client, clock clock.PassiveClock) OperationProcessor {
+func NewOperationProcessor(config v1alpha1.ConfigurationSpec, operationClient operations.OperationClient, clock clock.PassiveClock) OperationProcessor {
 	return &operationProcessor{
-		config: config,
-		client: client,
-		clock:  clock,
+		config:          config,
+		operationClient: operationClient,
+		clock:           clock,
 	}
 }
 
 type operationProcessor struct {
-	config v1alpha1.ConfigurationSpec
-	client operations.Client
-	clock  clock.PassiveClock
+	config          v1alpha1.ConfigurationSpec
+	operationClient operations.OperationClient
+	clock           clock.PassiveClock
 }
 
 func (p *operationProcessor) Run(ctx context.Context, namespace string, test discovery.Test, step v1alpha1.TestStepSpec, operation v1alpha1.Operation) {
@@ -54,18 +54,18 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 		resource.SetName(operation.Delete.Name)
 		resource.SetNamespace(operation.Delete.Namespace)
 		resource.SetLabels(operation.Delete.Labels)
-		if err := p.client.Delete(ctx, operation.Timeout, &resource); err != nil {
+		if err := p.operationClient.Delete(ctx, operation.Timeout, &resource); err != nil {
 			fail(t, operation.ContinueOnError)
 		}
 	}
 	// Handle Exec
 	if operation.Command != nil {
-		if err := p.client.Command(ctx, operation.Timeout, *operation.Command); err != nil {
+		if err := p.operationClient.Command(ctx, operation.Timeout, *operation.Command); err != nil {
 			fail(t, operation.ContinueOnError)
 		}
 	}
 	if operation.Script != nil {
-		if err := p.client.Script(ctx, operation.Timeout, *operation.Script); err != nil {
+		if err := p.operationClient.Script(ctx, operation.Timeout, *operation.Script); err != nil {
 			fail(t, operation.ContinueOnError)
 		}
 	}
@@ -73,7 +73,7 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 	if !cleanup.Skip(p.config.SkipDelete, test.Spec.SkipDelete, step.SkipDelete) {
 		cleaner = func(obj ctrlclient.Object, c client.Client) {
 			t.Cleanup(func() {
-				if err := p.client.Delete(ctx, nil, obj); err != nil {
+				if err := p.operationClient.Delete(ctx, nil, obj); err != nil {
 					t.Fail()
 				}
 			})
@@ -97,7 +97,7 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 		shouldFail := operation.Apply.ShouldFail != nil && *operation.Apply.ShouldFail
 		dryRun := operation.Apply.DryRun != nil && *operation.Apply.DryRun
 		for _, resource := range resources {
-			if err := p.client.Apply(ctx, operation.Timeout, resource, shouldFail, dryRun, cleaner); err != nil {
+			if err := p.operationClient.Apply(ctx, operation.Timeout, resource, shouldFail, dryRun, cleaner); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -120,7 +120,7 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 		shouldFail := operation.Create.ShouldFail != nil && *operation.Create.ShouldFail
 		dryRun := operation.Create.DryRun != nil && *operation.Create.DryRun
 		for _, resource := range resources {
-			if err := p.client.Create(ctx, operation.Timeout, resource, shouldFail, dryRun, cleaner); err != nil {
+			if err := p.operationClient.Create(ctx, operation.Timeout, resource, shouldFail, dryRun, cleaner); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -133,7 +133,7 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 			fail(t, operation.ContinueOnError)
 		}
 		for _, resource := range resources {
-			if err := p.client.Assert(ctx, operation.Timeout, resource); err != nil {
+			if err := p.operationClient.Assert(ctx, operation.Timeout, resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}
@@ -146,7 +146,7 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 			fail(t, operation.ContinueOnError)
 		}
 		for _, resource := range resources {
-			if err := p.client.Error(ctx, operation.Timeout, resource); err != nil {
+			if err := p.operationClient.Error(ctx, operation.Timeout, resource); err != nil {
 				fail(t, operation.ContinueOnError)
 			}
 		}

@@ -15,7 +15,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type Client interface {
+type OperationClient interface {
 	Apply(context.Context, *metav1.Duration, ctrlclient.Object, bool, bool, cleanup.Cleaner) error
 	Assert(context.Context, *metav1.Duration, unstructured.Unstructured) error
 	Create(context.Context, *metav1.Duration, ctrlclient.Object, bool, bool, cleanup.Cleaner) error
@@ -33,13 +33,13 @@ type opClient struct {
 	stepTimeouts v1alpha1.Timeouts
 }
 
-func NewClient(
+func NewOperationClient(
 	namespacer namespacer.Namespacer,
 	client client.Client,
 	config v1alpha1.ConfigurationSpec,
 	test v1alpha1.TestSpec,
 	stepTimeouts v1alpha1.Timeouts,
-) Client {
+) OperationClient {
 	return &opClient{
 		namespacer:   namespacer,
 		client:       client,
