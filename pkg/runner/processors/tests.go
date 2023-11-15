@@ -77,7 +77,6 @@ func (p *testsProcessor) Run(ctx context.Context, tests ...discovery.Test) repor
 			processor := p.CreateTestProcessor(test)
 			testReport := processor.Run(testing.IntoContext(ctx, t), nspacer, test)
 			testsReport.Steps = append(testsReport.Steps, testReport)
-
 		})
 	}
 	testsReport.EndTime = p.clock.Now()
