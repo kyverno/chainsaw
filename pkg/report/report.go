@@ -61,7 +61,7 @@ func SaveReport(report *TestsReport, serializer ReportSerializer, filePath strin
 	if err != nil {
 		return err
 	}
-	return os.WriteFile(filePath, data, 0o644)
+	return os.WriteFile(filePath, data, 0600)
 }
 
 func GetSerializer(format v1alpha1.ReportFormatType) (ReportSerializer, error) {

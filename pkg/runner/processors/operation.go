@@ -142,9 +142,7 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 			if err := p.operationClient.Apply(ctx, operation.Timeout, res, shouldFail, dryRun, cleaner); err != nil {
 				errMsg := fmt.Sprintf("Apply error for resource %v: %s", res, err.Error())
 				logging.FromContext(ctx).Log("APPLY ", color.BoldRed, errMsg)
-				if shouldFail {
-					fail(t, operation.ContinueOnError)
-				}
+				fail(t, operation.ContinueOnError)
 				applyErrors = append(applyErrors, errMsg)
 			}
 		}
@@ -187,9 +185,7 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 			if err := p.operationClient.Create(ctx, operation.Timeout, res, shouldFail, dryRun, cleaner); err != nil {
 				errMsg := fmt.Sprintf("Create error for resource %v: %s", res, err.Error())
 				createErrors = append(createErrors, errMsg)
-				if shouldFail {
-					fail(t, operation.ContinueOnError)
-				}
+				fail(t, operation.ContinueOnError)
 			}
 		}
 

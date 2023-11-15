@@ -197,6 +197,9 @@ func Command() *cobra.Command {
 				return err
 			}
 			summary, report, err := runner.Run(cfg, clock, configuration.Spec, testToRun...)
+			if saveErr := report.SaveReportBasedOnType(configuration.Spec.ReportFormat, configuration.Spec.ReportName); saveErr != nil {
+				return fmt.Errorf("failed to save report: %w", saveErr)
+			}
 			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Passed  tests", summary.Passed())
@@ -211,8 +214,6 @@ func Command() *cobra.Command {
 			} else {
 				fmt.Fprintln(out, "Done.")
 			}
-			// save report
-			report.SaveReportBasedOnType(configuration.Spec.ReportFormat, configuration.Spec.ReportName)
 			return err
 		},
 	}
