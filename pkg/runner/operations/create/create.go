@@ -1,4 +1,4 @@
-package operations
+package create
 
 import (
 	"context"
@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -15,15 +16,25 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type CreateOperation struct {
-	baseOperation
+type operation struct {
+	client     client.Client
 	obj        ctrlclient.Object
 	dryRun     bool
 	cleaner    cleanup.Cleaner
 	shouldFail bool
 }
 
-func (c *CreateOperation) Exec(ctx context.Context) (_err error) {
+func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, shouldFail bool) *operation {
+	return &operation{
+		client:     client,
+		obj:        obj,
+		dryRun:     dryRun,
+		cleaner:    cleaner,
+		shouldFail: shouldFail,
+	}
+}
+
+func (c *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "CREATE"
 	logger := logging.FromContext(ctx).WithResource(c.obj)
 
@@ -36,7 +47,7 @@ func (c *CreateOperation) Exec(ctx context.Context) (_err error) {
 		}
 	}()
 
-	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
+	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(c.obj.GetObjectKind().GroupVersionKind())
 		err := c.client.Get(ctx, client.ObjectKey(c.obj), &actual)
