@@ -138,7 +138,6 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 		shouldFail := operation.Apply.ShouldFail != nil && *operation.Apply.ShouldFail
 		dryRun := operation.Apply.DryRun != nil && *operation.Apply.DryRun
 
-		// Apply each resource
 		for _, res := range resources {
 			if err := p.operationClient.Apply(ctx, operation.Timeout, res, shouldFail, dryRun, cleaner); err != nil {
 				errMsg := fmt.Sprintf("Apply error for resource %v: %s", res, err.Error())
