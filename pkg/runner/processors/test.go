@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -23,12 +24,13 @@ type TestProcessor interface {
 	CreateStepProcessor(client operations.OperationClient) StepProcessor
 }
 
-func NewTestProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary) TestProcessor {
+func NewTestProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary, report *report.Report) TestProcessor {
 	return &testProcessor{
 		config:  config,
 		client:  client,
 		clock:   clock,
 		summary: summary,
+		report:  report,
 	}
 }
 
@@ -37,6 +39,7 @@ type testProcessor struct {
 	client  client.Client
 	clock   clock.PassiveClock
 	summary *summary.Summary
+	report  *report.Report
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test) {
@@ -112,5 +115,5 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 }
 
 func (p *testProcessor) CreateStepProcessor(client operations.OperationClient) StepProcessor {
-	return NewStepProcessor(p.config, client, p.clock)
+	return NewStepProcessor(p.config, client, p.clock, p.report)
 }

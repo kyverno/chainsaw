@@ -6,6 +6,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -21,12 +22,13 @@ type TestsProcessor interface {
 	CreateTestProcessor(test discovery.Test) TestProcessor
 }
 
-func NewTestsProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary) TestsProcessor {
+func NewTestsProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary, report *report.Report) TestsProcessor {
 	return &testsProcessor{
 		config:  config,
 		client:  client,
 		clock:   clock,
 		summary: summary,
+		report:  report,
 	}
 }
 
@@ -35,6 +37,7 @@ type testsProcessor struct {
 	client  client.Client
 	clock   clock.PassiveClock
 	summary *summary.Summary
+	report  *report.Report
 }
 
 func (p *testsProcessor) Run(ctx context.Context, tests ...discovery.Test) {
@@ -75,5 +78,5 @@ func (p *testsProcessor) Run(ctx context.Context, tests ...discovery.Test) {
 }
 
 func (p *testsProcessor) CreateTestProcessor(_ discovery.Test) TestProcessor {
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary)
+	return NewTestProcessor(p.config, p.client, p.clock, p.summary, p.report)
 }

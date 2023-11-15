@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -22,11 +23,12 @@ type OperationProcessor interface {
 	Run(ctx context.Context, namespace string, test discovery.Test, step v1alpha1.TestStepSpec, operation v1alpha1.Operation)
 }
 
-func NewOperationProcessor(config v1alpha1.ConfigurationSpec, operationClient operations.OperationClient, clock clock.PassiveClock) OperationProcessor {
+func NewOperationProcessor(config v1alpha1.ConfigurationSpec, operationClient operations.OperationClient, clock clock.PassiveClock, report *report.Report) OperationProcessor {
 	return &operationProcessor{
 		config:          config,
 		operationClient: operationClient,
 		clock:           clock,
+		report:          report,
 	}
 }
 
@@ -34,6 +36,7 @@ type operationProcessor struct {
 	config          v1alpha1.ConfigurationSpec
 	operationClient operations.OperationClient
 	clock           clock.PassiveClock
+	report          *report.Report
 }
 
 func (p *operationProcessor) Run(ctx context.Context, namespace string, test discovery.Test, step v1alpha1.TestStepSpec, operation v1alpha1.Operation) {

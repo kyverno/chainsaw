@@ -5,6 +5,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/collect"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -19,11 +20,12 @@ type StepProcessor interface {
 	CreateOperationProcessor(operation v1alpha1.Operation) OperationProcessor
 }
 
-func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.OperationClient, clock clock.PassiveClock) StepProcessor {
+func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.OperationClient, clock clock.PassiveClock, report *report.Report) StepProcessor {
 	return &stepProcessor{
 		config:          config,
 		operationClient: client,
 		clock:           clock,
+		report:          report,
 	}
 }
 
@@ -31,6 +33,7 @@ type stepProcessor struct {
 	config          v1alpha1.ConfigurationSpec
 	operationClient operations.OperationClient
 	clock           clock.PassiveClock
+	report          *report.Report
 }
 
 func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec) {
@@ -113,5 +116,5 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 }
 
 func (p *stepProcessor) CreateOperationProcessor(_ v1alpha1.Operation) OperationProcessor {
-	return NewOperationProcessor(p.config, p.operationClient, p.clock)
+	return NewOperationProcessor(p.config, p.operationClient, p.clock, p.report)
 }
