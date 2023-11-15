@@ -1,4 +1,4 @@
-package operations
+package assert
 
 import (
 	"context"
@@ -215,13 +215,11 @@ func Test_operationAssert(t *testing.T) {
 			ctxt, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 			ctx := logging.IntoContext(ctxt, logger)
-			assertOp := &AssertOperation{
-				baseOperation: baseOperation{
-					client: tt.client,
-				},
+			operation := operation{
+				client:   tt.client,
 				expected: tt.expected,
 			}
-			err := execOperation(ctx, assertOp)
+			err := operation.Exec(ctx)
 			if tt.expectErr {
 				assert.NotNil(t, err)
 			} else {

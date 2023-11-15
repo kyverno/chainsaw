@@ -1,4 +1,4 @@
-package operations
+package error
 
 import (
 	"context"
@@ -120,13 +120,11 @@ func Test_operationError(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx, cancel := context.WithTimeout(logging.IntoContext(context.TODO(), logger), 1*time.Second)
 			defer cancel()
-			errorOp := &ErrorOperation{
-				baseOperation: baseOperation{
-					client: tt.client,
-				},
+			operation := operation{
+				client:   tt.client,
 				expected: tt.expected,
 			}
-			err := execOperation(ctx, errorOp)
+			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

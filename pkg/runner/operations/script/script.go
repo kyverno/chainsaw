@@ -1,4 +1,4 @@
-package operations
+package script
 
 import (
 	"context"
@@ -8,19 +8,28 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno/ext/output/color"
 )
 
-type ScriptOperation struct {
+type operation struct {
 	script    v1alpha1.Script
 	log       bool
 	namespace string
 }
 
-func (s *ScriptOperation) Exec(ctx context.Context) (_err error) {
+func New(script v1alpha1.Script, namespace string, log bool) *operation {
+	return &operation{
+		script:    script,
+		namespace: namespace,
+		log:       log,
+	}
+}
+
+func (s *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
 	const operation = "SCRIPT"
-	var output CommandOutput
+	var output internal.CommandOutput
 	defer func() {
 		if _err == nil {
 			logger.Log(operation, color.BoldGreen, "DONE")
@@ -52,7 +61,7 @@ func (s *ScriptOperation) Exec(ctx context.Context) (_err error) {
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
-	cmd.Stdout = &output.stdout
-	cmd.Stderr = &output.stderr
+	cmd.Stdout = &output.Stdout
+	cmd.Stderr = &output.Stderr
 	return cmd.Run()
 }

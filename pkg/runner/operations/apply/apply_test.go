@@ -1,4 +1,4 @@
-package operations
+package apply
 
 import (
 	"context"
@@ -244,16 +244,14 @@ func Test_apply(t *testing.T) {
 			cleanerCalled = false
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
-			operationApply := &ApplyOperation{
-				baseOperation: baseOperation{
-					client: tt.client,
-				},
+			operation := operation{
+				client:     tt.client,
 				obj:        tt.object,
 				dryRun:     tt.dryRun,
 				cleaner:    tt.cleaner,
 				shouldFail: tt.shouldFail,
 			}
-			err := execOperation(ctx, operationApply)
+			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
