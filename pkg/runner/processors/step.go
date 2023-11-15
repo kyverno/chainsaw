@@ -19,18 +19,18 @@ type StepProcessor interface {
 	CreateOperationProcessor(operation v1alpha1.Operation) OperationProcessor
 }
 
-func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.Client, clock clock.PassiveClock) StepProcessor {
+func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.OperationClient, clock clock.PassiveClock) StepProcessor {
 	return &stepProcessor{
-		config: config,
-		client: client,
-		clock:  clock,
+		config:          config,
+		operationClient: client,
+		clock:           clock,
 	}
 }
 
 type stepProcessor struct {
-	config v1alpha1.ConfigurationSpec
-	client operations.Client
-	clock  clock.PassiveClock
+	config          v1alpha1.ConfigurationSpec
+	operationClient operations.OperationClient
+	clock           clock.PassiveClock
 }
 
 func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec) {
@@ -44,7 +44,7 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 					if err != nil {
 						logger.Log("COLLEC", color.BoldRed, err)
 						t.Fail()
-					} else if err := p.client.Command(ctx, nil, *cmd); err != nil {
+					} else if err := p.operationClient.Command(ctx, nil, *cmd); err != nil {
 						t.Fail()
 					}
 				}
@@ -53,17 +53,17 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 					if err != nil {
 						logger.Log("COLLEC", color.BoldRed, err)
 						t.Fail()
-					} else if err := p.client.Command(ctx, nil, *cmd); err != nil {
+					} else if err := p.operationClient.Command(ctx, nil, *cmd); err != nil {
 						t.Fail()
 					}
 				}
 				if handler.Command != nil {
-					if err := p.client.Command(ctx, nil, *handler.Command); err != nil {
+					if err := p.operationClient.Command(ctx, nil, *handler.Command); err != nil {
 						t.Fail()
 					}
 				}
 				if handler.Script != nil {
-					if err := p.client.Script(ctx, nil, *handler.Script); err != nil {
+					if err := p.operationClient.Script(ctx, nil, *handler.Script); err != nil {
 						t.Fail()
 					}
 				}
@@ -79,7 +79,7 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 						if err != nil {
 							logger.Log("COLLEC", color.BoldRed, err)
 							t.Fail()
-						} else if err := p.client.Command(ctx, nil, *cmd); err != nil {
+						} else if err := p.operationClient.Command(ctx, nil, *cmd); err != nil {
 							t.Fail()
 						}
 					}
@@ -88,17 +88,17 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 						if err != nil {
 							logger.Log("COLLEC", color.BoldRed, err)
 							t.Fail()
-						} else if err := p.client.Command(ctx, nil, *cmd); err != nil {
+						} else if err := p.operationClient.Command(ctx, nil, *cmd); err != nil {
 							t.Fail()
 						}
 					}
 					if handler.Command != nil {
-						if err := p.client.Command(ctx, nil, *handler.Command); err != nil {
+						if err := p.operationClient.Command(ctx, nil, *handler.Command); err != nil {
 							t.Fail()
 						}
 					}
 					if handler.Script != nil {
-						if err := p.client.Script(ctx, nil, *handler.Script); err != nil {
+						if err := p.operationClient.Script(ctx, nil, *handler.Script); err != nil {
 							t.Fail()
 						}
 					}
@@ -113,5 +113,5 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 }
 
 func (p *stepProcessor) CreateOperationProcessor(_ v1alpha1.Operation) OperationProcessor {
-	return NewOperationProcessor(p.config, p.client, p.clock)
+	return NewOperationProcessor(p.config, p.operationClient, p.clock)
 }
