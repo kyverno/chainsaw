@@ -20,17 +20,16 @@ import (
 )
 
 type TestProcessor interface {
-	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test)
+	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test) report.TestReport
 	CreateStepProcessor(client operations.OperationClient) StepProcessor
 }
 
-func NewTestProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary, report *report.Report) TestProcessor {
+func NewTestProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary) TestProcessor {
 	return &testProcessor{
 		config:  config,
 		client:  client,
 		clock:   clock,
 		summary: summary,
-		report:  report,
 	}
 }
 
@@ -39,11 +38,15 @@ type testProcessor struct {
 	client  client.Client
 	clock   clock.PassiveClock
 	summary *summary.Summary
-	report  *report.Report
 }
 
-func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test) {
+func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test) report.TestReport {
 	t := testing.FromContext(ctx)
+	// Create a TestReport
+	testReport := report.TestReport{
+		Name:      test.Name,
+		StartTime: p.clock.Now(),
+	}
 	size := 0
 	for i, step := range test.Spec.Steps {
 		name := step.Name
@@ -110,10 +113,13 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		processor.Run(logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Name, fmt.Sprintf("%-*s", size, name))), nspacer, test, step.Spec)
+		stepReport := processor.Run(logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Name, fmt.Sprintf("%-*s", size, name))), nspacer, test, step.Spec)
+		testReport.Steps = append(testReport.Steps, stepReport)
 	}
+	testReport.EndTime = p.clock.Now()
+	return testReport
 }
 
 func (p *testProcessor) CreateStepProcessor(client operations.OperationClient) StepProcessor {
-	return NewStepProcessor(p.config, client, p.clock, p.report)
+	return NewStepProcessor(p.config, client, p.clock)
 }

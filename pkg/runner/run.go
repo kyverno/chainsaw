@@ -18,10 +18,10 @@ import (
 	"k8s.io/utils/clock"
 )
 
-func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*summary.Summary, *report.Report, error) {
+func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*summary.Summary, *report.TestsReport, error) {
 	var summary summary.Summary
 	// report is the report of the test run
-	var report report.Report
+	var report report.TestsReport
 
 	if len(tests) == 0 {
 		return &summary, &report, nil
@@ -38,10 +38,11 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
-			processor := processors.NewTestsProcessor(config, client, clock, &summary, &report)
+			processor := processors.NewTestsProcessor(config, client, clock, &summary)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
-			processor.Run(ctx, tests...)
+			testsReport := processor.Run(ctx, tests...)
+			report = testsReport
 		},
 	}}
 	deps := &internal.TestDeps{}

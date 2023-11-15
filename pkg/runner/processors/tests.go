@@ -18,17 +18,16 @@ import (
 )
 
 type TestsProcessor interface {
-	Run(ctx context.Context, tests ...discovery.Test)
+	Run(ctx context.Context, tests ...discovery.Test) report.TestsReport
 	CreateTestProcessor(test discovery.Test) TestProcessor
 }
 
-func NewTestsProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary, report *report.Report) TestsProcessor {
+func NewTestsProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary) TestsProcessor {
 	return &testsProcessor{
 		config:  config,
 		client:  client,
 		clock:   clock,
 		summary: summary,
-		report:  report,
 	}
 }
 
@@ -37,11 +36,15 @@ type testsProcessor struct {
 	client  client.Client
 	clock   clock.PassiveClock
 	summary *summary.Summary
-	report  *report.Report
 }
 
-func (p *testsProcessor) Run(ctx context.Context, tests ...discovery.Test) {
+func (p *testsProcessor) Run(ctx context.Context, tests ...discovery.Test) report.TestsReport {
 	t := testing.FromContext(ctx)
+	// Create a TestsReport
+	testsReport := report.TestsReport{
+		StartTime: p.clock.Now(),
+	}
+
 	var nspacer namespacer.Namespacer
 	if p.config.Namespace != "" {
 		namespace := client.Namespace(p.config.Namespace)
@@ -72,11 +75,15 @@ func (p *testsProcessor) Run(ctx context.Context, tests ...discovery.Test) {
 		t.Run(name, func(t *testing.T) {
 			t.Helper()
 			processor := p.CreateTestProcessor(test)
-			processor.Run(testing.IntoContext(ctx, t), nspacer, test)
+			testReport := processor.Run(testing.IntoContext(ctx, t), nspacer, test)
+			testsReport.Steps = append(testsReport.Steps, testReport)
+
 		})
 	}
+	testsReport.EndTime = p.clock.Now()
+	return testsReport
 }
 
 func (p *testsProcessor) CreateTestProcessor(_ discovery.Test) TestProcessor {
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary, p.report)
+	return NewTestProcessor(p.config, p.client, p.clock, p.summary)
 }

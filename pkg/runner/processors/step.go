@@ -16,16 +16,15 @@ import (
 )
 
 type StepProcessor interface {
-	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec)
+	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec) report.StepReport
 	CreateOperationProcessor(operation v1alpha1.Operation) OperationProcessor
 }
 
-func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.OperationClient, clock clock.PassiveClock, report *report.Report) StepProcessor {
+func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.OperationClient, clock clock.PassiveClock) StepProcessor {
 	return &stepProcessor{
 		config:          config,
 		operationClient: client,
 		clock:           clock,
-		report:          report,
 	}
 }
 
@@ -33,11 +32,15 @@ type stepProcessor struct {
 	config          v1alpha1.ConfigurationSpec
 	operationClient operations.OperationClient
 	clock           clock.PassiveClock
-	report          *report.Report
 }
 
-func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec) {
+func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec) report.StepReport {
 	t := testing.FromContext(ctx)
+	// Create a StepReport
+	stepReport := report.StepReport{
+		StartTime: p.clock.Now(),
+	}
+
 	logger := logging.FromContext(ctx)
 	defer func() {
 		t.Cleanup(func() {
@@ -111,10 +114,13 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}()
 	for _, operation := range step.Try {
 		processor := p.CreateOperationProcessor(operation)
-		processor.Run(ctx, nspacer.GetNamespace(), test, step, operation)
+		opReports := processor.Run(ctx, nspacer.GetNamespace(), test, step, operation)
+		stepReport.Steps = append(stepReport.Steps, opReports...)
 	}
+	stepReport.EndTime = p.clock.Now()
+	return stepReport
 }
 
 func (p *stepProcessor) CreateOperationProcessor(_ v1alpha1.Operation) OperationProcessor {
-	return NewOperationProcessor(p.config, p.operationClient, p.clock, p.report)
+	return NewOperationProcessor(p.config, p.operationClient, p.clock)
 }

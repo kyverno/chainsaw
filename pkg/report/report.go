@@ -12,11 +12,7 @@ import (
 )
 
 type ReportSerializer interface {
-	Serialize(report *Report) ([]byte, error)
-}
-
-type Report struct {
-	Tests []TestsReport `json:"tests" xml:"tests"`
+	Serialize(report *TestsReport) ([]byte, error)
 }
 
 type TestsReport struct {
@@ -41,24 +37,26 @@ type StepReport struct {
 }
 
 type OperationReport struct {
-	Name    string `json:"name" xml:"name"`
-	Result  string `json:"result" xml:"result"`
-	Message string `json:"message,omitempty" xml:"message,omitempty"`
+	Name      string    `json:"name" xml:"name"`
+	StartTime time.Time `json:"startTime" xml:"startTime"`
+	EndTime   time.Time `json:"endTime" xml:"endTime"`
+	Result    string    `json:"result" xml:"result"`
+	Message   string    `json:"message,omitempty" xml:"message,omitempty"`
 }
 
 type JSONSerializer struct{}
 
-func (s JSONSerializer) Serialize(report *Report) ([]byte, error) {
+func (s JSONSerializer) Serialize(report *TestsReport) ([]byte, error) {
 	return json.MarshalIndent(report, "", "  ")
 }
 
 type XMLSerializer struct{}
 
-func (s XMLSerializer) Serialize(report *Report) ([]byte, error) {
+func (s XMLSerializer) Serialize(report *TestsReport) ([]byte, error) {
 	return xml.MarshalIndent(report, "", "  ")
 }
 
-func SaveReport(report *Report, serializer ReportSerializer, filePath string) error {
+func SaveReport(report *TestsReport, serializer ReportSerializer, filePath string) error {
 	data, err := serializer.Serialize(report)
 	if err != nil {
 		return err
@@ -77,7 +75,7 @@ func GetSerializer(format v1alpha1.ReportFormatType) (ReportSerializer, error) {
 	}
 }
 
-func (report *Report) SaveReportBasedOnType(reportFormat v1alpha1.ReportFormatType, reportName string) error {
+func (report *TestsReport) SaveReportBasedOnType(reportFormat v1alpha1.ReportFormatType, reportName string) error {
 	serializer, err := GetSerializer(reportFormat)
 	if err != nil {
 		return err
