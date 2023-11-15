@@ -1,4 +1,4 @@
-package operations
+package script
 
 import (
 	"context"
@@ -45,12 +45,12 @@ func Test_operationScript(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
-			scriptOp := &ScriptOperation{
+			operation := operation{
 				script:    tt.script,
 				log:       tt.log,
 				namespace: tt.namespace,
 			}
-			err := execOperation(ctx, scriptOp)
+			err := operation.Exec(ctx)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

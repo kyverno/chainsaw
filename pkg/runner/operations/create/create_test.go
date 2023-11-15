@@ -1,4 +1,4 @@
-package operations
+package create
 
 import (
 	"context"
@@ -174,16 +174,14 @@ func Test_create(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
-			createOp := &CreateOperation{
-				baseOperation: baseOperation{
-					client: tt.client,
-				},
+			operation := operation{
+				client:     tt.client,
 				obj:        tt.object,
 				dryRun:     tt.dryrun,
 				cleaner:    tt.cleaner,
 				shouldFail: tt.shouldFail,
 			}
-			err := createOp.Exec(ctx)
+			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

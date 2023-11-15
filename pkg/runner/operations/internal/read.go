@@ -1,4 +1,4 @@
-package operations
+package internal
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func read(ctx context.Context, expected ctrlclient.Object, c client.Client) ([]unstructured.Unstructured, error) {
+func Read(ctx context.Context, expected ctrlclient.Object, c client.Client) ([]unstructured.Unstructured, error) {
 	var results []unstructured.Unstructured
 	gvk := expected.GetObjectKind().GroupVersionKind()
 	useGet := expected.GetName() != ""

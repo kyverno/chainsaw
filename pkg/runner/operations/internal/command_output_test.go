@@ -1,4 +1,4 @@
-package operations
+package internal
 
 import (
 	"bytes"
@@ -48,8 +48,8 @@ func TestCommandOutput(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			co := &CommandOutput{
-				stdout: *bytes.NewBufferString(tt.stdout),
-				stderr: *bytes.NewBufferString(tt.stderr),
+				Stdout: *bytes.NewBufferString(tt.stdout),
+				Stderr: *bytes.NewBufferString(tt.stderr),
 			}
 			assert.Equal(t, tt.expectedOut, co.Out())
 			assert.Equal(t, tt.expectedErr, co.Err())

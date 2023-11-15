@@ -1,4 +1,4 @@
-package operations
+package command
 
 import (
 	"context"
@@ -8,19 +8,28 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno/ext/output/color"
 )
 
-type CommandOperation struct {
+type operation struct {
 	command   v1alpha1.Command
 	namespace string
 	log       bool
 }
 
-func (c *CommandOperation) Exec(ctx context.Context) (_err error) {
+func New(command v1alpha1.Command, namespace string, log bool) *operation {
+	return &operation{
+		command:   command,
+		namespace: namespace,
+		log:       log,
+	}
+}
+
+func (c *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
 	const operation = "CMD   "
-	var output CommandOutput
+	var output internal.CommandOutput
 	defer func() {
 		if _err == nil {
 			logger.Log(operation, color.BoldGreen, "DONE")
@@ -53,8 +62,8 @@ func (c *CommandOperation) Exec(ctx context.Context) (_err error) {
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
 	logger.Log(operation, color.BoldFgCyan, cmd, "RUNNING...")
-	cmd.Stdout = &output.stdout
-	cmd.Stderr = &output.stderr
+	cmd.Stdout = &output.Stdout
+	cmd.Stderr = &output.Stderr
 	return cmd.Run()
 }
 

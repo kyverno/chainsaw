@@ -1,4 +1,4 @@
-package operations
+package apply
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -17,15 +18,25 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-type ApplyOperation struct {
-	baseOperation
+type operation struct {
+	client     client.Client
 	obj        ctrlclient.Object
 	dryRun     bool
 	cleaner    cleanup.Cleaner
 	shouldFail bool
 }
 
-func (a *ApplyOperation) Exec(ctx context.Context) (_err error) {
+func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, shouldFail bool) *operation {
+	return &operation{
+		client:     client,
+		obj:        obj,
+		dryRun:     dryRun,
+		cleaner:    cleaner,
+		shouldFail: shouldFail,
+	}
+}
+
+func (a *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "APPLY"
 	logger := logging.FromContext(ctx).WithResource(a.obj)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
@@ -36,8 +47,7 @@ func (a *ApplyOperation) Exec(ctx context.Context) (_err error) {
 			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
-
-	return wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (bool, error) {
+	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(a.obj.GetObjectKind().GroupVersionKind())
 		err := a.client.Get(ctx, client.ObjectKey(a.obj), &actual)
@@ -55,7 +65,6 @@ func (a *ApplyOperation) Exec(ctx context.Context) (_err error) {
 			if err != nil {
 				return false, err
 			}
-
 			if err := a.client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes), patchOptions...); err != nil {
 				if a.shouldFail {
 					return true, nil

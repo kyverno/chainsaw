@@ -1,4 +1,4 @@
-package operations
+package assert
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"go.uber.org/multierr"
@@ -17,12 +18,19 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-type AssertOperation struct {
-	baseOperation
+type operation struct {
+	client   client.Client
 	expected unstructured.Unstructured
 }
 
-func (a *AssertOperation) Exec(ctx context.Context) (_err error) {
+func New(client client.Client, expected unstructured.Unstructured) *operation {
+	return &operation{
+		client:   client,
+		expected: expected,
+	}
+}
+
+func (a *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "ASSERT"
 	logger := logging.FromContext(ctx).WithResource(&a.expected)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
@@ -34,7 +42,7 @@ func (a *AssertOperation) Exec(ctx context.Context) (_err error) {
 		}
 	}()
 	var lastErrs []error
-	err := wait.PollUntilContextCancel(ctx, interval, false, func(ctx context.Context) (_ bool, err error) {
+	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
 		defer func() {
 			// record last errors only if there was no real error
@@ -42,7 +50,7 @@ func (a *AssertOperation) Exec(ctx context.Context) (_err error) {
 				lastErrs = errs
 			}
 		}()
-		if candidates, err := read(ctx, &a.expected, a.client); err != nil {
+		if candidates, err := internal.Read(ctx, &a.expected, a.client); err != nil {
 			if kerrors.IsNotFound(err) {
 				errs = append(errs, errors.New("actual resource not found"))
 				return false, nil

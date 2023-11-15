@@ -1,4 +1,4 @@
-package operations
+package delete
 
 import (
 	"context"
@@ -112,13 +112,11 @@ func Test_operationDelete(t *testing.T) {
 			ctxt, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 			defer cancel()
 			ctx := logging.IntoContext(ctxt, logger)
-			deleteOp := &DeleteOperation{
-				baseOperation: baseOperation{
-					client: tt.client,
-				},
-				obj: tt.object,
+			operation := operation{
+				client: tt.client,
+				obj:    tt.object,
 			}
-			err := execOperation(ctx, deleteOp)
+			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
