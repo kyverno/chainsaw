@@ -35,11 +35,7 @@ func (in *Apply) DeepCopyInto(out *Apply) {
 		*out = new(bool)
 		**out = **in
 	}
-	if in.ShouldFail != nil {
-		in, out := &in.ShouldFail, &out.ShouldFail
-		*out = new(bool)
-		**out = **in
-	}
+	in.Check.DeepCopyInto(&out.Check)
 	return
 }
 
@@ -196,11 +192,7 @@ func (in *Create) DeepCopyInto(out *Create) {
 		*out = new(bool)
 		**out = **in
 	}
-	if in.ShouldFail != nil {
-		in, out := &in.ShouldFail, &out.ShouldFail
-		*out = new(bool)
-		**out = **in
-	}
+	in.Check.DeepCopyInto(&out.Check)
 	return
 }
 

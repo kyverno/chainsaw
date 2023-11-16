@@ -44,8 +44,8 @@ func Test_create(t *testing.T) {
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
 		created     bool
-		shouldFail  bool
 		dryrun      bool
+		check       interface{}
 		expectedErr error
 	}{
 		{
@@ -57,7 +57,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("the resource already exists in the cluster"),
 		},
 		{
@@ -69,7 +69,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("the resource already exists in the cluster"),
 			dryrun:      true,
 		},
@@ -84,7 +84,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: nil,
 		},
 		{
@@ -98,9 +98,9 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
-			expectedErr: nil,
 			dryrun:      true,
+			check:       nil,
+			expectedErr: nil,
 			created:     true,
 		},
 		{
@@ -111,7 +111,7 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("some arbitrary error"),
 		},
 		{
@@ -125,7 +125,7 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("some arbitrary error"),
 		},
 		{
@@ -139,7 +139,9 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			shouldFail:  true,
+			check: map[string]interface{}{
+				"error": "some arbitrary error",
+			},
 			expectedErr: nil,
 		},
 		{
@@ -153,9 +155,9 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
-			expectedErr: nil,
 			cleaner:     testCleaner,
+			check:       nil,
+			expectedErr: nil,
 			created:     true,
 		},
 		{
@@ -169,8 +171,10 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  true,
-			expectedErr: errors.New("an error was expected but didn't happen"),
+			check: map[string]interface{}{
+				"(error != null)": true,
+			},
+			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
 		},
 	}
 	for _, tt := range tests {
@@ -178,12 +182,12 @@ func Test_create(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
 			operation := operation{
-				client:     tt.client,
-				obj:        tt.object,
-				dryRun:     tt.dryrun,
-				cleaner:    tt.cleaner,
-				shouldFail: tt.shouldFail,
-				created:    tt.created,
+				client:  tt.client,
+				obj:     tt.object,
+				dryRun:  tt.dryrun,
+				cleaner: tt.cleaner,
+				check:   tt.check,
+				created: tt.created,
 			}
 			err := operation.Exec(ctx)
 			operation.Cleanup()

@@ -57,12 +57,13 @@ func Test_apply(t *testing.T) {
 	}
 
 	tests := []struct {
-		name        string
-		object      ctrlclient.Object
-		client      *tclient.FakeClient
-		cleaner     cleanup.Cleaner
-		shouldFail  bool
+		name    string
+		object  ctrlclient.Object
+		client  *tclient.FakeClient
+		cleaner cleanup.Cleaner
+		// shouldFail  bool
 		dryRun      bool
+		check       interface{}
 		expectedErr error
 		created     bool
 	}{
@@ -78,7 +79,7 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: nil,
 		},
 		{
@@ -93,7 +94,7 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: nil,
 			dryRun:      true,
 		},
@@ -108,7 +109,7 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: nil,
 			created:     true,
 		},
@@ -123,7 +124,7 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: nil,
 			dryRun:      true,
 			created:     true,
@@ -136,7 +137,7 @@ func Test_apply(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			shouldFail:  true,
+			check:       nil,
 			expectedErr: errors.New("some arbitrary error"),
 		},
 		{
@@ -151,7 +152,7 @@ func Test_apply(t *testing.T) {
 					return errors.New("patch failed")
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("patch failed"),
 		},
 		{
@@ -165,7 +166,7 @@ func Test_apply(t *testing.T) {
 					return errors.New("create failed")
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("create failed"),
 		},
 		{
@@ -180,8 +181,10 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  true,
-			expectedErr: errors.New("an error was expected but didn't happen"),
+			check: map[string]interface{}{
+				"(error != null)": true,
+			},
+			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
 		},
 		{
 			name:   "Unexpected create success when should fail",
@@ -194,8 +197,10 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  true,
-			expectedErr: errors.New("an error was expected but didn't happen"),
+			check: map[string]interface{}{
+				"(error != null)": true,
+			},
+			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
 		},
 		{
 			name:   "Expected patch failure",
@@ -209,7 +214,9 @@ func Test_apply(t *testing.T) {
 					return errors.New("expected patch failure")
 				},
 			},
-			shouldFail:  true,
+			check: map[string]interface{}{
+				"error": "expected patch failure",
+			},
 			expectedErr: nil,
 		},
 		{
@@ -223,7 +230,9 @@ func Test_apply(t *testing.T) {
 					return errors.New("expected create failure")
 				},
 			},
-			shouldFail:  true,
+			check: map[string]interface{}{
+				"error": "expected create failure",
+			},
 			expectedErr: nil,
 		},
 		{
@@ -238,7 +247,7 @@ func Test_apply(t *testing.T) {
 				},
 			},
 			cleaner:     testCleaner,
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: nil,
 			created:     true,
 		},
@@ -249,12 +258,12 @@ func Test_apply(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
 			operation := operation{
-				client:     tt.client,
-				obj:        tt.object,
-				dryRun:     tt.dryRun,
-				cleaner:    tt.cleaner,
-				shouldFail: tt.shouldFail,
-				created:    tt.created,
+				client:  tt.client,
+				obj:     tt.object,
+				dryRun:  tt.dryRun,
+				cleaner: tt.cleaner,
+				check:   tt.check,
+				created: tt.created,
 			}
 			err := operation.Exec(ctx)
 			operation.Cleanup()
