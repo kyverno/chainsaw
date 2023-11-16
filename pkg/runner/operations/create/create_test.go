@@ -186,6 +186,7 @@ func Test_create(t *testing.T) {
 				created:    tt.created,
 			}
 			err := operation.Exec(ctx)
+			operation.Cleanup()
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
