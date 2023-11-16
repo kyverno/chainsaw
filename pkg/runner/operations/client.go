@@ -64,7 +64,7 @@ func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclien
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
-	operation := apply.New(c.client, obj, dryRun, cleanup, check)
+	operation := apply.New(c.getClient(dryRun), obj, getCleaner(cleanup, dryRun), check)
 	return operation.Exec(ctx)
 }
 
@@ -88,7 +88,7 @@ func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclie
 	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
-	operation := create.New(c.client, obj, dryRun, cleanup, check)
+	operation := create.New(c.getClient(dryRun), obj, getCleaner(cleanup, dryRun), check)
 	return operation.Exec(ctx)
 }
 
@@ -128,4 +128,18 @@ func (c *opClient) Script(ctx context.Context, to *metav1.Duration, exec v1alpha
 	defer cancel()
 	operation := script.New(exec, c.namespacer.GetNamespace())
 	return operation.Exec(ctx)
+}
+
+func (c *opClient) getClient(dryRun bool) client.Client {
+	if !dryRun {
+		return c.client
+	}
+	return client.DryRun(c.client)
+}
+
+func getCleaner(cleanup cleanup.Cleaner, dryRun bool) cleanup.Cleaner {
+	if dryRun {
+		return nil
+	}
+	return cleanup
 }
