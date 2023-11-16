@@ -19,16 +19,17 @@ import (
 )
 
 type TestProcessor interface {
-	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test)
+	Run(ctx context.Context, nspacer namespacer.Namespacer)
 	CreateStepProcessor(nspacer namespacer.Namespacer, client operations.OperationClient) StepProcessor
 }
 
-func NewTestProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary) TestProcessor {
+func NewTestProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary, test discovery.Test) TestProcessor {
 	return &testProcessor{
 		config:  config,
 		client:  client,
 		clock:   clock,
 		summary: summary,
+		test:    test,
 	}
 }
 
@@ -37,12 +38,13 @@ type testProcessor struct {
 	client  client.Client
 	clock   clock.PassiveClock
 	summary *summary.Summary
+	test    discovery.Test
 }
 
-func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test) {
+func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
 	t := testing.FromContext(ctx)
 	size := 0
-	for i, step := range test.Spec.Steps {
+	for i, step := range p.test.Spec.Steps {
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
@@ -64,18 +66,18 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			}
 		})
 	}
-	if test.Spec.Concurrent == nil || *test.Spec.Concurrent {
+	if p.test.Spec.Concurrent == nil || *p.test.Spec.Concurrent {
 		t.Parallel()
 	}
-	if test.Spec.Skip != nil && *test.Spec.Skip {
+	if p.test.Spec.Skip != nil && *p.test.Spec.Skip {
 		t.SkipNow()
 	}
-	setupLogger := logging.NewLogger(t, p.clock, test.Name, fmt.Sprintf("%-*s", size, "@setup"))
+	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	var namespace *corev1.Namespace
-	if nspacer == nil || test.Spec.Namespace != "" {
+	if nspacer == nil || p.test.Spec.Namespace != "" {
 		var ns corev1.Namespace
-		if test.Spec.Namespace != "" {
-			ns = client.Namespace(test.Spec.Namespace)
+		if p.test.Spec.Namespace != "" {
+			ns = client.Namespace(p.test.Spec.Namespace)
 		} else {
 			ns = client.PetNamespace()
 		}
@@ -83,7 +85,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 	if namespace != nil {
 		nspacer = namespacer.New(p.client, namespace.Name)
-		operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, test.Spec, v1alpha1.Timeouts{})
+		operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, p.test.Spec, v1alpha1.Timeouts{})
 		if err := p.client.Get(logging.IntoContext(ctx, setupLogger), client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
@@ -100,14 +102,14 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			})
 		}
 	}
-	for i, step := range test.Spec.Steps {
-		operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, test.Spec, step.Spec.Timeouts)
+	for i, step := range p.test.Spec.Steps {
+		operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, p.test.Spec, step.Spec.Timeouts)
 		processor := p.CreateStepProcessor(nspacer, operationsClient)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		processor.Run(logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Name, fmt.Sprintf("%-*s", size, name))), test, step.Spec)
+		processor.Run(logging.IntoContext(ctx, logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, name))), p.test, step.Spec)
 	}
 }
 
