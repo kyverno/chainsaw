@@ -6,6 +6,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type dryRunClient struct {
@@ -34,6 +35,11 @@ func (c *dryRunClient) List(ctx context.Context, list client.ObjectList, opts ..
 
 func (c *dryRunClient) Patch(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
 	return c.inner.Patch(ctx, obj, patch, append(opts, client.DryRunAll)...)
+}
+
+// Don't follow dry-run for status updates
+func (c *dryRunClient) Status() ctrlclient.StatusWriter {
+	return c.inner.Status()
 }
 
 func DryRun(inner Client) Client {
