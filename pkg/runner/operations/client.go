@@ -119,13 +119,13 @@ func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unst
 func (c *opClient) Command(ctx context.Context, to *metav1.Duration, exec v1alpha1.Command) error {
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
 	defer cancel()
-	operation := command.New(exec, c.namespacer.GetNamespace(), !exec.SkipLogOutput)
+	operation := command.New(exec, c.namespacer.GetNamespace())
 	return operation.Exec(ctx)
 }
 
 func (c *opClient) Script(ctx context.Context, to *metav1.Duration, exec v1alpha1.Script) error {
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
 	defer cancel()
-	operation := script.New(exec, c.namespacer.GetNamespace(), !exec.SkipLogOutput)
+	operation := script.New(exec, c.namespacer.GetNamespace())
 	return operation.Exec(ctx)
 }
