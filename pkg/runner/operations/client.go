@@ -6,8 +6,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
-	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/apply"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/assert"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/command"
@@ -16,7 +14,6 @@ import (
 	cmderror "github.com/kyverno/chainsaw/pkg/runner/operations/error"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/script"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
-	"github.com/kyverno/kyverno/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -33,7 +30,7 @@ type OperationClient interface {
 }
 
 type opClient struct {
-	namespacer   namespacer.Namespacer
+	namespace    string
 	client       client.Client
 	config       v1alpha1.ConfigurationSpec
 	test         v1alpha1.TestSpec
@@ -41,14 +38,14 @@ type opClient struct {
 }
 
 func NewOperationClient(
-	namespacer namespacer.Namespacer,
+	namespace string,
 	client client.Client,
 	config v1alpha1.ConfigurationSpec,
 	test v1alpha1.TestSpec,
 	stepTimeouts v1alpha1.Timeouts,
 ) OperationClient {
 	return &opClient{
-		namespacer:   namespacer,
+		namespace:    namespace,
 		client:       client,
 		config:       config,
 		test:         test,
@@ -57,11 +54,6 @@ func NewOperationClient(
 }
 
 func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, dryRun bool, check interface{}, cleanup cleanup.Cleaner) error {
-	logger := logging.FromContext(ctx)
-	if err := c.namespacer.Apply(obj); err != nil {
-		logger.Log("LOAD  ", color.BoldRed, err)
-		return err
-	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
 	operation := apply.New(c.getClient(dryRun), obj, getCleaner(cleanup, dryRun), check)
@@ -69,11 +61,6 @@ func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclien
 }
 
 func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) error {
-	logger := logging.FromContext(ctx)
-	if err := c.namespacer.Apply(&expected); err != nil {
-		logger.Log("LOAD  ", color.BoldRed, err)
-		return err
-	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultAssertTimeout, c.config.Timeouts.Assert, c.test.Timeouts.Assert, c.stepTimeouts.Assert, to)
 	defer cancel()
 	operation := assert.New(c.client, expected)
@@ -81,11 +68,6 @@ func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected uns
 }
 
 func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, dryRun bool, check interface{}, cleanup cleanup.Cleaner) error {
-	logger := logging.FromContext(ctx)
-	if err := c.namespacer.Apply(obj); err != nil {
-		logger.Log("LOAD  ", color.BoldRed, err)
-		return err
-	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultApplyTimeout, c.config.Timeouts.Apply, c.test.Timeouts.Apply, c.stepTimeouts.Apply, to)
 	defer cancel()
 	operation := create.New(c.getClient(dryRun), obj, getCleaner(cleanup, dryRun), check)
@@ -93,11 +75,6 @@ func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclie
 }
 
 func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object) error {
-	logger := logging.FromContext(ctx)
-	if err := c.namespacer.Apply(obj); err != nil {
-		logger.Log("LOAD  ", color.BoldRed, err)
-		return err
-	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultDeleteTimeout, c.config.Timeouts.Delete, c.test.Timeouts.Delete, c.stepTimeouts.Delete, to)
 	defer cancel()
 	operation := delete.New(c.client, obj)
@@ -105,11 +82,6 @@ func (c *opClient) Delete(ctx context.Context, to *metav1.Duration, obj ctrlclie
 }
 
 func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unstructured.Unstructured) error {
-	logger := logging.FromContext(ctx)
-	if err := c.namespacer.Apply(&expected); err != nil {
-		logger.Log("LOAD  ", color.BoldRed, err)
-		return err
-	}
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultErrorTimeout, c.config.Timeouts.Error, c.test.Timeouts.Error, c.stepTimeouts.Error, to)
 	defer cancel()
 	operation := cmderror.New(c.client, expected)
@@ -119,14 +91,14 @@ func (c *opClient) Error(ctx context.Context, to *metav1.Duration, expected unst
 func (c *opClient) Command(ctx context.Context, to *metav1.Duration, exec v1alpha1.Command) error {
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
 	defer cancel()
-	operation := command.New(exec, c.namespacer.GetNamespace())
+	operation := command.New(exec, c.namespace)
 	return operation.Exec(ctx)
 }
 
 func (c *opClient) Script(ctx context.Context, to *metav1.Duration, exec v1alpha1.Script) error {
 	ctx, cancel := timeout.Context(ctx, timeout.DefaultExecTimeout, c.config.Timeouts.Exec, c.test.Timeouts.Exec, c.stepTimeouts.Exec, to)
 	defer cancel()
-	operation := script.New(exec, c.namespacer.GetNamespace())
+	operation := script.New(exec, c.namespace)
 	return operation.Exec(ctx)
 }
 

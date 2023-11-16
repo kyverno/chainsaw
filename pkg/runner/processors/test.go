@@ -20,7 +20,7 @@ import (
 
 type TestProcessor interface {
 	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test)
-	CreateStepProcessor(client operations.OperationClient) StepProcessor
+	CreateStepProcessor(nspacer namespacer.Namespacer, client operations.OperationClient) StepProcessor
 }
 
 func NewTestProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary) TestProcessor {
@@ -83,7 +83,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 	if namespace != nil {
 		nspacer = namespacer.New(p.client, namespace.Name)
-		operationsClient := operations.NewOperationClient(nspacer, p.client, p.config, test.Spec, v1alpha1.Timeouts{})
+		operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, test.Spec, v1alpha1.Timeouts{})
 		if err := p.client.Get(logging.IntoContext(ctx, setupLogger), client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
@@ -101,16 +101,16 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		}
 	}
 	for i, step := range test.Spec.Steps {
-		operationsClient := operations.NewOperationClient(nspacer, p.client, p.config, test.Spec, step.Spec.Timeouts)
-		processor := p.CreateStepProcessor(operationsClient)
+		operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, test.Spec, step.Spec.Timeouts)
+		processor := p.CreateStepProcessor(nspacer, operationsClient)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		processor.Run(logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Name, fmt.Sprintf("%-*s", size, name))), nspacer, test, step.Spec)
+		processor.Run(logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Name, fmt.Sprintf("%-*s", size, name))), test, step.Spec)
 	}
 }
 
-func (p *testProcessor) CreateStepProcessor(client operations.OperationClient) StepProcessor {
-	return NewStepProcessor(p.config, client, p.clock)
+func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, client operations.OperationClient) StepProcessor {
+	return NewStepProcessor(p.config, client, nspacer, p.clock)
 }

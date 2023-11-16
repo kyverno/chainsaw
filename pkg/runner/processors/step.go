@@ -15,14 +15,15 @@ import (
 )
 
 type StepProcessor interface {
-	Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec)
+	Run(ctx context.Context, test discovery.Test, step v1alpha1.TestStepSpec)
 	CreateOperationProcessor(operation v1alpha1.Operation) OperationProcessor
 }
 
-func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.OperationClient, clock clock.PassiveClock) StepProcessor {
+func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.OperationClient, namespacer namespacer.Namespacer, clock clock.PassiveClock) StepProcessor {
 	return &stepProcessor{
 		config:          config,
 		operationClient: client,
+		namespacer:      namespacer,
 		clock:           clock,
 	}
 }
@@ -30,10 +31,11 @@ func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.Opera
 type stepProcessor struct {
 	config          v1alpha1.ConfigurationSpec
 	operationClient operations.OperationClient
+	namespacer      namespacer.Namespacer
 	clock           clock.PassiveClock
 }
 
-func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStepSpec) {
+func (p *stepProcessor) Run(ctx context.Context, test discovery.Test, step v1alpha1.TestStepSpec) {
 	t := testing.FromContext(ctx)
 	logger := logging.FromContext(ctx)
 	defer func() {
@@ -108,10 +110,10 @@ func (p *stepProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}()
 	for _, operation := range step.Try {
 		processor := p.CreateOperationProcessor(operation)
-		processor.Run(ctx, nspacer.GetNamespace(), test, step, operation)
+		processor.Run(ctx, test, step, operation)
 	}
 }
 
 func (p *stepProcessor) CreateOperationProcessor(_ v1alpha1.Operation) OperationProcessor {
-	return NewOperationProcessor(p.config, p.operationClient, p.clock)
+	return NewOperationProcessor(p.config, p.operationClient, p.namespacer, p.clock)
 }
