@@ -14,31 +14,30 @@ func Test_operationScript(t *testing.T) {
 	tests := []struct {
 		name      string
 		script    v1alpha1.Script
-		log       bool
 		namespace string
 		wantErr   bool
 	}{{
 		name: "Test with valid Script",
 		script: v1alpha1.Script{
-			Content: "echo hello",
+			Content:       "echo hello",
+			SkipLogOutput: false,
 		},
-		log:       true,
 		namespace: "test-namespace",
 		wantErr:   false,
 	}, {
 		name: "Test with invalid Script",
 		script: v1alpha1.Script{
-			Content: "invalidScriptCommand",
+			Content:       "invalidScriptCommand",
+			SkipLogOutput: false,
 		},
-		log:       true,
 		namespace: "test-namespace",
 		wantErr:   true,
 	}, {
 		name: "Test script without logging",
 		script: v1alpha1.Script{
-			Content: "echo silent",
+			Content:       "echo silent",
+			SkipLogOutput: true,
 		},
-		log:       false,
 		namespace: "test-namespace",
 		wantErr:   false,
 	}}
@@ -47,7 +46,6 @@ func Test_operationScript(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
 			operation := operation{
 				script:    tt.script,
-				log:       tt.log,
 				namespace: tt.namespace,
 			}
 			err := operation.Exec(ctx)

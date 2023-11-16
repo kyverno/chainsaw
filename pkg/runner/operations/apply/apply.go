@@ -63,7 +63,6 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 			if a.dryRun {
 				patchOptions = append(patchOptions, ctrlclient.DryRunAll)
 			}
-
 			patched, err := client.PatchObject(&actual, a.obj)
 			if err != nil {
 				return false, err

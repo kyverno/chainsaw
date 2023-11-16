@@ -69,6 +69,11 @@ spec:
                                 items:
                                   type: string
                                 type: array
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -125,6 +130,11 @@ spec:
                           script:
                             description: Script defines a script to run.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
@@ -152,6 +162,11 @@ spec:
                                 items:
                                   type: string
                                 type: array
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -208,6 +223,11 @@ spec:
                           script:
                             description: Script defines a script to run.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
@@ -296,6 +316,11 @@ spec:
                                 items:
                                   type: string
                                 type: array
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -372,6 +397,11 @@ spec:
                           script:
                             description: Script defines a script to run.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").

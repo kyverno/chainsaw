@@ -14,33 +14,32 @@ func Test_operationCommand(t *testing.T) {
 	tests := []struct {
 		name      string
 		command   v1alpha1.Command
-		log       bool
 		namespace string
 		wantErr   bool
 	}{{
 		name: "Test with valid Command",
 		command: v1alpha1.Command{
-			Entrypoint: "echo",
-			Args:       []string{"hello"},
+			Entrypoint:    "echo",
+			Args:          []string{"hello"},
+			SkipLogOutput: false,
 		},
-		log:       true,
 		namespace: "test-namespace",
 		wantErr:   false,
 	}, {
 		name: "Test with invalid Command",
 		command: v1alpha1.Command{
-			Entrypoint: "invalidCmd",
+			Entrypoint:    "invalidCmd",
+			SkipLogOutput: false,
 		},
-		log:       true,
 		namespace: "test-namespace",
 		wantErr:   true,
 	}, {
 		name: "Test without logging",
 		command: v1alpha1.Command{
-			Entrypoint: "echo",
-			Args:       []string{"silent"},
+			Entrypoint:    "echo",
+			Args:          []string{"silent"},
+			SkipLogOutput: true,
 		},
-		log:       false,
 		namespace: "test-namespace",
 		wantErr:   false,
 	}}
@@ -49,7 +48,6 @@ func Test_operationCommand(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
 			operation := operation{
 				command:   tt.command,
-				log:       tt.log,
 				namespace: tt.namespace,
 			}
 			err := operation.Exec(ctx)
