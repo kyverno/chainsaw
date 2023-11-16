@@ -53,7 +53,6 @@ func Test_apply(t *testing.T) {
 		name        string
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
-		dryRun      bool
 		check       interface{}
 		expectedErr error
 	}{
@@ -86,7 +85,6 @@ func Test_apply(t *testing.T) {
 			},
 			check:       nil,
 			expectedErr: nil,
-			dryRun:      true,
 		},
 		{
 			name:   "Resource does not exist, create it",
@@ -115,7 +113,6 @@ func Test_apply(t *testing.T) {
 			},
 			check:       nil,
 			expectedErr: nil,
-			dryRun:      true,
 		},
 		{
 			name:   "Error while getting resource",
@@ -245,7 +242,6 @@ func Test_apply(t *testing.T) {
 			operation := operation{
 				client: tt.client,
 				obj:    tt.object,
-				dryRun: tt.dryRun,
 				check:  tt.check,
 			}
 			err := operation.Exec(ctx)

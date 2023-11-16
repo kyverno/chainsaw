@@ -21,16 +21,14 @@ import (
 type operation struct {
 	client  client.Client
 	obj     ctrlclient.Object
-	dryRun  bool
 	cleaner cleanup.Cleaner
 	check   interface{}
 }
 
-func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, check interface{}) *operation {
+func New(client client.Client, obj ctrlclient.Object, cleaner cleanup.Cleaner, check interface{}) *operation {
 	return &operation{
 		client:  client,
 		obj:     obj,
-		dryRun:  dryRun,
 		cleaner: cleaner,
 		check:   check,
 	}
@@ -52,10 +50,6 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 		actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
 		err := o.client.Get(ctx, client.ObjectKey(o.obj), &actual)
 		if err == nil {
-			patchOptions := []ctrlclient.PatchOption{}
-			if o.dryRun {
-				patchOptions = append(patchOptions, ctrlclient.DryRunAll)
-			}
 			patched, err := client.PatchObject(&actual, o.obj)
 			if err != nil {
 				return false, err
@@ -64,7 +58,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 			if err != nil {
 				return false, err
 			}
-			err = o.client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes), patchOptions...)
+			err = o.client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes))
 			if o.check == nil {
 				return err == nil, err
 			} else {
@@ -82,12 +76,8 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 				return true, errs.ToAggregate()
 			}
 		} else if kerrors.IsNotFound(err) {
-			var createOptions []ctrlclient.CreateOption
-			if o.dryRun {
-				createOptions = append(createOptions, ctrlclient.DryRunAll)
-			}
-			err := o.client.Create(ctx, o.obj, createOptions...)
-			if err == nil && o.cleaner != nil && !o.dryRun {
+			err := o.client.Create(ctx, o.obj)
+			if err == nil && o.cleaner != nil {
 				o.cleaner(o.obj, o.client)
 			}
 			if o.check == nil {

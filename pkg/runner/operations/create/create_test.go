@@ -38,7 +38,6 @@ func Test_create(t *testing.T) {
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
-		dryrun      bool
 		check       interface{}
 		expectedErr error
 	}{
@@ -65,7 +64,6 @@ func Test_create(t *testing.T) {
 			},
 			check:       nil,
 			expectedErr: errors.New("the resource already exists in the cluster"),
-			dryrun:      true,
 		},
 		{
 			name:   "Resource does not exist, create it",
@@ -92,7 +90,6 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			dryrun:      true,
 			check:       nil,
 			expectedErr: nil,
 		},
@@ -175,7 +172,6 @@ func Test_create(t *testing.T) {
 			operation := operation{
 				client:  tt.client,
 				obj:     tt.object,
-				dryRun:  tt.dryrun,
 				cleaner: tt.cleaner,
 				check:   tt.check,
 			}
