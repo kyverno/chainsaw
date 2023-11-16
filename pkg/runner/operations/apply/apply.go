@@ -3,13 +3,13 @@ package apply
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -19,12 +19,12 @@ import (
 )
 
 type operation struct {
-	client     client.Client
-	obj        ctrlclient.Object
-	dryRun     bool
-	cleaner    cleanup.Cleaner
-	shouldFail bool
-	created    bool
+	client  client.Client
+	obj     ctrlclient.Object
+	dryRun  bool
+	cleaner cleanup.Cleaner
+	check   interface{}
+	created bool
 }
 
 func (a *operation) Cleanup() {
@@ -33,13 +33,13 @@ func (a *operation) Cleanup() {
 	}
 }
 
-func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, shouldFail bool) *operation {
+func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, check interface{}) *operation {
 	return &operation{
-		client:     client,
-		obj:        obj,
-		dryRun:     dryRun,
-		cleaner:    cleaner,
-		shouldFail: shouldFail,
+		client:  client,
+		obj:     obj,
+		dryRun:  dryRun,
+		cleaner: cleaner,
+		check:   check,
 	}
 }
 
@@ -71,39 +71,47 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 			if err != nil {
 				return false, err
 			}
-			if err := a.client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes), patchOptions...); err != nil {
-				if a.shouldFail {
-					return true, nil
+			err = a.client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes), patchOptions...)
+			if a.check == nil {
+				return err == nil, err
+			} else {
+				actual := map[string]interface{}{
+					"error":    nil,
+					"resource": a.obj,
 				}
-				return false, err
-			} else if a.shouldFail {
-				return false, errors.New("an error was expected but didn't happen")
-			}
-			if a.dryRun {
-				logger.Log(operation, color.BoldYellow, "DRY RUN: Resource patch simulated")
+				if err != nil {
+					actual["error"] = err.Error()
+				}
+				errs, err := assert.Validate(ctx, a.check, actual, nil)
+				if err != nil {
+					return false, err
+				}
+				return true, errs.ToAggregate()
 			}
 		} else if kerrors.IsNotFound(err) {
 			var createOptions []ctrlclient.CreateOption
 			if a.dryRun {
 				createOptions = append(createOptions, ctrlclient.DryRunAll)
 			}
-			if err := a.client.Create(ctx, a.obj, createOptions...); err != nil {
-				if a.shouldFail {
-					return true, nil
-				}
-				return false, err
+			err := a.client.Create(ctx, a.obj, createOptions...)
+			if a.check == nil {
+				return err == nil, err
 			} else {
-				a.created = true
-				if a.shouldFail {
-					return false, errors.New("an error was expected but didn't happen")
+				actual := map[string]interface{}{
+					"error":    nil,
+					"resource": a.obj,
 				}
-				if a.dryRun {
-					logger.Log(operation, color.BoldYellow, "DRY RUN: Resource creation simulated")
+				if err != nil {
+					actual["error"] = err.Error()
 				}
+				errs, err := assert.Validate(ctx, a.check, actual, nil)
+				if err != nil {
+					return false, err
+				}
+				return true, errs.ToAggregate()
 			}
 		} else {
 			return false, err
 		}
-		return true, nil
 	})
 }
