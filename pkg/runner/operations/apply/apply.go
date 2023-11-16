@@ -24,13 +24,6 @@ type operation struct {
 	dryRun  bool
 	cleaner cleanup.Cleaner
 	check   interface{}
-	created bool
-}
-
-func (a *operation) Cleanup() {
-	if a.cleaner != nil && a.created && !a.dryRun {
-		a.cleaner(a.obj, a.client)
-	}
 }
 
 func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, check interface{}) *operation {
@@ -43,9 +36,9 @@ func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner clean
 	}
 }
 
-func (a *operation) Exec(ctx context.Context) (_err error) {
+func (o *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "APPLY"
-	logger := logging.FromContext(ctx).WithResource(a.obj)
+	logger := logging.FromContext(ctx).WithResource(o.obj)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -56,14 +49,14 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 	}()
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
-		actual.SetGroupVersionKind(a.obj.GetObjectKind().GroupVersionKind())
-		err := a.client.Get(ctx, client.ObjectKey(a.obj), &actual)
+		actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
+		err := o.client.Get(ctx, client.ObjectKey(o.obj), &actual)
 		if err == nil {
 			patchOptions := []ctrlclient.PatchOption{}
-			if a.dryRun {
+			if o.dryRun {
 				patchOptions = append(patchOptions, ctrlclient.DryRunAll)
 			}
-			patched, err := client.PatchObject(&actual, a.obj)
+			patched, err := client.PatchObject(&actual, o.obj)
 			if err != nil {
 				return false, err
 			}
@@ -71,18 +64,18 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 			if err != nil {
 				return false, err
 			}
-			err = a.client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes), patchOptions...)
-			if a.check == nil {
+			err = o.client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes), patchOptions...)
+			if o.check == nil {
 				return err == nil, err
 			} else {
 				actual := map[string]interface{}{
 					"error":    nil,
-					"resource": a.obj,
+					"resource": o.obj,
 				}
 				if err != nil {
 					actual["error"] = err.Error()
 				}
-				errs, err := assert.Validate(ctx, a.check, actual, nil)
+				errs, err := assert.Validate(ctx, o.check, actual, nil)
 				if err != nil {
 					return false, err
 				}
@@ -90,21 +83,24 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 			}
 		} else if kerrors.IsNotFound(err) {
 			var createOptions []ctrlclient.CreateOption
-			if a.dryRun {
+			if o.dryRun {
 				createOptions = append(createOptions, ctrlclient.DryRunAll)
 			}
-			err := a.client.Create(ctx, a.obj, createOptions...)
-			if a.check == nil {
+			err := o.client.Create(ctx, o.obj, createOptions...)
+			if err == nil && o.cleaner != nil && !o.dryRun {
+				o.cleaner(o.obj, o.client)
+			}
+			if o.check == nil {
 				return err == nil, err
 			} else {
 				actual := map[string]interface{}{
 					"error":    nil,
-					"resource": a.obj,
+					"resource": o.obj,
 				}
 				if err != nil {
 					actual["error"] = err.Error()
 				}
-				errs, err := assert.Validate(ctx, a.check, actual, nil)
+				errs, err := assert.Validate(ctx, o.check, actual, nil)
 				if err != nil {
 					return false, err
 				}

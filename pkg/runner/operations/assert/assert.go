@@ -29,11 +29,10 @@ func New(client client.Client, expected unstructured.Unstructured) *operation {
 		expected: expected,
 	}
 }
-func (a *operation) Cleanup() {}
 
-func (a *operation) Exec(ctx context.Context) (_err error) {
+func (o *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "ASSERT"
-	logger := logging.FromContext(ctx).WithResource(&a.expected)
+	logger := logging.FromContext(ctx).WithResource(&o.expected)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -51,7 +50,7 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 				lastErrs = errs
 			}
 		}()
-		if candidates, err := internal.Read(ctx, &a.expected, a.client); err != nil {
+		if candidates, err := internal.Read(ctx, &o.expected, o.client); err != nil {
 			if kerrors.IsNotFound(err) {
 				errs = append(errs, errors.New("actual resource not found"))
 				return false, nil
@@ -62,7 +61,7 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 		} else {
 			for i := range candidates {
 				candidate := candidates[i]
-				_errs, err := assert.Validate(ctx, a.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
+				_errs, err := assert.Validate(ctx, o.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
 				if err != nil {
 					return false, err
 				}

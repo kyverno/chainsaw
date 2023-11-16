@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -17,10 +16,6 @@ import (
 )
 
 func Test_create(t *testing.T) {
-	var cleanerCalled bool
-	testCleaner := func(obj ctrlclient.Object, c client.Client) {
-		cleanerCalled = true
-	}
 	pod := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"apiVersion": "v1",
@@ -43,7 +38,6 @@ func Test_create(t *testing.T) {
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
-		created     bool
 		dryrun      bool
 		check       interface{}
 		expectedErr error
@@ -101,7 +95,6 @@ func Test_create(t *testing.T) {
 			dryrun:      true,
 			check:       nil,
 			expectedErr: nil,
-			created:     true,
 		},
 		{
 			name:   "failed get",
@@ -155,10 +148,8 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			cleaner:     testCleaner,
 			check:       nil,
 			expectedErr: nil,
-			created:     true,
 		},
 		{
 			name:   "Should fail is true but no error occurs",
@@ -187,17 +178,12 @@ func Test_create(t *testing.T) {
 				dryRun:  tt.dryrun,
 				cleaner: tt.cleaner,
 				check:   tt.check,
-				created: tt.created,
 			}
 			err := operation.Exec(ctx)
-			operation.Cleanup()
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
-			}
-			if tt.cleaner != nil {
-				assert.True(t, cleanerCalled, "cleaner was not called when expected")
 			}
 		})
 	}

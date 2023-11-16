@@ -101,5 +101,3 @@ func expand(env map[string]string, in ...string) []string {
 	}
 	return args
 }
-
-func (*operation) Cleanup() {}

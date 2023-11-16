@@ -23,13 +23,6 @@ type operation struct {
 	dryRun  bool
 	cleaner cleanup.Cleaner
 	check   interface{}
-	created bool
-}
-
-func (c *operation) Cleanup() {
-	if c.cleaner != nil && c.created && !c.dryRun {
-		c.cleaner(c.obj, c.client)
-	}
 }
 
 func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, check interface{}) *operation {
@@ -42,9 +35,9 @@ func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner clean
 	}
 }
 
-func (c *operation) Exec(ctx context.Context) (_err error) {
+func (o *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "CREATE"
-	logger := logging.FromContext(ctx).WithResource(c.obj)
+	logger := logging.FromContext(ctx).WithResource(o.obj)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -55,27 +48,30 @@ func (c *operation) Exec(ctx context.Context) (_err error) {
 	}()
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
-		actual.SetGroupVersionKind(c.obj.GetObjectKind().GroupVersionKind())
-		err := c.client.Get(ctx, client.ObjectKey(c.obj), &actual)
+		actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
+		err := o.client.Get(ctx, client.ObjectKey(o.obj), &actual)
 		if err == nil {
 			return false, errors.New("the resource already exists in the cluster")
 		} else if kerrors.IsNotFound(err) {
 			var createOptions []ctrlclient.CreateOption
-			if c.dryRun {
+			if o.dryRun {
 				createOptions = append(createOptions, ctrlclient.DryRunAll)
 			}
-			err := c.client.Create(ctx, c.obj, createOptions...)
-			if c.check == nil {
+			err := o.client.Create(ctx, o.obj, createOptions...)
+			if err == nil && o.cleaner != nil && !o.dryRun {
+				o.cleaner(o.obj, o.client)
+			}
+			if o.check == nil {
 				return err == nil, err
 			} else {
 				actual := map[string]interface{}{
 					"error":    nil,
-					"resource": c.obj,
+					"resource": o.obj,
 				}
 				if err != nil {
 					actual["error"] = err.Error()
 				}
-				errs, err := assert.Validate(ctx, c.check, actual, nil)
+				errs, err := assert.Validate(ctx, o.check, actual, nil)
 				if err != nil {
 					return false, err
 				}
