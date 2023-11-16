@@ -43,6 +43,7 @@ func Test_create(t *testing.T) {
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
+		created     bool
 		shouldFail  bool
 		dryrun      bool
 		expectedErr error
@@ -100,6 +101,7 @@ func Test_create(t *testing.T) {
 			shouldFail:  false,
 			expectedErr: nil,
 			dryrun:      true,
+			created:     true,
 		},
 		{
 			name:   "failed get",
@@ -154,6 +156,7 @@ func Test_create(t *testing.T) {
 			shouldFail:  false,
 			expectedErr: nil,
 			cleaner:     testCleaner,
+			created:     true,
 		},
 		{
 			name:   "Should fail is true but no error occurs",
@@ -180,8 +183,10 @@ func Test_create(t *testing.T) {
 				dryRun:     tt.dryrun,
 				cleaner:    tt.cleaner,
 				shouldFail: tt.shouldFail,
+				created:    tt.created,
 			}
 			err := operation.Exec(ctx)
+			operation.Cleanup()
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
