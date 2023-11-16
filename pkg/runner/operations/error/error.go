@@ -26,11 +26,10 @@ func New(client client.Client, expected unstructured.Unstructured) *operation {
 		expected: expected,
 	}
 }
-func (e *operation) Cleanup() {}
 
-func (e *operation) Exec(ctx context.Context) (_err error) {
+func (o *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "ERROR "
-	logger := logging.FromContext(ctx).WithResource(&e.expected)
+	logger := logging.FromContext(ctx).WithResource(&o.expected)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -48,7 +47,7 @@ func (e *operation) Exec(ctx context.Context) (_err error) {
 				lastErrs = errs
 			}
 		}()
-		if candidates, err := internal.Read(ctx, &e.expected, e.client); err != nil {
+		if candidates, err := internal.Read(ctx, &o.expected, o.client); err != nil {
 			if kerrors.IsNotFound(err) {
 				return true, nil
 			}
@@ -58,7 +57,7 @@ func (e *operation) Exec(ctx context.Context) (_err error) {
 		} else {
 			for i := range candidates {
 				candidate := candidates[i]
-				_errs, err := assert.Validate(ctx, e.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
+				_errs, err := assert.Validate(ctx, o.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
 				if err != nil {
 					return false, err
 				}

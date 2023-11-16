@@ -5,9 +5,7 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
@@ -51,21 +49,13 @@ func Test_apply(t *testing.T) {
 			},
 		},
 	}
-	var cleanerCalled bool
-	testCleaner := func(obj ctrlclient.Object, c client.Client) {
-		cleanerCalled = true
-	}
-
 	tests := []struct {
-		name    string
-		object  ctrlclient.Object
-		client  *tclient.FakeClient
-		cleaner cleanup.Cleaner
-		// shouldFail  bool
+		name        string
+		object      ctrlclient.Object
+		client      *tclient.FakeClient
 		dryRun      bool
 		check       interface{}
 		expectedErr error
-		created     bool
 	}{
 		{
 			name:   "Resource already exists, patch it",
@@ -111,7 +101,6 @@ func Test_apply(t *testing.T) {
 			},
 			check:       nil,
 			expectedErr: nil,
-			created:     true,
 		},
 		{
 			name:   "Dry Run Resource does not exist, create it",
@@ -127,7 +116,6 @@ func Test_apply(t *testing.T) {
 			check:       nil,
 			expectedErr: nil,
 			dryRun:      true,
-			created:     true,
 		},
 		{
 			name:   "Error while getting resource",
@@ -246,34 +234,25 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			cleaner:     testCleaner,
 			check:       nil,
 			expectedErr: nil,
-			created:     true,
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			cleanerCalled = false
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
 			operation := operation{
-				client:  tt.client,
-				obj:     tt.object,
-				dryRun:  tt.dryRun,
-				cleaner: tt.cleaner,
-				check:   tt.check,
-				created: tt.created,
+				client: tt.client,
+				obj:    tt.object,
+				dryRun: tt.dryRun,
+				check:  tt.check,
 			}
 			err := operation.Exec(ctx)
-			operation.Cleanup()
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
-			}
-			if tt.cleaner != nil {
-				assert.True(t, cleanerCalled, "cleaner was not called when expected")
 			}
 		})
 	}

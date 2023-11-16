@@ -56,7 +56,7 @@ func NewOperationClient(
 	}
 }
 
-func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, dryRun bool, check interface{}, cleanup func(ctrlclient.Object, client.Client)) error {
+func (c *opClient) Apply(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, dryRun bool, check interface{}, cleanup cleanup.Cleaner) error {
 	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(obj); err != nil {
 		logger.Log("LOAD  ", color.BoldRed, err)
@@ -80,7 +80,7 @@ func (c *opClient) Assert(ctx context.Context, to *metav1.Duration, expected uns
 	return operation.Exec(ctx)
 }
 
-func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, dryRun bool, check interface{}, cleanup func(ctrlclient.Object, client.Client)) error {
+func (c *opClient) Create(ctx context.Context, to *metav1.Duration, obj ctrlclient.Object, dryRun bool, check interface{}, cleanup cleanup.Cleaner) error {
 	logger := logging.FromContext(ctx)
 	if err := c.namespacer.Apply(obj); err != nil {
 		logger.Log("LOAD  ", color.BoldRed, err)

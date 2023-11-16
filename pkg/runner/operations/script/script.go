@@ -81,5 +81,3 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 		return errs.ToAggregate()
 	}
 }
-
-func (*operation) Cleanup() {}
