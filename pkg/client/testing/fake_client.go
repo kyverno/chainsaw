@@ -16,6 +16,7 @@ type FakeClient struct {
 	PatchFn              func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error
 	IsObjectNamespacedFn func(call int, obj runtime.Object) (bool, error)
 	numCalls             int
+	StatusWriterFn       func(call int) ctrlclient.StatusWriter
 }
 
 func (c *FakeClient) Get(ctx context.Context, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -50,4 +51,43 @@ func (c *FakeClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 
 func (c *FakeClient) NumCalls() int {
 	return c.numCalls
+}
+
+type FakeStatusWriter struct {
+	UpdateFn func(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.SubResourceUpdateOption) error
+	PatchFn  func(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.SubResourcePatchOption) error
+	CreateFn func(ctx context.Context, obj ctrlclient.Object, subResource ctrlclient.Object, opts ...ctrlclient.SubResourceCreateOption) error
+}
+
+func (f *FakeStatusWriter) Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.SubResourceUpdateOption) error {
+	return f.UpdateFn(ctx, obj, opts...)
+}
+
+func (f *FakeStatusWriter) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.SubResourcePatchOption) error {
+	return f.PatchFn(ctx, obj, patch, opts...)
+}
+
+func (f *FakeStatusWriter) Create(ctx context.Context, obj ctrlclient.Object, subResource ctrlclient.Object, opts ...ctrlclient.SubResourceCreateOption) error {
+	return f.CreateFn(ctx, obj, subResource, opts...)
+}
+
+func NewFakeStatusWriter() *FakeStatusWriter {
+	return &FakeStatusWriter{
+		UpdateFn: func(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.SubResourceUpdateOption) error {
+			return nil
+		},
+		PatchFn: func(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.SubResourcePatchOption) error {
+			return nil
+		},
+		CreateFn: func(ctx context.Context, obj ctrlclient.Object, subResource ctrlclient.Object, opts ...ctrlclient.SubResourceCreateOption) error {
+			return nil
+		},
+	}
+}
+
+func (c *FakeClient) Status() ctrlclient.StatusWriter {
+	if c.StatusWriterFn != nil {
+		return c.StatusWriterFn(c.numCalls)
+	}
+	return NewFakeStatusWriter()
 }

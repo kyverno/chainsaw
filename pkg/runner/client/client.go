@@ -83,3 +83,7 @@ func (c *runnerClient) log(ctx context.Context, op string, obj ctrlclient.Object
 		logger.WithResource(obj).Log(op, color, args...)
 	}
 }
+
+func (c *runnerClient) Status() ctrlclient.StatusWriter {
+	return c.inner.Status()
+}

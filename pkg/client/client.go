@@ -32,6 +32,9 @@ type Client interface {
 
 	// IsObjectNamespaced returns true if the GroupVersionKind of the object is namespaced.
 	IsObjectNamespaced(obj runtime.Object) (bool, error)
+
+	// Status update the status subresource for the given object.
+	Status() ctrlclient.StatusWriter
 }
 
 func New(cfg *rest.Config) (Client, error) {
