@@ -94,7 +94,6 @@ func (p *operationProcessor) Run(ctx context.Context, namespace string, test dis
 				resources = append(resources, &loaded[i])
 			}
 		}
-		// shouldFail := operation.Apply.ShouldFail != nil && *operation.Apply.ShouldFail
 		dryRun := operation.Apply.DryRun != nil && *operation.Apply.DryRun
 		for _, resource := range resources {
 			if err := p.operationClient.Apply(ctx, operation.Timeout, resource, dryRun, operation.Apply.Check.Value, cleaner); err != nil {
