@@ -92,6 +92,12 @@ func (o *operation) patchResource(ctx context.Context, actual *unstructured.Unst
 		}
 		return false, err
 	}
+	if err := o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes)); err != nil {
+		if o.check != nil {
+			return o.performCheck(ctx, err)
+		}
+		return false, err
+	}
 	if o.check != nil {
 		return o.performCheck(ctx, nil)
 	}
