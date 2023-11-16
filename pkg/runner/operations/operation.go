@@ -6,4 +6,5 @@ import (
 
 type Operation interface {
 	Exec(ctx context.Context) error
+	Cleanup()
 }

@@ -25,6 +25,7 @@ func New(client client.Client, obj ctrlclient.Object) *operation {
 		obj:    obj,
 	}
 }
+func (d *operation) Cleanup() {}
 
 func (d *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "DELETE"
