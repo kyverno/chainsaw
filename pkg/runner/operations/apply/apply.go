@@ -3,13 +3,13 @@ package apply
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -19,33 +19,26 @@ import (
 )
 
 type operation struct {
-	client     client.Client
-	obj        ctrlclient.Object
-	dryRun     bool
-	cleaner    cleanup.Cleaner
-	shouldFail bool
-	created    bool
+	client  client.Client
+	obj     ctrlclient.Object
+	dryRun  bool
+	cleaner cleanup.Cleaner
+	check   interface{}
 }
 
-func (a *operation) Cleanup() {
-	if a.cleaner != nil && a.created && !a.dryRun {
-		a.cleaner(a.obj, a.client)
-	}
-}
-
-func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, shouldFail bool) *operation {
+func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, check interface{}) *operation {
 	return &operation{
-		client:     client,
-		obj:        obj,
-		dryRun:     dryRun,
-		cleaner:    cleaner,
-		shouldFail: shouldFail,
+		client:  client,
+		obj:     obj,
+		dryRun:  dryRun,
+		cleaner: cleaner,
+		check:   check,
 	}
 }
 
-func (a *operation) Exec(ctx context.Context) (_err error) {
+func (o *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "APPLY"
-	logger := logging.FromContext(ctx).WithResource(a.obj)
+	logger := logging.FromContext(ctx).WithResource(o.obj)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -56,14 +49,14 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 	}()
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
-		actual.SetGroupVersionKind(a.obj.GetObjectKind().GroupVersionKind())
-		err := a.client.Get(ctx, client.ObjectKey(a.obj), &actual)
+		actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
+		err := o.client.Get(ctx, client.ObjectKey(o.obj), &actual)
 		if err == nil {
 			patchOptions := []ctrlclient.PatchOption{}
-			if a.dryRun {
+			if o.dryRun {
 				patchOptions = append(patchOptions, ctrlclient.DryRunAll)
 			}
-			patched, err := client.PatchObject(&actual, a.obj)
+			patched, err := client.PatchObject(&actual, o.obj)
 			if err != nil {
 				return false, err
 			}
@@ -71,39 +64,50 @@ func (a *operation) Exec(ctx context.Context) (_err error) {
 			if err != nil {
 				return false, err
 			}
-			if err := a.client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes), patchOptions...); err != nil {
-				if a.shouldFail {
-					return true, nil
+			err = o.client.Patch(ctx, &actual, ctrlclient.RawPatch(types.MergePatchType, bytes), patchOptions...)
+			if o.check == nil {
+				return err == nil, err
+			} else {
+				actual := map[string]interface{}{
+					"error":    nil,
+					"resource": o.obj,
 				}
-				return false, err
-			} else if a.shouldFail {
-				return false, errors.New("an error was expected but didn't happen")
-			}
-			if a.dryRun {
-				logger.Log(operation, color.BoldYellow, "DRY RUN: Resource patch simulated")
+				if err != nil {
+					actual["error"] = err.Error()
+				}
+				errs, err := assert.Validate(ctx, o.check, actual, nil)
+				if err != nil {
+					return false, err
+				}
+				return true, errs.ToAggregate()
 			}
 		} else if kerrors.IsNotFound(err) {
 			var createOptions []ctrlclient.CreateOption
-			if a.dryRun {
+			if o.dryRun {
 				createOptions = append(createOptions, ctrlclient.DryRunAll)
 			}
-			if err := a.client.Create(ctx, a.obj, createOptions...); err != nil {
-				if a.shouldFail {
-					return true, nil
-				}
-				return false, err
+			err := o.client.Create(ctx, o.obj, createOptions...)
+			if err == nil && o.cleaner != nil && !o.dryRun {
+				o.cleaner(o.obj, o.client)
+			}
+			if o.check == nil {
+				return err == nil, err
 			} else {
-				a.created = true
-				if a.shouldFail {
-					return false, errors.New("an error was expected but didn't happen")
+				actual := map[string]interface{}{
+					"error":    nil,
+					"resource": o.obj,
 				}
-				if a.dryRun {
-					logger.Log(operation, color.BoldYellow, "DRY RUN: Resource creation simulated")
+				if err != nil {
+					actual["error"] = err.Error()
 				}
+				errs, err := assert.Validate(ctx, o.check, actual, nil)
+				if err != nil {
+					return false, err
+				}
+				return true, errs.ToAggregate()
 			}
 		} else {
 			return false, err
 		}
-		return true, nil
 	})
 }

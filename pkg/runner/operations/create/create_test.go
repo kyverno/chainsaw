@@ -5,7 +5,6 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -17,10 +16,6 @@ import (
 )
 
 func Test_create(t *testing.T) {
-	var cleanerCalled bool
-	testCleaner := func(obj ctrlclient.Object, c client.Client) {
-		cleanerCalled = true
-	}
 	pod := &unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"apiVersion": "v1",
@@ -43,9 +38,8 @@ func Test_create(t *testing.T) {
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
-		created     bool
-		shouldFail  bool
 		dryrun      bool
+		check       interface{}
 		expectedErr error
 	}{
 		{
@@ -57,7 +51,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("the resource already exists in the cluster"),
 		},
 		{
@@ -69,7 +63,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("the resource already exists in the cluster"),
 			dryrun:      true,
 		},
@@ -84,7 +78,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: nil,
 		},
 		{
@@ -98,10 +92,9 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
-			expectedErr: nil,
 			dryrun:      true,
-			created:     true,
+			check:       nil,
+			expectedErr: nil,
 		},
 		{
 			name:   "failed get",
@@ -111,7 +104,7 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("some arbitrary error"),
 		},
 		{
@@ -125,7 +118,7 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: errors.New("some arbitrary error"),
 		},
 		{
@@ -139,7 +132,9 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			shouldFail:  true,
+			check: map[string]interface{}{
+				"error": "some arbitrary error",
+			},
 			expectedErr: nil,
 		},
 		{
@@ -153,10 +148,8 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  false,
+			check:       nil,
 			expectedErr: nil,
-			cleaner:     testCleaner,
-			created:     true,
 		},
 		{
 			name:   "Should fail is true but no error occurs",
@@ -169,8 +162,10 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			shouldFail:  true,
-			expectedErr: errors.New("an error was expected but didn't happen"),
+			check: map[string]interface{}{
+				"(error != null)": true,
+			},
+			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
 		},
 	}
 	for _, tt := range tests {
@@ -178,22 +173,17 @@ func Test_create(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
 			operation := operation{
-				client:     tt.client,
-				obj:        tt.object,
-				dryRun:     tt.dryrun,
-				cleaner:    tt.cleaner,
-				shouldFail: tt.shouldFail,
-				created:    tt.created,
+				client:  tt.client,
+				obj:     tt.object,
+				dryRun:  tt.dryrun,
+				cleaner: tt.cleaner,
+				check:   tt.check,
 			}
 			err := operation.Exec(ctx)
-			operation.Cleanup()
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
-			}
-			if tt.cleaner != nil {
-				assert.True(t, cleanerCalled, "cleaner was not called when expected")
 			}
 		})
 	}

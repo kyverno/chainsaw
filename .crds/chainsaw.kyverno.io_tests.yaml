@@ -282,6 +282,11 @@ spec:
                               like configuration settings or any other resources that
                               need to be available during the test.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               dryRun:
                                 description: DryRun determines whether the file should
                                   be applied in dry run mode.
@@ -294,10 +299,6 @@ spec:
                                 type: object
                                 x-kubernetes-embedded-resource: true
                                 x-kubernetes-preserve-unknown-fields: true
-                              shouldFail:
-                                description: ShouldFail determines whether applying
-                                  the file is expected to fail.
-                                type: boolean
                             type: object
                           assert:
                             description: Assert represents an assertion to be made.
@@ -342,6 +343,11 @@ spec:
                           create:
                             description: Create represents a creation operation.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               dryRun:
                                 description: DryRun determines whether the file should
                                   be applied in dry run mode.
@@ -354,10 +360,6 @@ spec:
                                 type: object
                                 x-kubernetes-embedded-resource: true
                                 x-kubernetes-preserve-unknown-fields: true
-                              shouldFail:
-                                description: ShouldFail determines whether applying
-                                  the file is expected to fail.
-                                type: boolean
                             type: object
                           delete:
                             description: Delete represents a creation operation.

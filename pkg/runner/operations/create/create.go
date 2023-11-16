@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -17,34 +18,26 @@ import (
 )
 
 type operation struct {
-	client     client.Client
-	obj        ctrlclient.Object
-	dryRun     bool
-	cleaner    cleanup.Cleaner
-	shouldFail bool
-	created    bool
+	client  client.Client
+	obj     ctrlclient.Object
+	dryRun  bool
+	cleaner cleanup.Cleaner
+	check   interface{}
 }
 
-func (c *operation) Cleanup() {
-	if c.cleaner != nil && c.created && !c.dryRun {
-		c.cleaner(c.obj, c.client)
-	}
-}
-
-func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, shouldFail bool) *operation {
+func New(client client.Client, obj ctrlclient.Object, dryRun bool, cleaner cleanup.Cleaner, check interface{}) *operation {
 	return &operation{
-		client:     client,
-		obj:        obj,
-		dryRun:     dryRun,
-		cleaner:    cleaner,
-		shouldFail: shouldFail,
+		client:  client,
+		obj:     obj,
+		dryRun:  dryRun,
+		cleaner: cleaner,
+		check:   check,
 	}
 }
 
-func (c *operation) Exec(ctx context.Context) (_err error) {
+func (o *operation) Exec(ctx context.Context) (_err error) {
 	const operation = "CREATE"
-	logger := logging.FromContext(ctx).WithResource(c.obj)
-
+	logger := logging.FromContext(ctx).WithResource(o.obj)
 	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
@@ -53,35 +46,39 @@ func (c *operation) Exec(ctx context.Context) (_err error) {
 			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
-
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
-		actual.SetGroupVersionKind(c.obj.GetObjectKind().GroupVersionKind())
-		err := c.client.Get(ctx, client.ObjectKey(c.obj), &actual)
+		actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
+		err := o.client.Get(ctx, client.ObjectKey(o.obj), &actual)
 		if err == nil {
 			return false, errors.New("the resource already exists in the cluster")
 		} else if kerrors.IsNotFound(err) {
 			var createOptions []ctrlclient.CreateOption
-			if c.dryRun {
+			if o.dryRun {
 				createOptions = append(createOptions, ctrlclient.DryRunAll)
 			}
-			if err := c.client.Create(ctx, c.obj, createOptions...); err != nil {
-				if c.shouldFail {
-					return true, nil
-				}
-				return false, err
+			err := o.client.Create(ctx, o.obj, createOptions...)
+			if err == nil && o.cleaner != nil && !o.dryRun {
+				o.cleaner(o.obj, o.client)
+			}
+			if o.check == nil {
+				return err == nil, err
 			} else {
-				c.created = true
-				if c.shouldFail {
-					return false, errors.New("an error was expected but didn't happen")
+				actual := map[string]interface{}{
+					"error":    nil,
+					"resource": o.obj,
 				}
-				if c.dryRun {
-					logger.Log(operation, color.BoldYellow, "DRY RUN: Resource creation simulated")
+				if err != nil {
+					actual["error"] = err.Error()
 				}
+				errs, err := assert.Validate(ctx, o.check, actual, nil)
+				if err != nil {
+					return false, err
+				}
+				return true, errs.ToAggregate()
 			}
 		} else {
 			return false, err
 		}
-		return true, nil
 	})
 }
