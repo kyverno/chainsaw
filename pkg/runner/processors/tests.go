@@ -61,7 +61,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			t.Cleanup(func() {
 				operation := operation{
 					continueOnError: false,
-					timeout:         timeout.DefaultCleanupTimeout,
+					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, nil, nil, nil),
 					operation:       opdelete.New(p.client, namespace.DeepCopy()),
 				}
 				operation.execute(ctx)
