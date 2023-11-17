@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
@@ -18,24 +19,25 @@ import (
 )
 
 type operation struct {
-	client  client.Client
-	obj     ctrlclient.Object
-	cleaner cleanup.Cleaner
-	check   interface{}
+	client     client.Client
+	obj        ctrlclient.Object
+	namespacer namespacer.Namespacer
+	cleaner    cleanup.Cleaner
+	check      interface{}
 }
 
-func New(client client.Client, obj ctrlclient.Object, cleaner cleanup.Cleaner, check interface{}) operations.Operation {
+func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, check interface{}) operations.Operation {
 	return &operation{
-		client:  client,
-		obj:     obj,
-		cleaner: cleaner,
-		check:   check,
+		client:     client,
+		obj:        obj,
+		namespacer: namespacer,
+		cleaner:    cleaner,
+		check:      check,
 	}
 }
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx).WithResource(o.obj)
-	logger.Log(logging.Create, logging.RunStatus, color.BoldFgCyan)
 	defer func() {
 		if _err == nil {
 			logger.Log(logging.Create, logging.DoneStatus, color.BoldGreen)
@@ -43,6 +45,12 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 			logger.Log(logging.Create, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
+	if o.namespacer != nil {
+		if err := o.namespacer.Apply(o.obj); err != nil {
+			return err
+		}
+	}
+	logger.Log(logging.Create, logging.RunStatus, color.BoldFgCyan)
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())

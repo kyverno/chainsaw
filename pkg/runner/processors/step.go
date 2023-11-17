@@ -30,7 +30,6 @@ import (
 )
 
 // TODO
-// - namespacer won't work when installing CRDs
 // - create if not exists
 
 type StepProcessor interface {
@@ -243,12 +242,9 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 	dryRun := op.DryRun != nil && *op.DryRun
 	for i := range resources {
 		resource := resources[i]
-		if err := p.namespacer.Apply(&resource); err != nil {
-			return nil, err
-		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opapply.New(p.getClient(dryRun), &resource, p.getCleaner(ctx, dryRun), op.Check.Value),
+			operation: opapply.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check.Value),
 		})
 	}
 	return ops, nil
@@ -262,12 +258,9 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert,
 	var ops []operation
 	for i := range resources {
 		resource := resources[i]
-		if err := p.namespacer.Apply(&resource); err != nil {
-			return nil, err
-		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultAssertTimeout, p.config.Timeouts.Assert, p.test.Spec.Timeouts.Assert, p.step.Spec.Timeouts.Assert, to),
-			operation: opassert.New(p.client, resource),
+			operation: opassert.New(p.client, resource, p.namespacer),
 		})
 	}
 	return ops, nil
@@ -289,12 +282,9 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create,
 	dryRun := op.DryRun != nil && *op.DryRun
 	for i := range resources {
 		resource := resources[i]
-		if err := p.namespacer.Apply(&resource); err != nil {
-			return nil, err
-		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opcreate.New(p.getClient(dryRun), &resource, p.getCleaner(ctx, dryRun), op.Check.Value),
+			operation: opcreate.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check.Value),
 		})
 	}
 	return ops, nil
@@ -307,12 +297,9 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete,
 	resource.SetName(op.Name)
 	resource.SetNamespace(op.Namespace)
 	resource.SetLabels(op.Labels)
-	if err := p.namespacer.Apply(&resource); err != nil {
-		return nil, err
-	}
 	return &operation{
 		timeout:   timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
-		operation: opdelete.New(p.client, &resource),
+		operation: opdelete.New(p.client, &resource, p.namespacer),
 	}, nil
 }
 
@@ -324,12 +311,9 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, t
 	var ops []operation
 	for i := range resources {
 		resource := resources[i]
-		if err := p.namespacer.Apply(&resource); err != nil {
-			return nil, err
-		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultErrorTimeout, p.config.Timeouts.Error, p.test.Spec.Timeouts.Error, p.step.Spec.Timeouts.Error, to),
-			operation: operror.New(p.client, resource),
+			operation: operror.New(p.client, resource, p.namespacer),
 		})
 	}
 	return ops, nil
@@ -378,7 +362,7 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 				operation := operation{
 					continueOnError: true,
 					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, p.step.Spec.Timeouts.Cleanup, nil),
-					operation:       opdelete.New(c, obj),
+					operation:       opdelete.New(c, obj, p.namespacer),
 				}
 				operation.execute(ctx)
 			})
