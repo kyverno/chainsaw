@@ -269,7 +269,7 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert,
 func (p *stepProcessor) commandOperation(ctx context.Context, exec v1alpha1.Command, to *metav1.Duration) operation {
 	return operation{
 		timeout:   timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
-		operation: opcommand.New(exec, p.namespacer.GetNamespace()),
+		operation: opcommand.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
 	}
 }
 
@@ -322,7 +322,7 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, t
 func (p *stepProcessor) scriptOperation(ctx context.Context, exec v1alpha1.Script, to *metav1.Duration) operation {
 	return operation{
 		timeout:   timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
-		operation: opscript.New(exec, p.namespacer.GetNamespace()),
+		operation: opscript.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
 	}
 }
 

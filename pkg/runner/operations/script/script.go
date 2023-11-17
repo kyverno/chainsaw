@@ -16,12 +16,14 @@ import (
 
 type operation struct {
 	script    v1alpha1.Script
+	basePath  string
 	namespace string
 }
 
-func New(script v1alpha1.Script, namespace string) operations.Operation {
+func New(script v1alpha1.Script, basePath string, namespace string) operations.Operation {
 	return &operation{
 		script:    script,
+		basePath:  basePath,
 		namespace: namespace,
 	}
 }
@@ -52,6 +54,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
+	cmd.Dir = o.basePath
 	logger.Log(logging.Script, logging.RunStatus, color.BoldFgCyan)
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
