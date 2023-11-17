@@ -30,7 +30,7 @@ import (
 )
 
 // TODO
-// - namespacer won't work when installing CRD
+// - namespacer won't work when installing CRDs
 // - cleanup timeout
 
 type StepProcessor interface {
@@ -72,47 +72,50 @@ func (p *stepProcessor) Run(ctx context.Context) {
 		logger.Log(logging.Try, color.BoldRed, err)
 		t.FailNow()
 	}
-	finally, err := p.finallyOperations(ctx, p.step.Spec.Finally...)
-	if err != nil {
-		logger.Log(logging.Finally, color.BoldRed, err)
-		t.FailNow()
-	}
 	catch, err := p.catchOperations(ctx, p.step.Spec.Catch...)
 	if err != nil {
 		logger.Log(logging.Catch, color.BoldRed, err)
 		t.FailNow()
 	}
-	defer func() {
-		t.Cleanup(func() {
-			for _, handler := range finally {
-				p.executeOperation(ctx, handler)
+	finally, err := p.finallyOperations(ctx, p.step.Spec.Finally...)
+	if err != nil {
+		logger.Log(logging.Finally, color.BoldRed, err)
+		t.FailNow()
+	}
+	if len(catch) != 0 {
+		defer func() {
+			if t.Failed() {
+				t.Cleanup(func() {
+					logger.Log(logging.Catch, color.BoldFgCyan, "RUNNING...")
+					defer func() {
+						logger.Log(logging.Catch, color.BoldFgCyan, "DONE")
+					}()
+					for _, operation := range catch {
+						operation.execute(ctx)
+					}
+				})
 			}
-		})
-	}()
-	defer func() {
-		if t.Failed() {
+		}()
+	}
+	if len(finally) != 0 {
+		defer func() {
 			t.Cleanup(func() {
-				for _, handler := range catch {
-					p.executeOperation(ctx, handler)
+				logger.Log(logging.Finally, color.BoldFgCyan, "RUNNING...")
+				defer func() {
+					logger.Log(logging.Finally, color.BoldFgCyan, "DONE")
+				}()
+				for _, operation := range finally {
+					operation.execute(ctx)
 				}
 			})
-		}
+		}()
+	}
+	logger.Log(logging.Try, color.BoldFgCyan, "RUNNING...")
+	defer func() {
+		logger.Log(logging.Try, color.BoldFgCyan, "DONE")
 	}()
 	for _, operation := range try {
-		p.executeOperation(ctx, operation)
-	}
-}
-
-func (p *stepProcessor) executeOperation(ctx context.Context, op operation) {
-	ctx, cancel := context.WithTimeout(ctx, op.timeout)
-	defer cancel()
-	if err := op.operation.Exec(ctx); err != nil {
-		t := testing.FromContext(ctx)
-		if op.continueOnError {
-			t.Fail()
-		} else {
-			t.FailNow()
-		}
+		operation.execute(ctx)
 	}
 }
 
@@ -372,11 +375,12 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 		cleaner = func(obj ctrlclient.Object, c client.Client) {
 			t := testing.FromContext(ctx)
 			t.Cleanup(func() {
-				p.executeOperation(ctx, operation{
+				operation := operation{
 					continueOnError: true,
 					timeout:         timeout.DefaultCleanupTimeout,
 					operation:       opdelete.New(c, obj),
-				})
+				}
+				operation.execute(ctx)
 			})
 		}
 	}

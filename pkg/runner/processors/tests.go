@@ -9,7 +9,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
+	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -57,10 +59,12 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				t.FailNow()
 			}
 			t.Cleanup(func() {
-				// TODO: wait
-				if err := p.client.Delete(ctx, &namespace); err != nil {
-					t.FailNow()
+				operation := operation{
+					continueOnError: false,
+					timeout:         timeout.DefaultCleanupTimeout,
+					operation:       opdelete.New(p.client, namespace.DeepCopy()),
 				}
+				operation.execute(ctx)
 			})
 			if err := p.client.Create(ctx, namespace.DeepCopy()); err != nil {
 				t.FailNow()

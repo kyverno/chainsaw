@@ -9,7 +9,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
+	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
 	corev1 "k8s.io/api/core/v1"
@@ -90,21 +92,24 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	}
 	if namespace != nil {
 		nspacer = namespacer.New(p.client, namespace.Name)
-		// operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, p.test.Spec, v1alpha1.Timeouts{})
-		if err := p.client.Get(logging.IntoContext(ctx, setupLogger), client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
+		ctx := logging.IntoContext(ctx, setupLogger)
+		if err := p.client.Get(ctx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
 				setupLogger.Log(logging.Get, color.BoldRed, err)
 				t.FailNow()
 			}
+			t.Cleanup(func() {
+				operation := operation{
+					continueOnError: false,
+					timeout:         timeout.DefaultCleanupTimeout,
+					operation:       opdelete.New(p.client, namespace),
+				}
+				operation.execute(ctx)
+			})
 			if err := p.client.Create(logging.IntoContext(ctx, setupLogger), namespace.DeepCopy()); err != nil {
 				t.FailNow()
 			}
-			// t.Cleanup(func() {
-			// 	if err := operationsClient.Delete(logging.IntoContext(ctx, setupLogger), nil, namespace); err != nil {
-			// 		t.FailNow()
-			// 	}
-			// })
 		}
 	}
 	for i, step := range p.test.Spec.Steps {
