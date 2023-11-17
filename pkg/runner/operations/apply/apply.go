@@ -37,17 +37,23 @@ func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Name
 	}
 }
 
-func (o *operation) Exec(ctx context.Context) error {
+func (o *operation) Exec(ctx context.Context) (err error) {
 	logger := logging.FromContext(ctx).WithResource(o.obj)
+	defer func() {
+		if err != nil {
+			logger.Log(logging.Apply, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		} else {
+			logger.Log(logging.Apply, logging.DoneStatus, color.BoldGreen)
+		}
+	}()
 
 	if o.namespacer != nil {
-		if err := o.namespacer.Apply(o.obj); err != nil {
+		if err = o.namespacer.Apply(o.obj); err != nil {
 			return err
 		}
 	}
 
 	logger.Log(logging.Apply, logging.RunStatus, color.BoldFgCyan)
-
 	return o.applyResource(ctx, logger)
 }
 
@@ -57,14 +63,11 @@ func (o *operation) applyResource(ctx context.Context, logger logging.Logger) er
 		return err == nil, err
 	})
 	if err != nil {
-		logger.Log(logging.Apply, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		return err
 	}
 
-	logger.Log(logging.Apply, logging.DoneStatus, color.BoldGreen)
 	return nil
 }
-
 func (o *operation) tryApplyResource(ctx context.Context) error {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
