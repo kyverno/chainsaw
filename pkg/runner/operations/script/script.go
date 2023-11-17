@@ -30,22 +30,15 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	var output internal.CommandOutput
 	defer func() {
 		if _err == nil {
-			logger.Log(logging.Script, color.BoldGreen, "DONE")
+			logger.Log(logging.Script, logging.DoneStatus, color.BoldGreen)
 		} else {
-			logger.Log(logging.Script, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Script, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
 	if !o.script.SkipLogOutput {
 		defer func() {
-			if out := output.Out(); out != "" {
-				logger.Log(logging.Stdout, color.BoldFgCyan, "LOGS...\n"+out)
-			}
-			if err := output.Err(); err != "" {
-				logger.Log(logging.Stdout, color.BoldFgCyan, "LOGS...\n"+err)
-			}
+			logger.Log(logging.Script, logging.LogStatus, color.BoldFgCyan, output.Sections()...)
 		}()
-	} else {
-		logger.Log(logging.Std___, color.BoldYellow, "suppressed logs")
 	}
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
 	cwd, err := os.Getwd()
@@ -58,7 +51,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
-	logger.Log(logging.Script, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Script, logging.RunStatus, color.BoldFgCyan)
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	cmdErr := cmd.Run()

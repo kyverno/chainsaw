@@ -7,6 +7,7 @@ import (
 type (
 	Logger    = tlogging.Logger
 	Operation = tlogging.Operation
+	Status    = tlogging.Status
 )
 
 const (
@@ -22,8 +23,15 @@ const (
 	Internal Operation = "INTERNAL"
 	Patch    Operation = "PATCH"
 	Script   Operation = "SCRIPT"
-	Std___   Operation = "STD___"
 	Stderr   Operation = "STDERR"
 	Stdout   Operation = "STDOUT"
 	Try      Operation = "TRY"
+)
+
+const (
+	DoneStatus  Status = "DONE"
+	ErrorStatus Status = "ERROR"
+	OkStatus    Status = "OK"
+	RunStatus   Status = "RUN"
+	LogStatus   Status = "LOG"
 )

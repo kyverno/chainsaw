@@ -55,7 +55,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 		if err := p.client.Get(ctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
-				logging.Log(ctx, logging.Get, color.BoldRed, err)
+				logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 				t.FailNow()
 			}
 			t.Cleanup(func() {
@@ -75,7 +75,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	for _, test := range p.tests {
 		name, err := names.Test(p.config, test)
 		if err != nil {
-			logging.Log(ctx, logging.Internal, color.BoldRed, err)
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			t.FailNow()
 		}
 		t.Run(name, func(t *testing.T) {

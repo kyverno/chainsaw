@@ -69,26 +69,26 @@ func (p *stepProcessor) Run(ctx context.Context) {
 	logger := logging.FromContext(ctx)
 	try, err := p.tryOperations(ctx, p.step.Spec.Try...)
 	if err != nil {
-		logger.Log(logging.Try, color.BoldRed, err)
+		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
 	catch, err := p.catchOperations(ctx, p.step.Spec.Catch...)
 	if err != nil {
-		logger.Log(logging.Catch, color.BoldRed, err)
+		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
 	finally, err := p.finallyOperations(ctx, p.step.Spec.Finally...)
 	if err != nil {
-		logger.Log(logging.Finally, color.BoldRed, err)
+		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
 	if len(catch) != 0 {
 		defer func() {
 			if t.Failed() {
 				t.Cleanup(func() {
-					logger.Log(logging.Catch, color.BoldFgCyan, "RUNNING...")
+					logger.Log(logging.Catch, logging.RunStatus, color.BoldFgCyan)
 					defer func() {
-						logger.Log(logging.Catch, color.BoldFgCyan, "DONE")
+						logger.Log(logging.Catch, logging.DoneStatus, color.BoldFgCyan)
 					}()
 					for _, operation := range catch {
 						operation.execute(ctx)
@@ -100,9 +100,9 @@ func (p *stepProcessor) Run(ctx context.Context) {
 	if len(finally) != 0 {
 		defer func() {
 			t.Cleanup(func() {
-				logger.Log(logging.Finally, color.BoldFgCyan, "RUNNING...")
+				logger.Log(logging.Finally, logging.RunStatus, color.BoldFgCyan)
 				defer func() {
-					logger.Log(logging.Finally, color.BoldFgCyan, "DONE")
+					logger.Log(logging.Finally, logging.DoneStatus, color.BoldFgCyan)
 				}()
 				for _, operation := range finally {
 					operation.execute(ctx)
@@ -110,9 +110,9 @@ func (p *stepProcessor) Run(ctx context.Context) {
 			})
 		}()
 	}
-	logger.Log(logging.Try, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Try, logging.RunStatus, color.BoldFgCyan)
 	defer func() {
-		logger.Log(logging.Try, color.BoldFgCyan, "DONE")
+		logger.Log(logging.Try, logging.DoneStatus, color.BoldFgCyan)
 	}()
 	for _, operation := range try {
 		operation.execute(ctx)

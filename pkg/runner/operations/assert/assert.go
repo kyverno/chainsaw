@@ -4,8 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
-	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -32,12 +30,12 @@ func New(client client.Client, expected unstructured.Unstructured) *operation {
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx).WithResource(&o.expected)
-	logger.Log(logging.Assert, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Assert, logging.RunStatus, color.BoldFgCyan)
 	defer func() {
 		if _err == nil {
-			logger.Log(logging.Assert, color.BoldGreen, "DONE")
+			logger.Log(logging.Assert, logging.DoneStatus, color.BoldGreen)
 		} else {
-			logger.Log(logging.Assert, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Assert, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
 	var lastErrs []error
@@ -65,12 +63,9 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 					return false, err
 				}
 				if len(_errs) != 0 {
-					var output []string
 					for _, _err := range _errs {
-						output = append(output, "    "+_err.Error())
+						errs = append(errs, fmt.Errorf("%s/%s/%s - %w", candidate.GetAPIVersion(), candidate.GetKind(), client.Name(client.ObjectKey(&candidate)), _err))
 					}
-					slices.Sort(output)
-					errs = append(errs, fmt.Errorf("resource %s doesn't match expectation:\n%s", client.Name(client.ObjectKey(&candidate)), strings.Join(output, "\n")))
 				} else {
 					// at least one match found
 					return true, nil
