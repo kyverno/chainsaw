@@ -31,7 +31,6 @@ import (
 
 // TODO
 // - namespacer won't work when installing CRDs
-// - cleanup timeout
 // - create if not exists
 
 type StepProcessor interface {
@@ -378,7 +377,7 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 			t.Cleanup(func() {
 				operation := operation{
 					continueOnError: true,
-					timeout:         timeout.DefaultCleanupTimeout,
+					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, p.step.Spec.Timeouts.Cleanup, nil),
 					operation:       opdelete.New(c, obj),
 				}
 				operation.execute(ctx)

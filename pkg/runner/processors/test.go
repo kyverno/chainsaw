@@ -102,7 +102,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			t.Cleanup(func() {
 				operation := operation{
 					continueOnError: false,
-					timeout:         timeout.DefaultCleanupTimeout,
+					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, nil, nil),
 					operation:       opdelete.New(p.client, namespace),
 				}
 				operation.execute(ctx)
