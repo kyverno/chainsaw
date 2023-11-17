@@ -14,6 +14,7 @@ func Test_operationScript(t *testing.T) {
 	tests := []struct {
 		name      string
 		script    v1alpha1.Script
+		basePath  string
 		namespace string
 		wantErr   bool
 	}{{
@@ -40,12 +41,22 @@ func Test_operationScript(t *testing.T) {
 		},
 		namespace: "test-namespace",
 		wantErr:   false,
+	}, {
+		name: "Test base path",
+		script: v1alpha1.Script{
+			Content:       "cat operation.go",
+			SkipLogOutput: true,
+		},
+		basePath:  "..",
+		namespace: "test-namespace",
+		wantErr:   false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
 			operation := operation{
 				script:    tt.script,
+				basePath:  tt.basePath,
 				namespace: tt.namespace,
 			}
 			err := operation.Exec(ctx)
