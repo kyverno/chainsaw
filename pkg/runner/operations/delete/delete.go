@@ -54,7 +54,8 @@ func (o *operation) deleteResource(ctx context.Context, logger logging.Logger) e
 		return err
 	}
 
-	for _, candidate := range candidates {
+	for i := range candidates {
+		candidate := candidates[i]
 		if err := o.tryDeleteCandidate(ctx, &candidate); err != nil {
 			logger.Log(logging.Delete, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			return err
