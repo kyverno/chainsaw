@@ -6,6 +6,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -20,7 +21,7 @@ type operation struct {
 	expected unstructured.Unstructured
 }
 
-func New(client client.Client, expected unstructured.Unstructured) *operation {
+func New(client client.Client, expected unstructured.Unstructured) operations.Operation {
 	return &operation{
 		client:   client,
 		expected: expected,

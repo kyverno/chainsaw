@@ -8,6 +8,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -18,7 +19,7 @@ type operation struct {
 	namespace string
 }
 
-func New(command v1alpha1.Command, namespace string) *operation {
+func New(command v1alpha1.Command, namespace string) operations.Operation {
 	return &operation{
 		command:   command,
 		namespace: namespace,

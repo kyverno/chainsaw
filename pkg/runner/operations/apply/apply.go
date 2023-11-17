@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -24,7 +25,7 @@ type operation struct {
 	check   interface{}
 }
 
-func New(client client.Client, obj ctrlclient.Object, cleaner cleanup.Cleaner, check interface{}) *operation {
+func New(client client.Client, obj ctrlclient.Object, cleaner cleanup.Cleaner, check interface{}) operations.Operation {
 	return &operation{
 		client:  client,
 		obj:     obj,
