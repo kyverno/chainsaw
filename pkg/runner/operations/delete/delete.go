@@ -5,6 +5,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -15,20 +16,21 @@ import (
 )
 
 type operation struct {
-	client client.Client
-	obj    ctrlclient.Object
+	client     client.Client
+	obj        ctrlclient.Object
+	namespacer namespacer.Namespacer
 }
 
-func New(client client.Client, obj ctrlclient.Object) operations.Operation {
+func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer) operations.Operation {
 	return &operation{
-		client: client,
-		obj:    obj,
+		client:     client,
+		obj:        obj,
+		namespacer: namespacer,
 	}
 }
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx).WithResource(o.obj)
-	logger.Log(logging.Delete, logging.RunStatus, color.BoldFgCyan)
 	defer func() {
 		if _err == nil {
 			logger.Log(logging.Delete, logging.DoneStatus, color.BoldGreen)
@@ -36,6 +38,12 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 			logger.Log(logging.Delete, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
+	if o.namespacer != nil {
+		if err := o.namespacer.Apply(o.obj); err != nil {
+			return err
+		}
+	}
+	logger.Log(logging.Delete, logging.RunStatus, color.BoldFgCyan)
 	candidates, _err := internal.Read(ctx, o.obj, o.client)
 	if _err != nil {
 		if errors.IsNotFound(_err) {
