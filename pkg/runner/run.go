@@ -34,10 +34,10 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
-			processor := processors.NewTestsProcessor(config, client, clock, &summary)
+			processor := processors.NewTestsProcessor(config, client, clock, &summary, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
-			processor.Run(ctx, tests...)
+			processor.Run(ctx)
 		},
 	}}
 	deps := &internal.TestDeps{}

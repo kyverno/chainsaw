@@ -44,7 +44,7 @@ func Test_operationDelete(t *testing.T) {
 				},
 			},
 			expectedErr:  nil,
-			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [DONE]"},
+			expectedLogs: []string{"DELETE: RUN - []", "DELETE: DONE - []"},
 		},
 		{
 			name:   "failed get",
@@ -58,7 +58,7 @@ func Test_operationDelete(t *testing.T) {
 				},
 			},
 			expectedErr:  kerrors.NewInternalError(errors.New("failed to get the pod")),
-			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [ERROR\nInternal error occurred: failed to get the pod]"},
+			expectedLogs: []string{"DELETE: RUN - []", "DELETE: ERROR - [=== ERROR\nInternal error occurred: failed to get the pod]"},
 		},
 		{
 			name:   "failed delete",
@@ -72,7 +72,7 @@ func Test_operationDelete(t *testing.T) {
 				},
 			},
 			expectedErr:  kerrors.NewInternalError(errors.New("failed to delete the pod")),
-			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [ERROR\nInternal error occurred: failed to delete the pod]"},
+			expectedLogs: []string{"DELETE: RUN - []", "DELETE: ERROR - [=== ERROR\nInternal error occurred: failed to delete the pod]"},
 		},
 		{
 			name:   "ok",
@@ -89,7 +89,7 @@ func Test_operationDelete(t *testing.T) {
 				},
 			},
 			expectedErr:  nil,
-			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [DONE]"},
+			expectedLogs: []string{"DELETE: RUN - []", "DELETE: DONE - []"},
 		},
 		{
 			name:   "poll succeeds but returns error after",
@@ -103,7 +103,7 @@ func Test_operationDelete(t *testing.T) {
 				},
 			},
 			expectedErr:  context.DeadlineExceeded,
-			expectedLogs: []string{"DELETE: [RUNNING...]", "DELETE: [ERROR\ncontext deadline exceeded]"},
+			expectedLogs: []string{"DELETE: RUN - []", "DELETE: ERROR - [=== ERROR\ncontext deadline exceeded]"},
 		},
 	}
 	for _, tt := range tests {

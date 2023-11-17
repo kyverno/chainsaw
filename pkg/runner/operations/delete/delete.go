@@ -2,10 +2,10 @@ package delete
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -19,7 +19,7 @@ type operation struct {
 	obj    ctrlclient.Object
 }
 
-func New(client client.Client, obj ctrlclient.Object) *operation {
+func New(client client.Client, obj ctrlclient.Object) operations.Operation {
 	return &operation{
 		client: client,
 		obj:    obj,
@@ -27,14 +27,13 @@ func New(client client.Client, obj ctrlclient.Object) *operation {
 }
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
-	const operation = "DELETE"
 	logger := logging.FromContext(ctx).WithResource(o.obj)
-	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Delete, logging.RunStatus, color.BoldFgCyan)
 	defer func() {
 		if _err == nil {
-			logger.Log(operation, color.BoldGreen, "DONE")
+			logger.Log(logging.Delete, logging.DoneStatus, color.BoldGreen)
 		} else {
-			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Delete, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
 	candidates, _err := internal.Read(ctx, o.obj, o.client)

@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -28,6 +29,10 @@ func TestNewLogger(t *testing.T) {
 	assert.Nil(t, logger.resource)
 }
 
+type s string
+
+func (v s) String() string { return string(v) }
+
 func Test_logger_Log(t *testing.T) {
 	fakeClock := tclock.NewFakePassiveClock(time.Now())
 	mockT := &tlogging.FakeTLogger{}
@@ -40,15 +45,17 @@ func Test_logger_Log(t *testing.T) {
 		name           string
 		resource       ctrlclient.Object
 		operation      string
+		status         string
 		color          *color.Color
-		args           []interface{}
+		args           []fmt.Stringer
 		expectContains []string
 	}{
 		{
 			name:      "without resource",
 			resource:  nil,
 			operation: "OPERATION",
-			args:      []interface{}{"arg1", "arg2"},
+			status:    "STATUS",
+			args:      []fmt.Stringer{s("arg1"), s("arg2")},
 			expectContains: []string{
 				"testName", "stepName", "OPERATION", "arg1", "arg2",
 			},
@@ -57,8 +64,9 @@ func Test_logger_Log(t *testing.T) {
 			name:      "with color",
 			resource:  nil,
 			operation: "OPERATION",
+			status:    "STATUS",
 			color:     enabled,
-			args:      []interface{}{"arg1", "arg2"},
+			args:      []fmt.Stringer{s("arg1"), s("arg2")},
 			expectContains: []string{
 				"testName", "stepName", "OPERATION", "arg1", "arg2",
 			},
@@ -74,7 +82,8 @@ func Test_logger_Log(t *testing.T) {
 				return &r
 			}(),
 			operation: "OPERATION",
-			args:      []interface{}{"arg1", "arg2"},
+			status:    "STATUS",
+			args:      []fmt.Stringer{s("arg1"), s("arg2")},
 			expectContains: []string{
 				"testName", "stepName", "OPERATION", "default/testResource", "testGroup/v1/testKind", "arg1", "arg2",
 			},
@@ -86,7 +95,7 @@ func Test_logger_Log(t *testing.T) {
 			if tt.resource != nil {
 				fakeLogger = fakeLogger.WithResource(tt.resource).(*logger)
 			}
-			fakeLogger.Log(tt.operation, tt.color, tt.args...)
+			fakeLogger.Log(Operation(tt.operation), Status(tt.status), tt.color, tt.args...)
 			for _, exp := range tt.expectContains {
 				found := false
 				for _, msg := range mockT.Messages {

@@ -3,11 +3,11 @@ package create
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -24,7 +24,7 @@ type operation struct {
 	check   interface{}
 }
 
-func New(client client.Client, obj ctrlclient.Object, cleaner cleanup.Cleaner, check interface{}) *operation {
+func New(client client.Client, obj ctrlclient.Object, cleaner cleanup.Cleaner, check interface{}) operations.Operation {
 	return &operation{
 		client:  client,
 		obj:     obj,
@@ -34,14 +34,13 @@ func New(client client.Client, obj ctrlclient.Object, cleaner cleanup.Cleaner, c
 }
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
-	const operation = "CREATE"
 	logger := logging.FromContext(ctx).WithResource(o.obj)
-	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Create, logging.RunStatus, color.BoldFgCyan)
 	defer func() {
 		if _err == nil {
-			logger.Log(operation, color.BoldGreen, "DONE")
+			logger.Log(logging.Create, logging.DoneStatus, color.BoldGreen)
 		} else {
-			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Create, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {

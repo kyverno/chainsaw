@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -27,9 +26,9 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log(ctx, "CREATE", obj, color.BoldGreen, "OK")
+			c.ok(ctx, logging.Create, obj)
 		} else {
-			c.log(ctx, "CREATE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.error(ctx, logging.Create, obj, _err)
 		}
 	}()
 	err := c.inner.Create(ctx, obj, opts...)
@@ -44,9 +43,9 @@ func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts .
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log(ctx, "DELETE", obj, color.BoldGreen, "OK")
+			c.ok(ctx, logging.Delete, obj)
 		} else {
-			c.log(ctx, "DELETE", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.error(ctx, logging.Delete, obj, _err)
 		}
 	}()
 	return c.inner.Delete(ctx, obj, opts...)
@@ -65,9 +64,9 @@ func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch c
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
 		if _err == nil {
-			c.log(ctx, "PATCH", obj, color.BoldGreen, "OK")
+			c.ok(ctx, logging.Patch, obj)
 		} else {
-			c.log(ctx, "PATCH", obj, color.BoldYellow, fmt.Sprintf("ERROR\n%s", _err))
+			c.error(ctx, logging.Patch, obj, _err)
 		}
 	}()
 	return c.inner.Patch(ctx, obj, patch, opts...)
@@ -77,10 +76,17 @@ func (c *runnerClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 	return c.inner.IsObjectNamespaced(obj)
 }
 
-func (c *runnerClient) log(ctx context.Context, op string, obj ctrlclient.Object, color *color.Color, args ...interface{}) {
+func (c *runnerClient) ok(ctx context.Context, op logging.Operation, obj ctrlclient.Object) {
 	logger := logging.FromContext(ctx)
 	if logger != nil {
-		logger.WithResource(obj).Log(op, color, args...)
+		logger.WithResource(obj).Log(op, logging.OkStatus, color.BoldGreen)
+	}
+}
+
+func (c *runnerClient) error(ctx context.Context, op logging.Operation, obj ctrlclient.Object, err error) {
+	logger := logging.FromContext(ctx)
+	if logger != nil {
+		logger.WithResource(obj).Log(op, logging.ErrorStatus, color.BoldYellow, logging.ErrSection(err))
 	}
 }
 

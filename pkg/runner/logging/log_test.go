@@ -2,6 +2,7 @@ package logging
 
 import (
 	"context"
+	"fmt"
 	"testing"
 	"time"
 
@@ -18,30 +19,34 @@ func TestLog(t *testing.T) {
 		name      string
 		ctx       context.Context //nolint:containedctx
 		operation string
+		status    string
 		color     *color.Color
-		args      []interface{}
+		args      []fmt.Stringer
 	}{{
 		name:      "background",
 		ctx:       context.Background(),
 		operation: "foo",
+		status:    "bar",
 		color:     nil,
 		args:      nil,
 	}, {
 		name:      "nil",
 		ctx:       nil,
 		operation: "foo",
+		status:    "bar",
 		color:     nil,
 		args:      nil,
 	}, {
 		name:      "with logger",
 		ctx:       IntoContext(context.Background(), fakeLogger),
 		operation: "foo",
+		status:    "bar",
 		color:     nil,
 		args:      nil,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			Log(tt.ctx, tt.operation, tt.color, tt.args...)
+			Log(tt.ctx, Operation(tt.operation), Status(tt.status), tt.color, tt.args...)
 		})
 	}
 }

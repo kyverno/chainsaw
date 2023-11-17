@@ -8,6 +8,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -18,7 +19,7 @@ type operation struct {
 	namespace string
 }
 
-func New(script v1alpha1.Script, namespace string) *operation {
+func New(script v1alpha1.Script, namespace string) operations.Operation {
 	return &operation{
 		script:    script,
 		namespace: namespace,
@@ -27,26 +28,18 @@ func New(script v1alpha1.Script, namespace string) *operation {
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
-	const operation = "SCRIPT"
 	var output internal.CommandOutput
 	defer func() {
 		if _err == nil {
-			logger.Log(operation, color.BoldGreen, "DONE")
+			logger.Log(logging.Script, logging.DoneStatus, color.BoldGreen)
 		} else {
-			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Script, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
 	if !o.script.SkipLogOutput {
 		defer func() {
-			if out := output.Out(); out != "" {
-				logger.Log("STDOUT", color.BoldFgCyan, "LOGS...\n"+out)
-			}
-			if err := output.Err(); err != "" {
-				logger.Log("STDERR", color.BoldFgCyan, "LOGS...\n"+err)
-			}
+			logger.Log(logging.Script, logging.LogStatus, color.BoldFgCyan, output.Sections()...)
 		}()
-	} else {
-		logger.Log("STDXXX", color.BoldYellow, "suppressed logs")
 	}
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
 	cwd, err := os.Getwd()
@@ -59,7 +52,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
-	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Script, logging.RunStatus, color.BoldFgCyan)
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	cmdErr := cmd.Run()
