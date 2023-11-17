@@ -35,14 +35,13 @@ func New(client client.Client, obj ctrlclient.Object, cleaner cleanup.Cleaner, c
 }
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
-	const operation = "APPLY"
 	logger := logging.FromContext(ctx).WithResource(o.obj)
-	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Apply, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
-			logger.Log(operation, color.BoldGreen, "DONE")
+			logger.Log(logging.Apply, color.BoldGreen, "DONE")
 		} else {
-			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Apply, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {

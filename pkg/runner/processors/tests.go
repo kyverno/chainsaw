@@ -21,7 +21,13 @@ type TestsProcessor interface {
 	CreateTestProcessor(test discovery.Test) TestProcessor
 }
 
-func NewTestsProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary, tests ...discovery.Test) TestsProcessor {
+func NewTestsProcessor(
+	config v1alpha1.ConfigurationSpec,
+	client client.Client,
+	clock clock.PassiveClock,
+	summary *summary.Summary,
+	tests ...discovery.Test,
+) TestsProcessor {
 	return &testsProcessor{
 		config:  config,
 		client:  client,
@@ -47,7 +53,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 		if err := p.client.Get(ctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
-				logging.Log(ctx, "GET   ", color.BoldRed, err)
+				logging.Log(ctx, logging.Get, color.BoldRed, err)
 				t.FailNow()
 			}
 			t.Cleanup(func() {
@@ -65,7 +71,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	for _, test := range p.tests {
 		name, err := names.Test(p.config, test)
 		if err != nil {
-			logging.Log(ctx, "INTERN", color.BoldRed, err)
+			logging.Log(ctx, logging.Internal, color.BoldRed, err)
 			t.FailNow()
 		}
 		t.Run(name, func(t *testing.T) {

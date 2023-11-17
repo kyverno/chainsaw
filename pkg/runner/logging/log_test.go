@@ -41,7 +41,7 @@ func TestLog(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			Log(tt.ctx, tt.operation, tt.color, tt.args...)
+			Log(tt.ctx, Operation(tt.operation), tt.color, tt.args...)
 		})
 	}
 }

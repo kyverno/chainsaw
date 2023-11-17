@@ -9,7 +9,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -20,10 +19,16 @@ import (
 
 type TestProcessor interface {
 	Run(ctx context.Context, nspacer namespacer.Namespacer)
-	CreateStepProcessor(nspacer namespacer.Namespacer, client operations.OperationClient) StepProcessor
+	CreateStepProcessor(nspacer namespacer.Namespacer, step v1alpha1.TestSpecStep) StepProcessor
 }
 
-func NewTestProcessor(config v1alpha1.ConfigurationSpec, client client.Client, clock clock.PassiveClock, summary *summary.Summary, test discovery.Test) TestProcessor {
+func NewTestProcessor(
+	config v1alpha1.ConfigurationSpec,
+	client client.Client,
+	clock clock.PassiveClock,
+	summary *summary.Summary,
+	test discovery.Test,
+) TestProcessor {
 	return &testProcessor{
 		config:  config,
 		client:  client,
@@ -85,34 +90,33 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	}
 	if namespace != nil {
 		nspacer = namespacer.New(p.client, namespace.Name)
-		operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, p.test.Spec, v1alpha1.Timeouts{})
+		// operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, p.test.Spec, v1alpha1.Timeouts{})
 		if err := p.client.Get(logging.IntoContext(ctx, setupLogger), client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
-				setupLogger.Log("GET   ", color.BoldRed, err)
+				setupLogger.Log(logging.Get, color.BoldRed, err)
 				t.FailNow()
 			}
 			if err := p.client.Create(logging.IntoContext(ctx, setupLogger), namespace.DeepCopy()); err != nil {
 				t.FailNow()
 			}
-			t.Cleanup(func() {
-				if err := operationsClient.Delete(logging.IntoContext(ctx, setupLogger), nil, namespace); err != nil {
-					t.FailNow()
-				}
-			})
+			// t.Cleanup(func() {
+			// 	if err := operationsClient.Delete(logging.IntoContext(ctx, setupLogger), nil, namespace); err != nil {
+			// 		t.FailNow()
+			// 	}
+			// })
 		}
 	}
 	for i, step := range p.test.Spec.Steps {
-		operationsClient := operations.NewOperationClient(nspacer.GetNamespace(), p.client, p.config, p.test.Spec, step.Spec.Timeouts)
-		processor := p.CreateStepProcessor(nspacer, operationsClient)
+		processor := p.CreateStepProcessor(nspacer, step)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		processor.Run(logging.IntoContext(ctx, logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, name))), p.test, step.Spec)
+		processor.Run(logging.IntoContext(ctx, logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, name))))
 	}
 }
 
-func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, client operations.OperationClient) StepProcessor {
-	return NewStepProcessor(p.config, client, nspacer, p.clock)
+func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, step v1alpha1.TestSpecStep) StepProcessor {
+	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step)
 }

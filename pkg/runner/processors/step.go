@@ -2,118 +2,383 @@ package processors
 
 import (
 	"context"
+	"errors"
+	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/resource"
+	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/collect"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
+	opapply "github.com/kyverno/chainsaw/pkg/runner/operations/apply"
+	opassert "github.com/kyverno/chainsaw/pkg/runner/operations/assert"
+	opcommand "github.com/kyverno/chainsaw/pkg/runner/operations/command"
+	opcreate "github.com/kyverno/chainsaw/pkg/runner/operations/create"
+	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
+	operror "github.com/kyverno/chainsaw/pkg/runner/operations/error"
+	opscript "github.com/kyverno/chainsaw/pkg/runner/operations/script"
+	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/clock"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+// TODO
+// - namespacer won't work when installing CRD
+// - cleanup timeout
+
 type StepProcessor interface {
-	Run(ctx context.Context, test discovery.Test, step v1alpha1.TestStepSpec)
-	CreateOperationProcessor(operation v1alpha1.Operation) OperationProcessor
+	Run(ctx context.Context)
 }
 
-func NewStepProcessor(config v1alpha1.ConfigurationSpec, client operations.OperationClient, namespacer namespacer.Namespacer, clock clock.PassiveClock) StepProcessor {
+func NewStepProcessor(
+	config v1alpha1.ConfigurationSpec,
+	client client.Client,
+	namespacer namespacer.Namespacer,
+	clock clock.PassiveClock,
+	test discovery.Test,
+	step v1alpha1.TestSpecStep,
+) StepProcessor {
 	return &stepProcessor{
-		config:          config,
-		operationClient: client,
-		namespacer:      namespacer,
-		clock:           clock,
+		config:     config,
+		client:     client,
+		namespacer: namespacer,
+		clock:      clock,
+		test:       test,
+		step:       step,
 	}
 }
 
 type stepProcessor struct {
-	config          v1alpha1.ConfigurationSpec
-	operationClient operations.OperationClient
-	namespacer      namespacer.Namespacer
-	clock           clock.PassiveClock
+	config     v1alpha1.ConfigurationSpec
+	client     client.Client
+	namespacer namespacer.Namespacer
+	clock      clock.PassiveClock
+	test       discovery.Test
+	step       v1alpha1.TestSpecStep
 }
 
-func (p *stepProcessor) Run(ctx context.Context, test discovery.Test, step v1alpha1.TestStepSpec) {
+func (p *stepProcessor) Run(ctx context.Context) {
 	t := testing.FromContext(ctx)
 	logger := logging.FromContext(ctx)
+	try, err := p.tryOperations(ctx, p.step.Spec.Try...)
+	if err != nil {
+		logger.Log(logging.Try, color.BoldRed, err)
+		t.FailNow()
+	}
+	finally, err := p.finallyOperations(ctx, p.step.Spec.Finally...)
+	if err != nil {
+		logger.Log(logging.Finally, color.BoldRed, err)
+		t.FailNow()
+	}
+	catch, err := p.catchOperations(ctx, p.step.Spec.Catch...)
+	if err != nil {
+		logger.Log(logging.Catch, color.BoldRed, err)
+		t.FailNow()
+	}
 	defer func() {
 		t.Cleanup(func() {
-			for _, handler := range step.Finally {
-				if handler.PodLogs != nil {
-					cmd, err := collect.PodLogs(handler.PodLogs)
-					if err != nil {
-						logger.Log("COLLEC", color.BoldRed, err)
-						t.Fail()
-					} else if err := p.operationClient.Command(ctx, nil, *cmd); err != nil {
-						t.Fail()
-					}
-				}
-				if handler.Events != nil {
-					cmd, err := collect.Events(handler.Events)
-					if err != nil {
-						logger.Log("COLLEC", color.BoldRed, err)
-						t.Fail()
-					} else if err := p.operationClient.Command(ctx, nil, *cmd); err != nil {
-						t.Fail()
-					}
-				}
-				if handler.Command != nil {
-					if err := p.operationClient.Command(ctx, nil, *handler.Command); err != nil {
-						t.Fail()
-					}
-				}
-				if handler.Script != nil {
-					if err := p.operationClient.Script(ctx, nil, *handler.Script); err != nil {
-						t.Fail()
-					}
-				}
+			for _, handler := range finally {
+				p.executeOperation(ctx, handler)
 			}
 		})
 	}()
 	defer func() {
 		if t.Failed() {
 			t.Cleanup(func() {
-				for _, handler := range step.Catch {
-					if handler.PodLogs != nil {
-						cmd, err := collect.PodLogs(handler.PodLogs)
-						if err != nil {
-							logger.Log("COLLEC", color.BoldRed, err)
-							t.Fail()
-						} else if err := p.operationClient.Command(ctx, nil, *cmd); err != nil {
-							t.Fail()
-						}
-					}
-					if handler.Events != nil {
-						cmd, err := collect.Events(handler.Events)
-						if err != nil {
-							logger.Log("COLLEC", color.BoldRed, err)
-							t.Fail()
-						} else if err := p.operationClient.Command(ctx, nil, *cmd); err != nil {
-							t.Fail()
-						}
-					}
-					if handler.Command != nil {
-						if err := p.operationClient.Command(ctx, nil, *handler.Command); err != nil {
-							t.Fail()
-						}
-					}
-					if handler.Script != nil {
-						if err := p.operationClient.Script(ctx, nil, *handler.Script); err != nil {
-							t.Fail()
-						}
-					}
+				for _, handler := range catch {
+					p.executeOperation(ctx, handler)
 				}
 			})
 		}
 	}()
-	for _, operation := range step.Try {
-		processor := p.CreateOperationProcessor(operation)
-		processor.Run(ctx, test, step, operation)
+	for _, operation := range try {
+		p.executeOperation(ctx, operation)
 	}
 }
 
-func (p *stepProcessor) CreateOperationProcessor(_ v1alpha1.Operation) OperationProcessor {
-	return NewOperationProcessor(p.config, p.operationClient, p.namespacer, p.clock)
+func (p *stepProcessor) executeOperation(ctx context.Context, op operation) {
+	ctx, cancel := context.WithTimeout(ctx, op.timeout)
+	defer cancel()
+	if err := op.operation.Exec(ctx); err != nil {
+		t := testing.FromContext(ctx)
+		if op.continueOnError {
+			t.Fail()
+		} else {
+			t.FailNow()
+		}
+	}
+}
+
+func (p *stepProcessor) tryOperations(ctx context.Context, handlers ...v1alpha1.Operation) ([]operation, error) {
+	var ops []operation
+	for _, handler := range handlers {
+		register := func(o ...operation) {
+			continueOnError := handler.ContinueOnError != nil && *handler.ContinueOnError
+			for _, o := range o {
+				o.continueOnError = continueOnError
+				ops = append(ops, o)
+			}
+		}
+		if handler.Apply != nil {
+			loaded, err := p.applyOperation(ctx, *handler.Apply, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
+		} else if handler.Assert != nil {
+			loaded, err := p.assertOperation(ctx, *handler.Assert, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
+		} else if handler.Command != nil {
+			register(p.commandOperation(ctx, *handler.Command, handler.Timeout))
+		} else if handler.Script != nil {
+			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
+		} else if handler.Create != nil {
+			loaded, err := p.createOperation(ctx, *handler.Create, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
+		} else if handler.Delete != nil {
+			loaded, err := p.deleteOperation(ctx, *handler.Delete, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(*loaded)
+		} else if handler.Error != nil {
+			loaded, err := p.errorOperation(ctx, *handler.Error, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
+		} else {
+			return nil, errors.New("no operation found")
+		}
+	}
+	return ops, nil
+}
+
+func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha1.Catch) ([]operation, error) {
+	var ops []operation
+	register := func(o ...operation) {
+		for _, o := range o {
+			o.continueOnError = true
+			ops = append(ops, o)
+		}
+	}
+	for _, handler := range handlers {
+		if handler.PodLogs != nil {
+			cmd, err := collect.PodLogs(handler.PodLogs)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, *cmd, nil))
+		} else if handler.Events != nil {
+			cmd, err := collect.Events(handler.Events)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, *cmd, nil))
+		} else if handler.Command != nil {
+			register(p.commandOperation(ctx, *handler.Command, nil))
+		} else if handler.Script != nil {
+			register(p.scriptOperation(ctx, *handler.Script, nil))
+		} else {
+			return nil, errors.New("no operation found")
+		}
+	}
+	return ops, nil
+}
+
+func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alpha1.Finally) ([]operation, error) {
+	var ops []operation
+	register := func(o ...operation) {
+		for _, o := range o {
+			o.continueOnError = true
+			ops = append(ops, o)
+		}
+	}
+	for _, handler := range handlers {
+		if handler.PodLogs != nil {
+			cmd, err := collect.PodLogs(handler.PodLogs)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, *cmd, nil))
+		} else if handler.Events != nil {
+			cmd, err := collect.Events(handler.Events)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, *cmd, nil))
+		} else if handler.Command != nil {
+			register(p.commandOperation(ctx, *handler.Command, nil))
+		} else if handler.Script != nil {
+			register(p.scriptOperation(ctx, *handler.Script, nil))
+		} else {
+			return nil, errors.New("no operation found")
+		}
+	}
+	return ops, nil
+}
+
+func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, to *metav1.Duration) ([]operation, error) {
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
+	if err != nil {
+		return nil, err
+	}
+	var ops []operation
+	dryRun := op.DryRun != nil && *op.DryRun
+	for i := range resources {
+		resource := resources[i]
+		if err := p.namespacer.Apply(&resource); err != nil {
+			return nil, err
+		}
+		ops = append(ops, operation{
+			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
+			operation: opapply.New(p.getClient(dryRun), &resource, p.getCleaner(ctx, dryRun), op.Check.Value),
+		})
+	}
+	return ops, nil
+}
+
+func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert, to *metav1.Duration) ([]operation, error) {
+	resources, err := p.fileRef(op.FileRef)
+	if err != nil {
+		return nil, err
+	}
+	var ops []operation
+	for i := range resources {
+		resource := resources[i]
+		if err := p.namespacer.Apply(&resource); err != nil {
+			return nil, err
+		}
+		ops = append(ops, operation{
+			timeout:   timeout.Get(timeout.DefaultAssertTimeout, p.config.Timeouts.Assert, p.test.Spec.Timeouts.Assert, p.step.Spec.Timeouts.Assert, to),
+			operation: opassert.New(p.client, resource),
+		})
+	}
+	return ops, nil
+}
+
+func (p *stepProcessor) commandOperation(ctx context.Context, exec v1alpha1.Command, to *metav1.Duration) operation {
+	return operation{
+		timeout:   timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
+		operation: opcommand.New(exec, p.namespacer.GetNamespace()),
+	}
+}
+
+func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create, to *metav1.Duration) ([]operation, error) {
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
+	if err != nil {
+		return nil, err
+	}
+	var ops []operation
+	dryRun := op.DryRun != nil && *op.DryRun
+	for i := range resources {
+		resource := resources[i]
+		if err := p.namespacer.Apply(&resource); err != nil {
+			return nil, err
+		}
+		ops = append(ops, operation{
+			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
+			operation: opcreate.New(p.getClient(dryRun), &resource, p.getCleaner(ctx, dryRun), op.Check.Value),
+		})
+	}
+	return ops, nil
+}
+
+func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete, to *metav1.Duration) (*operation, error) {
+	var resource unstructured.Unstructured
+	resource.SetAPIVersion(op.APIVersion)
+	resource.SetKind(op.Kind)
+	resource.SetName(op.Name)
+	resource.SetNamespace(op.Namespace)
+	resource.SetLabels(op.Labels)
+	if err := p.namespacer.Apply(&resource); err != nil {
+		return nil, err
+	}
+	return &operation{
+		timeout:   timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
+		operation: opdelete.New(p.client, &resource),
+	}, nil
+}
+
+func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, to *metav1.Duration) ([]operation, error) {
+	resources, err := p.fileRef(op.FileRef)
+	if err != nil {
+		return nil, err
+	}
+	var ops []operation
+	for i := range resources {
+		resource := resources[i]
+		if err := p.namespacer.Apply(&resource); err != nil {
+			return nil, err
+		}
+		ops = append(ops, operation{
+			timeout:   timeout.Get(timeout.DefaultErrorTimeout, p.config.Timeouts.Error, p.test.Spec.Timeouts.Error, p.step.Spec.Timeouts.Error, to),
+			operation: operror.New(p.client, resource),
+		})
+	}
+	return ops, nil
+}
+
+func (p *stepProcessor) scriptOperation(ctx context.Context, exec v1alpha1.Script, to *metav1.Duration) operation {
+	return operation{
+		timeout:   timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
+		operation: opscript.New(exec, p.namespacer.GetNamespace()),
+	}
+}
+
+func (p *stepProcessor) fileRef(ref v1alpha1.FileRef) ([]unstructured.Unstructured, error) {
+	if ref.File != "" {
+		return resource.Load(filepath.Join(p.test.BasePath, ref.File))
+	}
+	return nil, errors.New("file must be set")
+}
+
+func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]unstructured.Unstructured, error) {
+	if ref.Resource != nil {
+		return []unstructured.Unstructured{*ref.Resource}, nil
+	}
+	if ref.File != "" {
+		return resource.Load(filepath.Join(p.test.BasePath, ref.File))
+	}
+	return nil, errors.New("file or resource must be set")
+}
+
+func (p *stepProcessor) getClient(dryRun bool) client.Client {
+	if !dryRun {
+		return p.client
+	}
+	return client.DryRun(p.client)
+}
+
+func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cleaner {
+	if dryRun {
+		return nil
+	}
+	var cleaner cleanup.Cleaner
+	if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, p.step.Spec.SkipDelete) {
+		cleaner = func(obj ctrlclient.Object, c client.Client) {
+			t := testing.FromContext(ctx)
+			t.Cleanup(func() {
+				p.executeOperation(ctx, operation{
+					continueOnError: true,
+					timeout:         timeout.DefaultCleanupTimeout,
+					operation:       opdelete.New(c, obj),
+				})
+			})
+		}
+	}
+	return cleaner
 }

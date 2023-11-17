@@ -27,26 +27,25 @@ func New(script v1alpha1.Script, namespace string) *operation {
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
-	const operation = "SCRIPT"
 	var output internal.CommandOutput
 	defer func() {
 		if _err == nil {
-			logger.Log(operation, color.BoldGreen, "DONE")
+			logger.Log(logging.Script, color.BoldGreen, "DONE")
 		} else {
-			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Script, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	if !o.script.SkipLogOutput {
 		defer func() {
 			if out := output.Out(); out != "" {
-				logger.Log("STDOUT", color.BoldFgCyan, "LOGS...\n"+out)
+				logger.Log(logging.Stdout, color.BoldFgCyan, "LOGS...\n"+out)
 			}
 			if err := output.Err(); err != "" {
-				logger.Log("STDERR", color.BoldFgCyan, "LOGS...\n"+err)
+				logger.Log(logging.Stdout, color.BoldFgCyan, "LOGS...\n"+err)
 			}
 		}()
 	} else {
-		logger.Log("STDXXX", color.BoldYellow, "suppressed logs")
+		logger.Log(logging.Std___, color.BoldYellow, "suppressed logs")
 	}
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
 	cwd, err := os.Getwd()
@@ -59,7 +58,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
-	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Script, color.BoldFgCyan, "RUNNING...")
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	cmdErr := cmd.Run()
