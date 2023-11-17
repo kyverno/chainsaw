@@ -27,26 +27,25 @@ func New(command v1alpha1.Command, namespace string) *operation {
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx)
-	const operation = "CMD   "
 	var output internal.CommandOutput
 	defer func() {
 		if _err == nil {
-			logger.Log(operation, color.BoldGreen, "DONE")
+			logger.Log(logging.Command, color.BoldGreen, "DONE")
 		} else {
-			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Command, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	if !o.command.SkipLogOutput {
 		defer func() {
 			if out := output.Out(); out != "" {
-				logger.Log("STDOUT", color.BoldFgCyan, "LOGS...\n"+out)
+				logger.Log(logging.Stdout, color.BoldFgCyan, "LOGS...\n"+out)
 			}
 			if err := output.Err(); err != "" {
-				logger.Log("STDERR", color.BoldFgCyan, "LOGS...\n"+err)
+				logger.Log(logging.Stderr, color.BoldFgCyan, "LOGS...\n"+err)
 			}
 		}()
 	} else {
-		logger.Log("STD___", color.BoldYellow, "suppressed logs")
+		logger.Log(logging.Std___, color.BoldYellow, "suppressed logs")
 	}
 	args := expand(map[string]string{"NAMESPACE": o.namespace}, o.command.Args...)
 	cmd := exec.CommandContext(ctx, o.command.Entrypoint, args...) //nolint:gosec
@@ -60,7 +59,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
-	logger.Log(operation, color.BoldFgCyan, cmd, "RUNNING...")
+	logger.Log(logging.Command, color.BoldFgCyan, cmd, "RUNNING...")
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	cmdErr := cmd.Run()

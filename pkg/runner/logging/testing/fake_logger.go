@@ -18,7 +18,7 @@ func (f *FakeLogger) WithResource(resource ctrlclient.Object) Logger {
 	return f
 }
 
-func (f *FakeLogger) Log(operation string, color *color.Color, args ...interface{}) {
+func (f *FakeLogger) Log(operation Operation, color *color.Color, args ...interface{}) {
 	defer func() { f.numCalls++ }()
 	message := fmt.Sprintf("%s: %v", operation, args)
 	f.Logs = append(f.Logs, message)

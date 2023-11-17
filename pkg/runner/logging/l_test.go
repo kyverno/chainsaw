@@ -86,7 +86,7 @@ func Test_logger_Log(t *testing.T) {
 			if tt.resource != nil {
 				fakeLogger = fakeLogger.WithResource(tt.resource).(*logger)
 			}
-			fakeLogger.Log(tt.operation, tt.color, tt.args...)
+			fakeLogger.Log(Operation(tt.operation), tt.color, tt.args...)
 			for _, exp := range tt.expectContains {
 				found := false
 				for _, msg := range mockT.Messages {

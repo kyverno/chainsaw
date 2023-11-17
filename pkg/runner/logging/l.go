@@ -29,13 +29,15 @@ func NewLogger(t TLogger, clock clock.PassiveClock, test string, step string) Lo
 	}
 }
 
-func (l *logger) Log(operation string, color *color.Color, args ...interface{}) {
+func (l *logger) Log(operation Operation, color *color.Color, args ...interface{}) {
 	sprint := fmt.Sprint
+	opLen := 9
 	if color != nil {
 		sprint = color.Sprint
+		opLen += 14
 	}
 	a := make([]interface{}, 0, len(args)+1)
-	prefix := fmt.Sprintf("%s%s | %s | %s | %s |", eraser, l.clock.Now().Format("15:04:05"), sprint(l.test), sprint(l.step), sprint(operation))
+	prefix := fmt.Sprintf("%s%s | %s | %s | %-*s |", eraser, l.clock.Now().Format("15:04:05"), sprint(l.test), sprint(l.step), opLen, sprint(operation))
 	if l.resource != nil {
 		gvk := l.resource.GetObjectKind().GroupVersionKind()
 		key := client.ObjectKey(l.resource)

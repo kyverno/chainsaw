@@ -27,14 +27,13 @@ func New(client client.Client, obj ctrlclient.Object) *operation {
 }
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
-	const operation = "DELETE"
 	logger := logging.FromContext(ctx).WithResource(o.obj)
-	logger.Log(operation, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Delete, color.BoldFgCyan, "RUNNING...")
 	defer func() {
 		if _err == nil {
-			logger.Log(operation, color.BoldGreen, "DONE")
+			logger.Log(logging.Delete, color.BoldGreen, "DONE")
 		} else {
-			logger.Log(operation, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Delete, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
 		}
 	}()
 	candidates, _err := internal.Read(ctx, o.obj, o.client)

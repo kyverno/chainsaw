@@ -382,14 +382,19 @@ func (in *Operation) DeepCopyInto(out *Operation) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.Apply != nil {
+		in, out := &in.Apply, &out.Apply
+		*out = new(Apply)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.Assert != nil {
 		in, out := &in.Assert, &out.Assert
 		*out = new(Assert)
 		**out = **in
 	}
-	if in.Apply != nil {
-		in, out := &in.Apply, &out.Apply
-		*out = new(Apply)
+	if in.Command != nil {
+		in, out := &in.Command, &out.Command
+		*out = new(Command)
 		(*in).DeepCopyInto(*out)
 	}
 	if in.Create != nil {
@@ -397,20 +402,15 @@ func (in *Operation) DeepCopyInto(out *Operation) {
 		*out = new(Create)
 		(*in).DeepCopyInto(*out)
 	}
-	if in.Error != nil {
-		in, out := &in.Error, &out.Error
-		*out = new(Error)
-		**out = **in
-	}
 	if in.Delete != nil {
 		in, out := &in.Delete, &out.Delete
 		*out = new(Delete)
 		(*in).DeepCopyInto(*out)
 	}
-	if in.Command != nil {
-		in, out := &in.Command, &out.Command
-		*out = new(Command)
-		(*in).DeepCopyInto(*out)
+	if in.Error != nil {
+		in, out := &in.Error, &out.Error
+		*out = new(Error)
+		**out = **in
 	}
 	if in.Script != nil {
 		in, out := &in.Script, &out.Script

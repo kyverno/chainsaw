@@ -46,7 +46,7 @@ func Test_operationError(t *testing.T) {
 				},
 			},
 			expectedErr:  nil,
-			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [DONE]"},
+			expectedLogs: []string{"ERROR: [RUNNING...]", "ERROR: [DONE]"},
 		},
 		{
 			name:     "Internal error",
@@ -60,7 +60,7 @@ func Test_operationError(t *testing.T) {
 				},
 			},
 			expectedErr:  errors.New("internal error"),
-			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [ERROR\ninternal error]"},
+			expectedLogs: []string{"ERROR: [RUNNING...]", "ERROR: [ERROR\ninternal error]"},
 		},
 		{
 			name:     "Resource matches actual",
@@ -79,7 +79,7 @@ func Test_operationError(t *testing.T) {
 				},
 			},
 			expectedErr:  fmt.Errorf("found an actual resource matching expectation (v1/Pod / foo/test-pod)"),
-			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [ERROR\nfound an actual resource matching expectation (v1/Pod / foo/test-pod)]"},
+			expectedLogs: []string{"ERROR: [RUNNING...]", "ERROR: [ERROR\nfound an actual resource matching expectation (v1/Pod / foo/test-pod)]"},
 		},
 		{
 			name: "No resources found using List",
@@ -112,7 +112,7 @@ func Test_operationError(t *testing.T) {
 				},
 			},
 			expectedErr:  nil,
-			expectedLogs: []string{"ERROR : [RUNNING...]", "ERROR : [DONE]"},
+			expectedLogs: []string{"ERROR: [RUNNING...]", "ERROR: [DONE]"},
 		},
 	}
 	for _, tt := range tests {
