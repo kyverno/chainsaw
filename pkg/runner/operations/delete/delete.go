@@ -29,17 +29,23 @@ func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Name
 	}
 }
 
-func (o *operation) Exec(ctx context.Context) error {
+func (o *operation) Exec(ctx context.Context) (err error) {
 	logger := logging.FromContext(ctx).WithResource(o.obj)
+	defer func() {
+		if err != nil {
+			logger.Log(logging.Delete, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		} else {
+			logger.Log(logging.Delete, logging.DoneStatus, color.BoldGreen)
+		}
+	}()
 
 	if o.namespacer != nil {
-		if err := o.namespacer.Apply(o.obj); err != nil {
+		if err = o.namespacer.Apply(o.obj); err != nil {
 			return err
 		}
 	}
 
 	logger.Log(logging.Delete, logging.RunStatus, color.BoldFgCyan)
-
 	return o.deleteResource(ctx, logger)
 }
 
@@ -47,26 +53,21 @@ func (o *operation) deleteResource(ctx context.Context, logger logging.Logger) e
 	candidates, err := internal.Read(ctx, o.obj, o.client)
 	if err != nil {
 		if kerrors.IsNotFound(err) {
-			logger.Log(logging.Delete, logging.DoneStatus, color.BoldGreen)
 			return nil
 		}
-		logger.Log(logging.Delete, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		return err
 	}
 
 	for i := range candidates {
 		candidate := candidates[i]
 		if err := o.tryDeleteCandidate(ctx, &candidate); err != nil {
-			logger.Log(logging.Delete, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			return err
 		}
 		if err := o.waitForDeletion(ctx, &candidate); err != nil {
-			logger.Log(logging.Delete, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			return err
 		}
 	}
 
-	logger.Log(logging.Delete, logging.DoneStatus, color.BoldGreen)
 	return nil
 }
 
