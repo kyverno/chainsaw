@@ -32,6 +32,7 @@ import (
 // TODO
 // - namespacer won't work when installing CRDs
 // - cleanup timeout
+// - create if not exists
 
 type StepProcessor interface {
 	Run(ctx context.Context)

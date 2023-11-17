@@ -5,6 +5,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -18,7 +19,7 @@ type operation struct {
 	obj    ctrlclient.Object
 }
 
-func New(client client.Client, obj ctrlclient.Object) *operation {
+func New(client client.Client, obj ctrlclient.Object) operations.Operation {
 	return &operation{
 		client: client,
 		obj:    obj,
