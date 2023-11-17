@@ -11,7 +11,6 @@ spec:
     continueOnError: false
   - apply:
       file: /configs/service-config.yaml
-      shouldFail: false
     timeout: 45s
     continueOnError: true
   - error:

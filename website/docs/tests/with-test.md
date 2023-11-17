@@ -17,6 +17,10 @@ The full structure of the `Test` resource is documented [here](../apis/chainsaw.
 A `Test` resource is self contained and fully represents a test.
 Therefore the loading process is straightforward, Chainsaw loads the `Test` and adds it to the collection of tests to be processed.
 
+!!! note
+
+    For the time being, the `Test` based approach requires the file name to match `chainsaw-test.yaml`. This will be configurable by a command flag in the future.
+
 ## Example
 
 ### chainsaw-test.yaml

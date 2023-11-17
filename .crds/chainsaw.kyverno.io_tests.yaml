@@ -69,6 +69,11 @@ spec:
                                 items:
                                   type: string
                                 type: array
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -125,6 +130,11 @@ spec:
                           script:
                             description: Script defines a script to run.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
@@ -152,6 +162,11 @@ spec:
                                 items:
                                   type: string
                                 type: array
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -208,6 +223,11 @@ spec:
                           script:
                             description: Script defines a script to run.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
@@ -262,15 +282,23 @@ spec:
                               like configuration settings or any other resources that
                               need to be available during the test.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              dryRun:
+                                description: DryRun determines whether the file should
+                                  be applied in dry run mode.
+                                type: boolean
                               file:
                                 description: File is the path to the referenced file.
                                 type: string
-                              shouldFail:
-                                description: ShouldFail determines whether applying
-                                  the file is expected to fail.
-                                type: boolean
-                            required:
-                            - file
+                              resource:
+                                description: Resource provides a resource to be applied.
+                                type: object
+                                x-kubernetes-embedded-resource: true
+                                x-kubernetes-preserve-unknown-fields: true
                             type: object
                           assert:
                             description: Assert represents an assertion to be made.
@@ -280,8 +308,6 @@ spec:
                               file:
                                 description: File is the path to the referenced file.
                                 type: string
-                            required:
-                            - file
                             type: object
                           command:
                             description: Command defines a command to run.
@@ -291,6 +317,11 @@ spec:
                                 items:
                                   type: string
                                 type: array
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -312,15 +343,23 @@ spec:
                           create:
                             description: Create represents a creation operation.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              dryRun:
+                                description: DryRun determines whether the file should
+                                  be applied in dry run mode.
+                                type: boolean
                               file:
                                 description: File is the path to the referenced file.
                                 type: string
-                              shouldFail:
-                                description: ShouldFail determines whether applying
-                                  the file is expected to fail.
-                                type: boolean
-                            required:
-                            - file
+                              resource:
+                                description: Resource provides a resource to be applied.
+                                type: object
+                                x-kubernetes-embedded-resource: true
+                                x-kubernetes-preserve-unknown-fields: true
                             type: object
                           delete:
                             description: Delete represents a creation operation.
@@ -356,12 +395,15 @@ spec:
                               file:
                                 description: File is the path to the referenced file.
                                 type: string
-                            required:
-                            - file
                             type: object
                           script:
                             description: Script defines a script to run.
                             properties:
+                              check:
+                                description: Check is an assertion tree to validate
+                                  outcome.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").

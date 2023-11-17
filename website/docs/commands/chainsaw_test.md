@@ -48,6 +48,7 @@ chainsaw test [flags]... [test directories]...
       --report-name string                  The name of the report to create. (default "chainsaw-report")
       --skip-delete                         If set, do not delete the resources after running the tests.
       --test-dir stringArray                Directories containing test cases to run.
+      --test-file string                    Name of the test file. (default "chainsaw-test.yaml")
 ```
 
 ### SEE ALSO

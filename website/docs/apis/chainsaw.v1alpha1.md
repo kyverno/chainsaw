@@ -62,8 +62,9 @@ should be applied during testing.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the</p> |
-| `shouldFail` | `bool` |  |  | <p>ShouldFail determines whether applying the file is expected to fail.</p> |
+| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be applied.</p> |
+| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
+| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate outcome.</p> |
 
 ## `Assert`     {#chainsaw-kyverno-io-v1alpha1-Assert}
 
@@ -111,6 +112,7 @@ during the testing process.</p>
 | `entrypoint` | `string` | :white_check_mark: |  | <p>Entrypoint is the command entry point to run.</p> |
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
+| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate outcome.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -135,6 +137,7 @@ during the testing process.</p>
 | `excludeTestRegex` | `string` |  |  | <p>ExcludeTestRegex is used to exclude tests based on a regular expression.</p> |
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
 | `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
+| `testFile` | `string` |  |  | <p>TestFile is the name of the file containing the test to run.</p> |
 
 ## `Create`     {#chainsaw-kyverno-io-v1alpha1-Create}
 
@@ -148,8 +151,9 @@ If a resource already exists in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the</p> |
-| `shouldFail` | `bool` |  |  | <p>ShouldFail determines whether applying the file is expected to fail.</p> |
+| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be created.</p> |
+| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
+| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate outcome.</p> |
 
 ## `Delete`     {#chainsaw-kyverno-io-v1alpha1-Delete}
 
@@ -198,10 +202,9 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 **Appears in:**
     
-- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
 - [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
-- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
 - [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+- [FileRefOrResource](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource)
 
 <p>FileRef represents a file reference.</p>
 
@@ -209,6 +212,21 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
+
+## `FileRefOrResource`     {#chainsaw-kyverno-io-v1alpha1-FileRefOrResource}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+
+<p>FileRefOrResource represents a file reference or resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
+| `resource` | [`meta/v1/unstructured.Unstructured`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#unstructured-unstructured-v1) |  |  | <p>Resource provides a resource to be applied.</p> |
 
 ## `Finally`     {#chainsaw-kyverno-io-v1alpha1-Finally}
 
@@ -270,12 +288,12 @@ For multiple objects use labels.</p>
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
-| `assert` | [`Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents an assertion to be made. It checks whether the conditions specified in the assertion hold true.</p> |
 | `apply` | [`Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply represents resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
-| `create` | [`Create`](#chainsaw-kyverno-io-v1alpha1-Create) |  |  | <p>Create represents a creation operation.</p> |
-| `error` | [`Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
-| `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a creation operation.</p> |
+| `assert` | [`Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents an assertion to be made. It checks whether the conditions specified in the assertion hold true.</p> |
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
+| `create` | [`Create`](#chainsaw-kyverno-io-v1alpha1-Create) |  |  | <p>Create represents a creation operation.</p> |
+| `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a creation operation.</p> |
+| `error` | [`Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 
 ## `PodLogs`     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
@@ -319,6 +337,7 @@ For multiple objects use labels.</p>
 |---|---|---|---|---|
 | `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
+| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate outcome.</p> |
 
 ## `TestSpec`     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
 

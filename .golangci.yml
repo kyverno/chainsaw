@@ -43,3 +43,6 @@ run:
   timeout: 15m
   skip-files:
     - ".+\\.generated.go"
+  output:
+    format: colored-line-number
+    sort-results: true

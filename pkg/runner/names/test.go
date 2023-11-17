@@ -36,7 +36,6 @@ func helpTest(test discovery.Test, workingDir workignDirInterface, absolutePath 
 	if relativePath == nil {
 		relativePath = filepath.Rel
 	}
-
 	cwd, err := workingDir()
 	if err != nil {
 		return "", fmt.Errorf("failed to get current working dir (%w)", err)

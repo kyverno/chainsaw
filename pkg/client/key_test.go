@@ -20,18 +20,6 @@ func TestObjectKey(t *testing.T) {
 	assert.Equal(t, "test-namespace", key.Namespace)
 }
 
-func TestObjectName(t *testing.T) {
-	obj := &metav1.ObjectMeta{
-		Name: "test-name",
-	}
-	name := ObjectName(obj)
-	assert.Equal(t, "test-name", name)
-
-	obj.Namespace = "test-namespace"
-	name = ObjectName(obj)
-	assert.Equal(t, "test-namespace/test-name", name)
-}
-
 func TestName(t *testing.T) {
 	key := ctrlclient.ObjectKey{Name: "test-name"}
 	name := Name(key)

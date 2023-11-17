@@ -35,8 +35,10 @@ func TestDiscoverTests(t *testing.T) {
 						Spec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
 								Apply: &v1alpha1.Apply{
-									FileRef: v1alpha1.FileRef{
-										File: "configmap.yaml",
+									FileRefOrResource: v1alpha1.FileRefOrResource{
+										FileRef: v1alpha1.FileRef{
+											File: "configmap.yaml",
+										},
 									},
 								},
 							}},
@@ -83,8 +85,10 @@ func TestDiscoverTests(t *testing.T) {
 								},
 							}, {
 								Apply: &v1alpha1.Apply{
-									FileRef: v1alpha1.FileRef{
-										File: "01-configmap.yaml",
+									FileRefOrResource: v1alpha1.FileRefOrResource{
+										FileRef: v1alpha1.FileRef{
+											File: "01-configmap.yaml",
+										},
 									},
 								},
 							}, {
@@ -120,8 +124,10 @@ func TestDiscoverTests(t *testing.T) {
 						Spec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
 								Apply: &v1alpha1.Apply{
-									FileRef: v1alpha1.FileRef{
-										File: "foo.yaml",
+									FileRefOrResource: v1alpha1.FileRefOrResource{
+										FileRef: v1alpha1.FileRef{
+											File: "foo.yaml",
+										},
 									},
 								},
 							}, {

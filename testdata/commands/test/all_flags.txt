@@ -1,4 +1,5 @@
 Loading default configuration...
+- Using test file: custom-test.yaml
 - TestDirs [.]
 - SkipDelete false
 - FailFast false

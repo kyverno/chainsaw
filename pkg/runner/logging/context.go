@@ -7,8 +7,10 @@ import (
 type contextKey struct{}
 
 func FromContext(ctx context.Context) Logger {
-	if v, ok := ctx.Value(contextKey{}).(Logger); ok {
-		return v
+	if ctx != nil {
+		if v, ok := ctx.Value(contextKey{}).(Logger); ok {
+			return v
+		}
 	}
 	return nil
 }

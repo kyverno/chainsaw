@@ -1,4 +1,5 @@
 Loading default configuration...
+- Using test file: chainsaw-test.yaml
 - TestDirs []
 - SkipDelete false
 - FailFast false

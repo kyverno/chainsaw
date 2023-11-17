@@ -113,6 +113,7 @@ func TestChainsawCommand(t *testing.T) {
 	}, {
 		name: "all flags",
 		args: []string{
+			"--test-file=custom-test.yaml",
 			"--apply-timeout=100s",
 			"--assert-timeout=100s",
 			"--error-timeout=100s",

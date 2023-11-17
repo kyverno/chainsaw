@@ -1,0 +1,24 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-1
+spec:
+  steps:
+  - try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: chainsaw-quick-start
+          data:
+            foo: bar
+  - try:
+    - create:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: chainsaw-quick-start
+          data:
+            foo: bar

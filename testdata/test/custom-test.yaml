@@ -15,14 +15,12 @@ spec:
     try:
     - apply:
         file: /configs/service-config.yaml
-        shouldFail: false
       timeout: 45s
       continueOnError: true
   - name: "test-step-apply-changes"
     try:
     - apply:
         file: /configs/service-config.yaml
-        shouldFail: false
       timeout: 45s
       continueOnError: true
     - assert:
