@@ -56,7 +56,6 @@ func (o *operation) applyResource(ctx context.Context, logger logging.Logger) er
 		err := o.tryApplyResource(ctx)
 		return err == nil, err
 	})
-
 	if err != nil {
 		logger.Log(logging.Apply, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		return err
