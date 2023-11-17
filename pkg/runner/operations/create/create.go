@@ -3,7 +3,6 @@ package create
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
@@ -35,12 +34,12 @@ func New(client client.Client, obj ctrlclient.Object, cleaner cleanup.Cleaner, c
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx).WithResource(o.obj)
-	logger.Log(logging.Create, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Create, logging.RunStatus, color.BoldFgCyan)
 	defer func() {
 		if _err == nil {
-			logger.Log(logging.Create, color.BoldGreen, "DONE")
+			logger.Log(logging.Create, logging.DoneStatus, color.BoldGreen)
 		} else {
-			logger.Log(logging.Create, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Create, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {

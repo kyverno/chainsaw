@@ -29,12 +29,12 @@ func New(client client.Client, expected unstructured.Unstructured) *operation {
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx).WithResource(&o.expected)
-	logger.Log(logging.Error, color.BoldFgCyan, "RUNNING...")
+	logger.Log(logging.Error, logging.RunStatus, color.BoldFgCyan)
 	defer func() {
 		if _err == nil {
-			logger.Log(logging.Error, color.BoldGreen, "DONE")
+			logger.Log(logging.Error, logging.DoneStatus, color.BoldGreen)
 		} else {
-			logger.Log(logging.Error, color.BoldRed, fmt.Sprintf("ERROR\n%s", _err))
+			logger.Log(logging.Error, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
 	var lastErrs []error
@@ -61,7 +61,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 					return false, err
 				}
 				if len(_errs) == 0 {
-					errs = append(errs, fmt.Errorf("found an actual resource matching expectation (%s/%s / %s)", candidate.GetAPIVersion(), candidate.GetKind(), client.ObjectKey(&candidate)))
+					errs = append(errs, fmt.Errorf("%s/%s/%s - resource matches expectation", candidate.GetAPIVersion(), candidate.GetKind(), client.Name(client.ObjectKey(&candidate))))
 				}
 			}
 			return len(errs) == 0, nil

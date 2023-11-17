@@ -96,7 +96,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		if err := p.client.Get(ctx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
-				setupLogger.Log(logging.Get, color.BoldRed, err)
+				setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 				t.FailNow()
 			}
 			t.Cleanup(func() {

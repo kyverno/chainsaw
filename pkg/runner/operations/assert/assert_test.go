@@ -48,7 +48,7 @@ func Test_operationAssert(t *testing.T) {
 					return nil
 				},
 			},
-			expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [DONE]"},
+			expectedLogs: []string{"ASSERT: RUN - []", "ASSERT: DONE - []"},
 		},
 		{
 			name: "Failed match using Get",
@@ -92,8 +92,8 @@ func Test_operationAssert(t *testing.T) {
 			},
 			expectErr: true,
 			expectedLogs: []string{
-				"ASSERT: [RUNNING...]",
-				"ASSERT: [ERROR\nresource test-pod doesn't match expectation:\n    spec.containers[0].image: Invalid value: \"fake-image\": Expected value: \"test-image\"\n    spec.containers[0].name: Invalid value: \"fake-container\": Expected value: \"test-container\"]",
+				"ASSERT: RUN - []",
+				"ASSERT: ERROR - [=== ERROR\nv1/Pod/test-pod - spec.containers[0].image: Invalid value: \"fake-image\": Expected value: \"test-image\"\nv1/Pod/test-pod - spec.containers[0].name: Invalid value: \"fake-container\": Expected value: \"test-container\"]",
 			},
 		},
 		{
@@ -115,7 +115,7 @@ func Test_operationAssert(t *testing.T) {
 				},
 			},
 			expectErr:    true,
-			expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [ERROR\nactual resource not found]"},
+			expectedLogs: []string{"ASSERT: RUN - []", "ASSERT: ERROR - [=== ERROR\nactual resource not found]"},
 		},
 		{
 			name: "Successful match using List",
@@ -150,7 +150,7 @@ func Test_operationAssert(t *testing.T) {
 					return nil
 				},
 			},
-			expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [DONE]"},
+			expectedLogs: []string{"ASSERT: RUN - []", "ASSERT: DONE - []"},
 		},
 		{
 			name: "No resources found using List",
@@ -183,7 +183,7 @@ func Test_operationAssert(t *testing.T) {
 				},
 			},
 			expectErr:    true,
-			expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [ERROR\nno actual resource found]"},
+			expectedLogs: []string{"ASSERT: RUN - []", "ASSERT: ERROR - [=== ERROR\nno actual resource found]"},
 		},
 		{
 			name: "List operation fails",
@@ -206,7 +206,7 @@ func Test_operationAssert(t *testing.T) {
 				},
 			},
 			expectErr:    true,
-			expectedLogs: []string{"ASSERT: [RUNNING...]", "ASSERT: [ERROR\ninternal server error]"},
+			expectedLogs: []string{"ASSERT: RUN - []", "ASSERT: ERROR - [=== ERROR\ninternal server error]"},
 		},
 	}
 	for _, tt := range tests {

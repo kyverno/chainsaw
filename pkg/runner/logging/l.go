@@ -29,23 +29,30 @@ func NewLogger(t TLogger, clock clock.PassiveClock, test string, step string) Lo
 	}
 }
 
-func (l *logger) Log(operation Operation, color *color.Color, args ...interface{}) {
+func (l *logger) Log(operation Operation, status Status, color *color.Color, args ...fmt.Stringer) {
 	sprint := fmt.Sprint
 	opLen := 9
+	stLen := 5
 	if color != nil {
 		sprint = color.Sprint
 		opLen += 14
+		stLen += 14
 	}
-	a := make([]interface{}, 0, len(args)+1)
-	prefix := fmt.Sprintf("%s%s | %s | %s | %-*s |", eraser, l.clock.Now().Format("15:04:05"), sprint(l.test), sprint(l.step), opLen, sprint(operation))
+	a := make([]interface{}, 0, len(args)+2)
+	prefix := fmt.Sprintf("%s%s | %s | %s | %-*s | %-*s |", eraser, l.clock.Now().Format("15:04:05"), sprint(l.test), sprint(l.step), opLen, sprint(operation), stLen, sprint(status))
 	if l.resource != nil {
 		gvk := l.resource.GetObjectKind().GroupVersionKind()
 		key := client.ObjectKey(l.resource)
-		prefix = fmt.Sprintf("%s %s/%s | %s |", prefix, sprint(gvk.GroupVersion()), sprint(gvk.Kind), client.ColouredName(key, color))
+		prefix = fmt.Sprintf("%s %s/%s | %s", prefix, gvk.GroupVersion(), gvk.Kind, client.Name(key))
 	}
 	a = append(a, prefix)
-	a = append(a, args...)
-	l.t.Log(a...)
+	if len(args) > 0 {
+		a = append(a, "\n")
+		for _, arg := range args {
+			a = append(a, arg)
+		}
+	}
+	l.t.Log(fmt.Sprint(a...))
 }
 
 func (l *logger) WithResource(resource ctrlclient.Object) Logger {
