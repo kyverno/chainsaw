@@ -68,6 +68,7 @@ func (o *operation) applyResource(ctx context.Context, logger logging.Logger) er
 
 	return nil
 }
+
 func (o *operation) tryApplyResource(ctx context.Context) error {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
