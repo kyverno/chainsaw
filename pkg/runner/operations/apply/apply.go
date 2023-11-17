@@ -54,10 +54,15 @@ func (o *operation) Exec(ctx context.Context) error {
 func (o *operation) applyResource(ctx context.Context, logger logging.Logger) error {
 	var applyErr error
 
-	wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
+	pollErr := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		applyErr = o.tryApplyResource(ctx)
 		return applyErr == nil, applyErr
 	})
+
+	if pollErr != nil {
+		logger.Log(logging.Apply, logging.ErrorStatus, color.BoldRed, logging.ErrSection(pollErr))
+		return pollErr
+	}
 
 	if applyErr != nil {
 		logger.Log(logging.Apply, logging.ErrorStatus, color.BoldRed, logging.ErrSection(applyErr))
