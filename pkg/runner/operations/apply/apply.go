@@ -51,7 +51,6 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 			return err
 		}
 	}
-
 	logger.Log(logging.Apply, logging.RunStatus, color.BoldFgCyan)
 	return o.applyResource(ctx, logger)
 }
@@ -81,12 +80,10 @@ func (o *operation) updateResource(ctx context.Context, actual *unstructured.Uns
 	if err != nil {
 		return err
 	}
-
 	bytes, err := json.Marshal(patched)
 	if err != nil {
 		return err
 	}
-
 	err = o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes))
 	return o.handleCheck(ctx, err)
 }
@@ -103,7 +100,6 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 	if o.check == nil {
 		return err
 	}
-
 	actual := map[string]interface{}{
 		"error":    nil,
 		"resource": o.obj,
@@ -111,7 +107,6 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 	if err != nil {
 		actual["error"] = err.Error()
 	}
-
 	errs, validationErr := assert.Validate(ctx, o.check, actual, nil)
 	if validationErr != nil {
 		return validationErr
