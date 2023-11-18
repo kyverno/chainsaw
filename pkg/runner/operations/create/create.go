@@ -45,7 +45,6 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 			logger.Log(logging.Create, logging.DoneStatus, color.BoldGreen)
 		}
 	}()
-
 	if o.namespacer != nil {
 		if err = o.namespacer.Apply(o.obj); err != nil {
 			return err
