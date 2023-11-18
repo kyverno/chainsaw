@@ -46,7 +46,6 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 			logger.Log(logging.Apply, logging.DoneStatus, color.BoldGreen)
 		}
 	}()
-
 	if o.namespacer != nil {
 		if err = o.namespacer.Apply(o.obj); err != nil {
 			return err
@@ -58,15 +57,10 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 }
 
 func (o *operation) applyResource(ctx context.Context, logger logging.Logger) error {
-	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
+	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		err := o.tryApplyResource(ctx)
 		return err == nil, err
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (o *operation) tryApplyResource(ctx context.Context) error {
@@ -75,7 +69,8 @@ func (o *operation) tryApplyResource(ctx context.Context) error {
 	err := o.client.Get(ctx, client.ObjectKey(o.obj), &actual)
 	if err == nil {
 		return o.updateResource(ctx, &actual)
-	} else if kerrors.IsNotFound(err) {
+	}
+	if kerrors.IsNotFound(err) {
 		return o.createResource(ctx)
 	}
 	return err
