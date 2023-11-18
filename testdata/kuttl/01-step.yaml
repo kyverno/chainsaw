@@ -13,3 +13,8 @@ delete:
 # Delete all Pods in the test namespace
 - apiVersion: v1
   kind: Pod
+commands:
+- script: echo "hello world"
+  skipLogOutput: true
+- command: echo "hello world"
+  skipLogOutput: true

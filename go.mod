@@ -5,6 +5,7 @@ go 1.21.1
 require (
 	github.com/dustinkirkland/golang-petname v0.0.0-20231002161417-6a283f1aaaf2
 	github.com/fatih/color v1.16.0
+	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/kudobuilder/kuttl v0.15.0
 	github.com/kyverno/kyverno v1.5.0-rc1.0.20231030172702-fb530626ba01
 	github.com/kyverno/kyverno-json v0.0.2-0.20231104205629-6eaf6cda3d19
