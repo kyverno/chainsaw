@@ -1,6 +1,7 @@
 package migrate
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/shlex"
 	kuttlapi "github.com/kudobuilder/kuttl/pkg/apis/testharness/v1beta1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -182,6 +184,7 @@ func testSuite(in unstructured.Unstructured) (*v1alpha1.Configuration, error) {
 
 func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 	from, err := convert.To[kuttlapi.TestStep](in)
+	// TODO: verify order in kuttl
 	if err != nil {
 		return nil, err
 	}
@@ -227,6 +230,47 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 			},
 		})
 	}
-	// TODO: commands
+	for _, operation := range from.Commands {
+		var timeout *metav1.Duration
+		if operation.Timeout != 0 {
+			timeout = &metav1.Duration{Duration: time.Second * time.Duration(operation.Timeout)}
+		}
+		if operation.Background {
+			return nil, errors.New("found a command with background=true, this is not supported in chainsaw")
+		}
+		if operation.Namespaced {
+			return nil, errors.New("found a command with namespaced=true, this is not supported in chainsaw")
+		}
+		if operation.IgnoreFailure {
+			return nil, errors.New("found a command with ignoreFailure=true, this is not supported in chainsaw")
+		}
+		if operation.Script != "" {
+			to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{
+				Timeout: timeout,
+				Script: &v1alpha1.Script{
+					Content:       operation.Script,
+					SkipLogOutput: operation.SkipLogOutput,
+				},
+			})
+		} else if operation.Command != "" {
+			split, err := shlex.Split(operation.Command)
+			if err != nil {
+				return nil, err
+			}
+			entrypoint := split[0]
+			var args []string
+			if len(split) > 1 {
+				args = split[1:]
+			}
+			to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{
+				Timeout: timeout,
+				Command: &v1alpha1.Command{
+					Entrypoint:    entrypoint,
+					Args:          args,
+					SkipLogOutput: operation.SkipLogOutput,
+				},
+			})
+		}
+	}
 	return to, nil
 }
