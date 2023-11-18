@@ -38,13 +38,11 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 			logger.Log(logging.Delete, logging.DoneStatus, color.BoldGreen)
 		}
 	}()
-
 	if o.namespacer != nil {
-		if err = o.namespacer.Apply(o.obj); err != nil {
+		if err := o.namespacer.Apply(o.obj); err != nil {
 			return err
 		}
 	}
-
 	logger.Log(logging.Delete, logging.RunStatus, color.BoldFgCyan)
 	return o.deleteResource(ctx, logger)
 }
@@ -57,7 +55,6 @@ func (o *operation) deleteResource(ctx context.Context, logger logging.Logger) e
 		}
 		return err
 	}
-
 	for i := range candidates {
 		candidate := candidates[i]
 		if err := o.tryDeleteCandidate(ctx, &candidate); err != nil {
@@ -71,7 +68,6 @@ func (o *operation) deleteResource(ctx context.Context, logger logging.Logger) e
 			return err
 		}
 	}
-
 	return nil
 }
 

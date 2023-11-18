@@ -46,25 +46,19 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		}
 	}()
 	if o.namespacer != nil {
-		if err = o.namespacer.Apply(o.obj); err != nil {
+		if err := o.namespacer.Apply(o.obj); err != nil {
 			return err
 		}
 	}
-
 	logger.Log(logging.Create, logging.RunStatus, color.BoldFgCyan)
 	return o.createResource(ctx, logger)
 }
 
 func (o *operation) createResource(ctx context.Context, logger logging.Logger) error {
-	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
+	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		err := o.tryCreateResource(ctx)
 		return err == nil, err
 	})
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (o *operation) tryCreateResource(ctx context.Context) error {
@@ -73,7 +67,8 @@ func (o *operation) tryCreateResource(ctx context.Context) error {
 	err := o.client.Get(ctx, client.ObjectKey(o.obj), &actual)
 	if err == nil {
 		return errors.New("the resource already exists in the cluster")
-	} else if kerrors.IsNotFound(err) {
+	}
+	if kerrors.IsNotFound(err) {
 		return o.create_Resource(ctx)
 	}
 	return err
@@ -91,7 +86,6 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 	if o.check == nil {
 		return err
 	}
-
 	actual := map[string]interface{}{
 		"error":    nil,
 		"resource": o.obj,
@@ -99,7 +93,6 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 	if err != nil {
 		actual["error"] = err.Error()
 	}
-
 	errs, validationErr := assert.Validate(ctx, o.check, actual, nil)
 	if validationErr != nil {
 		return validationErr

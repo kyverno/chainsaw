@@ -84,7 +84,6 @@ func (o *operation) updateResource(ctx context.Context, actual *unstructured.Uns
 	if err != nil {
 		return err
 	}
-
 	return o.handleCheck(ctx, o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes)))
 }
 
