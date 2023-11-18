@@ -47,7 +47,7 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		}
 	}()
 	if o.namespacer != nil {
-		if err = o.namespacer.Apply(o.obj); err != nil {
+		if err := o.namespacer.Apply(o.obj); err != nil {
 			return err
 		}
 	}
@@ -84,8 +84,8 @@ func (o *operation) updateResource(ctx context.Context, actual *unstructured.Uns
 	if err != nil {
 		return err
 	}
-	err = o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes))
-	return o.handleCheck(ctx, err)
+
+	return o.handleCheck(ctx, o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes)))
 }
 
 func (o *operation) createResource(ctx context.Context) error {
