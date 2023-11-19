@@ -34,4 +34,4 @@ jobs:
           git fetch origin gh-pages --depth=1
           git config user.name ci-bot
           git config user.email ci-bot@example.com
-          mike deploy -F ./website/mkdocs.yaml --push main
+          mike deploy -F ./website/mkdocs.yaml --push --update-aliases main dev
