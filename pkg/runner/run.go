@@ -50,8 +50,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	}
 
 	if config.ReportFormat != "" {
-		reportName := "chainsaw-report"
-		if err := testsReport.SaveReportBasedOnType(config.ReportFormat, reportName); err != nil {
+		if err := testsReport.SaveReportBasedOnType(config.ReportFormat, config.ReportName); err != nil {
 			return &summary, fmt.Errorf("failed to save test report: %v", err)
 		}
 	}
