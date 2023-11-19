@@ -196,6 +196,16 @@ func (ts *TestSpecStepReport) AddOperation(op *OperationReport) {
 	ts.Results = append(ts.Results, op)
 }
 
+// NewFailure creates a new Failure instance with the given message and type and assigns it to the TestReport.
+func (t *TestReport) NewFailure(message, failureType string) {
+	if t.Failure == nil {
+		t.Failure = &Failure{
+			Message: message,
+			Type:    failureType,
+		}
+	}
+}
+
 // MarkTestEnd marks the end time of a TestReport and calculates its duration.
 func (t *TestReport) MarkTestEnd() {
 	t.EndTime = time.Now()
@@ -203,9 +213,20 @@ func (t *TestReport) MarkTestEnd() {
 }
 
 // MarkOperationEnd marks the end time of an OperationReport and calculates its duration.
-func (op *OperationReport) MarkOperationEnd() {
+// func (op *OperationReport) MarkOperationEnd() {
+// 	op.EndTime = time.Now()
+// 	op.Time = calculateDuration(op.StartTime, op.EndTime)
+// }
+
+func (op *OperationReport) MarkOperationEnd(success bool, message string) {
 	op.EndTime = time.Now()
 	op.Time = calculateDuration(op.StartTime, op.EndTime)
+	if success {
+		op.Result = "Success"
+	} else {
+		op.Result = "Failure"
+	}
+	op.Message = message
 }
 
 // calculateDuration calculates the duration between two time points.
