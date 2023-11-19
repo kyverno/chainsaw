@@ -58,6 +58,13 @@ type testProcessor struct {
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
 	t := testing.FromContext(ctx)
+	defer func() {
+		if t.Failed() {
+			if p.testReport != nil {
+				p.testReport.NewFailure("", "") // Not Decieded Yet
+			}
+		}
+	}()
 	size := 0
 	for i, step := range p.test.Spec.Steps {
 		name := step.Name
@@ -126,7 +133,6 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		}
 	}
 	for i, step := range p.test.Spec.Steps {
-
 		processor := p.CreateStepProcessor(nspacer, step)
 		name := step.Name
 		if name == "" {
