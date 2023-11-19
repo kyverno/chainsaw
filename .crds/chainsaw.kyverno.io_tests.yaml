@@ -275,6 +275,7 @@ spec:
                     try:
                       description: Try defines what the step will try to execute.
                       items:
+                        maxProperties: 1
                         properties:
                           apply:
                             description: Apply represents resources that should be

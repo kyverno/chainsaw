@@ -14,6 +14,14 @@ type Operation struct {
 	// +optional
 	ContinueOnError *bool `json:"continueOnError,omitempty"`
 
+	// SubOperations defines a list of sub-operations to be executed.
+	// +optional
+	SubOperation SubOperation `json:",inline"`
+}
+
+// SubOperation represents a set of possible sub-operations. Only one of these fields may be set.
+// +kubebuilder:validation:MaxProperties=1
+type SubOperation struct {
 	// Apply represents resources that should be applied for this test step. This can include things
 	// like configuration settings or any other resources that need to be available during the test.
 	// +optional
