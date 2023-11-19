@@ -1,4 +1,12 @@
 {% extends "base.html" %}
+
+{% block outdated %}
+  You're not viewing the latest version.
+  <a href="{{ '../' ~ base_url }}">
+    <strong>Click here to go to latest.</strong>
+  </a>
+{% endblock %}
+
 {% block extrahead %}
 {% set title = config.site_name %}
 {% if page and page.title and not page.is_homepage %}
