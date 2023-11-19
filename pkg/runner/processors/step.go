@@ -313,7 +313,7 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert,
 }
 
 func (p *stepProcessor) commandOperation(ctx context.Context, exec v1alpha1.Command, to *metav1.Duration) operation {
-	operationReport := report.NewOperation("Assert ", report.OperationTypeCommand)
+	operationReport := report.NewOperation("Command ", report.OperationTypeCommand)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
