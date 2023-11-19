@@ -62,6 +62,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		if t.Failed() {
 			if p.testReport != nil {
 				p.testReport.NewFailure("", "") // Not Decieded Yet
+				p.testReport.MarkTestEnd()
 			}
 		}
 	}()
