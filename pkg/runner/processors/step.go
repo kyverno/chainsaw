@@ -313,7 +313,7 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert,
 }
 
 func (p *stepProcessor) commandOperation(ctx context.Context, exec v1alpha1.Command, to *metav1.Duration) operation {
-	operationReport := report.NewOperation("Assert ", report.OperationTypeAssert)
+	operationReport := report.NewOperation("Assert ", report.OperationTypeCommand)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
@@ -386,7 +386,7 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, t
 		return nil, err
 	}
 	var ops []operation
-	operationReport := report.NewOperation("Error ", report.OperationTypeDelete)
+	operationReport := report.NewOperation("Error ", report.OperationTypeCommand)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
@@ -401,7 +401,7 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, t
 }
 
 func (p *stepProcessor) scriptOperation(ctx context.Context, exec v1alpha1.Script, to *metav1.Duration) operation {
-	operationReport := report.NewOperation("Script ", report.OperationTypeDelete)
+	operationReport := report.NewOperation("Script ", report.OperationTypeScript)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
