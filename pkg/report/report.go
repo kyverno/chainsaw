@@ -212,6 +212,7 @@ func (t *TestReport) MarkTestEnd() {
 	t.Time = calculateDuration(t.StartTime, t.EndTime)
 }
 
+// MarkOperationEnd marks the end time of an OperationReport and calculates its duration.
 func (op *OperationReport) MarkOperationEnd(success bool, message string) {
 	op.EndTime = time.Now()
 	op.Time = calculateDuration(op.StartTime, op.EndTime)
