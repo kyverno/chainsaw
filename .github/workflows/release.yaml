@@ -120,3 +120,35 @@ jobs:
       registry-username: ${{ github.actor }}
     secrets:
       registry-password: ${{ secrets.GITHUB_TOKEN }}
+
+  docs:
+    needs:
+      - goreleaser
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Parse semver string
+        id: semver 
+        uses: booxmedialtd/ws-action-parse-semver@7784200024d6b3fc01253e617ec0168daf603de3 # v1.4.7
+        with:
+          input_string: ${{ github.ref_name }}
+          version_extractor_regex: '\/v(.*)$'
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Build site
+        run: |
+          set -e
+          make codegen-mkdocs
+      - name: Deploy site
+        if: ${{ steps.semver.outputs.prerelease == '' }}
+        run: |
+          set -e
+          git fetch origin gh-pages --depth=1
+          git config user.name ci-bot
+          git config user.email ci-bot@example.com
+          mike deploy -F ./website/mkdocs.yaml --push --update-aliases ${{ steps.semver.outputs.fullversion }} latest
