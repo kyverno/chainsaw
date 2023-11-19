@@ -31,4 +31,6 @@ jobs:
       - name: Deploy site
         run: |
           set -e
+          git config user.name ci-bot
+          git config user.email ci-bot@example.com
           mike deploy -F ./website/mkdocs.yaml --push main
