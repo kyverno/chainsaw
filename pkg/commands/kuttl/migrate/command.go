@@ -42,6 +42,7 @@ func Command() *cobra.Command {
 }
 
 func execute(out io.Writer, save, overwrite bool, paths ...string) error {
+	testStepsMap := make(map[string]*v1alpha1.TestStep)
 	folders, err := fsutils.DiscoverFolders(paths...)
 	if err != nil {
 		fmt.Fprintf(out, "  ERROR: failed to discover folders: %s\n", err)
@@ -121,7 +122,7 @@ func saveConvertedFile(out io.Writer, path string, resources []interface{}, over
 	return os.WriteFile(savePath, yamlBytes, os.ModePerm)
 }
 
-func migrate(out io.Writer, path string, resource unstructured.Unstructured) (metav1.Object, error) {
+func migrate(out io.Writer, path string, resource unstructured.Unstructured, testStepsMap map[string]*v1alpha1.TestStep) (metav1.Object, error) {
 	if resource.GetAPIVersion() == "kuttl.dev/v1beta1" {
 		switch resource.GetKind() {
 		case "TestSuite":
@@ -149,19 +150,23 @@ func migrate(out io.Writer, path string, resource unstructured.Unstructured) (me
 			if step.GetName() == "" {
 				step.SetName(strings.ToLower(strings.ReplaceAll(groups[2], "_", "-")))
 			}
+			index := extractIndex(path)
+			testStepsMap[index] = step
 			return step, nil
 		case "TestAssert":
 			fmt.Fprintf(out, "Converting %s in %s...\n", "TestAssert", path)
-			step, err := migrateTestAssert(resource)
+			catchArray, err := migrateTestAssert(resource)
 			if err != nil {
-				fmt.Fprintf(out, "  ERROR: failed to convert %s (%s): %s\n", "TestStep", path, err)
+				fmt.Fprintf(out, "  ERROR: failed to convert %s (%s): %s\n", "TestAssert", path, err)
 				return nil, err
 			}
-			if step.GetName() == "" {
-				groups := discovery.StepFileName.FindStringSubmatch(filepath.Base(path))
-				step.SetName(groups[2])
+			index := extractIndex(path)
+			if testStep, ok := testStepsMap[index]; ok {
+				testStep.Spec.Catch = append(testStep.Spec.Catch, catchArray...)
+				return testStep, nil
+			} else {
+				return nil, fmt.Errorf("no TestStep found with index %s", index)
 			}
-			return step, nil
 		default:
 			fmt.Fprintf(out, "  ERROR: unknown kuttl resource (%s): %s\n", path, resource.GetKind())
 			return nil, fmt.Errorf("unknown kuttl resource %s", resource.GetKind())
@@ -303,41 +308,30 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 }
 
 // MigrateTestAssert migrates a KUTTL TestAssert to a Chainsaw TestStep.
-func migrateTestAssert(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
+func migrateTestAssert(in unstructured.Unstructured) ([]v1alpha1.Catch, error) {
 	from, err := convert.To[kuttlapi.TestAssert](in)
 	if err != nil {
 		return nil, err
 	}
-
-	testStep := &v1alpha1.TestStep{
-		TypeMeta: metav1.TypeMeta{
-			APIVersion: v1alpha1.GroupVersion.String(),
-			Kind:       "TestStep",
-		},
-		ObjectMeta: from.ObjectMeta,
-	}
-
-	// Handle Timeout
-	if from.Timeout != 0 {
-		testStep.Spec.Timeouts.Exec = &metav1.Duration{Duration: time.Second * time.Duration(from.Timeout)}
-	}
+	var catchArray []v1alpha1.Catch
 
 	// Handle TestAssertCommands
 	for _, cmd := range from.Commands {
-		var operation v1alpha1.Operation
+		var catch v1alpha1.Catch
 		if cmd.Script != "" {
-			operation = v1alpha1.Operation{
+			catch = v1alpha1.Catch{
 				Script: &v1alpha1.Script{
 					Content:       cmd.Script,
 					SkipLogOutput: cmd.SkipLogOutput,
 				},
 			}
+
 		} else if cmd.Command != "" {
 			splitCmd, err := shlex.Split(cmd.Command)
 			if err != nil {
 				return nil, err
 			}
-			operation = v1alpha1.Operation{
+			catch = v1alpha1.Catch{
 				Command: &v1alpha1.Command{
 					Entrypoint:    splitCmd[0],
 					Args:          splitCmd[1:],
@@ -345,7 +339,7 @@ func migrateTestAssert(in unstructured.Unstructured) (*v1alpha1.TestStep, error)
 				},
 			}
 		}
-		testStep.Spec.Try = append(testStep.Spec.Try, operation)
+		catchArray = append(catchArray, catch)
 	}
 
 	// Handle Collectors
@@ -386,7 +380,16 @@ func migrateTestAssert(in unstructured.Unstructured) (*v1alpha1.TestStep, error)
 		default:
 			return nil, fmt.Errorf("unknown collector type: %s", collector.Type)
 		}
-		testStep.Spec.Catch = append(testStep.Spec.Catch, catch)
+		catchArray = append(catchArray, catch)
 	}
-	return testStep, nil
+	return catchArray, nil
+}
+
+func extractIndex(path string) string {
+	baseName := filepath.Base(path)
+	splitName := strings.Split(baseName, "-")
+	if len(splitName) > 0 {
+		return splitName[0]
+	}
+	return ""
 }
