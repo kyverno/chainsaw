@@ -102,7 +102,7 @@ func processFile(out io.Writer, path string, save, overwrite bool) error {
 func saveConvertedFile(out io.Writer, path string, resources []interface{}, overwrite bool) error {
 	savePath := path
 	if !overwrite {
-		savePath = strings.TrimSuffix(path, filepath.Ext(path)) + ".chainsaw.yaml"
+		savePath = strings.TrimRight(path, filepath.Ext(path)) + ".chainsaw.yaml"
 	}
 	fmt.Fprintf(out, "Saving converted file %s to %s...\n", path, savePath)
 
