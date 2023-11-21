@@ -43,7 +43,8 @@ func Command() *cobra.Command {
 func execute(out io.Writer, save, overwrite bool, paths ...string) error {
 	folders, err := fsutils.DiscoverFolders(paths...)
 	if err != nil {
-		return fmt.Errorf("failed to discover folders: %w", err)
+		fmt.Fprintf(out, "  ERROR: failed to discover folders: %s\n", err)
+		return err
 	}
 	for _, folder := range folders {
 		if err := processFolder(out, folder, save, overwrite); err != nil {
