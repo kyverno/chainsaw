@@ -22,7 +22,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	var summary summary.Summary
 	var testsReport *report.TestsReport
 	if config.ReportFormat != "" {
-		testsReport = report.NewTests("chainsaw-report")
+		testsReport = report.NewTests(config.ReportName)
 	}
 
 	if len(tests) == 0 {
