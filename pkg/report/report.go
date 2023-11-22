@@ -47,7 +47,7 @@ type TestsReport struct {
 	// Time indicates the total duration of the test suite.
 	Time string `json:"time" xml:"time,attr"`
 	// Reports is an array of individual test reports within this suite.
-	Reports []*TestReport `json:"reports" xml:"reports"`
+	Reports []*TestReport `json:"testsuite" xml:"testsuite"`
 	// Failures count the number of failed tests in the suite.
 	Failures int `json:"failures" xml:"failures,attr"`
 }
@@ -65,7 +65,7 @@ type TestReport struct {
 	// Failure captures details if the test failed it should be nil otherwise.
 	Failure *Failure `json:"failure,omitempty" xml:"failure,omitempty"`
 	// Spec represents the specifications of the test.
-	Steps []*TestSpecStepReport `json:"steps,omitempty" xml:"steps,omitempty"`
+	Steps []*TestSpecStepReport `json:"testcase,omitempty" xml:"testcase,omitempty"`
 	// Concurrent indicates if the test runs concurrently with other tests.
 	Concurrent bool `json:"concurrent,omitempty" xml:"concurrent,attr,omitempty"`
 	// Namespace in which the test runs.

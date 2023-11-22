@@ -20,7 +20,11 @@ import (
 
 func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*summary.Summary, error) {
 	var summary summary.Summary
-	testsReport := report.NewTests("chainsaw-report")
+	var testsReport *report.TestsReport
+	if config.ReportFormat != "" {
+		testsReport = report.NewTests("chainsaw-report")
+	}
+
 	if len(tests) == 0 {
 		return &summary, nil
 	}
@@ -40,7 +44,9 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx)
-			testsReport.Close()
+			if testsReport != nil {
+				testsReport.Close()
+			}
 		},
 	}}
 	deps := &internal.TestDeps{}
@@ -49,7 +55,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
 
-	if config.ReportFormat != "" {
+	if testsReport != nil && config.ReportFormat != "" {
 		if err := testsReport.SaveReportBasedOnType(config.ReportFormat, config.ReportName); err != nil {
 			return &summary, fmt.Errorf("failed to save test report: %v", err)
 		}
