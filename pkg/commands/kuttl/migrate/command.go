@@ -47,62 +47,77 @@ func execute(out io.Writer, save, overwrite bool, paths ...string) error {
 		return err
 	}
 	for _, folder := range folders {
-		files, err := os.ReadDir(folder)
-		if err != nil {
-			continue
-		}
-		for _, file := range files {
-			if file.IsDir() {
-				continue
-			}
-			fileName := file.Name()
-			if !fileutils.IsYaml(fileName) {
-				continue
-			}
-			path := filepath.Join(folder, fileName)
-			resources, err := resource.Load(path)
-			if err != nil {
-				continue
-			}
-			var converted []interface{}
-			needsSave := false
-			for _, resource := range resources {
-				migrated, err := migrate(out, path, resource)
-				if err != nil {
-					needsSave = false
-					break
-				}
-				if migrated == nil {
-					converted = append(converted, resource)
-				} else {
-					converted = append(converted, migrated)
-					needsSave = true
-				}
-			}
-			if save && needsSave {
-				savePath := path
-				if !overwrite {
-					savePath = strings.TrimRight(path, filepath.Ext(path)) + ".chainsaw.yaml"
-				}
-				fmt.Fprintf(out, "Saving converted file %s to %s...\n", path, savePath)
-				var yamlBytes []byte
-				for _, resource := range converted {
-					finalBytes, err := yaml.Marshal(resource)
-					if err != nil {
-						fmt.Fprintf(out, "  ERROR: converting to yaml: %s\n", err)
-						return err
-					}
-					yamlBytes = append(yamlBytes, []byte("---\n")...)
-					yamlBytes = append(yamlBytes, finalBytes...)
-				}
-				if err := os.WriteFile(savePath, yamlBytes, os.ModePerm); err != nil {
-					fmt.Fprintf(out, "  ERROR: saving file (%s): %s\n", savePath, err)
-					return err
-				}
-			}
+		if err := processFolder(out, folder, save, overwrite); err != nil {
+			fmt.Fprintf(out, "Error processing folder %s: %v\n", folder, err)
 		}
 	}
 	return nil
+}
+
+func processFolder(out io.Writer, folder string, save, overwrite bool) error {
+	files, err := os.ReadDir(folder)
+	if err != nil {
+		return err
+	}
+	for _, file := range files {
+		if file.IsDir() || !fileutils.IsYaml(file.Name()) {
+			continue
+		}
+		path := filepath.Join(folder, file.Name())
+		if err := processFile(out, path, save, overwrite); err != nil {
+			fmt.Fprintf(out, "Error processing file %s: %v\n", path, err)
+		}
+	}
+	return nil
+}
+
+func processFile(out io.Writer, path string, save, overwrite bool) error {
+	resources, err := resource.Load(path)
+	if err != nil {
+		return err
+	}
+	var converted []interface{}
+	var needsSave bool
+	for _, resource := range resources {
+		migrated, err := migrate(out, path, resource)
+		if err != nil {
+			needsSave = false
+			break
+		}
+		if migrated == nil {
+			converted = append(converted, resource)
+		} else {
+			converted = append(converted, migrated)
+			needsSave = true
+		}
+	}
+	if save && needsSave {
+		if err := saveConvertedFile(out, path, converted, overwrite); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func saveConvertedFile(out io.Writer, path string, resources []interface{}, overwrite bool) error {
+	savePath := path
+	if !overwrite {
+		savePath = strings.TrimRight(path, filepath.Ext(path)) + ".chainsaw.yaml"
+	}
+	fmt.Fprintf(out, "Saving converted file %s to %s...\n", path, savePath)
+
+	var yamlBytes []byte
+	for _, res := range resources {
+		yamlData, err := yaml.Marshal(res)
+		if err != nil {
+			return fmt.Errorf("converting to yaml: %w", err)
+		}
+
+		yamlBytes = append(yamlBytes, []byte("---\n")...)
+		yamlBytes = append(yamlBytes, yamlData...)
+	}
+
+	return os.WriteFile(savePath, yamlBytes, os.ModePerm)
 }
 
 func migrate(out io.Writer, path string, resource unstructured.Unstructured) (metav1.Object, error) {
