@@ -46,6 +46,10 @@ type TestsReport struct {
 	EndTime time.Time `json:"endTime" xml:"endTime,attr"`
 	// Time indicates the total duration of the test suite.
 	Time string `json:"time" xml:"time,attr"`
+	// TimeStamp indicates the Date and time of when the test run was executed.
+	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
+	// Test count the number of tests in the files/TestReports.
+	Test int `json:"tests" xml:"tests,attr"`
 	// Reports is an array of individual test reports within this suite.
 	Reports []*TestReport `json:"testsuite" xml:"testsuite"`
 	// Failures count the number of failed tests in the suite.
@@ -62,8 +66,12 @@ type TestReport struct {
 	EndTime time.Time `json:"endTime" xml:"endTime,attr"`
 	// Time indicates the total duration of the test.
 	Time string `json:"time" xml:"time,attr"`
+	// TimeStamp indicates the Date and time of when the test suite was executed.
+	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// Failure captures details if the test failed it should be nil otherwise.
 	Failure *Failure `json:"failure,omitempty" xml:"failure,omitempty"`
+	// Test count the number of tests in the suite/TestReport.
+	Test int `json:"tests" xml:"tests,attr"`
 	// Spec represents the specifications of the test.
 	Steps []*TestSpecStepReport `json:"testcase,omitempty" xml:"testcase,omitempty"`
 	// Concurrent indicates if the test runs concurrently with other tests.
@@ -147,6 +155,7 @@ func NewTests(name string) *TestsReport {
 	return &TestsReport{
 		Name:      name,
 		StartTime: time.Now(),
+		TimeStamp: time.Now(),
 		Reports:   []*TestReport{},
 	}
 }
@@ -156,6 +165,7 @@ func NewTest(name string, concurrent bool, namespace string, skip bool, skipDele
 	return &TestReport{
 		Name:       name,
 		StartTime:  time.Now(),
+		TimeStamp:  time.Now(),
 		Concurrent: concurrent,
 		Namespace:  namespace,
 		Skip:       skip,
@@ -210,6 +220,10 @@ func (t *TestReport) NewFailure(message, failureType string) {
 func (t *TestReport) MarkTestEnd() {
 	t.EndTime = time.Now()
 	t.Time = calculateDuration(t.StartTime, t.EndTime)
+
+	for _, step := range t.Steps {
+		t.Test += len(step.Results)
+	}
 }
 
 // MarkOperationEnd marks the end time of an OperationReport and calculates its duration.
@@ -233,11 +247,12 @@ func calculateDuration(start, end time.Time) string {
 func (tr *TestsReport) Close() {
 	tr.EndTime = time.Now()
 	tr.Time = calculateDuration(tr.StartTime, tr.EndTime)
-
-	// Calculate the number of failures
+	totalTests := 0
 	for _, test := range tr.Reports {
 		if test.Failure != nil {
 			tr.Failures++
 		}
+		totalTests += test.Test
 	}
+	tr.Test = totalTests
 }
