@@ -125,68 +125,51 @@ func (p *stepProcessor) Run(ctx context.Context) {
 func (p *stepProcessor) tryOperations(ctx context.Context, handlers ...v1alpha1.Operation) ([]operation, error) {
 	var ops []operation
 	for _, handler := range handlers {
-		op, err := p.handleOperation(ctx, handler)
-		if err != nil {
-			return nil, err
-		}
-		if op != nil {
+		register := func(o ...operation) {
 			continueOnError := handler.ContinueOnError != nil && *handler.ContinueOnError
-			for _, singleOp := range op {
-				singleOp.continueOnError = continueOnError
-				ops = append(ops, singleOp)
+			for _, o := range o {
+				o.continueOnError = continueOnError
+				ops = append(ops, o)
 			}
 		}
-	}
-	return ops, nil
-}
-
-func (p *stepProcessor) handleOperation(ctx context.Context, handler v1alpha1.Operation) ([]operation, error) {
-	var ops []operation
-	if handler.Apply != nil {
-		applyOps, err := p.applyOperation(ctx, *handler.Apply, handler.Timeout)
-		if err != nil {
-			return nil, err
+		if handler.Apply != nil {
+			loaded, err := p.applyOperation(ctx, *handler.Apply, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
+		} else if handler.Assert != nil {
+			loaded, err := p.assertOperation(ctx, *handler.Assert, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
+		} else if handler.Command != nil {
+			register(p.commandOperation(ctx, *handler.Command, handler.Timeout))
+		} else if handler.Script != nil {
+			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
+		} else if handler.Create != nil {
+			loaded, err := p.createOperation(ctx, *handler.Create, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
+		} else if handler.Delete != nil {
+			loaded, err := p.deleteOperation(ctx, *handler.Delete, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(*loaded)
+		} else if handler.Error != nil {
+			loaded, err := p.errorOperation(ctx, *handler.Error, handler.Timeout)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
+		} else {
+			return nil, errors.New("no operation found")
 		}
-		ops = append(ops, applyOps...)
 	}
-	if handler.Assert != nil {
-		assertOps, err := p.assertOperation(ctx, *handler.Assert, handler.Timeout)
-		if err != nil {
-			return nil, err
-		}
-		ops = append(ops, assertOps...)
-	}
-	if handler.Command != nil {
-		ops = append(ops, p.commandOperation(ctx, *handler.Command, handler.Timeout))
-	}
-	if handler.Script != nil {
-		ops = append(ops, p.scriptOperation(ctx, *handler.Script, handler.Timeout))
-	}
-	if handler.Create != nil {
-		createOps, err := p.createOperation(ctx, *handler.Create, handler.Timeout)
-		if err != nil {
-			return nil, err
-		}
-		ops = append(ops, createOps...)
-	}
-	if handler.Delete != nil {
-		deleteOp, err := p.deleteOperation(ctx, *handler.Delete, handler.Timeout)
-		if err != nil {
-			return nil, err
-		}
-		ops = append(ops, *deleteOp)
-	}
-	if handler.Error != nil {
-		errorOps, err := p.errorOperation(ctx, *handler.Error, handler.Timeout)
-		if err != nil {
-			return nil, err
-		}
-		ops = append(ops, errorOps...)
-	}
-	if len(ops) == 0 {
-		return nil, errors.New("no operation found")
-	}
-
 	return ops, nil
 }
 
