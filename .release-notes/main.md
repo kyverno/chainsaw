@@ -13,6 +13,7 @@ Release notes for `TODO`.
 - Added `--test-file` flag to use a custom test file name
 - Added raw resource support in `Test` and `TestStep`s to provide a resource directly instead of referencing a file
 - Improved loggs, added a `STATUS` column and operation details are now shown in sections
+- Added programmatic validation in `Test` and `TestStep` resources
 
 ## :wrench: Fixes :wrench:
 
