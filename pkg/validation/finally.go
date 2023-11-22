@@ -26,6 +26,16 @@ func ValidateFinally(path *field.Path, obj v1alpha1.Finally) field.ErrorList {
 		errs = append(errs, field.Invalid(path, obj, "no statement found in operation"))
 	} else if count > 1 {
 		errs = append(errs, field.Invalid(path, obj, fmt.Sprintf("only one statement is allowed per operation (found %d)", count)))
+		// TODO
+		// } else {
+		// if obj.PodLogs != nil {
+		// }
+		// if obj.Events != nil {
+		// }
+		// if obj.Command != nil {
+		// }
+		// if obj.Script != nil {
+		// }
 	}
 	return errs
 }
