@@ -40,10 +40,8 @@ type Failure struct {
 type TestsReport struct {
 	// Name of the test suite.
 	Name string `json:"name" xml:"name,attr"`
-	// StartTime marks when the test suite began execution.
-	StartTime time.Time `json:"timestamp" xml:"timestamp,attr"`
-	// EndTime marks when the test suite finished execution.
-	EndTime time.Time `json:"-" xml:"-,attr"`
+	// TimeStamp marks when the test suite began execution.
+	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// Time indicates the total duration of the test suite.
 	Time string `json:"time" xml:"time,attr"`
 	// Test count the number of tests in the files/TestReports.
@@ -58,10 +56,8 @@ type TestsReport struct {
 type TestReport struct {
 	// Name of the test.
 	Name string `json:"name" xml:"name,attr"`
-	// StartTime marks when the test began execution.
-	StartTime time.Time `json:"timestamp" xml:"timestamp,attr"`
-	// EndTime marks when the test finished execution.
-	EndTime time.Time `json:"-" xml:"-,attr"`
+	// TimeStamp marks when the test began execution.
+	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// Time indicates the total duration of the test.
 	Time string `json:"time" xml:"time,attr"`
 	// Failure captures details if the test failed it should be nil otherwise.
@@ -92,10 +88,8 @@ type TestSpecStepReport struct {
 type OperationReport struct {
 	// Name of the operation.
 	Name string `json:"name" xml:"name,attr"`
-	// StartTime marks when the operation began execution.
-	StartTime time.Time `json:"startTime" xml:"startTime,attr"`
-	// EndTime marks when the operation finished execution.
-	EndTime time.Time `json:"endTime" xml:"endTime,attr"`
+	// TimeStamp marks when the operation began execution.
+	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// Time indicates the total duration of the operation.
 	Time string `json:"time" xml:"time,attr"`
 	// Result of the operation.
@@ -150,7 +144,7 @@ func (report *TestsReport) SaveReportBasedOnType(reportFormat v1alpha1.ReportFor
 func NewTests(name string) *TestsReport {
 	return &TestsReport{
 		Name:      name,
-		StartTime: time.Now(),
+		TimeStamp: time.Now(),
 		Reports:   []*TestReport{},
 	}
 }
@@ -159,7 +153,7 @@ func NewTests(name string) *TestsReport {
 func NewTest(name string, concurrent bool, namespace string, skip bool, skipDelete bool) *TestReport {
 	return &TestReport{
 		Name:       name,
-		StartTime:  time.Now(),
+		TimeStamp:  time.Now(),
 		Concurrent: concurrent,
 		Namespace:  namespace,
 		Skip:       skip,
@@ -180,7 +174,7 @@ func NewTestSpecStep(name string) *TestSpecStepReport {
 func NewOperation(name string, operationType OperationType) *OperationReport {
 	return &OperationReport{
 		Name:          name,
-		StartTime:     time.Now(),
+		TimeStamp:     time.Now(),
 		OperationType: operationType,
 	}
 }
@@ -212,8 +206,7 @@ func (t *TestReport) NewFailure(message, failureType string) {
 
 // MarkTestEnd marks the end time of a TestReport and calculates its duration.
 func (t *TestReport) MarkTestEnd() {
-	t.EndTime = time.Now()
-	t.Time = calculateDuration(t.StartTime, t.EndTime)
+	t.Time = calculateDuration(t.TimeStamp, time.Now())
 
 	for _, step := range t.Steps {
 		t.Test += len(step.Results)
@@ -222,8 +215,7 @@ func (t *TestReport) MarkTestEnd() {
 
 // MarkOperationEnd marks the end time of an OperationReport and calculates its duration.
 func (op *OperationReport) MarkOperationEnd(success bool, message string) {
-	op.EndTime = time.Now()
-	op.Time = calculateDuration(op.StartTime, op.EndTime)
+	op.Time = calculateDuration(op.TimeStamp, time.Now())
 	if success {
 		op.Result = "Success"
 	} else {
@@ -239,8 +231,7 @@ func calculateDuration(start, end time.Time) string {
 
 // Close finalizes the TestsReport, marking its end time and calculating the overall duration.
 func (tr *TestsReport) Close() {
-	tr.EndTime = time.Now()
-	tr.Time = calculateDuration(tr.StartTime, tr.EndTime)
+	tr.Time = calculateDuration(tr.TimeStamp, time.Now())
 	totalTests := 0
 	for _, test := range tr.Reports {
 		if test.Failure != nil {
