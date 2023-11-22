@@ -41,13 +41,11 @@ type TestsReport struct {
 	// Name of the test suite.
 	Name string `json:"name" xml:"name,attr"`
 	// StartTime marks when the test suite began execution.
-	StartTime time.Time `json:"startTime" xml:"startTime,attr"`
+	StartTime time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// EndTime marks when the test suite finished execution.
-	EndTime time.Time `json:"endTime" xml:"endTime,attr"`
+	EndTime time.Time `json:"-" xml:"-,attr"`
 	// Time indicates the total duration of the test suite.
 	Time string `json:"time" xml:"time,attr"`
-	// TimeStamp indicates the Date and time of when the test run was executed.
-	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// Test count the number of tests in the files/TestReports.
 	Test int `json:"tests" xml:"tests,attr"`
 	// Reports is an array of individual test reports within this suite.
@@ -61,13 +59,11 @@ type TestReport struct {
 	// Name of the test.
 	Name string `json:"name" xml:"name,attr"`
 	// StartTime marks when the test began execution.
-	StartTime time.Time `json:"startTime" xml:"startTime,attr"`
+	StartTime time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// EndTime marks when the test finished execution.
-	EndTime time.Time `json:"endTime" xml:"endTime,attr"`
+	EndTime time.Time `json:"-" xml:"-,attr"`
 	// Time indicates the total duration of the test.
 	Time string `json:"time" xml:"time,attr"`
-	// TimeStamp indicates the Date and time of when the test suite was executed.
-	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// Failure captures details if the test failed it should be nil otherwise.
 	Failure *Failure `json:"failure,omitempty" xml:"failure,omitempty"`
 	// Test count the number of tests in the suite/TestReport.
@@ -155,7 +151,6 @@ func NewTests(name string) *TestsReport {
 	return &TestsReport{
 		Name:      name,
 		StartTime: time.Now(),
-		TimeStamp: time.Now(),
 		Reports:   []*TestReport{},
 	}
 }
@@ -165,7 +160,6 @@ func NewTest(name string, concurrent bool, namespace string, skip bool, skipDele
 	return &TestReport{
 		Name:       name,
 		StartTime:  time.Now(),
-		TimeStamp:  time.Now(),
 		Concurrent: concurrent,
 		Namespace:  namespace,
 		Skip:       skip,
