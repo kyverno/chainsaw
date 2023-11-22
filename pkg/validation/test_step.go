@@ -5,7 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func ValidateTestStep(obj v1alpha1.TestStep) field.ErrorList {
+func ValidateTestStep(obj *v1alpha1.TestStep) field.ErrorList {
 	var errs field.ErrorList
 	var path *field.Path
 	errs = append(errs, ValidateTestStepSpec(path.Child("spec"), obj.Spec)...)
