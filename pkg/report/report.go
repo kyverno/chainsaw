@@ -150,15 +150,11 @@ func NewTests(name string) *TestsReport {
 }
 
 // NewTest creates a new TestReport with the given name.
-func NewTest(name string, concurrent bool, namespace string, skip bool, skipDelete bool) *TestReport {
+func NewTest(name string) *TestReport {
 	return &TestReport{
-		Name:       name,
-		TimeStamp:  time.Now(),
-		Concurrent: concurrent,
-		Namespace:  namespace,
-		Skip:       skip,
-		SkipDelete: skipDelete,
-		Steps:      []*TestSpecStepReport{},
+		Name:      name,
+		TimeStamp: time.Now(),
+		Steps:     []*TestSpecStepReport{},
 	}
 }
 
