@@ -157,7 +157,7 @@ data:
 
 ### 02-error.yaml
 
-This `TestStep` combines the `raw resource` feature with a custom `timeout`, demonstrating how `TestStep` resources can be combined with raw manifests.
+The manifest below contains a `TestStep` in a file called `02-error.yaml`. Chainsaw will load the `TestStep` and aggregate it in step `02`.
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -169,13 +169,7 @@ spec:
     error: 20s
   try:
   - error:
-      resource:
-        apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          name: chainsaw-quick-start-error
-        data:
-          lorem: ipsum
+      file: ../resources/configmap-error.yaml
 ```
 
 ## Conclusion

@@ -103,22 +103,9 @@ spec:
   # second step executes assert statements against existing resources
   - try:
     - assert:
-        resource:
-          apiVersion: v1
-          kind: ConfigMap
-          metadata:
-            name: chainsaw-quick-start
-          data:
-            foo: bar
+        file: ../resources/configmap-assert.yaml
   # third step executes error statements against existing resources
   - try:
     - error:
-        resource:
-          apiVersion: v1
-          kind: ConfigMap
-          metadata:
-            name: chainsaw-quick-start
-          data:
-            foo: bar
-
+        file: ../resources/configmap-error.yaml
 ```
