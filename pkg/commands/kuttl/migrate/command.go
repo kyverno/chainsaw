@@ -322,7 +322,6 @@ func migrateTestAssert(in unstructured.Unstructured) ([]v1alpha1.Catch, error) {
 					SkipLogOutput: cmd.SkipLogOutput,
 				},
 			}
-
 		} else if cmd.Command != "" {
 			splitCmd, err := shlex.Split(cmd.Command)
 			if err != nil {
