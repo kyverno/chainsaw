@@ -4,10 +4,13 @@ In a nutshell, a test can be represented as **an ordered sequence of test steps*
 
 A test step can consist in **one or more operations**:
 
-- To delete resources present in a cluster
-- To create or update resources in a cluster
-- To assert one or more resources in a cluster meet the expectations (or the opposite)
-- To run arbitrary commands (will be supported soon)
+- To **delete** resources present in a cluster
+- To **create** or update resources in a cluster
+- To **assert** one or more resources in a cluster meet the expectations (or the opposite)
+- To run arbitrary **commands** or **scripts**
+
+!!! tip "Try, catch, finally"
+    Additionally Chainsaw offers a flexible way to [react to errors and/or execute post step operations](./catch-finally/index.md).
 
 ## Different syntaxes
 
@@ -28,13 +31,15 @@ The `Test` based syntax is the more verbose and explicit syntax. It does not rel
 It supports all kind of operations.
 
 Choosing one syntax over the other is not a trivial choice, every one will have its own preference and/or constraints.
+
 If you feel more comfortable with explicit declarative models, the recommandation would be to use `Test` based syntax.
+
 If you don't mind relying on file naming conventions and don't need to reuse files across multiple tests manifests based syntax or `TestStep`s based syntax is a good choice.
-However, using `TestStep`s based syntax only is debatable. In this case, `Test` based syntax could be a simpler choice with more flexibility.
+
+!!! warning ""
+    Using `TestStep`s based syntax only is debatable. In this case, `Test` based syntax could be a simpler choice with more flexibility.
 
 ## Operations
-
-Chainsaw supports the following operations.
 
 All operations are explained in the [Operations documentation](./operations/index.md).
 
@@ -47,13 +52,19 @@ Note that Chainsaw performs a blocking deletion, that is, it will wait the resou
 
 This is important, especially when the controller being tested makes use of `finalizers`.
 
+!!! tip "Overriding cleanup timeout"
+
+    A global cleanup timeout can be defined at the configuration level or using command line flags.
+
+    It can also be overriden on a per test or per test step basis but not at the operation level.
+
 ## Namespaced resources
 
 Kubernetes organizes resources into two primary scopes: namespaced and cluster-scoped. While namespaced resources belong to a specific namespace, cluster-scoped resources span across the entire Kubernetes cluster.
 
 ### Purpose of the Namespacer Interface
 
-The [Namespacer interface](https://github.com/kyverno/chainsaw/blob/main/pkg/runner/namespacer/namespacer.go#L8) ensures automated and consistent namespace assignment to Kubernetes resources.
+The [Namespacer interface](https://github.com/kyverno/chainsaw/blob/main/pkg/runner/namespacer/namespacer.go) ensures automated and consistent namespace assignment to Kubernetes resources.
 
 - **Automated Namespacing**: Automatically assign namespaces to resources that don't have one.
 - **Ephemeral Namespaces**: Handles temporary namespaces for specific tasks.

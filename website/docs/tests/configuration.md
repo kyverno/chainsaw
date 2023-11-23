@@ -1,27 +1,32 @@
 # Configuration
 
-Chainsaw is a comprehensive tool designed to facilitate end-to-end (e2e) testing in Kubernetes. This documentation will focus on providing a breakdown of its configuration structure and how to use it.
+Chainsaw is a comprehensive tool designed to facilitate **end to end testing in [Kubernetes](https://kubernetes.io)**.
 
-Chainsaw can be configured in two ways:
+This documentation will focus on providing a breakdown of its configuration structure and how to use it.
 
-- Using a configuration file
-- Overriding configuration with command-line flags
+Chainsaw can be configured in two different and complementary ways:
 
-If both are specified, **command-line flags will take precedence** over configuration coming from a configuration file.
+- [Using a configuration file](#configuration-file)
+- [Overriding configuration with command-line flags](#overriding-with-flags)
+
+!!! tip
+    If both are specified, **command-line flags will take precedence** over configuration coming from a configuration file.
 
 ## Configuration file
 
 ### Overview
 
-Chainsaw is described as a "Stronger tool for e2e testing". With its versatile configuration options, you can customize the testing process to fit your needs.
+Chainsaw is described as a **_Stronger tool for e2e testing_**.
 
-### Configuration loading process
+With its versatile configuration options, you can customize the testing process to fit your needs.
 
-Chainsaw prioritizes its configuration in the following order:
+!!! info "Configuration loading process"
 
-1. **User-specified configuration**: If you explicitly provide a configuration file using a command-line flag.
-1. **Default configuration file**: If no configuration is specified, Chainsaw will look for a default file named `.chainsaw.yaml` in the current working directory.
-1. **Internal default configuration**: In the absence of both the above, Chainsaw will use a default configuration file embedded in the Chainsaw binary.
+    Chainsaw prioritizes its configuration in the following order:
+
+    1. **User-specified configuration**: If you explicitly provide a configuration file using a command-line flag.
+    1. **Default configuration file**: If no configuration is specified, Chainsaw will look for a default file named `.chainsaw.yaml` in the current working directory.
+    1. **Internal default configuration**: In the absence of both the above, Chainsaw will use a [default configuration](#default-configuration) file embedded in the Chainsaw binary.
 
 ### How to specify a configuration
 
@@ -31,23 +36,25 @@ To use a custom configuration file:
 chainsaw test --config path/to/your/config.yaml
 ```
 
-If you don't specify any configuration, Chainsaw will look for the default configuration file `.chainsaw.yaml` in the current working directory. If that's not found, it will fall back to its internal default configuration.
+If you don't specify any configuration, Chainsaw will look for the default configuration file `.chainsaw.yaml` in the current working directory.
+
+If that file is not found, it will fall back to its internal [default configuration](#default-configuration).
 
 ### Timeouts
 
-Timeouts are specified per operation:
+Timeouts are specified per type of operation:
 
-- Apply    - when Chainsaw applies manifests in a cluster
-- Assert   - when Chainsaw validates resources in a cluster
-- Error    - when Chainsaw validates resources in a cluster
-- Delete   - when Chainsaw deletes resources from a cluster
-- Cleanup  - when Chainsaw removes resources from a cluster created for a test
-- Exec     - when Chainsaw executes arbitrary commands or scripts
+- **Apply**    - when Chainsaw applies manifests in a cluster
+- **Assert**   - when Chainsaw validates resources in a cluster
+- **Error**    - when Chainsaw validates resources in a cluster
+- **Delete**   - when Chainsaw deletes resources from a cluster
+- **Cleanup**  - when Chainsaw removes resources from a cluster created for a test
+- **Exec**     - when Chainsaw executes arbitrary commands or scripts
 
 This is required because the timeout varies greatly depending on the nature of an operation.
-Applying a manifest in a cluster is expected to be reasonably fast, while validating a resource can be a long operation.
+For example, applying a manifest in a cluster is expected to be reasonably fast, while validating a resource can be a long operation.
 
-!!! note "Overriding timeouts"
+!!! tip "Overriding timeouts"
 
     Each timeout can be overridden at the test level, test step level, or individual operation level.
 

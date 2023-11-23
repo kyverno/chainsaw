@@ -42,16 +42,32 @@ On invocation, the command:
 - If the `--save` flag is set, the converted Chainsaw tests are saved to a new file with the extension `.chainsaw.yaml`.
 - If the `--save` and `--overwrite` flags are set, the converted Chainsaw tests are saved to the same file as the original one.
 
-### Implementation Details
+### Implementation details
 
-- **Discover Folders**: The command finds folders in the specified paths.
-- **File Inspection**: It filters out non-YAML files and directories, focusing only on YAML files which might contain KUTTL test definitions.
-- **Resource Conversion**: For identified KUTTL resources:
-  - `TestSuite` is converted to Chainsaw's `Configuration` resource.
-  - `TestStep` is converted to Chainsaw's `TestStep` resource.
+#### Discover Folders
 
-    !!! note
+The command finds folders in the specified paths.
 
-        If the file contains a `TestAssert`, an error is reported since its conversion isn't currently supported.
+#### File Inspection
 
-- **Save Converted Tests**: If the `--save` flag is provided and if any resource within the YAML file needs saving (as determined by the migration process), the converted tests are saved. The file path for saving is determined by the `--overwrite` flag; if it is set, the original file will be overwritten, else a new `.chainsaw.yaml` file will be created
+It filters out non-YAML files and directories, focusing only on YAML files which might contain KUTTL test definitions.
+
+#### Resource Conversion
+
+For identified KUTTL resources:
+
+- `TestSuite` is converted to Chainsaw's `Configuration` resource.
+- `TestStep` is converted to Chainsaw's `TestStep` resource.
+
+#### Save Converted Tests
+
+If the `--save` flag is provided and if any resource within the YAML file needs saving (as determined by the migration process), the converted tests are saved.
+
+The file path for saving is determined by the `--overwrite` flag; if it is set, the original file will be overwritten, else a new `.chainsaw.yaml` file will be created.
+
+### Current limitations
+
+The migration command has the following limitations:
+
+- Converting `TestAssert` resources is not supported (yet)
+- Some fileds in KUTTL `command` are not supported and will raise an error
