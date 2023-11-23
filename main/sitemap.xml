@@ -6,6 +6,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/docs/</loc>
+         <lastmod>2023-11-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/gh-action/</loc>
          <lastmod>2023-11-23</lastmod>
          <changefreq>daily</changefreq>
@@ -192,6 +197,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/tests/operations/assert/</loc>
+         <lastmod>2023-11-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/tests/operations/check/</loc>
          <lastmod>2023-11-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
