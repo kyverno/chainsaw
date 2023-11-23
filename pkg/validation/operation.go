@@ -36,27 +36,13 @@ func ValidateOperation(path *field.Path, obj v1alpha1.Operation) field.ErrorList
 	} else if count > 1 {
 		errs = append(errs, field.Invalid(path, obj, fmt.Sprintf("only one statement is allowed per operation (found %d)", count)))
 	} else {
-		if obj.Apply != nil {
-			errs = append(errs, ValidateFileRefOrResource(path.Child("apply"), obj.Apply.FileRefOrResource)...)
-		}
-		if obj.Assert != nil {
-			errs = append(errs, ValidateFileRef(path.Child("assert"), obj.Assert.FileRef)...)
-		}
-		// TODO
-		// if obj.Command != nil {
-		// }
-		if obj.Create != nil {
-			errs = append(errs, ValidateFileRefOrResource(path.Child("create"), obj.Create.FileRefOrResource)...)
-		}
-		// TODO
-		// 	if obj.Delete != nil {
-		// }
-		if obj.Error != nil {
-			errs = append(errs, ValidateFileRef(path.Child("error"), obj.Error.FileRef)...)
-		}
-		// TODO
-		// 	if obj.Script != nil {
-		// }
+		errs = append(errs, ValidateApply(path.Child("apply"), obj.Apply)...)
+		errs = append(errs, ValidateAssert(path.Child("assert"), obj.Assert)...)
+		errs = append(errs, ValidateCommand(path.Child("command"), obj.Command)...)
+		errs = append(errs, ValidateCreate(path.Child("create"), obj.Create)...)
+		errs = append(errs, ValidateDelete(path.Child("delete"), obj.Delete)...)
+		errs = append(errs, ValidateError(path.Child("error"), obj.Error)...)
+		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
 	}
 	return errs
 }

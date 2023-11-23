@@ -8,7 +8,7 @@ import (
 func ValidateFileRef(path *field.Path, obj v1alpha1.FileRef) field.ErrorList {
 	var errs field.ErrorList
 	if obj.File == "" {
-		errs = append(errs, field.Invalid(path, obj, "a file reference must be specified"))
+		errs = append(errs, field.Invalid(path.Child("file"), obj, "a file reference must be specified"))
 	}
 	return errs
 }
