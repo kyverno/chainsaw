@@ -2,8 +2,11 @@
 
 To use Chainsaw you will need a [Kubernetes](https://kybernetes.io) cluster, Chainsaw won't create one for you.
 
-We consider this is not the responsibility of Chainsaw to manage clusters.
-There are plenty of solutions to create and manage local clusters that will do that better than Chainsaw.
+!!! warning
+
+    We consider this is not the responsibility of Chainsaw to manage clusters.
+
+    There are plenty of solutions to create and manage local clusters that will do that better than Chainsaw.
 
 In this Quick start we will use [kind](https://kind.sigs.k8s.io) but feel free to use the tool of your choice.
 
@@ -70,12 +73,12 @@ spec:
   # first step applies the config map
   - try:
     - apply:
-      # file is relative to the test folder
+        # file is relative to the test folder
         file: configmap.yaml
   # second step verifies the config map exists and contains the expected data
   - try:
     - assert:
-      # file is relative to the test folder
+        # file is relative to the test folder
         file: configmap.yaml
 EOF
 ```
