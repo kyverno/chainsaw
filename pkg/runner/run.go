@@ -44,9 +44,6 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx)
-			if testsReport != nil {
-				testsReport.Close()
-			}
 		},
 	}}
 	deps := &internal.TestDeps{}

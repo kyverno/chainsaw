@@ -55,6 +55,11 @@ type testsProcessor struct {
 
 func (p *testsProcessor) Run(ctx context.Context) {
 	t := testing.FromContext(ctx)
+	defer func() {
+		if p.testsReport != nil {
+			p.testsReport.Close()
+		}
+	}()
 	var nspacer namespacer.Namespacer
 	if p.config.Namespace != "" {
 		namespace := client.Namespace(p.config.Namespace)
@@ -97,7 +102,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 }
 
 func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor {
-	testReport := report.NewTest(test.Name, false, p.config.Namespace, p.config.FailFast, p.config.SkipDelete)
+	testReport := report.NewTest(test.Name)
 	if p.testsReport != nil {
 		p.testsReport.AddTest(testReport)
 	}
