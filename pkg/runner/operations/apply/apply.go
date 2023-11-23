@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	kjsonv1alpha1 "github.com/kyverno/kyverno-json/pkg/apis/v1alpha1"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -24,10 +25,10 @@ type operation struct {
 	obj        ctrlclient.Object
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
-	check      interface{}
+	check      *kjsonv1alpha1.Any
 }
 
-func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, check interface{}) operations.Operation {
+func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, check *kjsonv1alpha1.Any) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,
@@ -96,7 +97,7 @@ func (o *operation) createResource(ctx context.Context) error {
 }
 
 func (o *operation) handleCheck(ctx context.Context, err error) error {
-	if o.check == nil {
+	if o.check == nil || o.check.Value == nil {
 		return err
 	}
 	actual := map[string]interface{}{
@@ -106,7 +107,7 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 	if err != nil {
 		actual["error"] = err.Error()
 	}
-	errs, validationErr := assert.Validate(ctx, o.check, actual, nil)
+	errs, validationErr := assert.Validate(ctx, o.check.Value, actual, nil)
 	if validationErr != nil {
 		return validationErr
 	}

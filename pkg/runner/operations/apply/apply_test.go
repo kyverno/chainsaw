@@ -8,6 +8,7 @@ import (
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
+	kjsonv1alpha1 "github.com/kyverno/kyverno-json/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -53,7 +54,7 @@ func Test_apply(t *testing.T) {
 		name        string
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
-		check       interface{}
+		check       *kjsonv1alpha1.Any
 		expectedErr error
 	}{
 		{
@@ -166,8 +167,10 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			check: map[string]interface{}{
-				"(error != null)": true,
+			check: &kjsonv1alpha1.Any{
+				Value: map[string]interface{}{
+					"(error != null)": true,
+				},
 			},
 			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
 		},
@@ -182,8 +185,10 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			check: map[string]interface{}{
-				"(error != null)": true,
+			check: &kjsonv1alpha1.Any{
+				Value: map[string]interface{}{
+					"(error != null)": true,
+				},
 			},
 			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
 		},
@@ -199,8 +204,10 @@ func Test_apply(t *testing.T) {
 					return errors.New("expected patch failure")
 				},
 			},
-			check: map[string]interface{}{
-				"error": "expected patch failure",
+			check: &kjsonv1alpha1.Any{
+				Value: map[string]interface{}{
+					"error": "expected patch failure",
+				},
 			},
 			expectedErr: nil,
 		},
@@ -215,8 +222,10 @@ func Test_apply(t *testing.T) {
 					return errors.New("expected create failure")
 				},
 			},
-			check: map[string]interface{}{
-				"error": "expected create failure",
+			check: &kjsonv1alpha1.Any{
+				Value: map[string]interface{}{
+					"error": "expected create failure",
+				},
 			},
 			expectedErr: nil,
 		},

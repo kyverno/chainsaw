@@ -11,7 +11,7 @@ import (
 
 type (
 	diffLibInterface = func(difflib.UnifiedDiff) (string, error)
-	yamlMarshaler    func(obj interface{}) ([]byte, error)
+	yamlMarshaler    = func(obj interface{}) ([]byte, error)
 )
 
 func diff(expected, actual ctrlclient.Object) (string, error) {
