@@ -5,6 +5,15 @@ metadata:
   creationTimestamp: null
   name: step
 spec:
+  catch:
+  - command:
+      args:
+      - hello
+      check: null
+      entrypoint: echo
+  - podLogs:
+      name: nginx
+      tail: 0
   timeouts: {}
   try:
   - delete:
