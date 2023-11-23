@@ -14,12 +14,7 @@ The full structure of the `Test` resource is documented [here](../apis/chainsaw.
 
 ## `Test` loading process
 
-A `Test` resource is self contained and fully represents a test.
-Therefore the loading process is straightforward, Chainsaw loads the `Test` and adds it to the collection of tests to be processed.
-
-!!! note
-
-    For the time being, the `Test` based approach requires the file name to match `chainsaw-test.yaml`. This will be configurable by a command flag in the future.
+A `Test` resource is self-contained and fully represents a test. Chainsaw loads the Test and adds it to the collection of tests to be processed. By default, Chainsaw expects the file name to match `chainsaw-test.yaml`. However, this can be customized using the `--test-file` command flag.
 
 ## Example
 
@@ -65,4 +60,65 @@ spec:
   - try:
     - error:
         file: ../resources/configmap-error.yaml
+```
+
+### Specifying a Custom Test File
+
+If you have your test defined in a different file, you can specify it when running Chainsaw:
+
+```bash
+chainsaw test --test-dir . --test-file=<custom-test-file-name>.yaml
+```
+
+## Raw Resource Support
+
+Chainsaw now includes the raw resource feature, allowing direct specification of Kubernetes resources within the test definitions. This feature offers a more streamlined approach for defining resources, especially useful for simpler test scenarios or for cases where resource definitions need to be reused or slightly modified across different tests.
+
+### Example Raw Resource
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-name
+spec:
+  skip: false
+  concurrent: false
+  skipDelete: false
+  timeouts:
+    apply: 10s
+    assert: 10s
+    error: 10s
+  steps:
+  # first step applies a configmap directly to the cluster
+  - try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: chainsaw-quick-start
+          data:
+            foo: bar
+  # second step executes assert statements against existing resources
+  - try:
+    - assert:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: chainsaw-quick-start
+          data:
+            foo: bar
+  # third step executes error statements against existing resources
+  - try:
+    - error:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: chainsaw-quick-start
+          data:
+            foo: bar
+
 ```

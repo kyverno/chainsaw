@@ -25,6 +25,10 @@ Manifests that are not a `TestStep` are processed as usual and participate to th
 
 Note that it's only allowed to have a **single `TestStep` resource for a given test step**.
 
+## Raw Resource Support
+
+Chainsaw now allows the specification of Kubernetes resources directly within the TestStep definition. This raw resource feature enhances flexibility by allowing inline resource definitions, particularly useful for concise or reusable configurations.
+
 ## Example
 
 ### 01-test-step.yaml
