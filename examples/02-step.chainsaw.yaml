@@ -10,9 +10,11 @@ spec:
       - hello
       check: null
       entrypoint: echo
-  - podLogs:
-      name: nginx
-      tail: 0
+  - command:
+      args:
+      - "1"
+      check: null
+      entrypoint: sleep
   timeouts: {}
   try:
   - delete:
@@ -28,10 +30,12 @@ spec:
       apiVersion: v1
       kind: Pod
   - script:
+      check: null
       content: echo "hello world"
       skipLogOutput: true
   - command:
       args:
       - hello world
+      check: null
       entrypoint: echo
       skipLogOutput: true
