@@ -7,6 +7,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
@@ -18,20 +19,21 @@ import (
 )
 
 type operation struct {
-	client   client.Client
-	expected unstructured.Unstructured
+	client     client.Client
+	expected   unstructured.Unstructured
+	namespacer namespacer.Namespacer
 }
 
-func New(client client.Client, expected unstructured.Unstructured) operations.Operation {
+func New(client client.Client, expected unstructured.Unstructured, namespacer namespacer.Namespacer) operations.Operation {
 	return &operation{
-		client:   client,
-		expected: expected,
+		client:     client,
+		expected:   expected,
+		namespacer: namespacer,
 	}
 }
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger := logging.FromContext(ctx).WithResource(&o.expected)
-	logger.Log(logging.Assert, logging.RunStatus, color.BoldFgCyan)
 	defer func() {
 		if _err == nil {
 			logger.Log(logging.Assert, logging.DoneStatus, color.BoldGreen)
@@ -39,6 +41,12 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 			logger.Log(logging.Assert, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
 		}
 	}()
+	if o.namespacer != nil {
+		if err := o.namespacer.Apply(&o.expected); err != nil {
+			return err
+		}
+	}
+	logger.Log(logging.Assert, logging.RunStatus, color.BoldFgCyan)
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error

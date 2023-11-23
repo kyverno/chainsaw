@@ -52,6 +52,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	var nspacer namespacer.Namespacer
 	if p.config.Namespace != "" {
 		namespace := client.Namespace(p.config.Namespace)
+		nspacer = namespacer.New(p.client, p.config.Namespace)
 		if err := p.client.Get(ctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
@@ -61,8 +62,8 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			t.Cleanup(func() {
 				operation := operation{
 					continueOnError: false,
-					timeout:         timeout.DefaultCleanupTimeout,
-					operation:       opdelete.New(p.client, namespace.DeepCopy()),
+					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, nil, nil, nil),
+					operation:       opdelete.New(p.client, namespace.DeepCopy(), nspacer),
 				}
 				operation.execute(ctx)
 			})
@@ -70,7 +71,6 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				t.FailNow()
 			}
 		}
-		nspacer = namespacer.New(p.client, p.config.Namespace)
 	}
 	for _, test := range p.tests {
 		name, err := names.Test(p.config, test)

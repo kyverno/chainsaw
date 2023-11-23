@@ -1,6 +1,6 @@
 # site
 site_name: Chainsaw
-site_url: https://github.io/kyverno/chainsaw
+site_url: https://github.io/kyverno/chainsaw/
 site_description: End to end testing tool
 
 # repo
@@ -19,6 +19,11 @@ copyright: Made with ❤️ by Kyverno contributors.
 # style
 extra_css:
 - static/extra.css
+
+# version
+extra:
+  version:
+    provider: mike
 
 theme:
   name: material

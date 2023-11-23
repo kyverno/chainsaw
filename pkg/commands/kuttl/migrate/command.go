@@ -1,6 +1,7 @@
 package migrate
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -8,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/google/shlex"
 	kuttlapi "github.com/kudobuilder/kuttl/pkg/apis/testharness/v1beta1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -45,62 +47,77 @@ func execute(out io.Writer, save, overwrite bool, paths ...string) error {
 		return err
 	}
 	for _, folder := range folders {
-		files, err := os.ReadDir(folder)
-		if err != nil {
-			continue
-		}
-		for _, file := range files {
-			if file.IsDir() {
-				continue
-			}
-			fileName := file.Name()
-			if !fileutils.IsYaml(fileName) {
-				continue
-			}
-			path := filepath.Join(folder, fileName)
-			resources, err := resource.Load(path)
-			if err != nil {
-				continue
-			}
-			var converted []interface{}
-			needsSave := false
-			for _, resource := range resources {
-				migrated, err := migrate(out, path, resource)
-				if err != nil {
-					needsSave = false
-					break
-				}
-				if migrated == nil {
-					converted = append(converted, resource)
-				} else {
-					converted = append(converted, migrated)
-					needsSave = true
-				}
-			}
-			if save && needsSave {
-				savePath := path
-				if !overwrite {
-					savePath = strings.TrimRight(path, filepath.Ext(path)) + ".chainsaw.yaml"
-				}
-				fmt.Fprintf(out, "Saving converted file %s to %s...\n", path, savePath)
-				var yamlBytes []byte
-				for _, resource := range converted {
-					finalBytes, err := yaml.Marshal(resource)
-					if err != nil {
-						fmt.Fprintf(out, "  ERROR: converting to yaml: %s\n", err)
-						return err
-					}
-					yamlBytes = append(yamlBytes, []byte("---\n")...)
-					yamlBytes = append(yamlBytes, finalBytes...)
-				}
-				if err := os.WriteFile(savePath, yamlBytes, os.ModePerm); err != nil {
-					fmt.Fprintf(out, "  ERROR: saving file (%s): %s\n", savePath, err)
-					return err
-				}
-			}
+		if err := processFolder(out, folder, save, overwrite); err != nil {
+			fmt.Fprintf(out, "Error processing folder %s: %v\n", folder, err)
 		}
 	}
 	return nil
+}
+
+func processFolder(out io.Writer, folder string, save, overwrite bool) error {
+	files, err := os.ReadDir(folder)
+	if err != nil {
+		return err
+	}
+	for _, file := range files {
+		if file.IsDir() || !fileutils.IsYaml(file.Name()) {
+			continue
+		}
+		path := filepath.Join(folder, file.Name())
+		if err := processFile(out, path, save, overwrite); err != nil {
+			fmt.Fprintf(out, "Error processing file %s: %v\n", path, err)
+		}
+	}
+	return nil
+}
+
+func processFile(out io.Writer, path string, save, overwrite bool) error {
+	resources, err := resource.Load(path)
+	if err != nil {
+		return err
+	}
+	var converted []interface{}
+	var needsSave bool
+	for _, resource := range resources {
+		migrated, err := migrate(out, path, resource)
+		if err != nil {
+			needsSave = false
+			break
+		}
+		if migrated == nil {
+			converted = append(converted, resource)
+		} else {
+			converted = append(converted, migrated)
+			needsSave = true
+		}
+	}
+	if save && needsSave {
+		if err := saveConvertedFile(out, path, converted, overwrite); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func saveConvertedFile(out io.Writer, path string, resources []interface{}, overwrite bool) error {
+	savePath := path
+	if !overwrite {
+		savePath = strings.TrimRight(path, filepath.Ext(path)) + ".chainsaw.yaml"
+	}
+	fmt.Fprintf(out, "Saving converted file %s to %s...\n", path, savePath)
+
+	var yamlBytes []byte
+	for _, res := range resources {
+		yamlData, err := yaml.Marshal(res)
+		if err != nil {
+			return fmt.Errorf("converting to yaml: %w", err)
+		}
+
+		yamlBytes = append(yamlBytes, []byte("---\n")...)
+		yamlBytes = append(yamlBytes, yamlData...)
+	}
+
+	return os.WriteFile(savePath, yamlBytes, os.ModePerm)
 }
 
 func migrate(out io.Writer, path string, resource unstructured.Unstructured) (metav1.Object, error) {
@@ -182,6 +199,7 @@ func testSuite(in unstructured.Unstructured) (*v1alpha1.Configuration, error) {
 
 func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 	from, err := convert.To[kuttlapi.TestStep](in)
+	// TODO: verify order in kuttl
 	if err != nil {
 		return nil, err
 	}
@@ -227,6 +245,47 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 			},
 		})
 	}
-	// TODO: commands
+	for _, operation := range from.Commands {
+		var timeout *metav1.Duration
+		if operation.Timeout != 0 {
+			timeout = &metav1.Duration{Duration: time.Second * time.Duration(operation.Timeout)}
+		}
+		if operation.Background {
+			return nil, errors.New("found a command with background=true, this is not supported in chainsaw")
+		}
+		if operation.Namespaced {
+			return nil, errors.New("found a command with namespaced=true, this is not supported in chainsaw")
+		}
+		if operation.IgnoreFailure {
+			return nil, errors.New("found a command with ignoreFailure=true, this is not supported in chainsaw")
+		}
+		if operation.Script != "" {
+			to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{
+				Timeout: timeout,
+				Script: &v1alpha1.Script{
+					Content:       operation.Script,
+					SkipLogOutput: operation.SkipLogOutput,
+				},
+			})
+		} else if operation.Command != "" {
+			split, err := shlex.Split(operation.Command)
+			if err != nil {
+				return nil, err
+			}
+			entrypoint := split[0]
+			var args []string
+			if len(split) > 1 {
+				args = split[1:]
+			}
+			to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{
+				Timeout: timeout,
+				Command: &v1alpha1.Command{
+					Entrypoint:    entrypoint,
+					Args:          args,
+					SkipLogOutput: operation.SkipLogOutput,
+				},
+			})
+		}
+	}
 	return to, nil
 }

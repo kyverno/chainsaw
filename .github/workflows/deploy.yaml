@@ -2,8 +2,7 @@
 
 name: Deploy
 
-permissions:
-  contents: write
+permissions: {}
 
 on:
   push:
@@ -17,6 +16,8 @@ concurrency:
 jobs:
   docs:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
@@ -31,4 +32,7 @@ jobs:
       - name: Deploy site
         run: |
           set -e
-          mkdocs gh-deploy -f ./website/mkdocs.yaml --force
+          git fetch origin gh-pages --depth=1
+          git config user.name ci-bot
+          git config user.email ci-bot@example.com
+          mike deploy -F ./website/mkdocs.yaml --push --update-aliases main dev

@@ -2,8 +2,7 @@
 
 name: CodeQL
 
-permissions:
-  security-events: write
+permissions: {}
 
 on:
   pull_request:
@@ -20,6 +19,8 @@ concurrency:
 jobs:
   required:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
