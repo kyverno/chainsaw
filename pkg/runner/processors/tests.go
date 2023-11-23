@@ -92,9 +92,6 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			})
 			processor := p.CreateTestProcessor(test)
 			processor.Run(testing.IntoContext(ctx, t), nspacer)
-			// if t.Failed() {
-			// 	testReport.NewFailure()
-			// }
 		})
 	}
 }

@@ -59,11 +59,8 @@ type testProcessor struct {
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
 	t := testing.FromContext(ctx)
 	defer func() {
-		if t.Failed() {
-			if p.testReport != nil {
-				p.testReport.NewFailure("", "") // Not Decieded Yet
-				p.testReport.MarkTestEnd()
-			}
+		if p.testReport != nil {
+			p.testReport.MarkTestEnd()
 		}
 	}()
 	size := 0

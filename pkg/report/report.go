@@ -233,11 +233,11 @@ func calculateDuration(start, end time.Time) string {
 func (tr *TestsReport) Close() {
 	tr.Time = calculateDuration(tr.TimeStamp, time.Now())
 	totalTests := 0
-	for _, test := range tr.Reports {
-		if test.Failure != nil {
+	for _, testReport := range tr.Reports {
+		if testReport.Failure != nil {
 			tr.Failures++
 		}
-		totalTests += test.Test
+		totalTests += testReport.Test
 	}
 	tr.Test = totalTests
 }
