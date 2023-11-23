@@ -42,7 +42,6 @@ func Command() *cobra.Command {
 }
 
 func execute(out io.Writer, save, overwrite bool, paths ...string) error {
-	testStepsMap := make(map[string]*v1alpha1.TestStep)
 	folders, err := fsutils.DiscoverFolders(paths...)
 	if err != nil {
 		fmt.Fprintf(out, "  ERROR: failed to discover folders: %s\n", err)
@@ -57,6 +56,11 @@ func execute(out io.Writer, save, overwrite bool, paths ...string) error {
 }
 
 func processFolder(out io.Writer, folder string, save, overwrite bool) error {
+	testAssertsMap, err := collectTestAsserts(folder)
+	if err != nil {
+		fmt.Fprintf(out, "ERROR: failed to collect test asserts: %v\n", err)
+		return err
+	}
 	files, err := os.ReadDir(folder)
 	if err != nil {
 		return err
@@ -66,14 +70,14 @@ func processFolder(out io.Writer, folder string, save, overwrite bool) error {
 			continue
 		}
 		path := filepath.Join(folder, file.Name())
-		if err := processFile(out, path, save, overwrite); err != nil {
+		if err := processFile(out, path, save, overwrite, testAssertsMap); err != nil {
 			fmt.Fprintf(out, "Error processing file %s: %v\n", path, err)
 		}
 	}
 	return nil
 }
 
-func processFile(out io.Writer, path string, save, overwrite bool) error {
+func processFile(out io.Writer, path string, save, overwrite bool, testAssertsMap map[string][]v1alpha1.Catch) error {
 	resources, err := resource.Load(path)
 	if err != nil {
 		return err
@@ -81,16 +85,18 @@ func processFile(out io.Writer, path string, save, overwrite bool) error {
 	var converted []interface{}
 	var needsSave bool
 	for _, resource := range resources {
-		migrated, err := migrate(out, path, resource)
+		migrated, shouldAppend, err := migrate(out, path, resource, testAssertsMap)
 		if err != nil {
 			needsSave = false
 			break
 		}
-		if migrated == nil {
-			converted = append(converted, resource)
-		} else {
-			converted = append(converted, migrated)
-			needsSave = true
+		if shouldAppend {
+			if migrated == nil {
+				converted = append(converted, resource)
+			} else {
+				converted = append(converted, migrated)
+				needsSave = true
+			}
 		}
 	}
 	if save && needsSave {
@@ -122,7 +128,8 @@ func saveConvertedFile(out io.Writer, path string, resources []interface{}, over
 	return os.WriteFile(savePath, yamlBytes, os.ModePerm)
 }
 
-func migrate(out io.Writer, path string, resource unstructured.Unstructured, testStepsMap map[string]*v1alpha1.TestStep) (metav1.Object, error) {
+func migrate(out io.Writer, path string, resource unstructured.Unstructured, testAssertsMap map[string][]v1alpha1.Catch) (interface{}, bool, error) {
+	index := extractIndex(path)
 	if resource.GetAPIVersion() == "kuttl.dev/v1beta1" {
 		switch resource.GetKind() {
 		case "TestSuite":
@@ -130,49 +137,39 @@ func migrate(out io.Writer, path string, resource unstructured.Unstructured, tes
 			configuration, err := testSuite(resource)
 			if err != nil {
 				fmt.Fprintf(out, "  ERROR: failed to convert %s (%s): %s\n", "TestSuite", path, err)
-				return nil, err
+				return nil, false, err
 			}
 			if configuration.GetName() == "" {
 				configuration.SetName("configuration")
 			}
-			return configuration, nil
+			return configuration, true, nil
 		case "TestStep":
 			groups := discovery.StepFileName.FindStringSubmatch(filepath.Base(path))
 			if len(groups) < 3 {
-				return nil, nil
+				return nil, true, nil
 			}
 			fmt.Fprintf(out, "Converting %s in %s...\n", "TestStep", path)
 			step, err := testStep(resource)
 			if err != nil {
 				fmt.Fprintf(out, "  ERROR: failed to convert %s (%s): %s\n", "TestStep", path, err)
-				return nil, err
+				return nil, false, err
 			}
 			if step.GetName() == "" {
 				step.SetName(strings.ToLower(strings.ReplaceAll(groups[2], "_", "-")))
 			}
-			index := extractIndex(path)
-			testStepsMap[index] = step
-			return step, nil
+			// Append TestAsserts (Catch objects) to the TestStep if they exist for this index
+			if catchArray, ok := testAssertsMap[index]; ok {
+				step.Spec.Catch = append(step.Spec.Catch, catchArray...)
+			}
+			return step, true, nil
 		case "TestAssert":
-			fmt.Fprintf(out, "Converting %s in %s...\n", "TestAssert", path)
-			catchArray, err := migrateTestAssert(resource)
-			if err != nil {
-				fmt.Fprintf(out, "  ERROR: failed to convert %s (%s): %s\n", "TestAssert", path, err)
-				return nil, err
-			}
-			index := extractIndex(path)
-			if testStep, ok := testStepsMap[index]; ok {
-				testStep.Spec.Catch = append(testStep.Spec.Catch, catchArray...)
-				return testStep, nil
-			} else {
-				return nil, fmt.Errorf("no TestStep found with index %s", index)
-			}
+			return nil, false, nil
 		default:
 			fmt.Fprintf(out, "  ERROR: unknown kuttl resource (%s): %s\n", path, resource.GetKind())
-			return nil, fmt.Errorf("unknown kuttl resource %s", resource.GetKind())
+			return nil, false, fmt.Errorf("unknown kuttl resource %s", resource.GetKind())
 		}
 	} else {
-		return nil, nil
+		return nil, true, nil
 	}
 }
 
@@ -392,4 +389,35 @@ func extractIndex(path string) string {
 		return splitName[0]
 	}
 	return ""
+}
+
+func collectTestAsserts(folder string) (map[string][]v1alpha1.Catch, error) {
+	testAssertsMap := make(map[string][]v1alpha1.Catch)
+	files, err := os.ReadDir(folder)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, file := range files {
+		if file.IsDir() || !fileutils.IsYaml(file.Name()) {
+			continue
+		}
+		path := filepath.Join(folder, file.Name())
+		resources, err := resource.Load(path)
+		if err != nil {
+			return nil, err
+		}
+
+		for _, res := range resources {
+			if res.GetAPIVersion() == "kuttl.dev/v1beta1" && res.GetKind() == "TestAssert" {
+				index := extractIndex(path)
+				catchArray, err := migrateTestAssert(res)
+				if err != nil {
+					return nil, err
+				}
+				testAssertsMap[index] = append(testAssertsMap[index], catchArray...)
+			}
+		}
+	}
+	return testAssertsMap, nil
 }
