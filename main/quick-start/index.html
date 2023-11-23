@@ -17,7 +17,7 @@ cat<span class=w> </span>&gt;<span class=w> </span>configmap.yaml<span class=w> 
 <span class=s>data:</span>
 <span class=s>  foo: bar</span>
 <span class=s>EOF</span>
-</code></pre></div> <h3 id=create-the-test>Create the test<a class=headerlink href=#create-the-test title="Permanent link">&para;</a></h3> <div class=highlight><pre><span></span><code><span class=c1># create test file</span>
+</code></pre></div> <h3 id=create-the-test>Create the test<a class=headerlink href=#create-the-test title="Permanent link">&para;</a></h3> <p>By default, Chainsaw looks for a file named chainsaw-test.yaml. If you don't specify a filename, Chainsaw will use this default. However, you can specify a different file using the --test-file argument.</p> <div class=highlight><pre><span></span><code><span class=c1># create test file</span>
 cat<span class=w> </span>&gt;<span class=w> </span>chainsaw-test.yaml<span class=w> </span><span class=s>&lt;&lt; EOF</span>
 <span class=s>apiVersion: chainsaw.kyverno.io/v1alpha1</span>
 <span class=s>kind: Test</span>
