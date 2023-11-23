@@ -2,10 +2,13 @@
 
 To use Chainsaw you will need a [Kubernetes](https://kybernetes.io) cluster, Chainsaw won't create one for you.
 
-We consider this is not the responsibility of Chainsaw to manage clusters.
-There are plenty of solutions to create and manage local clusters that will do that better than Chainsaw.
-
 In this Quick start we will use [kind](https://kind.sigs.k8s.io) but feel free to use the tool of your choice.
+
+!!! warning "Not a cluster management tool"
+
+    We consider this is not the responsibility of Chainsaw to manage clusters.
+
+    There are plenty of solutions to create and manage local clusters that will do that better than Chainsaw.
 
 ## Create a [kind](https://kind.sigs.k8s.io) cluster
 
@@ -72,12 +75,12 @@ spec:
   # first step applies the config map
   - try:
     - apply:
-      # file is relative to the test folder
+        # file is relative to the test folder
         file: configmap.yaml
   # second step verifies the config map exists and contains the expected data
   - try:
     - assert:
-      # file is relative to the test folder
+        # file is relative to the test folder
         file: configmap.yaml
 EOF
 ```
@@ -90,7 +93,7 @@ We finished writing our first test, now we can run Chainsaw to verify the test r
 chainsaw test --test-dir .
 
 Loading default configuration...
-- Timeout 30s
+- Using test file: chainsaw-test.yaml
 - TestDirs [.]
 - SkipDelete false
 - FailFast false
@@ -107,20 +110,24 @@ Running tests...
 === RUN   chainsaw/quick-start
 === PAUSE chainsaw/quick-start
 === CONT  chainsaw/quick-start
-    12:15:31 | quick-start | @begin | CREATE | v1/Namespace | chainsaw-awake-dane | OK
-    12:15:31 | quick-start | step-1 | APPLY  | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | RUNNING...
-    12:15:31 | quick-start | step-1 | CREATE | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | OK
-    12:15:31 | quick-start | step-1 | APPLY  | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | DONE
-    12:15:31 | quick-start | step-2 | ASSERT | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | RUNNING...
-    12:15:31 | quick-start | step-2 | ASSERT | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | DONE
-    12:15:31 | quick-start | step-1 | DELETE | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | RUNNING...
-    12:15:31 | quick-start | step-1 | DELETE | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | OK
-    12:15:31 | quick-start | step-1 | DELETE | v1/ConfigMap | chainsaw-awake-dane/chainsaw-quick-start | DONE
-    12:15:31 | quick-start | @clean | DELETE | v1/Namespace | chainsaw-awake-dane | RUNNING...
-    12:15:31 | quick-start | @clean | DELETE | v1/Namespace | chainsaw-awake-dane | OK
-    12:15:36 | quick-start | @clean | DELETE | v1/Namespace | chainsaw-awake-dane | DONE
+    09:45:36 | quick-start | @setup | CREATE    | OK    | v1/Namespace | chainsaw-eternal-elk
+    09:45:36 | quick-start | step-1 | TRY       | RUN   |
+    09:45:36 | quick-start | step-1 | APPLY     | RUN   | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
+    09:45:36 | quick-start | step-1 | CREATE    | OK    | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
+    09:45:36 | quick-start | step-1 | APPLY     | DONE  | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
+    09:45:36 | quick-start | step-1 | TRY       | DONE  |
+    09:45:36 | quick-start | step-2 | TRY       | RUN   |
+    09:45:36 | quick-start | step-2 | ASSERT    | RUN   | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
+    09:45:36 | quick-start | step-2 | ASSERT    | DONE  | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
+    09:45:36 | quick-start | step-2 | TRY       | DONE  |
+    09:45:36 | quick-start | step-1 | DELETE    | RUN   | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
+    09:45:36 | quick-start | step-1 | DELETE    | OK    | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
+    09:45:36 | quick-start | step-1 | DELETE    | DONE  | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
+    09:45:36 | quick-start | @setup | DELETE    | RUN   | v1/Namespace | chainsaw-eternal-elk
+    09:45:36 | quick-start | @setup | DELETE    | OK    | v1/Namespace | chainsaw-eternal-elk
+    09:45:41 | quick-start | @setup | DELETE    | DONE  | v1/Namespace | chainsaw-eternal-elk
 --- PASS: chainsaw (0.00s)
-    --- PASS: chainsaw/quick-start (5.28s)
+    --- PASS: chainsaw/quick-start (5.43s)
 PASS
 Tests Summary...
 - Passed  tests 1
