@@ -18,7 +18,8 @@ All operations share some configuration fields.
 - **ContinueOnError:** Determines whether a test step should continue or not in case the operation was not successful.
   Even if the test continues executing, it will still be reported as failed.
 
-The full structure of the `Operation` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Operation).
+!!! tip "Reference documentation"
+    The full structure of the `Operation` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Operation).
 
 ## Available operations
 
@@ -29,3 +30,9 @@ The full structure of the `Operation` is documented [here](../../apis/chainsaw.v
 - [Error](./error.md)
 - [Command](./command.md)
 - [Script](./script.md)
+
+## Operation checks
+
+Some operations support checking the operation execution result against specific expectations.
+
+See [Operation checks](./check.md) for use case details and supported operations.
