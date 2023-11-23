@@ -15,6 +15,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
+	kjsonv1alpha1 "github.com/kyverno/kyverno-json/pkg/apis/v1alpha1"
 	fileutils "github.com/kyverno/kyverno/ext/file"
 	"github.com/kyverno/kyverno/ext/resource/convert"
 	"github.com/spf13/cobra"
@@ -211,21 +212,26 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 		ObjectMeta: from.ObjectMeta,
 	}
 	for _, operation := range from.Apply {
-		to.Spec.Try = append(
-			to.Spec.Try,
-			v1alpha1.Operation{
-				Apply: &v1alpha1.Apply{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
-						FileRef: v1alpha1.FileRef{
-							File: operation,
-						},
-					},
+		action := &v1alpha1.Apply{
+			FileRefOrResource: v1alpha1.FileRefOrResource{
+				FileRef: v1alpha1.FileRef{
+					File: operation.File,
 				},
 			},
-		)
+		}
+		if operation.ShouldFail {
+			action.Check = &kjsonv1alpha1.Any{
+				Value: map[string]interface{}{
+					"(error != null)": true,
+				},
+			}
+		}
+		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{
+			Apply: action,
+		})
 	}
 	for _, operation := range from.Assert {
-		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Assert: &v1alpha1.Assert{FileRef: v1alpha1.FileRef{File: operation}}})
+		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Assert: &v1alpha1.Assert{FileRef: v1alpha1.FileRef{File: operation.File}}})
 	}
 	for _, operation := range from.Error {
 		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Error: &v1alpha1.Error{FileRef: v1alpha1.FileRef{File: operation}}})

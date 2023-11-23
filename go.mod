@@ -121,3 +121,5 @@ require (
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
 	sigs.k8s.io/structured-merge-diff/v4 v4.3.0 // indirect
 )
+
+replace github.com/kudobuilder/kuttl => github.com/kyverno/kuttl v0.0.0-20231009091100-7d9c9ba622b2
