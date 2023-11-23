@@ -60,10 +60,10 @@ Below is an example of using an [operation check](./check.md#command).
         entrypoint: echo
         args:
         - hello chainsaw
-      check:
-        # an error is expected, this will:
-        # - succeed if the operation failed
-        # - fail if the operation succeeded
-        (error != null): true
+        check:
+          # an error is expected, this will:
+          # - succeed if the operation failed
+          # - fail if the operation succeeded
+          (error != null): true
     # ...
     ```
