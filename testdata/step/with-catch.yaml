@@ -11,8 +11,10 @@ spec:
   catch:
   - podLogs:
       namespace: foo
+      name: bar
   - events:
       namespace: foo
+      name: bar
   - command:
       entrypoint: time
   - script:
