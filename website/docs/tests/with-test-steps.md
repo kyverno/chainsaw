@@ -25,6 +25,10 @@ Manifests that are not a `TestStep` are processed as usual and participate to th
 
 Note that it's only allowed to have a **single `TestStep` resource for a given test step**.
 
+## Raw Resource Support
+
+Chainsaw now allows the specification of Kubernetes resources directly within the TestStep definition. This raw resource feature enhances flexibility by allowing inline resource definitions, particularly useful for concise or reusable configurations.
+
 ## Example
 
 ### 01-test-step.yaml
@@ -110,6 +114,68 @@ spec:
       args:
       - "Hello Chainsaw"
 
+```
+
+## Example Raw Resource
+
+### 01-test-step.yaml
+
+This `TestStep` defines a custom `timeout` and applies a `ConfigMap` directly within the step using the `raw resource` feature.
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: TestStep
+metadata:
+  name: test-step-name
+spec:
+  skipDelete: true
+  timeouts:
+    apply: 45s
+  try:
+  - apply:
+      resource:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: chainsaw-quick-start
+        data:
+          foo: bar
+```
+
+### 02-assert.yaml
+
+This manifest contains an assertion statement for a `ConfigMap` and does not include a `TestStep` resource.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chainsaw-quick-start
+data:
+  foo: bar
+```
+
+### 02-error.yaml
+
+This `TestStep` combines the `raw resource` feature with a custom `timeout`, demonstrating how `TestStep` resources can be combined with raw manifests.
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: TestStep
+metadata:
+  name: test-step-name
+spec:
+  timeouts:
+    error: 20s
+  try:
+  - error:
+      resource:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: chainsaw-quick-start-error
+        data:
+          lorem: ipsum
 ```
 
 ## Conclusion

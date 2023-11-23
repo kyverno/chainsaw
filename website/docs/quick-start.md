@@ -61,6 +61,8 @@ EOF
 
 ### Create the test
 
+By default, Chainsaw looks for a file named chainsaw-test.yaml. If you don't specify a filename, Chainsaw will use this default. However, you can specify a different file using the --test-file argument.
+
 ```bash
 # create test file
 cat > chainsaw-test.yaml << EOF
