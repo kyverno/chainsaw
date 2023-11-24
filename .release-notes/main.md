@@ -19,3 +19,7 @@ Release notes for `TODO`.
 
 ## :guitar: Misc :guitar:
 -->
+
+## :wrench: Fixes :wrench:
+
+- Fixed a kuttl migration failure in case of unsupported file name
