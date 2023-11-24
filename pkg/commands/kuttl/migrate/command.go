@@ -135,6 +135,10 @@ func migrate(out io.Writer, path string, resource unstructured.Unstructured) (me
 			}
 			return configuration, nil
 		case "TestStep":
+			groups := discovery.StepFileName.FindStringSubmatch(filepath.Base(path))
+			if len(groups) < 3 {
+				return nil, nil
+			}
 			fmt.Fprintf(out, "Converting %s in %s...\n", "TestStep", path)
 			step, err := testStep(resource)
 			if err != nil {
@@ -142,8 +146,7 @@ func migrate(out io.Writer, path string, resource unstructured.Unstructured) (me
 				return nil, err
 			}
 			if step.GetName() == "" {
-				groups := discovery.StepFileName.FindStringSubmatch(filepath.Base(path))
-				step.SetName(groups[2])
+				step.SetName(strings.ReplaceAll(groups[2], "_", "-"))
 			}
 			return step, nil
 		case "TestAssert":

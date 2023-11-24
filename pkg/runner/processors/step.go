@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"path/filepath"
+	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -240,11 +241,28 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 	}
 	var ops []operation
 	dryRun := op.DryRun != nil && *op.DryRun
+	addDelay := false
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opapply.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check.Value),
+			operation: opapply.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check),
+		})
+		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
+			addDelay = true
+		}
+	}
+	if addDelay {
+		ops = append(ops, operation{
+			timeout: timeout.Get(2*time.Minute, nil, nil, nil, nil),
+			operation: opcommand.New(
+				v1alpha1.Command{
+					Entrypoint: "sleep",
+					Args:       []string{"5s"},
+				},
+				p.test.BasePath,
+				p.namespacer.GetNamespace(),
+			),
 		})
 	}
 	return ops, nil
@@ -280,11 +298,28 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create,
 	}
 	var ops []operation
 	dryRun := op.DryRun != nil && *op.DryRun
+	addDelay := false
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opcreate.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check.Value),
+			operation: opcreate.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check),
+		})
+		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
+			addDelay = true
+		}
+	}
+	if addDelay {
+		ops = append(ops, operation{
+			timeout: timeout.Get(2*time.Minute, nil, nil, nil, nil),
+			operation: opcommand.New(
+				v1alpha1.Command{
+					Entrypoint: "sleep",
+					Args:       []string{"5s"},
+				},
+				p.test.BasePath,
+				p.namespacer.GetNamespace(),
+			),
 		})
 	}
 	return ops, nil
