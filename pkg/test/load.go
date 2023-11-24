@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/kyverno/kyverno/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/client-go/openapi"
 )
 
@@ -19,6 +20,7 @@ type (
 	splitter      = func([]byte) ([][]byte, error)
 	loaderFactory = func(openapi.Client) (loader.Loader, error)
 	converter     = func(unstructured.Unstructured) (*v1alpha1.Test, error)
+	validator     = func(obj *v1alpha1.Test) field.ErrorList
 )
 
 var test_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Test")
@@ -39,15 +41,18 @@ func Load(path string) ([]*v1alpha1.Test, error) {
 }
 
 func Parse(content []byte) ([]*v1alpha1.Test, error) {
-	return parse(content, nil, nil, nil)
+	return parse(content, nil, nil, nil, nil)
 }
 
-func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter) ([]*v1alpha1.Test, error) {
+func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter, validator validator) ([]*v1alpha1.Test, error) {
 	if splitter == nil {
 		splitter = yaml.SplitDocuments
 	}
 	if converter == nil {
 		converter = convert.To[v1alpha1.Test]
+	}
+	if validator == nil {
+		validator = validation.ValidateTest
 	}
 	var loader loader.Loader
 	if loaderFactory != nil {
@@ -79,7 +84,7 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 			if err != nil {
 				return nil, err
 			}
-			if err := validation.ValidateTest(test).ToAggregate(); err != nil {
+			if err := validator(test).ToAggregate(); err != nil {
 				return nil, err
 			}
 			tests = append(tests, test)
