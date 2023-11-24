@@ -72,7 +72,7 @@ func TestValidateFileRefOrResource(t *testing.T) {
 				FileRef: v1alpha1.FileRef{
 					File: "",
 				},
-				Resource: pod, // Replace SomeResourceType with the actual type
+				Resource: pod,
 			},
 			expectErr: false,
 		},
