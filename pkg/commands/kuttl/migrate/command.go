@@ -147,7 +147,7 @@ func migrate(out io.Writer, path string, resource unstructured.Unstructured) (me
 				return nil, err
 			}
 			if step.GetName() == "" {
-				step.SetName(strings.ReplaceAll(groups[2], "_", "-"))
+				step.SetName(strings.ToLower(strings.ReplaceAll(groups[2], "_", "-")))
 			}
 			return step, nil
 		case "TestAssert":
