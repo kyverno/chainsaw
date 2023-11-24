@@ -94,7 +94,7 @@ func TestDiscoverTests(t *testing.T) {
 							}, {
 								Error: &v1alpha1.Error{
 									FileRef: v1alpha1.FileRef{
-										File: "01-error.yaml",
+										File: "01-errors.yaml",
 									},
 								},
 							}},

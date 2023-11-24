@@ -20,12 +20,10 @@ spec:
       apiVersion: v1
       kind: Pod
   - script:
-      check: null
       content: echo "hello world"
       skipLogOutput: true
   - command:
       args:
       - hello world
-      check: null
       entrypoint: echo
       skipLogOutput: true
