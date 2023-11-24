@@ -10,7 +10,6 @@ import (
 	tloader "github.com/kyverno/chainsaw/pkg/internal/loader/testing"
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -111,10 +110,12 @@ func TestLoad(t *testing.T) {
 					Catch: []v1alpha1.Catch{{
 						PodLogs: &v1alpha1.PodLogs{
 							Namespace: "foo",
+							Name:      "bar",
 						},
 					}, {
 						Events: &v1alpha1.Events{
 							Namespace: "foo",
+							Name:      "bar",
 						},
 					}, {
 						Command: &v1alpha1.Command{
@@ -159,10 +160,12 @@ func TestLoad(t *testing.T) {
 					Finally: []v1alpha1.Finally{{
 						PodLogs: &v1alpha1.PodLogs{
 							Namespace: "foo",
+							Name:      "bar",
 						},
 					}, {
 						Events: &v1alpha1.Events{
 							Namespace: "foo",
+							Name:      "bar",
 						},
 					}, {
 						Command: &v1alpha1.Command{
@@ -267,11 +270,11 @@ func TestLoad(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Load(tt.path)
 			if tt.wantErr {
-				require.Error(t, err)
+				assert.Error(t, err)
 			} else {
-				require.NoError(t, err)
+				assert.NoError(t, err)
 			}
-			require.Equal(t, tt.want, got)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

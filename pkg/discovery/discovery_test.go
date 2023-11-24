@@ -75,15 +75,9 @@ func TestDiscoverTests(t *testing.T) {
 				},
 				Spec: v1alpha1.TestSpec{
 					Steps: []v1alpha1.TestSpecStep{{
-						Name: "assert",
+						Name: "configmap",
 						Spec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
-								Assert: &v1alpha1.Assert{
-									FileRef: v1alpha1.FileRef{
-										File: "01-assert.yaml",
-									},
-								},
-							}, {
 								Apply: &v1alpha1.Apply{
 									FileRefOrResource: v1alpha1.FileRefOrResource{
 										FileRef: v1alpha1.FileRef{
@@ -92,9 +86,15 @@ func TestDiscoverTests(t *testing.T) {
 									},
 								},
 							}, {
+								Assert: &v1alpha1.Assert{
+									FileRef: v1alpha1.FileRef{
+										File: "01-assert.yaml",
+									},
+								},
+							}, {
 								Error: &v1alpha1.Error{
 									FileRef: v1alpha1.FileRef{
-										File: "01-error.yaml",
+										File: "01-errors.yaml",
 									},
 								},
 							}},

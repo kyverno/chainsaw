@@ -26,16 +26,11 @@ func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
 		errs = append(errs, field.Invalid(path, obj, "no statement found in operation"))
 	} else if count > 1 {
 		errs = append(errs, field.Invalid(path, obj, fmt.Sprintf("only one statement is allowed per operation (found %d)", count)))
-		// TODO
-		// } else {
-		// if obj.PodLogs != nil {
-		// }
-		// if obj.Events != nil {
-		// }
-		// if obj.Command != nil {
-		// }
-		// if obj.Script != nil {
-		// }
+	} else {
+		errs = append(errs, ValidatePodLogs(path.Child("podLogs"), obj.PodLogs)...)
+		errs = append(errs, ValidateEvents(path.Child("events"), obj.Events)...)
+		errs = append(errs, ValidateCommand(path.Child("command"), obj.Command)...)
+		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
 	}
 	return errs
 }

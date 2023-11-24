@@ -23,3 +23,17 @@ Release notes for the `main` branch lives in [main.md](../../.release-notes/main
 Make sure it is up to date and rename the file to the version being released.
 
 You can then copy [_template.md](../../.release-notes/_template.md) to [main.md](../../.release-notes/main.md) for the next release.
+
+## Publish documentation
+
+Publishing the documentation for a release is decoupled from cutting a release.
+
+To publish the documentation push a tag to the GitHub repository (begining with `docs-v`).
+
+```shell
+VERSION="v0.1.0"
+TAG=docs-$VERSION
+
+git tag $TAG -m "tag $TAG" -a
+git push origin $TAG
+```

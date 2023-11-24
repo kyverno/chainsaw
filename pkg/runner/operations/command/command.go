@@ -60,7 +60,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	cmdErr := cmd.Run()
-	if o.command.Check.Value == nil {
+	if o.command.Check == nil || o.command.Check.Value == nil {
 		return cmdErr
 	} else {
 		actual := map[string]interface{}{

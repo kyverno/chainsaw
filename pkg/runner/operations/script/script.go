@@ -59,7 +59,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	cmdErr := cmd.Run()
-	if o.script.Check.Value == nil {
+	if o.script.Check == nil || o.script.Check.Value == nil {
 		return cmdErr
 	} else {
 		actual := map[string]interface{}{

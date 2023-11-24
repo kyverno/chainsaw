@@ -7,6 +7,7 @@ nav:
   - install.md
   - gh-action.md
   - quick-start.md
+  - docs.md
 - Writing tests:
   - tests/index.md
   - tests/configuration.md
@@ -17,6 +18,7 @@ nav:
     - tests/with-test.md
   - Operations:
     - tests/operations/index.md
+    - tests/operations/check.md
     - tests/operations/apply.md
     - tests/operations/create.md
     - tests/operations/delete.md

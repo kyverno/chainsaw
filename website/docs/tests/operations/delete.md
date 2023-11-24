@@ -2,7 +2,8 @@
 
 The `delete` operation allows you to specify resources that should be deleted from the Kubernetes cluster before a particular test step is executed.
 
-The full structure of the `Delete` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
+!!! tip "Reference documentation"
+    The full structure of the `Delete` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
 
 ## Usage in `Test`
 

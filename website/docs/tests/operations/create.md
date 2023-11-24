@@ -7,14 +7,15 @@ These can be configurations, deployments, services, or any other Kubernetes reso
 
     If the resource to be created already exists in the cluster, the step will fail.
 
-The full structure of the `Create` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
+!!! tip "Reference documentation"
+    The full structure of the `Create` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
 
 
 ## Usage in `Test`
 
 Below is an example of using `create` in a `Test` resource.
 
-!!! example
+!!! example "Using a file"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -30,11 +31,33 @@ Below is an example of using `create` in a `Test` resource.
         # ...
     ```
 
+!!! example "Using an inline resource"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      steps:
+      - try:
+        # ...
+        - create:
+            resource:
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: chainsaw-quick-start
+              data:
+                foo: bar
+        # ...
+    ```
+
 ## Usage in `TestStep`
 
 Below is an example of using `create` in a `TestStep` resource.
 
-!!! example
+!!! example "Using a file"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -47,4 +70,63 @@ Below is an example of using `create` in a `TestStep` resource.
       - create:
           file: ../resources/configmap.yaml
       # ...
+    ```
+
+!!! example "Using an inline resource"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: TestStep
+    metadata:
+      name: example
+    spec:
+      try:
+      # ...
+      - create:
+          resource:
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: chainsaw-quick-start
+            data:
+              foo: bar
+      # ...
+    ```
+
+## Operation check
+
+Below is an example of using an [operation check](./check.md#create).
+
+!!! example "With check"
+
+    ```yaml
+    # ...
+    - apply:
+        file: my-pod.yaml
+        check:
+          # an error is expected, this will:
+          # - succeed if the operation failed
+          # - fail if the operation succeeded
+          (error != null): true
+    # ...
+    ```
+
+!!! example "With check"
+
+    ```yaml
+    # ...
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: chainsaw-quick-start
+          data:
+            foo: bar
+        check:
+          # an error is expected, this will:
+          # - succeed if the operation failed
+          # - fail if the operation succeeded
+          (error != null): true
+    # ...
     ```

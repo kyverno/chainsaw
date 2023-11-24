@@ -2,8 +2,6 @@
 
 The `error` operation lets you define a set of expected errors for a test step. If any of these errors occur during the test, they are treated as expected outcomes. However, if an error that's not on this list occurs, it will be treated as a test failure.
 
-The full structure of the `Error` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Error).
-
 !!! info
 
     Errors in Chainsaw are based on **assertion trees**.
@@ -12,6 +10,9 @@ The full structure of the `Error` is documented [here](../../apis/chainsaw.v1alp
 
     Assertion trees are compatible with standard assertions that exist in tools like KUTTL but can do a lot more.
     Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/policies/asserts/) in kyverno-json for details.
+
+!!! tip "Reference documentation"
+    The full structure of the `Error` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Error).
 
 ## Usage in `Test`
 

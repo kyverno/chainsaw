@@ -2,8 +2,6 @@
 
 The `assert` operation allows you to specify conditions that should hold true for a successful test. For example, after applying certain resources, you might want to ensure that a particular pod is running or a service is accessible.
 
-The full structure of the `Assert` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Assert).
-
 !!! info
 
     Assertions in Chainsaw are based on **assertion trees**.
@@ -12,6 +10,9 @@ The full structure of the `Assert` is documented [here](../../apis/chainsaw.v1al
 
     Assertion trees are compatible with standard assertions that exist in tools like KUTTL but can do a lot more.
     Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/policies/asserts/) in kyverno-json for details.
+
+!!! tip "Reference documentation"
+    The full structure of the `Assert` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Assert).
 
 ## Usage in `Test`
 
