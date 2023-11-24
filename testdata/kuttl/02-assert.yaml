@@ -1,0 +1,8 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestAssert
+timeout: 30
+commands:
+- command: echo hello
+collectors:
+- type: command
+  command: sleep 1
