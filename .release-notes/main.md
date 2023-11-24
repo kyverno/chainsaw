@@ -5,8 +5,6 @@ Release notes for `TODO`.
 <!--
 ## :bangbang: Breaking chages :bangbang:
 
-## :dizzy: New features :dizzy:
-
 ## :sparkles: UI changes :sparkles:
 
 ## :star: Examples :star:
@@ -19,6 +17,10 @@ Release notes for `TODO`.
 
 ## :guitar: Misc :guitar:
 -->
+
+## :dizzy: New features :dizzy:
+
+- Added timeout support in `try` and `catch` handlers
 
 ## :wrench: Fixes :wrench:
 

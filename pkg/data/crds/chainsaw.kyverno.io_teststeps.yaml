@@ -115,6 +115,10 @@ spec:
                             Useful for sensitive logs or to reduce noise.
                           type: boolean
                       type: object
+                    timeout:
+                      description: Timeout for the operation. Overrides the global
+                        timeout set in the Configuration.
+                      type: string
                   type: object
                 type: array
               finally:
@@ -198,6 +202,10 @@ spec:
                             Useful for sensitive logs or to reduce noise.
                           type: boolean
                       type: object
+                    timeout:
+                      description: Timeout for the operation. Overrides the global
+                        timeout set in the Configuration.
+                      type: string
                   type: object
                 type: array
               skipDelete:
