@@ -184,17 +184,17 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd, nil))
+			register(p.commandOperation(ctx, *cmd, handler.Timeout))
 		} else if handler.Events != nil {
 			cmd, err := collect.Events(handler.Events)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd, nil))
+			register(p.commandOperation(ctx, *cmd, handler.Timeout))
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, *handler.Command, nil))
+			register(p.commandOperation(ctx, *handler.Command, handler.Timeout))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, *handler.Script, nil))
+			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -216,17 +216,17 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd, nil))
+			register(p.commandOperation(ctx, *cmd, handler.Timeout))
 		} else if handler.Events != nil {
 			cmd, err := collect.Events(handler.Events)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd, nil))
+			register(p.commandOperation(ctx, *cmd, handler.Timeout))
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, *handler.Command, nil))
+			register(p.commandOperation(ctx, *handler.Command, handler.Timeout))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, *handler.Script, nil))
+			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
 		} else {
 			return nil, errors.New("no operation found")
 		}
