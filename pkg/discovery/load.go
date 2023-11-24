@@ -103,6 +103,24 @@ func LoadTest(fileName string, path string) (*Test, error) {
 					}
 				}
 			}
+			var assertFiles []string
+			var errorFiles []string
+			var otherFiles []string
+			for _, file := range manifestFiles {
+				groups := StepFileName.FindStringSubmatch(file)
+				switch groups[2] {
+				case "assert":
+					assertFiles = append(assertFiles, file)
+				case "error":
+					errorFiles = append(errorFiles, file)
+				default:
+					otherFiles = append(otherFiles, file)
+				}
+			}
+			manifestFiles = []string{}
+			manifestFiles = append(manifestFiles, otherFiles...)
+			manifestFiles = append(manifestFiles, assertFiles...)
+			manifestFiles = append(manifestFiles, errorFiles...)
 			for _, file := range manifestFiles {
 				groups := StepFileName.FindStringSubmatch(file)
 				step, ok := stepsMap[groups[1]]
