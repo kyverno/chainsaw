@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/validation/field"
