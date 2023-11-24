@@ -155,7 +155,8 @@ func migrate(out io.Writer, path string, resource unstructured.Unstructured, tes
 				return nil, false, err
 			}
 			if step.GetName() == "" {
-				step.SetName(strings.ToLower(strings.ReplaceAll(groups[2], "_", "-")))
+				groups := discovery.StepFileName.FindStringSubmatch(filepath.Base(path))
+				step.SetName(groups[2])
 			}
 			// Append TestAsserts (Catch objects) to the TestStep if they exist for this index
 			if catchArray, ok := testAssertsMap[index]; ok {
