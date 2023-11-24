@@ -23,3 +23,4 @@ Release notes for `TODO`.
 ## :wrench: Fixes :wrench:
 
 - Fixed a kuttl migration failure in case of unsupported file name
+- Fixed a potential invalid name when migrating a kuttl test step
