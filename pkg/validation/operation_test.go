@@ -31,7 +31,8 @@ func TestValidateOperation(t *testing.T) {
 			FileRef: v1alpha1.FileRef{
 				File: "example.yaml",
 			},
-		}}
+		},
+	}
 	exampleDelete := &v1alpha1.Delete{
 		ObjectReference: v1alpha1.ObjectReference{
 			APIVersion: "v1",
