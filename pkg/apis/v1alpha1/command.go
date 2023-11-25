@@ -13,7 +13,7 @@ type Command struct {
 	// +optional
 	SkipLogOutput bool `json:"skipLogOutput,omitempty"`
 
-	// Check is an assertion tree to validate outcome.
+	// Check is an assertion tree to validate the operation outcome.
 	// +optional
 	Check *Check `json:"check,omitempty"`
 }
