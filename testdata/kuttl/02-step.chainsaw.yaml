@@ -3,17 +3,16 @@ apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: TestStep
 metadata:
   creationTimestamp: null
+  name: step
 spec:
   catch:
   - command:
       args:
       - hello
-      check: null
       entrypoint: echo
   - command:
       args:
       - "1"
-      check: null
       entrypoint: sleep
   timeouts: {}
   try:
@@ -30,12 +29,10 @@ spec:
       apiVersion: v1
       kind: Pod
   - script:
-      check: null
       content: echo "hello world"
       skipLogOutput: true
   - command:
       args:
       - hello world
-      check: null
       entrypoint: echo
       skipLogOutput: true
