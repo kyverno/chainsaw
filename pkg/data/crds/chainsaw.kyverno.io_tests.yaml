@@ -283,6 +283,8 @@ spec:
                     try:
                       description: Try defines what the step will try to execute.
                       items:
+                        description: Operation defines a single operation, only one
+                          action is permitted for a given operation.
                         properties:
                           apply:
                             description: Apply represents resources that should be

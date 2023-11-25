@@ -5,11 +5,11 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
-	kjsonv1alpha1 "github.com/kyverno/kyverno-json/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -39,7 +39,7 @@ func Test_create(t *testing.T) {
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
-		check       *kjsonv1alpha1.Any
+		check       *v1alpha1.Check
 		expectedErr error
 	}{
 		{
@@ -130,7 +130,7 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			check: &kjsonv1alpha1.Any{
+			check: &v1alpha1.Check{
 				Value: map[string]interface{}{
 					"error": "some arbitrary error",
 				},
@@ -162,7 +162,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			check: &kjsonv1alpha1.Any{
+			check: &v1alpha1.Check{
 				Value: map[string]interface{}{
 					"(error != null)": true,
 				},

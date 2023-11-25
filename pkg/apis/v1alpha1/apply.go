@@ -1,9 +1,5 @@
 package v1alpha1
 
-import (
-	"github.com/kyverno/kyverno-json/pkg/apis/v1alpha1"
-)
-
 // Apply represents a set of configurations or resources that
 // should be applied during testing.
 type Apply struct {
@@ -16,5 +12,5 @@ type Apply struct {
 
 	// Check is an assertion tree to validate outcome.
 	// +optional
-	Check *v1alpha1.Any `json:"check,omitempty"`
+	Check *Check `json:"check,omitempty"`
 }
