@@ -55,7 +55,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
 	cmd.Dir = o.basePath
-	logger.Log(logging.Script, logging.RunStatus, color.BoldFgCyan)
+	logger.Log(logging.Script, logging.RunStatus, color.BoldFgCyan, logging.Section("COMMAND", cmd.String()))
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	cmdErr := cmd.Run()

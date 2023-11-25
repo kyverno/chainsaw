@@ -3,12 +3,12 @@ apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: TestStep
 metadata:
   creationTimestamp: null
+  name: step
 spec:
   catch:
   - command:
       args:
       - hello
-      check: null
       entrypoint: echo
   - podLogs:
       name: nginx
