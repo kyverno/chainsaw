@@ -18,6 +18,7 @@ Release notes for `TODO`.
 
 - Object reference in `delete` is not under the `ref` field
 - Check in `apply` and `create` operations was renamed to `expect` and is now an array of `Expectation`s (a combination of a match and a check)
+- Additional data passed to `check`s are now done using bindings (`$error`, `$stdout`, `$stderr`, etc...)
 
 ## :dizzy: New features :dizzy:
 
