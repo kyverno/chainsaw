@@ -16,6 +16,7 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/apimachinery/pkg/util/wait"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -97,9 +98,6 @@ func (o *operation) createResource(ctx context.Context) error {
 }
 
 func (o *operation) handleCheck(ctx context.Context, err error) error {
-	if len(o.expect) == 0 {
-		return err
-	}
 	actual := map[string]interface{}{
 		"error":    nil,
 		"resource": o.obj,
@@ -108,6 +106,8 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 		actual["error"] = err.Error()
 	}
 	// TODO refactor into a check package
+	matched := false
+	var results field.ErrorList
 	for _, expectation := range o.expect {
 		// if a match is specified, skip the check if the resource doesn't match
 		if expectation.Match != nil && expectation.Match.Value != nil {
@@ -119,13 +119,15 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 				continue
 			}
 		}
+		matched = true
 		errs, validationErr := assert.Validate(ctx, expectation.Check.Value, actual, nil)
 		if validationErr != nil {
 			return validationErr
 		}
-		if err := errs.ToAggregate(); err != nil {
-			return err
-		}
+		results = append(results, errs...)
 	}
-	return nil
+	if !matched {
+		return err
+	}
+	return results.ToAggregate()
 }
