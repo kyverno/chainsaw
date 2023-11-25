@@ -1,6 +1,7 @@
 package discovery
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 
@@ -308,6 +309,18 @@ func TestLoadTest(t *testing.T) {
 			},
 		},
 		wantErr: false,
+	}, {
+		name:     "empty test",
+		fileName: "",
+		path:     filepath.Join(basePath, "empty-test"),
+		want:     nil,
+		wantErr:  false,
+	}, {
+		name:     "multiple tests",
+		fileName: "chainsaw-test.yaml",
+		path:     filepath.Join(basePath, "multiple-tests"),
+		want:     nil,
+		wantErr:  true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -326,4 +339,21 @@ func TestLoadTest(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_tryLoadTest(t *testing.T) {
+	dir := t.TempDir()
+	fileName := "chainsaw-test.yaml"
+	filePath := filepath.Join(dir, fileName)
+
+	_, err := os.Create(filePath)
+	if err != nil {
+		t.Fatalf("Failed to create file: %v", err)
+	}
+	err = os.Chmod(filePath, 0o000)
+	if err != nil {
+		t.Fatalf("Failed to change file permissions: %v", err)
+	}
+	_, err = tryLoadTest(filePath)
+	assert.Error(t, err)
 }
