@@ -18,6 +18,7 @@ Release notes for `TODO`.
 
 - Object reference in `delete` is not under the `ref` field
 - Check in `apply` and `create` operations was renamed to `expect` and is now an array of `Expectation`s (a combination of a match and a check)
+- Additional data passed to `check`s are now done using bindings (`$error`, `$stdout`, `$stderr`, etc...)
 
 ## :dizzy: New features :dizzy:
 
@@ -28,6 +29,7 @@ Release notes for `TODO`.
 
 - Fixed a kuttl migration failure in case of unsupported file name
 - Fixed a potential invalid name when migrating a kuttl test step
+- Fixed `check` set to `null` in kuttl migration command
 - Fixed a manifest discovery issue where manifests could be loaded in the wrong order
 - Fixed a manifest discovery issue where error manifests where not discovered correctly
 

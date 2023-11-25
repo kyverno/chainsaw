@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
@@ -85,12 +86,11 @@ func (o *operation) create_Resource(ctx context.Context) error {
 }
 
 func (o *operation) handleCheck(ctx context.Context, err error) error {
-	actual := map[string]interface{}{
-		"error":    nil,
-		"resource": o.obj,
-	}
-	if err != nil {
-		actual["error"] = err.Error()
+	bindings := binding.NewBindings()
+	if err == nil {
+		bindings = bindings.Register("$error", binding.NewBinding(nil))
+	} else {
+		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
 	// TODO refactor into a check package
 	matched := false
@@ -107,7 +107,7 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 			}
 		}
 		matched = true
-		errs, validationErr := assert.Validate(ctx, expectation.Check.Value, actual, nil)
+		errs, validationErr := assert.Validate(ctx, expectation.Check.Value, o.obj, bindings)
 		if validationErr != nil {
 			return validationErr
 		}
