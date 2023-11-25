@@ -246,7 +246,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 		resource := resources[i]
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opapply.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check),
+			operation: opapply.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect),
 		})
 		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
 			addDelay = true
@@ -303,7 +303,7 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create,
 		resource := resources[i]
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opcreate.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check),
+			operation: opcreate.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect),
 		})
 		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
 			addDelay = true
@@ -334,7 +334,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete,
 	resource.SetLabels(op.Labels)
 	return &operation{
 		timeout:   timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
-		operation: opdelete.New(p.client, &resource, p.namespacer),
+		operation: opdelete.New(p.client, &resource, p.namespacer, op.Check),
 	}, nil
 }
 
@@ -397,7 +397,7 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 				operation := operation{
 					continueOnError: true,
 					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, p.step.Spec.Timeouts.Cleanup, nil),
-					operation:       opdelete.New(c, obj, p.namespacer),
+					operation:       opdelete.New(c, obj, p.namespacer, nil),
 				}
 				operation.execute(ctx)
 			})

@@ -300,19 +300,21 @@ spec:
                                 description: Expect defines a list of matched checks
                                   to validate the operation outcome.
                                 items:
-                                  description: MatchedCheck represents a check be
+                                  description: Expectation represents a check to be
                                     applied on the result of an operation with a match
                                     filter to determine if the verification should
                                     be considered.
                                   properties:
+                                    check:
+                                      description: Match defines the matching statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
                                       type: object
                                       x-kubernetes-preserve-unknown-fields: true
-                                    verify:
-                                      description: Match defines the matching statement.
-                                      type: object
-                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - check
                                   type: object
                                 type: array
                               file:
@@ -375,19 +377,21 @@ spec:
                                 description: Expect defines a list of matched checks
                                   to validate the operation outcome.
                                 items:
-                                  description: MatchedCheck represents a check be
+                                  description: Expectation represents a check to be
                                     applied on the result of an operation with a match
                                     filter to determine if the verification should
                                     be considered.
                                   properties:
+                                    check:
+                                      description: Match defines the matching statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
                                       type: object
                                       x-kubernetes-preserve-unknown-fields: true
-                                    verify:
-                                      description: Match defines the matching statement.
-                                      type: object
-                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - check
                                   type: object
                                 type: array
                               file:
@@ -402,32 +406,42 @@ spec:
                           delete:
                             description: Delete represents a creation operation.
                             properties:
-                              apiVersion:
-                                description: API version of the referent.
-                                type: string
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
-                              kind:
-                                description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-                                type: string
-                              labels:
-                                additionalProperties:
-                                  type: string
-                                description: Label selector to match objects to delete
+                              ref:
+                                description: ObjectReference determines objects to
+                                  be deleted.
+                                properties:
+                                  apiVersion:
+                                    description: API version of the referent.
+                                    type: string
+                                  kind:
+                                    description: 'Kind of the referent. More info:
+                                      https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                                    type: string
+                                  labels:
+                                    additionalProperties:
+                                      type: string
+                                    description: Label selector to match objects to
+                                      delete
+                                    type: object
+                                  name:
+                                    description: 'Name of the referent. More info:
+                                      https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                    type: string
+                                  namespace:
+                                    description: 'Namespace of the referent. More
+                                      info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                    type: string
+                                required:
+                                - apiVersion
+                                - kind
                                 type: object
-                              name:
-                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
-                                type: string
-                              namespace:
-                                description: 'Namespace of the referent. More info:
-                                  https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                                type: string
                             required:
-                            - apiVersion
-                            - kind
+                            - ref
                             type: object
                           error:
                             description: Error represents the expected errors for

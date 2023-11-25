@@ -3,8 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## :bangbang: Breaking chages :bangbang:
-
 ## :sparkles: UI changes :sparkles:
 
 ## :star: Examples :star:
@@ -16,9 +14,15 @@ Release notes for `TODO`.
 ## :guitar: Misc :guitar:
 -->
 
+## :bangbang: Breaking chages :bangbang:
+
+- Object reference in `delete` is not under the `ref` field
+- Check in `apply` and `create` operations was renamed to `expect` and is now an array of `Expectation`s (a combination of a match and a check)
+
 ## :dizzy: New features :dizzy:
 
 - Added timeout support in `try` and `catch` handlers
+- Added assertion tree check in `delete` operation
 
 ## :wrench: Fixes :wrench:
 

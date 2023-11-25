@@ -59,15 +59,16 @@ func (o *operation) deleteResource(ctx context.Context, logger logging.Logger) e
 		}
 		return err
 	}
+	var deleted []unstructured.Unstructured
 	for i := range candidates {
 		candidate := candidates[i]
 		if err := o.tryDeleteCandidate(ctx, &candidate); err != nil {
 			return err
 		}
+		deleted = append(deleted, candidate)
 	}
-
-	for i := range candidates {
-		candidate := candidates[i]
+	for i := range deleted {
+		candidate := deleted[i]
 		if err := o.waitForDeletion(ctx, &candidate); err != nil {
 			return err
 		}
@@ -84,19 +85,15 @@ func (o *operation) tryDeleteCandidate(ctx context.Context, candidate *unstructu
 
 func (o *operation) waitForDeletion(ctx context.Context, candidate *unstructured.Unstructured) error {
 	gvk := candidate.GetObjectKind().GroupVersionKind()
-	return o.handleCheck(
-		ctx,
-		candidate,
-		wait.PollUntilContextCancel(ctx, internal.PollInterval, true, func(ctx context.Context) (bool, error) {
-			var actual unstructured.Unstructured
-			actual.SetGroupVersionKind(gvk)
-			err := o.client.Get(ctx, client.ObjectKey(candidate), &actual)
-			if kerrors.IsNotFound(err) {
-				return true, nil
-			}
-			return false, err
-		}),
-	)
+	return wait.PollUntilContextCancel(ctx, internal.PollInterval, true, func(ctx context.Context) (bool, error) {
+		var actual unstructured.Unstructured
+		actual.SetGroupVersionKind(gvk)
+		err := o.client.Get(ctx, client.ObjectKey(candidate), &actual)
+		if kerrors.IsNotFound(err) {
+			return true, nil
+		}
+		return false, err
+	})
 }
 
 func (o *operation) handleCheck(ctx context.Context, candidate *unstructured.Unstructured, err error) error {

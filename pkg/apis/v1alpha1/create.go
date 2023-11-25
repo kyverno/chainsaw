@@ -12,5 +12,5 @@ type Create struct {
 
 	// Expect defines a list of matched checks to validate the operation outcome.
 	// +optional
-	Expect []MatchedCheck `json:"expect,omitempty"`
+	Expect []Expectation `json:"expect,omitempty"`
 }

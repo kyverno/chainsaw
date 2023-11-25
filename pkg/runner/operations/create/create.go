@@ -24,16 +24,16 @@ type operation struct {
 	obj        ctrlclient.Object
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
-	check      *v1alpha1.Check
+	expect     []v1alpha1.Expectation
 }
 
-func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, check *v1alpha1.Check) operations.Operation {
+func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, expect []v1alpha1.Expectation) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,
 		namespacer: namespacer,
 		cleaner:    cleaner,
-		check:      check,
+		expect:     expect,
 	}
 }
 
@@ -84,7 +84,7 @@ func (o *operation) create_Resource(ctx context.Context) error {
 }
 
 func (o *operation) handleCheck(ctx context.Context, err error) error {
-	if o.check == nil || o.check.Value == nil {
+	if len(o.expect) == 0 {
 		return err
 	}
 	actual := map[string]interface{}{
@@ -94,9 +94,16 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 	if err != nil {
 		actual["error"] = err.Error()
 	}
-	errs, validationErr := assert.Validate(ctx, o.check.Value, actual, nil)
-	if validationErr != nil {
-		return validationErr
+	for _, check := range o.expect {
+		// TODO match
+		// TODO refactor into a check package
+		errs, validationErr := assert.Validate(ctx, check.Check.Value, actual, nil)
+		if validationErr != nil {
+			return validationErr
+		}
+		if err := errs.ToAggregate(); err != nil {
+			return err
+		}
 	}
-	return errs.ToAggregate()
+	return nil
 }
