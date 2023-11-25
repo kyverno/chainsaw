@@ -195,13 +195,12 @@ func TestHelpDiscoverTests(t *testing.T) {
 			assert.Equal(t, tc.expectedTestCount, len(tests), "Unexpected number of tests returned")
 		})
 	}
-
 }
 
 func TestDiscoverTests_UnreadableFolder(t *testing.T) {
 	tempDir := t.TempDir()
 
-	err := os.Chmod(tempDir, 0000)
+	err := os.Chmod(tempDir, 0o000)
 	if err != nil {
 		t.Fatalf("Failed to change directory permissions: %v", err)
 	}
