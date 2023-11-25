@@ -30,3 +30,7 @@ Release notes for `TODO`.
 ## :books: Docs :books:
 
 - Added missing descriptions on API reference docs
+
+## :guitar: Misc :guitar:
+
+- Added command line log in `command` and `script` operations
