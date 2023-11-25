@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -62,15 +63,15 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	if o.script.Check == nil || o.script.Check.Value == nil {
 		return cmdErr
 	} else {
-		actual := map[string]interface{}{
-			"error":  nil,
-			"stdout": output.Out(),
-			"stderr": output.Err(),
+		bindings := binding.NewBindings()
+		if err == nil {
+			bindings.Register("$error", binding.NewBinding(nil))
+		} else {
+			bindings.Register("$error", binding.NewBinding(err.Error()))
 		}
-		if cmdErr != nil {
-			actual["error"] = cmdErr.Error()
-		}
-		errs, err := assert.Validate(ctx, o.script.Check.Value, actual, nil)
+		bindings.Register("$stdout", binding.NewBinding(output.Out()))
+		bindings.Register("$stderr", binding.NewBinding(output.Err()))
+		errs, err := assert.Validate(ctx, o.script.Check.Value, nil, bindings)
 		if err != nil {
 			return err
 		}

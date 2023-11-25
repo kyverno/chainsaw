@@ -3,6 +3,7 @@ package delete
 import (
 	"context"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -100,14 +101,13 @@ func (o *operation) handleCheck(ctx context.Context, candidate *unstructured.Uns
 	if o.check == nil || o.check.Value == nil {
 		return err
 	}
-	actual := map[string]interface{}{
-		"error":    nil,
-		"resource": candidate.Object,
+	bindings := binding.NewBindings()
+	if err == nil {
+		bindings.Register("$error", binding.NewBinding(nil))
+	} else {
+		bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
-	if err != nil {
-		actual["error"] = err.Error()
-	}
-	errs, validationErr := assert.Validate(ctx, o.check.Value, actual, nil)
+	errs, validationErr := assert.Validate(ctx, o.check.Value, candidate, bindings)
 	if validationErr != nil {
 		return validationErr
 	}
