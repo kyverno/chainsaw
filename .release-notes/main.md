@@ -13,8 +13,6 @@ Release notes for `TODO`.
 
 ## :wrench: Fixes :wrench:
 
-## :books: Docs :books:
-
 ## :guitar: Misc :guitar:
 -->
 
@@ -28,3 +26,7 @@ Release notes for `TODO`.
 - Fixed a potential invalid name when migrating a kuttl test step
 - Fixed a manifest discovery issue where manifests could be loaded in the wrong order
 - Fixed a manifest discovery issue where error manifests where not discovered correctly
+
+## :books: Docs :books:
+
+- Added missing descriptions on API reference docs

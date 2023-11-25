@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	kjsonv1alpha1 "github.com/kyverno/kyverno-json/pkg/apis/v1alpha1"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -25,10 +25,10 @@ type operation struct {
 	obj        ctrlclient.Object
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
-	check      *kjsonv1alpha1.Any
+	check      *v1alpha1.Check
 }
 
-func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, check *kjsonv1alpha1.Any) operations.Operation {
+func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, check *v1alpha1.Check) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,

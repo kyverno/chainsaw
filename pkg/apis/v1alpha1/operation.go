@@ -4,6 +4,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// Operation defines a single operation, only one action is permitted for a given operation.
 type Operation struct {
 	// Timeout for the operation. Overrides the global timeout set in the Configuration.
 	// +optional

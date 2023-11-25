@@ -286,6 +286,9 @@ For multiple objects use labels.</p>
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
+<p>Operation defines a single operation, only one action is permitted for a given operation.</p>
+
+
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
