@@ -133,7 +133,7 @@ func Test_create(t *testing.T) {
 			expect: []v1alpha1.Expectation{{
 				Check: v1alpha1.Check{
 					Value: map[string]interface{}{
-						"error": "some arbitrary error",
+						"($error)": "some arbitrary error",
 					},
 				},
 			}},
@@ -167,11 +167,11 @@ func Test_create(t *testing.T) {
 			expect: []v1alpha1.Expectation{{
 				Check: v1alpha1.Check{
 					Value: map[string]interface{}{
-						"(error != null)": true,
+						"($error != null)": true,
 					},
 				},
 			}},
-			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
+			expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
 		},
 	}
 	for _, tt := range tests {

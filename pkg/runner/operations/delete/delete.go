@@ -103,9 +103,9 @@ func (o *operation) handleCheck(ctx context.Context, candidate *unstructured.Uns
 	}
 	bindings := binding.NewBindings()
 	if err == nil {
-		bindings.Register("$error", binding.NewBinding(nil))
+		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {
-		bindings.Register("$error", binding.NewBinding(err.Error()))
+		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
 	errs, validationErr := assert.Validate(ctx, o.check.Value, candidate, bindings)
 	if validationErr != nil {

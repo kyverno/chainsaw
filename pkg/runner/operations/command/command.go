@@ -66,12 +66,12 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	} else {
 		bindings := binding.NewBindings()
 		if err == nil {
-			bindings.Register("$error", binding.NewBinding(nil))
+			bindings = bindings.Register("$error", binding.NewBinding(nil))
 		} else {
-			bindings.Register("$error", binding.NewBinding(err.Error()))
+			bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 		}
-		bindings.Register("$stdout", binding.NewBinding(output.Out()))
-		bindings.Register("$stderr", binding.NewBinding(output.Err()))
+		bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
+		bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
 		errs, err := assert.Validate(ctx, o.command.Check.Value, nil, bindings)
 		if err != nil {
 			return err

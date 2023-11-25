@@ -170,11 +170,11 @@ func Test_apply(t *testing.T) {
 			expect: []v1alpha1.Expectation{{
 				Check: v1alpha1.Check{
 					Value: map[string]interface{}{
-						"(error != null)": true,
+						"($error != null)": true,
 					},
 				},
 			}},
-			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
+			expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
 		},
 		{
 			name:   "Unexpected create success when should fail",
@@ -190,11 +190,11 @@ func Test_apply(t *testing.T) {
 			expect: []v1alpha1.Expectation{{
 				Check: v1alpha1.Check{
 					Value: map[string]interface{}{
-						"(error != null)": true,
+						"($error != null)": true,
 					},
 				},
 			}},
-			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
+			expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
 		},
 		{
 			name:   "Expected patch failure",
@@ -211,7 +211,7 @@ func Test_apply(t *testing.T) {
 			expect: []v1alpha1.Expectation{{
 				Check: v1alpha1.Check{
 					Value: map[string]interface{}{
-						"error": "expected patch failure",
+						"($error)": "expected patch failure",
 					},
 				},
 			}},
@@ -231,7 +231,7 @@ func Test_apply(t *testing.T) {
 			expect: []v1alpha1.Expectation{{
 				Check: v1alpha1.Check{
 					Value: map[string]interface{}{
-						"error": "expected create failure",
+						"($error)": "expected create failure",
 					},
 				},
 			}},
