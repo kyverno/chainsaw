@@ -1,6 +1,7 @@
 package discovery
 
 import (
+	"os"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -144,12 +145,6 @@ func TestDiscoverTests(t *testing.T) {
 			},
 		}},
 		wantErr: false,
-	}, {
-		name:     "unreadable-folder",
-		fileName: "chainsaw-test.yaml",
-		paths:    []string{"../../testdata/discovery/unreadable"},
-		want:     nil,
-		wantErr:  true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -201,4 +196,16 @@ func TestHelpDiscoverTests(t *testing.T) {
 		})
 	}
 
+}
+
+func TestDiscoverTests_UnreadableFolder(t *testing.T) {
+	tempDir := t.TempDir()
+
+	err := os.Chmod(tempDir, 0000)
+	if err != nil {
+		t.Fatalf("Failed to change directory permissions: %v", err)
+	}
+
+	_, err = DiscoverTests("chainsaw-test.yaml", tempDir)
+	assert.Error(t, err, "Expected an error for unreadable folder")
 }
