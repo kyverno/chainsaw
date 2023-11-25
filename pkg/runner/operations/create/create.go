@@ -94,10 +94,19 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 	if err != nil {
 		actual["error"] = err.Error()
 	}
-	for _, check := range o.expect {
-		// TODO match
-		// TODO refactor into a check package
-		errs, validationErr := assert.Validate(ctx, check.Check.Value, actual, nil)
+	// TODO refactor into a check package
+	for _, expectation := range o.expect {
+		// if a match is specified, skip the check if the resource doesn't match
+		if expectation.Match != nil && expectation.Match.Value != nil {
+			errs, validationErr := assert.Validate(ctx, expectation.Match.Value, o.obj, nil)
+			if validationErr != nil {
+				return validationErr
+			}
+			if len(errs) != 0 {
+				continue
+			}
+		}
+		errs, validationErr := assert.Validate(ctx, expectation.Check.Value, actual, nil)
 		if validationErr != nil {
 			return validationErr
 		}
