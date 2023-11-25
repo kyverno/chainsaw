@@ -29,6 +29,7 @@ Release notes for `TODO`.
 
 - Fixed a kuttl migration failure in case of unsupported file name
 - Fixed a potential invalid name when migrating a kuttl test step
+- Fixed `check` set to `null` in kuttl migration command
 - Fixed a manifest discovery issue where manifests could be loaded in the wrong order
 - Fixed a manifest discovery issue where error manifests where not discovered correctly
 
