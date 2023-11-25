@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -161,4 +162,43 @@ func TestDiscoverTests(t *testing.T) {
 			require.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func TestHelpDiscoverTests(t *testing.T) {
+	type testCase struct {
+		name              string
+		folders           []string
+		expectedTestCount int
+		expectError       bool
+	}
+
+	testCases := []testCase{
+		{
+			name:              "Successful Discovery",
+			folders:           []string{"../../testdata/discovery/test"},
+			expectedTestCount: 1,
+			expectError:       false,
+		},
+		{
+			name:              "LoadTest Returns Error",
+			folders:           []string{"folder1"},
+			expectedTestCount: 0,
+			expectError:       true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			tests, err := helpDiscoverTests("chainsaw-test.yaml", func() []string {
+				return tc.folders
+			})
+			if tc.expectError {
+				require.Error(t, err, "Expected an error but got none")
+			} else {
+				require.NoError(t, err, "Expected no error but got one")
+			}
+			assert.Equal(t, tc.expectedTestCount, len(tests), "Unexpected number of tests returned")
+		})
+	}
+
 }
