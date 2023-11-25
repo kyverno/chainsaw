@@ -8,7 +8,8 @@ import (
 func ValidateDelete(path *field.Path, obj *v1alpha1.Delete) field.ErrorList {
 	var errs field.ErrorList
 	if obj != nil {
-		errs = append(errs, ValidateObjectReference(path, obj.ObjectReference)...)
+		errs = append(errs, ValidateObjectReference(path.Child("ref"), obj.ObjectReference)...)
+		errs = append(errs, ValidateCheck(path.Child("check"), obj.Check)...)
 	}
 	return errs
 }

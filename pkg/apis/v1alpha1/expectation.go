@@ -1,11 +1,12 @@
 package v1alpha1
 
-// MatchedCheck represents a check be applied on the result of an operation
+// Expectation represents a check to be applied on the result of an operation
 // with a match filter to determine if the verification should be considered.
-type MatchedCheck struct {
+type Expectation struct {
 	// Match defines the matching statement.
+	// +optional
 	Match *Check `json:"match,omitempty"`
 
 	// Match defines the matching statement.
-	Verify *Check `json:"verify,omitempty"`
+	Check Check `json:"check"`
 }

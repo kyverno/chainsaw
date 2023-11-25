@@ -18,10 +18,11 @@ spec:
     timeout: 15s
     continueOnError: true
   - delete:
-      apiVersion: v1
-      kind: Pod
-      name: example-pod
-      namespace: test
+      ref:
+        apiVersion: v1
+        kind: Pod
+        name: example-pod
+        namespace: test
     timeout: 10s
     continueOnError: false
   - command:

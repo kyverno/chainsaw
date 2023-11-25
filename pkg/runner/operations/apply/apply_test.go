@@ -54,7 +54,7 @@ func Test_apply(t *testing.T) {
 		name        string
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
-		check       *v1alpha1.Check
+		expect      []v1alpha1.Expectation
 		expectedErr error
 	}{
 		{
@@ -69,7 +69,7 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: nil,
 		},
 		{
@@ -84,7 +84,7 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: nil,
 		},
 		{
@@ -98,7 +98,7 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: nil,
 		},
 		{
@@ -112,7 +112,7 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: nil,
 		},
 		{
@@ -123,7 +123,7 @@ func Test_apply(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: errors.New("some arbitrary error"),
 		},
 		{
@@ -138,7 +138,7 @@ func Test_apply(t *testing.T) {
 					return errors.New("patch failed")
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: errors.New("patch failed"),
 		},
 		{
@@ -152,7 +152,7 @@ func Test_apply(t *testing.T) {
 					return errors.New("create failed")
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: errors.New("create failed"),
 		},
 		{
@@ -167,11 +167,13 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			check: &v1alpha1.Check{
-				Value: map[string]interface{}{
-					"(error != null)": true,
+			expect: []v1alpha1.Expectation{{
+				Check: v1alpha1.Check{
+					Value: map[string]interface{}{
+						"(error != null)": true,
+					},
 				},
-			},
+			}},
 			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
 		},
 		{
@@ -185,11 +187,13 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			check: &v1alpha1.Check{
-				Value: map[string]interface{}{
-					"(error != null)": true,
+			expect: []v1alpha1.Expectation{{
+				Check: v1alpha1.Check{
+					Value: map[string]interface{}{
+						"(error != null)": true,
+					},
 				},
-			},
+			}},
 			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
 		},
 		{
@@ -204,11 +208,13 @@ func Test_apply(t *testing.T) {
 					return errors.New("expected patch failure")
 				},
 			},
-			check: &v1alpha1.Check{
-				Value: map[string]interface{}{
-					"error": "expected patch failure",
+			expect: []v1alpha1.Expectation{{
+				Check: v1alpha1.Check{
+					Value: map[string]interface{}{
+						"error": "expected patch failure",
+					},
 				},
-			},
+			}},
 			expectedErr: nil,
 		},
 		{
@@ -222,11 +228,13 @@ func Test_apply(t *testing.T) {
 					return errors.New("expected create failure")
 				},
 			},
-			check: &v1alpha1.Check{
-				Value: map[string]interface{}{
-					"error": "expected create failure",
+			expect: []v1alpha1.Expectation{{
+				Check: v1alpha1.Check{
+					Value: map[string]interface{}{
+						"error": "expected create failure",
+					},
 				},
-			},
+			}},
 			expectedErr: nil,
 		},
 		{
@@ -240,7 +248,7 @@ func Test_apply(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: nil,
 		},
 	}
@@ -251,7 +259,7 @@ func Test_apply(t *testing.T) {
 			operation := operation{
 				client: tt.client,
 				obj:    tt.object,
-				check:  tt.check,
+				expect: tt.expect,
 			}
 			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {

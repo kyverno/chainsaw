@@ -16,6 +16,7 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/apimachinery/pkg/util/wait"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -25,16 +26,16 @@ type operation struct {
 	obj        ctrlclient.Object
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
-	check      *v1alpha1.Check
+	expect     []v1alpha1.Expectation
 }
 
-func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, check *v1alpha1.Check) operations.Operation {
+func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, expect []v1alpha1.Expectation) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,
 		namespacer: namespacer,
 		cleaner:    cleaner,
-		check:      check,
+		expect:     expect,
 	}
 }
 
@@ -97,9 +98,6 @@ func (o *operation) createResource(ctx context.Context) error {
 }
 
 func (o *operation) handleCheck(ctx context.Context, err error) error {
-	if o.check == nil || o.check.Value == nil {
-		return err
-	}
 	actual := map[string]interface{}{
 		"error":    nil,
 		"resource": o.obj,
@@ -107,9 +105,29 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 	if err != nil {
 		actual["error"] = err.Error()
 	}
-	errs, validationErr := assert.Validate(ctx, o.check.Value, actual, nil)
-	if validationErr != nil {
-		return validationErr
+	// TODO refactor into a check package
+	matched := false
+	var results field.ErrorList
+	for _, expectation := range o.expect {
+		// if a match is specified, skip the check if the resource doesn't match
+		if expectation.Match != nil && expectation.Match.Value != nil {
+			errs, validationErr := assert.Validate(ctx, expectation.Match.Value, o.obj, nil)
+			if validationErr != nil {
+				return validationErr
+			}
+			if len(errs) != 0 {
+				continue
+			}
+		}
+		matched = true
+		errs, validationErr := assert.Validate(ctx, expectation.Check.Value, actual, nil)
+		if validationErr != nil {
+			return validationErr
+		}
+		results = append(results, errs...)
 	}
-	return errs.ToAggregate()
+	if !matched {
+		return err
+	}
+	return results.ToAggregate()
 }
