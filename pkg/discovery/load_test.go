@@ -206,7 +206,7 @@ func TestLoadTest(t *testing.T) {
 		},
 		wantErr: false,
 	}, {
-		name:     "steps",
+		name:     "steps and manifests",
 		fileName: "chainsaw-test.yaml",
 		path:     filepath.Join(basePath, "steps-and-manifests"),
 		want: &Test{
@@ -315,13 +315,48 @@ func TestLoadTest(t *testing.T) {
 		path:     filepath.Join(basePath, "empty-test"),
 		want:     nil,
 		wantErr:  false,
-	}, {
-		name:     "multiple tests",
-		fileName: "chainsaw-test.yaml",
-		path:     filepath.Join(basePath, "multiple-tests"),
-		want:     nil,
-		wantErr:  true,
-	}}
+	},
+
+		{
+			name:     "multiple tests",
+			fileName: "chainsaw-test.yaml",
+			path:     filepath.Join(basePath, "multiple-tests"),
+			want: &Test{
+				BasePath: "../../testdata/discovery/multiple-tests",
+				Test: &v1alpha1.Test{
+					TypeMeta: metav1.TypeMeta{
+						APIVersion: "chainsaw.kyverno.io/v1alpha1",
+						Kind:       "Test",
+					},
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "multiple-tests",
+					},
+					Spec: v1alpha1.TestSpec{},
+				},
+			},
+			wantErr: false,
+		},
+		// {
+		// 	name:     "multiple steps",
+		// 	fileName: "",
+		// 	path:     filepath.Join(basePath, "multiple-steps"),
+		// 	want: &Test{
+		// 		BasePath: "../../testdata/discovery/multiple-steps",
+		// 		Test: &v1alpha1.Test{
+		// 			TypeMeta: metav1.TypeMeta{
+		// 				APIVersion: "chainsaw.kyverno.io/v1alpha1",
+		// 				Kind:       "Test",
+		// 			},
+		// 			ObjectMeta: metav1.ObjectMeta{
+		// 				Name: "multiple-steps",
+		// 			},
+		// 			Spec: v1alpha1.TestSpec{},
+		// 		},
+		// 	},
+		// 	wantErr: false,
+		// }
+
+	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := LoadTest(tt.fileName, tt.path)
