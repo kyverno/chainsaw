@@ -54,9 +54,9 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 func (o *operation) pollForAssertion(ctx context.Context) error {
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
-		candidates, errs, err := o.fetchAndValidateCandidates(ctx)
+		candidates, errs, updateErrs, err := o.fetchAndValidateCandidates(ctx)
 		if err != nil || len(errs) != 0 {
-			if !kerrors.IsTimeout(err) && !errors.Is(err, context.Canceled) {
+			if updateErrs {
 				lastErrs = errs
 			}
 			return false, err
@@ -75,28 +75,28 @@ func (o *operation) pollForAssertion(ctx context.Context) error {
 	return err
 }
 
-func (o *operation) fetchAndValidateCandidates(ctx context.Context) ([]unstructured.Unstructured, []error, error) {
+func (o *operation) fetchAndValidateCandidates(ctx context.Context) ([]unstructured.Unstructured, []error, bool, error) {
 	candidates, err := internal.Read(ctx, &o.expected, o.client)
 	if err != nil {
 		if kerrors.IsNotFound(err) {
-			return nil, []error{errors.New("actual resource not found")}, nil
+			return nil, []error{errors.New("actual resource not found")}, true, nil
 		}
-		return nil, nil, err
+		return nil, nil, false, err
 	}
 
 	if len(candidates) == 0 {
-		return nil, []error{errors.New("no actual resource found")}, nil
+		return nil, []error{errors.New("no actual resource found")}, true, nil
 	}
 
 	var errs []error
 	for _, candidate := range candidates {
 		if _errs, err := assert.Validate(ctx, o.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil); err != nil {
-			return nil, nil, err
+			return nil, nil, false, err
 		} else if len(_errs) != 0 {
 			errs = appendErrorDetails(errs, candidate, _errs)
 		}
 	}
-	return candidates, errs, nil
+	return candidates, errs, true, nil
 }
 
 func appendErrorDetails(errs []error, candidate unstructured.Unstructured, _errs field.ErrorList) []error {
