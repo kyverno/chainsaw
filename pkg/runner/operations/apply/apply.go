@@ -7,30 +7,29 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/apimachinery/pkg/util/wait"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type operation struct {
 	client     client.Client
-	obj        ctrlclient.Object
+	obj        unstructured.Unstructured
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
 	expect     []v1alpha1.Expectation
 }
 
-func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, expect []v1alpha1.Expectation) operations.Operation {
+func New(client client.Client, obj unstructured.Unstructured, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, expect []v1alpha1.Expectation) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,
@@ -41,7 +40,7 @@ func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Name
 }
 
 func (o *operation) Exec(ctx context.Context) (err error) {
-	logger := logging.FromContext(ctx).WithResource(o.obj)
+	logger := logging.FromContext(ctx).WithResource(&o.obj)
 	defer func() {
 		if err != nil {
 			logger.Log(logging.Apply, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -50,7 +49,7 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		}
 	}()
 	if o.namespacer != nil {
-		if err := o.namespacer.Apply(o.obj); err != nil {
+		if err := o.namespacer.Apply(&o.obj); err != nil {
 			return err
 		}
 	}
@@ -68,7 +67,7 @@ func (o *operation) applyResource(ctx context.Context, logger logging.Logger) er
 func (o *operation) tryApplyResource(ctx context.Context) error {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
-	err := o.client.Get(ctx, client.ObjectKey(o.obj), &actual)
+	err := o.client.Get(ctx, client.ObjectKey(&o.obj), &actual)
 	if err == nil {
 		return o.updateResource(ctx, &actual)
 	}
@@ -79,7 +78,7 @@ func (o *operation) tryApplyResource(ctx context.Context) error {
 }
 
 func (o *operation) updateResource(ctx context.Context, actual *unstructured.Unstructured) error {
-	patched, err := client.PatchObject(actual, o.obj)
+	patched, err := client.PatchObject(actual, &o.obj)
 	if err != nil {
 		return err
 	}
@@ -91,7 +90,7 @@ func (o *operation) updateResource(ctx context.Context, actual *unstructured.Uns
 }
 
 func (o *operation) createResource(ctx context.Context) error {
-	err := o.client.Create(ctx, o.obj)
+	err := o.client.Create(ctx, &o.obj)
 	if err == nil && o.cleaner != nil {
 		o.cleaner(o.obj, o.client)
 	}
@@ -105,29 +104,8 @@ func (o *operation) handleCheck(ctx context.Context, err error) error {
 	} else {
 		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
-	// TODO refactor into a check package
-	matched := false
-	var results field.ErrorList
-	for _, expectation := range o.expect {
-		// if a match is specified, skip the check if the resource doesn't match
-		if expectation.Match != nil && expectation.Match.Value != nil {
-			errs, validationErr := assert.Validate(ctx, expectation.Match.Value, o.obj, nil)
-			if validationErr != nil {
-				return validationErr
-			}
-			if len(errs) != 0 {
-				continue
-			}
-		}
-		matched = true
-		errs, validationErr := assert.Validate(ctx, expectation.Check.Value, o.obj, bindings)
-		if validationErr != nil {
-			return validationErr
-		}
-		results = append(results, errs...)
-	}
-	if !matched {
+	if matched, err := check.Expectations(ctx, o.obj, bindings, o.expect...); matched {
 		return err
 	}
-	return results.ToAggregate()
+	return err
 }

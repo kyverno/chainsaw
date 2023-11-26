@@ -112,7 +112,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 				operation := operation{
 					continueOnError: false,
 					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, nil, nil),
-					operation:       opdelete.New(p.client, namespace, nspacer, nil),
+					operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, nil),
 				}
 				operation.execute(ctx)
 			})
