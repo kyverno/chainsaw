@@ -39,7 +39,7 @@ func Test_create(t *testing.T) {
 		object      ctrlclient.Object
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
-		check       *v1alpha1.Check
+		expect      []v1alpha1.Expectation
 		expectedErr error
 	}{
 		{
@@ -51,7 +51,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: errors.New("the resource already exists in the cluster"),
 		},
 		{
@@ -63,7 +63,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: errors.New("the resource already exists in the cluster"),
 		},
 		{
@@ -77,7 +77,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: nil,
 		},
 		{
@@ -91,7 +91,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: nil,
 		},
 		{
@@ -102,7 +102,7 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: errors.New("some arbitrary error"),
 		},
 		{
@@ -116,7 +116,7 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: errors.New("some arbitrary error"),
 		},
 		{
@@ -130,11 +130,13 @@ func Test_create(t *testing.T) {
 					return errors.New("some arbitrary error")
 				},
 			},
-			check: &v1alpha1.Check{
-				Value: map[string]interface{}{
-					"error": "some arbitrary error",
+			expect: []v1alpha1.Expectation{{
+				Check: v1alpha1.Check{
+					Value: map[string]interface{}{
+						"($error)": "some arbitrary error",
+					},
 				},
-			},
+			}},
 			expectedErr: nil,
 		},
 		{
@@ -148,7 +150,7 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			check:       nil,
+			expect:      nil,
 			expectedErr: nil,
 		},
 		{
@@ -162,12 +164,14 @@ func Test_create(t *testing.T) {
 					return nil
 				},
 			},
-			check: &v1alpha1.Check{
-				Value: map[string]interface{}{
-					"(error != null)": true,
+			expect: []v1alpha1.Expectation{{
+				Check: v1alpha1.Check{
+					Value: map[string]interface{}{
+						"($error != null)": true,
+					},
 				},
-			},
-			expectedErr: errors.New("(error != null): Invalid value: false: Expected value: true"),
+			}},
+			expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
 		},
 	}
 	for _, tt := range tests {
@@ -178,7 +182,7 @@ func Test_create(t *testing.T) {
 				client:  tt.client,
 				obj:     tt.object,
 				cleaner: tt.cleaner,
-				check:   tt.check,
+				expect:  tt.expect,
 			}
 			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {

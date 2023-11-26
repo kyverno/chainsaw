@@ -2,6 +2,7 @@ package processors
 
 import (
 	"context"
+	"sync/atomic"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -40,11 +41,12 @@ func NewTestsProcessor(
 }
 
 type testsProcessor struct {
-	config  v1alpha1.ConfigurationSpec
-	client  client.Client
-	clock   clock.PassiveClock
-	summary *summary.Summary
-	tests   []discovery.Test
+	config         v1alpha1.ConfigurationSpec
+	client         client.Client
+	clock          clock.PassiveClock
+	summary        *summary.Summary
+	tests          []discovery.Test
+	shouldFailFast atomic.Bool
 }
 
 func (p *testsProcessor) Run(ctx context.Context) {
@@ -63,7 +65,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				operation := operation{
 					continueOnError: false,
 					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, nil, nil, nil),
-					operation:       opdelete.New(p.client, namespace.DeepCopy(), nspacer),
+					operation:       opdelete.New(p.client, namespace.DeepCopy(), nspacer, nil),
 				}
 				operation.execute(ctx)
 			})
@@ -79,7 +81,11 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			t.FailNow()
 		}
 		t.Run(name, func(t *testing.T) {
-			t.Helper()
+			t.Cleanup(func() {
+				if t.Failed() {
+					p.shouldFailFast.Store(true)
+				}
+			})
 			processor := p.CreateTestProcessor(test)
 			processor.Run(testing.IntoContext(ctx, t), nspacer)
 		})
@@ -87,5 +93,5 @@ func (p *testsProcessor) Run(ctx context.Context) {
 }
 
 func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor {
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary, test)
+	return NewTestProcessor(p.config, p.client, p.clock, p.summary, test, &p.shouldFailFast)
 }

@@ -6,6 +6,7 @@ require (
 	github.com/dustinkirkland/golang-petname v0.0.0-20231002161417-6a283f1aaaf2
 	github.com/fatih/color v1.16.0
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
+	github.com/jmespath-community/go-jmespath v1.1.2-0.20231004164315-78945398586a
 	github.com/kudobuilder/kuttl v0.15.0
 	github.com/kyverno/kyverno v1.5.0-rc1.0.20231030172702-fb530626ba01
 	github.com/kyverno/kyverno-json v0.0.2-0.20231122195501-65ed240d6bf9
@@ -61,7 +62,6 @@ require (
 	github.com/imdario/mergo v0.3.16 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jinzhu/copier v0.4.0 // indirect
-	github.com/jmespath-community/go-jmespath v1.1.2-0.20231004164315-78945398586a // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect

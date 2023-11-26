@@ -17,17 +17,20 @@ spec:
   timeouts: {}
   try:
   - delete:
-      apiVersion: v1
-      kind: Pod
-      name: my-pod
+      ref:
+        apiVersion: v1
+        kind: Pod
+        name: my-pod
   - delete:
-      apiVersion: v1
-      kind: Pod
-      labels:
-        app: nginx
+      ref:
+        apiVersion: v1
+        kind: Pod
+        labels:
+          app: nginx
   - delete:
-      apiVersion: v1
-      kind: Pod
+      ref:
+        apiVersion: v1
+        kind: Pod
   - script:
       content: echo "hello world"
       skipLogOutput: true

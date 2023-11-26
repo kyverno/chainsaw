@@ -50,7 +50,8 @@ spec:
                             type: string
                           type: array
                         check:
-                          description: Check is an assertion tree to validate outcome.
+                          description: Check is an assertion tree to validate the
+                            operation outcome.
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         entrypoint:
@@ -103,7 +104,8 @@ spec:
                       description: Script defines a script to run.
                       properties:
                         check:
-                          description: Check is an assertion tree to validate outcome.
+                          description: Check is an assertion tree to validate the
+                            operation outcome.
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         content:
@@ -137,7 +139,8 @@ spec:
                             type: string
                           type: array
                         check:
-                          description: Check is an assertion tree to validate outcome.
+                          description: Check is an assertion tree to validate the
+                            operation outcome.
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         entrypoint:
@@ -190,7 +193,8 @@ spec:
                       description: Script defines a script to run.
                       properties:
                         check:
-                          description: Check is an assertion tree to validate outcome.
+                          description: Check is an assertion tree to validate the
+                            operation outcome.
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         content:
@@ -248,14 +252,30 @@ spec:
                         settings or any other resources that need to be available
                         during the test.
                       properties:
-                        check:
-                          description: Check is an assertion tree to validate outcome.
-                          type: object
-                          x-kubernetes-preserve-unknown-fields: true
                         dryRun:
                           description: DryRun determines whether the file should be
                             applied in dry run mode.
                           type: boolean
+                        expect:
+                          description: Expect defines a list of matched checks to
+                            validate the operation outcome.
+                          items:
+                            description: Expectation represents a check to be applied
+                              on the result of an operation with a match filter to
+                              determine if the verification should be considered.
+                            properties:
+                              check:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              match:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - check
+                            type: object
+                          type: array
                         file:
                           description: File is the path to the referenced file.
                           type: string
@@ -282,7 +302,8 @@ spec:
                             type: string
                           type: array
                         check:
-                          description: Check is an assertion tree to validate outcome.
+                          description: Check is an assertion tree to validate the
+                            operation outcome.
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         entrypoint:
@@ -304,14 +325,30 @@ spec:
                     create:
                       description: Create represents a creation operation.
                       properties:
-                        check:
-                          description: Check is an assertion tree to validate outcome.
-                          type: object
-                          x-kubernetes-preserve-unknown-fields: true
                         dryRun:
                           description: DryRun determines whether the file should be
                             applied in dry run mode.
                           type: boolean
+                        expect:
+                          description: Expect defines a list of matched checks to
+                            validate the operation outcome.
+                          items:
+                            description: Expectation represents a check to be applied
+                              on the result of an operation with a match filter to
+                              determine if the verification should be considered.
+                            properties:
+                              check:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              match:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - check
+                            type: object
+                          type: array
                         file:
                           description: File is the path to the referenced file.
                           type: string
@@ -324,26 +361,38 @@ spec:
                     delete:
                       description: Delete represents a creation operation.
                       properties:
-                        apiVersion:
-                          description: API version of the referent.
-                          type: string
-                        kind:
-                          description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
-                          type: string
-                        labels:
-                          additionalProperties:
-                            type: string
-                          description: Label selector to match objects to delete
+                        check:
+                          description: Check is an assertion tree to validate the
+                            operation outcome.
                           type: object
-                        name:
-                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
-                          type: string
-                        namespace:
-                          description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
-                          type: string
+                          x-kubernetes-preserve-unknown-fields: true
+                        ref:
+                          description: ObjectReference determines objects to be deleted.
+                          properties:
+                            apiVersion:
+                              description: API version of the referent.
+                              type: string
+                            kind:
+                              description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                              type: string
+                            labels:
+                              additionalProperties:
+                                type: string
+                              description: Label selector to match objects to delete
+                              type: object
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                              type: string
+                            namespace:
+                              description: 'Namespace of the referent. More info:
+                                https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                              type: string
+                          required:
+                          - apiVersion
+                          - kind
+                          type: object
                       required:
-                      - apiVersion
-                      - kind
+                      - ref
                       type: object
                     error:
                       description: Error represents the expected errors for this test
@@ -359,7 +408,8 @@ spec:
                       description: Script defines a script to run.
                       properties:
                         check:
-                          description: Check is an assertion tree to validate outcome.
+                          description: Check is an assertion tree to validate the
+                            operation outcome.
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         content:

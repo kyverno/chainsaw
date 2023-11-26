@@ -10,7 +10,7 @@ type Create struct {
 	// +optional
 	DryRun *bool `json:"dryRun,omitempty"`
 
-	// Check is an assertion tree to validate outcome.
+	// Expect defines a list of matched checks to validate the operation outcome.
 	// +optional
-	Check *Check `json:"check,omitempty"`
+	Expect []Expectation `json:"expect,omitempty"`
 }
