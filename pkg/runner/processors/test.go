@@ -3,6 +3,7 @@ package processors
 import (
 	"context"
 	"fmt"
+	"sync/atomic"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -30,22 +31,25 @@ func NewTestProcessor(
 	clock clock.PassiveClock,
 	summary *summary.Summary,
 	test discovery.Test,
+	shouldFailFast *atomic.Bool,
 ) TestProcessor {
 	return &testProcessor{
-		config:  config,
-		client:  client,
-		clock:   clock,
-		summary: summary,
-		test:    test,
+		config:         config,
+		client:         client,
+		clock:          clock,
+		summary:        summary,
+		test:           test,
+		shouldFailFast: shouldFailFast,
 	}
 }
 
 type testProcessor struct {
-	config  v1alpha1.ConfigurationSpec
-	client  client.Client
-	clock   clock.PassiveClock
-	summary *summary.Summary
-	test    discovery.Test
+	config         v1alpha1.ConfigurationSpec
+	client         client.Client
+	clock          clock.PassiveClock
+	summary        *summary.Summary
+	test           discovery.Test
+	shouldFailFast *atomic.Bool
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
@@ -78,6 +82,11 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	}
 	if p.test.Spec.Skip != nil && *p.test.Spec.Skip {
 		t.SkipNow()
+	}
+	if p.config.FailFast {
+		if p.shouldFailFast.Load() {
+			t.SkipNow()
+		}
 	}
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	var namespace *corev1.Namespace
