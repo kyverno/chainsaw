@@ -17,7 +17,7 @@ import (
 )
 
 func Test_create(t *testing.T) {
-	pod := &unstructured.Unstructured{
+	pod := unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"apiVersion": "v1",
 			"kind":       "Pod",
@@ -36,144 +36,180 @@ func Test_create(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		object      ctrlclient.Object
+		object      unstructured.Unstructured
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
 		expect      []v1alpha1.Expectation
 		expectedErr error
-	}{
-		{
-			name:   "Resource already exists",
-			object: pod,
-			client: &tclient.FakeClient{
-				GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
-					*obj.(*unstructured.Unstructured) = *pod.DeepCopy()
-					return nil
+	}{{
+		name:   "Resource already exists",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+				*obj.(*unstructured.Unstructured) = pod
+				return nil
+			},
+		},
+		expect:      nil,
+		expectedErr: errors.New("the resource already exists in the cluster"),
+	}, {
+		name:   "Dry Run Resource already exists",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+				*obj.(*unstructured.Unstructured) = pod
+				return nil
+			},
+		},
+		expect:      nil,
+		expectedErr: errors.New("the resource already exists in the cluster"),
+	}, {
+		name:   "Resource does not exist, create it",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+			},
+			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				return nil
+			},
+		},
+		expect:      nil,
+		expectedErr: nil,
+	}, {
+		name:   "Dry Run Resource does not exist, create it",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+			},
+			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				return nil
+			},
+		},
+		expect:      nil,
+		expectedErr: nil,
+	}, {
+		name:   "failed get",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return errors.New("some arbitrary error")
+			},
+		},
+		expect:      nil,
+		expectedErr: errors.New("some arbitrary error"),
+	}, {
+		name:   "failed create",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+			},
+			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				return errors.New("some arbitrary error")
+			},
+		},
+		expect:      nil,
+		expectedErr: errors.New("some arbitrary error"),
+	}, {
+		name:   "failed create (expected)",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+			},
+			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				return errors.New("some arbitrary error")
+			},
+		},
+		expect: []v1alpha1.Expectation{{
+			Check: v1alpha1.Check{
+				Value: map[string]interface{}{
+					"($error)": "some arbitrary error",
 				},
 			},
-			expect:      nil,
-			expectedErr: errors.New("the resource already exists in the cluster"),
+		}},
+		expectedErr: nil,
+	}, {
+		name:   "Cleaner function executed",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+			},
+			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				return nil
+			},
 		},
-		{
-			name:   "Dry Run Resource already exists",
-			object: pod,
-			client: &tclient.FakeClient{
-				GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
-					*obj.(*unstructured.Unstructured) = *pod.DeepCopy()
-					return nil
+		expect:      nil,
+		expectedErr: nil,
+	}, {
+		name:   "Should fail is true but no error occurs",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+			},
+			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				return nil
+			},
+		},
+		expect: []v1alpha1.Expectation{{
+			Check: v1alpha1.Check{
+				Value: map[string]interface{}{
+					"($error != null)": true,
 				},
 			},
-			expect:      nil,
-			expectedErr: errors.New("the resource already exists in the cluster"),
+		}},
+		expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
+	}, {
+		name:   "Don't match",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+			},
+			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				return nil
+			},
 		},
-		{
-			name:   "Resource does not exist, create it",
-			object: pod,
-			client: &tclient.FakeClient{
-				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
-				},
-				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
-					return nil
+		expect: []v1alpha1.Expectation{{
+			Match: &v1alpha1.Check{
+				Value: map[string]interface{}{
+					"foo": "bar",
 				},
 			},
-			expect:      nil,
-			expectedErr: nil,
-		},
-		{
-			name:   "Dry Run Resource does not exist, create it",
-			object: pod,
-			client: &tclient.FakeClient{
-				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
-				},
-				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
-					return nil
+			Check: v1alpha1.Check{
+				Value: map[string]interface{}{
+					"kind": "Service",
 				},
 			},
-			expect:      nil,
-			expectedErr: nil,
+		}},
+		expectedErr: nil,
+	}, {
+		name:   "Match",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
+			},
+			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				return nil
+			},
 		},
-		{
-			name:   "failed get",
-			object: pod,
-			client: &tclient.FakeClient{
-				GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return errors.New("some arbitrary error")
+		expect: []v1alpha1.Expectation{{
+			Match: &v1alpha1.Check{
+				Value: pod.UnstructuredContent(),
+			},
+			Check: v1alpha1.Check{
+				Value: map[string]interface{}{
+					"kind": "Service",
 				},
 			},
-			expect:      nil,
-			expectedErr: errors.New("some arbitrary error"),
-		},
-		{
-			name:   "failed create",
-			object: pod,
-			client: &tclient.FakeClient{
-				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
-				},
-				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
-					return errors.New("some arbitrary error")
-				},
-			},
-			expect:      nil,
-			expectedErr: errors.New("some arbitrary error"),
-		},
-		{
-			name:   "failed create (expected)",
-			object: pod,
-			client: &tclient.FakeClient{
-				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
-				},
-				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
-					return errors.New("some arbitrary error")
-				},
-			},
-			expect: []v1alpha1.Expectation{{
-				Check: v1alpha1.Check{
-					Value: map[string]interface{}{
-						"($error)": "some arbitrary error",
-					},
-				},
-			}},
-			expectedErr: nil,
-		},
-		{
-			name:   "Cleaner function executed",
-			object: pod,
-			client: &tclient.FakeClient{
-				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
-				},
-				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
-					return nil
-				},
-			},
-			expect:      nil,
-			expectedErr: nil,
-		},
-		{
-			name:   "Should fail is true but no error occurs",
-			object: pod,
-			client: &tclient.FakeClient{
-				GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
-				},
-				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
-					return nil
-				},
-			},
-			expect: []v1alpha1.Expectation{{
-				Check: v1alpha1.Check{
-					Value: map[string]interface{}{
-						"($error != null)": true,
-					},
-				},
-			}},
-			expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
-		},
-	}
+		}},
+		expectedErr: errors.New(`kind: Invalid value: "Pod": Expected value: "Service"`),
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &tlogging.FakeLogger{}

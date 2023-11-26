@@ -15,17 +15,16 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type operation struct {
 	client     client.Client
-	obj        ctrlclient.Object
+	obj        unstructured.Unstructured
 	namespacer namespacer.Namespacer
 	check      *v1alpha1.Check
 }
 
-func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, check *v1alpha1.Check) operations.Operation {
+func New(client client.Client, obj unstructured.Unstructured, namespacer namespacer.Namespacer, check *v1alpha1.Check) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,
@@ -35,7 +34,7 @@ func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Name
 }
 
 func (o *operation) Exec(ctx context.Context) (err error) {
-	logger := logging.FromContext(ctx).WithResource(o.obj)
+	logger := logging.FromContext(ctx).WithResource(&o.obj)
 	defer func() {
 		if err != nil {
 			logger.Log(logging.Delete, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -44,7 +43,7 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		}
 	}()
 	if o.namespacer != nil {
-		if err := o.namespacer.Apply(o.obj); err != nil {
+		if err := o.namespacer.Apply(&o.obj); err != nil {
 			return err
 		}
 	}
@@ -53,7 +52,7 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 }
 
 func (o *operation) deleteResource(ctx context.Context, logger logging.Logger) error {
-	candidates, err := internal.Read(ctx, o.obj, o.client)
+	candidates, err := internal.Read(ctx, &o.obj, o.client)
 	if err != nil {
 		if kerrors.IsNotFound(err) {
 			return nil
@@ -107,7 +106,7 @@ func (o *operation) handleCheck(ctx context.Context, candidate *unstructured.Uns
 	} else {
 		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
-	errs, validationErr := assert.Validate(ctx, o.check.Value, candidate, bindings)
+	errs, validationErr := assert.Validate(ctx, o.check.Value, candidate.UnstructuredContent(), bindings)
 	if validationErr != nil {
 		return validationErr
 	}

@@ -16,7 +16,7 @@ import (
 )
 
 func Test_operationDelete(t *testing.T) {
-	pod := &unstructured.Unstructured{
+	pod := unstructured.Unstructured{
 		Object: map[string]interface{}{
 			"apiVersion": "v1",
 			"kind":       "Pod",
@@ -27,7 +27,7 @@ func Test_operationDelete(t *testing.T) {
 	}
 	tests := []struct {
 		name         string
-		object       ctrlclient.Object
+		object       unstructured.Unstructured
 		client       *tclient.FakeClient
 		expectedErr  error
 		expectedLogs []string
@@ -48,7 +48,7 @@ func Test_operationDelete(t *testing.T) {
 		},
 		{
 			name:   "failed get",
-			object: pod.DeepCopy(),
+			object: pod,
 			client: &tclient.FakeClient{
 				GetFn: func(_ context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
 					return kerrors.NewInternalError(errors.New("failed to get the pod"))
@@ -62,7 +62,7 @@ func Test_operationDelete(t *testing.T) {
 		},
 		{
 			name:   "failed delete",
-			object: pod.DeepCopy(),
+			object: pod,
 			client: &tclient.FakeClient{
 				GetFn: func(_ context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
 					return nil
@@ -76,7 +76,7 @@ func Test_operationDelete(t *testing.T) {
 		},
 		{
 			name:   "ok",
-			object: pod.DeepCopy(),
+			object: pod,
 			client: &tclient.FakeClient{
 				GetFn: func(_ context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
 					if call < 10 {
@@ -93,7 +93,7 @@ func Test_operationDelete(t *testing.T) {
 		},
 		{
 			name:   "poll succeeds but returns error after",
-			object: pod.DeepCopy(),
+			object: pod,
 			client: &tclient.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
 					return nil

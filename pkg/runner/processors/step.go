@@ -27,7 +27,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/clock"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // TODO
@@ -242,11 +241,10 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 	var ops []operation
 	dryRun := op.DryRun != nil && *op.DryRun
 	addDelay := false
-	for i := range resources {
-		resource := resources[i]
+	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opapply.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect),
+			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect),
 		})
 		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
 			addDelay = true
@@ -274,8 +272,7 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert,
 		return nil, err
 	}
 	var ops []operation
-	for i := range resources {
-		resource := resources[i]
+	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultAssertTimeout, p.config.Timeouts.Assert, p.test.Spec.Timeouts.Assert, p.step.Spec.Timeouts.Assert, to),
 			operation: opassert.New(p.client, resource, p.namespacer),
@@ -299,11 +296,10 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create,
 	var ops []operation
 	dryRun := op.DryRun != nil && *op.DryRun
 	addDelay := false
-	for i := range resources {
-		resource := resources[i]
+	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opcreate.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect),
+			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect),
 		})
 		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
 			addDelay = true
@@ -334,7 +330,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete,
 	resource.SetLabels(op.Labels)
 	return &operation{
 		timeout:   timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
-		operation: opdelete.New(p.client, &resource, p.namespacer, op.Check),
+		operation: opdelete.New(p.client, resource, p.namespacer, op.Check),
 	}, nil
 }
 
@@ -344,8 +340,7 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, t
 		return nil, err
 	}
 	var ops []operation
-	for i := range resources {
-		resource := resources[i]
+	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultErrorTimeout, p.config.Timeouts.Error, p.test.Spec.Timeouts.Error, p.step.Spec.Timeouts.Error, to),
 			operation: operror.New(p.client, resource, p.namespacer),
@@ -391,7 +386,7 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 	}
 	var cleaner cleanup.Cleaner
 	if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, p.step.Spec.SkipDelete) {
-		cleaner = func(obj ctrlclient.Object, c client.Client) {
+		cleaner = func(obj unstructured.Unstructured, c client.Client) {
 			t := testing.FromContext(ctx)
 			t.Cleanup(func() {
 				operation := operation{
