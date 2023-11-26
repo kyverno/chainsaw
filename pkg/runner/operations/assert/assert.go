@@ -56,7 +56,7 @@ func (o *operation) pollForAssertion(ctx context.Context) error {
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		candidates, errs, err := o.fetchAndValidateCandidates(ctx)
 		if err != nil || len(errs) != 0 {
-			if !kerrors.IsTimeout(err) {
+			if !kerrors.IsTimeout(err) && !errors.Is(err, context.Canceled) {
 				lastErrs = errs
 			}
 			return false, err
