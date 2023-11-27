@@ -25,6 +25,8 @@ Release notes for `TODO`.
 - Added timeout support in `try` and `catch` handlers
 - Added assertion tree check in `delete` operation
 - Added a new configuration option to force termination graceful period on `Pod`, `Deployment`, `StatefulSet`, `DaemonSet`, `Job` and `CronJob`
+- Added reports support
+- Completed kuttl migration command with `TestAssert` support
 
 ## :wrench: Fixes :wrench:
 
