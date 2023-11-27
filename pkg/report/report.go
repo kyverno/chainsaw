@@ -32,22 +32,20 @@ type ReportSerializer interface {
 type Failure struct {
 	// Message provides a summary of the failure.
 	Message string `json:"message" xml:"message,attr"`
-	// Type indicates the type of failure.
-	Type string `json:"type" xml:"type,attr"`
 }
 
 // TestsReport encapsulates the entire report for a test suite.
 type TestsReport struct {
 	// Name of the test suite.
 	Name string `json:"name" xml:"name,attr"`
-	// StartTime marks when the test suite began execution.
-	StartTime time.Time `json:"startTime" xml:"startTime,attr"`
-	// EndTime marks when the test suite finished execution.
-	EndTime time.Time `json:"endTime" xml:"endTime,attr"`
+	// TimeStamp marks when the test suite began execution.
+	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// Time indicates the total duration of the test suite.
 	Time string `json:"time" xml:"time,attr"`
+	// Test count the number of tests in the files/TestReports.
+	Test int `json:"tests" xml:"tests,attr"`
 	// Reports is an array of individual test reports within this suite.
-	Reports []*TestReport `json:"reports" xml:"reports"`
+	Reports []*TestReport `json:"testsuite" xml:"testsuite"`
 	// Failures count the number of failed tests in the suite.
 	Failures int `json:"failures" xml:"failures,attr"`
 }
@@ -56,16 +54,16 @@ type TestsReport struct {
 type TestReport struct {
 	// Name of the test.
 	Name string `json:"name" xml:"name,attr"`
-	// StartTime marks when the test began execution.
-	StartTime time.Time `json:"startTime" xml:"startTime,attr"`
-	// EndTime marks when the test finished execution.
-	EndTime time.Time `json:"endTime" xml:"endTime,attr"`
+	// TimeStamp marks when the test began execution.
+	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// Time indicates the total duration of the test.
 	Time string `json:"time" xml:"time,attr"`
 	// Failure captures details if the test failed it should be nil otherwise.
 	Failure *Failure `json:"failure,omitempty" xml:"failure,omitempty"`
+	// Test count the number of tests in the suite/TestReport.
+	Test int `json:"tests" xml:"tests,attr"`
 	// Spec represents the specifications of the test.
-	Steps []*TestSpecStepReport `json:"steps,omitempty" xml:"steps,omitempty"`
+	Steps []*TestSpecStepReport `json:"testcase,omitempty" xml:"testcase,omitempty"`
 	// Concurrent indicates if the test runs concurrently with other tests.
 	Concurrent bool `json:"concurrent,omitempty" xml:"concurrent,attr,omitempty"`
 	// Namespace in which the test runs.
@@ -88,10 +86,8 @@ type TestSpecStepReport struct {
 type OperationReport struct {
 	// Name of the operation.
 	Name string `json:"name" xml:"name,attr"`
-	// StartTime marks when the operation began execution.
-	StartTime time.Time `json:"startTime" xml:"startTime,attr"`
-	// EndTime marks when the operation finished execution.
-	EndTime time.Time `json:"endTime" xml:"endTime,attr"`
+	// TimeStamp marks when the operation began execution.
+	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
 	// Time indicates the total duration of the operation.
 	Time string `json:"time" xml:"time,attr"`
 	// Result of the operation.
@@ -146,21 +142,17 @@ func (report *TestsReport) SaveReportBasedOnType(reportFormat v1alpha1.ReportFor
 func NewTests(name string) *TestsReport {
 	return &TestsReport{
 		Name:      name,
-		StartTime: time.Now(),
+		TimeStamp: time.Now(),
 		Reports:   []*TestReport{},
 	}
 }
 
 // NewTest creates a new TestReport with the given name.
-func NewTest(name string, concurrent bool, namespace string, skip bool, skipDelete bool) *TestReport {
+func NewTest(name string) *TestReport {
 	return &TestReport{
-		Name:       name,
-		StartTime:  time.Now(),
-		Concurrent: concurrent,
-		Namespace:  namespace,
-		Skip:       skip,
-		SkipDelete: skipDelete,
-		Steps:      []*TestSpecStepReport{},
+		Name:      name,
+		TimeStamp: time.Now(),
+		Steps:     []*TestSpecStepReport{},
 	}
 }
 
@@ -176,7 +168,7 @@ func NewTestSpecStep(name string) *TestSpecStepReport {
 func NewOperation(name string, operationType OperationType) *OperationReport {
 	return &OperationReport{
 		Name:          name,
-		StartTime:     time.Now(),
+		TimeStamp:     time.Now(),
 		OperationType: operationType,
 	}
 }
@@ -196,16 +188,33 @@ func (ts *TestSpecStepReport) AddOperation(op *OperationReport) {
 	ts.Results = append(ts.Results, op)
 }
 
+// NewFailure creates a new Failure instance with the given message and type and assigns it to the TestReport.
+func (t *TestReport) NewFailure(message string) {
+	if t.Failure == nil {
+		t.Failure = &Failure{
+			Message: message,
+		}
+	}
+}
+
 // MarkTestEnd marks the end time of a TestReport and calculates its duration.
 func (t *TestReport) MarkTestEnd() {
-	t.EndTime = time.Now()
-	t.Time = calculateDuration(t.StartTime, t.EndTime)
+	t.Time = calculateDuration(t.TimeStamp, time.Now())
+
+	for _, step := range t.Steps {
+		t.Test += len(step.Results)
+	}
 }
 
 // MarkOperationEnd marks the end time of an OperationReport and calculates its duration.
-func (op *OperationReport) MarkOperationEnd() {
-	op.EndTime = time.Now()
-	op.Time = calculateDuration(op.StartTime, op.EndTime)
+func (op *OperationReport) MarkOperationEnd(success bool, message string) {
+	op.Time = calculateDuration(op.TimeStamp, time.Now())
+	if success {
+		op.Result = "Success"
+	} else {
+		op.Result = "Failure"
+	}
+	op.Message = message
 }
 
 // calculateDuration calculates the duration between two time points.
@@ -215,13 +224,13 @@ func calculateDuration(start, end time.Time) string {
 
 // Close finalizes the TestsReport, marking its end time and calculating the overall duration.
 func (tr *TestsReport) Close() {
-	tr.EndTime = time.Now()
-	tr.Time = calculateDuration(tr.StartTime, tr.EndTime)
-
-	// Calculate the number of failures
-	for _, test := range tr.Reports {
-		if test.Failure != nil {
+	tr.Time = calculateDuration(tr.TimeStamp, time.Now())
+	totalTests := 0
+	for _, testReport := range tr.Reports {
+		if testReport.Failure != nil {
 			tr.Failures++
 		}
+		totalTests += testReport.Test
 	}
+	tr.Test = totalTests
 }

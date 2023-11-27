@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -29,14 +30,16 @@ func NewTestsProcessor(
 	client client.Client,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
+	testsReport *report.TestsReport,
 	tests ...discovery.Test,
 ) TestsProcessor {
 	return &testsProcessor{
-		config:  config,
-		client:  client,
-		clock:   clock,
-		summary: summary,
-		tests:   tests,
+		config:      config,
+		client:      client,
+		clock:       clock,
+		summary:     summary,
+		testsReport: testsReport,
+		tests:       tests,
 	}
 }
 
@@ -45,12 +48,18 @@ type testsProcessor struct {
 	client         client.Client
 	clock          clock.PassiveClock
 	summary        *summary.Summary
+	testsReport    *report.TestsReport
 	tests          []discovery.Test
 	shouldFailFast atomic.Bool
 }
 
 func (p *testsProcessor) Run(ctx context.Context) {
 	t := testing.FromContext(ctx)
+	t.Cleanup(func() {
+		if p.testsReport != nil {
+			p.testsReport.Close()
+		}
+	})
 	var nspacer namespacer.Namespacer
 	if p.config.Namespace != "" {
 		namespace := client.Namespace(p.config.Namespace)
@@ -93,5 +102,9 @@ func (p *testsProcessor) Run(ctx context.Context) {
 }
 
 func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor {
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary, test, &p.shouldFailFast)
+	testReport := report.NewTest(test.Name)
+	if p.testsReport != nil {
+		p.testsReport.AddTest(testReport)
+	}
+	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast)
 }

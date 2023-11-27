@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/collect"
@@ -43,6 +44,7 @@ func NewStepProcessor(
 	clock clock.PassiveClock,
 	test discovery.Test,
 	step v1alpha1.TestSpecStep,
+	stepReport *report.TestSpecStepReport,
 ) StepProcessor {
 	return &stepProcessor{
 		config:     config,
@@ -51,6 +53,7 @@ func NewStepProcessor(
 		clock:      clock,
 		test:       test,
 		step:       step,
+		stepReport: stepReport,
 	}
 }
 
@@ -61,6 +64,7 @@ type stepProcessor struct {
 	clock      clock.PassiveClock
 	test       discovery.Test
 	step       v1alpha1.TestSpecStep
+	stepReport *report.TestSpecStepReport
 }
 
 func (p *stepProcessor) Run(ctx context.Context) {
@@ -239,6 +243,10 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 		return nil, err
 	}
 	var ops []operation
+	operationReport := report.NewOperation("Apply "+op.File, report.OperationTypeApply)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	addDelay := false
 	for _, resource := range resources {
@@ -261,6 +269,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 				p.test.BasePath,
 				p.namespacer.GetNamespace(),
 			),
+			operationReport: operationReport,
 		})
 	}
 	return ops, nil
@@ -272,19 +281,29 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert,
 		return nil, err
 	}
 	var ops []operation
+	operationReport := report.NewOperation("Assert ", report.OperationTypeAssert)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	for _, resource := range resources {
 		ops = append(ops, operation{
-			timeout:   timeout.Get(timeout.DefaultAssertTimeout, p.config.Timeouts.Assert, p.test.Spec.Timeouts.Assert, p.step.Spec.Timeouts.Assert, to),
-			operation: opassert.New(p.client, resource, p.namespacer),
+			timeout:         timeout.Get(timeout.DefaultAssertTimeout, p.config.Timeouts.Assert, p.test.Spec.Timeouts.Assert, p.step.Spec.Timeouts.Assert, to),
+			operation:       opassert.New(p.client, resource, p.namespacer),
+			operationReport: operationReport,
 		})
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) commandOperation(ctx context.Context, exec v1alpha1.Command, to *metav1.Duration) operation {
+	operationReport := report.NewOperation("Command ", report.OperationTypeCommand)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	return operation{
-		timeout:   timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
-		operation: opcommand.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
+		timeout:         timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
+		operation:       opcommand.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
+		operationReport: operationReport,
 	}
 }
 
@@ -294,6 +313,10 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create,
 		return nil, err
 	}
 	var ops []operation
+	operationReport := report.NewOperation("Create ", report.OperationTypeCreate)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	addDelay := false
 	for _, resource := range resources {
@@ -316,6 +339,7 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create,
 				p.test.BasePath,
 				p.namespacer.GetNamespace(),
 			),
+			operationReport: operationReport,
 		})
 	}
 	return ops, nil
@@ -328,9 +352,14 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete,
 	resource.SetName(op.Name)
 	resource.SetNamespace(op.Namespace)
 	resource.SetLabels(op.Labels)
+	operationReport := report.NewOperation("Delete ", report.OperationTypeDelete)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	return &operation{
-		timeout:   timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
-		operation: opdelete.New(p.client, resource, p.namespacer, op.Check),
+		timeout:         timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
+		operation:       opdelete.New(p.client, resource, p.namespacer, op.Check),
+		operationReport: operationReport,
 	}, nil
 }
 
@@ -340,19 +369,29 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, t
 		return nil, err
 	}
 	var ops []operation
+	operationReport := report.NewOperation("Error ", report.OperationTypeCommand)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	for _, resource := range resources {
 		ops = append(ops, operation{
-			timeout:   timeout.Get(timeout.DefaultErrorTimeout, p.config.Timeouts.Error, p.test.Spec.Timeouts.Error, p.step.Spec.Timeouts.Error, to),
-			operation: operror.New(p.client, resource, p.namespacer),
+			timeout:         timeout.Get(timeout.DefaultErrorTimeout, p.config.Timeouts.Error, p.test.Spec.Timeouts.Error, p.step.Spec.Timeouts.Error, to),
+			operation:       operror.New(p.client, resource, p.namespacer),
+			operationReport: operationReport,
 		})
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) scriptOperation(ctx context.Context, exec v1alpha1.Script, to *metav1.Duration) operation {
+	operationReport := report.NewOperation("Script ", report.OperationTypeScript)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	return operation{
-		timeout:   timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
-		operation: opscript.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
+		timeout:         timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
+		operation:       opscript.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
+		operationReport: operationReport,
 	}
 }
 
