@@ -58,11 +58,11 @@ type testProcessor struct {
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
 	t := testing.FromContext(ctx)
-	defer func() {
+	t.Cleanup(func() {
 		if p.testReport != nil {
 			p.testReport.MarkTestEnd()
 		}
-	}()
+	})
 	size := 0
 	for i, step := range p.test.Spec.Steps {
 		name := step.Name

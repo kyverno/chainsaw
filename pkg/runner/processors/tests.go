@@ -55,11 +55,11 @@ type testsProcessor struct {
 
 func (p *testsProcessor) Run(ctx context.Context) {
 	t := testing.FromContext(ctx)
-	defer func() {
+	t.Cleanup(func() {
 		if p.testsReport != nil {
 			p.testsReport.Close()
 		}
-	}()
+	})
 	var nspacer namespacer.Namespacer
 	if p.config.Namespace != "" {
 		namespace := client.Namespace(p.config.Namespace)
