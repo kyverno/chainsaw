@@ -386,15 +386,15 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 		seconds := int64(p.config.ForceTerminationGracePeriod.Duration.Seconds())
 		switch resource.GetKind() {
 		case "Pod":
-			if err := unstructured.SetNestedField(resource.UnstructuredContent(), &seconds, "spec", "terminationGracePeriodSeconds"); err != nil {
+			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "terminationGracePeriodSeconds"); err != nil {
 				return err
 			}
 		case "Deployment", "StatefulSet", "DaemonSet", "Job":
-			if err := unstructured.SetNestedField(resource.UnstructuredContent(), &seconds, "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
 				return err
 			}
 		case "CronJob":
-			if err := unstructured.SetNestedField(resource.UnstructuredContent(), &seconds, "spec", "jobTemplate", "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "jobTemplate", "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
 				return err
 			}
 		}
