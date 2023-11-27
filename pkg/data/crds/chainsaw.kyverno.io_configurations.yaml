@@ -43,6 +43,10 @@ spec:
                 description: FailFast determines whether the test should stop upon
                   encountering the first failure.
                 type: boolean
+              forceTerminationGracePeriod:
+                description: ForceTerminationGracePeriod forces the termination grace
+                  period on pods, statefulsets, daemonsets and deployments.
+                type: string
               fullName:
                 description: FullName makes use of the full test case folder path
                   instead of the folder name.
