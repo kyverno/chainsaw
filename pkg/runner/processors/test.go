@@ -59,6 +59,9 @@ type testProcessor struct {
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
 	t := testing.FromContext(ctx)
 	t.Cleanup(func() {
+		if t.Failed() {
+			p.testReport.NewFailure(fmt.Sprintf("test failed"))
+		}
 		if p.testReport != nil {
 			p.testReport.MarkTestEnd()
 		}

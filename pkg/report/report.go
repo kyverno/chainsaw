@@ -32,8 +32,6 @@ type ReportSerializer interface {
 type Failure struct {
 	// Message provides a summary of the failure.
 	Message string `json:"message" xml:"message,attr"`
-	// Type indicates the type of failure.
-	Type string `json:"type" xml:"type,attr"`
 }
 
 // TestsReport encapsulates the entire report for a test suite.
@@ -191,11 +189,10 @@ func (ts *TestSpecStepReport) AddOperation(op *OperationReport) {
 }
 
 // NewFailure creates a new Failure instance with the given message and type and assigns it to the TestReport.
-func (t *TestReport) NewFailure(message, failureType string) {
+func (t *TestReport) NewFailure(message string) {
 	if t.Failure == nil {
 		t.Failure = &Failure{
 			Message: message,
-			Type:    failureType,
 		}
 	}
 }
