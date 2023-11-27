@@ -244,7 +244,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect),
+			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
 		})
 		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
 			addDelay = true
@@ -299,7 +299,7 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create,
 	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect),
+			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
 		})
 		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
 			addDelay = true

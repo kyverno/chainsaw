@@ -29,7 +29,7 @@ type operation struct {
 	expect     []v1alpha1.Expectation
 }
 
-func New(client client.Client, obj unstructured.Unstructured, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, expect []v1alpha1.Expectation) operations.Operation {
+func New(client client.Client, obj unstructured.Unstructured, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, expect ...v1alpha1.Expectation) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,

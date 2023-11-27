@@ -215,10 +215,11 @@ func Test_operationAssert(t *testing.T) {
 			ctxt, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 			defer cancel()
 			ctx := logging.IntoContext(ctxt, logger)
-			operation := operation{
-				client:   tt.client,
-				expected: tt.expected,
-			}
+			operation := New(
+				tt.client,
+				tt.expected,
+				nil,
+			)
 			err := operation.Exec(ctx)
 			if tt.expectErr {
 				assert.NotNil(t, err)
