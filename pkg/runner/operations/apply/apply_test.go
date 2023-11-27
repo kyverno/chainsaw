@@ -289,11 +289,13 @@ func Test_apply(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
-			operation := operation{
-				client: tt.client,
-				obj:    tt.object,
-				expect: tt.expect,
-			}
+			operation := New(
+				tt.client,
+				tt.object,
+				nil,
+				nil,
+				tt.expect...,
+			)
 			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
