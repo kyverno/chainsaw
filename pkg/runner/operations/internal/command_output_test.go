@@ -2,8 +2,10 @@ package internal
 
 import (
 	"bytes"
+	"fmt"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -53,6 +55,51 @@ func TestCommandOutput(t *testing.T) {
 			}
 			assert.Equal(t, tt.expectedOut, co.Out())
 			assert.Equal(t, tt.expectedErr, co.Err())
+		})
+	}
+}
+
+func TestCommandOutput_Sections(t *testing.T) {
+	var o, e bytes.Buffer
+	o.WriteString("out")
+	e.WriteString("err")
+	tests := []struct {
+		name   string
+		Stdout bytes.Buffer
+		Stderr bytes.Buffer
+		want   []fmt.Stringer
+	}{{
+		name: "none",
+		want: nil,
+	}, {
+		name:   "out",
+		Stdout: o,
+		want: []fmt.Stringer{
+			logging.Section("STDOUT", o.String()),
+		},
+	}, {
+		name:   "err",
+		Stderr: e,
+		want: []fmt.Stringer{
+			logging.Section("STDERR", e.String()),
+		},
+	}, {
+		name:   "both",
+		Stdout: o,
+		Stderr: e,
+		want: []fmt.Stringer{
+			logging.Section("STDOUT", o.String()),
+			logging.Section("STDERR", e.String()),
+		},
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &CommandOutput{
+				Stdout: tt.Stdout,
+				Stderr: tt.Stderr,
+			}
+			got := c.Sections()
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
