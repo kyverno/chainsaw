@@ -131,6 +131,7 @@ func TestChainsawCommand(t *testing.T) {
 			"--full-name=true",
 			"--include-test-regex=^.*$",
 			"--exclude-test-regex=^.*$",
+			"--force-termination-grace-period=5s",
 		},
 		wantErr: false,
 		out:     filepath.Join(basePath, "all_flags.txt"),

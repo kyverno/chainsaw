@@ -248,6 +248,9 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	for _, resource := range resources {
+		if err := p.prepareResource(resource); err != nil {
+			return nil, err
+		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
 			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
@@ -300,6 +303,9 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create,
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	for _, resource := range resources {
+		if err := p.prepareResource(resource); err != nil {
+			return nil, err
+		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
 			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
@@ -373,6 +379,27 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]uns
 		return resource.Load(filepath.Join(p.test.BasePath, ref.File))
 	}
 	return nil, errors.New("file or resource must be set")
+}
+
+func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) error {
+	if p.config.ForceTerminationGracePeriod != nil {
+		seconds := int64(p.config.ForceTerminationGracePeriod.Duration.Seconds())
+		switch resource.GetKind() {
+		case "Pod":
+			if err := unstructured.SetNestedField(resource.UnstructuredContent(), &seconds, "spec", "terminationGracePeriodSeconds"); err != nil {
+				return err
+			}
+		case "Deployment", "StatefulSet", "DaemonSet", "Job":
+			if err := unstructured.SetNestedField(resource.UnstructuredContent(), &seconds, "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+				return err
+			}
+		case "CronJob":
+			if err := unstructured.SetNestedField(resource.UnstructuredContent(), &seconds, "spec", "jobTemplate", "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func (p *stepProcessor) getClient(dryRun bool) client.Client {

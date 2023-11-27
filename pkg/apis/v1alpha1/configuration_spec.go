@@ -1,5 +1,7 @@
 package v1alpha1
 
+import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 type ReportFormatType string
 
 const (
@@ -71,4 +73,8 @@ type ConfigurationSpec struct {
 	// +kubebuilder:default:="chainsaw-test.yaml"
 	// +optional
 	TestFile string `json:"testFile,omitempty"`
+
+	// ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.
+	// +optional
+	ForceTerminationGracePeriod *metav1.Duration `json:"forceTerminationGracePeriod,omitempty"`
 }

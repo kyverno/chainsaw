@@ -184,6 +184,11 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		*out = new(int)
 		**out = **in
 	}
+	if in.ForceTerminationGracePeriod != nil {
+		in, out := &in.ForceTerminationGracePeriod, &out.ForceTerminationGracePeriod
+		*out = new(v1.Duration)
+		**out = **in
+	}
 	return
 }
 

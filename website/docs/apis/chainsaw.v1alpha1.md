@@ -139,6 +139,7 @@ during the testing process.</p>
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
 | `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
 | `testFile` | `string` |  |  | <p>TestFile is the name of the file containing the test to run.</p> |
+| `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 
 ## `Create`     {#chainsaw-kyverno-io-v1alpha1-Create}
 

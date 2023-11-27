@@ -19,3 +19,4 @@ spec:
   fullName: true
   includeTestRegex: "include-*"
   excludeTestRegex: "exclude-*"
+  forceTerminationGracePeriod: 10s
