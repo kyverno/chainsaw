@@ -9,8 +9,9 @@ import (
 )
 
 func TestToUnstructured(t *testing.T) {
+	var nilPtr *int
 	assert.Panics(t, func() {
-		ToUnstructured(nil)
+		ToUnstructured(nilPtr)
 	})
 	assert.Equal(t, ToUnstructured(ptr.To(Namespace("foo"))), unstructured.Unstructured{
 		Object: map[string]interface{}{
