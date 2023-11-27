@@ -54,11 +54,11 @@ func Test_operationScript(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
-			operation := operation{
-				script:    tt.script,
-				basePath:  tt.basePath,
-				namespace: tt.namespace,
-			}
+			operation := New(
+				tt.script,
+				tt.basePath,
+				tt.namespace,
+			)
 			err := operation.Exec(ctx)
 			if tt.wantErr {
 				assert.Error(t, err)
