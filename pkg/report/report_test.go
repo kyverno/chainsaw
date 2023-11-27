@@ -3,10 +3,9 @@ package report
 import (
 	"errors"
 	"os"
-	"time"
-
 	"path/filepath"
 	"testing"
+	"time"
 
 	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
@@ -19,7 +18,6 @@ func (s FakeSerializer) Serialize(report *TestsReport) ([]byte, error) {
 }
 
 func TestSaveReport(t *testing.T) {
-
 	testCases := []struct {
 		name        string
 		reportName  string
