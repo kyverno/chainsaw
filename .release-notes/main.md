@@ -35,6 +35,7 @@ Release notes for `TODO`.
 - Fixed `check` set to `null` in kuttl migration command
 - Fixed a manifest discovery issue where manifests could be loaded in the wrong order
 - Fixed a manifest discovery issue where error manifests where not discovered correctly
+- Fixed controller-runtime logger not initialised
 
 ## :books: Docs :books:
 
