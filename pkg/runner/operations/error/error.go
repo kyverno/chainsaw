@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -65,7 +66,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 		} else {
 			for i := range candidates {
 				candidate := candidates[i]
-				_errs, err := assert.Validate(ctx, o.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
+				_errs, err := check.Check(ctx, candidate.UnstructuredContent(), nil, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
 				if err != nil {
 					return false, err
 				}
