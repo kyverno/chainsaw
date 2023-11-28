@@ -15,6 +15,7 @@ import (
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
@@ -47,41 +48,20 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 		}
 	}
 	logger.Log(logging.Assert, logging.RunStatus, color.BoldFgCyan)
+	return o.pollForAssertion(ctx)
+}
+
+func (o *operation) pollForAssertion(ctx context.Context) error {
 	var lastErrs []error
-	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
-		var errs []error
-		defer func() {
-			// record last errors only if there was no real error
-			if err == nil {
+	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
+		candidates, errs, updateErrs, err := o.fetchAndValidateCandidates(ctx)
+		if err != nil || len(errs) != 0 {
+			if updateErrs {
 				lastErrs = errs
 			}
-		}()
-		if candidates, err := internal.Read(ctx, &o.expected, o.client); err != nil {
-			if kerrors.IsNotFound(err) {
-				errs = append(errs, errors.New("actual resource not found"))
-				return false, nil
-			}
 			return false, err
-		} else if len(candidates) == 0 {
-			errs = append(errs, errors.New("no actual resource found"))
-		} else {
-			for i := range candidates {
-				candidate := candidates[i]
-				_errs, err := assert.Validate(ctx, o.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil)
-				if err != nil {
-					return false, err
-				}
-				if len(_errs) != 0 {
-					for _, _err := range _errs {
-						errs = append(errs, fmt.Errorf("%s/%s/%s - %w", candidate.GetAPIVersion(), candidate.GetKind(), client.Name(client.ObjectKey(&candidate)), _err))
-					}
-				} else {
-					// at least one match found
-					return true, nil
-				}
-			}
 		}
-		return false, nil
+		return len(candidates) > 0, nil
 	})
 	// if no error, return success
 	if err == nil {
@@ -93,4 +73,35 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	}
 	// return received error
 	return err
+}
+
+func (o *operation) fetchAndValidateCandidates(ctx context.Context) ([]unstructured.Unstructured, []error, bool, error) {
+	candidates, err := internal.Read(ctx, &o.expected, o.client)
+	if err != nil {
+		if kerrors.IsNotFound(err) {
+			return nil, []error{errors.New("actual resource not found")}, true, nil
+		}
+		return nil, nil, false, err
+	}
+
+	if len(candidates) == 0 {
+		return nil, []error{errors.New("no actual resource found")}, true, nil
+	}
+
+	var errs []error
+	for _, candidate := range candidates {
+		if _errs, err := assert.Validate(ctx, o.expected.UnstructuredContent(), candidate.UnstructuredContent(), nil); err != nil {
+			return nil, nil, false, err
+		} else if len(_errs) != 0 {
+			errs = appendErrorDetails(errs, candidate, _errs)
+		}
+	}
+	return candidates, errs, true, nil
+}
+
+func appendErrorDetails(errs []error, candidate unstructured.Unstructured, _errs field.ErrorList) []error {
+	for _, _err := range _errs {
+		errs = append(errs, fmt.Errorf("%s/%s/%s - %w", candidate.GetAPIVersion(), candidate.GetKind(), client.Name(client.ObjectKey(&candidate)), _err))
+	}
+	return errs
 }
