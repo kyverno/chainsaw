@@ -36,6 +36,7 @@ Release notes for `TODO`.
 - Fixed a manifest discovery issue where manifests could be loaded in the wrong order
 - Fixed a manifest discovery issue where error manifests where not discovered correctly
 - Fixed controller-runtime logger not initialised
+- Fixed `command` and `script` bug not receiving the right error in `$error` check
 
 ## :books: Docs :books:
 
