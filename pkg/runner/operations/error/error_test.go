@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	tnamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
 	ttesting "github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -172,6 +173,33 @@ func Test_operationError(t *testing.T) {
 			return namespacer.New(c, "bar")
 		},
 		expectedLogs: []string{"ERROR: RUN - []", "ERROR: DONE - []"},
+	}, {
+		name: "with namespacer error",
+		expected: unstructured.Unstructured{
+			Object: map[string]interface{}{
+				"apiVersion": "apps/v1",
+				"kind":       "Deployment",
+				"metadata": map[string]interface{}{
+					"labels": map[string]interface{}{
+						"app": "my-app",
+					},
+				},
+			},
+		},
+		client: &tclient.FakeClient{
+			IsObjectNamespacedFn: func(int, runtime.Object) (bool, error) {
+				return true, nil
+			},
+		},
+		namespacer: func(c client.Client) namespacer.Namespacer {
+			return &tnamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return errors.New("namespacer error")
+				},
+			}
+		},
+		expectedErr:  errors.New("namespacer error"),
+		expectedLogs: []string{"ERROR: ERROR - [=== ERROR\nnamespacer error]"},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
