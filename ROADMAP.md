@@ -6,7 +6,7 @@
   - Focus on developing and finalizing a stable API for Chainsaw, ensuring robustness and reliability.
 
 - **Enhance Chainsaw Capabilities:**
-  - Implement the ability for Chainsaw to register custom JMESPath functions.
+  - Implement the ability for Chainsaw to register custom JMESPath functions. This involves making modifications to the kyverno-json library to accommodate these new features.
   
 ## 🌟 Version 0.2.0
 
