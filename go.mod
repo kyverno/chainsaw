@@ -5,7 +5,7 @@ go 1.21.1
 require (
 	github.com/dustinkirkland/golang-petname v0.0.0-20231002161417-6a283f1aaaf2
 	github.com/fatih/color v1.16.0
-	github.com/go-logr/logr v1.2.4
+	github.com/go-logr/logr v1.3.0
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20231004164315-78945398586a
 	github.com/kudobuilder/kuttl v0.15.0
