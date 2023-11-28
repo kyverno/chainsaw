@@ -64,6 +64,6 @@ Below is an example of using an [operation check](./check.md#command).
           # an error is expected, this will:
           # - succeed if the operation failed
           # - fail if the operation succeeded
-          (error != null): true
+          ($error != null): true
     # ...
     ```
