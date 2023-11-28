@@ -1,9 +1,5 @@
 package v1alpha1
 
-import (
-	"github.com/kyverno/kyverno-json/pkg/apis/v1alpha1"
-)
-
 // Command describes a command to run as a part of a test step.
 type Command struct {
 	// Entrypoint is the command entry point to run.
@@ -17,7 +13,7 @@ type Command struct {
 	// +optional
 	SkipLogOutput bool `json:"skipLogOutput,omitempty"`
 
-	// Check is an assertion tree to validate outcome.
+	// Check is an assertion tree to validate the operation outcome.
 	// +optional
-	Check *v1alpha1.Any `json:"check,omitempty"`
+	Check *Check `json:"check,omitempty"`
 }

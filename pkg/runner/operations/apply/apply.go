@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/json"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	kjsonv1alpha1 "github.com/kyverno/kyverno-json/pkg/apis/v1alpha1"
-	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -22,24 +23,24 @@ import (
 
 type operation struct {
 	client     client.Client
-	obj        ctrlclient.Object
+	obj        unstructured.Unstructured
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
-	check      *kjsonv1alpha1.Any
+	expect     []v1alpha1.Expectation
 }
 
-func New(client client.Client, obj ctrlclient.Object, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, check *kjsonv1alpha1.Any) operations.Operation {
+func New(client client.Client, obj unstructured.Unstructured, namespacer namespacer.Namespacer, cleaner cleanup.Cleaner, expect ...v1alpha1.Expectation) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,
 		namespacer: namespacer,
 		cleaner:    cleaner,
-		check:      check,
+		expect:     expect,
 	}
 }
 
 func (o *operation) Exec(ctx context.Context) (err error) {
-	logger := logging.FromContext(ctx).WithResource(o.obj)
+	logger := logging.FromContext(ctx).WithResource(&o.obj)
 	defer func() {
 		if err != nil {
 			logger.Log(logging.Apply, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -48,7 +49,7 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		}
 	}()
 	if o.namespacer != nil {
-		if err := o.namespacer.Apply(o.obj); err != nil {
+		if err := o.namespacer.Apply(&o.obj); err != nil {
 			return err
 		}
 	}
@@ -66,7 +67,7 @@ func (o *operation) applyResource(ctx context.Context, logger logging.Logger) er
 func (o *operation) tryApplyResource(ctx context.Context) error {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
-	err := o.client.Get(ctx, client.ObjectKey(o.obj), &actual)
+	err := o.client.Get(ctx, client.ObjectKey(&o.obj), &actual)
 	if err == nil {
 		return o.updateResource(ctx, &actual)
 	}
@@ -77,7 +78,7 @@ func (o *operation) tryApplyResource(ctx context.Context) error {
 }
 
 func (o *operation) updateResource(ctx context.Context, actual *unstructured.Unstructured) error {
-	patched, err := client.PatchObject(actual, o.obj)
+	patched, err := client.PatchObject(actual, &o.obj)
 	if err != nil {
 		return err
 	}
@@ -89,7 +90,7 @@ func (o *operation) updateResource(ctx context.Context, actual *unstructured.Uns
 }
 
 func (o *operation) createResource(ctx context.Context) error {
-	err := o.client.Create(ctx, o.obj)
+	err := o.client.Create(ctx, &o.obj)
 	if err == nil && o.cleaner != nil {
 		o.cleaner(o.obj, o.client)
 	}
@@ -97,19 +98,14 @@ func (o *operation) createResource(ctx context.Context) error {
 }
 
 func (o *operation) handleCheck(ctx context.Context, err error) error {
-	if o.check == nil || o.check.Value == nil {
+	bindings := binding.NewBindings()
+	if err == nil {
+		bindings = bindings.Register("$error", binding.NewBinding(nil))
+	} else {
+		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
+	}
+	if matched, err := check.Expectations(ctx, o.obj, bindings, o.expect...); matched {
 		return err
 	}
-	actual := map[string]interface{}{
-		"error":    nil,
-		"resource": o.obj,
-	}
-	if err != nil {
-		actual["error"] = err.Error()
-	}
-	errs, validationErr := assert.Validate(ctx, o.check.Value, actual, nil)
-	if validationErr != nil {
-		return validationErr
-	}
-	return errs.ToAggregate()
+	return err
 }

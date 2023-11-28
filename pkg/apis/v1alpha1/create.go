@@ -1,9 +1,5 @@
 package v1alpha1
 
-import (
-	"github.com/kyverno/kyverno-json/pkg/apis/v1alpha1"
-)
-
 // Create represents a set of resources that should be created.
 // If a resource already exists in the cluster it will fail.
 type Create struct {
@@ -14,7 +10,7 @@ type Create struct {
 	// +optional
 	DryRun *bool `json:"dryRun,omitempty"`
 
-	// Check is an assertion tree to validate outcome.
+	// Expect defines a list of matched checks to validate the operation outcome.
 	// +optional
-	Check *v1alpha1.Any `json:"check,omitempty"`
+	Expect []Expectation `json:"expect,omitempty"`
 }

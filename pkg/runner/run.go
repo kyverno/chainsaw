@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -19,6 +20,11 @@ import (
 
 func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*summary.Summary, error) {
 	var summary summary.Summary
+	var testsReport *report.TestsReport
+	if config.ReportFormat != "" {
+		testsReport = report.NewTests(config.ReportName)
+	}
+
 	if len(tests) == 0 {
 		return &summary, nil
 	}
@@ -33,8 +39,8 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
-			t.Helper()
-			processor := processors.NewTestsProcessor(config, client, clock, &summary, tests...)
+			t.Parallel()
+			processor := processors.NewTestsProcessor(config, client, clock, &summary, testsReport, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx)
@@ -45,5 +51,12 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	if code := m.Run(); code > 1 {
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
+
+	if testsReport != nil && config.ReportFormat != "" {
+		if err := testsReport.SaveReportBasedOnType(config.ReportFormat, config.ReportName); err != nil {
+			return &summary, fmt.Errorf("failed to save test report: %v", err)
+		}
+	}
+
 	return &summary, nil
 }

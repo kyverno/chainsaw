@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -44,36 +45,35 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 		}()
 	}
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
-	cwd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get current working directory (%w)", err)
-	}
 	env := os.Environ()
+	if cwd, err := os.Getwd(); err != nil {
+		return fmt.Errorf("failed to get current working directory (%w)", err)
+	} else {
+		env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
+	}
 	env = append(env, fmt.Sprintf("NAMESPACE=%s", o.namespace))
-	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
 	cmd.Dir = o.basePath
-	logger.Log(logging.Script, logging.RunStatus, color.BoldFgCyan)
+	logger.Log(logging.Script, logging.RunStatus, color.BoldFgCyan, logging.Section("COMMAND", cmd.String()))
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
-	cmdErr := cmd.Run()
-	if o.script.Check == nil || o.script.Check.Value == nil {
-		return cmdErr
+	if err := cmd.Run(); o.script.Check == nil || o.script.Check.Value == nil {
+		return err
 	} else {
-		actual := map[string]interface{}{
-			"error":  nil,
-			"stdout": output.Out(),
-			"stderr": output.Err(),
+		bindings := binding.NewBindings()
+		if err == nil {
+			bindings = bindings.Register("$error", binding.NewBinding(nil))
+		} else {
+			bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 		}
-		if cmdErr != nil {
-			actual["error"] = cmdErr.Error()
-		}
-		errs, err := assert.Validate(ctx, o.script.Check.Value, actual, nil)
-		if err != nil {
+		bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
+		bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
+		if errs, err := assert.Validate(ctx, o.script.Check.Value, nil, bindings); err != nil {
 			return err
+		} else {
+			return errs.ToAggregate()
 		}
-		return errs.ToAggregate()
 	}
 }

@@ -10,6 +10,7 @@ func ValidateScript(path *field.Path, obj *v1alpha1.Script) field.ErrorList {
 	if obj != nil {
 		if obj.Content == "" {
 			errs = append(errs, field.Invalid(path.Child("content"), obj, "content must be specified"))
+			errs = append(errs, ValidateCheck(path.Child("check"), obj.Check)...)
 		}
 	}
 	return errs

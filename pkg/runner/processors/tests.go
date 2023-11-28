@@ -2,10 +2,12 @@ package processors
 
 import (
 	"context"
+	"sync/atomic"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -28,27 +30,36 @@ func NewTestsProcessor(
 	client client.Client,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
+	testsReport *report.TestsReport,
 	tests ...discovery.Test,
 ) TestsProcessor {
 	return &testsProcessor{
-		config:  config,
-		client:  client,
-		clock:   clock,
-		summary: summary,
-		tests:   tests,
+		config:      config,
+		client:      client,
+		clock:       clock,
+		summary:     summary,
+		testsReport: testsReport,
+		tests:       tests,
 	}
 }
 
 type testsProcessor struct {
-	config  v1alpha1.ConfigurationSpec
-	client  client.Client
-	clock   clock.PassiveClock
-	summary *summary.Summary
-	tests   []discovery.Test
+	config         v1alpha1.ConfigurationSpec
+	client         client.Client
+	clock          clock.PassiveClock
+	summary        *summary.Summary
+	testsReport    *report.TestsReport
+	tests          []discovery.Test
+	shouldFailFast atomic.Bool
 }
 
 func (p *testsProcessor) Run(ctx context.Context) {
 	t := testing.FromContext(ctx)
+	t.Cleanup(func() {
+		if p.testsReport != nil {
+			p.testsReport.Close()
+		}
+	})
 	var nspacer namespacer.Namespacer
 	if p.config.Namespace != "" {
 		namespace := client.Namespace(p.config.Namespace)
@@ -63,7 +74,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				operation := operation{
 					continueOnError: false,
 					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, nil, nil, nil),
-					operation:       opdelete.New(p.client, namespace.DeepCopy(), nspacer),
+					operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, nil),
 				}
 				operation.execute(ctx)
 			})
@@ -79,7 +90,11 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			t.FailNow()
 		}
 		t.Run(name, func(t *testing.T) {
-			t.Helper()
+			t.Cleanup(func() {
+				if t.Failed() {
+					p.shouldFailFast.Store(true)
+				}
+			})
 			processor := p.CreateTestProcessor(test)
 			processor.Run(testing.IntoContext(ctx, t), nspacer)
 		})
@@ -87,5 +102,9 @@ func (p *testsProcessor) Run(ctx context.Context) {
 }
 
 func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor {
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary, test)
+	testReport := report.NewTest(test.Name)
+	if p.testsReport != nil {
+		p.testsReport.AddTest(testReport)
+	}
+	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast)
 }

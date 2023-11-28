@@ -4,11 +4,11 @@ import (
 	"context"
 	"errors"
 	"path/filepath"
-	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/collect"
@@ -27,7 +27,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/clock"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // TODO
@@ -44,6 +43,7 @@ func NewStepProcessor(
 	clock clock.PassiveClock,
 	test discovery.Test,
 	step v1alpha1.TestSpecStep,
+	stepReport *report.TestSpecStepReport,
 ) StepProcessor {
 	return &stepProcessor{
 		config:     config,
@@ -52,6 +52,7 @@ func NewStepProcessor(
 		clock:      clock,
 		test:       test,
 		step:       step,
+		stepReport: stepReport,
 	}
 }
 
@@ -62,6 +63,7 @@ type stepProcessor struct {
 	clock      clock.PassiveClock
 	test       discovery.Test
 	step       v1alpha1.TestSpecStep
+	stepReport *report.TestSpecStepReport
 }
 
 func (p *stepProcessor) Run(ctx context.Context) {
@@ -184,17 +186,17 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd, nil))
+			register(p.commandOperation(ctx, *cmd, handler.Timeout))
 		} else if handler.Events != nil {
 			cmd, err := collect.Events(handler.Events)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd, nil))
+			register(p.commandOperation(ctx, *cmd, handler.Timeout))
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, *handler.Command, nil))
+			register(p.commandOperation(ctx, *handler.Command, handler.Timeout))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, *handler.Script, nil))
+			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -216,17 +218,17 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd, nil))
+			register(p.commandOperation(ctx, *cmd, handler.Timeout))
 		} else if handler.Events != nil {
 			cmd, err := collect.Events(handler.Events)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd, nil))
+			register(p.commandOperation(ctx, *cmd, handler.Timeout))
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, *handler.Command, nil))
+			register(p.commandOperation(ctx, *handler.Command, handler.Timeout))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, *handler.Script, nil))
+			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -240,29 +242,18 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 		return nil, err
 	}
 	var ops []operation
+	operationReport := report.NewOperation("Apply "+op.File, report.OperationTypeApply)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	addDelay := false
-	for i := range resources {
-		resource := resources[i]
+	for _, resource := range resources {
+		if err := p.prepareResource(resource); err != nil {
+			return nil, err
+		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opapply.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check),
-		})
-		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
-			addDelay = true
-		}
-	}
-	if addDelay {
-		ops = append(ops, operation{
-			timeout: timeout.Get(2*time.Minute, nil, nil, nil, nil),
-			operation: opcommand.New(
-				v1alpha1.Command{
-					Entrypoint: "sleep",
-					Args:       []string{"5s"},
-				},
-				p.test.BasePath,
-				p.namespacer.GetNamespace(),
-			),
+			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
 		})
 	}
 	return ops, nil
@@ -274,20 +265,29 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert,
 		return nil, err
 	}
 	var ops []operation
-	for i := range resources {
-		resource := resources[i]
+	operationReport := report.NewOperation("Assert ", report.OperationTypeAssert)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
+	for _, resource := range resources {
 		ops = append(ops, operation{
-			timeout:   timeout.Get(timeout.DefaultAssertTimeout, p.config.Timeouts.Assert, p.test.Spec.Timeouts.Assert, p.step.Spec.Timeouts.Assert, to),
-			operation: opassert.New(p.client, resource, p.namespacer),
+			timeout:         timeout.Get(timeout.DefaultAssertTimeout, p.config.Timeouts.Assert, p.test.Spec.Timeouts.Assert, p.step.Spec.Timeouts.Assert, to),
+			operation:       opassert.New(p.client, resource, p.namespacer),
+			operationReport: operationReport,
 		})
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) commandOperation(ctx context.Context, exec v1alpha1.Command, to *metav1.Duration) operation {
+	operationReport := report.NewOperation("Command ", report.OperationTypeCommand)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	return operation{
-		timeout:   timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
-		operation: opcommand.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
+		timeout:         timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
+		operation:       opcommand.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
+		operationReport: operationReport,
 	}
 }
 
@@ -297,29 +297,18 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create,
 		return nil, err
 	}
 	var ops []operation
+	operationReport := report.NewOperation("Create ", report.OperationTypeCreate)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	addDelay := false
-	for i := range resources {
-		resource := resources[i]
+	for _, resource := range resources {
+		if err := p.prepareResource(resource); err != nil {
+			return nil, err
+		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(timeout.DefaultApplyTimeout, p.config.Timeouts.Apply, p.test.Spec.Timeouts.Apply, p.step.Spec.Timeouts.Apply, to),
-			operation: opcreate.New(p.getClient(dryRun), &resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Check),
-		})
-		if resource.GetKind() == "Pod" || resource.GetKind() == "Deployment" {
-			addDelay = true
-		}
-	}
-	if addDelay {
-		ops = append(ops, operation{
-			timeout: timeout.Get(2*time.Minute, nil, nil, nil, nil),
-			operation: opcommand.New(
-				v1alpha1.Command{
-					Entrypoint: "sleep",
-					Args:       []string{"5s"},
-				},
-				p.test.BasePath,
-				p.namespacer.GetNamespace(),
-			),
+			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
 		})
 	}
 	return ops, nil
@@ -332,9 +321,14 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete,
 	resource.SetName(op.Name)
 	resource.SetNamespace(op.Namespace)
 	resource.SetLabels(op.Labels)
+	operationReport := report.NewOperation("Delete ", report.OperationTypeDelete)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	return &operation{
-		timeout:   timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
-		operation: opdelete.New(p.client, &resource, p.namespacer),
+		timeout:         timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
+		operation:       opdelete.New(p.client, resource, p.namespacer, op.Check),
+		operationReport: operationReport,
 	}, nil
 }
 
@@ -344,20 +338,29 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, t
 		return nil, err
 	}
 	var ops []operation
-	for i := range resources {
-		resource := resources[i]
+	operationReport := report.NewOperation("Error ", report.OperationTypeCommand)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
+	for _, resource := range resources {
 		ops = append(ops, operation{
-			timeout:   timeout.Get(timeout.DefaultErrorTimeout, p.config.Timeouts.Error, p.test.Spec.Timeouts.Error, p.step.Spec.Timeouts.Error, to),
-			operation: operror.New(p.client, resource, p.namespacer),
+			timeout:         timeout.Get(timeout.DefaultErrorTimeout, p.config.Timeouts.Error, p.test.Spec.Timeouts.Error, p.step.Spec.Timeouts.Error, to),
+			operation:       operror.New(p.client, resource, p.namespacer),
+			operationReport: operationReport,
 		})
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) scriptOperation(ctx context.Context, exec v1alpha1.Script, to *metav1.Duration) operation {
+	operationReport := report.NewOperation("Script ", report.OperationTypeScript)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
 	return operation{
-		timeout:   timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
-		operation: opscript.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
+		timeout:         timeout.Get(timeout.DefaultExecTimeout, p.config.Timeouts.Exec, p.test.Spec.Timeouts.Exec, p.step.Spec.Timeouts.Exec, to),
+		operation:       opscript.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
+		operationReport: operationReport,
 	}
 }
 
@@ -378,6 +381,27 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]uns
 	return nil, errors.New("file or resource must be set")
 }
 
+func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) error {
+	if p.config.ForceTerminationGracePeriod != nil {
+		seconds := int64(p.config.ForceTerminationGracePeriod.Duration.Seconds())
+		switch resource.GetKind() {
+		case "Pod":
+			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "terminationGracePeriodSeconds"); err != nil {
+				return err
+			}
+		case "Deployment", "StatefulSet", "DaemonSet", "Job":
+			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+				return err
+			}
+		case "CronJob":
+			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "jobTemplate", "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 func (p *stepProcessor) getClient(dryRun bool) client.Client {
 	if !dryRun {
 		return p.client
@@ -391,13 +415,13 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 	}
 	var cleaner cleanup.Cleaner
 	if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, p.step.Spec.SkipDelete) {
-		cleaner = func(obj ctrlclient.Object, c client.Client) {
+		cleaner = func(obj unstructured.Unstructured, c client.Client) {
 			t := testing.FromContext(ctx)
 			t.Cleanup(func() {
 				operation := operation{
 					continueOnError: true,
 					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, p.step.Spec.Timeouts.Cleanup, nil),
-					operation:       opdelete.New(c, obj, p.namespacer),
+					operation:       opdelete.New(c, obj, p.namespacer, nil),
 				}
 				operation.execute(ctx)
 			})

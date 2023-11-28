@@ -3,10 +3,12 @@ package processors
 import (
 	"context"
 	"fmt"
+	"sync/atomic"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
@@ -29,27 +31,41 @@ func NewTestProcessor(
 	client client.Client,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
+	testReport *report.TestReport,
 	test discovery.Test,
+	shouldFailFast *atomic.Bool,
 ) TestProcessor {
 	return &testProcessor{
-		config:  config,
-		client:  client,
-		clock:   clock,
-		summary: summary,
-		test:    test,
+		config:         config,
+		client:         client,
+		clock:          clock,
+		summary:        summary,
+		testReport:     testReport,
+		test:           test,
+		shouldFailFast: shouldFailFast,
 	}
 }
 
 type testProcessor struct {
-	config  v1alpha1.ConfigurationSpec
-	client  client.Client
-	clock   clock.PassiveClock
-	summary *summary.Summary
-	test    discovery.Test
+	config         v1alpha1.ConfigurationSpec
+	client         client.Client
+	clock          clock.PassiveClock
+	summary        *summary.Summary
+	testReport     *report.TestReport
+	test           discovery.Test
+	shouldFailFast *atomic.Bool
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
 	t := testing.FromContext(ctx)
+	t.Cleanup(func() {
+		if t.Failed() {
+			p.testReport.NewFailure("test failed")
+		}
+		if p.testReport != nil {
+			p.testReport.MarkTestEnd()
+		}
+	})
 	size := 0
 	for i, step := range p.test.Spec.Steps {
 		name := step.Name
@@ -79,6 +95,11 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	if p.test.Spec.Skip != nil && *p.test.Spec.Skip {
 		t.SkipNow()
 	}
+	if p.config.FailFast {
+		if p.shouldFailFast.Load() {
+			t.SkipNow()
+		}
+	}
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	var namespace *corev1.Namespace
 	if nspacer == nil || p.test.Spec.Namespace != "" {
@@ -103,7 +124,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 				operation := operation{
 					continueOnError: false,
 					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, nil, nil),
-					operation:       opdelete.New(p.client, namespace, nspacer),
+					operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, nil),
 				}
 				operation.execute(ctx)
 			})
@@ -123,5 +144,9 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 }
 
 func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, step v1alpha1.TestSpecStep) StepProcessor {
-	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step)
+	stepReport := report.NewTestSpecStep(step.Name)
+	if p.testReport != nil {
+		p.testReport.AddTestStep(stepReport)
+	}
+	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport)
 }

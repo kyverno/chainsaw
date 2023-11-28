@@ -64,7 +64,7 @@ should be applied during testing.</p>
 |---|---|---|---|---|
 | `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be applied.</p> |
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
-| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate outcome.</p> |
+| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
 ## `Assert`     {#chainsaw-kyverno-io-v1alpha1-Assert}
 
@@ -91,6 +91,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
@@ -112,7 +113,7 @@ during the testing process.</p>
 | `entrypoint` | `string` | :white_check_mark: |  | <p>Entrypoint is the command entry point to run.</p> |
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
-| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate outcome.</p> |
+| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -138,6 +139,7 @@ during the testing process.</p>
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
 | `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
 | `testFile` | `string` |  |  | <p>TestFile is the name of the file containing the test to run.</p> |
+| `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 
 ## `Create`     {#chainsaw-kyverno-io-v1alpha1-Create}
 
@@ -153,7 +155,7 @@ If a resource already exists in the cluster it will fail.</p>
 |---|---|---|---|---|
 | `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be created.</p> |
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
-| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate outcome.</p> |
+| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
 ## `Delete`     {#chainsaw-kyverno-io-v1alpha1-Delete}
 
@@ -166,7 +168,8 @@ If a resource already exists in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `ObjectReference` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: | :white_check_mark: | <p>ObjectReference determines objects to be deleted.</p> |
+| `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: |  | <p>ObjectReference determines objects to be deleted.</p> |
+| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
 
@@ -197,6 +200,22 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 | `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+
+## `Expectation`     {#chainsaw-kyverno-io-v1alpha1-Expectation}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+
+<p>Expectation represents a check to be applied on the result of an operation
+with a match filter to determine if the verification should be considered.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `match` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
+| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` | :white_check_mark: |  | <p>Match defines the matching statement.</p> |
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
@@ -239,6 +258,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
@@ -283,6 +303,9 @@ For multiple objects use labels.</p>
 **Appears in:**
     
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+<p>Operation defines a single operation, only one action is permitted for a given operation.</p>
+
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
@@ -337,7 +360,7 @@ For multiple objects use labels.</p>
 |---|---|---|---|---|
 | `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
-| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate outcome.</p> |
+| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
 ## `TestSpec`     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
 

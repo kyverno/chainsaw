@@ -7,12 +7,14 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	internalloader "github.com/kyverno/chainsaw/pkg/internal/loader"
 	tloader "github.com/kyverno/chainsaw/pkg/internal/loader/testing"
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/client-go/openapi"
 )
 
@@ -287,6 +289,7 @@ func Test_parse(t *testing.T) {
 		splitter      splitter
 		loaderFactory loaderFactory
 		converter     converter
+		validator     validator
 		wantErr       bool
 	}{{
 		name:          "default",
@@ -330,15 +333,36 @@ func Test_parse(t *testing.T) {
 			return nil, errors.New("converter")
 		},
 		wantErr: true,
+	}, {
+		name:          "validator error",
+		splitter:      nil,
+		loaderFactory: nil,
+		converter:     nil,
+		validator: func(obj *v1alpha1.TestStep) field.ErrorList {
+			return field.ErrorList{
+				field.Invalid(nil, nil, ""),
+			}
+		},
+		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := parse(content, tt.splitter, tt.loaderFactory, tt.converter)
+			_, err := parse(content, tt.splitter, tt.loaderFactory, tt.converter, tt.validator)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}
 		})
+	}
+}
+
+func Test_parse_globalErr(t *testing.T) {
+	content, err := os.ReadFile("../../testdata/step/custom-step.yaml")
+	assert.NoError(t, err)
+	internalloader.Err = errors.New("dummy error")
+	{
+		_, err := parse(content, nil, nil, nil, nil)
+		assert.Error(t, err)
 	}
 }
