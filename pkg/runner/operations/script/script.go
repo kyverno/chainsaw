@@ -45,13 +45,13 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 		}()
 	}
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
-	cwd, err := os.Getwd()
-	if err != nil {
-		return fmt.Errorf("failed to get current working directory (%w)", err)
-	}
 	env := os.Environ()
+	if cwd, err := os.Getwd(); err != nil {
+		return fmt.Errorf("failed to get current working directory (%w)", err)
+	} else {
+		env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
+	}
 	env = append(env, fmt.Sprintf("NAMESPACE=%s", o.namespace))
-	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	// TODO
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
@@ -59,9 +59,8 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	logger.Log(logging.Script, logging.RunStatus, color.BoldFgCyan, logging.Section("COMMAND", cmd.String()))
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
-	cmdErr := cmd.Run()
-	if o.script.Check == nil || o.script.Check.Value == nil {
-		return cmdErr
+	if err := cmd.Run(); o.script.Check == nil || o.script.Check.Value == nil {
+		return err
 	} else {
 		bindings := binding.NewBindings()
 		if err == nil {
@@ -71,10 +70,10 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 		}
 		bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
 		bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
-		errs, err := assert.Validate(ctx, o.script.Check.Value, nil, bindings)
-		if err != nil {
+		if errs, err := assert.Validate(ctx, o.script.Check.Value, nil, bindings); err != nil {
 			return err
+		} else {
+			return errs.ToAggregate()
 		}
-		return errs.ToAggregate()
 	}
 }

@@ -50,6 +50,20 @@ func Test_operationScript(t *testing.T) {
 		basePath:  "..",
 		namespace: "test-namespace",
 		wantErr:   false,
+	}, {
+		name: "with check",
+		script: v1alpha1.Script{
+			Content:       "foo",
+			SkipLogOutput: true,
+			Check: &v1alpha1.Check{
+				Value: map[string]interface{}{
+					"($error != null)": true,
+				},
+			},
+		},
+		basePath:  "..",
+		namespace: "test-namespace",
+		wantErr:   false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
