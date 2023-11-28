@@ -55,11 +55,12 @@
 </code></pre></div> </div> <h2 id=operation-check>Operation check<a class=headerlink href=#operation-check title="Permanent link">&para;</a></h2> <p>Below is an example of using an <a href=../check/#create>operation check</a>.</p> <div class="admonition example"> <p class=admonition-title>With check</p> <div class=highlight><pre><span></span><code><span class=c1># ...</span>
 <span class="p p-Indicator">-</span><span class=w> </span><span class=nt>apply</span><span class=p>:</span>
 <span class=w>    </span><span class=nt>file</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">my-pod.yaml</span>
-<span class=w>    </span><span class=nt>check</span><span class=p>:</span>
-<span class=w>      </span><span class=c1># an error is expected, this will:</span>
-<span class=w>      </span><span class=c1># - succeed if the operation failed</span>
-<span class=w>      </span><span class=c1># - fail if the operation succeeded</span>
-<span class=w>      </span><span class=nt>(error != null)</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class=w>    </span><span class=nt>expect</span><span class=p>:</span>
+<span class=w>    </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>check</span><span class=p>:</span>
+<span class=w>        </span><span class=c1># an error is expected, this will:</span>
+<span class=w>        </span><span class=c1># - succeed if the operation failed</span>
+<span class=w>        </span><span class=c1># - fail if the operation succeeded</span>
+<span class=w>        </span><span class=nt>($error != null)</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class=c1># ...</span>
 </code></pre></div> </div> <div class="admonition example"> <p class=admonition-title>With check</p> <div class=highlight><pre><span></span><code><span class=c1># ...</span>
 <span class="p p-Indicator">-</span><span class=w> </span><span class=nt>apply</span><span class=p>:</span>
@@ -70,10 +71,16 @@
 <span class=w>        </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">chainsaw-quick-start</span>
 <span class=w>      </span><span class=nt>data</span><span class=p>:</span>
 <span class=w>        </span><span class=nt>foo</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">bar</span>
-<span class=w>    </span><span class=nt>check</span><span class=p>:</span>
-<span class=w>      </span><span class=c1># an error is expected, this will:</span>
-<span class=w>      </span><span class=c1># - succeed if the operation failed</span>
-<span class=w>      </span><span class=c1># - fail if the operation succeeded</span>
-<span class=w>      </span><span class=nt>(error != null)</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class=w>    </span><span class=nt>expect</span><span class=p>:</span>
+<span class=w>    </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>match</span><span class=p>:</span>
+<span class=w>        </span><span class=c1># this check applies only if the match</span>
+<span class=w>        </span><span class=c1># statement below evaluates to `true`</span>
+<span class=w>        </span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class=w>        </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class=w>      </span><span class=nt>check</span><span class=p>:</span>
+<span class=w>        </span><span class=c1># an error is expected, this will:</span>
+<span class=w>        </span><span class=c1># - succeed if the operation failed</span>
+<span class=w>        </span><span class=c1># - fail if the operation succeeded</span>
+<span class=w>        </span><span class=nt>($error != null)</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 <span class=c1># ...</span>
 </code></pre></div> </div> </article> </div> </div> </main> <footer class=md-footer> <nav class="md-footer__inner md-grid" aria-label=Footer> <a href=../apply/ class="md-footer__link md-footer__link--prev" aria-label="Previous: Apply"> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg> </div> <div class=md-footer__title> <span class=md-footer__direction> Previous </span> <div class=md-ellipsis> Apply </div> </div> </a> <a href=../delete/ class="md-footer__link md-footer__link--next" aria-label="Next: Delete"> <div class=md-footer__title> <span class=md-footer__direction> Next </span> <div class=md-ellipsis> Delete </div> </div> <div class="md-footer__button md-icon"> <svg xmlns=http://www.w3.org/2000/svg viewbox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg> </div> </a> </nav> <div class="md-footer-meta md-typeset"> <div class="md-footer-meta__inner md-grid"> <div class=md-copyright> <div class=md-copyright__highlight> Made with ❤️ by Kyverno contributors. </div> Made with <a href=https://squidfunk.github.io/mkdocs-material/ target=_blank rel=noopener> Material for MkDocs </a> </div> </div> </div> </footer> </div> <div class=md-dialog data-md-component=dialog> <div class="md-dialog__inner md-typeset"></div> </div> <script id=__config type=application/json>{"base": "../../..", "features": ["announce.dismiss", "search.suggest", "search.highlight", "search.share", "content.code.copy", "content.action.edit", "navigation.footer", "navigation.instant", "navigation.tracking", "navigation.tabs"], "search": "../../../assets/javascripts/workers/search.f886a092.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"provider": "mike"}}</script> <script src=../../../assets/javascripts/bundle.cd18aaf1.min.js></script> </body> </html>
