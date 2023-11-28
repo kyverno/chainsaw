@@ -30,6 +30,10 @@ Built under the Kyverno umbrella, you can use the Kyverno Chainsaw **Slack chann
 
 Please refer to the [Getting Started](https://kyverno.github.io/chainsaw/intro/) documentation.
 
+## RoadMap
+
+For detailed information on our planned features and upcoming updates, please [view our Roadmap](./ROADMAP.md).
+
 ## Community, Events, Discussion, Contribution, and Support
 
 Learn more on how to engage with the [Kyverno](https://kyverno.io) community on our [community page](https://kyverno.io/community/).
