@@ -68,6 +68,36 @@ func Test_operationCommand(t *testing.T) {
 		basePath:  "..",
 		namespace: "test-namespace",
 		wantErr:   false,
+	}, {
+		name: "with bad check",
+		command: v1alpha1.Command{
+			Entrypoint:    "foo",
+			Args:          []string{"operation.go"},
+			SkipLogOutput: true,
+			Check: &v1alpha1.Check{
+				Value: map[string]interface{}{
+					"(foo('bar'))": true,
+				},
+			},
+		},
+		basePath:  "..",
+		namespace: "test-namespace",
+		wantErr:   true,
+	}, {
+		name: "with bad check",
+		command: v1alpha1.Command{
+			Entrypoint:    "cat",
+			Args:          []string{"operation.go"},
+			SkipLogOutput: true,
+			Check: &v1alpha1.Check{
+				Value: map[string]interface{}{
+					"(foo('bar'))": true,
+				},
+			},
+		},
+		basePath:  "..",
+		namespace: "test-namespace",
+		wantErr:   true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
