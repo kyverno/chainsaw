@@ -124,6 +124,12 @@ chainsaw test --config my-config.yaml --test-dir /path/to/tests --parallel 10
 
 This command will run tests using the configuration from `my-config.yaml`, taking tests from `/path/to/tests`, and running a maximum of `10` tests simultaneously.
 
+## Reports
+
+Chainsaw can generate JUnit reports in `XML` or `JSON` format.
+
+Provide a report format and report name in the configuration or via CLI flags.
+
 ## Reference
 
 Refer to the reference documentations for details about supported fields in the configuration file and/or supported flags in the `test` command.

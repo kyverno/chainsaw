@@ -1,9 +1,10 @@
 # What is catch / finally
 
 Catch and Finally are additional fields to collect certain information about the outcome of a step should it fail (in the case of `catch`) or at the end of the step (in the case of `finally`).
+
 The ultimate goal of collectors is to gather information about the failure of a step and therefore help understand what caused it to fail.
 
-A test step can have an arbitrary number of collectors.
+A test step can have an arbitrary number of collectors. A collector can be configured with a `timeout`.
 
 !!! note
 
@@ -97,5 +98,22 @@ Catch / Finally are a per step configuration and are registered under the `catch
         - script:
             content: |
               echo "goodbye"
+    ```
+    See [Scripts](scripts.md) for details and supported configurations.
+
+!!! example "Execute a custom script with timeout"
+
+    ```yaml
+        try:
+        # ...
+        catch:
+        - script:
+            content: |
+              echo "an error has occured"
+        finally:
+        - script:
+            content: |
+              echo "goodbye"
+          timeout: 15s
     ```
     See [Scripts](scripts.md) for details and supported configurations.
