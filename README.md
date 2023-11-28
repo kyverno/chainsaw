@@ -20,12 +20,11 @@ Chainsaw is an **open source** tool that was initially developped for defining a
 
 ## Resources
 
-Built under the Kyverno umbrella, you can use the Kyverno **Slack channels** to discuss anything related to Chainsaw.
+Built under the Kyverno umbrella, you can use the Kyverno Chainsaw **Slack channels** to discuss anything related to Chainsaw.
 
 ### Slack channels
 
-- [#kyverno](https://kubernetes.slack.com/archives/CLGR9BJU9)
-- [#kyverno-dev](https://kubernetes.slack.com/archives/C032MM2CH7X)
+- [#kyverno-chainsaw](https://kubernetes.slack.com/archives/C067LUFL43U)
 
 ## Getting Started
 
