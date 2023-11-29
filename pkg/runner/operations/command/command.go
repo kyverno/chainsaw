@@ -41,7 +41,9 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	}()
 	if !o.command.SkipLogOutput {
 		defer func() {
-			logger.Log(logging.Command, logging.LogStatus, color.BoldFgCyan, output.Sections()...)
+			if sections := output.Sections(); len(sections) != 0 {
+				logger.Log(logging.Command, logging.LogStatus, color.BoldFgCyan, sections...)
+			}
 		}()
 	}
 	args := expand(map[string]string{"NAMESPACE": o.namespace}, o.command.Args...)

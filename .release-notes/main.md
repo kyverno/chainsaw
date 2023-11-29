@@ -10,8 +10,6 @@ Release notes for `TODO`.
 
 ## :boat: Tutorials :boat:
 
-## :wrench: Fixes :wrench:
-
 ## :books: Docs :books:
 -->
 
@@ -23,6 +21,10 @@ Release notes for `TODO`.
 
 - Added support to register Chainsaw specific JMESPath functions for use in assertion trees
 - Added inline manifest support to `assert` and `error` operations
+
+## :wrench: Fixes :wrench:
+
+- Don't show `command` or `script` logs if there's nothing to show
 
 ## :guitar: Misc :guitar:
 
