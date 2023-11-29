@@ -1,0 +1,11 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: basic
+spec:
+  steps:
+  - try:
+    - apply:
+        file: configmap.yaml
+    - assert:
+        file: configmap-assert.yaml

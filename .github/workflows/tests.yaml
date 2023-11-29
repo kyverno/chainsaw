@@ -17,7 +17,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  required:
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -36,3 +36,27 @@ jobs:
           file: ./coverage.out
           fail_ci_if_error: true
           verbose: true
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+      - name: Build
+        run: make build
+      - name: Create test cluster
+        run: make kind-cluster
+      - name: Run tests
+        run: ./chainsaw test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --no-color=false
+
+  required:
+    needs:
+    - unit-tests
+    - e2e-tests
+    runs-on: ubuntu-latest
+    steps:
+    - run: echo "Required jobs success!"

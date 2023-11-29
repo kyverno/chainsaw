@@ -1,0 +1,8 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Configuration
+metadata:
+  name: congiguration
+spec:
+  fullName: true
+  failFast: true
+  forceTerminationGracePeriod: 5s
