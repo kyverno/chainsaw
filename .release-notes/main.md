@@ -22,6 +22,7 @@ Release notes for `TODO`.
 ## :dizzy: New features :dizzy:
 
 - Added support to register Chainsaw specific JMESPath functions for use in assertion trees
+- Added inline manifest support to `assert` and `error` operations
 
 ## :guitar: Misc :guitar:
 

@@ -334,6 +334,11 @@ spec:
                               file:
                                 description: File is the path to the referenced file.
                                 type: string
+                              resource:
+                                description: Resource provides a resource to be applied.
+                                type: object
+                                x-kubernetes-embedded-resource: true
+                                x-kubernetes-preserve-unknown-fields: true
                             type: object
                           command:
                             description: Command defines a command to run.
@@ -468,6 +473,11 @@ spec:
                               file:
                                 description: File is the path to the referenced file.
                                 type: string
+                              resource:
+                                description: Resource provides a resource to be applied.
+                                type: object
+                                x-kubernetes-embedded-resource: true
+                                x-kubernetes-preserve-unknown-fields: true
                             type: object
                           script:
                             description: Script defines a script to run.

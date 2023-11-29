@@ -101,8 +101,10 @@ func TestLoad(t *testing.T) {
 					Spec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Assert: &v1alpha1.Assert{
-								FileRef: v1alpha1.FileRef{
-									File: "bar.yaml",
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									FileRef: v1alpha1.FileRef{
+										File: "bar.yaml",
+									},
 								},
 							},
 						}},

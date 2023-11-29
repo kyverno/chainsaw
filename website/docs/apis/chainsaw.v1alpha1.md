@@ -62,7 +62,7 @@ should be applied during testing.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be applied.</p> |
+| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the resources to be applied.</p> |
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
@@ -78,7 +78,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the assertion.</p> |
+| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the assertion.</p> |
 
 ## `Catch`     {#chainsaw-kyverno-io-v1alpha1-Catch}
 
@@ -183,7 +183,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | <p>FileRef provides a reference to the file containing the expected error.</p> |
+| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the expected error.</p> |
 
 ## `Events`     {#chainsaw-kyverno-io-v1alpha1-Events}
 
@@ -222,8 +222,6 @@ with a match filter to determine if the verification should be considered.</p>
 
 **Appears in:**
     
-- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
-- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
 - [FileRefOrResource](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource)
 
 <p>FileRef represents a file reference.</p>
@@ -238,7 +236,9 @@ with a match filter to determine if the verification should be considered.</p>
 **Appears in:**
     
 - [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
 
 <p>FileRefOrResource represents a file reference or resource.</p>
 

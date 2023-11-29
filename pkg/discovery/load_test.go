@@ -69,8 +69,10 @@ func TestLoadTest(t *testing.T) {
 							Spec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{{
 									Assert: &v1alpha1.Assert{
-										FileRef: v1alpha1.FileRef{
-											File: "configmap.yaml",
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "configmap.yaml",
+											},
 										},
 									},
 								}},
@@ -117,8 +119,10 @@ func TestLoadTest(t *testing.T) {
 								Try: []v1alpha1.Operation{
 									{
 										Assert: &v1alpha1.Assert{
-											FileRef: v1alpha1.FileRef{
-												File: "configmap.yaml",
+											FileRefOrResource: v1alpha1.FileRefOrResource{
+												FileRef: v1alpha1.FileRef{
+													File: "configmap.yaml",
+												},
 											},
 										},
 									},
@@ -160,8 +164,10 @@ func TestLoadTest(t *testing.T) {
 									},
 								}, {
 									Assert: &v1alpha1.Assert{
-										FileRef: v1alpha1.FileRef{
-											File: "bar.yaml",
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "bar.yaml",
+											},
 										},
 									},
 								}},
@@ -200,8 +206,10 @@ func TestLoadTest(t *testing.T) {
 									},
 								}, {
 									Assert: &v1alpha1.Assert{
-										FileRef: v1alpha1.FileRef{
-											File: "bar.yaml",
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "bar.yaml",
+											},
 										},
 									},
 								}},
@@ -240,8 +248,10 @@ func TestLoadTest(t *testing.T) {
 									},
 								}, {
 									Assert: &v1alpha1.Assert{
-										FileRef: v1alpha1.FileRef{
-											File: "bar.yaml",
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "bar.yaml",
+											},
 										},
 									},
 								}, {
@@ -254,14 +264,18 @@ func TestLoadTest(t *testing.T) {
 									},
 								}, {
 									Assert: &v1alpha1.Assert{
-										FileRef: v1alpha1.FileRef{
-											File: "01-assert.yaml",
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "01-assert.yaml",
+											},
 										},
 									},
 								}, {
 									Error: &v1alpha1.Error{
-										FileRef: v1alpha1.FileRef{
-											File: "01-errors.yaml",
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "01-errors.yaml",
+											},
 										},
 									},
 								}},
@@ -300,14 +314,18 @@ func TestLoadTest(t *testing.T) {
 									},
 								}, {
 									Assert: &v1alpha1.Assert{
-										FileRef: v1alpha1.FileRef{
-											File: "01-assert.yaml",
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "01-assert.yaml",
+											},
 										},
 									},
 								}, {
 									Error: &v1alpha1.Error{
-										FileRef: v1alpha1.FileRef{
-											File: "01-errors.yaml",
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "01-errors.yaml",
+											},
 										},
 									},
 								}},

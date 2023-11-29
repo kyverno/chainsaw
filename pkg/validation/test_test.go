@@ -43,8 +43,10 @@ func TestValidateTest(t *testing.T) {
 								},
 							},
 							Assert: &v1alpha1.Assert{
-								FileRef: v1alpha1.FileRef{
-									File: "file",
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									FileRef: v1alpha1.FileRef{
+										File: "file",
+									},
 								},
 							},
 						},
