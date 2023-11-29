@@ -6,6 +6,10 @@ import (
 
 // Operation defines a single operation, only one action is permitted for a given operation.
 type Operation struct {
+	// Description contains a description of the operation.
+	// +optional
+	Description string `json:"description,omitempty"`
+
 	// Timeout for the operation. Overrides the global timeout set in the Configuration.
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`

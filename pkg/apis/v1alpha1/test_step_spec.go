@@ -2,6 +2,10 @@ package v1alpha1
 
 // TestStepSpec defines the desired state and behavior for each test step.
 type TestStepSpec struct {
+	// Description contains a description of the test step.
+	// +optional
+	Description string `json:"description,omitempty"`
+
 	// Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.
 	// +optional
 	Timeouts Timeouts `json:"timeouts"`
