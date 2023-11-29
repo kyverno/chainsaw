@@ -397,7 +397,7 @@ For multiple objects use labels.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | `string` |  |  | <p>Name of the step.</p> |
-| `Spec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>Spec of the step.</p> |
+| `TestStepSpec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>TestStepSpec of the step.</p> |
 
 ## `TestStepSpec`     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}
 

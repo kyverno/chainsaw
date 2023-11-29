@@ -1,4 +1,4 @@
-package migrate
+package tests
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 )
 
 func Test_Execute(t *testing.T) {
-	basePath := "../../../../testdata/commands/kuttl/migrate"
+	basePath := "../../../../../testdata/commands/kuttl/migrate/tests"
 	tests := []struct {
 		name    string
 		args    []string
@@ -21,7 +21,7 @@ func Test_Execute(t *testing.T) {
 	}{{
 		name: "help",
 		args: []string{
-			"migrate",
+			"tests",
 			"--help",
 		},
 		out:     filepath.Join(basePath, "help.txt"),
@@ -29,22 +29,25 @@ func Test_Execute(t *testing.T) {
 	}, {
 		name: "migrate",
 		args: []string{
-			"migrate",
+			"tests",
+			"../../../../../testdata/kuttl",
 		},
-		out:     filepath.Join(basePath, "help.txt"),
+		out:     filepath.Join(basePath, "out.txt"),
+		wantErr: false,
+	}, {
+		name: "migrate save",
+		args: []string{
+			"tests",
+			"../../../../../testdata/kuttl",
+			"--save",
+		},
+		out:     filepath.Join(basePath, "out-save.txt"),
 		wantErr: false,
 	}, {
 		name: "unknow flag",
 		args: []string{
-			"migrate",
+			"tests",
 			"--foo",
-		},
-		wantErr: true,
-	}, {
-		name: "unknow arg",
-		args: []string{
-			"migrate",
-			"foo",
 		},
 		wantErr: true,
 	}}

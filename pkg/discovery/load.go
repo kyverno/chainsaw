@@ -31,7 +31,7 @@ func tryLoadTest(file string) (*v1alpha1.Test, error) {
 	return tests[0], nil
 }
 
-func tryFindStepFiles(path string) ([]string, error) {
+func TryFindStepFiles(path string) ([]string, error) {
 	files, err := os.ReadDir(path)
 	if err != nil {
 		return nil, err
@@ -79,7 +79,7 @@ func LoadTest(fileName string, path string) (*Test, error) {
 		}
 	}
 	// next, look at files
-	files, err := tryFindStepFiles(path)
+	files, err := TryFindStepFiles(path)
 	if err != nil {
 		return nil, err
 	} else {
@@ -98,8 +98,8 @@ func LoadTest(fileName string, path string) (*Test, error) {
 				} else {
 					groups := StepFileName.FindStringSubmatch(file)
 					stepsMap[groups[1]] = v1alpha1.TestSpecStep{
-						Name: steps[0].Name,
-						Spec: steps[0].Spec,
+						Name:         steps[0].Name,
+						TestStepSpec: steps[0].Spec,
 					}
 				}
 			}
@@ -135,7 +135,7 @@ func LoadTest(fileName string, path string) (*Test, error) {
 				}
 				switch groups[2] {
 				case "assert":
-					step.Spec.Try = append(step.Spec.Try, v1alpha1.Operation{
+					step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 						Assert: &v1alpha1.Assert{
 							FileRefOrResource: v1alpha1.FileRefOrResource{
 								FileRef: fileRef,
@@ -143,7 +143,7 @@ func LoadTest(fileName string, path string) (*Test, error) {
 						},
 					})
 				case "errors":
-					step.Spec.Try = append(step.Spec.Try, v1alpha1.Operation{
+					step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 						Error: &v1alpha1.Error{
 							FileRefOrResource: v1alpha1.FileRefOrResource{
 								FileRef: fileRef,
@@ -151,7 +151,7 @@ func LoadTest(fileName string, path string) (*Test, error) {
 						},
 					})
 				default:
-					step.Spec.Try = append(step.Spec.Try, v1alpha1.Operation{
+					step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 						Apply: &v1alpha1.Apply{
 							FileRefOrResource: v1alpha1.FileRefOrResource{
 								FileRef: fileRef,

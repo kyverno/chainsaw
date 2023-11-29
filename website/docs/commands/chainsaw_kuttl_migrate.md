@@ -1,6 +1,6 @@
 ## chainsaw kuttl migrate
 
-Migrate KUTTL tests to Chainsaw
+Migrate KUTTL resources to Chainsaw
 
 ```
 chainsaw kuttl migrate [flags]
@@ -9,12 +9,11 @@ chainsaw kuttl migrate [flags]
 ### Options
 
 ```
-  -h, --help        help for migrate
-      --overwrite   If set, overwrites original file.
-      --save        If set, converted files will be saved.
+  -h, --help   help for migrate
 ```
 
 ### SEE ALSO
 
 * [chainsaw kuttl](chainsaw_kuttl.md)	 - Work with KUTTL tests
+* [chainsaw kuttl migrate tests](chainsaw_kuttl_migrate_tests.md)	 - Migrate KUTTL tests to Chainsaw
 

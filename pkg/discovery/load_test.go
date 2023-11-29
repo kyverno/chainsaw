@@ -51,7 +51,7 @@ func TestLoadTest(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Steps: []v1alpha1.TestSpecStep{{
 							Name: "create configmap",
-							Spec: v1alpha1.TestStepSpec{
+							TestStepSpec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{
 									{
 										Apply: &v1alpha1.Apply{
@@ -66,7 +66,7 @@ func TestLoadTest(t *testing.T) {
 							},
 						}, {
 							Name: "assert configmap",
-							Spec: v1alpha1.TestStepSpec{
+							TestStepSpec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{{
 									Assert: &v1alpha1.Assert{
 										FileRefOrResource: v1alpha1.FileRefOrResource{
@@ -100,7 +100,7 @@ func TestLoadTest(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Steps: []v1alpha1.TestSpecStep{{
 							Name: "create configmap",
-							Spec: v1alpha1.TestStepSpec{
+							TestStepSpec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{
 									{
 										Apply: &v1alpha1.Apply{
@@ -115,7 +115,7 @@ func TestLoadTest(t *testing.T) {
 							},
 						}, {
 							Name: "assert configmap",
-							Spec: v1alpha1.TestStepSpec{
+							TestStepSpec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{
 									{
 										Assert: &v1alpha1.Assert{
@@ -153,7 +153,7 @@ func TestLoadTest(t *testing.T) {
 						Concurrent: ptr.To(false),
 						Steps: []v1alpha1.TestSpecStep{{
 							Name: "test-1",
-							Spec: v1alpha1.TestStepSpec{
+							TestStepSpec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{{
 									Apply: &v1alpha1.Apply{
 										FileRefOrResource: v1alpha1.FileRefOrResource{
@@ -195,7 +195,7 @@ func TestLoadTest(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Steps: []v1alpha1.TestSpecStep{{
 							Name: "test-1",
-							Spec: v1alpha1.TestStepSpec{
+							TestStepSpec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{{
 									Apply: &v1alpha1.Apply{
 										FileRefOrResource: v1alpha1.FileRefOrResource{
@@ -237,7 +237,7 @@ func TestLoadTest(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Steps: []v1alpha1.TestSpecStep{{
 							Name: "test-1",
-							Spec: v1alpha1.TestStepSpec{
+							TestStepSpec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{{
 									Apply: &v1alpha1.Apply{
 										FileRefOrResource: v1alpha1.FileRefOrResource{
@@ -303,7 +303,7 @@ func TestLoadTest(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Steps: []v1alpha1.TestSpecStep{{
 							Name: "configmap",
-							Spec: v1alpha1.TestStepSpec{
+							TestStepSpec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{{
 									Apply: &v1alpha1.Apply{
 										FileRefOrResource: v1alpha1.FileRefOrResource{

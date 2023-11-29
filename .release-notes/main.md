@@ -16,6 +16,7 @@ Release notes for `TODO`.
 ## :bangbang: Breaking chages :bangbang:
 
 - Changed `check` to `expect` in delete `operation`
+- Kuttl migration command split into `chainsaw kuttl migrate tests` and `chainsaw kuttl migrate config`
 
 ## :dizzy: New features :dizzy:
 

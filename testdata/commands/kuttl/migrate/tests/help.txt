@@ -1,0 +1,9 @@
+Migrate KUTTL tests to Chainsaw
+
+Usage:
+  chainsaw tests [flags]
+
+Flags:
+      --cleanup   If set, delete converted files.
+  -h, --help      help for tests
+      --save      If set, converted files will be saved.
