@@ -2,6 +2,7 @@ package commands
 
 import (
 	"github.com/kyverno/chainsaw/pkg/commands/docs"
+	"github.com/kyverno/chainsaw/pkg/commands/generate"
 	"github.com/kyverno/chainsaw/pkg/commands/kuttl"
 	"github.com/kyverno/chainsaw/pkg/commands/root"
 	"github.com/kyverno/chainsaw/pkg/commands/test"
@@ -16,6 +17,7 @@ func RootCommand() *cobra.Command {
 		kuttl.Command(),
 		test.Command(),
 		version.Command(),
+		generate.Command(),
 	)
 	return cmd
 }

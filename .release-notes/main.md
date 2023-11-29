@@ -21,6 +21,8 @@ Release notes for `TODO`.
 
 - Added support to register Chainsaw specific JMESPath functions for use in assertion trees
 - Added inline manifest support to `assert` and `error` operations
+- Added a `description` field to `Test`, `TestStep`, `Operation`, `Catch` and `Finally`
+- Added a command to generate tests documentation
 
 ## :wrench: Fixes :wrench:
 
