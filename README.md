@@ -28,7 +28,7 @@ Built under the Kyverno umbrella, you can use the Kyverno Chainsaw **Slack chann
 
 ## Getting Started
 
-Please refer to the [Getting Started](https://kyverno.github.io/chainsaw/intro/) documentation.
+Please refer to the [Getting Started](https://kyverno.github.io/chainsaw/latest/intro/) documentation.
 
 ## RoadMap
 
