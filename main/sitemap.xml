@@ -111,6 +111,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_kuttl_migrate_tests/</loc>
+         <lastmod>2023-11-29</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_test/</loc>
          <lastmod>2023-11-29</lastmod>
          <changefreq>daily</changefreq>
