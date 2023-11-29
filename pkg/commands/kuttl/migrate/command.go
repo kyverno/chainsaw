@@ -251,7 +251,7 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 			Assert: &v1alpha1.Assert{
 				FileRefOrResource: v1alpha1.FileRefOrResource{
 					FileRef: v1alpha1.FileRef{
-						File: operation,
+						File: operation.File,
 					},
 				},
 			},
