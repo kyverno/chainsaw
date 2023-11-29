@@ -21,15 +21,15 @@ type operation struct {
 	client     client.Client
 	obj        unstructured.Unstructured
 	namespacer namespacer.Namespacer
-	check      *v1alpha1.Check
+	expect     []v1alpha1.Expectation
 }
 
-func New(client client.Client, obj unstructured.Unstructured, namespacer namespacer.Namespacer, check *v1alpha1.Check) operations.Operation {
+func New(client client.Client, obj unstructured.Unstructured, namespacer namespacer.Namespacer, expect ...v1alpha1.Expectation) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,
 		namespacer: namespacer,
-		check:      check,
+		expect:     expect,
 	}
 }
 
@@ -60,9 +60,8 @@ func (o *operation) deleteResource(ctx context.Context, logger logging.Logger) e
 		return err
 	}
 	var deleted []unstructured.Unstructured
-	for i := range candidates {
-		candidate := candidates[i]
-		if err := o.tryDeleteCandidate(ctx, &candidate); err != nil {
+	for _, candidate := range candidates {
+		if err := o.tryDeleteCandidate(ctx, candidate); err != nil {
 			return err
 		}
 		deleted = append(deleted, candidate)
@@ -76,8 +75,8 @@ func (o *operation) deleteResource(ctx context.Context, logger logging.Logger) e
 	return nil
 }
 
-func (o *operation) tryDeleteCandidate(ctx context.Context, candidate *unstructured.Unstructured) error {
-	if err := o.client.Delete(ctx, candidate); err != nil && !kerrors.IsNotFound(err) {
+func (o *operation) tryDeleteCandidate(ctx context.Context, candidate unstructured.Unstructured) error {
+	if err := o.client.Delete(ctx, &candidate); err != nil && !kerrors.IsNotFound(err) {
 		return o.handleCheck(ctx, candidate, err)
 	}
 	return o.handleCheck(ctx, candidate, nil)
@@ -96,19 +95,15 @@ func (o *operation) waitForDeletion(ctx context.Context, candidate *unstructured
 	})
 }
 
-func (o *operation) handleCheck(ctx context.Context, candidate *unstructured.Unstructured, err error) error {
-	if o.check == nil || o.check.Value == nil {
-		return err
-	}
+func (o *operation) handleCheck(ctx context.Context, candidate unstructured.Unstructured, err error) error {
 	bindings := binding.NewBindings()
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {
 		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
-	errs, validationErr := check.Check(ctx, candidate.UnstructuredContent(), bindings, o.check)
-	if validationErr != nil {
-		return validationErr
+	if matched, err := check.Expectations(ctx, candidate, bindings, o.expect...); matched {
+		return err
 	}
-	return errs.ToAggregate()
+	return err
 }

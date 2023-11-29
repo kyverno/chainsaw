@@ -5,7 +5,7 @@ type Delete struct {
 	// ObjectReference determines objects to be deleted.
 	ObjectReference `json:"ref"`
 
-	// Check is an assertion tree to validate the operation outcome.
+	// Expect defines a list of matched checks to validate the operation outcome.
 	// +optional
-	Check *Check `json:"check,omitempty"`
+	Expect []Expectation `json:"expect,omitempty"`
 }

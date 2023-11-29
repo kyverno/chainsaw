@@ -327,7 +327,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete,
 	}
 	return &operation{
 		timeout:         timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
-		operation:       opdelete.New(p.client, resource, p.namespacer, op.Check),
+		operation:       opdelete.New(p.client, resource, p.namespacer, op.Expect...),
 		operationReport: operationReport,
 	}, nil
 }
@@ -421,7 +421,7 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 				operation := operation{
 					continueOnError: true,
 					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, p.step.Spec.Timeouts.Cleanup, nil),
-					operation:       opdelete.New(c, obj, p.namespacer, nil),
+					operation:       opdelete.New(c, obj, p.namespacer),
 				}
 				operation.execute(ctx)
 			})

@@ -169,7 +169,7 @@ If a resource already exists in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: |  | <p>ObjectReference determines objects to be deleted.</p> |
-| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
+| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
 
@@ -207,6 +207,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
     
 - [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
 
 <p>Expectation represents a check to be applied on the result of an operation
 with a match filter to determine if the verification should be considered.</p>
