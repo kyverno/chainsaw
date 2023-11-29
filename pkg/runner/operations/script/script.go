@@ -41,7 +41,9 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	}()
 	if !o.script.SkipLogOutput {
 		defer func() {
-			logger.Log(logging.Script, logging.LogStatus, color.BoldFgCyan, output.Sections()...)
+			if sections := output.Sections(); len(sections) != 0 {
+				logger.Log(logging.Script, logging.LogStatus, color.BoldFgCyan, sections...)
+			}
 		}()
 	}
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
