@@ -8,10 +8,10 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno/ext/output/color"
 )
 
@@ -41,7 +41,9 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	}()
 	if !o.script.SkipLogOutput {
 		defer func() {
-			logger.Log(logging.Script, logging.LogStatus, color.BoldFgCyan, output.Sections()...)
+			if sections := output.Sections(); len(sections) != 0 {
+				logger.Log(logging.Script, logging.LogStatus, color.BoldFgCyan, sections...)
+			}
 		}()
 	}
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
@@ -70,7 +72,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 		}
 		bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
 		bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
-		if errs, err := assert.Validate(ctx, o.script.Check.Value, nil, bindings); err != nil {
+		if errs, err := check.Check(ctx, nil, bindings, o.script.Check); err != nil {
 			return err
 		} else {
 			return errs.ToAggregate()

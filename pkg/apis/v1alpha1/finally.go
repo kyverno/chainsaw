@@ -6,6 +6,10 @@ import (
 
 // Finally defines actions to be executed at the end of a test.
 type Finally struct {
+	// Description contains a description of the operation.
+	// +optional
+	Description string `json:"description,omitempty"`
+
 	// Timeout for the operation. Overrides the global timeout set in the Configuration.
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`

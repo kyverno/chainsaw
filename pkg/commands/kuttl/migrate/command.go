@@ -247,10 +247,26 @@ func testStep(in unstructured.Unstructured) (*v1alpha1.TestStep, error) {
 		})
 	}
 	for _, operation := range from.Assert {
-		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Assert: &v1alpha1.Assert{FileRef: v1alpha1.FileRef{File: operation.File}}})
+		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{
+			Assert: &v1alpha1.Assert{
+				FileRefOrResource: v1alpha1.FileRefOrResource{
+					FileRef: v1alpha1.FileRef{
+						File: operation,
+					},
+				},
+			},
+		})
 	}
 	for _, operation := range from.Error {
-		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{Error: &v1alpha1.Error{FileRef: v1alpha1.FileRef{File: operation}}})
+		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{
+			Error: &v1alpha1.Error{
+				FileRefOrResource: v1alpha1.FileRefOrResource{
+					FileRef: v1alpha1.FileRef{
+						File: operation,
+					},
+				},
+			},
+		})
 	}
 	for _, operation := range from.Delete {
 		to.Spec.Try = append(to.Spec.Try, v1alpha1.Operation{

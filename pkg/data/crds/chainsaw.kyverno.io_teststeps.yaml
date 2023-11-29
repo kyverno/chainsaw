@@ -64,6 +64,9 @@ spec:
                       required:
                       - entrypoint
                       type: object
+                    description:
+                      description: Description contains a description of the operation.
+                      type: string
                     events:
                       description: Events determines the events collector to execute.
                       properties:
@@ -123,6 +126,9 @@ spec:
                       type: string
                   type: object
                 type: array
+              description:
+                description: Description contains a description of the test step.
+                type: string
               finally:
                 description: Finally defines what the step will execute after the
                   step is terminated.
@@ -153,6 +159,9 @@ spec:
                       required:
                       - entrypoint
                       type: object
+                    description:
+                      description: Description contains a description of the operation.
+                      type: string
                     events:
                       description: Events determines the events collector to execute.
                       properties:
@@ -292,6 +301,11 @@ spec:
                         file:
                           description: File is the path to the referenced file.
                           type: string
+                        resource:
+                          description: Resource provides a resource to be applied.
+                          type: object
+                          x-kubernetes-embedded-resource: true
+                          x-kubernetes-preserve-unknown-fields: true
                       type: object
                     command:
                       description: Command defines a command to run.
@@ -361,11 +375,26 @@ spec:
                     delete:
                       description: Delete represents a creation operation.
                       properties:
-                        check:
-                          description: Check is an assertion tree to validate the
-                            operation outcome.
-                          type: object
-                          x-kubernetes-preserve-unknown-fields: true
+                        expect:
+                          description: Expect defines a list of matched checks to
+                            validate the operation outcome.
+                          items:
+                            description: Expectation represents a check to be applied
+                              on the result of an operation with a match filter to
+                              determine if the verification should be considered.
+                            properties:
+                              check:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              match:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - check
+                            type: object
+                          type: array
                         ref:
                           description: ObjectReference determines objects to be deleted.
                           properties:
@@ -394,6 +423,9 @@ spec:
                       required:
                       - ref
                       type: object
+                    description:
+                      description: Description contains a description of the operation.
+                      type: string
                     error:
                       description: Error represents the expected errors for this test
                         step. If any of these errors occur, the test will consider
@@ -403,6 +435,11 @@ spec:
                         file:
                           description: File is the path to the referenced file.
                           type: string
+                        resource:
+                          description: Resource provides a resource to be applied.
+                          type: object
+                          x-kubernetes-embedded-resource: true
+                          x-kubernetes-preserve-unknown-fields: true
                       type: object
                     script:
                       description: Script defines a script to run.

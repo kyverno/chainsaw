@@ -2,6 +2,10 @@ package v1alpha1
 
 // TestSpec contains the test spec.
 type TestSpec struct {
+	// Description contains a description of the test.
+	// +optional
+	Description string `json:"description,omitempty"`
+
 	// Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.
 	// +optional
 	Timeouts Timeouts `json:"timeouts"`

@@ -99,11 +99,12 @@ Below is an example of using an [operation check](./check.md#apply).
     # ...
     - apply:
         file: my-pod.yaml
-        check:
-          # an error is expected, this will:
-          # - succeed if the operation failed
-          # - fail if the operation succeeded
-          (error != null): true
+        expect:
+        - check:
+            # an error is expected, this will:
+            # - succeed if the operation failed
+            # - fail if the operation succeeded
+            ($error != null): true
     # ...
     ```
 
@@ -119,10 +120,16 @@ Below is an example of using an [operation check](./check.md#apply).
             name: chainsaw-quick-start
           data:
             foo: bar
-        check:
-          # an error is expected, this will:
-          # - succeed if the operation failed
-          # - fail if the operation succeeded
-          (error != null): true
+        expect:
+        - match:
+            # this check applies only if the match
+            # statement below evaluates to `true`
+            apiVersion: v1
+            kind: ConfigMap
+          check:
+            # an error is expected, this will:
+            # - succeed if the operation failed
+            # - fail if the operation succeeded
+            ($error != null): true
     # ...
     ```

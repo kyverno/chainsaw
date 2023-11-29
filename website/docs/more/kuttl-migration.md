@@ -38,7 +38,6 @@ On invocation, the command:
 - Discovers folders from the specified paths.
 - Reads the files within these folders, specifically looking for YAML files.
 - Inspects each YAML file to check if it's a KUTTL resource. If it is, the command tries to convert it to a Chainsaw resource.
-- The conversion handles two types of KUTTL resources: TestSuite and TestStep. It also reports an error for unsupported resources like `TestAssert`.
 - If the `--save` flag is set, the converted Chainsaw tests are saved to a new file with the extension `.chainsaw.yaml`.
 - If the `--save` and `--overwrite` flags are set, the converted Chainsaw tests are saved to the same file as the original one.
 
@@ -69,5 +68,4 @@ The file path for saving is determined by the `--overwrite` flag; if it is set, 
 
 The migration command has the following limitations:
 
-- Converting `TestAssert` resources is not supported (yet)
-- Some fileds in KUTTL `command` are not supported and will raise an error
+- Some fields in KUTTL `command` are not supported and will raise an error

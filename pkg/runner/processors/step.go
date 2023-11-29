@@ -260,7 +260,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 }
 
 func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert, to *metav1.Duration) ([]operation, error) {
-	resources, err := p.fileRef(op.FileRef)
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
 	}
@@ -327,13 +327,13 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete,
 	}
 	return &operation{
 		timeout:         timeout.Get(timeout.DefaultDeleteTimeout, p.config.Timeouts.Delete, p.test.Spec.Timeouts.Delete, p.step.Spec.Timeouts.Delete, to),
-		operation:       opdelete.New(p.client, resource, p.namespacer, op.Check),
+		operation:       opdelete.New(p.client, resource, p.namespacer, op.Expect...),
 		operationReport: operationReport,
 	}, nil
 }
 
 func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, to *metav1.Duration) ([]operation, error) {
-	resources, err := p.fileRef(op.FileRef)
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
 	}
@@ -362,13 +362,6 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, exec v1alpha1.Scrip
 		operation:       opscript.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
 		operationReport: operationReport,
 	}
-}
-
-func (p *stepProcessor) fileRef(ref v1alpha1.FileRef) ([]unstructured.Unstructured, error) {
-	if ref.File != "" {
-		return resource.Load(filepath.Join(p.test.BasePath, ref.File))
-	}
-	return nil, errors.New("file must be set")
 }
 
 func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]unstructured.Unstructured, error) {
@@ -421,7 +414,7 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 				operation := operation{
 					continueOnError: true,
 					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, p.step.Spec.Timeouts.Cleanup, nil),
-					operation:       opdelete.New(c, obj, p.namespacer, nil),
+					operation:       opdelete.New(c, obj, p.namespacer),
 				}
 				operation.execute(ctx)
 			})

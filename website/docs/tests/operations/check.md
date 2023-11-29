@@ -7,43 +7,79 @@ Considering an operation success or failure is not always as simple as checking 
 
 To support those kind of use cases, some operations support an additional `check` field to evaluate the operation result against an assertion tree.
 
+!!! info
+
+    Assertions in Chainsaw are based on **assertion trees**.
+
+    Assertion trees is a solution to declaratively represent complex conditions like partial array comparisons or complex operations against an incoming data structure.
+
+    Assertion trees are compatible with standard assertions that exist in tools like KUTTL but can do a lot more.
+    Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/policies/asserts/) in kyverno-json for details.
+
 !!! tip "Checked model"
     Different operation have a different model passed through the assertion tree.
 
+    The object passed to the assertion tree is the output object of the operation. Additional data like error or standard logs are passed using bindings (`$error`, `$stdout`, `$stderr`)
+
+## `Expect` vs `Check`
+
+While a simple check is enough to determine the result of a single operation, we needed a more advanced construct to cover `apply` and `create` operations. Those operations can operate on files containing multiple manifests and every manifest can have a different result.
+
+To support more granular checks we use the `expect` field that contains an array of [Expectation](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Expectation).
+Every expectation is made of an optional `match` and a `check` statement.
+
+This way it is possible to control the scope of a `check`.
+
+!!! tip "Null match"
+    If the `match` statement is null, the `check` statement applies to all manifests in the operation.
+
+    If no expectation matches a given manifest, the default expectation will be used, checking that no error occured.
+
 ## Apply
 
-`apply` supports the following elements to be checked:
+`apply` supports `expect` and has the following elements to be checked:
 
 | Name | Purpose | Type |
 |---|---|---|
-| `error` | The error message (if any) at the end of the operation | `string` |
-| `resource` | The state of the resource (if any) at the end of the operation | `object` |
+| `$error` | The error message (if any) at the end of the operation | `string` |
+| `@` | The state of the resource (if any) at the end of the operation | `object` |
 
 ## Create
 
-`create` supports the following elements to be checked:
+`create` supports `expect` and has the following elements to be checked:
 
 | Name | Purpose | Type |
 |---|---|---|
-| `error` | The error message (if any) at the end of the operation | `string` |
-| `resource` | The state of the resource (if any) at the end of the operation | `object` |
+| `$error` | The error message (if any) at the end of the operation | `string` |
+| `@` | The state of the resource (if any) at the end of the operation | `object` |
+
+## Delete
+
+`delete` supports `check` and has the following elements to be checked:
+
+| Name | Purpose | Type |
+|---|---|---|
+| `$error` | The error message (if any) at the end of the operation | `string` |
+| `@` | The state of the resource (if any) at the end of the operation | `object` |
 
 ## Command
 
-`command` supports the following elements to be checked:
+`command` supports `check` and has the following elements to be checked:
 
 | Name | Purpose | Type |
 |---|---|---|
-| `error` | The error message (if any) at the end of the operation | `string` |
-| `stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
-| `stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
+| `$error` | The error message (if any) at the end of the operation | `string` |
+| `$stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
+| `$stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
+| `@` | Always `null` | |
 
 ## Script
 
-`script` supports the following elements to be checked:
+`script` supports `check` and has the following elements to be checked:
 
 | Name | Purpose | Type |
 |---|---|---|
-| `error` | The error message (if any) at the end of the operation | `string` |
-| `stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
-| `stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
+| `$error` | The error message (if any) at the end of the operation | `string` |
+| `$stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
+| `$stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
+| `@` | Always `null` | |

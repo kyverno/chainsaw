@@ -1,0 +1,12 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: timeout
+spec:
+  steps:
+  - try:
+    - script:
+        content: sleep 5
+        check:
+          ($error != null): true
+      timeout: 3s

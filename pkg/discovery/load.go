@@ -137,13 +137,17 @@ func LoadTest(fileName string, path string) (*Test, error) {
 				case "assert":
 					step.Spec.Try = append(step.Spec.Try, v1alpha1.Operation{
 						Assert: &v1alpha1.Assert{
-							FileRef: fileRef,
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: fileRef,
+							},
 						},
 					})
 				case "errors":
 					step.Spec.Try = append(step.Spec.Try, v1alpha1.Operation{
 						Error: &v1alpha1.Error{
-							FileRef: fileRef,
+							FileRefOrResource: v1alpha1.FileRefOrResource{
+								FileRef: fileRef,
+							},
 						},
 					})
 				default:

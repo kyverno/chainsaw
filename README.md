@@ -20,16 +20,19 @@ Chainsaw is an **open source** tool that was initially developped for defining a
 
 ## Resources
 
-Built under the Kyverno umbrella, you can use the Kyverno **Slack channels** to discuss anything related to Chainsaw.
+Built under the Kyverno umbrella, you can use the Kyverno Chainsaw **Slack channels** to discuss anything related to Chainsaw.
 
 ### Slack channels
 
-- [#kyverno](https://kubernetes.slack.com/archives/CLGR9BJU9)
-- [#kyverno-dev](https://kubernetes.slack.com/archives/C032MM2CH7X)
+- [#kyverno-chainsaw](https://kubernetes.slack.com/archives/C067LUFL43U)
 
 ## Getting Started
 
-Please refer to the [Getting Started](https://kyverno.github.io/chainsaw/intro/) documentation.
+Please refer to the [Getting Started](https://kyverno.github.io/chainsaw/latest/intro/) documentation.
+
+## RoadMap
+
+For detailed information on our planned features and upcoming updates, please [view our Roadmap](./ROADMAP.md).
 
 ## Community, Events, Discussion, Contribution, and Support
 
