@@ -38,6 +38,9 @@ spec:
                 description: Concurrent determines whether the test should run concurrently
                   with other tests.
                 type: boolean
+              description:
+                description: Description contains a description of the test.
+                type: string
               namespace:
                 description: Namespace determines whether the test should run in a
                   random ephemeral namespace or not.
@@ -86,6 +89,10 @@ spec:
                             required:
                             - entrypoint
                             type: object
+                          description:
+                            description: Description contains a description of the
+                              operation.
+                            type: string
                           events:
                             description: Events determines the events collector to
                               execute.
@@ -151,6 +158,10 @@ spec:
                             type: string
                         type: object
                       type: array
+                    description:
+                      description: Description contains a description of the test
+                        step.
+                      type: string
                     finally:
                       description: Finally defines what the step will execute after
                         the step is terminated.
@@ -183,6 +194,10 @@ spec:
                             required:
                             - entrypoint
                             type: object
+                          description:
+                            description: Description contains a description of the
+                              operation.
+                            type: string
                           events:
                             description: Events determines the events collector to
                               execute.
@@ -464,6 +479,10 @@ spec:
                             required:
                             - ref
                             type: object
+                          description:
+                            description: Description contains a description of the
+                              operation.
+                            type: string
                           error:
                             description: Error represents the expected errors for
                               this test step. If any of these errors occur, the test

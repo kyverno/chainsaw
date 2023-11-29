@@ -3,8 +3,10 @@ kind: Test
 metadata:
   name: basic
 spec:
+  description: This is a very simple test that creates a configmap and checks the content is as expected.
   steps:
-  - try:
+  - description: This steps applies the configmap in the cluster and checks the configmap content.
+    try:
     - apply:
         file: configmap.yaml
     - assert:

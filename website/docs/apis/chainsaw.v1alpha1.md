@@ -91,6 +91,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
@@ -259,6 +260,7 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
@@ -310,6 +312,7 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 | `apply` | [`Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply represents resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
@@ -374,6 +377,7 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `description` | `string` |  |  | <p>Description contains a description of the test.</p> |
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.</p> |
 | `skip` | `bool` |  |  | <p>Skip determines whether the test should skipped.</p> |
 | `concurrent` | `bool` |  |  | <p>Concurrent determines whether the test should run concurrently with other tests.</p> |
@@ -407,6 +411,7 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `description` | `string` |  |  | <p>Description contains a description of the test step.</p> |
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
 | `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) | :white_check_mark: |  | <p>Try defines what the step will try to execute.</p> |
