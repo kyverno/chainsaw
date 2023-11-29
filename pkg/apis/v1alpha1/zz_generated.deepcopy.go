@@ -235,9 +235,12 @@ func (in *Create) DeepCopy() *Create {
 func (in *Delete) DeepCopyInto(out *Delete) {
 	*out = *in
 	in.ObjectReference.DeepCopyInto(&out.ObjectReference)
-	if in.Check != nil {
-		in, out := &in.Check, &out.Check
-		*out = (*in).DeepCopy()
+	if in.Expect != nil {
+		in, out := &in.Expect, &out.Expect
+		*out = make([]Expectation, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	return
 }

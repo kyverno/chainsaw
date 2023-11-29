@@ -35,7 +35,7 @@ func Test_operationDelete(t *testing.T) {
 		object       unstructured.Unstructured
 		client       *tclient.FakeClient
 		namespacer   func(c client.Client) namespacer.Namespacer
-		check        *v1alpha1.Check
+		expect       []v1alpha1.Expectation
 		expectedErr  error
 		expectedLogs []string
 	}{{
@@ -148,11 +148,13 @@ func Test_operationDelete(t *testing.T) {
 				return errors.New("dummy error")
 			},
 		},
-		check: &v1alpha1.Check{
-			Value: map[string]interface{}{
-				"($error == 'dummy error')": true,
+		expect: []v1alpha1.Expectation{{
+			Check: v1alpha1.Check{
+				Value: map[string]interface{}{
+					"($error == 'dummy error')": true,
+				},
 			},
-		},
+		}},
 		expectedErr:  nil,
 		expectedLogs: []string{"DELETE: RUN - []", "DELETE: DONE - []"},
 	}}
@@ -168,7 +170,7 @@ func Test_operationDelete(t *testing.T) {
 				tt.client,
 				tt.object,
 				nspacer,
-				tt.check,
+				tt.expect...,
 			)
 			logger := &tlogging.FakeLogger{}
 			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t))

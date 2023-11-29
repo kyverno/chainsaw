@@ -3,7 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## :bangbang: Breaking chages :bangbang:
 
 ## :sparkles: UI changes :sparkles:
 
@@ -15,6 +14,11 @@ Release notes for `TODO`.
 
 ## :books: Docs :books:
 -->
+
+## :bangbang: Breaking chages :bangbang:
+
+- Changed `check` to `expect` in delete `operation`
+
 ## :dizzy: New features :dizzy:
 
 - Added support to register Chainsaw specific JMESPath functions for use in assertion trees

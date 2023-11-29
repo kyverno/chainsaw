@@ -9,7 +9,7 @@ func ValidateDelete(path *field.Path, obj *v1alpha1.Delete) field.ErrorList {
 	var errs field.ErrorList
 	if obj != nil {
 		errs = append(errs, ValidateObjectReference(path.Child("ref"), obj.ObjectReference)...)
-		errs = append(errs, ValidateCheck(path.Child("check"), obj.Check)...)
+		errs = append(errs, ValidateExpectations(path.Child("expect"), obj.Expect...)...)
 	}
 	return errs
 }

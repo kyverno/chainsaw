@@ -361,11 +361,26 @@ spec:
                     delete:
                       description: Delete represents a creation operation.
                       properties:
-                        check:
-                          description: Check is an assertion tree to validate the
-                            operation outcome.
-                          type: object
-                          x-kubernetes-preserve-unknown-fields: true
+                        expect:
+                          description: Expect defines a list of matched checks to
+                            validate the operation outcome.
+                          items:
+                            description: Expectation represents a check to be applied
+                              on the result of an operation with a match filter to
+                              determine if the verification should be considered.
+                            properties:
+                              check:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              match:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - check
+                            type: object
+                          type: array
                         ref:
                           description: ObjectReference determines objects to be deleted.
                           properties:
