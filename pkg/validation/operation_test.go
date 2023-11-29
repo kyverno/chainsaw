@@ -18,8 +18,10 @@ func TestValidateOperation(t *testing.T) {
 		},
 	}
 	exampleAssert := &v1alpha1.Assert{
-		FileRef: v1alpha1.FileRef{
-			File: "example.yaml",
+		FileRefOrResource: v1alpha1.FileRefOrResource{
+			FileRef: v1alpha1.FileRef{
+				File: "example.yaml",
+			},
 		},
 	}
 	exampleCommand := &v1alpha1.Command{
@@ -46,87 +48,77 @@ func TestValidateOperation(t *testing.T) {
 		},
 	}
 	exampleError := &v1alpha1.Error{
-		FileRef: v1alpha1.FileRef{
-			File: "example.yaml",
+		FileRefOrResource: v1alpha1.FileRefOrResource{
+			FileRef: v1alpha1.FileRef{
+				File: "example.yaml",
+			},
 		},
 	}
 	exampleScript := &v1alpha1.Script{
 		Content: "echo 'hello world'",
 	}
-
 	tests := []struct {
 		name      string
 		input     v1alpha1.Operation
 		expectErr bool
 		errMsg    string
-	}{
-		{
-			name:      "No operation statements provided",
-			input:     v1alpha1.Operation{},
-			expectErr: true,
-			errMsg:    "no statement found in operation",
+	}{{
+		name:      "No operation statements provided",
+		input:     v1alpha1.Operation{},
+		expectErr: true,
+		errMsg:    "no statement found in operation",
+	}, {
+		name: "Multiple operation statements provided",
+		input: v1alpha1.Operation{
+			Apply:   exampleApply,
+			Assert:  exampleAssert,
+			Command: exampleCommand,
 		},
-		{
-			name: "Multiple operation statements provided",
-			input: v1alpha1.Operation{
-				Apply:   exampleApply,
-				Assert:  exampleAssert,
-				Command: exampleCommand,
-			},
-			expectErr: true,
-			errMsg:    fmt.Sprintf("only one statement is allowed per operation (found %d)", 3),
+		expectErr: true,
+		errMsg:    fmt.Sprintf("only one statement is allowed per operation (found %d)", 3),
+	}, {
+		name: "Only Apply operation statement provided",
+		input: v1alpha1.Operation{
+			Apply: exampleApply,
 		},
-		{
-			name: "Only Apply operation statement provided",
-			input: v1alpha1.Operation{
-				Apply: exampleApply,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Assert operation statement provided",
+		input: v1alpha1.Operation{
+			Assert: exampleAssert,
 		},
-		{
-			name: "Only Assert operation statement provided",
-			input: v1alpha1.Operation{
-				Assert: exampleAssert,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Command operation statement provided",
+		input: v1alpha1.Operation{
+			Command: exampleCommand,
 		},
-		{
-			name: "Only Command operation statement provided",
-			input: v1alpha1.Operation{
-				Command: exampleCommand,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Create operation statement provided",
+		input: v1alpha1.Operation{
+			Create: exampleCreate,
 		},
-		{
-			name: "Only Create operation statement provided",
-			input: v1alpha1.Operation{
-				Create: exampleCreate,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Delete operation statement provided",
+		input: v1alpha1.Operation{
+			Delete: exampleDelete,
 		},
-		{
-			name: "Only Delete operation statement provided",
-			input: v1alpha1.Operation{
-				Delete: exampleDelete,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Error operation statement provided",
+		input: v1alpha1.Operation{
+			Error: exampleError,
 		},
-		{
-			name: "Only Error operation statement provided",
-			input: v1alpha1.Operation{
-				Error: exampleError,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Script operation statement provided",
+		input: v1alpha1.Operation{
+			Script: exampleScript,
 		},
-		{
-			name: "Only Script operation statement provided",
-			input: v1alpha1.Operation{
-				Script: exampleScript,
-			},
-			expectErr: false,
-		},
-	}
-
+		expectErr: false,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			errs := ValidateOperation(field.NewPath("testPath"), tt.input)

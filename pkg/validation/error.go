@@ -8,7 +8,7 @@ import (
 func ValidateError(path *field.Path, obj *v1alpha1.Error) field.ErrorList {
 	var errs field.ErrorList
 	if obj != nil {
-		errs = append(errs, ValidateFileRef(path, obj.FileRef)...)
+		errs = append(errs, ValidateFileRefOrResource(path, obj.FileRefOrResource)...)
 	}
 	return errs
 }

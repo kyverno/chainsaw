@@ -32,35 +32,32 @@ func TestValidateTestStep(t *testing.T) {
 					},
 				},
 				Assert: &v1alpha1.Assert{
-					FileRef: v1alpha1.FileRef{
-						File: "file",
+					FileRefOrResource: v1alpha1.FileRefOrResource{
+						FileRef: v1alpha1.FileRef{
+							File: "file",
+						},
 					},
 				},
 			},
 		},
 	}
-
 	tests := []struct {
 		name      string
 		input     *v1alpha1.TestStep
 		expectErr bool
-	}{
-		{
-			name: "Valid TestStepSpec",
-			input: &v1alpha1.TestStep{
-				Spec: validTestStepSpec,
-			},
-			expectErr: false,
+	}{{
+		name: "Valid TestStepSpec",
+		input: &v1alpha1.TestStep{
+			Spec: validTestStepSpec,
 		},
-		{
-			name: "Invalid TestStepSpec",
-			input: &v1alpha1.TestStep{
-				Spec: invalidTestStepSpec,
-			},
-			expectErr: true,
+		expectErr: false,
+	}, {
+		name: "Invalid TestStepSpec",
+		input: &v1alpha1.TestStep{
+			Spec: invalidTestStepSpec,
 		},
-	}
-
+		expectErr: true,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			errs := ValidateTestStep(tt.input)

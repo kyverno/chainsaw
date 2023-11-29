@@ -14,4 +14,10 @@ spec:
           data:
             foo: bar
     - assert:
-        file: configmap-assert.yaml
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            foo: bar

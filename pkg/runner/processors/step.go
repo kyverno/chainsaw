@@ -260,7 +260,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply, t
 }
 
 func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert, to *metav1.Duration) ([]operation, error) {
-	resources, err := p.fileRef(op.FileRef)
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
 	}
@@ -333,7 +333,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete,
 }
 
 func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error, to *metav1.Duration) ([]operation, error) {
-	resources, err := p.fileRef(op.FileRef)
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
 	}
@@ -362,13 +362,6 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, exec v1alpha1.Scrip
 		operation:       opscript.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
 		operationReport: operationReport,
 	}
-}
-
-func (p *stepProcessor) fileRef(ref v1alpha1.FileRef) ([]unstructured.Unstructured, error) {
-	if ref.File != "" {
-		return resource.Load(filepath.Join(p.test.BasePath, ref.File))
-	}
-	return nil, errors.New("file must be set")
 }
 
 func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]unstructured.Unstructured, error) {
