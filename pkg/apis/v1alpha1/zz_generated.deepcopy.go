@@ -703,8 +703,8 @@ func (in *Timeouts) DeepCopyInto(out *Timeouts) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
-	if in.Error != nil {
-		in, out := &in.Error, &out.Error
+	if in.Cleanup != nil {
+		in, out := &in.Cleanup, &out.Cleanup
 		*out = new(v1.Duration)
 		**out = **in
 	}
@@ -713,8 +713,8 @@ func (in *Timeouts) DeepCopyInto(out *Timeouts) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
-	if in.Cleanup != nil {
-		in, out := &in.Cleanup, &out.Cleanup
+	if in.Error != nil {
+		in, out := &in.Error, &out.Error
 		*out = new(v1.Duration)
 		**out = **in
 	}

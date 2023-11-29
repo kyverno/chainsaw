@@ -262,25 +262,17 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		return err
 	}
 	for _, operation := range from.Apply {
-		action := &v1alpha1.Apply{
-			FileRefOrResource: v1alpha1.FileRefOrResource{
-				FileRef: v1alpha1.FileRef{
-					File: operation.File,
-				},
-			},
-		}
-		if operation.ShouldFail {
-			action.Expect = []v1alpha1.Expectation{{
-				Check: v1alpha1.Check{
-					Value: map[string]interface{}{
-						"($error != null)": true,
-					},
-				},
-			}}
-		}
 		to.Try = append(
 			to.Try,
-			v1alpha1.Operation{Apply: action},
+			v1alpha1.Operation{
+				Apply: &v1alpha1.Apply{
+					FileRefOrResource: v1alpha1.FileRefOrResource{
+						FileRef: v1alpha1.FileRef{
+							File: operation,
+						},
+					},
+				},
+			},
 		)
 	}
 	for _, operation := range from.Assert {
@@ -288,7 +280,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			Assert: &v1alpha1.Assert{
 				FileRefOrResource: v1alpha1.FileRefOrResource{
 					FileRef: v1alpha1.FileRef{
-						File: operation.File,
+						File: operation,
 					},
 				},
 			},

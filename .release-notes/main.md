@@ -28,6 +28,7 @@ Release notes for `TODO`.
 ## :wrench: Fixes :wrench:
 
 - Don't show `command` or `script` logs if there's nothing to show
+- Fixed `timeouts` always set when migrating kuttl tests
 
 ## :guitar: Misc :guitar:
 
