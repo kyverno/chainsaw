@@ -15,5 +15,5 @@ chainsaw kuttl [flags]
 ### SEE ALSO
 
 * [chainsaw](chainsaw.md)	 - Stronger tool for e2e testing
-* [chainsaw kuttl migrate](chainsaw_kuttl_migrate.md)	 - Migrate KUTTL tests to Chainsaw
+* [chainsaw kuttl migrate](chainsaw_kuttl_migrate.md)	 - Migrate KUTTL resources to Chainsaw
 

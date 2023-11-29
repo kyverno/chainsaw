@@ -67,7 +67,7 @@ func TestLoad(t *testing.T) {
 			},
 			Spec: v1alpha1.TestSpec{
 				Steps: []v1alpha1.TestSpecStep{{
-					Spec: v1alpha1.TestStepSpec{
+					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Apply: &v1alpha1.Apply{
 								FileRefOrResource: v1alpha1.FileRefOrResource{
@@ -98,7 +98,7 @@ func TestLoad(t *testing.T) {
 						}},
 					},
 				}, {
-					Spec: v1alpha1.TestStepSpec{
+					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Assert: &v1alpha1.Assert{
 								FileRefOrResource: v1alpha1.FileRefOrResource{
@@ -170,7 +170,7 @@ func TestLoad(t *testing.T) {
 			},
 			Spec: v1alpha1.TestSpec{
 				Steps: []v1alpha1.TestSpecStep{{
-					Spec: v1alpha1.TestStepSpec{
+					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Apply: &v1alpha1.Apply{
 								FileRefOrResource: v1alpha1.FileRefOrResource{
@@ -180,7 +180,7 @@ func TestLoad(t *testing.T) {
 						}},
 					},
 				}, {
-					Spec: v1alpha1.TestStepSpec{
+					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Create: &v1alpha1.Create{
 								FileRefOrResource: v1alpha1.FileRefOrResource{

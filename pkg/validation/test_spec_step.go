@@ -7,6 +7,6 @@ import (
 
 func ValidateTestSpecStep(path *field.Path, obj v1alpha1.TestSpecStep) field.ErrorList {
 	var errs field.ErrorList
-	errs = append(errs, ValidateTestStepSpec(path, obj.Spec)...)
+	errs = append(errs, ValidateTestStepSpec(path, obj.TestStepSpec)...)
 	return errs
 }

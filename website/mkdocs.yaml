@@ -40,8 +40,11 @@ nav:
     - commands/chainsaw_completion_powershell.md
     - commands/chainsaw_completion_zsh.md
     - commands/chainsaw_docs.md
+    - commands/chainsaw_generate.md
+    - commands/chainsaw_generate_docs.md
     - commands/chainsaw_kuttl.md
     - commands/chainsaw_kuttl_migrate.md
+    - commands/chainsaw_kuttl_migrate_tests.md
     - commands/chainsaw_test.md
     - commands/chainsaw_version.md
   - APIs:

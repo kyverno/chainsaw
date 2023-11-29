@@ -1,0 +1,78 @@
+Converting test ../../../../../testdata/kuttl ...
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  creationTimestamp: null
+  name: kuttl
+spec:
+  steps:
+  - catch:
+    - command:
+        args:
+        - hello
+        entrypoint: echo
+    - podLogs:
+        name: nginx
+    name: step-01
+    timeouts: {}
+    try:
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+          name: my-pod
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+          labels:
+            app: nginx
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+    - script:
+        content: echo "hello world"
+        skipLogOutput: true
+    - command:
+        args:
+        - hello world
+        entrypoint: echo
+        skipLogOutput: true
+  - catch:
+    - command:
+        args:
+        - hello
+        entrypoint: echo
+    - command:
+        args:
+        - "1"
+        entrypoint: sleep
+    name: step-02
+    timeouts: {}
+    try:
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+          name: my-pod
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+          labels:
+            app: nginx
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+    - script:
+        content: echo "hello world"
+        skipLogOutput: true
+    - command:
+        args:
+        - hello world
+        entrypoint: echo
+        skipLogOutput: true
+  timeouts: {}
+
