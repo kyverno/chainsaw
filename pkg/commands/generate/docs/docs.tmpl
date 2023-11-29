@@ -1,0 +1,74 @@
+{{- define "OperationType" }}
+{{- if .Apply -}}
+Apply
+{{- else if .Assert -}}
+Assert
+{{- else if .Command -}}
+Command
+{{- else if .Create -}}
+Create
+{{- else if .Delete -}}
+Delete
+{{- else if .Error -}}
+Error
+{{- else if .Script -}}
+Script
+{{- end }}
+{{- end }}
+# Test: `{{ .Name }}`
+
+## Description
+
+{{ default "*No description*" .Spec.Description }}
+
+## Steps
+
+{{- with .Spec.Steps }}
+
+| Name | Operations | Catch | Finally |
+|---|---|---|---|
+{{- range $i, $step := . }}
+| `{{ default (print "step-" (add $i 1)) .Name }}` | {{ len .Spec.Try }} | {{ len .Spec.Catch }} | {{ len .Spec.Finally }} |
+{{- end }}
+{{- end }}
+
+{{- range $i, $step := .Spec.Steps }}
+
+### Step {{ add $i 1 }}: {{ with .Name }}`{{ . }}`{{ else }}*No name*{{ end }}
+
+{{- with .Spec.Description }}
+
+{{ . }}
+{{- end }}
+
+### Operations
+
+| Action | Description |
+|---|---|
+{{- range $step.Spec.Try }}
+| `{{ template "OperationType" . }}` | {{ default "*No description*" .Description }} |
+{{- end }}
+
+{{-  with $step.Spec.Catch }}
+
+### Catch
+
+| Action | Description |
+|---|---|
+{{- range $step.Spec.Catch }}
+| `{{ template "OperationType" . }}` | {{ default "*No description*" .Description }} |
+{{- end }}
+{{- end }}
+
+{{- with $step.Spec.Finally }}
+
+### Finally
+
+| Action | Description |
+|---|---|
+{{- range $step.Spec.Finally }}
+| `{{ template "OperationType" . }}` | {{ default "*No description*" .Description }} |
+{{- end }}
+{{- end }}
+
+{{- end }}
