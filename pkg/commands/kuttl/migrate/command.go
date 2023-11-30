@@ -1,6 +1,7 @@
 package migrate
 
 import (
+	"github.com/kyverno/chainsaw/pkg/commands/kuttl/migrate/config"
 	"github.com/kyverno/chainsaw/pkg/commands/kuttl/migrate/tests"
 	"github.com/spf13/cobra"
 )
@@ -16,6 +17,7 @@ func Command() *cobra.Command {
 		},
 	}
 	cmd.AddCommand(
+		config.Command(),
 		tests.Command(),
 	)
 	return cmd

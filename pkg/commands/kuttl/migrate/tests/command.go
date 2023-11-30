@@ -37,20 +37,20 @@ func Command() *cobra.Command {
 			return execute(cmd.OutOrStdout(), save, cleanup, args...)
 		},
 	}
-	cmd.Flags().BoolVar(&save, "save", false, "If set, converted files will be saved.")
-	cmd.Flags().BoolVar(&cleanup, "cleanup", false, "If set, delete converted files.")
+	cmd.Flags().BoolVar(&save, "save", false, "If set, converted files will be saved")
+	cmd.Flags().BoolVar(&cleanup, "cleanup", false, "If set, delete converted files")
 	return cmd
 }
 
 func execute(out io.Writer, save, cleanup bool, paths ...string) error {
 	folders, err := fsutils.DiscoverFolders(paths...)
 	if err != nil {
-		fmt.Fprintf(out, "  ERROR: failed to discover folders: %s\n", err)
+		fmt.Fprintf(out, "ERROR: failed to discover folders: %s\n", err)
 		return err
 	}
 	for _, folder := range folders {
 		if err := processFolder(out, folder, save, cleanup); err != nil {
-			fmt.Fprintf(out, "Error processing folder %s: %v\n", folder, err)
+			fmt.Fprintf(out, "ERROR: failed to process folder %s: %v\n", folder, err)
 		}
 	}
 	return nil
@@ -59,7 +59,7 @@ func execute(out io.Writer, save, cleanup bool, paths ...string) error {
 func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 	files, err := discovery.TryFindStepFiles(folder)
 	if err != nil {
-		fmt.Fprintf(out, "ERROR: failed to collect test asserts: %v\n", err)
+		fmt.Fprintf(out, "ERROR: failed to collect test files: %v\n", err)
 		return err
 	}
 	if len(files) != 0 {
@@ -136,13 +136,13 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s step, folder stri
 				case "TestStep":
 					err := testStep(&step.TestStepSpec, resource)
 					if err != nil {
-						fmt.Fprintf(out, "  ERROR: failed to convert %s (%s): %s\n", "TestStep", filepath.Join(folder, file), err)
+						fmt.Fprintf(out, "ERROR: failed to convert %s (%s): %s\n", "TestStep", filepath.Join(folder, file), err)
 						return err
 					}
 				case "TestAssert":
 					err := testAssert(&step.TestStepSpec, resource)
 					if err != nil {
-						fmt.Fprintf(out, "  ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
+						fmt.Fprintf(out, "ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
 						return err
 					}
 				default:
@@ -178,7 +178,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s step, folder stri
 				case "TestAssert":
 					err := testAssert(&step.TestStepSpec, resource)
 					if err != nil {
-						fmt.Fprintf(out, "  ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
+						fmt.Fprintf(out, "ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
 						return err
 					}
 				default:
@@ -214,7 +214,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s step, folder stri
 				case "TestAssert":
 					err := testAssert(&step.TestStepSpec, resource)
 					if err != nil {
-						fmt.Fprintf(out, "  ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
+						fmt.Fprintf(out, "ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
 						return err
 					}
 				default:
