@@ -1,16 +1,16 @@
-## chainsaw kuttl migrate tests
+## chainsaw kuttl migrate config
 
-Migrate KUTTL tests to Chainsaw
+Migrate KUTTL config to Chainsaw
 
 ```
-chainsaw kuttl migrate tests [flags]
+chainsaw kuttl migrate config [flags]
 ```
 
 ### Options
 
 ```
       --cleanup   If set, delete converted files
-  -h, --help      help for tests
+  -h, --help      help for config
       --save      If set, converted files will be saved
 ```
 

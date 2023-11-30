@@ -5,6 +5,7 @@ Usage:
   chainsaw migrate [command]
 
 Available Commands:
+  config      Migrate KUTTL config to Chainsaw
   tests       Migrate KUTTL tests to Chainsaw
 
 Flags:

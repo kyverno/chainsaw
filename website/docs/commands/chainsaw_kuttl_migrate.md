@@ -15,5 +15,6 @@ chainsaw kuttl migrate [flags]
 ### SEE ALSO
 
 * [chainsaw kuttl](chainsaw_kuttl.md)	 - Work with KUTTL tests
+* [chainsaw kuttl migrate config](chainsaw_kuttl_migrate_config.md)	 - Migrate KUTTL config to Chainsaw
 * [chainsaw kuttl migrate tests](chainsaw_kuttl_migrate_tests.md)	 - Migrate KUTTL tests to Chainsaw
 
