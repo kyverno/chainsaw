@@ -1,21 +1,20 @@
-
 # Test: `inline`
-
-## Description
 
 *No description*
 
-## Steps
+### Steps
 
-| Name | Operations | Catch | Finally |
-|---|---|---|---|
-| `step-1` | 2 | 0 | 0 |
+| # | Name | Try | Catch | Finally |
+|:-:|---|:-:|:-:|:-:|
+| 1 | [step-1](#step-step-1) | 2 | 0 | 0 |
 
-### Step 1: *No name*
+## Step: `step-1`
 
-### Operations
+*No description*
 
-| Action | Description |
-|---|---|
-| `Apply` | *No description* |
-| `Assert` | *No description* |
+### Try
+
+| # | Action | Description |
+|:-:|---|---|
+| 1 | `apply` | *No description* |
+| 2 | `assert` | *No description* |

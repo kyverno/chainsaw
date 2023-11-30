@@ -2,6 +2,7 @@ package docs
 
 import (
 	_ "embed"
+	"fmt"
 	"os"
 	"path/filepath"
 	"text/template"
@@ -27,7 +28,7 @@ func Command() *cobra.Command {
 		Args:         cobra.NoArgs,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			tmpl, err := template.New("exception").Funcs(sprig.FuncMap()).Parse(docsTemplate)
+			tmpl, err := template.New("docs").Funcs(sprig.FuncMap()).Parse(docsTemplate)
 			if err != nil {
 				return err
 			}
@@ -44,14 +45,16 @@ func Command() *cobra.Command {
 					defer file.Close()
 					output := file
 					if err := tmpl.Execute(output, test); err != nil {
-						return nil
+						return err
 					}
+				} else {
+					fmt.Fprintf(cmd.OutOrStdout(), "ERROR: failed to load test %s (%s)", test.BasePath, test.Err)
 				}
 			}
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test.yaml", "Name of the test file.")
-	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run.")
+	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test.yaml", "Name of the test file")
+	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run")
 	return cmd
 }
