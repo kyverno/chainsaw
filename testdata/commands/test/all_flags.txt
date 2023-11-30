@@ -9,14 +9,14 @@ Loading default configuration...
 - FullName true
 - IncludeTestRegex '^.*$'
 - ExcludeTestRegex '^.*$'
-- Parallel 24
-- RepeatCount 12
 - ApplyTimeout 1m40s
 - AssertTimeout 1m40s
-- ErrorTimeout 1m40s
-- DeleteTimeout 1m40s
 - CleanupTimeout 1m40s
+- DeleteTimeout 1m40s
+- ErrorTimeout 1m40s
 - ExecTimeout 1m40s
+- Parallel 24
+- RepeatCount 12
 - ForceTerminationGracePeriod 5s
 Loading tests...
 Running tests...

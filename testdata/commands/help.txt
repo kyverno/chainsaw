@@ -7,6 +7,7 @@ Usage:
 Available Commands:
   completion  Generate the autocompletion script for the specified shell
   docs        Generate reference documentation
+  generate    Generate commands
   help        Help about any command
   kuttl       Work with KUTTL tests
   test        Run tests

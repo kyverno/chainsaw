@@ -30,24 +30,21 @@ func Test_Execute(t *testing.T) {
 		name: "migrate",
 		args: []string{
 			"migrate",
-			"../../../../testdata/kuttl",
 		},
-		out:     filepath.Join(basePath, "out.txt"),
-		wantErr: false,
-	}, {
-		name: "migrate save",
-		args: []string{
-			"migrate",
-			"../../../../testdata/kuttl",
-			"--save",
-		},
-		out:     filepath.Join(basePath, "out-save.txt"),
+		out:     filepath.Join(basePath, "help.txt"),
 		wantErr: false,
 	}, {
 		name: "unknow flag",
 		args: []string{
 			"migrate",
 			"--foo",
+		},
+		wantErr: true,
+	}, {
+		name: "unknow arg",
+		args: []string{
+			"migrate",
+			"foo",
 		},
 		wantErr: true,
 	}}

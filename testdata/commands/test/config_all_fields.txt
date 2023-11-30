@@ -9,13 +9,13 @@ Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)..
 - FullName true
 - IncludeTestRegex '^include-.*'
 - ExcludeTestRegex '^exclude-.*'
-- Parallel 5
 - ApplyTimeout 5s
 - AssertTimeout 10s
-- ErrorTimeout 10s
-- DeleteTimeout 5s
 - CleanupTimeout 5s
+- DeleteTimeout 5s
+- ErrorTimeout 10s
 - ExecTimeout 10s
+- Parallel 5
 Loading tests...
 Running tests...
 Tests Summary...

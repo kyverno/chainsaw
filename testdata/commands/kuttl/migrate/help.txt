@@ -1,9 +1,14 @@
-Migrate KUTTL tests to Chainsaw
+Migrate KUTTL resources to Chainsaw
 
 Usage:
   chainsaw migrate [flags]
+  chainsaw migrate [command]
+
+Available Commands:
+  config      Migrate KUTTL config to Chainsaw
+  tests       Migrate KUTTL tests to Chainsaw
 
 Flags:
-  -h, --help        help for migrate
-      --overwrite   If set, overwrites original file.
-      --save        If set, converted files will be saved.
+  -h, --help   help for migrate
+
+Use "chainsaw migrate [command] --help" for more information about a command.

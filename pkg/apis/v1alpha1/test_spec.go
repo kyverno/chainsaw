@@ -8,7 +8,7 @@ type TestSpec struct {
 
 	// Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.
 	// +optional
-	Timeouts Timeouts `json:"timeouts"`
+	Timeouts *Timeouts `json:"timeouts,omitempty"`
 
 	// Skip determines whether the test should skipped.
 	// +optional
