@@ -1,0 +1,13 @@
+Generate commands
+
+Usage:
+  chainsaw generate [flags]
+  chainsaw generate [command]
+
+Available Commands:
+  docs        Generate documentation for tests
+
+Flags:
+  -h, --help   help for generate
+
+Use "chainsaw generate [command] --help" for more information about a command.
