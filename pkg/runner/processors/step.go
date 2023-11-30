@@ -3,6 +3,9 @@ package processors
 import (
 	"context"
 	"errors"
+	"io"
+	"net/http"
+	"net/url"
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -26,6 +29,7 @@ import (
 	"github.com/kyverno/kyverno/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/util/yaml"
 	"k8s.io/utils/clock"
 )
 
@@ -376,7 +380,25 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]uns
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}
 	if ref.File != "" {
-		return resource.Load(filepath.Join(p.test.BasePath, ref.File))
+		url, err := url.ParseRequestURI(ref.File)
+		if err != nil {
+			return resource.Load(filepath.Join(p.test.BasePath, ref.File))
+		} else {
+			resp, err := http.Get(url.String())
+			if err != nil {
+				return nil, err
+			}
+			defer resp.Body.Close()
+			body, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			var resources []unstructured.Unstructured
+			if err := yaml.Unmarshal(body, &resources); err != nil {
+				return nil, err
+			}
+			return resources, nil
+		}
 	}
 	return nil, errors.New("file or resource must be set")
 }
