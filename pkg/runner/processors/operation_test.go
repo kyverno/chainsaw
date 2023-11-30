@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	mock "github.com/kyverno/chainsaw/pkg/runner/operations/testing"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -15,6 +16,7 @@ func TestOperation_Execute(t *testing.T) {
 		continueOnError bool
 		expectedFail    bool
 		operation       operations.Operation
+		operationReport *report.OperationReport
 	}{
 		// {
 		// 	name: "operation fails",
@@ -32,7 +34,8 @@ func TestOperation_Execute(t *testing.T) {
 					return nil
 				},
 			},
-			expectedFail: false,
+			expectedFail:    false,
+			operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
 		},
 	}
 
@@ -42,9 +45,11 @@ func TestOperation_Execute(t *testing.T) {
 				continueOnError: tc.continueOnError,
 				timeout:         1 * time.Second,
 				operation:       tc.operation,
-				operationReport: nil,
+				operationReport: tc.operationReport,
 			}
-			op.execute(context.Background())
+			nt := testing.T{}
+			ctx := testing.IntoContext(context.Background(), &nt)
+			op.execute(ctx)
 		})
 	}
 }
