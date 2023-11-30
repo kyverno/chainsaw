@@ -2,6 +2,9 @@ package resource
 
 import (
 	"fmt"
+	"io"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 
@@ -26,6 +29,26 @@ func Load(path string) ([]unstructured.Unstructured, error) {
 	}
 	if len(tests) == 0 {
 		return nil, fmt.Errorf("found no test in %s", path)
+	}
+	return tests, nil
+}
+
+func LoadFromURL(url *url.URL) ([]unstructured.Unstructured, error) {
+	resp, err := http.Get(url.String())
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	content, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+	tests, err := Parse(content)
+	if err != nil {
+		return nil, err
+	}
+	if len(tests) == 0 {
+		return nil, fmt.Errorf("found no test in %s", url.String())
 	}
 	return tests, nil
 }
