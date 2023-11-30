@@ -50,6 +50,41 @@ func Test_Execute(t *testing.T) {
 			"--foo",
 		},
 		wantErr: true,
+	}, {
+		name: "unknown file",
+		args: []string{
+			"config",
+			"../../../../../testdata/kuttl/unknown.yaml",
+		},
+		wantErr: true,
+	}, {
+		name: "multiple file",
+		args: []string{
+			"config",
+			"../../../../../testdata/kuttl/multiple-config.yaml",
+		},
+		wantErr: true,
+	}, {
+		name: "not a config",
+		args: []string{
+			"config",
+			"../../../../../testdata/kuttl/02-step.yaml",
+		},
+		wantErr: true,
+	}, {
+		name: "invalid config",
+		args: []string{
+			"config",
+			"../../../../../testdata/kuttl/invalid-config.yaml",
+		},
+		wantErr: true,
+	}, {
+		name: "configmap",
+		args: []string{
+			"config",
+			"../../../../../testdata/kuttl/configmap.yaml",
+		},
+		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
