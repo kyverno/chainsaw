@@ -5,7 +5,7 @@ Usage:
   chainsaw kuttl [command]
 
 Available Commands:
-  migrate     Migrate KUTTL tests to Chainsaw
+  migrate     Migrate KUTTL resources to Chainsaw
 
 Flags:
   -h, --help   help for kuttl

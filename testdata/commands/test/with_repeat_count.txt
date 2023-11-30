@@ -9,6 +9,12 @@ Loading default configuration...
 - FullName false
 - IncludeTestRegex ''
 - ExcludeTestRegex ''
+- ApplyTimeout 5s
+- AssertTimeout 30s
+- CleanupTimeout 30s
+- DeleteTimeout 15s
+- ErrorTimeout 30s
+- ExecTimeout 5s
 - RepeatCount 3
 Loading tests...
 Running tests...

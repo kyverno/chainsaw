@@ -12,7 +12,7 @@ func TestValidateTest(t *testing.T) {
 		Steps: []v1alpha1.TestSpecStep{
 			{
 				Name: "step1",
-				Spec: v1alpha1.TestStepSpec{
+				TestStepSpec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{
 						{
 							Apply: &v1alpha1.Apply{
@@ -32,7 +32,7 @@ func TestValidateTest(t *testing.T) {
 		Steps: []v1alpha1.TestSpecStep{
 			{
 				Name: "step1",
-				Spec: v1alpha1.TestStepSpec{
+				TestStepSpec: v1alpha1.TestStepSpec{
 					Try: []v1alpha1.Operation{
 						{
 							Apply: &v1alpha1.Apply{

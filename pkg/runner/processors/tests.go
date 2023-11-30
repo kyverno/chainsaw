@@ -13,7 +13,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
-	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -73,7 +72,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			t.Cleanup(func() {
 				operation := operation{
 					continueOnError: false,
-					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, nil, nil, nil),
+					timeout:         p.config.Timeouts.CleanupDuration(),
 					operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
 				}
 				operation.execute(ctx)

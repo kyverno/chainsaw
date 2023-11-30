@@ -16,6 +16,7 @@ Release notes for `TODO`.
 ## :bangbang: Breaking chages :bangbang:
 
 - Changed `check` to `expect` in delete `operation`
+- Kuttl migration command split into `chainsaw kuttl migrate tests` and `chainsaw kuttl migrate config`
 
 ## :dizzy: New features :dizzy:
 
@@ -27,6 +28,7 @@ Release notes for `TODO`.
 ## :wrench: Fixes :wrench:
 
 - Don't show `command` or `script` logs if there's nothing to show
+- Fixed `timeouts` always set when migrating kuttl tests
 
 ## :guitar: Misc :guitar:
 
