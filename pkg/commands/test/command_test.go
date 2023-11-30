@@ -19,6 +19,13 @@ func TestChainsawCommand(t *testing.T) {
 		out     string
 		err     string
 	}{{
+		name: "help",
+		args: []string{
+			"--help",
+		},
+		wantErr: false,
+		out:     filepath.Join(basePath, "help.txt"),
+	}, {
 		name:    "default",
 		args:    []string{},
 		wantErr: false,

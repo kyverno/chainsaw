@@ -1,23 +1,20 @@
-
 # Test: `basic`
-
-## Description
 
 This is a very simple test that creates a configmap and checks the content is as expected.
 
-## Steps
+### Steps
 
-| Name | Operations | Catch | Finally |
-|---|---|---|---|
-| `step-1` | 2 | 0 | 0 |
+| # | Name | Try | Catch | Finally |
+|:-:|---|:-:|:-:|:-:|
+| 1 | [step-1](#step-step-1) | 2 | 0 | 0 |
 
-### Step 1: *No name*
+## Step: `step-1`
 
 This steps applies the configmap in the cluster and checks the configmap content.
 
-### Operations
+### Try
 
-| Action | Description |
-|---|---|
-| `Apply` | *No description* |
-| `Assert` | *No description* |
+| # | Action | Description |
+|:-:|---|---|
+| 1 | `apply` | *No description* |
+| 2 | `assert` | *No description* |
