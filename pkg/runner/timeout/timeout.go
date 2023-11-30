@@ -1,38 +1,41 @@
 package timeout
 
 import (
-	"context"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-const (
-	DefaultApplyTimeout   = 5 * time.Second
-	DefaultAssertTimeout  = 30 * time.Second
-	DefaultErrorTimeout   = 30 * time.Second
-	DefaultDeleteTimeout  = 15 * time.Second
-	DefaultCleanupTimeout = 30 * time.Second
-	DefaultExecTimeout    = 5 * time.Second
-)
+func Combine(config v1alpha1.Timeouts, next ...*v1alpha1.Timeouts) v1alpha1.Timeouts {
+	for _, next := range next {
+		if next != nil {
+			if next.Apply != nil {
+				config.Apply = next.Apply
+			}
+			if next.Assert != nil {
+				config.Assert = next.Assert
+			}
+			if next.Error != nil {
+				config.Error = next.Error
+			}
+			if next.Delete != nil {
+				config.Delete = next.Delete
+			}
+			if next.Cleanup != nil {
+				config.Cleanup = next.Cleanup
+			}
+			if next.Exec != nil {
+				config.Exec = next.Exec
+			}
+		}
+	}
+	return config
+}
 
-func Get(fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) time.Duration {
+func Get(operation *metav1.Duration, fallback time.Duration) time.Duration {
 	if operation != nil {
 		return operation.Duration
 	}
-	if step != nil {
-		return step.Duration
-	}
-	if test != nil {
-		return test.Duration
-	}
-	if config != nil {
-		return config.Duration
-	}
 	return fallback
-}
-
-func Context(ctx context.Context, fallback time.Duration, config *metav1.Duration, test *metav1.Duration, step *metav1.Duration, operation *metav1.Duration) (context.Context, context.CancelFunc) {
-	timeout := Get(fallback, config, test, step, operation)
-	return context.WithTimeout(ctx, timeout)
 }

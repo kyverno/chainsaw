@@ -14,7 +14,6 @@ spec:
     - podLogs:
         name: nginx
     name: step-01
-    timeouts: {}
     try:
     - delete:
         ref:
@@ -49,7 +48,6 @@ spec:
         - "1"
         entrypoint: sleep
     name: step-02
-    timeouts: {}
     try:
     - delete:
         ref:
@@ -74,5 +72,4 @@ spec:
         - hello world
         entrypoint: echo
         skipLogOutput: true
-  timeouts: {}
 

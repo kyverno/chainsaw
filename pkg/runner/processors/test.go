@@ -121,9 +121,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 				t.FailNow()
 			}
 			t.Cleanup(func() {
+				timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts)
 				operation := operation{
 					continueOnError: false,
-					timeout:         timeout.Get(timeout.DefaultCleanupTimeout, p.config.Timeouts.Cleanup, p.test.Spec.Timeouts.Cleanup, nil, nil),
+					timeout:         timeouts.CleanupDuration(),
 					operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
 				}
 				operation.execute(ctx)
