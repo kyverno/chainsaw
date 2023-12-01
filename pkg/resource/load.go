@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/http"
@@ -34,11 +35,16 @@ func Load(path string) ([]unstructured.Unstructured, error) {
 }
 
 func LoadFromURL(url *url.URL) ([]unstructured.Unstructured, error) {
-	resp, err := http.Get(url.String())
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url.String(), nil)
+	if err != nil {
+		return nil, err
+	}
+	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		return nil, err
 	}
 	defer resp.Body.Close()
+
 	content, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return nil, err
