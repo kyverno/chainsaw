@@ -75,7 +75,8 @@ func TestValidateFileRefOrResource(t *testing.T) {
 				Resource: pod,
 			},
 			expectErr: false,
-		}, {
+		},
+		{
 			name: "File field with invalid path",
 			input: v1alpha1.FileRefOrResource{
 				FileRef: v1alpha1.FileRef{
