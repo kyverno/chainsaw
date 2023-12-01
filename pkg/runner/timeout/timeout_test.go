@@ -15,17 +15,17 @@ func TestGet(t *testing.T) {
 		name      string
 		fallback  time.Duration
 		operation *metav1.Duration
-		want      time.Duration
+		want      *time.Duration
 	}{{
 		name:      "fallback",
 		fallback:  fallback,
 		operation: nil,
-		want:      fallback,
+		want:      &fallback,
 	}, {
 		name:      "operation",
 		fallback:  fallback,
 		operation: &operation,
-		want:      operation.Duration,
+		want:      &operation.Duration,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

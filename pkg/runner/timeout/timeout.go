@@ -33,9 +33,9 @@ func Combine(config v1alpha1.Timeouts, next ...*v1alpha1.Timeouts) v1alpha1.Time
 	return config
 }
 
-func Get(operation *metav1.Duration, fallback time.Duration) time.Duration {
+func Get(operation *metav1.Duration, fallback time.Duration) *time.Duration {
 	if operation != nil {
-		return operation.Duration
+		return &operation.Duration
 	}
-	return fallback
+	return &fallback
 }

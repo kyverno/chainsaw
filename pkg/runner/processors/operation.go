@@ -11,14 +11,17 @@ import (
 
 type operation struct {
 	continueOnError bool
-	timeout         time.Duration
+	timeout         *time.Duration
 	operation       operations.Operation
 	operationReport *report.OperationReport
 }
 
 func (o operation) execute(ctx context.Context) {
-	ctx, cancel := context.WithTimeout(ctx, o.timeout)
-	defer cancel()
+	if o.timeout != nil {
+		toCtx, cancel := context.WithTimeout(ctx, *o.timeout)
+		ctx = toCtx
+		defer cancel()
+	}
 	if err := o.operation.Exec(ctx); err != nil {
 		t := testing.FromContext(ctx)
 		if o.operationReport != nil {
