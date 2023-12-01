@@ -13,6 +13,8 @@ delete
 error
 {{- else if .Script -}}
 script
+{{- else if .Sleep -}}
+sleep
 {{- end -}}
 {{- end -}}
 
@@ -25,6 +27,8 @@ events
 pod logs
 {{- else if .Script -}}
 script
+{{- else if .Sleep -}}
+sleep
 {{- end -}}
 {{- end -}}
 
@@ -37,6 +41,8 @@ events
 pod logs
 {{- else if .Script -}}
 script
+{{- else if .Sleep -}}
+sleep
 {{- end -}}
 {{- end -}}
 

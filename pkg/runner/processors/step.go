@@ -21,6 +21,7 @@ import (
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
 	operror "github.com/kyverno/chainsaw/pkg/runner/operations/error"
 	opscript "github.com/kyverno/chainsaw/pkg/runner/operations/script"
+	opsleep "github.com/kyverno/chainsaw/pkg/runner/operations/sleep"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -145,8 +146,6 @@ func (p *stepProcessor) tryOperations(ctx context.Context, handlers ...v1alpha1.
 			register(loaded...)
 		} else if handler.Command != nil {
 			register(p.commandOperation(ctx, *handler.Command, handler.Timeout))
-		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
 		} else if handler.Create != nil {
 			loaded, err := p.createOperation(ctx, *handler.Create, handler.Timeout)
 			if err != nil {
@@ -165,6 +164,10 @@ func (p *stepProcessor) tryOperations(ctx context.Context, handlers ...v1alpha1.
 				return nil, err
 			}
 			register(loaded...)
+		} else if handler.Script != nil {
+			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
+		} else if handler.Sleep != nil {
+			register(p.sleepOperation(ctx, *handler.Sleep))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -197,6 +200,8 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 			register(p.commandOperation(ctx, *handler.Command, handler.Timeout))
 		} else if handler.Script != nil {
 			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
+		} else if handler.Sleep != nil {
+			register(p.sleepOperation(ctx, *handler.Sleep))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -229,6 +234,8 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 			register(p.commandOperation(ctx, *handler.Command, handler.Timeout))
 		} else if handler.Script != nil {
 			register(p.scriptOperation(ctx, *handler.Script, handler.Timeout))
+		} else if handler.Sleep != nil {
+			register(p.sleepOperation(ctx, *handler.Sleep))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -367,6 +374,17 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, exec v1alpha1.Scrip
 	return operation{
 		timeout:         timeout.Get(to, timeouts.ExecDuration()),
 		operation:       opscript.New(exec, p.test.BasePath, p.namespacer.GetNamespace()),
+		operationReport: operationReport,
+	}
+}
+
+func (p *stepProcessor) sleepOperation(ctx context.Context, sleep v1alpha1.Sleep) operation {
+	operationReport := report.NewOperation("Sleep ", report.OperationTypeSleep)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
+	return operation{
+		operation:       opsleep.New(sleep),
 		operationReport: operationReport,
 	}
 }

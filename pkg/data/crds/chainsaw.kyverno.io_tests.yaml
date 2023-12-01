@@ -152,6 +152,15 @@ spec:
                                   noise.
                                 type: boolean
                             type: object
+                          sleep:
+                            description: Sleep defines zzzz.
+                            properties:
+                              duration:
+                                description: Duration is the delay used for sleeping.
+                                type: string
+                            required:
+                            - duration
+                            type: object
                           timeout:
                             description: Timeout for the operation. Overrides the
                               global timeout set in the Configuration.
@@ -256,6 +265,15 @@ spec:
                                   the command. Useful for sensitive logs or to reduce
                                   noise.
                                 type: boolean
+                            type: object
+                          sleep:
+                            description: Sleep defines zzzz.
+                            properties:
+                              duration:
+                                description: Duration is the delay used for sleeping.
+                                type: string
+                            required:
+                            - duration
                             type: object
                           timeout:
                             description: Timeout for the operation. Overrides the
@@ -515,6 +533,15 @@ spec:
                                   the command. Useful for sensitive logs or to reduce
                                   noise.
                                 type: boolean
+                            type: object
+                          sleep:
+                            description: Sleep defines zzzz.
+                            properties:
+                              duration:
+                                description: Duration is the delay used for sleeping.
+                                type: string
+                            required:
+                            - duration
                             type: object
                           timeout:
                             description: Timeout for the operation. Overrides the

@@ -22,6 +22,9 @@ func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
 	if obj.Script != nil {
 		count++
 	}
+	if obj.Sleep != nil {
+		count++
+	}
 	if count == 0 {
 		errs = append(errs, field.Invalid(path, obj, "no statement found in operation"))
 	} else if count > 1 {
