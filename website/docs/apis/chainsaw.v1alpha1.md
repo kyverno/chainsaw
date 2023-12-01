@@ -97,6 +97,7 @@ during the testing process.</p>
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
+| `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 
 ## `Command`     {#chainsaw-kyverno-io-v1alpha1-Command}
 
@@ -266,6 +267,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
+| `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 
 ## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
 
@@ -322,6 +324,7 @@ For multiple objects use labels.</p>
 | `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a creation operation.</p> |
 | `error` | [`Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
+| `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 
 ## `PodLogs`     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 
@@ -365,6 +368,21 @@ For multiple objects use labels.</p>
 | `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 | `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
+
+## `Sleep`     {#chainsaw-kyverno-io-v1alpha1-Sleep}
+
+**Appears in:**
+    
+- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
+- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
+
+<p>Sleep represents a duration while nothing happens.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `duration` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Duration is the delay used for sleeping.</p> |
 
 ## `TestSpec`     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
 

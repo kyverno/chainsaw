@@ -48,4 +48,8 @@ type Operation struct {
 	// Script defines a script to run.
 	// +optional
 	Script *Script `json:"script,omitempty"`
+
+	// Sleep defines zzzz.
+	// +optional
+	Sleep *Sleep `json:"sleep,omitempty"`
 }

@@ -23,6 +23,7 @@ const (
 	Internal Operation = "INTERNAL"
 	Patch    Operation = "PATCH"
 	Script   Operation = "SCRIPT"
+	Sleep    Operation = "SLEEP"
 	Stderr   Operation = "STDERR"
 	Stdout   Operation = "STDOUT"
 	Try      Operation = "TRY"

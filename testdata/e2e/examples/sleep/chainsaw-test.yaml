@@ -1,0 +1,15 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: sleep
+spec:
+  steps:
+  - try:
+    - sleep:
+        duration: 5s
+    catch:
+    - sleep:
+        duration: 5s
+    finally:
+    - sleep:
+        duration: 5s
