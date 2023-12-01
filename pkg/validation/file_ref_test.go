@@ -31,6 +31,14 @@ func TestValidateFileRef(t *testing.T) {
 			},
 			expectErr: false,
 		},
+		{
+			name: "File field with invalid path",
+			input: v1alpha1.FileRef{
+				File: "invalid-path/::file.yaml",
+			},
+			expectErr: true,
+			errMsg:    "the file reference must be a valid file path or URI",
+		},
 	}
 
 	for _, tt := range tests {
