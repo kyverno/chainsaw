@@ -34,7 +34,7 @@ func Load(path string) ([]unstructured.Unstructured, error) {
 	return tests, nil
 }
 
-func LoadFromURL(url *url.URL) ([]unstructured.Unstructured, error) {
+func LoadFromURI(url *url.URL) ([]unstructured.Unstructured, error) {
 	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url.String(), nil)
 	if err != nil {
 		return nil, err

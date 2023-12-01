@@ -381,7 +381,7 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]uns
 		if err != nil {
 			return resource.Load(filepath.Join(p.test.BasePath, ref.File))
 		} else {
-			return resource.LoadFromURL(url)
+			return resource.LoadFromURI(url)
 		}
 	}
 	return nil, errors.New("file or resource must be set")
