@@ -6,7 +6,7 @@ spec:
   steps:
   - try:
     - sleep:
-        duration: 5s
+        duration: 10s
     catch:
     - sleep:
         duration: 5s

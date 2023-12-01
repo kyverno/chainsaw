@@ -13,7 +13,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
@@ -40,20 +39,14 @@ func New(client client.Client, obj unstructured.Unstructured, namespacer namespa
 }
 
 func (o *operation) Exec(ctx context.Context) (err error) {
-	logger := logging.FromContext(ctx).WithResource(&o.obj)
+	logger := internal.GetLogger(ctx, &o.obj)
 	defer func() {
-		if err != nil {
-			logger.Log(logging.Apply, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		} else {
-			logger.Log(logging.Apply, logging.DoneStatus, color.BoldGreen)
-		}
+		internal.LogEnd(logger, logging.Apply, err)
 	}()
-	if o.namespacer != nil {
-		if err := o.namespacer.Apply(&o.obj); err != nil {
-			return err
-		}
+	if err := internal.ApplyNamespacer(o.namespacer, &o.obj); err != nil {
+		return err
 	}
-	logger.Log(logging.Apply, logging.RunStatus, color.BoldFgCyan)
+	internal.LogStart(logger, logging.Apply)
 	return o.applyResource(ctx, logger)
 }
 

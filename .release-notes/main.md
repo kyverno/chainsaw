@@ -17,6 +17,7 @@ Release notes for `TODO`.
 
 - Changed `check` to `expect` in delete `operation`
 - Kuttl migration command split into `chainsaw kuttl migrate tests` and `chainsaw kuttl migrate config`
+- `timeout` was moved inside operations that support a timeout (all operations but sleep)
 
 ## :dizzy: New features :dizzy:
 

@@ -124,7 +124,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 				timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts)
 				operation := operation{
 					continueOnError: false,
-					timeout:         timeouts.CleanupDuration(),
+					timeout:         timeout.Get(nil, timeouts.CleanupDuration()),
 					operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
 				}
 				operation.execute(ctx)

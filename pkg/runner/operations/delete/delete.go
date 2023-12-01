@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	"github.com/kyverno/kyverno/ext/output/color"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -34,24 +33,16 @@ func New(client client.Client, obj unstructured.Unstructured, namespacer namespa
 }
 
 func (o *operation) Exec(ctx context.Context) (err error) {
-	logger := logging.FromContext(ctx).WithResource(&o.obj)
-	defer func() {
-		if err != nil {
-			logger.Log(logging.Delete, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		} else {
-			logger.Log(logging.Delete, logging.DoneStatus, color.BoldGreen)
-		}
-	}()
-	if o.namespacer != nil {
-		if err := o.namespacer.Apply(&o.obj); err != nil {
-			return err
-		}
+	logger := internal.GetLogger(ctx, &o.obj)
+	defer func() { internal.LogEnd(logger, logging.Delete, err) }()
+	if err := internal.ApplyNamespacer(o.namespacer, &o.obj); err != nil {
+		return err
 	}
-	logger.Log(logging.Delete, logging.RunStatus, color.BoldFgCyan)
-	return o.deleteResource(ctx, logger)
+	internal.LogStart(logger, logging.Delete)
+	return o.deleteResource(ctx)
 }
 
-func (o *operation) deleteResource(ctx context.Context, logger logging.Logger) error {
+func (o *operation) deleteResource(ctx context.Context) error {
 	candidates, err := internal.Read(ctx, &o.obj, o.client)
 	if err != nil {
 		if kerrors.IsNotFound(err) {

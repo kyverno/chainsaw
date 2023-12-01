@@ -328,8 +328,8 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		}
 		if operation.Script != "" {
 			to.Try = append(to.Try, v1alpha1.Operation{
-				Timeout: timeout,
 				Script: &v1alpha1.Script{
+					Timeout:       timeout,
 					Content:       operation.Script,
 					SkipLogOutput: operation.SkipLogOutput,
 				},
@@ -345,8 +345,8 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 				args = split[1:]
 			}
 			to.Try = append(to.Try, v1alpha1.Operation{
-				Timeout: timeout,
 				Command: &v1alpha1.Command{
+					Timeout:       timeout,
 					Entrypoint:    entrypoint,
 					Args:          args,
 					SkipLogOutput: operation.SkipLogOutput,
