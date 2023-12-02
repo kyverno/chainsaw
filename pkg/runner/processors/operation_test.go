@@ -2,12 +2,14 @@ package processors
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	mock "github.com/kyverno/chainsaw/pkg/runner/operations/testing"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestOperation_Execute(t *testing.T) {
@@ -18,14 +20,27 @@ func TestOperation_Execute(t *testing.T) {
 		operation       operations.Operation
 		operationReport *report.OperationReport
 	}{
+		{
+			name: "operation fails but continues",
+			operation: mock.MockOperation{
+				ExecFn: func(ctx context.Context) error {
+					return errors.New("operation failed")
+				},
+			},
+			continueOnError: true,
+			expectedFail:    true,
+			operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
+		},
 		// {
-		// 	name: "operation fails",
+		// 	name: "operation fails don't continues",
 		// 	operation: mock.MockOperation{
 		// 		ExecFn: func(ctx context.Context) error {
 		// 			return errors.New("operation failed")
 		// 		},
 		// 	},
-		// 	expectedFail: true,
+		// 	continueOnError: false,
+		// 	expectedFail:    true,
+		// 	operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
 		// },
 		{
 			name: "operation succeeds",
@@ -50,6 +65,12 @@ func TestOperation_Execute(t *testing.T) {
 			nt := testing.T{}
 			ctx := testing.IntoContext(context.Background(), &nt)
 			op.execute(ctx)
+
+			if tc.expectedFail {
+				assert.True(t, nt.Failed(), "expected an error but got none")
+			} else {
+				assert.False(t, nt.Failed(), "expected no error but got one")
+			}
 		})
 	}
 }
