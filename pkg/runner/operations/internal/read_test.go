@@ -20,20 +20,20 @@ func TestRead(t *testing.T) {
 	}{{
 		name: "Test Get",
 		expected: &unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name": "test-pod",
 				},
 			},
 		},
 		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-				obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
-					"metadata": map[string]interface{}{
+					"metadata": map[string]any{
 						"name": "test-pod",
 					},
 				}
@@ -42,10 +42,10 @@ func TestRead(t *testing.T) {
 		},
 		expectedResult: []unstructured.Unstructured{
 			{
-				Object: map[string]interface{}{
+				Object: map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
-					"metadata": map[string]interface{}{
+					"metadata": map[string]any{
 						"name": "test-pod",
 					},
 				},
@@ -54,7 +54,7 @@ func TestRead(t *testing.T) {
 	}, {
 		name: "Test List",
 		expected: &unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
 			},
@@ -63,19 +63,19 @@ func TestRead(t *testing.T) {
 			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
 				list.(*unstructured.UnstructuredList).Items = []unstructured.Unstructured{
 					{
-						Object: map[string]interface{}{
+						Object: map[string]any{
 							"apiVersion": "v1",
 							"kind":       "Pod",
-							"metadata": map[string]interface{}{
+							"metadata": map[string]any{
 								"name": "test-pod-1",
 							},
 						},
 					},
 					{
-						Object: map[string]interface{}{
+						Object: map[string]any{
 							"apiVersion": "v1",
 							"kind":       "Pod",
-							"metadata": map[string]interface{}{
+							"metadata": map[string]any{
 								"name": "test-pod-2",
 							},
 						},
@@ -86,19 +86,19 @@ func TestRead(t *testing.T) {
 		},
 		expectedResult: []unstructured.Unstructured{
 			{
-				Object: map[string]interface{}{
+				Object: map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
-					"metadata": map[string]interface{}{
+					"metadata": map[string]any{
 						"name": "test-pod-1",
 					},
 				},
 			},
 			{
-				Object: map[string]interface{}{
+				Object: map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
-					"metadata": map[string]interface{}{
+					"metadata": map[string]any{
 						"name": "test-pod-2",
 					},
 				},

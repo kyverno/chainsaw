@@ -21,6 +21,7 @@ const (
 	OperationTypeAssert  OperationType = "assert"
 	OperationTypeError   OperationType = "error"
 	OperationTypeScript  OperationType = "script"
+	OperationTypeSleep   OperationType = "sleep"
 	OperationTypeCommand OperationType = "command"
 )
 

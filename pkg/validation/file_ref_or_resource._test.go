@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"path/filepath"
 	"testing"
 
 	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -11,15 +12,15 @@ import (
 
 func TestValidateFileRefOrResource(t *testing.T) {
 	pod := &unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"apiVersion": "v1",
 			"kind":       "Pod",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "example-pod",
 			},
-			"spec": map[string]interface{}{
-				"containers": []interface{}{
-					map[string]interface{}{
+			"spec": map[string]any{
+				"containers": []any{
+					map[string]any{
 						"name":  "nginx",
 						"image": "nginx:latest",
 					},
@@ -59,7 +60,7 @@ func TestValidateFileRefOrResource(t *testing.T) {
 			name: "Only File is provided",
 			input: v1alpha1.FileRefOrResource{
 				FileRef: v1alpha1.FileRef{
-					File: "file",
+					File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 				},
 				Resource: nil,
 			},

@@ -17,6 +17,7 @@ Release notes for `TODO`.
 
 - Changed `check` to `expect` in delete `operation`
 - Kuttl migration command split into `chainsaw kuttl migrate tests` and `chainsaw kuttl migrate config`
+- `timeout` was moved inside operations that support a timeout (all operations but sleep)
 
 ## :dizzy: New features :dizzy:
 
@@ -24,6 +25,7 @@ Release notes for `TODO`.
 - Added inline manifest support to `assert` and `error` operations
 - Added a `description` field to `Test`, `TestStep`, `Operation`, `Catch` and `Finally`
 - Added a command to generate tests documentation
+- Added `sleep` operation support in `try`, `catch` and `finally`
 
 ## :wrench: Fixes :wrench:
 

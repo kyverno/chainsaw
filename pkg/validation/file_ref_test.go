@@ -1,6 +1,7 @@
 package validation
 
 import (
+	"path/filepath"
 	"testing"
 
 	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -26,7 +27,7 @@ func TestValidateFileRef(t *testing.T) {
 		{
 			name: "File field is provided",
 			input: v1alpha1.FileRef{
-				File: "example-file.yaml",
+				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
 			expectErr: false,
 		},

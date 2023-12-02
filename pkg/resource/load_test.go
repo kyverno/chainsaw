@@ -48,19 +48,19 @@ func TestParse(t *testing.T) {
 			expectedLen: 2,
 			expectedResources: []unstructured.Unstructured{
 				{
-					Object: map[string]interface{}{
+					Object: map[string]any{
 						"apiVersion": "v1",
 						"kind":       "Pod",
-						"metadata": map[string]interface{}{
+						"metadata": map[string]any{
 							"name": "test-pod",
 						},
 					},
 				},
 				{
-					Object: map[string]interface{}{
+					Object: map[string]any{
 						"apiVersion": "v1",
 						"kind":       "Service",
-						"metadata": map[string]interface{}{
+						"metadata": map[string]any{
 							"name": "test-service",
 						},
 					},

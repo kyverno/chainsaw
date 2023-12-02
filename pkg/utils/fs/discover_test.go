@@ -35,6 +35,6 @@ func TestDiscoverFoldersWithError(t *testing.T) {
 	unreadableDir := filepath.Join(root, "unreadable")
 	assert.NoError(t, os.MkdirAll(unreadableDir, os.ModePerm))
 	assert.NoError(t, os.Chmod(unreadableDir, 0o000))
-	_, err := DiscoverFolders(root)
+	_, err := DiscoverFolders(unreadableDir)
 	assert.Error(t, err)
 }

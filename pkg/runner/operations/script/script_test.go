@@ -56,7 +56,7 @@ func Test_operationScript(t *testing.T) {
 			Content:       "foo",
 			SkipLogOutput: true,
 			Check: &v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"($error != null)": true,
 				},
 			},
@@ -70,7 +70,7 @@ func Test_operationScript(t *testing.T) {
 			Content:       "foo",
 			SkipLogOutput: true,
 			Check: &v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"(foo('bar'))": true,
 				},
 			},
@@ -84,7 +84,7 @@ func Test_operationScript(t *testing.T) {
 			Content:       "cat operation.go",
 			SkipLogOutput: true,
 			Check: &v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"(foo('bar'))": true,
 				},
 			},

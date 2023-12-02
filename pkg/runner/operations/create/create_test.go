@@ -18,15 +18,15 @@ import (
 
 func Test_create(t *testing.T) {
 	pod := unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"apiVersion": "v1",
 			"kind":       "Pod",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-pod",
 			},
-			"spec": map[string]interface{}{
-				"containers": []interface{}{
-					map[string]interface{}{
+			"spec": map[string]any{
+				"containers": []any{
+					map[string]any{
 						"name":  "test-container",
 						"image": "test-image:v1",
 					},
@@ -125,7 +125,7 @@ func Test_create(t *testing.T) {
 		},
 		expect: []v1alpha1.Expectation{{
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"($error)": "some arbitrary error",
 				},
 			},
@@ -157,7 +157,7 @@ func Test_create(t *testing.T) {
 		},
 		expect: []v1alpha1.Expectation{{
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"($error != null)": true,
 				},
 			},
@@ -176,12 +176,12 @@ func Test_create(t *testing.T) {
 		},
 		expect: []v1alpha1.Expectation{{
 			Match: &v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"foo": "bar",
 				},
 			},
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"kind": "Service",
 				},
 			},
@@ -203,7 +203,7 @@ func Test_create(t *testing.T) {
 				Value: pod.UnstructuredContent(),
 			},
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"kind": "Service",
 				},
 			},

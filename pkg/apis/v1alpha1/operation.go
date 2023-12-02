@@ -1,18 +1,10 @@
 package v1alpha1
 
-import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
 // Operation defines a single operation, only one action is permitted for a given operation.
 type Operation struct {
 	// Description contains a description of the operation.
 	// +optional
 	Description string `json:"description,omitempty"`
-
-	// Timeout for the operation. Overrides the global timeout set in the Configuration.
-	// +optional
-	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
 	// ContinueOnError determines whether a test should continue or not in case the operation was not successful.
 	// Even if the test continues executing, it will still be reported as failed.
@@ -48,4 +40,8 @@ type Operation struct {
 	// Script defines a script to run.
 	// +optional
 	Script *Script `json:"script,omitempty"`
+
+	// Sleep defines zzzz.
+	// +optional
+	Sleep *Sleep `json:"sleep,omitempty"`
 }

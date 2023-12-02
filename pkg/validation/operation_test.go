@@ -2,10 +2,13 @@ package validation
 
 import (
 	"fmt"
+	"path/filepath"
 	"testing"
+	"time"
 
 	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
@@ -13,14 +16,14 @@ func TestValidateOperation(t *testing.T) {
 	exampleApply := &v1alpha1.Apply{
 		FileRefOrResource: v1alpha1.FileRefOrResource{
 			FileRef: v1alpha1.FileRef{
-				File: "example.yaml",
+				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
 		},
 	}
 	exampleAssert := &v1alpha1.Assert{
 		FileRefOrResource: v1alpha1.FileRefOrResource{
 			FileRef: v1alpha1.FileRef{
-				File: "example.yaml",
+				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
 		},
 	}
@@ -31,7 +34,7 @@ func TestValidateOperation(t *testing.T) {
 	exampleCreate := &v1alpha1.Create{
 		FileRefOrResource: v1alpha1.FileRefOrResource{
 			FileRef: v1alpha1.FileRef{
-				File: "example.yaml",
+				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
 		},
 	}
@@ -50,12 +53,15 @@ func TestValidateOperation(t *testing.T) {
 	exampleError := &v1alpha1.Error{
 		FileRefOrResource: v1alpha1.FileRefOrResource{
 			FileRef: v1alpha1.FileRef{
-				File: "example.yaml",
+				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
 		},
 	}
 	exampleScript := &v1alpha1.Script{
 		Content: "echo 'hello world'",
+	}
+	exampleSleep := &v1alpha1.Sleep{
+		Duration: metav1.Duration{Duration: 5 * time.Second},
 	}
 	tests := []struct {
 		name      string
@@ -116,6 +122,12 @@ func TestValidateOperation(t *testing.T) {
 		name: "Only Script operation statement provided",
 		input: v1alpha1.Operation{
 			Script: exampleScript,
+		},
+		expectErr: false,
+	}, {
+		name: "Only Sleep operation statement provided",
+		input: v1alpha1.Operation{
+			Sleep: exampleSleep,
 		},
 		expectErr: false,
 	}}

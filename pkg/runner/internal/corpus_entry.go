@@ -8,7 +8,7 @@ type corpusEntry = struct {
 	Parent     string
 	Path       string
 	Data       []byte
-	Values     []interface{}
+	Values     []any
 	Generation int
 	IsSeed     bool
 }
