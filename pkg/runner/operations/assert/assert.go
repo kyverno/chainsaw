@@ -32,15 +32,19 @@ func New(client client.Client, expected unstructured.Unstructured, namespacer na
 	}
 }
 
-func (o *operation) Exec(ctx context.Context) (_err error) {
+func (o *operation) Exec(ctx context.Context) (err error) {
 	logger := internal.GetLogger(ctx, &o.expected)
 	defer func() {
-		internal.LogEnd(logger, logging.Assert, _err)
+		internal.LogEnd(logger, logging.Assert, err)
 	}()
 	if err := internal.ApplyNamespacer(o.namespacer, &o.expected); err != nil {
 		return err
 	}
 	internal.LogStart(logger, logging.Assert)
+	return o.execute(ctx)
+}
+
+func (o *operation) execute(ctx context.Context) error {
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error

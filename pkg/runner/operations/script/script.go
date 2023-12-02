@@ -29,27 +29,24 @@ func New(script v1alpha1.Script, basePath string, namespace string) operations.O
 	}
 }
 
-func (o *operation) Exec(ctx context.Context) (_err error) {
-	logger := logging.FromContext(ctx)
-	var output internal.CommandOutput
+func (o *operation) Exec(ctx context.Context) (err error) {
+	logger := internal.GetLogger(ctx, nil)
 	defer func() {
-		if _err == nil {
-			logger.Log(logging.Script, logging.DoneStatus, color.BoldGreen)
-		} else {
-			logger.Log(logging.Script, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
-		}
+		internal.LogEnd(logger, logging.Script, err)
 	}()
-	if !o.script.SkipLogOutput {
-		defer func() {
-			if sections := output.Sections(); len(sections) != 0 {
-				logger.Log(logging.Script, logging.LogStatus, color.BoldFgCyan, sections...)
-			}
-		}()
+	cmd, err := o.createCommand(ctx)
+	if err != nil {
+		return err
 	}
+	internal.LogStart(logger, logging.Script, logging.Section("COMMAND", cmd.String()))
+	return o.execute(ctx, cmd)
+}
+
+func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, error) {
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
 	env := os.Environ()
 	if cwd, err := os.Getwd(); err != nil {
-		return fmt.Errorf("failed to get current working directory (%w)", err)
+		return nil, fmt.Errorf("failed to get current working directory (%w)", err)
 	} else {
 		env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	}
@@ -58,24 +55,36 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
 	cmd.Dir = o.basePath
-	logger.Log(logging.Script, logging.RunStatus, color.BoldFgCyan, logging.Section("COMMAND", cmd.String()))
+	return cmd, nil
+}
+
+func (o *operation) execute(ctx context.Context, cmd *exec.Cmd) error {
+	logger := internal.GetLogger(ctx, nil)
+	var output internal.CommandOutput
+	if !o.script.SkipLogOutput {
+		defer func() {
+			if sections := output.Sections(); len(sections) != 0 {
+				logger.Log(logging.Script, logging.LogStatus, color.BoldFgCyan, sections...)
+			}
+		}()
+	}
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
-	if err := cmd.Run(); o.script.Check == nil || o.script.Check.Value == nil {
+	err := cmd.Run()
+	if o.script.Check == nil || o.script.Check.Value == nil {
+		return err
+	}
+	bindings := binding.NewBindings()
+	if err == nil {
+		bindings = bindings.Register("$error", binding.NewBinding(nil))
+	} else {
+		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
+	}
+	bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
+	bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
+	if errs, err := check.Check(ctx, nil, bindings, o.script.Check); err != nil {
 		return err
 	} else {
-		bindings := binding.NewBindings()
-		if err == nil {
-			bindings = bindings.Register("$error", binding.NewBinding(nil))
-		} else {
-			bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
-		}
-		bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
-		bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
-		if errs, err := check.Check(ctx, nil, bindings, o.script.Check); err != nil {
-			return err
-		} else {
-			return errs.ToAggregate()
-		}
+		return errs.ToAggregate()
 	}
 }
