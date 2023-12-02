@@ -3,14 +3,15 @@ package resource
 import (
 	"context"
 	"fmt"
-	"io"
-	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
+	"time"
 
+	"github.com/hashicorp/go-getter"
 	extyaml "github.com/kyverno/kyverno/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
@@ -35,19 +36,40 @@ func Load(path string) ([]unstructured.Unstructured, error) {
 }
 
 func LoadFromURI(url *url.URL) ([]unstructured.Unstructured, error) {
-	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, url.String(), nil)
+	tempFile, err := os.CreateTemp("", "getter-*.yaml")
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error creating temp file: %s", err)
 	}
-	resp, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
+	defer os.Remove(tempFile.Name())
 
-	content, err := io.ReadAll(resp.Body)
+	client := &getter.Client{
+		Ctx:  context.Background(),
+		Src:  url.String(),
+		Dst:  tempFile.Name(),
+		Mode: getter.ClientModeFile,
+	}
+	backoff := wait.Backoff{
+		Steps:    3,
+		Duration: 1 * time.Second,
+		Factor:   2.0,
+		Jitter:   0.1,
+	}
+
+	if err := wait.ExponentialBackoff(backoff, func() (bool, error) {
+		if err := client.Get(); err != nil {
+			return false, nil
+		}
+		return true, nil
+	}); err != nil {
+		return nil, fmt.Errorf("error downloading content: %s", err)
+	}
+
+	content, err := os.ReadFile(tempFile.Name())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("error reading downloaded content: %s", err)
+	}
+	if err := tempFile.Close(); err != nil {
+		return nil, fmt.Errorf("error closing temp file: %s", err)
 	}
 	tests, err := Parse(content)
 	if err != nil {
