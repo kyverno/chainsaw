@@ -1,7 +1,15 @@
 package v1alpha1
 
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
 // PodLogs defines how to collects pod logs.
 type PodLogs struct {
+	// Timeout for the operation. Overrides the global timeout set in the Configuration.
+	// +optional
+	Timeout *metav1.Duration `json:"timeout,omitempty"`
+
 	// Namespace of the referent.
 	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
 	// +optional

@@ -61,6 +61,10 @@ spec:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
                           type: boolean
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       required:
                       - entrypoint
                       type: object
@@ -78,6 +82,10 @@ spec:
                           type: string
                         selector:
                           description: Selector defines labels selector.
+                          type: string
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
                           type: string
                       type: object
                     podLogs:
@@ -102,6 +110,10 @@ spec:
                             if you use a selector, or -1 (all) if you use a pod name.
                             This matches default behavior of `kubectl logs`.
                           type: integer
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       type: object
                     script:
                       description: Script defines a script to run.
@@ -119,11 +131,20 @@ spec:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
                           type: boolean
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       type: object
-                    timeout:
-                      description: Timeout for the operation. Overrides the global
-                        timeout set in the Configuration.
-                      type: string
+                    sleep:
+                      description: Sleep defines zzzz.
+                      properties:
+                        duration:
+                          description: Duration is the delay used for sleeping.
+                          type: string
+                      required:
+                      - duration
+                      type: object
                   type: object
                 type: array
               description:
@@ -156,6 +177,10 @@ spec:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
                           type: boolean
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       required:
                       - entrypoint
                       type: object
@@ -173,6 +198,10 @@ spec:
                           type: string
                         selector:
                           description: Selector defines labels selector.
+                          type: string
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
                           type: string
                       type: object
                     podLogs:
@@ -197,6 +226,10 @@ spec:
                             if you use a selector, or -1 (all) if you use a pod name.
                             This matches default behavior of `kubectl logs`.
                           type: integer
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       type: object
                     script:
                       description: Script defines a script to run.
@@ -214,11 +247,20 @@ spec:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
                           type: boolean
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       type: object
-                    timeout:
-                      description: Timeout for the operation. Overrides the global
-                        timeout set in the Configuration.
-                      type: string
+                    sleep:
+                      description: Sleep defines zzzz.
+                      properties:
+                        duration:
+                          description: Duration is the delay used for sleeping.
+                          type: string
+                      required:
+                      - duration
+                      type: object
                   type: object
                 type: array
               skipDelete:
@@ -293,6 +335,10 @@ spec:
                           type: object
                           x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       type: object
                     assert:
                       description: Assert represents an assertion to be made. It checks
@@ -306,6 +352,10 @@ spec:
                           type: object
                           x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       type: object
                     command:
                       description: Command defines a command to run.
@@ -327,6 +377,10 @@ spec:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
                           type: boolean
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       required:
                       - entrypoint
                       type: object
@@ -371,6 +425,10 @@ spec:
                           type: object
                           x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       type: object
                     delete:
                       description: Delete represents a creation operation.
@@ -420,6 +478,10 @@ spec:
                           - apiVersion
                           - kind
                           type: object
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       required:
                       - ref
                       type: object
@@ -440,6 +502,10 @@ spec:
                           type: object
                           x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       type: object
                     script:
                       description: Script defines a script to run.
@@ -457,11 +523,20 @@ spec:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
                           type: boolean
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
                       type: object
-                    timeout:
-                      description: Timeout for the operation. Overrides the global
-                        timeout set in the Configuration.
-                      type: string
+                    sleep:
+                      description: Sleep defines zzzz.
+                      properties:
+                        duration:
+                          description: Duration is the delay used for sleeping.
+                          type: string
+                      required:
+                      - duration
+                      type: object
                   type: object
                 type: array
             required:

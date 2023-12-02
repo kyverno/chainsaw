@@ -10,20 +10,20 @@ spec:
   steps:
   - name: "test-step-initial-setup"
     timeouts:
-      apply: "5s"
+      apply: 5s
     skipDelete: false
     try:
     - apply:
         file: /configs/service-config.yaml
-      timeout: 45s
+        timeout: 45s
       continueOnError: true
   - name: "test-step-apply-changes"
     try:
     - apply:
         file: /configs/service-config.yaml
-      timeout: 45s
+        timeout: 45s
       continueOnError: true
     - assert:
         file: /assertions/verify-service.yaml
-      timeout: 30s
+        timeout: 30s
       continueOnError: false

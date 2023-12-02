@@ -1,18 +1,10 @@
 package v1alpha1
 
-import (
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-)
-
 // Catch defines actions to be executed on failure.
 type Catch struct {
 	// Description contains a description of the operation.
 	// +optional
 	Description string `json:"description,omitempty"`
-
-	// Timeout for the operation. Overrides the global timeout set in the Configuration.
-	// +optional
-	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
 	// PodLogs determines the pod logs collector to execute.
 	// +optional
@@ -29,4 +21,8 @@ type Catch struct {
 	// Script defines a script to run.
 	// +optional
 	Script *Script `json:"script,omitempty"`
+
+	// Sleep defines zzzz.
+	// +optional
+	Sleep *Sleep `json:"sleep,omitempty"`
 }

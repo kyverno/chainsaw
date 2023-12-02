@@ -17,15 +17,15 @@ import (
 
 func Test_apply(t *testing.T) {
 	podv1 := unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"apiVersion": "v1",
 			"kind":       "Pod",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-pod",
 			},
-			"spec": map[string]interface{}{
-				"containers": []interface{}{
-					map[string]interface{}{
+			"spec": map[string]any{
+				"containers": []any{
+					map[string]any{
 						"name":  "test-container",
 						"image": "test-image:v1",
 					},
@@ -34,15 +34,15 @@ func Test_apply(t *testing.T) {
 		},
 	}
 	podv2 := unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"apiVersion": "v1",
 			"kind":       "Pod",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-pod",
 			},
-			"spec": map[string]interface{}{
-				"containers": []interface{}{
-					map[string]interface{}{
+			"spec": map[string]any{
+				"containers": []any{
+					map[string]any{
 						"name":  "test-container",
 						"image": "test-image:v2",
 					},
@@ -161,7 +161,7 @@ func Test_apply(t *testing.T) {
 		},
 		expect: []v1alpha1.Expectation{{
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"($error != null)": true,
 				},
 			},
@@ -180,7 +180,7 @@ func Test_apply(t *testing.T) {
 		},
 		expect: []v1alpha1.Expectation{{
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"($error != null)": true,
 				},
 			},
@@ -200,7 +200,7 @@ func Test_apply(t *testing.T) {
 		},
 		expect: []v1alpha1.Expectation{{
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"($error)": "expected patch failure",
 				},
 			},
@@ -219,7 +219,7 @@ func Test_apply(t *testing.T) {
 		},
 		expect: []v1alpha1.Expectation{{
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"($error)": "expected create failure",
 				},
 			},
@@ -242,7 +242,7 @@ func Test_apply(t *testing.T) {
 				Value: podv2.UnstructuredContent(),
 			},
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"kind": "Service",
 				},
 			},
@@ -265,7 +265,7 @@ func Test_apply(t *testing.T) {
 				Value: podv1.UnstructuredContent(),
 			},
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"kind": "Service",
 				},
 			},

@@ -7,15 +7,15 @@ spec:
   try:
   - assert:
       file: /assertions/verify-service.yaml
-    timeout: 30s
+      timeout: 30s
     continueOnError: false
   - apply:
       file: /configs/service-config.yaml
-    timeout: 45s
+      timeout: 45s
     continueOnError: true
   - error:
       file: /errors/expected-timeout-error.yaml
-    timeout: 15s
+      timeout: 15s
     continueOnError: true
   - delete:
       ref:
@@ -23,7 +23,7 @@ spec:
         kind: Pod
         name: example-pod
         namespace: test
-    timeout: 10s
+      timeout: 10s
     continueOnError: false
   - command:
       skipLogOutput: false

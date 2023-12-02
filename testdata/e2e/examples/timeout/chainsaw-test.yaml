@@ -7,6 +7,6 @@ spec:
   - try:
     - script:
         content: sleep 5
+        timeout: 3s
         check:
           ($error != null): true
-      timeout: 3s

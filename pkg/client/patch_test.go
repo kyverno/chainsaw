@@ -29,30 +29,30 @@ func TestPatchObject(t *testing.T) {
 	}, {
 		name: "ok",
 		actual: &unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name":            "test-pod",
 					"resourceVersion": "12345",
 				},
 			},
 		},
 		expected: &unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name": "test-pod",
 				},
 				"foo": "bar",
 			},
 		},
 		want: &unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name":            "test-pod",
 					"resourceVersion": "12345",
 				},

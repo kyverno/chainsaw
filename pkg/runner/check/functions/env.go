@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-func jpEnv(arguments []interface{}) (interface{}, error) {
+func jpEnv(arguments []any) (any, error) {
 	if key, ok := arguments[0].(string); !ok {
 		return nil, errors.New("invalid type, first argument must be a string")
 	} else {
