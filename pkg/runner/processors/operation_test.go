@@ -32,7 +32,7 @@ func TestOperation_Execute(t *testing.T) {
 			operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
 		},
 		// {
-		// 	name: "operation fails don't continues",
+		// 	name: "operation fails and don't continues",
 		// 	operation: mock.MockOperation{
 		// 		ExecFn: func(ctx context.Context) error {
 		// 			return errors.New("operation failed")
