@@ -58,7 +58,7 @@ func TestOperation_Execute(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			op := operation{
 				continueOnError: tc.continueOnError,
-				timeout:         1 * time.Second,
+				timeout:         time.Duration(1),
 				operation:       tc.operation,
 				operationReport: tc.operationReport,
 			}
