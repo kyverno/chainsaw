@@ -116,33 +116,3 @@ func Test_operationCommand(t *testing.T) {
 		})
 	}
 }
-
-func Test_expand(t *testing.T) {
-	tests := []struct {
-		name string
-		env  map[string]string
-		in   []string
-		want []string
-	}{{
-		name: "nil",
-		env:  nil,
-		in:   []string{"echo", "$NAMESPACE"},
-		want: []string{"echo", "$NAMESPACE"},
-	}, {
-		name: "empty",
-		env:  map[string]string{},
-		in:   []string{"echo", "$NAMESPACE"},
-		want: []string{"echo", "$NAMESPACE"},
-	}, {
-		name: "expand",
-		env:  map[string]string{"NAMESPACE": "foo"},
-		in:   []string{"echo", "$NAMESPACE"},
-		want: []string{"echo", "foo"},
-	}}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := expand(tt.env, tt.in...)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
