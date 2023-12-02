@@ -66,3 +66,28 @@ func (t Timeouts) ErrorDuration() time.Duration {
 func (t Timeouts) ExecDuration() time.Duration {
 	return durationOrDefault(t.Exec, DefaultExecTimeout)
 }
+
+func (t Timeouts) Combine(override *Timeouts) Timeouts {
+	if override == nil {
+		return t
+	}
+	if override.Apply != nil {
+		t.Apply = override.Apply
+	}
+	if override.Assert != nil {
+		t.Assert = override.Assert
+	}
+	if override.Error != nil {
+		t.Error = override.Error
+	}
+	if override.Delete != nil {
+		t.Delete = override.Delete
+	}
+	if override.Cleanup != nil {
+		t.Cleanup = override.Cleanup
+	}
+	if override.Exec != nil {
+		t.Exec = override.Exec
+	}
+	return t
+}
