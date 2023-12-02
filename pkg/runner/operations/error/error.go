@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	"github.com/kyverno/kyverno/ext/output/color"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -33,20 +32,14 @@ func New(client client.Client, expected unstructured.Unstructured, namespacer na
 }
 
 func (o *operation) Exec(ctx context.Context) (_err error) {
-	logger := logging.FromContext(ctx).WithResource(&o.expected)
+	logger := internal.GetLogger(ctx, &o.expected)
 	defer func() {
-		if _err == nil {
-			logger.Log(logging.Error, logging.DoneStatus, color.BoldGreen)
-		} else {
-			logger.Log(logging.Error, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
-		}
+		internal.LogEnd(logger, logging.Error, _err)
 	}()
-	if o.namespacer != nil {
-		if err := o.namespacer.Apply(&o.expected); err != nil {
-			return err
-		}
+	if err := internal.ApplyNamespacer(o.namespacer, &o.expected); err != nil {
+		return err
 	}
-	logger.Log(logging.Error, logging.RunStatus, color.BoldFgCyan)
+	internal.LogStart(logger, logging.Error)
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error

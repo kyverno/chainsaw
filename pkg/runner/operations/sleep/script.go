@@ -26,6 +26,10 @@ func (o *operation) Exec(ctx context.Context) error {
 		logger.Log(logging.Sleep, logging.DoneStatus, color.BoldGreen)
 	}()
 	logger.Log(logging.Sleep, logging.RunStatus, color.BoldFgCyan)
+	return o.execute(ctx)
+}
+
+func (o *operation) execute(ctx context.Context) error {
 	time.Sleep(o.sleep.Duration.Duration)
 	return nil
 }
