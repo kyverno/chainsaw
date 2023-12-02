@@ -19,6 +19,7 @@ func TestOperation_Execute(t *testing.T) {
 		expectedFail    bool
 		operation       operations.Operation
 		operationReport *report.OperationReport
+		timeout         time.Duration
 	}{
 		{
 			name: "operation fails but continues",
@@ -29,6 +30,7 @@ func TestOperation_Execute(t *testing.T) {
 			},
 			continueOnError: true,
 			expectedFail:    true,
+			timeout:         1 * time.Second,
 			operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
 		},
 		// {
@@ -50,15 +52,17 @@ func TestOperation_Execute(t *testing.T) {
 				},
 			},
 			expectedFail:    false,
+			timeout:         1 * time.Second,
 			operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+
 			op := operation{
 				continueOnError: tc.continueOnError,
-				timeout:         time.Duration(1),
+				timeout:         tc.timeout,
 				operation:       tc.operation,
 				operationReport: tc.operationReport,
 			}
