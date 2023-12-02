@@ -2,6 +2,8 @@ package processors
 
 import (
 	"context"
+	"sync/atomic"
+	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -13,6 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/clock"
+	tclock "k8s.io/utils/clock/testing"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -122,6 +125,59 @@ func TestTestsProcessor_Run(t *testing.T) {
 			} else {
 				assert.False(t, nt.Failed(), "expected no error but got one")
 			}
+		})
+	}
+}
+
+func TestCreateTestProcessor(t *testing.T) {
+	testCases := []struct {
+		name        string
+		config      v1alpha1.ConfigurationSpec
+		client      client.Client
+		clock       clock.PassiveClock
+		summary     *summary.Summary
+		testsReport *report.TestsReport
+		test        []discovery.Test
+	}{
+		{
+			name: "TestProcessor is created",
+			config: v1alpha1.ConfigurationSpec{
+				Namespace: "default",
+			},
+			client:      &fake.FakeClient{},
+			clock:       tclock.NewFakePassiveClock(time.Now()),
+			summary:     &summary.Summary{},
+			testsReport: report.NewTests("FakeReport"),
+			test: []discovery.Test{
+				{
+					Err:      nil,
+					BasePath: "fakePath",
+					Test:     &v1alpha1.Test{},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			processor := testsProcessor{
+				config:         tc.config,
+				client:         tc.client,
+				clock:          tc.clock,
+				summary:        tc.summary,
+				testsReport:    tc.testsReport,
+				tests:          tc.test,
+				shouldFailFast: atomic.Bool{},
+			}
+			processor.shouldFailFast.Store(false)
+
+			result := processor.CreateTestProcessor(tc.test[0])
+
+			assert.NotNil(t, result, "TestProcessor should not be nil")
+			if tc.testsReport != nil {
+				assert.True(t, len(tc.testsReport.Reports) > 0, "Test report should be added")
+			}
+
 		})
 	}
 }
