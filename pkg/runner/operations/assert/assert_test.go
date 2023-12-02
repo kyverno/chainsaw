@@ -32,10 +32,10 @@ func Test_operationAssert(t *testing.T) {
 	}{{
 		name: "Successful match using Get",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name": "test-pod",
 				},
 			},
@@ -43,10 +43,10 @@ func Test_operationAssert(t *testing.T) {
 		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				t.Helper()
-				obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
-					"metadata": map[string]interface{}{
+					"metadata": map[string]any{
 						"name": "test-pod",
 					},
 				}
@@ -57,15 +57,15 @@ func Test_operationAssert(t *testing.T) {
 	}, {
 		name: "Failed match using Get",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name": "test-pod",
 				},
-				"spec": map[string]interface{}{
-					"containers": []interface{}{
-						map[string]interface{}{
+				"spec": map[string]any{
+					"containers": []any{
+						map[string]any{
 							"name":  "test-container",
 							"image": "test-image",
 						},
@@ -76,15 +76,15 @@ func Test_operationAssert(t *testing.T) {
 		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				t.Helper()
-				obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
-					"metadata": map[string]interface{}{
+					"metadata": map[string]any{
 						"name": "test-pod",
 					},
-					"spec": map[string]interface{}{
-						"containers": []interface{}{
-							map[string]interface{}{
+					"spec": map[string]any{
+						"containers": []any{
+							map[string]any{
 								"name":  "fake-container",
 								"image": "fake-image",
 							},
@@ -102,10 +102,10 @@ func Test_operationAssert(t *testing.T) {
 	}, {
 		name: "Not found using Get",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name": "test-pod",
 				},
 			},
@@ -122,13 +122,13 @@ func Test_operationAssert(t *testing.T) {
 	}, {
 		name: "Bad assert",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"name": "test-pod",
 				},
-				"spec": map[string]interface{}{
+				"spec": map[string]any{
 					"(foo('bar'))": "test-pod",
 				},
 			},
@@ -136,10 +136,10 @@ func Test_operationAssert(t *testing.T) {
 		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				t.Helper()
-				obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
-					"metadata": map[string]interface{}{
+					"metadata": map[string]any{
 						"name": "test-pod",
 					},
 				}
@@ -151,12 +151,12 @@ func Test_operationAssert(t *testing.T) {
 	}, {
 		name: "Successful match using List",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "apps/v1",
 				"kind":       "Deployment",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"namespace": "test-ns",
-					"labels": map[string]interface{}{
+					"labels": map[string]any{
 						"app": "my-app",
 					},
 				},
@@ -167,12 +167,12 @@ func Test_operationAssert(t *testing.T) {
 				t.Helper()
 				uList := list.(*unstructured.UnstructuredList)
 				uList.Items = append(uList.Items, unstructured.Unstructured{
-					Object: map[string]interface{}{
+					Object: map[string]any{
 						"apiVersion": "apps/v1",
 						"kind":       "Deployment",
-						"metadata": map[string]interface{}{
+						"metadata": map[string]any{
 							"namespace": "test-ns",
-							"labels": map[string]interface{}{
+							"labels": map[string]any{
 								"app": "my-app",
 							},
 						},
@@ -185,18 +185,18 @@ func Test_operationAssert(t *testing.T) {
 	}, {
 		name: "No resources found using List",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "v1",
 				"kind":       "Pod",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"namespace": "test-ns",
-					"labels": map[string]interface{}{
+					"labels": map[string]any{
 						"app": "my-app",
 					},
 				},
-				"spec": map[string]interface{}{
-					"containers": []interface{}{
-						map[string]interface{}{
+				"spec": map[string]any{
+					"containers": []any{
+						map[string]any{
 							"name":  "test-container",
 							"image": "test-image",
 						},
@@ -217,12 +217,12 @@ func Test_operationAssert(t *testing.T) {
 	}, {
 		name: "List operation fails",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "apps/v1",
 				"kind":       "Deployment",
-				"metadata": map[string]interface{}{
+				"metadata": map[string]any{
 					"namespace": "test-ns",
-					"labels": map[string]interface{}{
+					"labels": map[string]any{
 						"app": "my-app",
 					},
 				},
@@ -239,11 +239,11 @@ func Test_operationAssert(t *testing.T) {
 	}, {
 		name: "with namespacer",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "apps/v1",
 				"kind":       "Deployment",
-				"metadata": map[string]interface{}{
-					"labels": map[string]interface{}{
+				"metadata": map[string]any{
+					"labels": map[string]any{
 						"app": "my-app",
 					},
 				},
@@ -255,12 +255,12 @@ func Test_operationAssert(t *testing.T) {
 				assert.Contains(t, opts, ctrlclient.InNamespace("bar"))
 				uList := list.(*unstructured.UnstructuredList)
 				uList.Items = append(uList.Items, unstructured.Unstructured{
-					Object: map[string]interface{}{
+					Object: map[string]any{
 						"apiVersion": "apps/v1",
 						"kind":       "Deployment",
-						"metadata": map[string]interface{}{
+						"metadata": map[string]any{
 							"namespace": "bar",
-							"labels": map[string]interface{}{
+							"labels": map[string]any{
 								"app": "my-app",
 							},
 						},
@@ -279,11 +279,11 @@ func Test_operationAssert(t *testing.T) {
 	}, {
 		name: "with namespacer error",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"apiVersion": "apps/v1",
 				"kind":       "Deployment",
-				"metadata": map[string]interface{}{
-					"labels": map[string]interface{}{
+				"metadata": map[string]any{
+					"labels": map[string]any{
 						"app": "my-app",
 					},
 				},

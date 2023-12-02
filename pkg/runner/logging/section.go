@@ -12,14 +12,14 @@ import (
 
 type section struct {
 	name string
-	args []interface{}
+	args []any
 }
 
 func (s section) String() string {
 	return s.name + "\n" + fmt.Sprint(s.args...)
 }
 
-func Section(name string, args ...interface{}) fmt.Stringer {
+func Section(name string, args ...any) fmt.Stringer {
 	return section{
 		name: "=== " + strings.ToUpper(name),
 		args: args,

@@ -14,15 +14,15 @@ func TestToUnstructured(t *testing.T) {
 		ToUnstructured(nilPtr)
 	})
 	assert.Equal(t, ToUnstructured(ptr.To(Namespace("foo"))), unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"apiVersion": "v1",
 			"kind":       "Namespace",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"creationTimestamp": nil,
 				"name":              "foo",
 			},
-			"spec":   map[string]interface{}{},
-			"status": map[string]interface{}{},
+			"spec":   map[string]any{},
+			"status": map[string]any{},
 		},
 	})
 }

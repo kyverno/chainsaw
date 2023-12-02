@@ -21,7 +21,7 @@ var caller = func() interpreter.FunctionCaller {
 	return interpreter.NewFunctionCaller(funcs...)
 }()
 
-func Check(ctx context.Context, obj interface{}, bindings binding.Bindings, check *v1alpha1.Check) (field.ErrorList, error) {
+func Check(ctx context.Context, obj any, bindings binding.Bindings, check *v1alpha1.Check) (field.ErrorList, error) {
 	if check == nil {
 		return nil, errors.New("check is null")
 	}
