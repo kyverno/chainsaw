@@ -3,6 +3,7 @@ package processors
 import (
 	"context"
 	"errors"
+	"net/url"
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -388,7 +389,12 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]uns
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}
 	if ref.File != "" {
-		return resource.Load(filepath.Join(p.test.BasePath, ref.File))
+		url, err := url.ParseRequestURI(ref.File)
+		if err != nil {
+			return resource.Load(filepath.Join(p.test.BasePath, ref.File))
+		} else {
+			return resource.LoadFromURI(url)
+		}
 	}
 	return nil, errors.New("file or resource must be set")
 }
