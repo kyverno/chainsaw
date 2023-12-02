@@ -53,6 +53,7 @@ func NewStepProcessor(
 		test:       test,
 		step:       step,
 		stepReport: stepReport,
+		timeouts:   config.Timeouts.Combine(test.Spec.Timeouts).Combine(step.Timeouts),
 	}
 }
 
@@ -64,6 +65,7 @@ type stepProcessor struct {
 	test       discovery.Test
 	step       v1alpha1.TestSpecStep
 	stepReport *report.TestSpecStepReport
+	timeouts   v1alpha1.Timeouts
 }
 
 func (p *stepProcessor) Run(ctx context.Context) {
@@ -253,13 +255,12 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) (
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts, p.step.TestStepSpec.Timeouts)
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
 		ops = append(ops, operation{
-			timeout:   timeout.Get(op.Timeout, timeouts.ApplyDuration()),
+			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
 			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
 		})
 	}
@@ -276,10 +277,9 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
-	timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts, p.step.TestStepSpec.Timeouts)
 	for _, resource := range resources {
 		ops = append(ops, operation{
-			timeout:         timeout.Get(op.Timeout, timeouts.AssertDuration()),
+			timeout:         timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
 			operation:       opassert.New(p.client, resource, p.namespacer),
 			operationReport: operationReport,
 		})
@@ -292,9 +292,8 @@ func (p *stepProcessor) commandOperation(ctx context.Context, op v1alpha1.Comman
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
-	timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts, p.step.TestStepSpec.Timeouts)
 	return operation{
-		timeout:         timeout.Get(op.Timeout, timeouts.ExecDuration()),
+		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
 		operation:       opcommand.New(op, p.test.BasePath, p.namespacer.GetNamespace()),
 		operationReport: operationReport,
 	}
@@ -311,13 +310,12 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create)
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts, p.step.TestStepSpec.Timeouts)
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
 		ops = append(ops, operation{
-			timeout:   timeout.Get(op.Timeout, timeouts.ApplyDuration()),
+			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
 			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
 		})
 	}
@@ -335,9 +333,8 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
-	timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts, p.step.TestStepSpec.Timeouts)
 	return &operation{
-		timeout:         timeout.Get(op.Timeout, timeouts.DeleteDuration()),
+		timeout:         timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
 		operation:       opdelete.New(p.client, resource, p.namespacer, op.Expect...),
 		operationReport: operationReport,
 	}, nil
@@ -353,10 +350,9 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) (
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
-	timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts, p.step.TestStepSpec.Timeouts)
 	for _, resource := range resources {
 		ops = append(ops, operation{
-			timeout:         timeout.Get(op.Timeout, timeouts.ErrorDuration()),
+			timeout:         timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
 			operation:       operror.New(p.client, resource, p.namespacer),
 			operationReport: operationReport,
 		})
@@ -369,9 +365,8 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, op v1alpha1.Script)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
-	timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts, p.step.TestStepSpec.Timeouts)
 	return operation{
-		timeout:         timeout.Get(op.Timeout, timeouts.ExecDuration()),
+		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
 		operation:       opscript.New(op, p.test.BasePath, p.namespacer.GetNamespace()),
 		operationReport: operationReport,
 	}
@@ -435,10 +430,9 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 		cleaner = func(obj unstructured.Unstructured, c client.Client) {
 			t := testing.FromContext(ctx)
 			t.Cleanup(func() {
-				timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts, p.step.TestStepSpec.Timeouts)
 				operation := operation{
 					continueOnError: true,
-					timeout:         timeout.Get(nil, timeouts.DeleteDuration()),
+					timeout:         timeout.Get(nil, p.timeouts.DeleteDuration()),
 					operation:       opdelete.New(c, obj, p.namespacer),
 				}
 				operation.execute(ctx)
