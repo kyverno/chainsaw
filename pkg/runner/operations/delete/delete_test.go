@@ -22,10 +22,10 @@ import (
 
 func Test_operationDelete(t *testing.T) {
 	pod := unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"apiVersion": "v1",
 			"kind":       "Pod",
-			"metadata": map[string]interface{}{
+			"metadata": map[string]any{
 				"name": "test-pod",
 			},
 		},
@@ -150,7 +150,7 @@ func Test_operationDelete(t *testing.T) {
 		},
 		expect: []v1alpha1.Expectation{{
 			Check: v1alpha1.Check{
-				Value: map[string]interface{}{
+				Value: map[string]any{
 					"($error == 'dummy error')": true,
 				},
 			},

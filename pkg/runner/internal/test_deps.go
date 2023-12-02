@@ -63,7 +63,7 @@ func (*TestDeps) ReadCorpus(string, []reflect.Type) ([]corpusEntry, error) {
 	return nil, nil
 }
 
-func (*TestDeps) CheckCorpus([]interface{}, []reflect.Type) error {
+func (*TestDeps) CheckCorpus([]any, []reflect.Type) error {
 	return nil
 }
 

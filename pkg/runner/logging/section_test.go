@@ -12,12 +12,12 @@ import (
 func TestSection(t *testing.T) {
 	tests := []struct {
 		name     string
-		args     []interface{}
+		args     []any
 		expected string
 	}{
 		{"empty", nil, "=== EMPTY\n"},
-		{"single arg", []interface{}{"example"}, "=== SINGLE ARG\nexample"},
-		{"multiple args", []interface{}{"one", 2, 3.0}, "=== MULTIPLE ARGS\none2 3"},
+		{"single arg", []any{"example"}, "=== SINGLE ARG\nexample"},
+		{"multiple args", []any{"one", 2, 3.0}, "=== MULTIPLE ARGS\none2 3"},
 	}
 
 	for _, tt := range tests {
