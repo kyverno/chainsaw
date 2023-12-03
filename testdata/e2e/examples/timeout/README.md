@@ -14,6 +14,6 @@
 
 ### Try
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 | 1 | `script` | *No description* |

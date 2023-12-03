@@ -14,7 +14,7 @@ This steps applies the configmap in the cluster and checks the configmap content
 
 ### Try
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
-| 1 | `apply` | *No description* |
-| 2 | `assert` | *No description* |
+| 1 | `apply` | Create the configmap. |
+| 2 | `assert` | Check the configmap content. |
