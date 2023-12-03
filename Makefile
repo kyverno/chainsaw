@@ -108,8 +108,14 @@ codegen-api-docs: $(REFERENCE_DOCS) ## Generate markdown API docs
 	@rm -rf ./website/docs/apis
 	@cd ./website/apis && $(REFERENCE_DOCS) -c config.yaml -f markdown -o ../docs/apis
 
+.PHONY: codegen-jp-docs
+codegen-jp-docs: ## Generate JP docs
+	@echo Generate jp docs... >&2
+	@rm -rf ./website/docs/jp && mkdir -p ./website/docs/jp
+	@go run ./website/jp/main.go > ./website/docs/jp/functions.md
+
 .PHONY: codegen-mkdocs
-codegen-mkdocs: codegen-cli-docs codegen-api-docs ## Generate mkdocs website
+codegen-mkdocs: codegen-cli-docs codegen-api-docs codegen-jp-docs ## Generate mkdocs website
 	@echo Generate mkdocs website... >&2
 	@$(PIP) install mkdocs
 	@$(PIP) install --upgrade pip
