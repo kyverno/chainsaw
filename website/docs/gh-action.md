@@ -13,7 +13,7 @@ Add the following entry to your Github workflow YAML file:
 ```yaml
 uses: kyverno/chainsaw/.github/actions/install@<version>
 with:
-  release: 'v0.0.3' # optional
+  release: v0.0.3 # optional
 ```
 
 Example using a pinned version:
@@ -30,7 +30,7 @@ jobs:
       - name: Install Chainsaw
         uses: kyverno/chainsaw/.github/actions/install@<version>
         with:
-          release: 'v1.9.5'
+          release: v0.0.2
       - name: Check install
         run: chainsaw version
 ```
@@ -90,8 +90,7 @@ jobs:
       - name: Install go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.20'
-          check-latest: true
+          go-version: '1.21'
       - name: Install Chainsaw
         uses: kyverno/chainsaw/.github/actions/install@<version>
         with:
