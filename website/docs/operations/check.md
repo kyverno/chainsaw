@@ -7,7 +7,7 @@ Considering an operation success or failure is not always as simple as checking 
 
 To support those kind of use cases, some operations support an additional `check` field to evaluate the operation result against an assertion tree.
 
-!!! info
+!!! info "Assertion trees"
 
     Assertions in Chainsaw are based on **assertion trees**.
 
