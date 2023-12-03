@@ -48,7 +48,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	}}
 	deps := &internal.TestDeps{}
 	m := testing.MainStart(deps, internalTests, nil, nil, nil)
-	if code := m.Run(); code > 1 {
+	if code := m.Run(); code >= 1 {
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
 
