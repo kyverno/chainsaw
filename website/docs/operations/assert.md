@@ -1,8 +1,10 @@
 # Assert
 
-The `assert` operation allows you to specify conditions that should hold true for a successful test. For example, after applying certain resources, you might want to ensure that a particular pod is running or a service is accessible.
+The `assert` operation allows you to specify conditions that should hold true for a successful test.
 
-!!! info
+For example, after applying resources, you might want to ensure that a particular pod is running or a service is accessible.
+
+!!! info "Assertion trees"
 
     Assertions in Chainsaw are based on **assertion trees**.
 
@@ -18,7 +20,7 @@ The `assert` operation allows you to specify conditions that should hold true fo
 
 Below is an example of using `assert` in a `Test` resource.
 
-!!! example
+!!! example "Using a file"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -30,7 +32,29 @@ Below is an example of using `assert` in a `Test` resource.
       - try:
         # ...
         - assert:
-            file: ../resources/configmap-assert.yaml
+            file: ../resources/deployment-assert.yaml
+        # ...
+    ```
+
+!!! example "Using an inline assertion tree"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      steps:
+      - try:
+        # ...
+        - assert:
+            resource:
+              apiVersion: v1
+              kind: Deployment
+              metadata:
+                name: foo
+              spec:
+                (replicas > 3): true
         # ...
     ```
 
@@ -38,7 +62,7 @@ Below is an example of using `assert` in a `Test` resource.
 
 Below is an example of using `assert` in a `TestStep` resource.
 
-!!! example
+!!! example "Using a file"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -49,6 +73,27 @@ Below is an example of using `assert` in a `TestStep` resource.
       try:
       # ...
       - assert:
-          file: ../resources/configmap-assert.yaml
+          file: ../resources/deployment-assert.yaml
+      # ...
+    ```
+
+!!! example "Using an inline assertion tree"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: TestStep
+    metadata:
+      name: example
+    spec:
+      try:
+      # ...
+      - assert:
+          resource:
+            apiVersion: v1
+            kind: Deployment
+            metadata:
+              name: foo
+            spec:
+              (replicas > 3): true
       # ...
     ```

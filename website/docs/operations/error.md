@@ -2,7 +2,7 @@
 
 The `error` operation lets you define a set of expected errors for a test step. If any of these errors occur during the test, they are treated as expected outcomes. However, if an error that's not on this list occurs, it will be treated as a test failure.
 
-!!! info
+!!! info "Assertion trees"
 
     Errors in Chainsaw are based on **assertion trees**.
 
@@ -18,7 +18,7 @@ The `error` operation lets you define a set of expected errors for a test step. 
 
 Below is an example of using `error` in a `Test` resource.
 
-!!! example
+!!! example "Using a file"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -30,7 +30,29 @@ Below is an example of using `error` in a `Test` resource.
       - try:
         # ...
         - error:
-            file: ../resources/configmap-error.yaml
+            file: ../resources/deployment-error.yaml
+        # ...
+    ```
+
+!!! example "Using an inline assertion tree"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      steps:
+      - try:
+        # ...
+        - error:
+            resource:
+              apiVersion: v1
+              kind: Deployment
+              metadata:
+                name: foo
+              spec:
+                (replicas > 3): true
         # ...
     ```
 
@@ -38,7 +60,7 @@ Below is an example of using `error` in a `Test` resource.
 
 Below is an example of using `error` in a `TestStep` resource.
 
-!!! example
+!!! example "Using a file"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -49,6 +71,27 @@ Below is an example of using `error` in a `TestStep` resource.
       try:
       # ...
       - error:
-          file: ../resources/configmap-error.yaml
+          file: ../resources/deployment-error.yaml
+      # ...
+    ```
+
+!!! example "Using an inline assertion tree"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: TestStep
+    metadata:
+      name: example
+    spec:
+      try:
+      # ...
+      - error:
+          resource:
+            apiVersion: v1
+            kind: Deployment
+            metadata:
+              name: foo
+            spec:
+              (replicas > 3): true
       # ...
     ```

@@ -75,7 +75,7 @@ Below is an example of using an [operation check](./check.md#delete).
             metadata:
               namespace: default
               name: my-test-pod
-        - check:
+          check:
             # an error is expected, this will:
             # - succeed if the operation failed
             # - fail if the operation succeeded

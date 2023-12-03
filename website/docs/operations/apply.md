@@ -23,7 +23,7 @@ Below is an example of using `apply` in a `Test` resource.
       - try:
         # ...
         - apply:
-            file: my-pod.yaml
+            file: my-configmap.yaml
         # ...
     ```
 
@@ -64,7 +64,7 @@ Below is an example of using `apply` in a `TestStep` resource.
       try:
       # ...
       - apply:
-          file: my-pod.yaml
+          file: my-configmap.yaml
       # ...
     ```
 
@@ -98,9 +98,14 @@ Below is an example of using an [operation check](./check.md#apply).
     ```yaml
     # ...
     - apply:
-        file: my-pod.yaml
+        file: my-configmap.yaml
         expect:
-        - check:
+        - match:
+            # this check applies only if the match
+            # statement below evaluates to `true`
+            apiVersion: v1
+            kind: ConfigMap
+          check:
             # an error is expected, this will:
             # - succeed if the operation failed
             # - fail if the operation succeeded
