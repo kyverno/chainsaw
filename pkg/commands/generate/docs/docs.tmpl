@@ -73,7 +73,7 @@ sleep
 
 ### Try
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 {{- range $i, $op := . }}
 | {{ add $i 1 }} | `{{ template "OperationType" $op }}` | {{ default "*No description*" $op.Description }} |
@@ -84,7 +84,7 @@ sleep
 
 ### Catch
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 {{- range $i, $op := . }}
 | {{ add $i 1 }} | `{{ template "CatchType" $op }}` | {{ default "*No description*" $op.Description }} |
@@ -95,7 +95,7 @@ sleep
 
 ### Finally
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 {{- range $i, $op := . }}
 | {{ add $i 1 }} | `{{ template "FinallyType" $op }}` | {{ default "*No description*" $op.Description }} |
