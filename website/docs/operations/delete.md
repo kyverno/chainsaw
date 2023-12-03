@@ -66,28 +66,11 @@ Below is an example of using an [operation check](./check.md#delete).
           kind: Pod
           namespace: default
           name: my-test-pod
-        check:
-          # an error is expected, this will:
-          # - succeed if the operation failed
-          # - fail if the operation succeeded
-          ($error != null): true
-    # ...
-    ```
-
-!!! example "With check"
-
-    ```yaml
-    # ...
-    - delete:
-        ref:
-          apiVersion: v1
-          kind: Pod
-          namespace: default
-          name: my-test-pod
-        check:
-          # an error is expected, this will:
-          # - succeed if the operation failed
-          # - fail if the operation succeeded
-          ($error != null): true
+        expect:
+        - check:
+            # an error is expected, this will:
+            # - succeed if the operation failed
+            # - fail if the operation succeeded
+            ($error != null): true
     # ...
     ```
