@@ -1,13 +1,13 @@
-# Script
+# Command
 
-The `script` operation provides a means to run a script during the test step.
+The `command` operation provides a means to execute a specific command during the test step.
 
 !!! tip "Reference documentation"
-    The full structure of the `Script` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Script).
+    The full structure of the `Command` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
 
 ## Usage in `Test`
 
-Below is an example of using `script` in a `Test` resource.
+Below is an example of using `command` in a `Test` resource.
 
 !!! example
 
@@ -20,15 +20,16 @@ Below is an example of using `script` in a `Test` resource.
       steps:
       - try:
         # ...
-        - script:
-            content: |
-              echo "hello chainsaw"
+        - command:
+            entrypoint: echo
+            args:
+            - hello chainsaw
         # ...
     ```
 
 ## Usage in `TestStep`
 
-Below is an example of using `script` in a `TestStep` resource.
+Below is an example of using `command` in a `TestStep` resource.
 
 !!! example
 
@@ -40,23 +41,25 @@ Below is an example of using `script` in a `TestStep` resource.
     spec:
       try:
       # ...
-      - script:
-          content: |
-            echo "hello chainsaw"
+      - command:
+          entrypoint: echo
+          args:
+          - hello chainsaw
       # ...
     ```
 
 ## Operation check
 
-Below is an example of using an [operation check](./check.md#script).
+Below is an example of using an [operation check](./check.md#command).
 
 !!! example "With check"
 
     ```yaml
     # ...
-    - script:
-        content: |
-          echo "hello chainsaw"
+    - command:
+        entrypoint: echo
+        args:
+        - hello chainsaw
         check:
           # an error is expected, this will:
           # - succeed if the operation failed

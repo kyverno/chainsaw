@@ -8,7 +8,7 @@ These can be configurations, deployments, services, or any other Kubernetes reso
     If the resource to be created already exists in the cluster, the step will fail.
 
 !!! tip "Reference documentation"
-    The full structure of the `Create` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
+    The full structure of the `Create` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
 
 
 ## Usage in `Test`
@@ -27,7 +27,7 @@ Below is an example of using `create` in a `Test` resource.
       - try:
         # ...
         - create:
-            file: ../resources/configmap.yaml
+            file: my-configmap.yaml
         # ...
     ```
 
@@ -68,7 +68,7 @@ Below is an example of using `create` in a `TestStep` resource.
       try:
       # ...
       - create:
-          file: ../resources/configmap.yaml
+          file: my-configmap.yaml
       # ...
     ```
 
@@ -102,9 +102,14 @@ Below is an example of using an [operation check](./check.md#create).
     ```yaml
     # ...
     - apply:
-        file: my-pod.yaml
+        file: my-configmap.yaml
         expect:
-        - check:
+        - match:
+            # this check applies only if the match
+            # statement below evaluates to `true`
+            apiVersion: v1
+            kind: ConfigMap
+          check:
             # an error is expected, this will:
             # - succeed if the operation failed
             # - fail if the operation succeeded

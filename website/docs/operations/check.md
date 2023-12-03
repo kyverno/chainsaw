@@ -7,7 +7,7 @@ Considering an operation success or failure is not always as simple as checking 
 
 To support those kind of use cases, some operations support an additional `check` field to evaluate the operation result against an assertion tree.
 
-!!! info
+!!! info "Assertion trees"
 
     Assertions in Chainsaw are based on **assertion trees**.
 
@@ -25,7 +25,7 @@ To support those kind of use cases, some operations support an additional `check
 
 While a simple check is enough to determine the result of a single operation, we needed a more advanced construct to cover `apply` and `create` operations. Those operations can operate on files containing multiple manifests and every manifest can have a different result.
 
-To support more granular checks we use the `expect` field that contains an array of [Expectation](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Expectation).
+To support more granular checks we use the `expect` field that contains an array of [Expectation](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Expectation).
 Every expectation is made of an optional `match` and a `check` statement.
 
 This way it is possible to control the scope of a `check`.
@@ -44,6 +44,17 @@ This way it is possible to control the scope of a `check`.
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
+## Command
+
+`command` supports `check` and has the following elements to be checked:
+
+| Name | Purpose | Type |
+|---|---|---|
+| `$error` | The error message (if any) at the end of the operation | `string` |
+| `$stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
+| `$stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
+| `@` | Always `null` | |
+
 ## Create
 
 `create` supports `expect` and has the following elements to be checked:
@@ -61,17 +72,6 @@ This way it is possible to control the scope of a `check`.
 |---|---|---|
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
-
-## Command
-
-`command` supports `check` and has the following elements to be checked:
-
-| Name | Purpose | Type |
-|---|---|---|
-| `$error` | The error message (if any) at the end of the operation | `string` |
-| `$stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
-| `$stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
-| `@` | Always `null` | |
 
 ## Script
 
