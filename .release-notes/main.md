@@ -33,6 +33,7 @@ Release notes for `TODO`.
 ## 📚 Docs 📚
 
 - Added community docs page
+- Fixed inconsistencies in GitHub action install docs
 
 ## 🎸 Misc 🎸
 
