@@ -30,6 +30,7 @@ All operations share some configuration fields.
 - [Error](./error.md)
 - [Command](./command.md)
 - [Script](./script.md)
+- [Sleep](./sleep.md)
 
 ## Operation checks
 
