@@ -124,6 +124,19 @@ chainsaw test --config my-config.yaml --test-dir /path/to/tests --parallel 10
 
 This command will run tests using the configuration from `my-config.yaml`, taking tests from `/path/to/tests`, and running a maximum of `10` tests simultaneously.
 
+## Termination graceful period
+
+Some Kubernetes resources can take time before being stopped. For example, deleting a `Pod` can take time if the underlying container doesn't quit quickly enough.
+
+Chainsaw provides the `forceTerminationGracePeriod` configuration option to override the `terminationGracePeriodSeconds` when working with the following resource kinds:
+
+- `Pod`
+- `Deployment`
+- `StatefulSet`
+- `DaemonSet`
+- `Job`
+- `CronJob`
+
 ## Reports
 
 Chainsaw can generate JUnit reports in `XML` or `JSON` format.

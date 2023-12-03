@@ -53,6 +53,8 @@ nav:
     - commands/chainsaw_kuttl_migrate_tests.md
     - commands/chainsaw_test.md
     - commands/chainsaw_version.md
+  - JMESPath:
+    - Functions: jp/functions.md
   - APIs:
     - v1alpha1: apis/chainsaw.v1alpha1.md
 - More resources:
@@ -60,5 +62,6 @@ nav:
   - more/crds.md
   - more/ide-completion.md
   - more/kuttl-migration.md
+  - more/test-docs.md
 - Blog:
   - blog/index.md

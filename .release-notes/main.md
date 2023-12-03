@@ -33,7 +33,9 @@ Release notes for `TODO`.
 ## 📚 Docs 📚
 
 - Added community docs page
+- Added supported JMESPath functions docs
 - Fixed inconsistencies in GitHub action install docs
+- The `Writing tests` docs section were rewritten for more clarity
 
 ## 🎸 Misc 🎸
 

@@ -14,13 +14,13 @@
 
 ### Try
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 | 1 | `apply` | *No description* |
 | 2 | `assert` | *No description* |
 
 ### Catch
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 | 1 | `events` | *No description* |
