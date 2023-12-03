@@ -8,8 +8,6 @@ Release notes for `TODO`.
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
-
-## 📚 Docs 📚
 -->
 
 ## ‼️ Breaking chages ‼️
@@ -31,6 +29,10 @@ Release notes for `TODO`.
 
 - Don't show `command` or `script` logs if there's nothing to show
 - Fixed `timeouts` always set when migrating kuttl tests
+
+## 📚 Docs 📚
+
+- Added community docs page
 
 ## 🎸 Misc 🎸
 
