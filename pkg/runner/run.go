@@ -48,12 +48,6 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	}}
 	deps := &internal.TestDeps{}
 	m := testing.MainStart(deps, internalTests, nil, nil, nil)
-	// m.Run() returns:
-	// - 0 if everything went well
-	// - 1 if some of the tests failed
-	// - 2 if running the tests was not possible
-	// In our case, we consider an error only when running the tests was not possible.
-	// For now, the case where some of the tests failed will be covered by the summary.
 	if code := m.Run(); code > 1 {
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
