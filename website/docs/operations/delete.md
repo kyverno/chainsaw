@@ -67,6 +67,14 @@ Below is an example of using an [operation check](./check.md#delete).
           namespace: default
           name: my-test-pod
         expect:
+        - match:
+            # this check applies only if the match
+            # statement below evaluates to `true`
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              namespace: default
+              name: my-test-pod
         - check:
             # an error is expected, this will:
             # - succeed if the operation failed
