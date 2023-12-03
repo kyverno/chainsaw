@@ -156,6 +156,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/jp/functions/</loc>
+         <lastmod>2023-12-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/more/crds/</loc>
          <lastmod>2023-12-03</lastmod>
          <changefreq>daily</changefreq>
@@ -172,6 +177,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/more/kuttl-migration/</loc>
+         <lastmod>2023-12-03</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/more/test-docs/</loc>
          <lastmod>2023-12-03</lastmod>
          <changefreq>daily</changefreq>
     </url>
