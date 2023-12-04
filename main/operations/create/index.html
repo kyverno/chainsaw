@@ -9,7 +9,7 @@
 <span class=w>    </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>create</span><span class=p>:</span>
 <span class=w>        </span><span class=nt>file</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">my-configmap.yaml</span>
 <span class=w>    </span><span class=c1># ...</span>
-</code></pre></div> </div> <div class="admonition example"> <p class=admonition-title>Using an inline resource</p> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">chainsaw.kyverno.io/v1alpha1</span>
+</code></pre></div> </div> <div class="admonition example"> <p class=admonition-title>Using an URL</p> <p>```yaml apiVersion: chainsaw.kyverno.io/v1alpha1 kind: Test metadata: name: example spec: steps: - try: # ... - create: file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml # ...</p> </div> <div class="admonition example"> <p class=admonition-title>Using an inline resource</p> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">chainsaw.kyverno.io/v1alpha1</span>
 <span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Test</span>
 <span class=nt>metadata</span><span class=p>:</span>
 <span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">example</span>
@@ -35,6 +35,16 @@
 <span class=w>  </span><span class=c1># ...</span>
 <span class=w>  </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>create</span><span class=p>:</span>
 <span class=w>      </span><span class=nt>file</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">my-configmap.yaml</span>
+<span class=w>  </span><span class=c1># ...</span>
+</code></pre></div> </div> <div class="admonition example"> <p class=admonition-title>Using an URL</p> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">chainsaw.kyverno.io/v1alpha1</span>
+<span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">TestStep</span>
+<span class=nt>metadata</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">example</span>
+<span class=nt>spec</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>try</span><span class=p>:</span>
+<span class=w>  </span><span class=c1># ...</span>
+<span class=w>  </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>create</span><span class=p>:</span>
+<span class=w>      </span><span class=nt>file</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml</span>
 <span class=w>  </span><span class=c1># ...</span>
 </code></pre></div> </div> <div class="admonition example"> <p class=admonition-title>Using an inline resource</p> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">chainsaw.kyverno.io/v1alpha1</span>
 <span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">TestStep</span>
