@@ -34,6 +34,22 @@ Below is an example of using `error` in a `Test` resource.
         # ...
     ```
 
+!!! example "Using an URL"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      steps:
+      - try:
+        # ...
+        - error:
+            file: https://raw.githubusercontent.com/user/repo/branch/path/to/deployment-error.yaml
+        # ...
+    ```
+
 !!! example "Using an inline assertion tree"
 
     ```yaml
@@ -72,6 +88,21 @@ Below is an example of using `error` in a `TestStep` resource.
       # ...
       - error:
           file: ../resources/deployment-error.yaml
+      # ...
+    ```
+
+!!! example "Using an URL"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: TestStep
+    metadata:
+      name: example
+    spec:
+      try:
+      # ...
+      - error:
+          file: https://example.com/path/to/deployment-error.yaml
       # ...
     ```
 
