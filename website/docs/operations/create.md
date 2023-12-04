@@ -87,7 +87,7 @@ Below is an example of using `create` in a `TestStep` resource.
       # ...
     ```
 
-!!! example "Using a URL"
+!!! example "Using an URL"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
