@@ -94,7 +94,7 @@ func TestRun(t *testing.T) {
 				},
 			},
 			restConfig: &rest.Config{},
-			mockReturn: 1,
+			mockReturn: 2,
 			wantErr:    true,
 		},
 		{
