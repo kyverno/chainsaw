@@ -173,7 +173,7 @@ spec:
 ```
 ## URL File Reference Support
 
-Chainsaw has now enhanced its flexibility by supporting URL file references in TestStep operations like apply, assert, and others. This feature allows users to specify files hosted on external sources, such as GitHub raw URLs or other accessible web URLs, directly within their test steps. 
+Chainsaw supports URL file references in TestStep operations like apply, assert, and others. This feature allows users to specify files hosted on external sources, such as GitHub raw URLs or other accessible web URLs, directly within their test steps. 
 
 ## Example URL File Reference
 
