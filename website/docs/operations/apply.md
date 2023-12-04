@@ -27,6 +27,22 @@ Below is an example of using `apply` in a `Test` resource.
         # ...
     ```
 
+!!! example "Using an URL"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      steps:
+      - try:
+        # ...
+        - apply:
+            file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/step/configmap.yaml
+        # ...
+    ```
+
 !!! example "Using an inline resource"
 
     ```yaml
@@ -65,6 +81,21 @@ Below is an example of using `apply` in a `TestStep` resource.
       # ...
       - apply:
           file: my-configmap.yaml
+      # ...
+    ```
+
+!!! example "Using an URL"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: TestStep
+    metadata:
+      name: example
+    spec:
+      try:
+      # ...
+      - apply:
+          file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/step/configmap.yaml
       # ...
     ```
 
