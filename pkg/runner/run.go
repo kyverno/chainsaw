@@ -47,6 +47,7 @@ func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
+			t.Helper()
 			t.Parallel()
 			processor := processors.NewTestsProcessor(config, client, clock, &summary, testsReport, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
