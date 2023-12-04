@@ -177,7 +177,6 @@ func TestCreateTestProcessor(t *testing.T) {
 			if tc.testsReport != nil {
 				assert.True(t, len(tc.testsReport.Reports) > 0, "Test report should be added")
 			}
-
 		})
 	}
 }
