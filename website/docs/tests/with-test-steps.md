@@ -171,7 +171,41 @@ spec:
   - error:
       file: ../resources/configmap-error.yaml
 ```
+## URL File Reference Support
 
+Chainsaw has now enhanced its flexibility by supporting URL file references in TestStep operations like apply, assert, and others. This feature allows users to specify files hosted on external sources, such as GitHub raw URLs or other accessible web URLs, directly within their test steps. 
+
+## Example URL File Reference
+
+### 03-url-apply-test-step.yaml
+
+This TestStep demonstrates the use of a URL file reference in an apply operation. Chainsaw will fetch the file from the provided URL and execute the apply operation using the fetched content.
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: TestStep
+metadata:
+  name: url-apply-test-step
+spec:
+  try:
+  - apply:
+      file: https://raw.githubusercontent.com/user/repo/branch/path/to/external-configmap.yaml
+```
+
+### 04-url-assert-test-step.yaml
+
+The manifest below contains a TestStep where the assert operation references a file hosted on an external URL. Chainsaw will load the content from the URL for the assertion.
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: TestStep
+metadata:
+  name: url-assert-test-step
+spec:
+  try:
+  - assert:
+      file: https://example.com/path/to/assert-configmap.yaml
+```
 ## Conclusion
 
 This test will create a config map in the first step.

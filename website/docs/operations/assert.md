@@ -36,6 +36,22 @@ Below is an example of using `assert` in a `Test` resource.
         # ...
     ```
 
+!!! example "Using a github-raw file"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      steps:
+      - try:
+        # ...
+        - assert:
+            file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml
+        # ...
+    ```
+
 !!! example "Using an inline assertion tree"
 
     ```yaml
@@ -74,6 +90,21 @@ Below is an example of using `assert` in a `TestStep` resource.
       # ...
       - assert:
           file: ../resources/deployment-assert.yaml
+      # ...
+    ```
+
+!!! example "Using a github-raw file"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: TestStep
+    metadata:
+      name: example
+    spec:
+      try:
+      # ...
+      - assert:
+          file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml
       # ...
     ```
 

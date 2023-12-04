@@ -109,3 +109,40 @@ spec:
     - error:
         file: ../resources/configmap-error.yaml
 ```
+## URL Support for File References
+
+Chainsaw has now expanded its capabilities to include support for URLs in file references for assert, apply, error and similar operations. This feature enhances the flexibility and reach of Chainsaw by allowing users to reference files hosted on remote locations, such as GitHub raw URLs or other web URLs, directly within their test definitions.
+
+### Example URL File Reference
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-name
+spec:
+  skip: false
+  concurrent: false
+  skipDelete: false
+  timeouts:
+    apply: 10s
+    assert: 10s
+    error: 10s
+  steps:
+  # first step
+  # apply a Kubernetes manifest hosted at a GitHub raw URL
+  - try:
+    - apply:
+        file: https://raw.githubusercontent.com/username/repo/branch/path/to/configmap.yaml
+  # second step
+  # execute assert statements against existing resources
+  # using a file hosted on another web URL
+  - try:
+    - assert:
+        file: https://example.com/path/to/configmap-assert.yaml
+  # third step
+  # execute error statements against existing resources
+  - try:
+    - error:
+        file: https://mywebsite.com/path/to/configmap-error.yaml
+```
