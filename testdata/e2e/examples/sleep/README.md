@@ -14,18 +14,18 @@
 
 ### Try
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 | 1 | `sleep` | *No description* |
 
 ### Catch
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 | 1 | `sleep` | *No description* |
 
 ### Finally
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 | 1 | `sleep` | *No description* |

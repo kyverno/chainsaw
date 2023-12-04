@@ -43,6 +43,7 @@ func NewTestProcessor(
 		testReport:     testReport,
 		test:           test,
 		shouldFailFast: shouldFailFast,
+		timeouts:       config.Timeouts.Combine(test.Spec.Timeouts),
 	}
 }
 
@@ -54,6 +55,7 @@ type testProcessor struct {
 	testReport     *report.TestReport
 	test           discovery.Test
 	shouldFailFast *atomic.Bool
+	timeouts       v1alpha1.Timeouts
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
@@ -121,10 +123,9 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 				t.FailNow()
 			}
 			t.Cleanup(func() {
-				timeouts := timeout.Combine(p.config.Timeouts, p.test.Spec.Timeouts)
 				operation := operation{
 					continueOnError: false,
-					timeout:         timeout.Get(nil, timeouts.CleanupDuration()),
+					timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
 					operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
 				}
 				operation.execute(ctx)

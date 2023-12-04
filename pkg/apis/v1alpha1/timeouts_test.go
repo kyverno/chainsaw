@@ -60,3 +60,44 @@ func TestTimeouts_NoyDefaults(t *testing.T) {
 	assert.Equal(t, time.Hour*2, timeouts.ErrorDuration())
 	assert.Equal(t, time.Hour*2, timeouts.ExecDuration())
 }
+
+func TestTimeouts_Combine(t *testing.T) {
+	base := Timeouts{
+		Apply:   &metav1.Duration{Duration: 1 * time.Minute},
+		Assert:  &metav1.Duration{Duration: 1 * time.Minute},
+		Cleanup: &metav1.Duration{Duration: 1 * time.Minute},
+		Delete:  &metav1.Duration{Duration: 1 * time.Minute},
+		Error:   &metav1.Duration{Duration: 1 * time.Minute},
+		Exec:    &metav1.Duration{Duration: 1 * time.Minute},
+	}
+	override := Timeouts{
+		Apply:   &metav1.Duration{Duration: 2 * time.Minute},
+		Assert:  &metav1.Duration{Duration: 2 * time.Minute},
+		Cleanup: &metav1.Duration{Duration: 2 * time.Minute},
+		Delete:  &metav1.Duration{Duration: 2 * time.Minute},
+		Error:   &metav1.Duration{Duration: 2 * time.Minute},
+		Exec:    &metav1.Duration{Duration: 2 * time.Minute},
+	}
+	tests := []struct {
+		name     string
+		base     Timeouts
+		override *Timeouts
+		want     Timeouts
+	}{{
+		name:     "nil",
+		base:     base,
+		override: nil,
+		want:     base,
+	}, {
+		name:     "override",
+		base:     base,
+		override: &override,
+		want:     override,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.base.Combine(tt.override)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

@@ -12,7 +12,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	"github.com/kyverno/kyverno/ext/output/color"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -33,21 +32,19 @@ func New(client client.Client, expected unstructured.Unstructured, namespacer na
 	}
 }
 
-func (o *operation) Exec(ctx context.Context) (_err error) {
-	logger := logging.FromContext(ctx).WithResource(&o.expected)
+func (o *operation) Exec(ctx context.Context) (err error) {
+	logger := internal.GetLogger(ctx, &o.expected)
 	defer func() {
-		if _err == nil {
-			logger.Log(logging.Assert, logging.DoneStatus, color.BoldGreen)
-		} else {
-			logger.Log(logging.Assert, logging.ErrorStatus, color.BoldRed, logging.ErrSection(_err))
-		}
+		internal.LogEnd(logger, logging.Assert, err)
 	}()
-	if o.namespacer != nil {
-		if err := o.namespacer.Apply(&o.expected); err != nil {
-			return err
-		}
+	if err := internal.ApplyNamespacer(o.namespacer, &o.expected); err != nil {
+		return err
 	}
-	logger.Log(logging.Assert, logging.RunStatus, color.BoldFgCyan)
+	internal.LogStart(logger, logging.Assert)
+	return o.execute(ctx)
+}
+
+func (o *operation) execute(ctx context.Context) error {
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error

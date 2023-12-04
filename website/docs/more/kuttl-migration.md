@@ -2,70 +2,39 @@
 
 ## Overview
 
-The `chainsaw kuttl migrate` command is designed for the migration of KUTTL tests to Chainsaw.
-When executed, the command looks for KUTTL-defined tests and attempts to convert these into the equivalent Chainsaw-defined tests.
+The `chainsaw kuttl migrate tests` and `chainsaw kuttl migrate config` commands are designed for the migration of KUTTL tests to Chainsaw.
 
-### Usage
+- [`chainsaw kuttl migrate config`](#migrate-configuration)
 
-```bash
-chainsaw kuttl migrate [flags]
-```
+    migrates a KUTTL `TestSuite` to the corresponding Chainsaw `Configuration`
 
-### Options
+- [`chainsaw kuttl migrate tests`](#migrate-tests)
 
-```bash
-  -h, --help        help for migrate
-      --overwrite   If set, overwrites original file.
-      --save        If set, converted files will be saved.
-```
+    migrates KUTTL tests to the corresponding Chainsaw `Test`s
 
-!!! note
+!!! tip "Reference documentation"
 
     You can view the full command documentation [here](../commands/chainsaw_kuttl_migrate.md).
 
-### Example
+## Examples
+
+### Migrate tests
 
 The command below will migrate KUTTL tests to Chainsaw and overwrite original files with converted ones.
 
 ```bash
-chainsaw kuttl migrate --save --overwrite path/to/kuttl/tests
+chainsaw kuttl migrate tests path/to/kuttl/tests --save --cleanup
 ```
 
-## Description
+This will generate a `chainsaw-test.yaml` for every KUTTL test discovered.
 
-On invocation, the command:
+### Migrate configuration
 
-- Discovers folders from the specified paths.
-- Reads the files within these folders, specifically looking for YAML files.
-- Inspects each YAML file to check if it's a KUTTL resource. If it is, the command tries to convert it to a Chainsaw resource.
-- If the `--save` flag is set, the converted Chainsaw tests are saved to a new file with the extension `.chainsaw.yaml`.
-- If the `--save` and `--overwrite` flags are set, the converted Chainsaw tests are saved to the same file as the original one.
+The command below will migrate a KUTTL test suite file to the corresponding Chainsaw `Configuration`.
 
-### Implementation details
+```bash
+chainsaw kuttl migrate config path/to/kuttl/testsuite --save --cleanup
+```
 
-#### Discover Folders
+This will generate a `.chainsaw.yaml` configuration file.
 
-The command finds folders in the specified paths.
-
-#### File Inspection
-
-It filters out non-YAML files and directories, focusing only on YAML files which might contain KUTTL test definitions.
-
-#### Resource Conversion
-
-For identified KUTTL resources:
-
-- `TestSuite` is converted to Chainsaw's `Configuration` resource.
-- `TestStep` is converted to Chainsaw's `TestStep` resource.
-
-#### Save Converted Tests
-
-If the `--save` flag is provided and if any resource within the YAML file needs saving (as determined by the migration process), the converted tests are saved.
-
-The file path for saving is determined by the `--overwrite` flag; if it is set, the original file will be overwritten, else a new `.chainsaw.yaml` file will be created.
-
-### Current limitations
-
-The migration command has the following limitations:
-
-- Some fields in KUTTL `command` are not supported and will raise an error

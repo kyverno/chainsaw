@@ -3,9 +3,11 @@ package validation
 import (
 	"fmt"
 	"testing"
+	"time"
 
 	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
@@ -21,59 +23,59 @@ func TestValidateFinally(t *testing.T) {
 	exampleScript := &v1alpha1.Script{
 		Content: "echo Hello, World!",
 	}
-
+	exampleSleep := &v1alpha1.Sleep{
+		Duration: metav1.Duration{Duration: 5 * time.Second},
+	}
 	tests := []struct {
 		name      string
 		input     v1alpha1.Finally
 		expectErr bool
 		errMsg    string
-	}{
-		{
-			name:      "No Finally statements provided",
-			input:     v1alpha1.Finally{},
-			expectErr: true,
-			errMsg:    "no statement found in operation",
+	}{{
+		name:      "No Finally statements provided",
+		input:     v1alpha1.Finally{},
+		expectErr: true,
+		errMsg:    "no statement found in operation",
+	}, {
+		name: "Multiple Finally statements provided",
+		input: v1alpha1.Finally{
+			PodLogs: examplePodLogs,
+			Events:  exampleEvents,
+			Command: exampleCommand,
 		},
-		{
-			name: "Multiple Finally statements provided",
-			input: v1alpha1.Finally{
-				PodLogs: examplePodLogs,
-				Events:  exampleEvents,
-				Command: exampleCommand,
-			},
-			expectErr: true,
-			errMsg:    fmt.Sprintf("only one statement is allowed per operation (found %d)", 3),
+		expectErr: true,
+		errMsg:    fmt.Sprintf("only one statement is allowed per operation (found %d)", 3),
+	}, {
+		name: "Only PodLogs statement provided",
+		input: v1alpha1.Finally{
+			PodLogs: examplePodLogs,
 		},
-		{
-			name: "Only PodLogs statement provided",
-			input: v1alpha1.Finally{
-				PodLogs: examplePodLogs,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Events statement provided",
+		input: v1alpha1.Finally{
+			Events: exampleEvents,
 		},
-		{
-			name: "Only Events statement provided",
-			input: v1alpha1.Finally{
-				Events: exampleEvents,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Command statement provided",
+		input: v1alpha1.Finally{
+			Command: exampleCommand,
 		},
-		{
-			name: "Only Command statement provided",
-			input: v1alpha1.Finally{
-				Command: exampleCommand,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Script statement provided",
+		input: v1alpha1.Finally{
+			Script: exampleScript,
 		},
-		{
-			name: "Only Script statement provided",
-			input: v1alpha1.Finally{
-				Script: exampleScript,
-			},
-			expectErr: false,
+		expectErr: false,
+	}, {
+		name: "Only Sleep statement provided",
+		input: v1alpha1.Finally{
+			Sleep: exampleSleep,
 		},
-	}
-
+		expectErr: false,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			errs := ValidateFinally(field.NewPath("testPath"), tt.input)

@@ -1,6 +1,6 @@
 # What is a test
 
-In a nutshell, a test can be represented as **an ordered sequence of test steps**. Test steps within a test are run sequentially: **if any of the test steps fail, the entire test is considered failed**.
+In a nutshell, a test can be represented as **an ordered sequence of [test steps](../steps/index.md)**. Test steps within a test are run sequentially: **if any of the test steps fail, the entire test is considered failed**.
 
 A test step can consist in **one or more operations**:
 
@@ -8,9 +8,6 @@ A test step can consist in **one or more operations**:
 - To **create** or update resources in a cluster
 - To **assert** one or more resources in a cluster meet the expectations (or the opposite)
 - To run arbitrary **commands** or **scripts**
-
-!!! tip "Try, catch, finally"
-    Additionally Chainsaw offers a flexible way to [react to errors and/or execute post step operations](./catch-finally/index.md).
 
 ## Different syntaxes
 
@@ -41,7 +38,7 @@ If you don't mind relying on file naming conventions and don't need to reuse fil
 
 ## Operations
 
-All operations are explained in the [Operations documentation](./operations/index.md).
+All operations are explained in the [Operations documentation](../operations/index.md).
 
 ## Cleanup
 

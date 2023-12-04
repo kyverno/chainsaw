@@ -14,22 +14,26 @@ Every operation in a test steps runs sequentially.
 
 All operations share some configuration fields.
 
-- **Timeout:** A timeout for the operation.
-- **ContinueOnError:** Determines whether a test step should continue or not in case the operation was not successful.
-  Even if the test continues executing, it will still be reported as failed.
-
 !!! tip "Reference documentation"
-    The full structure of the `Operation` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Operation).
+    The full structure of the `Operation` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Operation).
+
+#### ContinueOnError
+
+Determines whether a test step should continue or not in case the operation was not successful.
+
+!!! note ""
+    Even if the test continues executing, it will still be reported as failed.
 
 ## Available operations
 
-- [Delete](./delete.md)
 - [Apply](./apply.md)
-- [Create](./create.md)
 - [Assert](./assert.md)
-- [Error](./error.md)
 - [Command](./command.md)
+- [Create](./create.md)
+- [Delete](./delete.md)
+- [Error](./error.md)
 - [Script](./script.md)
+- [Sleep](./sleep.md)
 
 ## Operation checks
 

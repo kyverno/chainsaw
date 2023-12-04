@@ -1,15 +1,19 @@
-# Apply
+# Create
 
-The `apply` operation lets you define resources that should be applied to the Kubernetes cluster during the test step.
-
+The `create` operation lets you define resources that should be created in the Kubernetes cluster during the test step.
 These can be configurations, deployments, services, or any other Kubernetes resource.
 
+!!! warning
+
+    If the resource to be created already exists in the cluster, the step will fail.
+
 !!! tip "Reference documentation"
-    The full structure of the `Apply` is documented [here](../../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Apply).
+    The full structure of the `Create` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
+
 
 ## Usage in `Test`
 
-Below is an example of using `apply` in a `Test` resource.
+Below is an example of using `create` in a `Test` resource.
 
 !!! example "Using a file"
 
@@ -22,10 +26,25 @@ Below is an example of using `apply` in a `Test` resource.
       steps:
       - try:
         # ...
-        - apply:
-            file: my-pod.yaml
+        - create:
+            file: my-configmap.yaml
         # ...
     ```
+
+!!! example "Using an URL"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      steps:
+      - try:
+        # ...
+        - create:
+            file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml
+        # ...
 
 !!! example "Using an inline resource"
 
@@ -38,7 +57,7 @@ Below is an example of using `apply` in a `Test` resource.
       steps:
       - try:
         # ...
-        - apply:
+        - create:
             resource:
               apiVersion: v1
               kind: ConfigMap
@@ -51,7 +70,7 @@ Below is an example of using `apply` in a `Test` resource.
 
 ## Usage in `TestStep`
 
-Below is an example of using `apply` in a `TestStep` resource.
+Below is an example of using `create` in a `TestStep` resource.
 
 !!! example "Using a file"
 
@@ -63,8 +82,23 @@ Below is an example of using `apply` in a `TestStep` resource.
     spec:
       try:
       # ...
-      - apply:
-          file: my-pod.yaml
+      - create:
+          file: my-configmap.yaml
+      # ...
+    ```
+
+!!! example "Using an URL"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: TestStep
+    metadata:
+      name: example
+    spec:
+      try:
+      # ...
+      - create:
+          file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml
       # ...
     ```
 
@@ -78,7 +112,7 @@ Below is an example of using `apply` in a `TestStep` resource.
     spec:
       try:
       # ...
-      - apply:
+      - create:
           resource:
             apiVersion: v1
             kind: ConfigMap
@@ -91,16 +125,21 @@ Below is an example of using `apply` in a `TestStep` resource.
 
 ## Operation check
 
-Below is an example of using an [operation check](./check.md#apply).
+Below is an example of using an [operation check](./check.md#create).
 
 !!! example "With check"
 
     ```yaml
     # ...
     - apply:
-        file: my-pod.yaml
+        file: my-configmap.yaml
         expect:
-        - check:
+        - match:
+            # this check applies only if the match
+            # statement below evaluates to `true`
+            apiVersion: v1
+            kind: ConfigMap
+          check:
             # an error is expected, this will:
             # - succeed if the operation failed
             # - fail if the operation succeeded
