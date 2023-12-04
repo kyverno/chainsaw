@@ -27,7 +27,7 @@ Below is an example of using `apply` in a `Test` resource.
         # ...
     ```
 
-!!! example "Using a github-raw file"
+!!! example "Using a URL"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -84,7 +84,7 @@ Below is an example of using `apply` in a `TestStep` resource.
       # ...
     ```
 
-!!! example "Using a github-raw file"
+!!! example "Using a URL"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
