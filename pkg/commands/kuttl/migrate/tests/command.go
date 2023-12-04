@@ -103,7 +103,8 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 			return err
 		}
 		if save {
-			path := filepath.Join(folder, "chainsaw-test.yaml")
+			path := filepath.Join(folder, ".chainsaw-test", "chainsaw-test.yaml")
+			os.MkdirAll(filepath.Join(folder, ".chainsaw-test"), os.ModeDir|os.ModePerm)
 			fmt.Fprintf(out, "Saving file %s ...\n", path)
 			if err := os.WriteFile(path, data, os.ModePerm); err != nil {
 				return err
@@ -243,12 +244,13 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s step, folder stri
 }
 
 func saveResource(out io.Writer, folder, file string, resource unstructured.Unstructured) error {
-	path := filepath.Join(folder, file)
+	path := filepath.Join(folder, ".chainsaw-test", file)
 	fmt.Fprintf(out, "Saving file %s ...\n", path)
 	yamlData, err := yaml.Marshal(&resource)
 	if err != nil {
 		return fmt.Errorf("converting to yaml: %w", err)
 	}
+	os.MkdirAll(filepath.Join(folder, ".chainsaw-test"), os.ModeDir|os.ModePerm)
 	if err := os.WriteFile(path, yamlData, os.ModePerm); err != nil {
 		return err
 	}
