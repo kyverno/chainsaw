@@ -111,7 +111,7 @@ spec:
 ```
 ## URL Support for File References
 
-Chainsaw support for URLs in file references for assert, apply, error and similar operations. This feature enhances the flexibility and reach of Chainsaw by allowing users to reference files hosted on remote locations, such as GitHub raw URLs or other web URLs, directly within their test definitions.
+Chainsaw support for URLs in file references for assert, apply, error and similar operations. This feature enhances the reach of Chainsaw by allowing users to reference files hosted on remote locations, such as GitHub raw URLs or other web URLs, directly within their test definitions.
 
 ### Example URL File Reference
 
