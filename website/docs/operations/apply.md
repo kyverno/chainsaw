@@ -95,7 +95,7 @@ Below is an example of using `apply` in a `TestStep` resource.
       try:
       # ...
       - apply:
-          file: my-configmap.yaml
+          file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/step/configmap.yaml
       # ...
     ```
 
