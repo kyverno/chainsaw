@@ -8,30 +8,35 @@ nav:
   - gh-action.md
   - quick-start.md
   - docs.md
+  - community.md
 - Writing tests:
   - tests/index.md
-  - tests/configuration.md
+  - configuration/index.md
   - Tests:
     - tests/what-is-a-test.md
     - tests/with-manifests.md
     - tests/with-test-steps.md
     - tests/with-test.md
+  - Test steps:
+    - steps/index.md
+    - steps/try.md
+    - steps/catch.md
+    - steps/finally.md
   - Operations:
-    - tests/operations/index.md
-    - tests/operations/check.md
-    - tests/operations/apply.md
-    - tests/operations/create.md
-    - tests/operations/delete.md
-    - tests/operations/assert.md
-    - tests/operations/error.md
-    - tests/operations/command.md
-    - tests/operations/script.md
-  - Catch and Finally:
-    - tests/catch-finally/index.md
-    - tests/catch-finally/pod-logs.md
-    - tests/catch-finally/events.md
-    - tests/catch-finally/commands.md
-    - tests/catch-finally/scripts.md
+    - operations/index.md
+    - operations/check.md
+    - operations/apply.md
+    - operations/assert.md
+    - operations/create.md
+    - operations/command.md
+    - operations/delete.md
+    - operations/error.md
+    - operations/script.md
+    - operations/sleep.md
+  - Collectors:
+    - collectors/index.md
+    - collectors/pod-logs.md
+    - collectors/events.md
   - Command Line Usage:
     - commands/chainsaw.md
     - commands/chainsaw_completion.md
@@ -48,6 +53,8 @@ nav:
     - commands/chainsaw_kuttl_migrate_tests.md
     - commands/chainsaw_test.md
     - commands/chainsaw_version.md
+  - JMESPath:
+    - Functions: jp/functions.md
   - APIs:
     - v1alpha1: apis/chainsaw.v1alpha1.md
 - More resources:
@@ -55,5 +62,6 @@ nav:
   - more/crds.md
   - more/ide-completion.md
   - more/kuttl-migration.md
+  - more/test-docs.md
 - Blog:
   - blog/index.md

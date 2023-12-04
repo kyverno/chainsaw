@@ -7,7 +7,9 @@ spec:
   steps:
   - description: This steps applies the configmap in the cluster and checks the configmap content.
     try:
-    - apply:
+    - description: Create the configmap.
+      apply:
         file: configmap.yaml
-    - assert:
+    - description: Check the configmap content.
+      assert:
         file: configmap-assert.yaml

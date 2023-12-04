@@ -14,7 +14,7 @@
 
 ### Try
 
-| # | Action | Description |
+| # | Operation | Description |
 |:-:|---|---|
 | 1 | `apply` | *No description* |
 | 2 | `delete` | *No description* |

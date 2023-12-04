@@ -3,19 +3,19 @@
 Release notes for `TODO`.
 
 <!--
-## :bangbang: Breaking chages :bangbang:
+## ‼️ Breaking chages ‼️
 
-## :dizzy: New features :dizzy:
+## 💫 New features 💫
 
-## :sparkles: UI changes :sparkles:
+## ✨ UI changes ✨
 
-## :star: Examples :star:
+## ⭐ Examples ⭐
 
-## :boat: Tutorials :boat:
+## ⛵ Tutorials ⛵
 
-## :wrench: Fixes :wrench:
+## 🔧 Fixes 🔧
 
-## :books: Docs :books:
+## 📚 Docs 📚
 
-## :guitar: Misc :guitar:
+## 🎸 Misc 🎸
 -->
