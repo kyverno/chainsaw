@@ -59,17 +59,18 @@ func TestOperation_Execute(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			localTC := tc
 			op := operation{
-				continueOnError: tc.continueOnError,
-				timeout:         &tc.timeout,
-				operation:       tc.operation,
-				operationReport: tc.operationReport,
+				continueOnError: localTC.continueOnError,
+				timeout:         &localTC.timeout,
+				operation:       localTC.operation,
+				operationReport: localTC.operationReport,
 			}
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
 			op.execute(ctx)
 
-			if tc.expectedFail {
+			if localTC.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {
 				assert.False(t, nt.FailedVar, "expected no error but got one")

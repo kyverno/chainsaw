@@ -1,6 +1,8 @@
 package testing
 
-import "time"
+import (
+	"time"
+)
 
 type MockT struct {
 	NameVar           string
@@ -57,7 +59,8 @@ func (c *MockT) Name() string {
 func (t *MockT) Parallel() {
 }
 
-func (t *MockT) Run(name string, f func(t *T)) bool {
+func (nt *MockT) Run(name string, f func(t *T)) bool {
+	nt.NameVar = name
 	return true
 }
 

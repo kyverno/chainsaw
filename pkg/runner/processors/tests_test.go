@@ -21,14 +21,13 @@ import (
 
 func TestTestsProcessor_Run(t *testing.T) {
 	testCases := []struct {
-		name        string
-		config      v1alpha1.ConfigurationSpec
-		client      client.Client
-		clock       clock.PassiveClock
-		summary     *summary.Summary
-		testsReport *report.TestsReport
-		tests       []discovery.Test
-		// shouldFailFast atomic.Bool
+		name         string
+		config       v1alpha1.ConfigurationSpec
+		client       client.Client
+		clock        clock.PassiveClock
+		summary      *summary.Summary
+		testsReport  *report.TestsReport
+		tests        []discovery.Test
 		expectedFail bool
 	}{
 		{
@@ -41,11 +40,10 @@ func TestTestsProcessor_Run(t *testing.T) {
 					return nil
 				},
 			},
-			clock:       nil,
-			summary:     &summary.Summary{},
-			testsReport: &report.TestsReport{},
-			tests:       []discovery.Test{},
-			// shouldFailFast: atomic.Bool{},
+			clock:        nil,
+			summary:      &summary.Summary{},
+			testsReport:  &report.TestsReport{},
+			tests:        []discovery.Test{},
 			expectedFail: false,
 		},
 		{
@@ -60,12 +58,14 @@ func TestTestsProcessor_Run(t *testing.T) {
 				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
 					return nil
 				},
+				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+					return nil
+				},
 			},
-			clock:       nil,
-			summary:     &summary.Summary{},
-			testsReport: &report.TestsReport{},
-			tests:       []discovery.Test{},
-			// shouldFailFast: atomic.Bool{},
+			clock:        nil,
+			summary:      &summary.Summary{},
+			testsReport:  &report.TestsReport{},
+			tests:        []discovery.Test{},
 			expectedFail: false,
 		},
 		{
@@ -77,13 +77,15 @@ func TestTestsProcessor_Run(t *testing.T) {
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 					return errors.NewBadRequest("failed to get namespace")
 				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
 			},
-			clock:       nil,
-			summary:     &summary.Summary{},
-			testsReport: &report.TestsReport{},
-			tests:       []discovery.Test{},
-			// shouldFailFast: atomic.Bool{},
-			expectedFail: false,
+			clock:        nil,
+			summary:      &summary.Summary{},
+			testsReport:  &report.TestsReport{},
+			tests:        []discovery.Test{},
+			expectedFail: true,
 		},
 		{
 			name: "Namesapce doesn't exists and can't be created",
@@ -98,12 +100,55 @@ func TestTestsProcessor_Run(t *testing.T) {
 					return errors.NewBadRequest("failed to create namespace")
 				},
 			},
+			clock:        nil,
+			summary:      &summary.Summary{},
+			testsReport:  &report.TestsReport{},
+			tests:        []discovery.Test{},
+			expectedFail: true,
+		},
+		{
+			name: "Success",
+			config: v1alpha1.ConfigurationSpec{
+				Namespace: "default",
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return nil
+				},
+			},
 			clock:       nil,
 			summary:     &summary.Summary{},
 			testsReport: &report.TestsReport{},
-			tests:       []discovery.Test{},
-			// shouldFailFast: atomic.Bool{},
+			tests: []discovery.Test{
+				{
+					Err:      nil,
+					BasePath: "fakePath",
+					Test:     &v1alpha1.Test{},
+				},
+			},
 			expectedFail: false,
+		},
+		{
+			name: "Fail",
+			config: v1alpha1.ConfigurationSpec{
+				Namespace: "default",
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return nil
+				},
+			},
+			clock:       nil,
+			summary:     &summary.Summary{},
+			testsReport: &report.TestsReport{},
+			tests: []discovery.Test{
+				{
+					Err:      errors.NewBadRequest("failed to get test"),
+					BasePath: "fakePath",
+					Test:     nil,
+				},
+			},
+			expectedFail: true,
 		},
 	}
 
@@ -115,15 +160,17 @@ func TestTestsProcessor_Run(t *testing.T) {
 				tc.clock,
 				tc.summary,
 				tc.testsReport,
+				tc.tests...,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
-			go processor.Run(ctx)
-
+			processor.Run(ctx)
+			nt.Cleanup(func() {
+			})
 			if tc.expectedFail {
-				assert.True(t, nt.Failed(), "expected an error but got none")
+				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {
-				assert.False(t, nt.Failed(), "expected no error but got one")
+				assert.False(t, nt.FailedVar, "expected no error but got one")
 			}
 		})
 	}
