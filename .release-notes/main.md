@@ -7,8 +7,6 @@ Release notes for `TODO`.
 
 ## 💫 New features 💫
 
-## ✨ UI changes ✨
-
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
@@ -22,3 +20,7 @@ Release notes for `TODO`.
 
 - Fixed `command` and `script` log output when multiple sections are present
 - Fixed delete timeout used instead of cleanup timeout
+
+## ✨ UI changes ✨
+
+- Use `@setup` and `@cleanup` in the logs to indicate setup/cleanup steps
