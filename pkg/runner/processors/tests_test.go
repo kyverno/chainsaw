@@ -116,7 +116,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				tc.summary,
 				tc.testsReport,
 			)
-			nt := testing.T{}
+			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
 			go processor.Run(ctx)
 
