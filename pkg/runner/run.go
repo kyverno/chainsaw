@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -14,6 +15,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 )
@@ -24,11 +26,20 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	if config.ReportFormat != "" {
 		testsReport = report.NewTests(config.ReportName)
 	}
-
 	if len(tests) == 0 {
 		return &summary, nil
 	}
 	if err := internal.SetupFlags(config); err != nil {
+		return nil, err
+	}
+	// TODO: refactor that better
+	// The creation of the "kubeconfig" is necessary for out of cluster execution of kubectl
+	f, err := os.Create("kubeconfig")
+	if err != nil {
+		return nil, err
+	}
+	defer f.Close()
+	if err := restutils.Kubeconfig(cfg, f); err != nil {
 		return nil, err
 	}
 	client, err := client.New(cfg)
