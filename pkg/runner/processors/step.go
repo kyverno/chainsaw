@@ -438,7 +438,7 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 			t.Cleanup(func() {
 				operation := operation{
 					continueOnError: true,
-					timeout:         timeout.Get(nil, p.timeouts.DeleteDuration()),
+					timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
 					operation:       opdelete.New(c, obj, p.namespacer),
 				}
 				operation.execute(ctx)
