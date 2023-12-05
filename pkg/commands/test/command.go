@@ -179,6 +179,9 @@ func Command() *cobra.Command {
 			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
+			if len(configuration.Spec.TestDirs) == 0 {
+				configuration.Spec.TestDirs = append(configuration.Spec.TestDirs, ".")
+			}
 			if err := fsutils.CheckFolders(configuration.Spec.TestDirs...); err != nil {
 				return err
 			}
