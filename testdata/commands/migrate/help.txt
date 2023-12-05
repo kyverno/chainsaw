@@ -1,12 +1,11 @@
-Migrate KUTTL resources to Chainsaw
+Migrate resources to Chainsaw
 
 Usage:
   chainsaw migrate [flags]
   chainsaw migrate [command]
 
 Available Commands:
-  config      Migrate KUTTL config to Chainsaw
-  tests       Migrate KUTTL tests to Chainsaw
+  kuttl       Migrate KUTTL resources to Chainsaw
 
 Flags:
   -h, --help   help for migrate

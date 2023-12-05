@@ -12,7 +12,7 @@ import (
 )
 
 func Test_Execute(t *testing.T) {
-	basePath := "../../../../../testdata/commands/kuttl/migrate/tests"
+	basePath := "../../../../../testdata/commands/migrate/kuttl/tests"
 	tests := []struct {
 		name    string
 		args    []string

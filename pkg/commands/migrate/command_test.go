@@ -1,4 +1,4 @@
-package config
+package migrate
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 )
 
 func Test_Execute(t *testing.T) {
-	basePath := "../../../../../testdata/commands/kuttl/migrate/config"
+	basePath := "../../../testdata/commands/migrate"
 	tests := []struct {
 		name    string
 		args    []string
@@ -21,7 +21,7 @@ func Test_Execute(t *testing.T) {
 	}{{
 		name: "help",
 		args: []string{
-			"config",
+			"migrate",
 			"--help",
 		},
 		out:     filepath.Join(basePath, "help.txt"),
@@ -29,60 +29,22 @@ func Test_Execute(t *testing.T) {
 	}, {
 		name: "migrate",
 		args: []string{
-			"config",
-			"../../../../../testdata/kuttl/kuttl-test.yaml",
+			"migrate",
 		},
-		out:     filepath.Join(basePath, "out.txt"),
-		wantErr: false,
-	}, {
-		name: "migrate save",
-		args: []string{
-			"config",
-			"../../../../../testdata/kuttl/kuttl-test.yaml",
-			"--save",
-		},
-		out:     filepath.Join(basePath, "out-save.txt"),
+		out:     filepath.Join(basePath, "help.txt"),
 		wantErr: false,
 	}, {
 		name: "unknow flag",
 		args: []string{
-			"config",
+			"migrate",
 			"--foo",
 		},
 		wantErr: true,
 	}, {
-		name: "unknown file",
+		name: "unknow arg",
 		args: []string{
-			"config",
-			"../../../../../testdata/kuttl/unknown.yaml",
-		},
-		wantErr: true,
-	}, {
-		name: "multiple file",
-		args: []string{
-			"config",
-			"../../../../../testdata/kuttl/multiple-config.yaml",
-		},
-		wantErr: true,
-	}, {
-		name: "not a config",
-		args: []string{
-			"config",
-			"../../../../../testdata/kuttl/02-step.yaml",
-		},
-		wantErr: true,
-	}, {
-		name: "invalid config",
-		args: []string{
-			"config",
-			"../../../../../testdata/kuttl/invalid-config.yaml",
-		},
-		wantErr: true,
-	}, {
-		name: "configmap",
-		args: []string{
-			"config",
-			"../../../../../testdata/kuttl/configmap.yaml",
+			"migrate",
+			"foo",
 		},
 		wantErr: true,
 	}}
