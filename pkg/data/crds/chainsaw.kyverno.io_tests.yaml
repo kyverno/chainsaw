@@ -45,6 +45,10 @@ spec:
               description:
                 description: Description contains a description of the test.
                 type: string
+              forceTerminationGracePeriod:
+                description: ForceTerminationGracePeriod forces the termination grace
+                  period on pods, statefulsets, daemonsets and deployments.
+                type: string
               namespace:
                 description: Namespace determines whether the test should run in a
                   random ephemeral namespace or not.

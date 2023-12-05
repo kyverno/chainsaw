@@ -17,6 +17,7 @@ Release notes for `TODO`.
 ## 💫 New features 💫
 
 - Added a cleanup delay option to add a delay between the time a test ends and the time cleanup starts
+- Added support for overriding termination grace period on a per test basis
 
 ## 🔧 Fixes 🔧
 

@@ -403,20 +403,26 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]uns
 }
 
 func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) error {
-	if p.config.ForceTerminationGracePeriod != nil {
-		seconds := int64(p.config.ForceTerminationGracePeriod.Duration.Seconds())
-		switch resource.GetKind() {
-		case "Pod":
-			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "terminationGracePeriodSeconds"); err != nil {
-				return err
-			}
-		case "Deployment", "StatefulSet", "DaemonSet", "Job":
-			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
-				return err
-			}
-		case "CronJob":
-			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "jobTemplate", "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
-				return err
+	terminationGracePeriod := p.config.ForceTerminationGracePeriod
+	if p.test.Spec.ForceTerminationGracePeriod != nil {
+		terminationGracePeriod = p.test.Spec.ForceTerminationGracePeriod
+	}
+	if terminationGracePeriod != nil {
+		seconds := int64(terminationGracePeriod.Seconds())
+		if seconds != 0 {
+			switch resource.GetKind() {
+			case "Pod":
+				if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "terminationGracePeriodSeconds"); err != nil {
+					return err
+				}
+			case "Deployment", "StatefulSet", "DaemonSet", "Job":
+				if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+					return err
+				}
+			case "CronJob":
+				if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "jobTemplate", "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+					return err
+				}
 			}
 		}
 	}
