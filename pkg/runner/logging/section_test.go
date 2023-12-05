@@ -15,7 +15,7 @@ func TestSection(t *testing.T) {
 		args     []any
 		expected string
 	}{
-		{"empty", nil, "=== EMPTY\n"},
+		{"empty", nil, "=== EMPTY"},
 		{"single arg", []any{"example"}, "=== SINGLE ARG\nexample"},
 		{"multiple args", []any{"one", 2, 3.0}, "=== MULTIPLE ARGS\none2 3"},
 	}
