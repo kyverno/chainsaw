@@ -1,9 +1,9 @@
-## chainsaw kuttl migrate tests
+## chainsaw migrate kuttl tests
 
 Migrate KUTTL tests to Chainsaw
 
 ```
-chainsaw kuttl migrate tests [flags]
+chainsaw migrate kuttl tests [flags]
 ```
 
 ### Options
@@ -16,5 +16,5 @@ chainsaw kuttl migrate tests [flags]
 
 ### SEE ALSO
 
-* [chainsaw kuttl migrate](chainsaw_kuttl_migrate.md)	 - Migrate KUTTL resources to Chainsaw
+* [chainsaw migrate kuttl](chainsaw_migrate_kuttl.md)	 - Migrate KUTTL resources to Chainsaw
 

@@ -3,8 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## ‼️ Breaking chages ‼️
-
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
@@ -13,6 +11,11 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
+
+## ‼️ Breaking chages ‼️
+
+- Renamed `chainsaw kuttl migrate config` command to  `chainsaw migrate kuttl config`
+- Renamed `chainsaw kuttl migrate tests` command to  `chainsaw migrate kuttl tests`
 
 ## 💫 New features 💫
 

@@ -1,14 +1,15 @@
 package kuttl
 
 import (
-	"github.com/kyverno/chainsaw/pkg/commands/kuttl/migrate"
+	"github.com/kyverno/chainsaw/pkg/commands/migrate/kuttl/config"
+	"github.com/kyverno/chainsaw/pkg/commands/migrate/kuttl/tests"
 	"github.com/spf13/cobra"
 )
 
 func Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "kuttl",
-		Short:        "Work with KUTTL tests",
+		Short:        "Migrate KUTTL resources to Chainsaw",
 		Args:         cobra.NoArgs,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -16,7 +17,8 @@ func Command() *cobra.Command {
 		},
 	}
 	cmd.AddCommand(
-		migrate.Command(),
+		config.Command(),
+		tests.Command(),
 	)
 	return cmd
 }
