@@ -3,15 +3,9 @@ package testing
 import "context"
 
 type MockOperation struct {
-	numCalls int
-	ExecFn   func(ctx context.Context) error
+	ExecFn func(ctx context.Context) error
 }
 
 func (m MockOperation) Exec(ctx context.Context) error {
-	m.numCalls++
 	return m.ExecFn(ctx)
-}
-
-func (m *MockOperation) NumCalls() int {
-	return m.numCalls
 }
