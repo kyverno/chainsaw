@@ -13,9 +13,12 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 🔧 Fixes 🔧
-
 ## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
 -->
+
+## 🔧 Fixes 🔧
+
+- Fixed `command` and `script` log output when multiple sections are present
+- Use a temporary kube config when running tests

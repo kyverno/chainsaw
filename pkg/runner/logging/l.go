@@ -46,11 +46,9 @@ func (l *logger) Log(operation Operation, status Status, color *color.Color, arg
 		prefix = fmt.Sprintf("%s %s/%s | %s", prefix, gvk.GroupVersion(), gvk.Kind, client.Name(key))
 	}
 	a = append(a, prefix)
-	if len(args) > 0 {
+	for _, arg := range args {
 		a = append(a, "\n")
-		for _, arg := range args {
-			a = append(a, arg)
-		}
+		a = append(a, arg)
 	}
 	l.t.Log(fmt.Sprint(a...))
 }
