@@ -18,7 +18,15 @@ import (
 	"k8s.io/utils/clock"
 )
 
+type mainstart interface {
+	Run() int
+}
+
 func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*summary.Summary, error) {
+	return run(cfg, clock, config, nil, tests...)
+}
+
+func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, m mainstart, tests ...discovery.Test) (*summary.Summary, error) {
 	var summary summary.Summary
 	var testsReport *report.TestsReport
 	if config.ReportFormat != "" {
@@ -39,6 +47,7 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
+			t.Helper()
 			t.Parallel()
 			processor := processors.NewTestsProcessor(config, client, clock, &summary, testsReport, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
@@ -47,7 +56,9 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		},
 	}}
 	deps := &internal.TestDeps{}
-	m := testing.MainStart(deps, internalTests, nil, nil, nil)
+	if m == nil {
+		m = testing.MainStart(deps, internalTests, nil, nil, nil)
+	}
 	// m.Run() returns:
 	// - 0 if everything went well
 	// - 1 if some of the tests failed
