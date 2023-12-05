@@ -51,10 +51,10 @@ func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, error) {
 		return nil, fmt.Errorf("failed to get current working directory (%w)", err)
 	} else {
 		env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
+		// TODO: won't work with multicluster support
+		env = append(env, fmt.Sprintf("KUBECONFIG=%s/kubeconfig", cwd))
 	}
 	env = append(env, fmt.Sprintf("NAMESPACE=%s", o.namespace))
-	// TODO
-	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	cmd.Env = env
 	cmd.Dir = o.basePath
 	return cmd, nil
