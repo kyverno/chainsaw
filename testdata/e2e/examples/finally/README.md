@@ -1,4 +1,4 @@
-# Test: `inline`
+# Test: `finally`
 
 *No description*
 
