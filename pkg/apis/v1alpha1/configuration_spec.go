@@ -77,4 +77,8 @@ type ConfigurationSpec struct {
 	// ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.
 	// +optional
 	ForceTerminationGracePeriod *metav1.Duration `json:"forceTerminationGracePeriod,omitempty"`
+
+	// DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.
+	// +optional
+	DelayBeforeCleanup *metav1.Duration `json:"delayBeforeCleanup,omitempty"`
 }

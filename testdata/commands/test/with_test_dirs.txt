@@ -1,6 +1,6 @@
 Loading default configuration...
 - Using test file: chainsaw-test.yaml
-- TestDirs [dir1,dir2,dir3]
+- TestDirs [.. .]
 - SkipDelete false
 - FailFast false
 - ReportFormat ''

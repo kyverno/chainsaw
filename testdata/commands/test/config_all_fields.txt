@@ -1,6 +1,6 @@
 Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)...
 - Using test file: chainsaw-test.yaml
-- TestDirs [/path/to/testdir1 /path/to/testdir2]
+- TestDirs [. ..]
 - SkipDelete true
 - FailFast true
 - ReportFormat 'JSON'

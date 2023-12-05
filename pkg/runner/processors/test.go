@@ -137,7 +137,11 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			}
 		}
 	}
-	cleaner := newCleaner(nspacer)
+	delay := p.config.DelayBeforeCleanup
+	if p.test.Spec.DelayBeforeCleanup != nil {
+		delay = p.test.Spec.DelayBeforeCleanup
+	}
+	cleaner := newCleaner(nspacer, delay)
 	t.Cleanup(func() {
 		cleaner.run(logging.IntoContext(ctx, cleanupLogger))
 	})
