@@ -204,6 +204,11 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.DelayBeforeCleanup != nil {
+		in, out := &in.DelayBeforeCleanup, &out.DelayBeforeCleanup
+		*out = new(v1.Duration)
+		**out = **in
+	}
 	return
 }
 
@@ -647,6 +652,11 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.DelayBeforeCleanup != nil {
+		in, out := &in.DelayBeforeCleanup, &out.DelayBeforeCleanup
+		*out = new(v1.Duration)
+		**out = **in
 	}
 	return
 }
