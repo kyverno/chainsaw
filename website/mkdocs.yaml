@@ -47,10 +47,10 @@ nav:
     - commands/chainsaw_docs.md
     - commands/chainsaw_generate.md
     - commands/chainsaw_generate_docs.md
-    - commands/chainsaw_kuttl.md
-    - commands/chainsaw_kuttl_migrate.md
-    - commands/chainsaw_kuttl_migrate_config.md
-    - commands/chainsaw_kuttl_migrate_tests.md
+    - commands/chainsaw_migrate.md
+    - commands/chainsaw_migrate_kuttl.md
+    - commands/chainsaw_migrate_kuttl_config.md
+    - commands/chainsaw_migrate_kuttl_tests.md
     - commands/chainsaw_test.md
     - commands/chainsaw_version.md
   - JMESPath:

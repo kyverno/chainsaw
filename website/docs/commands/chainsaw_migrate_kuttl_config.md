@@ -1,9 +1,9 @@
-## chainsaw kuttl migrate config
+## chainsaw migrate kuttl config
 
 Migrate KUTTL config to Chainsaw
 
 ```
-chainsaw kuttl migrate config [flags]
+chainsaw migrate kuttl config [flags]
 ```
 
 ### Options
@@ -16,5 +16,5 @@ chainsaw kuttl migrate config [flags]
 
 ### SEE ALSO
 
-* [chainsaw kuttl migrate](chainsaw_kuttl_migrate.md)	 - Migrate KUTTL resources to Chainsaw
+* [chainsaw migrate kuttl](chainsaw_migrate_kuttl.md)	 - Migrate KUTTL resources to Chainsaw
 

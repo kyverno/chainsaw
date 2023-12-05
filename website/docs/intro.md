@@ -29,7 +29,7 @@ But we ended up needing more flexibility than what [KUTTL](https://kuttl.dev) co
 At this point it was simpler to start a new tool from scratch than continuing making changes in our [KUTTL](https://kuttl.dev) fork.
 
 !!! tip "KUTTL compatibility"
-    Migrating from [KUTTL](https://kuttl.dev) to Chainsaw should be easy, the assertion model used in KUTTL is compatible with Chainsaw. We provide `chainsaw kuttl migrate config` and `chainsaw kuttl migrate tests` commands to help with the migration, see [Migration from KUTTL](./more/kuttl-migration.md) for details.
+    Migrating from [KUTTL](https://kuttl.dev) to Chainsaw should be easy, the assertion model used in KUTTL is compatible with Chainsaw. We provide `chainsaw migrate kuttl config` and `chainsaw migrate kuttl tests` commands to help with the migration, see [Migration from KUTTL](./more/kuttl-migration.md) for details.
 
 ## Use cases
 

@@ -9,7 +9,7 @@ Available Commands:
   docs        Generate reference documentation
   generate    Generate commands
   help        Help about any command
-  kuttl       Work with KUTTL tests
+  migrate     Migrate resources to Chainsaw
   test        Run tests
   version     Print the version informations
 
