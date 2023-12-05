@@ -90,6 +90,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			t.FailNow()
 		}
 		t.Run(name, func(t *testing.T) {
+			t.Helper()
 			t.Cleanup(func() {
 				if t.Failed() {
 					p.shouldFailFast.Store(true)
