@@ -13,6 +13,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
+	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"github.com/spf13/cobra"
@@ -171,6 +172,9 @@ func Command() *cobra.Command {
 			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
+			if err := fsutils.CheckFolders(configuration.Spec.TestDirs...); err != nil {
+				return err
+			}
 			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, configuration.Spec.TestDirs...)
 			if err != nil {
 				return err

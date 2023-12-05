@@ -20,6 +20,7 @@ Release notes for `TODO`.
 
 - Fixed `command` and `script` log output when multiple sections are present
 - Fixed delete timeout used instead of cleanup timeout
+- Return an error if a test dir is not accessible
 
 ## ✨ UI changes ✨
 
