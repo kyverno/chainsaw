@@ -57,7 +57,9 @@ func TestChainsawCommand(t *testing.T) {
 		name: "test dirs specified",
 		args: []string{
 			"--test-dir",
-			"dir1,dir2,dir3",
+			"..",
+			"--test-dir",
+			".",
 		},
 		wantErr: false,
 		out:     filepath.Join(basePath, "with_test_dirs.txt"),

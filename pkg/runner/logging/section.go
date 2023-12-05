@@ -16,7 +16,7 @@ type section struct {
 }
 
 func (s section) String() string {
-	return s.name + "\n" + fmt.Sprint(s.args...)
+	return strings.TrimSpace(s.name + "\n" + fmt.Sprint(s.args...))
 }
 
 func Section(name string, args ...any) fmt.Stringer {

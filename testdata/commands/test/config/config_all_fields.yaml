@@ -12,8 +12,8 @@ spec:
     cleanup: 5s
     exec: 10s
   testDirs:
-    - /path/to/testdir1
-    - /path/to/testdir2
+    - '.'
+    - '..'
   skipDelete: true
   failFast: true
   parallel: 5

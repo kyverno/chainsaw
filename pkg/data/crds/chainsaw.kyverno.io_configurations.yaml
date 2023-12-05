@@ -35,6 +35,10 @@ spec:
           spec:
             description: Configuration spec.
             properties:
+              delayBeforeCleanup:
+                description: DelayBeforeCleanup adds a delay between the time a test
+                  ends and the time cleanup starts.
+                type: string
               excludeTestRegex:
                 description: ExcludeTestRegex is used to exclude tests based on a
                   regular expression.

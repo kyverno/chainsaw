@@ -1,4 +1,4 @@
-# Test: `inline`
+# Test: `catch`
 
 *No description*
 

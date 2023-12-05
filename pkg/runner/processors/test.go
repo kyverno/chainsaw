@@ -22,8 +22,8 @@ import (
 )
 
 type TestProcessor interface {
-	Run(ctx context.Context, nspacer namespacer.Namespacer)
-	CreateStepProcessor(nspacer namespacer.Namespacer, step v1alpha1.TestSpecStep) StepProcessor
+	Run(context.Context, namespacer.Namespacer)
+	CreateStepProcessor(namespacer.Namespacer, *cleaner, v1alpha1.TestSpecStep) StepProcessor
 }
 
 func NewTestProcessor(
@@ -68,7 +68,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			p.testReport.MarkTestEnd()
 		}
 	})
-	size := 0
+	size := len("@cleanup")
 	for i, step := range p.test.Spec.Steps {
 		name := step.Name
 		if name == "" {
@@ -103,6 +103,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		}
 	}
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
+	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
 	if nspacer == nil || p.test.Spec.Namespace != "" {
 		var ns corev1.Namespace
@@ -115,8 +116,9 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	}
 	if namespace != nil {
 		nspacer = namespacer.New(p.client, namespace.Name)
-		ctx := logging.IntoContext(ctx, setupLogger)
-		if err := p.client.Get(ctx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
+		setupCtx := logging.IntoContext(ctx, setupLogger)
+		cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
+		if err := p.client.Get(setupCtx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
 			if !errors.IsNotFound(err) {
 				// Get doesn't log
 				setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -128,15 +130,23 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 					timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
 					operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
 				}
-				operation.execute(ctx)
+				operation.execute(cleanupCtx)
 			})
-			if err := p.client.Create(logging.IntoContext(ctx, setupLogger), namespace.DeepCopy()); err != nil {
+			if err := p.client.Create(logging.IntoContext(setupCtx, setupLogger), namespace.DeepCopy()); err != nil {
 				t.FailNow()
 			}
 		}
 	}
+	delay := p.config.DelayBeforeCleanup
+	if p.test.Spec.DelayBeforeCleanup != nil {
+		delay = p.test.Spec.DelayBeforeCleanup
+	}
+	cleaner := newCleaner(nspacer, delay)
+	t.Cleanup(func() {
+		cleaner.run(logging.IntoContext(ctx, cleanupLogger))
+	})
 	for i, step := range p.test.Spec.Steps {
-		processor := p.CreateStepProcessor(nspacer, step)
+		processor := p.CreateStepProcessor(nspacer, cleaner, step)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
@@ -145,10 +155,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	}
 }
 
-func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, step v1alpha1.TestSpecStep) StepProcessor {
+func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, cleaner *cleaner, step v1alpha1.TestSpecStep) StepProcessor {
 	stepReport := report.NewTestSpecStep(step.Name)
 	if p.testReport != nil {
 		p.testReport.AddTestStep(stepReport)
 	}
-	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport)
+	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner)
 }

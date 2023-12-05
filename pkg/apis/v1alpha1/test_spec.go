@@ -1,5 +1,9 @@
 package v1alpha1
 
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
 // TestSpec contains the test spec.
 type TestSpec struct {
 	// Description contains a description of the test.
@@ -28,4 +32,12 @@ type TestSpec struct {
 
 	// Steps defining the test.
 	Steps []TestSpecStep `json:"steps"`
+
+	// ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.
+	// +optional
+	ForceTerminationGracePeriod *metav1.Duration `json:"forceTerminationGracePeriod,omitempty"`
+
+	// DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.
+	// +optional
+	DelayBeforeCleanup *metav1.Duration `json:"delayBeforeCleanup,omitempty"`
 }

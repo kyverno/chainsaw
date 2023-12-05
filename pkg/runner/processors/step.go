@@ -45,6 +45,7 @@ func NewStepProcessor(
 	test discovery.Test,
 	step v1alpha1.TestSpecStep,
 	stepReport *report.TestSpecStepReport,
+	cleaner *cleaner,
 ) StepProcessor {
 	return &stepProcessor{
 		config:     config,
@@ -55,6 +56,7 @@ func NewStepProcessor(
 		step:       step,
 		stepReport: stepReport,
 		timeouts:   config.Timeouts.Combine(test.Spec.Timeouts).Combine(step.Timeouts),
+		cleaner:    cleaner,
 	}
 }
 
@@ -67,6 +69,7 @@ type stepProcessor struct {
 	step       v1alpha1.TestSpecStep
 	stepReport *report.TestSpecStepReport
 	timeouts   v1alpha1.Timeouts
+	cleaner    *cleaner
 }
 
 func (p *stepProcessor) Run(ctx context.Context) {
@@ -400,20 +403,26 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]uns
 }
 
 func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) error {
-	if p.config.ForceTerminationGracePeriod != nil {
-		seconds := int64(p.config.ForceTerminationGracePeriod.Duration.Seconds())
-		switch resource.GetKind() {
-		case "Pod":
-			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "terminationGracePeriodSeconds"); err != nil {
-				return err
-			}
-		case "Deployment", "StatefulSet", "DaemonSet", "Job":
-			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
-				return err
-			}
-		case "CronJob":
-			if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "jobTemplate", "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
-				return err
+	terminationGracePeriod := p.config.ForceTerminationGracePeriod
+	if p.test.Spec.ForceTerminationGracePeriod != nil {
+		terminationGracePeriod = p.test.Spec.ForceTerminationGracePeriod
+	}
+	if terminationGracePeriod != nil {
+		seconds := int64(terminationGracePeriod.Seconds())
+		if seconds != 0 {
+			switch resource.GetKind() {
+			case "Pod":
+				if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "terminationGracePeriodSeconds"); err != nil {
+					return err
+				}
+			case "Deployment", "StatefulSet", "DaemonSet", "Job":
+				if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+					return err
+				}
+			case "CronJob":
+				if err := unstructured.SetNestedField(resource.UnstructuredContent(), seconds, "spec", "jobTemplate", "spec", "template", "spec", "terminationGracePeriodSeconds"); err != nil {
+					return err
+				}
 			}
 		}
 	}
@@ -431,19 +440,10 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 	if dryRun {
 		return nil
 	}
-	var cleaner cleanup.Cleaner
-	if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, p.step.TestStepSpec.SkipDelete) {
-		cleaner = func(obj unstructured.Unstructured, c client.Client) {
-			t := testing.FromContext(ctx)
-			t.Cleanup(func() {
-				operation := operation{
-					continueOnError: true,
-					timeout:         timeout.Get(nil, p.timeouts.DeleteDuration()),
-					operation:       opdelete.New(c, obj, p.namespacer),
-				}
-				operation.execute(ctx)
-			})
-		}
+	if cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, p.step.TestStepSpec.SkipDelete) {
+		return nil
 	}
-	return cleaner
+	return func(obj unstructured.Unstructured, c client.Client) {
+		p.cleaner.register(obj, c, timeout.Get(nil, p.timeouts.CleanupDuration()))
+	}
 }

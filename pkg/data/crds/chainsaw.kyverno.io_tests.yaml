@@ -38,8 +38,16 @@ spec:
                 description: Concurrent determines whether the test should run concurrently
                   with other tests.
                 type: boolean
+              delayBeforeCleanup:
+                description: DelayBeforeCleanup adds a delay between the time a test
+                  ends and the time cleanup starts.
+                type: string
               description:
                 description: Description contains a description of the test.
+                type: string
+              forceTerminationGracePeriod:
+                description: ForceTerminationGracePeriod forces the termination grace
+                  period on pods, statefulsets, daemonsets and deployments.
                 type: string
               namespace:
                 description: Namespace determines whether the test should run in a
