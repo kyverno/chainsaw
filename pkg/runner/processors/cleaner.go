@@ -2,21 +2,22 @@ package processors
 
 import (
 	"context"
-	"slices"
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 type cleaner struct {
 	namespacer namespacer.Namespacer
+	delay      *metav1.Duration
 	operations []operation
 }
 
-func newCleaner(namespacer namespacer.Namespacer) *cleaner {
+func newCleaner(namespacer namespacer.Namespacer, delay *metav1.Duration) *cleaner {
 	return &cleaner{
 		namespacer: namespacer,
 	}
@@ -31,8 +32,10 @@ func (c *cleaner) register(obj unstructured.Unstructured, client client.Client, 
 }
 
 func (c *cleaner) run(ctx context.Context) {
-	slices.Reverse(c.operations)
-	for _, operation := range c.operations {
-		operation.execute(ctx)
+	if c.delay != nil {
+		time.Sleep(c.delay.Duration)
+	}
+	for i := len(c.operations) - 1; i >= 0; i-- {
+		c.operations[i].execute(ctx)
 	}
 }
