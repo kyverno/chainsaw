@@ -207,22 +207,23 @@ func TestCreateTestProcessor(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			localTC := tc
 			processor := testsProcessor{
-				config:         tc.config,
-				client:         tc.client,
-				clock:          tc.clock,
-				summary:        tc.summary,
-				testsReport:    tc.testsReport,
-				tests:          tc.test,
+				config:         localTC.config,
+				client:         localTC.client,
+				clock:          localTC.clock,
+				summary:        localTC.summary,
+				testsReport:    localTC.testsReport,
+				tests:          localTC.test,
 				shouldFailFast: atomic.Bool{},
 			}
 			processor.shouldFailFast.Store(false)
 
-			result := processor.CreateTestProcessor(tc.test[0])
+			result := processor.CreateTestProcessor(localTC.test[0])
 
 			assert.NotNil(t, result, "TestProcessor should not be nil")
-			if tc.testsReport != nil {
-				assert.True(t, len(tc.testsReport.Reports) > 0, "Test report should be added")
+			if localTC.testsReport != nil {
+				assert.True(t, len(localTC.testsReport.Reports) > 0, "Test report should be added")
 			}
 		})
 	}
