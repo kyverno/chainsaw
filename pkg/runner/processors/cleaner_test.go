@@ -48,7 +48,7 @@ func Test_Cleaner_Register(t *testing.T) {
 			assert.Len(t, c.operations, tc.expectedOp)
 			for _, op := range c.operations {
 				assert.Equal(t, true, op.continueOnError)
-				assert.GreaterOrEqual(t, *op.timeout, tc.timeout)
+				assert.Equal(t, tc.timeout, *op.timeout)
 			}
 		})
 	}
