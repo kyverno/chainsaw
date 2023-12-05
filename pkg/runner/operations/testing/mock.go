@@ -8,6 +8,7 @@ type MockOperation struct {
 }
 
 func (m MockOperation) Exec(ctx context.Context) error {
+	m.numCalls++
 	return m.ExecFn(ctx)
 }
 
