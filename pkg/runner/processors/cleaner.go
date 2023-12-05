@@ -20,6 +20,7 @@ type cleaner struct {
 func newCleaner(namespacer namespacer.Namespacer, delay *metav1.Duration) *cleaner {
 	return &cleaner{
 		namespacer: namespacer,
+		delay:      delay,
 	}
 }
 
