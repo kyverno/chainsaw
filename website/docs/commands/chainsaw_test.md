@@ -11,6 +11,7 @@ chainsaw test [flags]... [test directories]...
 ```
       --apply-timeout duration                    The apply timeout to use as default for configuration (default 5s)
       --assert-timeout duration                   The assert timeout to use as default for configuration (default 30s)
+      --cleanup-delay duration                    Adds a delay between the time a test ends and the time cleanup starts
       --cleanup-timeout duration                  The cleanup timeout to use as default for configuration (default 30s)
       --config string                             Chainsaw configuration file
       --delete-timeout duration                   The delete timeout to use as default for configuration (default 15s)

@@ -44,6 +44,7 @@ type options struct {
 	noColor                     bool
 	kubeConfigOverrides         clientcmd.ConfigOverrides
 	forceTerminationGracePeriod metav1.Duration
+	delayBeforeCleanup          metav1.Duration
 }
 
 func Command() *cobra.Command {
@@ -144,6 +145,9 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "force-termination-grace-period") {
 				configuration.Spec.ForceTerminationGracePeriod = &options.forceTerminationGracePeriod
 			}
+			if flagutils.IsSet(flags, "cleanup-delay") {
+				configuration.Spec.DelayBeforeCleanup = &options.delayBeforeCleanup
+			}
 			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.TestFile)
 			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
@@ -168,6 +172,9 @@ func Command() *cobra.Command {
 			}
 			if configuration.Spec.ForceTerminationGracePeriod != nil {
 				fmt.Fprintf(out, "- ForceTerminationGracePeriod %v\n", configuration.Spec.ForceTerminationGracePeriod.Duration)
+			}
+			if configuration.Spec.DelayBeforeCleanup != nil {
+				fmt.Fprintf(out, "- DelayBeforeCleanup %v\n", configuration.Spec.DelayBeforeCleanup.Duration)
 			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
@@ -229,6 +236,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.excludeTestRegex, "exclude-test-regex", "", "Regular expression to exclude tests")
 	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
 	cmd.Flags().DurationVar(&options.forceTerminationGracePeriod.Duration, "force-termination-grace-period", 0, "If specified, overrides termination grace periods in applicable resources")
+	cmd.Flags().DurationVar(&options.delayBeforeCleanup.Duration, "cleanup-delay", 0, "Adds a delay between the time a test ends and the time cleanup starts")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
