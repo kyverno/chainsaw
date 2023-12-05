@@ -121,22 +121,22 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_kuttl/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_migrate/</loc>
          <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_kuttl_migrate/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_migrate_kuttl/</loc>
          <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_kuttl_migrate_config/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_migrate_kuttl_config/</loc>
          <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_kuttl_migrate_tests/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_migrate_kuttl_tests/</loc>
          <lastmod>2023-12-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
