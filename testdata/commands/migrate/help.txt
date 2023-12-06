@@ -6,6 +6,7 @@ Usage:
 
 Available Commands:
   kuttl       Migrate KUTTL resources to Chainsaw
+  tests       Migrate test steps to test
 
 Flags:
   -h, --help   help for migrate
