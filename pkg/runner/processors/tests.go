@@ -74,7 +74,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				operation := operation{
 					continueOnError: false,
 					timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-					operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
+					operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer),
 				}
 				operation.execute(ctx)
 			})
@@ -90,6 +90,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			t.FailNow()
 		}
 		t.Run(name, func(t *testing.T) {
+			t.Helper()
 			t.Cleanup(func() {
 				if t.Failed() {
 					p.shouldFailFast.Store(true)
