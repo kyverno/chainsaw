@@ -302,7 +302,7 @@ func TestLoadTest(t *testing.T) {
 					},
 					Spec: v1alpha1.TestSpec{
 						Steps: []v1alpha1.TestSpecStep{{
-							Name: "configmap",
+							Name: "step-01",
 							TestStepSpec: v1alpha1.TestStepSpec{
 								Try: []v1alpha1.Operation{{
 									Apply: &v1alpha1.Apply{
@@ -405,7 +405,6 @@ func Test_tryLoadTest(t *testing.T) {
 	dir := t.TempDir()
 	fileName := "chainsaw-test.yaml"
 	filePath := filepath.Join(dir, fileName)
-
 	_, err := os.Create(filePath)
 	if err != nil {
 		t.Fatalf("Failed to create file: %v", err)
