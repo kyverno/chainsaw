@@ -192,7 +192,7 @@ func TestHelpDiscoverTests(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			tests, err := helpDiscoverTests("chainsaw-test.yaml", func() []string {
+			tests, err := discoverTests("chainsaw-test.yaml", func() []string {
 				return tc.folders
 			})
 			if tc.expectError {

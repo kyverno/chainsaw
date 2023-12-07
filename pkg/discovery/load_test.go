@@ -414,6 +414,6 @@ func Test_tryLoadTest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to change file permissions: %v", err)
 	}
-	_, err = tryLoadTest(filePath)
+	_, err = tryLoadTestFile(filePath)
 	assert.Error(t, err)
 }
