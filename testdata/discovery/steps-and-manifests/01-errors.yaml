@@ -1,6 +1,0 @@
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: chainsaw-quick-start
-data:
-  foo: bar
