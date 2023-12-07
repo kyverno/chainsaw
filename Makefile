@@ -133,6 +133,29 @@ verify-codegen: codegen ## Verify all generated code and docs are up to date
 	@echo 'To correct this, locally run "make codegen", commit the changes, and re-run tests.' >&2
 	@git diff --quiet --exit-code -- .
 
+.PHONY: codegen-schemas-openapi
+codegen-schemas-openapi: $(KIND) $(HELM) ## Generate openapi schemas (v2 and v3)
+	@echo Generate openapi schema... >&2
+	@rm -rf ./.temp/.schemas
+	@mkdir -p ./.temp/.schemas/openapi/v2
+	@mkdir -p ./.temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io
+	@$(KIND) create cluster --name schema --image $(KIND_IMAGE)
+	@kubectl create -f $(CRDS_PATH)
+	@sleep 15
+	@kubectl get --raw /openapi/v2 > ./.temp/.schemas/openapi/v2/schema.json
+	@kubectl get --raw /openapi/v3/apis/chainsaw.kyverno.io/v1alpha1 > ./.temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha1.json
+	@$(KIND) delete cluster --name schema
+
+.PHONY: codegen-schemas-json
+codegen-schemas-json: #codegen-schemas-openapi ## Generate json schemas
+	@$(PIP) install openapi2jsonschema
+	@rm -rf ./.temp/.schemas/json
+	@rm -rf ./.schemas/json
+	@openapi2jsonschema ./.temp/.schemas/openapi/v2/schema.json --kubernetes --stand-alone --expanded -o ./.temp/.schemas/json
+	@mkdir -p ./.schemas/json
+	@cp ./.temp/.schemas/json/test-chainsaw-*.json ./.schemas/json
+	@cp ./.temp/.schemas/json/configuration-chainsaw-*.json ./.schemas/json
+
 ##########
 # MKDOCS #
 ##########
