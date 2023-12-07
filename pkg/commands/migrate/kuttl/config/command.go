@@ -116,7 +116,6 @@ func testSuite(in unstructured.Unstructured) (*v1alpha1.Configuration, error) {
 		ObjectMeta: from.ObjectMeta,
 		Spec: v1alpha1.ConfigurationSpec{
 			Timeouts:     timeouts,
-			TestDirs:     from.TestDirs,
 			SkipDelete:   from.SkipDelete,
 			ReportFormat: v1alpha1.ReportFormatType(from.ReportFormat),
 			ReportName:   from.ReportName,

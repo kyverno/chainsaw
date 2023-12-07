@@ -368,19 +368,6 @@
             "null"
           ]
         },
-        "testDirs": {
-          "description": "Directories containing test cases to run.",
-          "type": [
-            "array",
-            "null"
-          ],
-          "items": {
-            "type": [
-              "string",
-              "null"
-            ]
-          }
-        },
         "testFile": {
           "description": "TestFile is the name of the file containing the test to run.",
           "type": [

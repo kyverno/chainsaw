@@ -16,10 +16,6 @@ type ConfigurationSpec struct {
 	// +optional
 	Timeouts Timeouts `json:"timeouts"`
 
-	// Directories containing test cases to run.
-	// +optional
-	TestDirs []string `json:"testDirs,omitempty"`
-
 	// If set, do not delete the resources after running the tests (implies SkipClusterDelete).
 	// +optional
 	SkipDelete bool `json:"skipDelete,omitempty"`

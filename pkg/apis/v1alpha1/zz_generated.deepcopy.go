@@ -184,11 +184,6 @@ func (in *Configuration) DeepCopyObject() runtime.Object {
 func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 	*out = *in
 	in.Timeouts.DeepCopyInto(&out.Timeouts)
-	if in.TestDirs != nil {
-		in, out := &in.TestDirs, &out.TestDirs
-		*out = make([]string, len(*in))
-		copy(*out, *in)
-	}
 	if in.Parallel != nil {
 		in, out := &in.Parallel, &out.Parallel
 		*out = new(int)

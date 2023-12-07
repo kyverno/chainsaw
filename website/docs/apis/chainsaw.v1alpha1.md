@@ -131,7 +131,6 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |
-| `testDirs` | `[]string` |  |  | <p>Directories containing test cases to run.</p> |
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running the tests (implies SkipClusterDelete).</p> |
 | `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
 | `parallel` | `int` |  |  | <p>The maximum number of tests to run at once.</p> |

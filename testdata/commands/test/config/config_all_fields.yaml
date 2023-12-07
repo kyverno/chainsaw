@@ -11,9 +11,6 @@ spec:
     delete: 5s
     cleanup: 5s
     exec: 10s
-  testDirs:
-    - '.'
-    - '..'
   skipDelete: true
   failFast: true
   parallel: 5
