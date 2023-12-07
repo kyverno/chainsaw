@@ -1,7 +1,7 @@
 Loading default configuration...
 - Using test file: chainsaw-test.yaml
 - Timeout 30s
-- TestDirs []
+- TestDirs [.]
 - SkipDelete false
 - FailFast false
 - ReportFormat ''

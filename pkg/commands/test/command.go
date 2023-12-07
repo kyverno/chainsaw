@@ -146,6 +146,9 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "cleanup-delay") {
 				configuration.Spec.DelayBeforeCleanup = &options.delayBeforeCleanup
 			}
+			if len(options.testDirs) == 0 {
+				options.testDirs = append(options.testDirs, ".")
+			}
 			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.TestFile)
 			fmt.Fprintf(out, "- TestDirs %v\n", options.testDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
@@ -176,9 +179,6 @@ func Command() *cobra.Command {
 			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
-			if len(options.testDirs) == 0 {
-				options.testDirs = append(options.testDirs, ".")
-			}
 			if err := fsutils.CheckFolders(options.testDirs...); err != nil {
 				return err
 			}

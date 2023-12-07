@@ -123,7 +123,7 @@ codegen-mkdocs: codegen-cli-docs codegen-api-docs codegen-jp-docs ## Generate mk
 	@mkdocs build -f ./website/mkdocs.yaml
 
 .PHONY: codegen-schemas-openapi
-codegen-schemas-openapi: $(KIND) $(HELM) ## Generate openapi schemas (v2 and v3)
+codegen-schemas-openapi: codegen-crds $(KIND) ## Generate openapi schemas (v2 and v3)
 	@echo Generate openapi schema... >&2
 	@rm -rf ./.temp/.schemas
 	@mkdir -p ./.temp/.schemas/openapi/v2
@@ -136,7 +136,7 @@ codegen-schemas-openapi: $(KIND) $(HELM) ## Generate openapi schemas (v2 and v3)
 	@$(KIND) delete cluster --name schema
 
 .PHONY: codegen-schemas-json
-codegen-schemas-json: #codegen-schemas-openapi ## Generate json schemas
+codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas
 	@$(PIP) install openapi2jsonschema
 	@rm -rf ./.temp/.schemas/json
 	@rm -rf ./.schemas/json
