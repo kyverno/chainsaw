@@ -57,28 +57,13 @@ func execute(out io.Writer, save, cleanup bool, paths ...string) error {
 }
 
 func processFolder(out io.Writer, folder string, save, cleanup bool) error {
-	files, err := discovery.TryFindStepFiles(folder)
+	steps, err := discovery.TryFindStepFiles(folder)
 	if err != nil {
 		fmt.Fprintf(out, "ERROR: failed to collect test files: %v\n", err)
 		return err
 	}
-	if len(files) != 0 {
+	if len(steps) != 0 {
 		fmt.Fprintf(out, "Converting test %s ...\n", folder)
-		slices.Sort(files)
-		steps := map[string]step{}
-		for _, file := range files {
-			groups := discovery.StepFileName.FindStringSubmatch(file)
-			s := steps[groups[1]]
-			switch groups[2] {
-			case "assert":
-				s.assertFiles = append(s.assertFiles, file)
-			case "errors":
-				s.errorFiles = append(s.errorFiles, file)
-			default:
-				s.otherFiles = append(s.otherFiles, file)
-			}
-			steps[groups[1]] = s
-		}
 		keys := maps.Keys(steps)
 		slices.Sort(keys)
 		test := v1alpha1.Test{
@@ -89,11 +74,10 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 		}
 		test.SetName(strings.ToLower(strings.ReplaceAll(filepath.Base(folder), "_", "-")))
 		for _, key := range keys {
-			s := steps[key]
 			step := v1alpha1.TestSpecStep{
 				Name: fmt.Sprintf("step-%s", key),
 			}
-			if err := processStep(out, &step, s, folder, save); err != nil {
+			if err := processStep(out, &step, steps[key], folder, save); err != nil {
 				return err
 			}
 			test.Spec.Steps = append(test.Spec.Steps, step)
@@ -112,6 +96,12 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 			fmt.Fprintln(out, string(data))
 		}
 		if save && cleanup {
+			var files []string
+			for _, step := range steps {
+				files = append(files, step.AssertFiles...)
+				files = append(files, step.ErrorFiles...)
+				files = append(files, step.OtherFiles...)
+			}
 			for _, file := range files {
 				path := filepath.Join(folder, file)
 				fmt.Fprintf(out, "Deleting file %s ...\n", path)
@@ -124,8 +114,8 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 	return nil
 }
 
-func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s step, folder string, save bool) error {
-	for _, file := range s.otherFiles {
+func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, folder string, save bool) error {
+	for _, file := range s.OtherFiles {
 		resources, err := resource.Load(filepath.Join(folder, file))
 		if err != nil {
 			return err
@@ -167,7 +157,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s step, folder stri
 			}
 		}
 	}
-	for _, file := range s.assertFiles {
+	for _, file := range s.AssertFiles {
 		resources, err := resource.Load(filepath.Join(folder, file))
 		if err != nil {
 			return err
@@ -203,7 +193,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s step, folder stri
 			}
 		}
 	}
-	for _, file := range s.errorFiles {
+	for _, file := range s.ErrorFiles {
 		resources, err := resource.Load(filepath.Join(folder, file))
 		if err != nil {
 			return err

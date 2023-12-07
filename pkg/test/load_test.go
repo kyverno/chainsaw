@@ -283,7 +283,7 @@ func Test_parse(t *testing.T) {
 }
 
 func Test_parse_globalErr(t *testing.T) {
-	content, err := os.ReadFile("../../testdata/step/custom-step.yaml")
+	content, err := os.ReadFile("../../testdata/validation/example-file.yaml")
 	assert.NoError(t, err)
 	internalloader.Err = errors.New("dummy error")
 	{
