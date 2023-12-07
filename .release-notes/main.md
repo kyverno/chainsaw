@@ -16,11 +16,16 @@ Release notes for `TODO`.
 
 - Renamed `chainsaw kuttl migrate config` command to  `chainsaw migrate kuttl config`
 - Renamed `chainsaw kuttl migrate tests` command to  `chainsaw migrate kuttl tests`
+- Removed `testDirs` from `Configuration` spec, it is only supported in flags now
+- Removed `TestStep` based tests support, keeping only `Test` based or raw manifests
 
 ## 💫 New features 💫
 
 - Added a cleanup delay option to add a delay between the time a test ends and the time cleanup starts
 - Added support for overriding termination grace period on a per test basis
+- Default test dirs to `.` when flag not specified
+- Added `chainsaw migrate tests` command to migrate `TestStep` based tests to `Test` based
+- Generate json schemas to support validation and autocomplete in IDEs
 
 ## 🔧 Fixes 🔧
 
@@ -31,3 +36,4 @@ Release notes for `TODO`.
 ## ✨ UI changes ✨
 
 - Use `@setup` and `@cleanup` in the logs to indicate setup/cleanup steps
+- Made resource in log messages easier to read
