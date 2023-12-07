@@ -110,9 +110,6 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "exec-timeout") {
 				configuration.Spec.Timeouts.Exec = &options.execTimeout
 			}
-			if flagutils.IsSet(flags, "test-dir") {
-				configuration.Spec.TestDirs = options.testDirs
-			}
 			if flagutils.IsSet(flags, "skip-delete") {
 				configuration.Spec.SkipDelete = options.skipDelete
 			}
@@ -150,7 +147,7 @@ func Command() *cobra.Command {
 				configuration.Spec.DelayBeforeCleanup = &options.delayBeforeCleanup
 			}
 			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.TestFile)
-			fmt.Fprintf(out, "- TestDirs %v\n", configuration.Spec.TestDirs)
+			fmt.Fprintf(out, "- TestDirs %v\n", options.testDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
 			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
@@ -179,13 +176,13 @@ func Command() *cobra.Command {
 			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
-			if len(configuration.Spec.TestDirs) == 0 {
-				configuration.Spec.TestDirs = append(configuration.Spec.TestDirs, ".")
+			if len(options.testDirs) == 0 {
+				options.testDirs = append(options.testDirs, ".")
 			}
-			if err := fsutils.CheckFolders(configuration.Spec.TestDirs...); err != nil {
+			if err := fsutils.CheckFolders(options.testDirs...); err != nil {
 				return err
 			}
-			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, configuration.Spec.TestDirs...)
+			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, options.testDirs...)
 			if err != nil {
 				return err
 			}

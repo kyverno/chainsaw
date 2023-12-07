@@ -122,17 +122,6 @@ codegen-mkdocs: codegen-cli-docs codegen-api-docs codegen-jp-docs ## Generate mk
 	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin mike
 	@mkdocs build -f ./website/mkdocs.yaml
 
-.PHONY: codegen
-codegen: codegen-crds codegen-deepcopy codegen-register codegen-mkdocs codegen-cli-docs codegen-api-docs ## Rebuild all generated code and docs
-
-.PHONY: verify-codegen
-verify-codegen: codegen ## Verify all generated code and docs are up to date
-	@echo Checking codegen is up to date... >&2
-	@git --no-pager diff -- .
-	@echo 'If this test fails, it is because the git diff is non-empty after running "make codegen".' >&2
-	@echo 'To correct this, locally run "make codegen", commit the changes, and re-run tests.' >&2
-	@git diff --quiet --exit-code -- .
-
 .PHONY: codegen-schemas-openapi
 codegen-schemas-openapi: $(KIND) $(HELM) ## Generate openapi schemas (v2 and v3)
 	@echo Generate openapi schema... >&2
@@ -155,6 +144,17 @@ codegen-schemas-json: #codegen-schemas-openapi ## Generate json schemas
 	@mkdir -p ./.schemas/json
 	@cp ./.temp/.schemas/json/test-chainsaw-*.json ./.schemas/json
 	@cp ./.temp/.schemas/json/configuration-chainsaw-*.json ./.schemas/json
+
+.PHONY: codegen
+codegen: codegen-crds codegen-deepcopy codegen-register codegen-mkdocs codegen-cli-docs codegen-api-docs codegen-schemas-json ## Rebuild all generated code and docs
+
+.PHONY: verify-codegen
+verify-codegen: codegen ## Verify all generated code and docs are up to date
+	@echo Checking codegen is up to date... >&2
+	@git --no-pager diff -- .
+	@echo 'If this test fails, it is because the git diff is non-empty after running "make codegen".' >&2
+	@echo 'To correct this, locally run "make codegen", commit the changes, and re-run tests.' >&2
+	@git diff --quiet --exit-code -- .
 
 ##########
 # MKDOCS #
