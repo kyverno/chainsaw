@@ -115,7 +115,7 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 }
 
 func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, folder string, save bool) error {
-	for _, file := range s.OtherFiles {
+	for f, file := range s.OtherFiles {
 		resources, err := resource.Load(filepath.Join(folder, file))
 		if err != nil {
 			return err
@@ -139,7 +139,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 					return fmt.Errorf("type not supported %s / %s", resource.GetAPIVersion(), resource.GetKind())
 				}
 			} else {
-				file := fmt.Sprintf("chainsaw-%s-apply-%d.yaml", step.Name, i+1)
+				file := fmt.Sprintf("chainsaw-%s-apply-%d-%d.yaml", step.Name, f+1, i+1)
 				if save {
 					if err := saveResource(out, folder, file, resource); err != nil {
 						return err
@@ -157,7 +157,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 			}
 		}
 	}
-	for _, file := range s.AssertFiles {
+	for f, file := range s.AssertFiles {
 		resources, err := resource.Load(filepath.Join(folder, file))
 		if err != nil {
 			return err
@@ -175,7 +175,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 					return fmt.Errorf("type not supported %s / %s", resource.GetAPIVersion(), resource.GetKind())
 				}
 			} else {
-				file := fmt.Sprintf("chainsaw-%s-assert-%d.yaml", step.Name, i+1)
+				file := fmt.Sprintf("chainsaw-%s-assert-%d-%d.yaml", step.Name, f+1, i+1)
 				if save {
 					if err := saveResource(out, folder, file, resource); err != nil {
 						return err
@@ -193,7 +193,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 			}
 		}
 	}
-	for _, file := range s.ErrorFiles {
+	for f, file := range s.ErrorFiles {
 		resources, err := resource.Load(filepath.Join(folder, file))
 		if err != nil {
 			return err
@@ -211,7 +211,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 					return fmt.Errorf("type not supported %s / %s", resource.GetAPIVersion(), resource.GetKind())
 				}
 			} else {
-				file := fmt.Sprintf("chainsaw-%s-error-%d.yaml", step.Name, i+1)
+				file := fmt.Sprintf("chainsaw-%s-error-%d-%d.yaml", step.Name, f+1, i+1)
 				if save {
 					if err := saveResource(out, folder, file, resource); err != nil {
 						return err
