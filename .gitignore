@@ -1,5 +1,6 @@
-.gopath
-.tools
+.gopath/
+.temp/
+.tools/
 chainsaw
 coverage.out
 website/site
