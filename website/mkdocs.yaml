@@ -10,7 +10,7 @@ nav:
   - docs.md
   - community.md
 - Writing tests:
-  - tests/index.md
+  - writing-tests.md
   - Configuration:
     - configuration/index.md
     - configuration/file.md
@@ -20,10 +20,9 @@ nav:
     - configuration/cleanup-delay.md
     - configuration/reports.md
   - Tests:
-    - tests/what-is-a-test.md
-    - tests/with-manifests.md
-    - tests/with-test-steps.md
-    - tests/with-test.md
+    - tests/index.md
+    - tests/manifests-based.md
+    - tests/test-based.md
   - Test steps:
     - steps/index.md
     - steps/try.md

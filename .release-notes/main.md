@@ -7,8 +7,6 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 📚 Docs 📚
-
 ## 🎸 Misc 🎸
 -->
 
@@ -37,3 +35,7 @@ Release notes for `TODO`.
 
 - Use `@setup` and `@cleanup` in the logs to indicate setup/cleanup steps
 - Made resource in log messages easier to read
+
+## 📚 Docs 📚
+
+- Improved the configuration docs
