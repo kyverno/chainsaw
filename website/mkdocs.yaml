@@ -68,7 +68,6 @@ nav:
 - More resources:
   - more/events.md
   - more/crds.md
-  - more/ide-completion.md
   - more/kuttl-migration.md
   - more/test-docs.md
 - Blog:

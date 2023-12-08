@@ -6,8 +6,6 @@ Release notes for `TODO`.
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
-
-## 🎸 Misc 🎸
 -->
 
 ## ‼️ Breaking chages ‼️
@@ -41,3 +39,7 @@ Release notes for `TODO`.
 - Improved the *Writing tests/Configuration* docs
 - Improved the *Writing tests/Tests* docs
 - Added *Writing tests/JSON schemas* docs to use generated JSON schemas for validation and autocomplete in VS code
+
+## 🎸 Misc 🎸
+
+- [Nirmata Office Hours for Kyverno- Episode 9- Demonstrate Kyverno Chainsaw](https://www.youtube.com/watch?v=IrIteTTjlbU)
