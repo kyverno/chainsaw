@@ -3,7 +3,7 @@
 Release notes for `TODO`.
 
 <!--
-## ‼️ Breaking chages ‼️
+## ‼️ Breaking changes ‼️
 
 ## 💫 New features 💫
 
