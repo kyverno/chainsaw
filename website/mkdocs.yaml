@@ -11,7 +11,14 @@ nav:
   - community.md
 - Writing tests:
   - tests/index.md
-  - configuration/index.md
+  - Configuration:
+    - configuration/index.md
+    - configuration/file.md
+    - configuration/flags.md
+    - configuration/timeouts.md
+    - configuration/grace.md
+    - configuration/cleanup-delay.md
+    - configuration/reports.md
   - Tests:
     - tests/what-is-a-test.md
     - tests/with-manifests.md
