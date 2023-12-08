@@ -19,11 +19,11 @@ func DiscoverTests(fileName string, paths ...string) ([]Test, error) {
 func discoverTests(fileName string, discoveredFolders folders) ([]Test, error) {
 	var tests []Test
 	for _, folder := range discoveredFolders() {
-		test, err := LoadTest(fileName, folder)
+		t, err := LoadTest(fileName, folder)
 		if err != nil {
 			return nil, err
-		} else if test != nil {
-			tests = append(tests, *test)
+		} else if t != nil {
+			tests = append(tests, t...)
 		}
 	}
 	return tests, nil

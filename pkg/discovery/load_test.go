@@ -16,7 +16,7 @@ func TestLoadTest(t *testing.T) {
 		name     string
 		fileName string
 		path     string
-		want     *Test
+		want     []Test
 		wantErr  bool
 	}{{
 		name:     "invalid path",
@@ -34,7 +34,7 @@ func TestLoadTest(t *testing.T) {
 		name:     "test",
 		fileName: "chainsaw-test.yaml",
 		path:     filepath.Join(basePath, "test"),
-		want: &Test{
+		want: []Test{{
 			BasePath: "../../testdata/discovery/test",
 			Test: &v1alpha1.Test{
 				TypeMeta: metav1.TypeMeta{
@@ -76,13 +76,13 @@ func TestLoadTest(t *testing.T) {
 					}},
 				},
 			},
-		},
+		}},
 		wantErr: false,
 	}, {
 		name:     "manifests",
 		fileName: "chainsaw-test.yaml",
 		path:     filepath.Join(basePath, "manifests"),
-		want: &Test{
+		want: []Test{{
 			BasePath: "../../testdata/discovery/manifests",
 			Test: &v1alpha1.Test{
 				TypeMeta: metav1.TypeMeta{
@@ -125,7 +125,7 @@ func TestLoadTest(t *testing.T) {
 					}},
 				},
 			},
-		},
+		}},
 		wantErr: false,
 	}, {
 		name:     "empty test",
@@ -137,8 +137,92 @@ func TestLoadTest(t *testing.T) {
 		name:     "multiple tests",
 		fileName: "chainsaw-test.yaml",
 		path:     filepath.Join(basePath, "multiple-tests"),
-		want:     nil,
-		wantErr:  true,
+		want: []Test{{
+			BasePath: "../../testdata/discovery/multiple-tests",
+			Test: &v1alpha1.Test{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Test",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-1",
+				},
+				Spec: v1alpha1.TestSpec{
+					Steps: []v1alpha1.TestSpecStep{{
+						Name: "create configmap",
+						TestStepSpec: v1alpha1.TestStepSpec{
+							Try: []v1alpha1.Operation{
+								{
+									Apply: &v1alpha1.Apply{
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "configmap.yaml",
+											},
+										},
+									},
+								},
+							},
+						},
+					}, {
+						Name: "assert configmap",
+						TestStepSpec: v1alpha1.TestStepSpec{
+							Try: []v1alpha1.Operation{{
+								Assert: &v1alpha1.Assert{
+									FileRefOrResource: v1alpha1.FileRefOrResource{
+										FileRef: v1alpha1.FileRef{
+											File: "configmap.yaml",
+										},
+									},
+								},
+							}},
+						},
+					}},
+				},
+			},
+		}, {
+			BasePath: "../../testdata/discovery/multiple-tests",
+			Test: &v1alpha1.Test{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Test",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "test-2",
+				},
+				Spec: v1alpha1.TestSpec{
+					Steps: []v1alpha1.TestSpecStep{{
+						Name: "create configmap",
+						TestStepSpec: v1alpha1.TestStepSpec{
+							Try: []v1alpha1.Operation{
+								{
+									Apply: &v1alpha1.Apply{
+										FileRefOrResource: v1alpha1.FileRefOrResource{
+											FileRef: v1alpha1.FileRef{
+												File: "configmap.yaml",
+											},
+										},
+									},
+								},
+							},
+						},
+					}, {
+						Name: "assert configmap",
+						TestStepSpec: v1alpha1.TestStepSpec{
+							Try: []v1alpha1.Operation{{
+								Assert: &v1alpha1.Assert{
+									FileRefOrResource: v1alpha1.FileRefOrResource{
+										FileRef: v1alpha1.FileRef{
+											File: "configmap.yaml",
+										},
+									},
+								},
+							}},
+						},
+					}},
+				},
+			},
+		}},
+		wantErr: false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -147,12 +231,12 @@ func TestLoadTest(t *testing.T) {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
-				if tt.want != nil {
-					tt.want.Err = nil
-				}
-				if got != nil {
-					got.Err = nil
-				}
+				// if tt.want != nil {
+				// 	tt.want.Err = nil
+				// }
+				// if got != nil {
+				// 	got.Err = nil
+				// }
 			}
 			assert.Equal(t, tt.want, got)
 		})

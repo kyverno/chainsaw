@@ -14,7 +14,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func tryLoadTestFile(file string) (*v1alpha1.Test, error) {
+func tryLoadTestFile(file string) ([]*v1alpha1.Test, error) {
 	if _, err := os.Stat(file); err != nil {
 		if os.IsNotExist(err) {
 			return nil, nil
@@ -25,28 +25,29 @@ func tryLoadTestFile(file string) (*v1alpha1.Test, error) {
 	if err != nil {
 		return nil, err
 	}
-	if len(tests) != 1 {
-		return nil, fmt.Errorf("found more than one test in %s (%d)", file, len(tests))
-	}
-	return tests[0], nil
+	return tests, nil
 }
 
-func LoadTest(fileName string, path string) (*Test, error) {
+func LoadTest(fileName string, path string) ([]Test, error) {
 	// first, try to load a test manifest
 	if path == "" {
 		return nil, errors.New("path must be specified")
 	}
+	var tests []Test
 	if fileName != "" {
-		test, err := tryLoadTestFile(filepath.Join(path, fileName))
+		apiTests, err := tryLoadTestFile(filepath.Join(path, fileName))
 		if err != nil {
 			return nil, err
 		}
-		if test != nil {
-			return &Test{
-				Test:     test,
-				BasePath: path,
-				Err:      nil,
-			}, nil
+		if len(apiTests) != 0 {
+			for _, apiTest := range apiTests {
+				tests = append(tests, Test{
+					Test:     apiTest,
+					BasePath: path,
+					Err:      nil,
+				})
+			}
+			return tests, nil
 		}
 	}
 	// next, look at files
@@ -107,8 +108,10 @@ func LoadTest(fileName string, path string) (*Test, error) {
 		}
 		test.Spec.Steps = append(test.Spec.Steps, step)
 	}
-	return &Test{
+	tests = append(tests, Test{
 		Test:     test,
 		BasePath: path,
-	}, nil
+		Err:      nil,
+	})
+	return tests, nil
 }

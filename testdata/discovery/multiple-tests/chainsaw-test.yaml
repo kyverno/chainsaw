@@ -1,7 +1,7 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: test
+  name: test-1
 spec:
   steps:
   - name: create configmap
@@ -16,7 +16,7 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: test
+  name: test-2
 spec:
   steps:
   - name: create configmap
