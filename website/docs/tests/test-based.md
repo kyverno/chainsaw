@@ -1,8 +1,11 @@
-# `Test`s based syntax
+# `Test` based syntax
 
-The `Test` based approach is the more verbose and explicit syntax.
+The `Test` based syntax is more verbose than the [manifests based syntax](./manifests-based.md) but offers more flexibility and features:
 
-It does not rely on file naming conventions, it makes it easy to reuse files accross multiple tests, it offers the flexibility to provide additional configuration at both the test and test step level and supports all operations.
+- Does not rely on file naming conventions for operations ordering
+- Allows to easily reuse files accross multiple tests
+- Offers the flexibility to provide additional configuration at the test, step and operation level
+- Supports all [operations](../operations/index.md) and [collectors](../collectors/index.md)
 
 ## The `Test` resource
 
@@ -10,20 +13,22 @@ A `Test` resource, like any Kubernetes resource has an `apiVersion`, `kind` and 
 
 It also comes with a `spec` section used to declaratively represent the steps of a test and other configuration elements belonging to the test being defined.
 
-The full structure of the `Test` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test).
+!!! tip "Reference documentation"
+    The full structure of the `Test` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test).
 
-## `Test` loading process
+### Test steps
 
-A `Test` resource is self-contained and fully represents a test. Chainsaw loads the Test and adds it to the collection of tests to be processed. By default, Chainsaw expects the file name to match `chainsaw-test.yaml`. However, this can be customized using the `--test-file` command flag.
+A `Test` is mostly made of test steps. Test steps are detailed in a [dedicated documentation](../steps/index.md).
 
 ## Example
 
 ### chainsaw-test.yaml
 
 The manifest below contains a `Test` in a file called `chainsaw-test.yaml`.
+
 Chainsaw will load the `Test` and steps defined in its `spec` section.
-The `Test` defines a custom `timeout` for the whole test.
-Note that the `timeout` could have been overridden in specific steps if needed.
+
+The `Test` uses a custom `timeouts` for the whole test. Note that `timeouts` could have been overridden in specific steps if needed.
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -67,12 +72,14 @@ spec:
 If you have your test defined in a different file, you can specify it when running Chainsaw:
 
 ```bash
-chainsaw test --test-dir . --test-file=<custom-test-file-name>.yaml
+$ chainsaw test --test-dir . --test-file=<custom-test-file-name>.yaml
 ```
 
 ## Raw Resource Support
 
-Chainsaw now includes the raw resource feature, allowing direct specification of Kubernetes resources within the test definitions. This feature offers a more streamlined approach for defining resources, especially useful for simpler test scenarios or for cases where resource definitions need to be reused or slightly modified across different tests.
+Chainsaw now includes the raw resource feature, allowing direct specification of Kubernetes resources within the test definitions.
+
+This feature offers a more streamlined approach for defining resources, especially useful for simpler test scenarios or for cases where resource definitions need to be reused or slightly modified across different tests.
 
 ### Example Raw Resource
 
@@ -111,7 +118,9 @@ spec:
 ```
 ## URL Support for File References
 
-Chainsaw support for URLs in file references for assert, apply, error and similar operations. This feature enhances the reach of Chainsaw by allowing users to reference files hosted on remote locations, such as GitHub raw URLs or other web URLs, directly within their test definitions.
+Chainsaw has support for URLs in file references for assert, apply, error and similar operations.
+
+This feature enhances the reach of Chainsaw by allowing users to reference files hosted on remote locations, such as GitHub raw URLs or other web URLs, directly within their test definitions.
 
 ### Example URL File Reference
 

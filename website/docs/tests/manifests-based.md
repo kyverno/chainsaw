@@ -1,6 +1,8 @@
 # Manifests based syntax
 
-This is the simplest and less verbose supported syntax, you provide bare Kubernetes resource manifests and Chainsaw will use those manifests to create, update, or assert expectations against a cluster.
+This is the simplest and less verbose supported syntax.
+
+You provide bare Kubernetes resource manifests and Chainsaw will use those manifests to create, update, or assert expectations against a cluster.
 
 While this syntax is simple, it doesn't support deletion operations and doesn't allow specifying additional configuration per test or step.
 
@@ -8,15 +10,15 @@ It also relies a lot on file naming conventions and makes it hard to reuse files
 
 ## File naming convention
 
-Manifest files must follow the naming convention `<step index>-<name|assert|error>.yaml`.
+Manifest files must follow the naming convention `<step index>-<name|assert|errors>.yaml`.
 
-As an example `00-configmap.yaml`, `01-assert.yaml` and `02-error.yaml` can all be considered valid file names.
+As an example `00-configmap.yaml`, `01-assert.yaml` and `02-errors.yaml` can all be considered valid file names.
 
-It's also perfectly valid to have multiple files for the same step. Let's imagine we have the following files `00-resources.yaml`, `00-more-resources.yaml`, `00-assert.yaml` and `00-error.yaml`:
+It's also perfectly valid to have multiple files for the same step. Let's imagine we have the following files `00-resources.yaml`, `00-more-resources.yaml`, `00-assert.yaml` and `00-errors.yaml`:
 
 - `00-resources.yaml` and `00-more-resources.yaml` contain resources that will be applied in step `00`
 - `00-assert.yaml` contains assert statements in step `00`
-- `00-error.yaml` contains error statements in step `00`
+- `00-errors.yaml` contains error statements in step `00`
 
 With the four files above, Chainsaw will assemble a test step made of the combination of all those files.
 
@@ -60,9 +62,9 @@ data:
   foo: bar
 ```
 
-### 03-error.yaml
+### 03-errors.yaml
 
-The manifest below contains an error statement in a file called `03-error.yaml`. Chainsaw will associate this manifest with an error operation in step `03`.
+The manifest below contains an error statement in a file called `03-errors.yaml`. Chainsaw will associate this manifest with an error operation in step `03`.
 
 ```yaml
 apiVersion: v1
