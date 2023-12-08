@@ -2,16 +2,14 @@
 
 Chainsaw is a tool developed to **run end to end tests in [Kubernetes](https://kubernetes.io) clusters**.
 
-!!! info "How it works"
+It is meant to test [Kubernetes operators](https://kubernetes.io/docs/concepts/extend-kubernetes/operator) work as expected by running a sequence of test steps for:
 
-    It is meant to test [Kubernetes operators](https://kubernetes.io/docs/concepts/extend-kubernetes/operator) work as expected by running a sequence of test steps for:
-
-    - creating resources
-    - and asserting operators react (or not) in the expected way.
+- creating resources
+- and asserting operators react (or not) in the expected way.
 
 ## Why we made it ?
 
-While developing [Kyverno](https://kyverno.io) we needed to run end to end tests to make sure our admission controller worked as expected.
+While developing [Kyverno](https://kyverno.io) we need to run end to end tests to make sure our admission controller works as expected.
 
 !!! info "A typical Kyverno end to end test"
 
@@ -22,14 +20,23 @@ While developing [Kyverno](https://kyverno.io) we needed to run end to end tests
     1. Check that Kyverno acted as expected
     1. Cleanup and move to the next test
 
-We started with another tool called [KUTTL](https://kuttl.dev). While [KUTTL](https://kuttl.dev) is great we identified some limitations and forked the tool to add the features we needed.
+### From KUTTL to Chainsaw
 
-But we ended up needing more flexibility than what [KUTTL](https://kuttl.dev) could offer and we started designing a new assertion model.
+We started with another tool called [KUTTL](https://kuttl.dev).
 
-At this point it was simpler to start a new tool from scratch than continuing making changes in our [KUTTL](https://kuttl.dev) fork.
+While KUTTL was a great tool to start with, we quickly identified some limitations and forked it to add the features we needed.
 
-!!! tip "KUTTL compatibility"
-    Migrating from [KUTTL](https://kuttl.dev) to Chainsaw should be easy, the assertion model used in KUTTL is compatible with Chainsaw. We provide `chainsaw migrate kuttl config` and `chainsaw migrate kuttl tests` commands to help with the migration, see [Migration from KUTTL](./more/kuttl-migration.md) for details.
+In the end we needed more flexibility than what KUTTL could offer and we started designing a new assertion model and at this point it was simpler to start a new tool from scratch than continuing making changes in our KUTTL fork.
+
+The changes we were making was simply too large to have a chance to be incorporated upstream.
+
+Chainsaw was born :tada:
+
+#### KUTTL compatibility
+
+Fortunately, Chainsaw assertion model is compatible with KUTTL and therefore migration to Chainsaw is relatively easy.
+
+We provide `chainsaw migrate kuttl config` and `chainsaw migrate kuttl tests` commands to assist with the migration, see [Migration from KUTTL](./more/kuttl-migration.md) for details.
 
 ## Use cases
 
