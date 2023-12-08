@@ -5,8 +5,8 @@ nav:
 - Getting Started:
   - intro.md
   - install.md
-  - gh-action.md
   - quick-start.md
+  - gh-action.md
   - docs.md
   - community.md
 - Writing tests:

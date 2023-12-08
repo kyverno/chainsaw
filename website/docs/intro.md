@@ -4,8 +4,8 @@ Chainsaw is a tool developed to **run end to end tests in [Kubernetes](https://k
 
 It is meant to test [Kubernetes operators](https://kubernetes.io/docs/concepts/extend-kubernetes/operator) work as expected by running a sequence of test steps for:
 
-- creating resources
-- and asserting operators react (or not) in the expected way.
+- Creating resources
+- Asserting operators react (or not) the way they should
 
 ## Why we made it ?
 
@@ -32,7 +32,7 @@ The changes we were making was simply too large to have a chance to be incorpora
 
 Chainsaw was born :tada:
 
-#### KUTTL compatibility
+### KUTTL compatibility
 
 Fortunately, Chainsaw assertion model is compatible with KUTTL and therefore migration to Chainsaw is relatively easy.
 
