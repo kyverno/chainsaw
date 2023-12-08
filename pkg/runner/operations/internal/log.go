@@ -10,17 +10,25 @@ import (
 )
 
 func GetLogger(ctx context.Context, obj client.Object) logging.Logger {
-	return logging.FromContext(ctx).WithResource(obj)
+	logger := logging.FromContext(ctx)
+	if logger == nil {
+		return logger
+	}
+	return logger.WithResource(obj)
 }
 
 func LogStart(logger logging.Logger, op logging.Operation, args ...fmt.Stringer) {
-	logger.Log(op, logging.RunStatus, color.BoldFgCyan, args...)
+	if logger != nil {
+		logger.Log(op, logging.RunStatus, color.BoldFgCyan, args...)
+	}
 }
 
 func LogEnd(logger logging.Logger, op logging.Operation, err error) {
-	if err != nil {
-		logger.Log(op, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-	} else {
-		logger.Log(op, logging.DoneStatus, color.BoldGreen)
+	if logger != nil {
+		if err != nil {
+			logger.Log(op, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		} else {
+			logger.Log(op, logging.DoneStatus, color.BoldGreen)
+		}
 	}
 }
