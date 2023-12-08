@@ -1,4 +1,4 @@
-package script
+package sleep
 
 import (
 	"context"
@@ -11,12 +11,12 @@ import (
 )
 
 type operation struct {
-	sleep v1alpha1.Sleep
+	duration v1alpha1.Sleep
 }
 
-func New(sleep v1alpha1.Sleep) operations.Operation {
+func New(duration v1alpha1.Sleep) operations.Operation {
 	return &operation{
-		sleep: sleep,
+		duration: duration,
 	}
 }
 
@@ -30,6 +30,6 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 }
 
 func (o *operation) execute(ctx context.Context) error {
-	time.Sleep(o.sleep.Duration.Duration)
+	time.Sleep(o.duration.Duration.Duration)
 	return nil
 }
