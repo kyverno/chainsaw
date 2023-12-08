@@ -38,4 +38,6 @@ Release notes for `TODO`.
 
 ## 📚 Docs 📚
 
-- Improved the configuration docs
+- Improved the *Writing tests/Configuration* docs
+- Improved the *Writing tests/Tests* docs
+- Added *Writing tests/JSON schemas* docs to use generated JSON schemas for validation and autocomplete in VS code
