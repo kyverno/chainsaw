@@ -26,11 +26,16 @@ kind create cluster --image $KIND_IMAGE
 
 ## Writing tests
 
-A Chainsaw test is made of YAML files in a folder.
+A Chainsaw test is [made of YAML files in a folder](./tests/index.md).
 
-Every file contains a `TestStep` and Chainsaw will run every step sequentially.
+YAML files can either contain raw manifests with a special file naming convention to identify the step operations.
+This is useful to create test quickly but doesn't allow great flexibility.
 
-For this Quick start, we will create a two step test:
+Another option is to have a `chainsaw-test.yaml` file containing a `Test` resource. While more verbose, this offers full flexibility over the test and test steps configuration.
+
+### Quick start
+
+For this quick start, we will create a `Test` with one step and two operations:
 
 1. Create a `ConfigMap` from a manifest
 1. Verify the `ConfigMap` was created and contains the expected data
@@ -39,17 +44,17 @@ For this Quick start, we will create a two step test:
 
 ```bash
 # create test folder
-mkdir chainsaw-quick-start
+$ mkdir chainsaw-quick-start
 
 # enter test folder
-cd chainsaw-quick-start
+$ cd chainsaw-quick-start
 ```
 
 ### Create a `ConfigMap`
 
 ```bash
 # create a ConfigMap
-cat > configmap.yaml << EOF
+$ cat > configmap.yaml << EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -61,24 +66,23 @@ EOF
 
 ### Create the test
 
-By default, Chainsaw looks for a file named chainsaw-test.yaml. If you don't specify a filename, Chainsaw will use this default. However, you can specify a different file using the --test-file argument.
+By default, Chainsaw will look for a file named `chainsaw-test.yaml` in every folder.
 
 ```bash
 # create test file
-cat > chainsaw-test.yaml << EOF
+$ cat > chainsaw-test.yaml << EOF
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: quick-start
 spec:
   steps:
-  # first step applies the config map
   - try:
+    # first operation: create the config map
     - apply:
         # file is relative to the test folder
         file: configmap.yaml
-  # second step verifies the config map exists and contains the expected data
-  - try:
+    # second operation: verify the config map exists and contains the expected data
     - assert:
         # file is relative to the test folder
         file: configmap.yaml
@@ -90,7 +94,7 @@ EOF
 We finished writing our first test, now we can run Chainsaw to verify the test runs as expected:
 
 ```bash
-chainsaw test --test-dir .
+$ chainsaw test
 
 Loading default configuration...
 - Using test file: chainsaw-test.yaml
@@ -103,31 +107,37 @@ Loading default configuration...
 - FullName false
 - IncludeTestRegex ''
 - ExcludeTestRegex ''
+- ApplyTimeout 5s
+- AssertTimeout 30s
+- CleanupTimeout 30s
+- DeleteTimeout 15s
+- ErrorTimeout 30s
+- ExecTimeout 5s
 Loading tests...
 - quick-start (.)
 Running tests...
 === RUN   chainsaw
+=== PAUSE chainsaw
+=== CONT  chainsaw
 === RUN   chainsaw/quick-start
 === PAUSE chainsaw/quick-start
 === CONT  chainsaw/quick-start
-    09:45:36 | quick-start | @setup | CREATE    | OK    | v1/Namespace | chainsaw-eternal-elk
-    09:45:36 | quick-start | step-1 | TRY       | RUN   |
-    09:45:36 | quick-start | step-1 | APPLY     | RUN   | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
-    09:45:36 | quick-start | step-1 | CREATE    | OK    | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
-    09:45:36 | quick-start | step-1 | APPLY     | DONE  | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
-    09:45:36 | quick-start | step-1 | TRY       | DONE  |
-    09:45:36 | quick-start | step-2 | TRY       | RUN   |
-    09:45:36 | quick-start | step-2 | ASSERT    | RUN   | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
-    09:45:36 | quick-start | step-2 | ASSERT    | DONE  | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
-    09:45:36 | quick-start | step-2 | TRY       | DONE  |
-    09:45:36 | quick-start | step-1 | DELETE    | RUN   | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
-    09:45:36 | quick-start | step-1 | DELETE    | OK    | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
-    09:45:36 | quick-start | step-1 | DELETE    | DONE  | v1/ConfigMap | chainsaw-eternal-elk/chainsaw-quick-start
-    09:45:36 | quick-start | @setup | DELETE    | RUN   | v1/Namespace | chainsaw-eternal-elk
-    09:45:36 | quick-start | @setup | DELETE    | OK    | v1/Namespace | chainsaw-eternal-elk
-    09:45:41 | quick-start | @setup | DELETE    | DONE  | v1/Namespace | chainsaw-eternal-elk
+    | 10:30:13 | quick-start | @setup   | CREATE    | OK    | v1/Namespace @ chainsaw-strong-troll
+    | 10:30:13 | quick-start | step-1   | TRY       | RUN   |
+    | 10:30:13 | quick-start | step-1   | APPLY     | RUN   | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
+    | 10:30:13 | quick-start | step-1   | CREATE    | OK    | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
+    | 10:30:13 | quick-start | step-1   | APPLY     | DONE  | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
+    | 10:30:13 | quick-start | step-1   | ASSERT    | RUN   | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
+    | 10:30:13 | quick-start | step-1   | ASSERT    | DONE  | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
+    | 10:30:13 | quick-start | step-1   | TRY       | DONE  |
+    | 10:30:13 | quick-start | @cleanup | DELETE    | RUN   | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
+    | 10:30:13 | quick-start | @cleanup | DELETE    | OK    | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
+    | 10:30:13 | quick-start | @cleanup | DELETE    | DONE  | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
+    | 10:30:13 | quick-start | @cleanup | DELETE    | RUN   | v1/Namespace @ chainsaw-strong-troll
+    | 10:30:13 | quick-start | @cleanup | DELETE    | OK    | v1/Namespace @ chainsaw-strong-troll
+    | 10:30:18 | quick-start | @cleanup | DELETE    | DONE  | v1/Namespace @ chainsaw-strong-troll
 --- PASS: chainsaw (0.00s)
-    --- PASS: chainsaw/quick-start (5.43s)
+    --- PASS: chainsaw/quick-start (5.26s)
 PASS
 Tests Summary...
 - Passed  tests 1

@@ -5,18 +5,24 @@ nav:
 - Getting Started:
   - intro.md
   - install.md
-  - gh-action.md
   - quick-start.md
+  - gh-action.md
   - docs.md
   - community.md
 - Writing tests:
-  - tests/index.md
-  - configuration/index.md
+  - writing-tests.md
+  - Configuration:
+    - configuration/index.md
+    - configuration/file.md
+    - configuration/flags.md
+    - configuration/timeouts.md
+    - configuration/grace.md
+    - configuration/cleanup-delay.md
+    - configuration/reports.md
   - Tests:
-    - tests/what-is-a-test.md
-    - tests/with-manifests.md
-    - tests/with-test-steps.md
-    - tests/with-test.md
+    - tests/index.md
+    - tests/manifests-based.md
+    - tests/test-based.md
   - Test steps:
     - steps/index.md
     - steps/try.md
@@ -58,10 +64,10 @@ nav:
     - Functions: jp/functions.md
   - APIs:
     - v1alpha1: apis/chainsaw.v1alpha1.md
+  - json-schemas.md
 - More resources:
   - more/events.md
   - more/crds.md
-  - more/ide-completion.md
   - more/kuttl-migration.md
   - more/test-docs.md
 - Blog:

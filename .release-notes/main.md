@@ -6,10 +6,6 @@ Release notes for `TODO`.
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
-
-## 📚 Docs 📚
-
-## 🎸 Misc 🎸
 -->
 
 ## ‼️ Breaking chages ‼️
@@ -37,3 +33,13 @@ Release notes for `TODO`.
 
 - Use `@setup` and `@cleanup` in the logs to indicate setup/cleanup steps
 - Made resource in log messages easier to read
+
+## 📚 Docs 📚
+
+- Improved the *Writing tests/Configuration* docs
+- Improved the *Writing tests/Tests* docs
+- Added *Writing tests/JSON schemas* docs to use generated JSON schemas for validation and autocomplete in VS code
+
+## 🎸 Misc 🎸
+
+- [Nirmata Office Hours for Kyverno- Episode 9- Demonstrate Kyverno Chainsaw](https://www.youtube.com/watch?v=IrIteTTjlbU)
