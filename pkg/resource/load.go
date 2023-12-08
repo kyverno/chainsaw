@@ -41,7 +41,6 @@ func LoadFromURI(url *url.URL) ([]unstructured.Unstructured, error) {
 		return nil, fmt.Errorf("error creating temp file: %s", err)
 	}
 	defer os.Remove(tempFile.Name())
-
 	client := &getter.Client{
 		Ctx:  context.Background(),
 		Src:  url.String(),
@@ -54,7 +53,6 @@ func LoadFromURI(url *url.URL) ([]unstructured.Unstructured, error) {
 		Factor:   2.0,
 		Jitter:   0.1,
 	}
-
 	if err := wait.ExponentialBackoff(backoff, func() (bool, error) {
 		if err := client.Get(); err != nil {
 			return false, nil
@@ -63,7 +61,6 @@ func LoadFromURI(url *url.URL) ([]unstructured.Unstructured, error) {
 	}); err != nil {
 		return nil, fmt.Errorf("error downloading content: %s", err)
 	}
-
 	content, err := os.ReadFile(tempFile.Name())
 	if err != nil {
 		return nil, fmt.Errorf("error reading downloaded content: %s", err)
@@ -92,7 +89,6 @@ func parse(content []byte, splitter splitter, converter converter) ([]unstructur
 	if converter == nil {
 		converter = yaml.ToJSON
 	}
-
 	documents, err := splitter(content)
 	if err != nil {
 		return nil, err

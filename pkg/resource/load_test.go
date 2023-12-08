@@ -2,6 +2,7 @@ package resource
 
 import (
 	"errors"
+	"net/url"
 	"os"
 	"path/filepath"
 	"testing"
@@ -16,15 +17,60 @@ func TestLoad(t *testing.T) {
 		fileName    string
 		expectError bool
 		expectedLen int
-	}{
-		{filepath.Join(baseDir, "valid.yaml"), false, 2},
-		{filepath.Join(baseDir, "empty.yaml"), true, 0},
-		{filepath.Join(baseDir, "invalid.yaml"), true, 0},
-		{filepath.Join(baseDir, "nonexistent.yaml"), true, 0},
-	}
-
+	}{{
+		fileName:    filepath.Join(baseDir, "valid.yaml"),
+		expectError: false,
+		expectedLen: 2,
+	}, {
+		fileName:    filepath.Join(baseDir, "empty.yaml"),
+		expectError: true,
+		expectedLen: 0,
+	}, {
+		fileName:    filepath.Join(baseDir, "invalid.yaml"),
+		expectError: true,
+		expectedLen: 0,
+	}, {
+		fileName:    filepath.Join(baseDir, "nonexistent.yaml"),
+		expectError: true,
+		expectedLen: 0,
+	}}
 	for _, tt := range tests {
 		resources, err := Load(tt.fileName)
+		if !tt.expectError {
+			assert.NoError(t, err)
+			assert.Len(t, resources, tt.expectedLen)
+		} else {
+			assert.Error(t, err)
+		}
+	}
+}
+
+func TestLoadFromURI(t *testing.T) {
+	tests := []struct {
+		fileName    string
+		expectError bool
+		expectedLen int
+	}{{
+		fileName:    "https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml",
+		expectError: false,
+		expectedLen: 2,
+	}, {
+		fileName:    "https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/empty.yaml",
+		expectError: true,
+		expectedLen: 0,
+	}, {
+		fileName:    "https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/invalid.yaml",
+		expectError: true,
+		expectedLen: 0,
+	}, {
+		fileName:    "https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/nonexistent.yaml",
+		expectError: true,
+		expectedLen: 0,
+	}}
+	for _, tt := range tests {
+		url, err := url.ParseRequestURI(tt.fileName)
+		assert.NoError(t, err)
+		resources, err := LoadFromURI(url)
 		if !tt.expectError {
 			assert.NoError(t, err)
 			assert.Len(t, resources, tt.expectedLen)
@@ -41,49 +87,40 @@ func TestParse(t *testing.T) {
 		expectError       bool
 		expectedLen       int
 		expectedResources []unstructured.Unstructured
-	}{
-		{
-			fileName:    filepath.Join(baseDir, "valid.yaml"),
-			expectError: false,
-			expectedLen: 2,
-			expectedResources: []unstructured.Unstructured{
-				{
-					Object: map[string]any{
-						"apiVersion": "v1",
-						"kind":       "Pod",
-						"metadata": map[string]any{
-							"name": "test-pod",
-						},
-					},
-				},
-				{
-					Object: map[string]any{
-						"apiVersion": "v1",
-						"kind":       "Service",
-						"metadata": map[string]any{
-							"name": "test-service",
-						},
-					},
+	}{{
+		fileName:    filepath.Join(baseDir, "valid.yaml"),
+		expectError: false,
+		expectedLen: 2,
+		expectedResources: []unstructured.Unstructured{{
+			Object: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]any{
+					"name": "test-pod",
 				},
 			},
-		},
-		{
-			fileName:          filepath.Join(baseDir, "empty.yaml"),
-			expectError:       false,
-			expectedLen:       0,
-			expectedResources: []unstructured.Unstructured{},
-		},
-		{
-			fileName:    filepath.Join(baseDir, "invalid.yaml"),
-			expectError: true,
-			expectedLen: 0,
-		},
-	}
-
+		}, {
+			Object: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Service",
+				"metadata": map[string]any{
+					"name": "test-service",
+				},
+			},
+		}},
+	}, {
+		fileName:          filepath.Join(baseDir, "empty.yaml"),
+		expectError:       false,
+		expectedLen:       0,
+		expectedResources: []unstructured.Unstructured{},
+	}, {
+		fileName:    filepath.Join(baseDir, "invalid.yaml"),
+		expectError: true,
+		expectedLen: 0,
+	}}
 	for _, tt := range tests {
 		content, readErr := os.ReadFile(tt.fileName)
 		assert.NoError(t, readErr)
-
 		resources, err := Parse(content)
 		if !tt.expectError {
 			assert.NoError(t, err)
@@ -98,37 +135,31 @@ func TestParse(t *testing.T) {
 func Test_parse(t *testing.T) {
 	content, err := os.ReadFile("../../testdata/resource/custom-resource.yaml")
 	assert.NoError(t, err)
-
 	tests := []struct {
 		name      string
 		splitter  splitter
 		converter converter
 		wantErr   bool
-	}{
-		{
-			name:      "default behavior",
-			splitter:  nil,
-			converter: nil,
-			wantErr:   false,
+	}{{
+		name:      "default behavior",
+		splitter:  nil,
+		converter: nil,
+		wantErr:   false,
+	}, {
+		name: "splitter error",
+		splitter: func([]byte) ([][]byte, error) {
+			return nil, errors.New("splitter error")
 		},
-		{
-			name: "splitter error",
-			splitter: func([]byte) ([][]byte, error) {
-				return nil, errors.New("splitter error")
-			},
-			converter: nil,
-			wantErr:   true,
+		converter: nil,
+		wantErr:   true,
+	}, {
+		name:     "converter error",
+		splitter: nil,
+		converter: func([]byte) ([]byte, error) {
+			return nil, errors.New("converter error")
 		},
-		{
-			name:     "converter error",
-			splitter: nil,
-			converter: func([]byte) ([]byte, error) {
-				return nil, errors.New("converter error")
-			},
-			wantErr: true,
-		},
-	}
-
+		wantErr: true,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := parse(content, tt.splitter, tt.converter)
