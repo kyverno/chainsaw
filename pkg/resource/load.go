@@ -30,7 +30,7 @@ func Load(path string) ([]unstructured.Unstructured, error) {
 		return nil, err
 	}
 	if len(tests) == 0 {
-		return nil, fmt.Errorf("found no test in %s", path)
+		return nil, fmt.Errorf("found no resource in %s", path)
 	}
 	return tests, nil
 }
