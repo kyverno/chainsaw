@@ -1,6 +1,6 @@
 module github.com/kyverno/chainsaw
 
-go 1.23
+go 1.21.1
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
