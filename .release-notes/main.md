@@ -19,3 +19,7 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
+
+## 📚 Docs 📚
+
+- Parallel execution of Test
