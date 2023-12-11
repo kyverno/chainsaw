@@ -85,4 +85,6 @@ While Chainsaw ensures that the steps within a test are executed sequentially, i
 
     By default, Chainsaw will run tests in parallel.
 
-    This can be configured at the configuration level or using command line flags.
+    This can be configured at the configuration level or using command line flags. However, individual tests can be configured to run concurrently by setting `Concurrent: true` in their `TestSpec`.
+
+    All non-concurrent tests are executed first, followed by the concurrent tests in parallel.
