@@ -50,9 +50,18 @@ docker_signs:
       - --yes
 
 brews:
-  - repository:
+  - homepage: https://kyverno.github.io/chainsaw
+    description: Declarative Kubernetes end-to-end testing.
+    repository:
       owner: kyverno
-      name: homebrew-kyverno
+      name: chainsaw
+      branch: brew-{{.Version}}
+      pull_request:
+        enabled: true
+        base:
+          owner: kyverno
+          name: chainsaw
+          branch: main
 
 archives:
   - name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
