@@ -25,6 +25,9 @@ func version(reader buildInfoReader) string {
 		if !ok {
 			return notFound
 		}
+		if bi.Main.Version == "" {
+			return notFound
+		}
 		BuildVersion = bi.Main.Version
 	}
 	return BuildVersion
