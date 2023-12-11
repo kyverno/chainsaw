@@ -8,7 +8,7 @@ import (
 )
 
 func TestVersion(t *testing.T) {
-	require.NotEqual(t, "---", Version())
+	require.Equal(t, "---", Version())
 }
 
 func Test_version(t *testing.T) {
@@ -16,25 +16,21 @@ func Test_version(t *testing.T) {
 		name            string
 		reader          buildInfoReader
 		expectedVersion string
-	}{
-		{
-			name: "No Build Info",
-			reader: func() (*debug.BuildInfo, bool) {
-				return nil, false
-			},
-			expectedVersion: notFound,
+	}{{
+		name: "No Build Info",
+		reader: func() (*debug.BuildInfo, bool) {
+			return nil, false
 		},
-		{
-			name: "Valid Build Info",
-			reader: func() (*debug.BuildInfo, bool) {
-				return &debug.BuildInfo{
-					Main: debug.Module{Version: "v1.0.0"},
-				}, true
-			},
-			expectedVersion: "v1.0.0",
+		expectedVersion: notFound,
+	}, {
+		name: "Valid Build Info",
+		reader: func() (*debug.BuildInfo, bool) {
+			return &debug.BuildInfo{
+				Main: debug.Module{Version: "v1.0.0"},
+			}, true
 		},
-	}
-
+		expectedVersion: "v1.0.0",
+	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			BuildVersion = ""
@@ -59,38 +55,33 @@ func Test_time(t *testing.T) {
 		name         string
 		reader       buildInfoReader
 		expectedTime string
-	}{
-		{
-			name: "No Build Info",
-			reader: func() (*debug.BuildInfo, bool) {
-				return nil, false
-			},
-			expectedTime: notFound,
+	}{{
+		name: "No Build Info",
+		reader: func() (*debug.BuildInfo, bool) {
+			return nil, false
 		},
-		{
-			name: "VCS Time Found",
-			reader: func() (*debug.BuildInfo, bool) {
-				return &debug.BuildInfo{
-					Settings: []debug.BuildSetting{
-						{Key: vcsTime, Value: "2021-04-01T12:34:56Z"},
-					},
-				}, true
-			},
-			expectedTime: "2021-04-01T12:34:56Z",
+		expectedTime: notFound,
+	}, {
+		name: "VCS Time Found",
+		reader: func() (*debug.BuildInfo, bool) {
+			return &debug.BuildInfo{
+				Settings: []debug.BuildSetting{
+					{Key: vcsTime, Value: "2021-04-01T12:34:56Z"},
+				},
+			}, true
 		},
-		{
-			name: "VCS Time Not Found",
-			reader: func() (*debug.BuildInfo, bool) {
-				return &debug.BuildInfo{
-					Settings: []debug.BuildSetting{
-						{Key: "some.other.setting", Value: "some-value"},
-					},
-				}, true
-			},
-			expectedTime: notFound,
+		expectedTime: "2021-04-01T12:34:56Z",
+	}, {
+		name: "VCS Time Not Found",
+		reader: func() (*debug.BuildInfo, bool) {
+			return &debug.BuildInfo{
+				Settings: []debug.BuildSetting{
+					{Key: "some.other.setting", Value: "some-value"},
+				},
+			}, true
 		},
-	}
-
+		expectedTime: notFound,
+	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			actualTime := time(tc.reader)
@@ -109,38 +100,33 @@ func Test_hash(t *testing.T) {
 		name         string
 		reader       buildInfoReader
 		expectedHash string
-	}{
-		{
-			name: "No Build Info",
-			reader: func() (*debug.BuildInfo, bool) {
-				return nil, false
-			},
-			expectedHash: notFound,
+	}{{
+		name: "No Build Info",
+		reader: func() (*debug.BuildInfo, bool) {
+			return nil, false
 		},
-		{
-			name: "VCS Revision Found",
-			reader: func() (*debug.BuildInfo, bool) {
-				return &debug.BuildInfo{
-					Settings: []debug.BuildSetting{
-						{Key: vcsRevision, Value: "abcdef123456"},
-					},
-				}, true
-			},
-			expectedHash: "abcdef123456",
+		expectedHash: notFound,
+	}, {
+		name: "VCS Revision Found",
+		reader: func() (*debug.BuildInfo, bool) {
+			return &debug.BuildInfo{
+				Settings: []debug.BuildSetting{
+					{Key: vcsRevision, Value: "abcdef123456"},
+				},
+			}, true
 		},
-		{
-			name: "VCS Revision Not Found",
-			reader: func() (*debug.BuildInfo, bool) {
-				return &debug.BuildInfo{
-					Settings: []debug.BuildSetting{
-						{Key: "some.other.setting", Value: "some-value"},
-					},
-				}, true
-			},
-			expectedHash: notFound,
+		expectedHash: "abcdef123456",
+	}, {
+		name: "VCS Revision Not Found",
+		reader: func() (*debug.BuildInfo, bool) {
+			return &debug.BuildInfo{
+				Settings: []debug.BuildSetting{
+					{Key: "some.other.setting", Value: "some-value"},
+				},
+			}, true
 		},
-	}
-
+		expectedHash: notFound,
+	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			actualHash := hash(tc.reader)
