@@ -8,10 +8,6 @@ Release notes for `TODO`.
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
-
-## 📚 Docs 📚
-
-## 🎸 Misc 🎸
 -->
 
 ## 💫 New features 💫
@@ -30,3 +26,7 @@ Release notes for `TODO`.
 ## 📚 Docs 📚
 
 - Added docs about parallel execution of Tests
+
+## 🎸 Misc 🎸
+
+- Added an ADOPTERS.md file to the repository
