@@ -15,6 +15,7 @@ import (
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
+	"github.com/kyverno/chainsaw/pkg/version"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -59,6 +60,7 @@ func Command() *cobra.Command {
 			color.Init(options.noColor, true)
 			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
+			fmt.Fprintf(out, "Version: %s\n", version.Version())
 			var configuration v1alpha1.Configuration
 			// if no config file was provided, give a chance to the default config name
 			if options.config == "" {
