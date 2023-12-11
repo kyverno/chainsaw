@@ -76,3 +76,15 @@ This is important, especially when the controller being tested makes use of `fin
     A global cleanup timeout can be defined at the configuration level or using command line flags.
 
     It can also be overriden on a per test or per test step basis but not at the operation level.
+
+## Parallel Execution of Tests
+
+While Chainsaw ensures that the steps within a test are executed sequentially, it is designed to run multiple tests in parallel to each other. This parallel execution helps in significantly reducing the overall time required to run an entire suite of tests, making the testing process more efficient, especially in scenarios with a large number of tests.
+
+!!! tip "Parallel execution of tests"
+
+    By default, Chainsaw will run tests in parallel.
+
+    This can be configured at the configuration level or using command line flags. However, individual tests can be configured to run concurrently by setting `Concurrent: true` in their `TestSpec`.
+
+    All non-concurrent tests are executed first, followed by the concurrent tests in parallel.
