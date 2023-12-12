@@ -11,8 +11,6 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 🔧 Fixes 🔧
-
 ## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
@@ -21,3 +19,7 @@ Release notes for `TODO`.
 ## ‼️ Breaking changes ‼️
 
 - GitHub action was moved to a dedicated repository https://github.com/kyverno/action-install-chainsaw
+
+## 🔧 Fixes 🔧
+
+- Fixed an invalid error check in `chainsaw docs` command
