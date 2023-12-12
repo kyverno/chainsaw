@@ -16,8 +16,9 @@ import (
 var docsTemplate string
 
 type options struct {
-	testFile string
-	testDirs []string
+	testFile   string
+	readmeFile string
+	testDirs   []string
 }
 
 func Command() *cobra.Command {
@@ -38,7 +39,7 @@ func Command() *cobra.Command {
 			}
 			for _, test := range tests {
 				if test.Err == nil {
-					file, err := os.Create(filepath.Join(test.BasePath, "README.md"))
+					file, err := os.Create(filepath.Join(test.BasePath, options.readmeFile))
 					if err != nil {
 						return err
 					}
@@ -55,6 +56,7 @@ func Command() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test.yaml", "Name of the test file")
+	cmd.Flags().StringVar(&options.readmeFile, "readme-file", "README.md", "Name of the generated docs file")
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run")
 	return cmd
 }
