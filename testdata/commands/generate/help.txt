@@ -5,7 +5,7 @@ Usage:
   chainsaw generate [command]
 
 Available Commands:
-  docs        Generate documentation for tests
+  docs        Generate tests documentation
 
 Flags:
   -h, --help   help for generate

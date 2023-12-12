@@ -15,5 +15,5 @@ chainsaw generate [flags]
 ### SEE ALSO
 
 * [chainsaw](chainsaw.md)	 - Stronger tool for e2e testing
-* [chainsaw generate docs](chainsaw_generate_docs.md)	 - Generate documentation for tests
+* [chainsaw generate docs](chainsaw_generate_docs.md)	 - Generate tests documentation
 

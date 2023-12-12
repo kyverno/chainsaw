@@ -1,0 +1,4 @@
+# Tests catalog
+{{ range .Tests }}
+- [{{ .ObjectMeta.Name }}]({{ .BasePath }}/{{ $.Readme }})
+{{- end }}
