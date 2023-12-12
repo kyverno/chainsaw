@@ -10,6 +10,7 @@ The list of organizations that have publicly shared the usage of Chainsaw:
 |:--|:--|
 | [Kyverno](https://kyverno.io) | Running all end to end tests for both Kyverno and the policies catalog |
 | [Redis-operator](https://github.com/OT-CONTAINER-KIT/redis-operator) | Chainsaw helped a lot for declarative assertion of Redis Cluster state against various e2e test  |
+| [rbac-manager](https://github.com/fairwindsops/rbac-manager) | Chainsaw replaced and improved upon our bash test framework for testing the RbacDefinition CRD |
 
 <!-- append the line below to the table
 | [name](URL) | brief description of how you are using Chainsaw | 
