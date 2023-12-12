@@ -11,9 +11,9 @@ This action currently supports GitHub-provided Linux, macOS and Windows runners 
 Add the following entry to your Github workflow YAML file:
 
 ```yaml
-uses: kyverno/chainsaw/.github/actions/install@<version>
+uses: kyverno/action-install-chainsaw@v0.1.0
 with:
-  release: v0.0.3 # optional
+  release: v0.1.0 # optional
 ```
 
 Example using a pinned version:
@@ -28,9 +28,9 @@ jobs:
     name: Install Chainsaw
     steps:
       - name: Install Chainsaw
-        uses: kyverno/chainsaw/.github/actions/install@<version>
+        uses: kyverno/action-install-chainsaw@v0.1.0
         with:
-          release: v0.0.2
+          release: v0.0.9
       - name: Check install
         run: chainsaw version
 ```
@@ -47,7 +47,7 @@ jobs:
     name: Install Chainsaw
     steps:
       - name: Install Chainsaw
-        uses: kyverno/chainsaw/.github/actions/install@<version>
+        uses: kyverno/action-install-chainsaw@v0.1.0
       - name: Check install
         run: chainsaw version
 ```
@@ -66,7 +66,7 @@ jobs:
       - name: Install Cosign
         uses: sigstore/cosign-installer@v3.1.1
       - name: Install Chainsaw
-        uses: kyverno/chainsaw/.github/actions/install@<version>
+        uses: kyverno/action-install-chainsaw@v0.1.0
         with:
           verify: true
       - name: Check install
@@ -92,7 +92,7 @@ jobs:
         with:
           go-version: '1.21'
       - name: Install Chainsaw
-        uses: kyverno/chainsaw/.github/actions/install@<version>
+        uses: kyverno/action-install-chainsaw@v0.1.0
         with:
           release: main
       - name: Check install
