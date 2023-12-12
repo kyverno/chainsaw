@@ -31,7 +31,10 @@ func (o options) execute(root *cobra.Command) error {
 		prepender = websitePrepender
 		linkHandler = websiteLinkHandler
 	}
-	if _, err := os.Stat(o.path); errors.Is(err, os.ErrNotExist) {
+	if _, err := os.Stat(o.path); err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			return err
+		}
 		if err := os.MkdirAll(o.path, os.ModeDir|os.ModePerm); err != nil {
 			return err
 		}
