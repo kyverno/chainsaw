@@ -33,3 +33,7 @@ Please read the [contributing guide](https://github.com/kyverno/kyverno/blob/mai
 1. Code of Conduct
 1. Code Culture
 1. Details on how to contribute
+
+## Adopters
+
+If you are using Chainsaw and want to share it publicly we always appreciate a bit of support. Pull requests to the [ADOPTERS LIST](https://github.com/kyverno/chainsaw/blob/main/ADOPTERS.md) will put a smile on our face :smile:.
