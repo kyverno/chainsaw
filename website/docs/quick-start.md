@@ -96,6 +96,7 @@ We finished writing our first test, now we can run Chainsaw to verify the test r
 ```bash
 $ chainsaw test
 
+Version: (devel)
 Loading default configuration...
 - Using test file: chainsaw-test.yaml
 - TestDirs [.]
@@ -122,22 +123,22 @@ Running tests...
 === RUN   chainsaw/quick-start
 === PAUSE chainsaw/quick-start
 === CONT  chainsaw/quick-start
-    | 10:30:13 | quick-start | @setup   | CREATE    | OK    | v1/Namespace @ chainsaw-strong-troll
-    | 10:30:13 | quick-start | step-1   | TRY       | RUN   |
-    | 10:30:13 | quick-start | step-1   | APPLY     | RUN   | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
-    | 10:30:13 | quick-start | step-1   | CREATE    | OK    | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
-    | 10:30:13 | quick-start | step-1   | APPLY     | DONE  | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
-    | 10:30:13 | quick-start | step-1   | ASSERT    | RUN   | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
-    | 10:30:13 | quick-start | step-1   | ASSERT    | DONE  | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
-    | 10:30:13 | quick-start | step-1   | TRY       | DONE  |
-    | 10:30:13 | quick-start | @cleanup | DELETE    | RUN   | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
-    | 10:30:13 | quick-start | @cleanup | DELETE    | OK    | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
-    | 10:30:13 | quick-start | @cleanup | DELETE    | DONE  | v1/ConfigMap @ chainsaw-strong-troll/chainsaw-quick-start
-    | 10:30:13 | quick-start | @cleanup | DELETE    | RUN   | v1/Namespace @ chainsaw-strong-troll
-    | 10:30:13 | quick-start | @cleanup | DELETE    | OK    | v1/Namespace @ chainsaw-strong-troll
-    | 10:30:18 | quick-start | @cleanup | DELETE    | DONE  | v1/Namespace @ chainsaw-strong-troll
+    | 10:44:26 | quick-start | @setup   | CREATE    | OK    | v1/Namespace @ chainsaw-immense-jay
+    | 10:44:26 | quick-start | step-1   | TRY       | RUN   |
+    | 10:44:26 | quick-start | step-1   | APPLY     | RUN   | v1/ConfigMap @ chainsaw-immense-jay/chainsaw-quick-start
+    | 10:44:26 | quick-start | step-1   | CREATE    | OK    | v1/ConfigMap @ chainsaw-immense-jay/chainsaw-quick-start
+    | 10:44:26 | quick-start | step-1   | APPLY     | DONE  | v1/ConfigMap @ chainsaw-immense-jay/chainsaw-quick-start
+    | 10:44:26 | quick-start | step-1   | ASSERT    | RUN   | v1/ConfigMap @ chainsaw-immense-jay/chainsaw-quick-start
+    | 10:44:26 | quick-start | step-1   | ASSERT    | DONE  | v1/ConfigMap @ chainsaw-immense-jay/chainsaw-quick-start
+    | 10:44:26 | quick-start | step-1   | TRY       | DONE  |
+    | 10:44:26 | quick-start | @cleanup | DELETE    | RUN   | v1/ConfigMap @ chainsaw-immense-jay/chainsaw-quick-start
+    | 10:44:26 | quick-start | @cleanup | DELETE    | OK    | v1/ConfigMap @ chainsaw-immense-jay/chainsaw-quick-start
+    | 10:44:26 | quick-start | @cleanup | DELETE    | DONE  | v1/ConfigMap @ chainsaw-immense-jay/chainsaw-quick-start
+    | 10:44:26 | quick-start | @cleanup | DELETE    | RUN   | v1/Namespace @ chainsaw-immense-jay
+    | 10:44:26 | quick-start | @cleanup | DELETE    | OK    | v1/Namespace @ chainsaw-immense-jay
+    | 10:44:31 | quick-start | @cleanup | DELETE    | DONE  | v1/Namespace @ chainsaw-immense-jay
 --- PASS: chainsaw (0.00s)
-    --- PASS: chainsaw/quick-start (5.26s)
+    --- PASS: chainsaw/quick-start (5.25s)
 PASS
 Tests Summary...
 - Passed  tests 1

@@ -1,46 +1,48 @@
 # Install
 
-You can install the pre-compiled binary (in several ways), or compile from source.
+You can install the pre-compiled binary (in several ways), compile from sources, or run with Docker.
 
-## Manually
+We also provide a [GitHub action](#github-action) to easily install Chainsaw in your workflows.
 
-Download the pre-compiled binaries from the [releases page](https://github.com/kyverno/chainsaw/releases) and copy them to the desired location.
+## Install the pre-compiled binary
+
+### Homebrew tap
+
+**add tap:**
+
+```bash
+$ brew tap kyverno/chainsaw https://github.com/kyverno/chainsaw
+```
+
+**install chainsaw:**
+
+```bash
+$ brew install kyverno/chainsaw/chainsaw
+```
+
+!!! warning "Don't forget to specify the tap name"
+    Homebrew core already has a tool named `chainsaw`.
+    
+    **Be sure that you specify the tap name when installing to install the right tool.**
+
+### Manually
+
+Download the pre-compiled binaries for your system from the [releases page](https://github.com/kyverno/chainsaw/releases) and copy them to the desired location.
 
 ## Install using `go install`
 
 You can install with `go install` with:
 
 ```bash
-go install github.com/kyverno/chainsaw@latest
+$ go install github.com/kyverno/chainsaw@latest
 ```
 
-## Compile from sources
-
-**clone:**
-
-```bash
-git clone https://github.com/kyverno/chainsaw.git
-```
-**build the binaries:**
-
-```bash
-cd chainsaw
-go mod tidy
-make build
-```
-
-**verify it works:**
-
-```bash
-./chainsaw version
-```
-
-## Install using Docker
+## Running with Docker
 
 Chainsaw is also available as a Docker image which you can pull and run:
 
 ```bash
-docker pull ghcr.io/kyverno/chainsaw:<version>
+$ docker pull ghcr.io/kyverno/chainsaw:<version>
 ```
 
 !!! info
@@ -48,10 +50,31 @@ docker pull ghcr.io/kyverno/chainsaw:<version>
     Since Chainsaw relies on files for its operation (like test definitions), you will need to bind mount the necessary directories when running it via Docker.
 
 ```bash
-docker run --rm                         \
+$ docker run --rm                       \
     -v /path/on/host:/path/in/container \
     ghcr.io/kyverno/chainsaw:<version>  \
     <chainsaw-command>
+```
+
+## Compiling from sources
+
+**clone:**
+
+```bash
+$ git clone https://github.com/kyverno/chainsaw.git
+```
+**build the binaries:**
+
+```bash
+$ cd chainsaw
+$ go mod tidy
+$ make build
+```
+
+**verify it works:**
+
+```bash
+$ ./chainsaw version
 ```
 
 ## GitHub action
