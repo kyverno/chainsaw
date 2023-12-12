@@ -3,8 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## ‼️ Breaking changes ‼️
-
 ## 💫 New features 💫
 
 ## ✨ UI changes ✨
@@ -19,3 +17,7 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
+
+## ‼️ Breaking changes ‼️
+
+- GitHub action was moved to a dedicated repository https://github.com/kyverno/action-install-chainsaw
