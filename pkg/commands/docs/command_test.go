@@ -51,6 +51,24 @@ func Test_Execute(t *testing.T) {
 		},
 		wantErr: false,
 	}, {
+		name: "bad output",
+		args: []string{
+			"docs",
+			"--website",
+			"--output",
+			"",
+		},
+		wantErr: true,
+	}, {
+		name: "output not exists",
+		args: []string{
+			"docs",
+			"--website",
+			"--output",
+			"../../../.temp/cmd/docs",
+		},
+		wantErr: false,
+	}, {
 		name: "unknow flag",
 		args: []string{
 			"docs",
