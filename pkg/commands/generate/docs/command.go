@@ -20,8 +20,9 @@ var docsTemplate string
 var catalogTemplate string
 
 var (
-	docsTmpl    = template.Must(template.New("docs").Funcs(sprig.FuncMap()).Parse(docsTemplate))
-	catalogTmpl = template.Must(template.New("catalog").Funcs(sprig.FuncMap()).Parse(catalogTemplate))
+	funcMap     = map[string]any{"fpRel": filepath.Rel, "fpJoin": filepath.Join}
+	docsTmpl    = template.Must(template.New("docs").Funcs(sprig.TxtFuncMap()).Funcs(funcMap).Parse(docsTemplate))
+	catalogTmpl = template.Must(template.New("catalog").Funcs(sprig.TxtFuncMap()).Funcs(funcMap).Parse(catalogTemplate))
 )
 
 type options struct {
@@ -88,8 +89,9 @@ func generateCatalog(out io.Writer, readme string, catalog string, tests ...disc
 	}
 	defer file.Close()
 	if err := catalogTmpl.Execute(file, map[string]any{
-		"Readme": readme,
-		"Tests":  tests,
+		"BasePath": filepath.Dir(catalog),
+		"Readme":   readme,
+		"Tests":    tests,
 	}); err != nil {
 		return err
 	}
