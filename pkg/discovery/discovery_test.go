@@ -114,7 +114,7 @@ func TestDiscoverTests(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := DiscoverTests(tt.fileName, tt.paths...)
+			got, err := DiscoverTests(tt.fileName, nil, tt.paths...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -145,9 +145,7 @@ func TestHelpDiscoverTests(t *testing.T) {
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			tests, err := discoverTests("chainsaw-test.yaml", func() []string {
-				return tc.folders
-			})
+			tests, err := discoverTests("chainsaw-test.yaml", nil, tc.folders...)
 			if tc.expectError {
 				assert.Error(t, err, "Expected an error but got none")
 			} else {
@@ -164,6 +162,6 @@ func TestDiscoverTests_UnreadableFolder(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to change directory permissions: %v", err)
 	}
-	_, err = DiscoverTests("chainsaw-test.yaml", tempDir)
+	_, err = DiscoverTests("chainsaw-test.yaml", nil, tempDir)
 	assert.Error(t, err, "Expected an error for unreadable folder")
 }
