@@ -16,9 +16,9 @@
 
 Chainsaw provides a declarative approach to test [Kubernetes](https://kubernetes.io) operators and controllers.
 
-While Chainsaw is designed for testing operators and controllers, it can declaratively test any kubernetes objects.
+While Chainsaw is designed for testing operators and controllers, it can declaratively test any Kubernetes objects.
 
-Chainsaw is an **open source** tool that was initially developped for defining and running [Kyverno](https://kyverno.io) end to end tests.
+Chainsaw is an open-source tool that was initially developed for defining and running [Kyverno](https://kyverno.io) end-to-end tests.
 
 ## Resources
 
@@ -31,7 +31,7 @@ Built under the Kyverno umbrella, you can use the Kyverno Chainsaw **Slack chann
 ### More resources
 
 - [Nirmata Office Hours for Kyverno- Episode 9- Demonstrate Kyverno Chainsaw](https://www.youtube.com/watch?v=IrIteTTjlbU)
-- [Kyverno Chainsaw - The ultimate end to end testing tool!](https://kyverno.io/blog/2023/12/12/kyverno-chainsaw-the-ultimate-end-to-end-testing-tool/)
+- [Kyverno Chainsaw - The ultimate end-to-end testing tool!](https://kyverno.io/blog/2023/12/12/kyverno-chainsaw-the-ultimate-end-to-end-testing-tool/)
 
 ## Getting Started
 
