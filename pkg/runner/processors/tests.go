@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
+	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -70,14 +71,16 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 				t.FailNow()
 			}
-			t.Cleanup(func() {
-				operation := operation{
-					continueOnError: false,
-					timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-					operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer),
-				}
-				operation.execute(ctx)
-			})
+			if cleanup.Skip(p.config.SkipDelete, nil, nil) {
+				t.Cleanup(func() {
+					operation := operation{
+						continueOnError: false,
+						timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
+						operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer),
+					}
+					operation.execute(ctx)
+				})
+			}
 			if err := p.client.Create(ctx, namespace.DeepCopy()); err != nil {
 				t.FailNow()
 			}
