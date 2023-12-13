@@ -40,7 +40,7 @@ func Command() *cobra.Command {
 		Args:         cobra.NoArgs,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			tests, err := discovery.DiscoverTests(options.testFile, options.testDirs...)
+			tests, err := discovery.DiscoverTests(options.testFile, nil, options.testDirs...)
 			if err != nil {
 				return err
 			}

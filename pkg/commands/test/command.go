@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
@@ -19,6 +20,7 @@ import (
 	"github.com/kyverno/kyverno/ext/output/color"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/utils/clock"
 )
@@ -47,6 +49,7 @@ type options struct {
 	kubeConfigOverrides         clientcmd.ConfigOverrides
 	forceTerminationGracePeriod metav1.Duration
 	delayBeforeCleanup          metav1.Duration
+	selector                    []string
 }
 
 func Command() *cobra.Command {
@@ -179,12 +182,23 @@ func Command() *cobra.Command {
 			if configuration.Spec.DelayBeforeCleanup != nil {
 				fmt.Fprintf(out, "- DelayBeforeCleanup %v\n", configuration.Spec.DelayBeforeCleanup.Duration)
 			}
+			if len(options.selector) != 0 {
+				fmt.Fprintf(out, "- Selector %v\n", options.selector)
+			}
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
 			if err := fsutils.CheckFolders(options.testDirs...); err != nil {
 				return err
 			}
-			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, options.testDirs...)
+			var selector labels.Selector
+			if len(options.selector) != 0 {
+				parsed, err := labels.Parse(strings.Join(options.selector, ","))
+				if err != nil {
+					return err
+				}
+				selector = parsed
+			}
+			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, selector, options.testDirs...)
 			if err != nil {
 				return err
 			}
@@ -243,6 +257,7 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
 	cmd.Flags().DurationVar(&options.forceTerminationGracePeriod.Duration, "force-termination-grace-period", 0, "If specified, overrides termination grace periods in applicable resources")
 	cmd.Flags().DurationVar(&options.delayBeforeCleanup.Duration, "cleanup-delay", 0, "Adds a delay between the time a test ends and the time cleanup starts")
+	cmd.Flags().StringSliceVar(&options.selector, "selector", []string{}, "Selector (label query) to filter on")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
