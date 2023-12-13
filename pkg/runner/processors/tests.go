@@ -71,7 +71,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 				t.FailNow()
 			}
-			if cleanup.Skip(p.config.SkipDelete, nil, nil) {
+			if !cleanup.Skip(p.config.SkipDelete, nil, nil) {
 				t.Cleanup(func() {
 					operation := operation{
 						continueOnError: false,

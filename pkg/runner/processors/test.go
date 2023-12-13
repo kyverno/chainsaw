@@ -125,7 +125,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 				setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 				t.FailNow()
 			}
-			if cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, nil) {
+			if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, nil) {
 				t.Cleanup(func() {
 					operation := operation{
 						continueOnError: false,
