@@ -1,0 +1,9 @@
+Create a Chainsaw test
+
+Usage:
+  chainsaw test [flags]
+
+Flags:
+      --force   If set, existing test will be deleted if needed
+  -h, --help    help for test
+      --save    If set, created test will be saved
