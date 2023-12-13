@@ -15,6 +15,7 @@ chainsaw [flags]
 ### SEE ALSO
 
 * [chainsaw completion](chainsaw_completion.md)	 - Generate the autocompletion script for the specified shell
+* [chainsaw create](chainsaw_create.md)	 - Create Chainsaw resources
 * [chainsaw docs](chainsaw_docs.md)	 - Generate reference documentation
 * [chainsaw generate](chainsaw_generate.md)	 - Generate commands
 * [chainsaw migrate](chainsaw_migrate.md)	 - Migrate resources to Chainsaw

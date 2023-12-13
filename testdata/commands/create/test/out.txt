@@ -1,0 +1,41 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  creationTimestamp: null
+  name: test
+spec:
+  description: test description
+  steps:
+  - catch:
+    - description: sample events collector
+      events:
+        name: foo
+    - description: sample pod logs collector
+      podLogs:
+        selector: app=foo
+    description: sample step 1
+    finally:
+    - description: sample sleep operation
+      sleep:
+        duration: 5s
+    name: step 1
+    try:
+    - apply:
+        file: resources.yaml
+      description: sample apply operation
+    - assert:
+        file: assert.yaml
+      description: sample assert operation
+    - description: sample error operation
+      error:
+        file: error.yaml
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+          name: foo
+      description: sample delete operation
+    - description: sample script operation
+      script:
+        content: echo "test namespace = $NAMESPACE"
+
