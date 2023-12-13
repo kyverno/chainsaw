@@ -12,6 +12,8 @@
 
 <a href="https://kyverno.github.io/chainsaw" rel="https://kyverno.github.io/chainsaw">![logo](.assets/kyverno-chainsaw-horizontal.png)</a>
 
+## Overview
+
 Chainsaw provides a declarative approach to test [Kubernetes](https://kubernetes.io) operators and controllers.
 
 While Chainsaw is designed for testing operators and controllers, it can declaratively test any kubernetes objects.
@@ -25,6 +27,11 @@ Built under the Kyverno umbrella, you can use the Kyverno Chainsaw **Slack chann
 ### Slack channels
 
 - [#kyverno-chainsaw](https://kubernetes.slack.com/archives/C067LUFL43U)
+
+### More resources
+
+- [Nirmata Office Hours for Kyverno- Episode 9- Demonstrate Kyverno Chainsaw](https://www.youtube.com/watch?v=IrIteTTjlbU)
+- [Kyverno Chainsaw - The ultimate end to end testing tool!](https://kyverno.io/blog/2023/12/12/kyverno-chainsaw-the-ultimate-end-to-end-testing-tool/)
 
 ## Getting Started
 
