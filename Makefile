@@ -123,6 +123,7 @@ codegen-mkdocs: codegen-cli-docs codegen-api-docs codegen-jp-docs ## Generate mk
 	@mkdocs build -f ./website/mkdocs.yaml
 
 .PHONY: codegen-schemas-openapi
+codegen-schemas-openapi: CURRENT_CONTEXT = $(shell kubectl config current-context)
 codegen-schemas-openapi: codegen-crds $(KIND) ## Generate openapi schemas (v2 and v3)
 	@echo Generate openapi schema... >&2
 	@rm -rf ./.temp/.schemas
@@ -134,6 +135,7 @@ codegen-schemas-openapi: codegen-crds $(KIND) ## Generate openapi schemas (v2 an
 	@kubectl get --raw /openapi/v2 > ./.temp/.schemas/openapi/v2/schema.json
 	@kubectl get --raw /openapi/v3/apis/chainsaw.kyverno.io/v1alpha1 > ./.temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha1.json
 	@$(KIND) delete cluster --name schema
+	@kubectl config use-context $(CURRENT_CONTEXT)
 
 .PHONY: codegen-schemas-json
 codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas
@@ -144,6 +146,9 @@ codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas
 	@mkdir -p ./.schemas/json
 	@cp ./.temp/.schemas/json/test-chainsaw-*.json ./.schemas/json
 	@cp ./.temp/.schemas/json/configuration-chainsaw-*.json ./.schemas/json
+	@echo Copy generated schemas to embed in the CLI... >&2
+	@rm -rf pkg/data/schemas/json && mkdir -p pkg/data/schemas/json
+	@cp ./.schemas/json/* pkg/data/schemas/json
 
 .PHONY: codegen
 codegen: codegen-crds codegen-deepcopy codegen-register codegen-mkdocs codegen-cli-docs codegen-api-docs codegen-schemas-json ## Rebuild all generated code and docs

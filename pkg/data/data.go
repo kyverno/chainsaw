@@ -13,10 +13,17 @@ var crdsFs embed.FS
 //go:embed config
 var configFs embed.FS
 
+//go:embed schemas
+var schemasFs embed.FS
+
 func Crds() fs.FS {
 	return crdsFs
 }
 
 func Config() fs.FS {
 	return configFs
+}
+
+func Schemas() fs.FS {
+	return schemasFs
 }
