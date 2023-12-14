@@ -135,7 +135,7 @@ codegen-schemas-openapi: codegen-crds $(KIND) ## Generate openapi schemas (v2 an
 	@kubectl get --raw /openapi/v2 > ./.temp/.schemas/openapi/v2/schema.json
 	@kubectl get --raw /openapi/v3/apis/chainsaw.kyverno.io/v1alpha1 > ./.temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha1.json
 	@$(KIND) delete cluster --name schema
-	@kubectl config use-context $(CURRENT_CONTEXT)
+	@kubectl config use-context $(CURRENT_CONTEXT) || true
 
 .PHONY: codegen-schemas-json
 codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas

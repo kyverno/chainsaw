@@ -9,9 +9,10 @@ chainsaw create test [flags]
 ### Options
 
 ```
-      --force   If set, existing test will be deleted if needed
-  -h, --help    help for test
-      --save    If set, created test will be saved
+      --description   If set, adds description when applicable (default true)
+      --force         If set, existing test will be deleted if needed
+  -h, --help          help for test
+      --save          If set, created test will be saved
 ```
 
 ### SEE ALSO

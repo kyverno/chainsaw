@@ -16,6 +16,7 @@ import (
 func Command() *cobra.Command {
 	save := false
 	force := false
+	description := false
 	cmd := &cobra.Command{
 		Use:          "test",
 		Short:        "Create a Chainsaw test",
@@ -35,8 +36,8 @@ func Command() *cobra.Command {
 						Kind:       "Test",
 					},
 					Spec: v1alpha1.TestSpec{
-						Description: "test description",
-						Steps:       sampleSteps(),
+						Description: getDescription(description, "test description"),
+						Steps:       sampleSteps(description),
 					},
 				}
 				test.SetName(strings.ToLower(strings.ReplaceAll(name, "_", "-")))
@@ -59,16 +60,17 @@ func Command() *cobra.Command {
 	}
 	cmd.Flags().BoolVar(&save, "save", false, "If set, created test will be saved")
 	cmd.Flags().BoolVar(&force, "force", false, "If set, existing test will be deleted if needed")
+	cmd.Flags().BoolVar(&description, "description", true, "If set, adds description when applicable")
 	return cmd
 }
 
-func sampleSteps() []v1alpha1.TestSpecStep {
+func sampleSteps(description bool) []v1alpha1.TestSpecStep {
 	return []v1alpha1.TestSpecStep{{
 		Name: "step 1",
 		TestStepSpec: v1alpha1.TestStepSpec{
-			Description: "sample step 1",
+			Description: getDescription(description, "sample step 1"),
 			Try: []v1alpha1.Operation{{
-				Description: "sample apply operation",
+				Description: getDescription(description, "sample apply operation"),
 				Apply: &v1alpha1.Apply{
 					FileRefOrResource: v1alpha1.FileRefOrResource{
 						FileRef: v1alpha1.FileRef{
@@ -77,7 +79,7 @@ func sampleSteps() []v1alpha1.TestSpecStep {
 					},
 				},
 			}, {
-				Description: "sample assert operation",
+				Description: getDescription(description, "sample assert operation"),
 				Assert: &v1alpha1.Assert{
 					FileRefOrResource: v1alpha1.FileRefOrResource{
 						FileRef: v1alpha1.FileRef{
@@ -86,7 +88,7 @@ func sampleSteps() []v1alpha1.TestSpecStep {
 					},
 				},
 			}, {
-				Description: "sample error operation",
+				Description: getDescription(description, "sample error operation"),
 				Error: &v1alpha1.Error{
 					FileRefOrResource: v1alpha1.FileRefOrResource{
 						FileRef: v1alpha1.FileRef{
@@ -95,7 +97,7 @@ func sampleSteps() []v1alpha1.TestSpecStep {
 					},
 				},
 			}, {
-				Description: "sample delete operation",
+				Description: getDescription(description, "sample delete operation"),
 				Delete: &v1alpha1.Delete{
 					ObjectReference: v1alpha1.ObjectReference{
 						ObjectSelector: v1alpha1.ObjectSelector{
@@ -106,28 +108,35 @@ func sampleSteps() []v1alpha1.TestSpecStep {
 					},
 				},
 			}, {
-				Description: "sample script operation",
+				Description: getDescription(description, "sample script operation"),
 				Script: &v1alpha1.Script{
 					Content: `echo "test namespace = $NAMESPACE"`,
 				},
 			}},
 			Catch: []v1alpha1.Catch{{
-				Description: "sample events collector",
+				Description: getDescription(description, "sample events collector"),
 				Events: &v1alpha1.Events{
 					Name: "foo",
 				},
 			}, {
-				Description: "sample pod logs collector",
+				Description: getDescription(description, "sample pod logs collector"),
 				PodLogs: &v1alpha1.PodLogs{
 					Selector: "app=foo",
 				},
 			}},
 			Finally: []v1alpha1.Finally{{
-				Description: "sample sleep operation",
+				Description: getDescription(description, "sample sleep operation"),
 				Sleep: &v1alpha1.Sleep{
 					Duration: metav1.Duration{Duration: 5 * time.Second},
 				},
 			}},
 		},
 	}}
+}
+
+func getDescription(enabled bool, desc string) string {
+	if !enabled {
+		return ""
+	}
+	return desc
 }
