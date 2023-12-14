@@ -28,5 +28,8 @@ func Check(ctx context.Context, obj any, bindings binding.Bindings, check *v1alp
 	if check.Value == nil {
 		return nil, errors.New("check value is null")
 	}
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	return assert.Assert(ctx, assert.Parse(ctx, check.Value), obj, bindings, template.WithFunctionCaller(caller))
 }
