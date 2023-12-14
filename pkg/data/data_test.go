@@ -38,3 +38,25 @@ func TestConfig(t *testing.T) {
 		assert.True(t, file.IsDir())
 	}
 }
+
+func TestSchemas(t *testing.T) {
+	data := Schemas()
+	{
+		file, err := fs.Stat(data, "schemas/json/test-chainsaw-v1alpha1.json")
+		assert.NoError(t, err)
+		assert.NotNil(t, file)
+		assert.False(t, file.IsDir())
+	}
+	{
+		file, err := fs.Stat(data, "schemas/json")
+		assert.NoError(t, err)
+		assert.NotNil(t, file)
+		assert.True(t, file.IsDir())
+	}
+	{
+		file, err := fs.Stat(data, "schemas")
+		assert.NoError(t, err)
+		assert.NotNil(t, file)
+		assert.True(t, file.IsDir())
+	}
+}
