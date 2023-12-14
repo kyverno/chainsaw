@@ -23,9 +23,9 @@ func (p YAMLProcessor) ToJSON(input []byte) ([]byte, error) {
 	return yaml.ToJSON(input)
 }
 
-func getProcessor(format string) (FileFormatProcessor, error) {
+func getProcessor(format string, input []byte) (FileFormatProcessor, error) {
 	if format == "" {
-		return nil, fmt.Errorf("file format must be specified")
+		format = detectFormat(input)
 	}
 	switch format {
 	case ".json":
@@ -35,4 +35,11 @@ func getProcessor(format string) (FileFormatProcessor, error) {
 	default:
 		return nil, fmt.Errorf("unsupported file format: %s", format)
 	}
+}
+
+func detectFormat(input []byte) string {
+	if yaml.IsJSONBuffer(input) {
+		return ".json"
+	}
+	return ".yaml"
 }

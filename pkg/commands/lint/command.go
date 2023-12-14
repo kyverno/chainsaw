@@ -31,7 +31,6 @@ func getConfigurationSchema() string {
 
 func Command() *cobra.Command {
 	var fileFlag string
-	var stdInFlag bool
 
 	cmd := &cobra.Command{
 		Use:       "lint [test|configuration]",
@@ -40,12 +39,12 @@ func Command() *cobra.Command {
 		Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		ValidArgs: []string{"test", "configuration"},
 		RunE: func(cmd *cobra.Command, args []string) error {
-			if stdInFlag {
+			if fileFlag == "-" {
 				input, err := io.ReadAll(os.Stdin)
 				if err != nil {
 					return err
 				}
-				return lintInput(input, args[0], filepath.Ext(fileFlag), cmd.OutOrStdout())
+				return lintInput(input, args[0], "", cmd.OutOrStdout())
 			} else if fileFlag != "" {
 				input, err := os.ReadFile(fileFlag)
 				if err != nil {
@@ -53,13 +52,12 @@ func Command() *cobra.Command {
 				}
 				return lintInput(input, args[0], filepath.Ext(fileFlag), cmd.OutOrStdout())
 			} else {
-				return fmt.Errorf("either --file or --std-in must be specified")
+				return fmt.Errorf("no file or standard input specified")
 			}
 		},
 	}
 
-	cmd.Flags().StringVarP(&fileFlag, "file", "f", "", "Specify the file to lint")
-	cmd.Flags().BoolVar(&stdInFlag, "std-in", false, "Read from standard input")
+	cmd.Flags().StringVarP(&fileFlag, "file", "f", "", "Specify the file to lint or '-' for standard input")
 
 	return cmd
 }
@@ -67,7 +65,7 @@ func Command() *cobra.Command {
 func lintInput(input []byte, schema string, format string, writer io.Writer) error {
 	fmt.Fprintln(writer, "Processing input...")
 
-	processor, err := getProcessor(format)
+	processor, err := getProcessor(format, input)
 	if err != nil {
 		return err
 	}
