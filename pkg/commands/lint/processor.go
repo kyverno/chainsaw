@@ -10,8 +10,10 @@ type FileFormatProcessor interface {
 	ToJSON(input []byte) ([]byte, error)
 }
 
-type JSONProcessor struct{}
-type YAMLProcessor struct{}
+type (
+	JSONProcessor struct{}
+	YAMLProcessor struct{}
+)
 
 func (p JSONProcessor) ToJSON(input []byte) ([]byte, error) {
 	return input, nil
