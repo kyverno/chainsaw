@@ -14,7 +14,7 @@
             "args": [
                 "test",
                 "--test-dir",
-                "./quick-start/pass",
+                "./testdata/e2e/examples",
             ]
         }
     ]
