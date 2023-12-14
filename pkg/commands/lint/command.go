@@ -11,11 +11,22 @@ import (
 )
 
 func getTestSchema() string {
-	return filepath.Join("..", "..", "..", ".schemas", "json", "test-chainsaw-v1alpha1.json")
+	relativePath := filepath.Join(".schemas", "json", "test-chainsaw-v1alpha1.json")
+	absolutePath, err := filepath.Abs(relativePath)
+	if err != nil {
+		panic(err)
+	}
+	canonicalPath := filepath.Clean(absolutePath)
+	return "file://" + canonicalPath
 }
 
 func getConfigurationSchema() string {
-	return filepath.Join("..", "..", "..", ".schemas", "json", "configuration-chainsaw-v1alpha1.json")
+	relativePath := filepath.Join(".schemas", "json", "configuration-chainsaw-v1alpha1.json")
+	absolutePath, err := filepath.Abs(relativePath)
+	if err != nil {
+		panic(err)
+	}
+	return absolutePath
 }
 
 func Command() *cobra.Command {
@@ -34,13 +45,13 @@ func Command() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				return lintInput(input, args[0])
+				return lintInput(input, args[0], filepath.Ext(fileFlag), cmd.OutOrStdout())
 			} else if fileFlag != "" {
 				input, err := os.ReadFile(fileFlag)
 				if err != nil {
 					return err
 				}
-				return lintInput(input, args[0])
+				return lintInput(input, args[0], filepath.Ext(fileFlag), cmd.OutOrStdout())
 			} else {
 				return fmt.Errorf("either --file or --std-in must be specified")
 			}
@@ -53,10 +64,20 @@ func Command() *cobra.Command {
 	return cmd
 }
 
-func lintInput(input []byte, schema string) error {
-	fmt.Println("Processing input...")
+func lintInput(input []byte, schema string, format string, writer io.Writer) error {
+	fmt.Fprintln(writer, "Processing input...")
+
+	processor, err := getProcessor(format)
+	if err != nil {
+		return err
+	}
+	jsonInput, err := processor.ToJSON(input)
+	if err != nil {
+		return err
+	}
+
 	schemaLoader := gojsonschema.NewReferenceLoader(getScheme(schema))
-	documentLoader := gojsonschema.NewBytesLoader(input)
+	documentLoader := gojsonschema.NewBytesLoader(jsonInput)
 
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
@@ -64,13 +85,14 @@ func lintInput(input []byte, schema string) error {
 	}
 
 	if !result.Valid() {
-		fmt.Println("The schema is not valid. See errors :")
+		fmt.Fprintln(writer, "The schema is not valid. See errors:")
 		for _, desc := range result.Errors() {
-			fmt.Printf("- %s\n", desc)
+			fmt.Fprintf(writer, "- %s\n", desc)
 		}
 		return fmt.Errorf("document is not valid")
 	}
 
+	fmt.Fprintln(writer, "The document is valid")
 	return nil
 }
 
