@@ -50,6 +50,8 @@ nav:
     - commands/chainsaw_completion_fish.md
     - commands/chainsaw_completion_powershell.md
     - commands/chainsaw_completion_zsh.md
+    - commands/chainsaw_create.md
+    - commands/chainsaw_create_test.md
     - commands/chainsaw_docs.md
     - commands/chainsaw_generate.md
     - commands/chainsaw_generate_docs.md
