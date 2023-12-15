@@ -3,6 +3,7 @@ package commands
 import (
 	"github.com/kyverno/chainsaw/pkg/commands/create"
 	"github.com/kyverno/chainsaw/pkg/commands/docs"
+	"github.com/kyverno/chainsaw/pkg/commands/export"
 	"github.com/kyverno/chainsaw/pkg/commands/generate"
 	"github.com/kyverno/chainsaw/pkg/commands/migrate"
 	"github.com/kyverno/chainsaw/pkg/commands/root"
@@ -16,6 +17,7 @@ func RootCommand() *cobra.Command {
 	cmd.AddCommand(
 		create.Command(),
 		docs.Command(),
+		export.Command(),
 		generate.Command(),
 		migrate.Command(),
 		test.Command(),

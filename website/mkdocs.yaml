@@ -53,6 +53,8 @@ nav:
     - commands/chainsaw_create.md
     - commands/chainsaw_create_test.md
     - commands/chainsaw_docs.md
+    - commands/chainsaw_export.md
+    - commands/chainsaw_export_schemas.md
     - commands/chainsaw_generate.md
     - commands/chainsaw_generate_docs.md
     - commands/chainsaw_migrate.md

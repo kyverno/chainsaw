@@ -1,5 +1,6 @@
 # Tests catalog
 
+- [assertion-tree](assertion-tree/README.md)
 - [basic](basic/README.md)
 - [catch](catch/README.md)
 - [delete](delete/README.md)

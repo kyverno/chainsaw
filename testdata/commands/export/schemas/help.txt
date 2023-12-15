@@ -1,0 +1,7 @@
+Export JSON schemas
+
+Usage:
+  chainsaw schemas [flags]
+
+Flags:
+  -h, --help   help for schemas
