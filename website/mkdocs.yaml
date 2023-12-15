@@ -45,6 +45,8 @@ nav:
     - collectors/events.md
   - Command Line Usage:
     - commands/chainsaw.md
+    - commands/chainsaw_build.md
+    - commands/chainsaw_build_docs.md
     - commands/chainsaw_completion.md
     - commands/chainsaw_completion_bash.md
     - commands/chainsaw_completion_fish.md
@@ -55,8 +57,6 @@ nav:
     - commands/chainsaw_docs.md
     - commands/chainsaw_export.md
     - commands/chainsaw_export_schemas.md
-    - commands/chainsaw_generate.md
-    - commands/chainsaw_generate_docs.md
     - commands/chainsaw_migrate.md
     - commands/chainsaw_migrate_kuttl.md
     - commands/chainsaw_migrate_kuttl_config.md

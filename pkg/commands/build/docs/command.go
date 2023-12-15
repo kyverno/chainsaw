@@ -36,7 +36,7 @@ func Command() *cobra.Command {
 	var options options
 	cmd := &cobra.Command{
 		Use:          "docs",
-		Short:        "Generate tests documentation",
+		Short:        "Build tests documentation",
 		Args:         cobra.NoArgs,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
@@ -57,8 +57,8 @@ func Command() *cobra.Command {
 		},
 	}
 	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test.yaml", "Name of the test file")
-	cmd.Flags().StringVar(&options.readmeFile, "readme-file", "README.md", "Name of the generated docs file")
-	cmd.Flags().StringVar(&options.catalog, "catalog", "", "Path to the generated test catalog file")
+	cmd.Flags().StringVar(&options.readmeFile, "readme-file", "README.md", "Name of the built docs file")
+	cmd.Flags().StringVar(&options.catalog, "catalog", "", "Path to the built test catalog file")
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run")
 	return cmd
 }
