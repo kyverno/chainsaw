@@ -1,4 +1,4 @@
-package generate
+package docs
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 )
 
 func Test_Execute(t *testing.T) {
-	basePath := "../../../testdata/commands/generate"
+	basePath := "../../../../testdata/commands/build/docs"
 	tests := []struct {
 		name    string
 		args    []string
@@ -21,29 +21,46 @@ func Test_Execute(t *testing.T) {
 	}{{
 		name: "help",
 		args: []string{
-			"generate",
+			"docs",
 			"--help",
 		},
 		out:     filepath.Join(basePath, "help.txt"),
 		wantErr: false,
 	}, {
-		name: "generate",
+		name: "invalid output",
 		args: []string{
-			"generate",
+			"docs",
 		},
-		out:     filepath.Join(basePath, "help.txt"),
+		wantErr: false,
+	}, {
+		name: "docs",
+		args: []string{
+			"docs",
+			"--test-dir",
+			"../../../../testdata/e2e/examples",
+		},
+		wantErr: false,
+	}, {
+		name: "catalog",
+		args: []string{
+			"docs",
+			"--test-dir",
+			"../../../../testdata/e2e/examples",
+			"--catalog",
+			"../../../../testdata/e2e/examples/CATALOG.md",
+		},
 		wantErr: false,
 	}, {
 		name: "unknow flag",
 		args: []string{
-			"generate",
+			"docs",
 			"--foo",
 		},
 		wantErr: true,
 	}, {
 		name: "unknow arg",
 		args: []string{
-			"generate",
+			"docs",
 			"foo",
 		},
 		wantErr: true,

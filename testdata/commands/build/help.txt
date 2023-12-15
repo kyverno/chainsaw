@@ -1,0 +1,13 @@
+Build commands
+
+Usage:
+  chainsaw build [flags]
+  chainsaw build [command]
+
+Available Commands:
+  docs        Build tests documentation
+
+Flags:
+  -h, --help   help for build
+
+Use "chainsaw build [command] --help" for more information about a command.

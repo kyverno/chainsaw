@@ -1,4 +1,4 @@
-package docs
+package build
 
 import (
 	"bytes"
@@ -12,7 +12,7 @@ import (
 )
 
 func Test_Execute(t *testing.T) {
-	basePath := "../../../../testdata/commands/generate/docs"
+	basePath := "../../../testdata/commands/build"
 	tests := []struct {
 		name    string
 		args    []string
@@ -21,46 +21,29 @@ func Test_Execute(t *testing.T) {
 	}{{
 		name: "help",
 		args: []string{
-			"docs",
+			"build",
 			"--help",
 		},
 		out:     filepath.Join(basePath, "help.txt"),
 		wantErr: false,
 	}, {
-		name: "invalid output",
+		name: "build",
 		args: []string{
-			"docs",
+			"build",
 		},
-		wantErr: false,
-	}, {
-		name: "docs",
-		args: []string{
-			"docs",
-			"--test-dir",
-			"../../../../testdata/e2e/examples",
-		},
-		wantErr: false,
-	}, {
-		name: "catalog",
-		args: []string{
-			"docs",
-			"--test-dir",
-			"../../../../testdata/e2e/examples",
-			"--catalog",
-			"../../../../testdata/e2e/examples/CATALOG.md",
-		},
+		out:     filepath.Join(basePath, "help.txt"),
 		wantErr: false,
 	}, {
 		name: "unknow flag",
 		args: []string{
-			"docs",
+			"build",
 			"--foo",
 		},
 		wantErr: true,
 	}, {
 		name: "unknow arg",
 		args: []string{
-			"docs",
+			"build",
 			"foo",
 		},
 		wantErr: true,
