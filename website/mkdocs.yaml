@@ -45,6 +45,7 @@ nav:
     - collectors/events.md
   - Command Line Usage:
     - commands/chainsaw.md
+    - commands/chainsaw_assert.md
     - commands/chainsaw_build.md
     - commands/chainsaw_build_docs.md
     - commands/chainsaw_completion.md

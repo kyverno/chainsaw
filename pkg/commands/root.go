@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"github.com/kyverno/chainsaw/pkg/commands/assert"
 	"github.com/kyverno/chainsaw/pkg/commands/build"
 	"github.com/kyverno/chainsaw/pkg/commands/create"
 	"github.com/kyverno/chainsaw/pkg/commands/docs"
@@ -15,6 +16,7 @@ import (
 func RootCommand() *cobra.Command {
 	cmd := root.Command()
 	cmd.AddCommand(
+		assert.Command(),
 		create.Command(),
 		docs.Command(),
 		export.Command(),
