@@ -1,8 +1,8 @@
-# Generating test docs
+# Building test docs
 
 ## Overview
 
-Chainsaw makes it simple to generate the documentation of your tests.
+Chainsaw makes it simple to build the documentation of your tests.
 
 As test suites grow, it becomes important to document what a test does and how it is supposed to work.
 
@@ -10,14 +10,14 @@ Going through the implementation of a test to understand its purpose is not an e
 
 !!! tip "Reference documentation"
 
-    You can view the full command documentation [here](../commands/chainsaw_generate_docs.md).
+    You can view the full command documentation [here](../commands/chainsaw_build_docs.md).
 
 ## Usage
 
-To generate the docs of a test, Chainsaw provides the `chainsaw generate docs` command.
+To build the docs of a test, Chainsaw provides the `chainsaw build docs` command.
 
 ```bash
-chainsaw generate docs --test-dir path/to/chainsaw/tests
+chainsaw build docs --test-dir path/to/chainsaw/tests
 ```
 
 This will automatically discover tests and document steps and operations in `try`, `catch` and `finally` statements.
@@ -33,11 +33,11 @@ Additionally, you can set the `description` field in:
 - `Catch`
 - `Finally`
 
-Chainsaw will output them nicely in the generated docs.
+Chainsaw will output them nicely in the built docs.
 
 ## Example
 
-See below for an example test and the corresponding generated docs.
+See below for an example test and the corresponding built docs.
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
