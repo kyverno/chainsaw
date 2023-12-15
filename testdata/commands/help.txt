@@ -5,11 +5,11 @@ Usage:
   chainsaw [command]
 
 Available Commands:
+  build       Build commands
   completion  Generate the autocompletion script for the specified shell
   create      Create Chainsaw resources
   docs        Generate reference documentation
   export      Export commands
-  generate    Generate commands
   help        Help about any command
   migrate     Migrate resources to Chainsaw
   test        Run tests
