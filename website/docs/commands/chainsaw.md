@@ -14,6 +14,7 @@ chainsaw [flags]
 
 ### SEE ALSO
 
+* [chainsaw assert](chainsaw_assert.md)	 - Evaluate assertion
 * [chainsaw build](chainsaw_build.md)	 - Build commands
 * [chainsaw completion](chainsaw_completion.md)	 - Generate the autocompletion script for the specified shell
 * [chainsaw create](chainsaw_create.md)	 - Create Chainsaw resources

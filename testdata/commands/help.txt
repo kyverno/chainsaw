@@ -5,6 +5,7 @@ Usage:
   chainsaw [command]
 
 Available Commands:
+  assert      Evaluate assertion
   build       Build commands
   completion  Generate the autocompletion script for the specified shell
   create      Create Chainsaw resources
