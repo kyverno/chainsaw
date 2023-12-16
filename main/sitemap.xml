@@ -41,6 +41,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/resources/</loc>
+         <lastmod>2023-12-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/writing-tests/</loc>
          <lastmod>2023-12-16</lastmod>
          <changefreq>daily</changefreq>
