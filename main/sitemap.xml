@@ -226,6 +226,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/selector/</loc>
+         <lastmod>2023-12-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/configuration/timeouts/</loc>
          <lastmod>2023-12-16</lastmod>
          <changefreq>daily</changefreq>
