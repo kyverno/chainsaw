@@ -11,8 +11,6 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 📚 Docs 📚
-
 ## 🎸 Misc 🎸
 -->
 
@@ -35,3 +33,7 @@ Release notes for `TODO`.
 - Fixed an invalid error check in `chainsaw docs` command
 - Fixed skip delete not applied to test namespace
 - Fixed crash due to bindings being null
+
+## 📚 Docs 📚
+
+- Added a _Getting Started/Resources_ docs page
