@@ -52,3 +52,13 @@ The command below will apply the Chainsaw CRDs to the configured cluster:
 $ kubectl apply -f https://raw.githubusercontent.com/kyverno/chainsaw/main/config/crds/chainsaw.kyverno.io_configurations.yaml
 $ kubectl apply -f https://raw.githubusercontent.com/kyverno/chainsaw/main/config/crds/chainsaw.kyverno.io_tests.yaml
 ```
+
+## Exporting schemas
+
+Chainsaw can export JSON schemas locally.
+
+```bash
+$ chainsaw export schemas <local path>
+```
+
+See [Chainsaw export schemas reference](./commands/chainsaw_export_schemas.md) for more details.

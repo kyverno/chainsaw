@@ -2,7 +2,7 @@
 
 A GitHub action is available to easily install Chainsaw in your workflows.
 
-The GitHub action is available at [kyverno/chainsaw/.github/actions/install](https://github.com/kyverno/chainsaw/.github/actions/install).
+The GitHub action is available at [kyverno/action-install-chainsaw](https://github.com/kyverno/action-install-chainsaw) or in the [marketplace](https://github.com/marketplace/actions/chainsaw-installer).
 
 ## Usage
 
