@@ -1,6 +1,6 @@
 # Configuring Chainsaw
 
-Chainsaw is a comprehensive tool designed to facilitate **end to end testing in [Kubernetes](https://kubernetes.io)**.
+Chainsaw is a comprehensive tool designed to facilitate **end-to-end testing in [Kubernetes](https://kubernetes.io)**.
 
 This documentation will focus on providing a breakdown of its configuration structure and how to use it.
 
@@ -19,3 +19,4 @@ Please pay attention to the configuration options below, they may or may not be 
 - [Timeouts](./timeouts.md)
 - [Termination graceful period](./grace.md)
 - [Cleanup before delay](./cleanup-delay.md)
+- [Label selectors](./selector.md)

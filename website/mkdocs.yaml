@@ -20,6 +20,7 @@ nav:
     - configuration/grace.md
     - configuration/cleanup-delay.md
     - configuration/reports.md
+    - configuration/selector.md
   - Tests:
     - tests/index.md
     - tests/manifests-based.md
