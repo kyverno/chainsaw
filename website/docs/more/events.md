@@ -1,4 +1,4 @@
-# Kubernetes events
+# Working with events
 
 Kubernetes events are regular Kubernetes objects and can be asserted on just like any other object:
 

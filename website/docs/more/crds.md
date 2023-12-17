@@ -1,8 +1,8 @@
-# Custom resource definitions
+# Working with CRDs
 
 New Custom Resource Definitions are not immediately available for use in the Kubernetes API until the Kubernetes API has acknowledged them.
 
-If a Custom Resource Definition is being defined inside of a test step, be sure to to wait for the CustomResourceDefinition object to appear.
+If a Custom Resource Definition is being defined inside of a test step, be sure to wait for the CustomResourceDefinition object to appear.
 
 For example, given this Custom Resource Definition:
 
