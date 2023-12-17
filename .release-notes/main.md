@@ -37,3 +37,5 @@ Release notes for `TODO`.
 ## 📚 Docs 📚
 
 - Added a _Getting Started/Resources_ docs page
+- Grouped all reference documents into _Writing Tests/Reference Documentation_
+- Moved _More resources_ documentation into _Writing Tests/Other Resources_
