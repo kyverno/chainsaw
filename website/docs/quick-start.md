@@ -28,8 +28,8 @@ kind create cluster --image $KIND_IMAGE
 
 A Chainsaw test is [made of YAML files in a folder](./tests/index.md).
 
-YAML files can either contain raw manifests with a special file naming convention to identify the step operations.
-This is useful to create test quickly but doesn't allow great flexibility.
+YAML files can contain raw manifests with a special file naming convention to identify the step operations.
+This is useful to create tests quickly but doesn't allow great flexibility.
 
 Another option is to have a `chainsaw-test.yaml` file containing a `Test` resource. While more verbose, this offers full flexibility over the test and test steps configuration.
 
