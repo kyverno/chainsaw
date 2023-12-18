@@ -103,6 +103,16 @@ func Test_Execute(t *testing.T) {
 			},
 			wantErr: true,
 		},
+		{
+			name: "Lint Error Test Txt File",
+			args: []string{
+				"lint",
+				"test",
+				"--file",
+				filepath.Join(basePath, "test", "txt.txt"),
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -159,6 +169,30 @@ func Test_Stdin(t *testing.T) {
 				"-",
 			},
 			file:    filepath.Join(basePath, "configuration", "configuration.json"),
+			wantErr: false,
+			out:     filepath.Join(basePath, "configuration", "pass.txt"),
+		},
+		{
+			name: "Lint Test YAMl File",
+			args: []string{
+				"lint",
+				"test",
+				"--file",
+				"-",
+			},
+			file:    filepath.Join(basePath, "test", "test.yaml"),
+			wantErr: false,
+			out:     filepath.Join(basePath, "test", "pass.txt"),
+		},
+		{
+			name: "Lint Configuration YAML File",
+			args: []string{
+				"lint",
+				"configuration",
+				"--file",
+				"-",
+			},
+			file:    filepath.Join(basePath, "configuration", "configuration.yaml"),
 			wantErr: false,
 			out:     filepath.Join(basePath, "configuration", "pass.txt"),
 		},
