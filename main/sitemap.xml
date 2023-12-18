@@ -236,6 +236,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/examples/</loc>
+         <lastmod>2023-12-18</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/examples/basic/</loc>
+         <lastmod>2023-12-18</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/jp/functions/</loc>
          <lastmod>2023-12-18</lastmod>
          <changefreq>daily</changefreq>
