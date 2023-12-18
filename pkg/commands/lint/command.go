@@ -1,6 +1,7 @@
 package lint
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -10,23 +11,60 @@ import (
 	"github.com/xeipuuv/gojsonschema"
 )
 
-func getTestSchema() string {
-	relativePath := filepath.Join(".schemas", "json", "test-chainsaw-v1alpha1.json")
-	absolutePath, err := filepath.Abs(relativePath)
+func getTestSchema() (string, error) {
+	startingDir, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-	canonicalPath := filepath.Clean(absolutePath)
-	return "file://" + canonicalPath
+	var findSchemasDir func(dir string) (string, error)
+	findSchemasDir = func(dir string) (string, error) {
+		if dir == "" || dir == "/" {
+			return "", errors.New(".schemas directory not found")
+		}
+
+		schemasPath := filepath.Join(dir, ".schemas")
+		if _, err := os.Stat(schemasPath); err == nil {
+			return schemasPath, nil
+		}
+		parentDir := filepath.Dir(dir)
+		return findSchemasDir(parentDir)
+	}
+
+	schemasDir, err := findSchemasDir(startingDir)
+	if err != nil {
+		return "", err
+	}
+	testSchemaPath := filepath.Join(schemasDir, "json", "test-chainsaw-v1alpha1.json")
+	canonicalPath := filepath.Clean(testSchemaPath)
+	return "file://" + canonicalPath, nil
 }
 
-func getConfigurationSchema() string {
-	relativePath := filepath.Join(".schemas", "json", "configuration-chainsaw-v1alpha1.json")
-	absolutePath, err := filepath.Abs(relativePath)
+func getConfigurationSchema() (string, error) {
+	startingDir, err := os.Getwd()
 	if err != nil {
-		panic(err)
+		return "", err
 	}
-	return absolutePath
+
+	var findSchemasDir func(dir string) (string, error)
+	findSchemasDir = func(dir string) (string, error) {
+		if dir == "" || dir == "/" {
+			return "", errors.New(".schemas directory not found")
+		}
+		schemasPath := filepath.Join(dir, ".schemas")
+		if _, err := os.Stat(schemasPath); err == nil {
+			return schemasPath, nil
+		}
+		parentDir := filepath.Dir(dir)
+		return findSchemasDir(parentDir)
+	}
+
+	schemasDir, err := findSchemasDir(startingDir)
+	if err != nil {
+		return "", err
+	}
+
+	configSchemaPath := filepath.Join(schemasDir, "json", "configuration-chainsaw-v1alpha1.json")
+	return filepath.Clean(configSchemaPath), nil
 }
 
 func Command() *cobra.Command {
@@ -73,8 +111,11 @@ func lintInput(input []byte, schema string, format string, writer io.Writer) err
 	if err != nil {
 		return err
 	}
-
-	schemaLoader := gojsonschema.NewReferenceLoader(getScheme(schema))
+	goschema, err := getScheme(schema)
+	if err != nil {
+		return err
+	}
+	schemaLoader := gojsonschema.NewReferenceLoader(goschema)
 	documentLoader := gojsonschema.NewBytesLoader(jsonInput)
 
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
@@ -94,11 +135,13 @@ func lintInput(input []byte, schema string, format string, writer io.Writer) err
 	return nil
 }
 
-func getScheme(schema string) string {
+func getScheme(schema string) (string, error) {
 	switch schema {
+	case "test":
+		return getTestSchema()
 	case "configuration":
 		return getConfigurationSchema()
 	default:
-		return getTestSchema()
+		return "", fmt.Errorf("unknown schema: %s", schema)
 	}
 }
