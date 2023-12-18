@@ -12,6 +12,7 @@ Available Commands:
   docs        Generate reference documentation
   export      Export commands
   help        Help about any command
+  lint        Lint a file or read from standard input
   migrate     Migrate resources to Chainsaw
   test        Run tests
   version     Print the version informations

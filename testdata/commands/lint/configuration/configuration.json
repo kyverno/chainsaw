@@ -1,0 +1,27 @@
+{
+  "apiVersion": "chainsaw.kyverno.io/v1alpha1",
+  "kind": "Configuration",
+  "metadata": {
+    "name": "valid",
+    "namespace": "kyverno"
+  },
+  "spec": {
+    "timeouts": {
+      "apply": "5s",
+      "assert": "10s",
+      "error": "10s",
+      "delete": "5s",
+      "cleanup": "5s",
+      "exec": "10s"
+    },
+    "skipDelete": true,
+    "failFast": true,
+    "parallel": 5,
+    "reportFormat": "JSON",
+    "reportName": "custom-chainsaw-report",
+    "namespace": "test-namespace",
+    "fullName": true,
+    "includeTestRegex": "^include-.*",
+    "excludeTestRegex": "^exclude-.*"
+  }
+}
