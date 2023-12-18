@@ -1,0 +1,77 @@
+{
+  "apiVersion": "chainsaw.kyverno.io/v1alpha2",
+  "kind": "Tests",
+  "metadata": {
+    "name": "test-1"
+  },
+  "spec": {
+    "steps": [
+      {
+        "try": [
+          {
+            "apply": {
+              "file": "foo.yaml"
+            }
+          }
+        ],
+        "catch": [
+          {
+            "podLogs": {
+              "namespace": "foo",
+              "name": "bar"
+            }
+          },
+          {
+            "events": {
+              "namespace": "foo",
+              "name": "bar"
+            }
+          },
+          {
+            "command": {
+              "entrypoint": "time"
+            }
+          },
+          {
+            "script": {
+              "content": "echo \"hello\""
+            }
+          }
+        ]
+      },
+      {
+        "try": [
+          {
+            "assert": {
+              "file": "bar.yaml"
+            }
+          }
+        ],
+        "finally": [
+          {
+            "podLogs": {
+              "namespace": "foo",
+              "name": "bar"
+            }
+          },
+          {
+            "events": {
+              "namespace": "foo",
+              "name": "bar"
+            }
+          },
+          {
+            "command": {
+              "entrypoint": "time"
+            }
+          },
+          {
+            "script": {
+              "content": "echo \"hello\""
+            }
+          }
+        ]
+      }
+    ]
+  }
+}
