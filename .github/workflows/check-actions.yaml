@@ -8,6 +8,9 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -26,4 +29,3 @@ jobs:
           # See: https://github.com/slsa-framework/slsa-github-generator#referencing-slsa-builders-and-generators
           allowlist: |
             slsa-framework/slsa-github-generator
-            kyverno/chainsaw

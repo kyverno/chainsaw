@@ -14,7 +14,7 @@ edit_uri: edit/main/website/docs/
 copyright: Made with ❤️ by Kyverno contributors.
 
 # strictness
-# strict: true
+strict: true
 
 # style
 extra_css:
