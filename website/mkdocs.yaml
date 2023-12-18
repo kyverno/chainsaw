@@ -78,5 +78,9 @@ nav:
     - APIs:
       - v1alpha1: apis/chainsaw.v1alpha1.md
   - json-schemas.md
+- Examples:
+  - examples/index.md
+  - Examples:
+    - examples/basic.md
 - Blog:
   - blog/index.md
