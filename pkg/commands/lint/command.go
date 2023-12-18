@@ -7,8 +7,11 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/validation"
 	"github.com/spf13/cobra"
 	"github.com/xeipuuv/gojsonschema"
+	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
 func getTestSchema() (string, error) {
@@ -103,7 +106,19 @@ func Command() *cobra.Command {
 
 func lintInput(input []byte, schema string, format string, writer io.Writer) error {
 	fmt.Fprintln(writer, "Processing input...")
+	if err := lintSchema(input, schema, format, writer); err != nil {
+		return err
+	}
+	if schema == "test" {
+		if err := lintBusinessLogic(input, writer); err != nil {
+			return err
+		}
+	}
+	fmt.Fprintln(writer, "The document is valid")
+	return nil
+}
 
+func lintSchema(input []byte, schema string, format string, writer io.Writer) error {
 	processor, err := getProcessor(format, input)
 	if err != nil {
 		return err
@@ -131,9 +146,15 @@ func lintInput(input []byte, schema string, format string, writer io.Writer) err
 		}
 		return fmt.Errorf("document is not valid")
 	}
-
-	fmt.Fprintln(writer, "The document is valid")
 	return nil
+}
+
+func lintBusinessLogic(input []byte, writer io.Writer) error {
+	test := &v1alpha1.Test{}
+	if err := yaml.UnmarshalStrict(input, test); err != nil {
+		return err
+	}
+	return validation.ValidateTest(test).ToAggregate()
 }
 
 func getScheme(schema string) (string, error) {
