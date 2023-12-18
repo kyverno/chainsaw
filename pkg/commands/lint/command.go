@@ -64,7 +64,8 @@ func getConfigurationSchema() (string, error) {
 	}
 
 	configSchemaPath := filepath.Join(schemasDir, "json", "configuration-chainsaw-v1alpha1.json")
-	return filepath.Clean(configSchemaPath), nil
+	canonicalPath := filepath.Clean(configSchemaPath)
+	return "file://" + canonicalPath, nil
 }
 
 func Command() *cobra.Command {
