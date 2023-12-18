@@ -82,5 +82,6 @@ nav:
   - examples/index.md
   - Examples:
     - examples/basic.md
+    - examples/labels-selector.md
 - Blog:
   - blog/index.md
