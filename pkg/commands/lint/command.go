@@ -79,7 +79,7 @@ func Command() *cobra.Command {
 		ValidArgs: []string{"test", "configuration"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if fileFlag == "-" {
-				input, err := io.ReadAll(os.Stdin)
+				input, err := io.ReadAll(cmd.InOrStdin())
 				if err != nil {
 					return err
 				}
