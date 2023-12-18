@@ -161,6 +161,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_lint/</loc>
+         <lastmod>2023-12-18</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_migrate/</loc>
          <lastmod>2023-12-18</lastmod>
          <changefreq>daily</changefreq>
