@@ -23,3 +23,7 @@ export KIND_IMAGE="kindest/node:v1.28.0"
 # create cluster
 kind create cluster --image $KIND_IMAGE
 ```
+
+## Install Chainsaw
+
+Refer to [install docs](../install.md) to install Chainsaw.
