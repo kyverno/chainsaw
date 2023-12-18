@@ -18,27 +18,29 @@ func Test_Execute(t *testing.T) {
 		args    []string
 		wantErr bool
 		out     string
-	}{{
-		name: "Lint Test JSON File",
-		args: []string{
-			"lint",
-			"test",
-			"--file",
-			filepath.Join(basePath, "test", "test.json"),
+	}{
+		{
+			name: "Lint Test JSON File",
+			args: []string{
+				"lint",
+				"test",
+				"--file",
+				filepath.Join(basePath, "test", "test.json"),
+			},
+			out:     filepath.Join(basePath, "test", "pass.txt"),
+			wantErr: false,
 		},
-		out:     filepath.Join(basePath, "test", "pass.txt"),
-		wantErr: false,
-	}, {
-		name: "Lint Test YAML File",
-		args: []string{
-			"lint",
-			"test",
-			"--file",
-			filepath.Join(basePath, "test", "test.yaml"),
+		{
+			name: "Lint Test YAML File",
+			args: []string{
+				"lint",
+				"test",
+				"--file",
+				filepath.Join(basePath, "test", "test.yaml"),
+			},
+			out:     filepath.Join(basePath, "test", "pass.txt"),
+			wantErr: false,
 		},
-		out:     filepath.Join(basePath, "test", "pass.txt"),
-		wantErr: false,
-	},
 		{
 			name: "Lint Configuration JSON File",
 			args: []string{
@@ -49,7 +51,8 @@ func Test_Execute(t *testing.T) {
 			},
 			out:     filepath.Join(basePath, "configuration", "pass.txt"),
 			wantErr: false,
-		}, {
+		},
+		{
 			name: "Lint Configuration YAML File",
 			args: []string{
 				"lint",
