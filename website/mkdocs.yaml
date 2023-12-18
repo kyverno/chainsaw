@@ -82,5 +82,8 @@ nav:
   - examples/index.md
   - Examples:
     - examples/basic.md
+    - examples/inline.md
+    - examples/assertion-tree.md
+    - examples/labels-selector.md
 - Blog:
   - blog/index.md

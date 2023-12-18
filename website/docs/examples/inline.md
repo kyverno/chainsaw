@@ -1,4 +1,4 @@
-# Basic
+# Inline resources
 
 Test steps:
 
@@ -9,30 +9,6 @@ Test steps:
 
 See [Setup docs](./index.md#setup)
 
-## Manifests
-
-### `resources.yaml`
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: quick-start
-data:
-  foo: bar
-```
-
-### `assertions.yaml`
-
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: quick-start
-data:
-  foo: bar
-```
-
 ## Test
 
 ### `chainsaw-test.yaml`
@@ -42,14 +18,26 @@ data:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: basic
+  name: inline-resources
 spec:
   steps:
   - try:
     - apply:
-        file: resources.yaml
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            foo: bar
     - assert:
-        file: assertions.yaml
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            foo: bar
 ```
 
 ## Execute

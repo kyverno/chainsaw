@@ -1,9 +1,9 @@
-# Basic
+# Assertion trees
 
 Test steps:
 
-1.  Creates a ConfigMap
-1.  Asserts the ConfigMap contains the expected data
+1.  Creates a Deployment with 2 replicas
+1.  Asserts that the number of replicas is > 1 and that `status.replicas == spec.replicas`
 
 ## Setup
 
@@ -14,23 +14,35 @@ See [Setup docs](./index.md#setup)
 ### `resources.yaml`
 
 ```yaml
-apiVersion: v1
-kind: ConfigMap
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: quick-start
-data:
-  foo: bar
+  name: nginx-deployment
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx
 ```
 
 ### `assertions.yaml`
 
 ```yaml
-apiVersion: v1
-kind: ConfigMap
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: quick-start
-data:
-  foo: bar
+  name: nginx-deployment
+(status.replicas == spec.replicas): true
+spec:
+  (replicas > `1`): true
 ```
 
 ## Test
