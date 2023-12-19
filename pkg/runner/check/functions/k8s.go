@@ -2,24 +2,11 @@ package functions
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
-
-func getArg[T any](arguments []any, index int, out *T) error {
-	if index >= len(arguments) {
-		return fmt.Errorf("index out of range (%d / %d)", index, len(arguments))
-	}
-	if value, ok := arguments[index].(T); !ok {
-		return fmt.Errorf("invalid type")
-	} else {
-		*out = value
-		return nil
-	}
-}
 
 func jpKubernetesList(arguments []any) (any, error) {
 	var client client.Client
