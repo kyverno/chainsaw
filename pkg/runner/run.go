@@ -48,7 +48,7 @@ func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		return nil, err
 	}
 	client = runnerclient.New(client)
-	var caller = func() interpreter.FunctionCaller {
+	caller := func() interpreter.FunctionCaller {
 		var funcs []jpfunctions.FunctionEntry
 		funcs = append(funcs, template.GetFunctions(context.Background())...)
 		funcs = append(funcs, functions.GetFunctions(client)...)
