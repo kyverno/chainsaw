@@ -11,5 +11,14 @@ func GetFunctions() []functions.FunctionEntry {
 			{Types: []functions.JpType{functions.JpString}},
 		},
 		Handler: jpEnv,
+	}, {
+		Name: "k8s_list",
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpAny}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}, Optional: true},
+		},
+		Handler: jpKubernetesList,
 	}}
 }

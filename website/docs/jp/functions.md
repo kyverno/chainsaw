@@ -111,4 +111,5 @@
 | Name | Signature |
 |---|---|
 | env | `env(string)` |
+| k8s_list | `k8s_list(any, string, string, string)` |
 
