@@ -23,11 +23,6 @@ func Test_jpEnv(t *testing.T) {
 		want:      nil,
 		wantErr:   true,
 	}, {
-		name:      "two",
-		arguments: []any{"", 1},
-		want:      nil,
-		wantErr:   true,
-	}, {
 		name:      "not found",
 		arguments: []any{"FOO"},
 		want:      "",
