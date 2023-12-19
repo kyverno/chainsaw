@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	jpfunctions "github.com/jmespath-community/go-jmespath/pkg/functions"
 	"github.com/jmespath-community/go-jmespath/pkg/interpreter"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/check/functions"
@@ -14,12 +13,12 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-var caller = func() interpreter.FunctionCaller {
-	var funcs []jpfunctions.FunctionEntry
-	funcs = append(funcs, template.GetFunctions(context.Background())...)
-	funcs = append(funcs, functions.GetFunctions()...)
-	return interpreter.NewFunctionCaller(funcs...)
-}()
+// var caller = func() interpreter.FunctionCaller {
+// 	var funcs []jpfunctions.FunctionEntry
+// 	funcs = append(funcs, template.GetFunctions(context.Background())...)
+// 	funcs = append(funcs, functions.GetFunctions()...)
+// 	return interpreter.NewFunctionCaller(funcs...)
+// }()
 
 func Check(ctx context.Context, obj any, bindings binding.Bindings, check *v1alpha1.Check) (field.ErrorList, error) {
 	if check == nil {
@@ -31,5 +30,6 @@ func Check(ctx context.Context, obj any, bindings binding.Bindings, check *v1alp
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
+	caller := ctx.Value(functions.ContextKey{}).(interpreter.FunctionCaller)
 	return assert.Assert(ctx, assert.Parse(ctx, check.Value), obj, bindings, template.WithFunctionCaller(caller))
 }

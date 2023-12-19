@@ -27,7 +27,7 @@ func main() {
 	fmt.Println()
 	fmt.Println("## chainsaw functions")
 	fmt.Println()
-	printFunctions(chainsawfunctions.GetFunctions()...)
+	printFunctions(chainsawfunctions.GetFunctions(nil)...)
 	fmt.Println()
 }
 
