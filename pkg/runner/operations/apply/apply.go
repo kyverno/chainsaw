@@ -92,6 +92,7 @@ func (o *operation) createResource(ctx context.Context) error {
 
 func (o *operation) handleCheck(ctx context.Context, err error) error {
 	bindings := binding.NewBindings()
+	bindings = bindings.Register("$client", binding.NewBinding(o.client))
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {

@@ -4,20 +4,16 @@ import (
 	"context"
 	"fmt"
 
-	jpfunctions "github.com/jmespath-community/go-jmespath/pkg/functions"
-	"github.com/jmespath-community/go-jmespath/pkg/interpreter"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
-	"github.com/kyverno/chainsaw/pkg/runner/check/functions"
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
-	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 )
@@ -48,12 +44,6 @@ func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		return nil, err
 	}
 	client = runnerclient.New(client)
-	caller := func() interpreter.FunctionCaller {
-		var funcs []jpfunctions.FunctionEntry
-		funcs = append(funcs, template.GetFunctions(context.Background())...)
-		funcs = append(funcs, functions.GetFunctions(client)...)
-		return interpreter.NewFunctionCaller(funcs...)
-	}()
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
@@ -62,7 +52,6 @@ func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 			processor := processors.NewTestsProcessor(config, client, clock, &summary, testsReport, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
-			ctx = context.WithValue(ctx, functions.ContextKey{}, caller)
 			processor.Run(ctx)
 		},
 	}}

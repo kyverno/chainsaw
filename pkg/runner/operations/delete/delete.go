@@ -114,6 +114,7 @@ func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.U
 
 func (o *operation) handleCheck(ctx context.Context, resource unstructured.Unstructured, err error) error {
 	bindings := binding.NewBindings()
+	bindings = bindings.Register("$client", binding.NewBinding(o.client))
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {

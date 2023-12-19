@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
@@ -61,9 +62,11 @@ func (o *operation) execute(ctx context.Context) error {
 		} else if len(candidates) == 0 {
 			return true, nil
 		} else {
+			bindings := binding.NewBindings()
+			bindings = bindings.Register("$client", binding.NewBinding(o.client))
 			for i := range candidates {
 				candidate := candidates[i]
-				_errs, err := check.Check(ctx, candidate.UnstructuredContent(), nil, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
+				_errs, err := check.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
 				if err != nil {
 					return false, err
 				}

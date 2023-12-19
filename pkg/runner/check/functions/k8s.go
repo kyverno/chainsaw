@@ -4,13 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jmespath-community/go-jmespath/pkg/functions"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
-
-type ContextKey struct{}
 
 func getArg[T any](arguments []any, index int, out *T) error {
 	if index >= len(arguments) {
@@ -21,12 +18,6 @@ func getArg[T any](arguments []any, index int, out *T) error {
 	} else {
 		*out = value
 		return nil
-	}
-}
-
-func jpKubernetesClient(c client.Client) functions.JpFunction {
-	return func([]any) (any, error) {
-		return c, nil
 	}
 }
 
