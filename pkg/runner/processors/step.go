@@ -272,7 +272,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) (
 }
 
 func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.FileRefOrResource, false)
+	resources, err := p.fileRefOrCheck(op.FileRefOrCheck, false)
 	if err != nil {
 		return nil, err
 	}
@@ -345,7 +345,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete)
 }
 
 func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.FileRefOrResource, false)
+	resources, err := p.fileRefOrCheck(op.FileRefOrCheck, false)
 	if err != nil {
 		return nil, err
 	}
@@ -385,6 +385,21 @@ func (p *stepProcessor) sleepOperation(ctx context.Context, sleep v1alpha1.Sleep
 		operation:       opsleep.New(sleep),
 		operationReport: operationReport,
 	}
+}
+
+func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.FileRefOrCheck, manifest bool) ([]unstructured.Unstructured, error) {
+	// if ref.Resource != nil {
+	// 	return []unstructured.Unstructured{*ref.Resource}, nil
+	// }
+	if ref.File != "" {
+		url, err := url.ParseRequestURI(ref.File)
+		if err != nil {
+			return resource.Load(filepath.Join(p.test.BasePath, ref.File), manifest)
+		} else {
+			return resource.LoadFromURI(url, manifest)
+		}
+	}
+	return nil, errors.New("file or resource must be set")
 }
 
 func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource, manifest bool) ([]unstructured.Unstructured, error) {

@@ -889,6 +889,7 @@
                         },
                         "resource": {
                           "description": "Resource provides a resource to be applied.",
+                          "x-kubernetes-embedded-resource": true,
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "timeout": {
@@ -915,7 +916,7 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource provides a resource to be applied.",
+                          "description": "Resource provides a check used in assertions.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "timeout": {
@@ -1031,6 +1032,7 @@
                         },
                         "resource": {
                           "description": "Resource provides a resource to be applied.",
+                          "x-kubernetes-embedded-resource": true,
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "timeout": {
@@ -1155,7 +1157,7 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource provides a resource to be applied.",
+                          "description": "Resource provides a check used in assertions.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "timeout": {

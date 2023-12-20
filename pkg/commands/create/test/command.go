@@ -81,7 +81,7 @@ func sampleSteps(description bool) []v1alpha1.TestSpecStep {
 			}, {
 				Description: getDescription(description, "sample assert operation"),
 				Assert: &v1alpha1.Assert{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
+					FileRefOrCheck: v1alpha1.FileRefOrCheck{
 						FileRef: v1alpha1.FileRef{
 							File: "assert.yaml",
 						},
@@ -90,7 +90,7 @@ func sampleSteps(description bool) []v1alpha1.TestSpecStep {
 			}, {
 				Description: getDescription(description, "sample error operation"),
 				Error: &v1alpha1.Error{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
+					FileRefOrCheck: v1alpha1.FileRefOrCheck{
 						FileRef: v1alpha1.FileRef{
 							File: "error.yaml",
 						},

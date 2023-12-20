@@ -11,6 +11,6 @@ type Assert struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
-	// FileRefOrResource provides a reference to the assertion.
-	FileRefOrResource `json:",inline"`
+	// FileRefOrAssert provides a reference to the assertion.
+	FileRefOrCheck `json:",inline"`
 }

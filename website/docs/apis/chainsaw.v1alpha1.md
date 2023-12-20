@@ -80,7 +80,7 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the assertion.</p> |
+| `FileRefOrCheck` | [`FileRefOrCheck`](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck) | :white_check_mark: | :white_check_mark: | <p>FileRefOrAssert provides a reference to the assertion.</p> |
 
 ## `Catch`     {#chainsaw-kyverno-io-v1alpha1-Catch}
 
@@ -190,7 +190,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the expected error.</p> |
+| `FileRefOrCheck` | [`FileRefOrCheck`](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck) | :white_check_mark: | :white_check_mark: | <p>FileRefOrAssert provides a reference to the expected error.</p> |
 
 ## `Events`     {#chainsaw-kyverno-io-v1alpha1-Events}
 
@@ -230,6 +230,7 @@ with a match filter to determine if the verification should be considered.</p>
 
 **Appears in:**
     
+- [FileRefOrCheck](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck)
 - [FileRefOrResource](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource)
 
 <p>FileRef represents a file reference.</p>
@@ -239,14 +240,27 @@ with a match filter to determine if the verification should be considered.</p>
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
 
+## `FileRefOrCheck`     {#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck}
+
+**Appears in:**
+    
+- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
+- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+
+<p>FileRefOrCheck represents a file reference or resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
+| `resource` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Resource provides a check used in assertions.</p> |
+
 ## `FileRefOrResource`     {#chainsaw-kyverno-io-v1alpha1-FileRefOrResource}
 
 **Appears in:**
     
 - [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
-- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
-- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
 
 <p>FileRefOrResource represents a file reference or resource.</p>
 
