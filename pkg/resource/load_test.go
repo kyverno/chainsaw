@@ -35,7 +35,7 @@ func TestLoad(t *testing.T) {
 		expectedLen: 0,
 	}}
 	for _, tt := range tests {
-		resources, err := Load(tt.fileName)
+		resources, err := Load(tt.fileName, true)
 		if !tt.expectError {
 			assert.NoError(t, err)
 			assert.Len(t, resources, tt.expectedLen)
@@ -70,7 +70,7 @@ func TestLoadFromURI(t *testing.T) {
 	for _, tt := range tests {
 		url, err := url.ParseRequestURI(tt.fileName)
 		assert.NoError(t, err)
-		resources, err := LoadFromURI(url)
+		resources, err := LoadFromURI(url, true)
 		if !tt.expectError {
 			assert.NoError(t, err)
 			assert.Len(t, resources, tt.expectedLen)
@@ -121,7 +121,7 @@ func TestParse(t *testing.T) {
 	for _, tt := range tests {
 		content, readErr := os.ReadFile(tt.fileName)
 		assert.NoError(t, readErr)
-		resources, err := Parse(content)
+		resources, err := Parse(content, true)
 		if !tt.expectError {
 			assert.NoError(t, err)
 			assert.Len(t, resources, tt.expectedLen)
@@ -162,7 +162,7 @@ func Test_parse(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := parse(content, tt.splitter, tt.converter)
+			_, err := parse(content, tt.splitter, tt.converter, true)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

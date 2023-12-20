@@ -116,7 +116,7 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 
 func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, folder string, save bool) error {
 	for f, file := range s.OtherFiles {
-		resources, err := resource.Load(filepath.Join(folder, file))
+		resources, err := resource.Load(filepath.Join(folder, file), true)
 		if err != nil {
 			return err
 		}
@@ -158,7 +158,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		}
 	}
 	for f, file := range s.AssertFiles {
-		resources, err := resource.Load(filepath.Join(folder, file))
+		resources, err := resource.Load(filepath.Join(folder, file), true)
 		if err != nil {
 			return err
 		}
@@ -194,7 +194,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		}
 	}
 	for f, file := range s.ErrorFiles {
-		resources, err := resource.Load(filepath.Join(folder, file))
+		resources, err := resource.Load(filepath.Join(folder, file), true)
 		if err != nil {
 			return err
 		}

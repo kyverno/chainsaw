@@ -21,12 +21,12 @@ type (
 	converter = func([]byte) ([]byte, error)
 )
 
-func Load(path string) ([]unstructured.Unstructured, error) {
+func Load(path string, manifest bool) ([]unstructured.Unstructured, error) {
 	content, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		return nil, err
 	}
-	tests, err := Parse(content)
+	tests, err := Parse(content, manifest)
 	if err != nil {
 		return nil, err
 	}
@@ -36,7 +36,7 @@ func Load(path string) ([]unstructured.Unstructured, error) {
 	return tests, nil
 }
 
-func LoadFromURI(url *url.URL) ([]unstructured.Unstructured, error) {
+func LoadFromURI(url *url.URL, manifest bool) ([]unstructured.Unstructured, error) {
 	tempFile, err := os.CreateTemp("", "getter-*.yaml")
 	if err != nil {
 		return nil, fmt.Errorf("error creating temp file: %s", err)
@@ -69,7 +69,7 @@ func LoadFromURI(url *url.URL) ([]unstructured.Unstructured, error) {
 	if err := tempFile.Close(); err != nil {
 		return nil, fmt.Errorf("error closing temp file: %s", err)
 	}
-	tests, err := Parse(content)
+	tests, err := Parse(content, manifest)
 	if err != nil {
 		return nil, err
 	}
@@ -79,11 +79,11 @@ func LoadFromURI(url *url.URL) ([]unstructured.Unstructured, error) {
 	return tests, nil
 }
 
-func Parse(content []byte) ([]unstructured.Unstructured, error) {
-	return parse(content, nil, nil)
+func Parse(content []byte, manifest bool) ([]unstructured.Unstructured, error) {
+	return parse(content, nil, nil, manifest)
 }
 
-func parse(content []byte, splitter splitter, converter converter) ([]unstructured.Unstructured, error) {
+func parse(content []byte, splitter splitter, converter converter, manifest bool) ([]unstructured.Unstructured, error) {
 	if splitter == nil {
 		splitter = extyaml.SplitDocuments
 	}
@@ -101,8 +101,10 @@ func parse(content []byte, splitter splitter, converter converter) ([]unstructur
 			return nil, err
 		}
 		var resource unstructured.Unstructured
-		if err := resource.UnmarshalJSON(jsonBytes); err != nil && !runtime.IsMissingKind(err) {
-			return nil, err
+		if err := resource.UnmarshalJSON(jsonBytes); err != nil {
+			if manifest || !runtime.IsMissingKind(err) {
+				return nil, err
+			}
 		}
 		resources = append(resources, resource)
 	}

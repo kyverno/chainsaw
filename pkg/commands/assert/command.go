@@ -36,7 +36,7 @@ func Command() *cobra.Command {
 			color.Init(options.noColor, true)
 			out := cmd.OutOrStdout()
 			file := args[0]
-			resources, err := resource.Load(file)
+			resources, err := resource.Load(file, false)
 			if err != nil {
 				return err
 			}

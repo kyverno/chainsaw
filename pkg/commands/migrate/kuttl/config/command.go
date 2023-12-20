@@ -36,7 +36,7 @@ func Command() *cobra.Command {
 }
 
 func execute(out io.Writer, save, cleanup bool, path string) error {
-	resources, err := resource.Load(path)
+	resources, err := resource.Load(path, true)
 	if err != nil {
 		return err
 	}
