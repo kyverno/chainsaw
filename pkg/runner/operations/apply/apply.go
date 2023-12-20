@@ -53,7 +53,7 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 func (o *operation) execute(ctx context.Context) error {
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		err := o.tryApplyResource(ctx)
-		return err == nil, err
+		return err == nil, nil
 	})
 }
 
