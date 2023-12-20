@@ -2,7 +2,7 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: assertion-bare
+  name: non-resource-assertion
 spec:
   steps:
   - try:
