@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example
+spec:
+  # iterate over all containers having `name: container-1`
+  ~.(containers[?name == 'container-1']):
+    image: nginx-1
+  # iterate over all containers, bind `$index` to the element index
+  ~index.(containers):
+    image: (join('-', ['nginx', to_string($index + `1`)]))
+  # nested iteration
+  ~index2.(containers):
+    ~.(env):
+      name: (join('_', ['ENV', to_string($index2 + `1`)]))
+      value: (join('-', ['value', to_string($index2 + `1`)]))

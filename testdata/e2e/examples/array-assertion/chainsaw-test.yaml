@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: array-assertions
+spec:
+  steps:
+  - try:
+    # - sleep:
+    #     duration: 15s
+    # - script:
+    #     content: kubectl get sa -n $NAMESPACE
+    - apply:
+        file: resources.yaml
+    - assert:
+        file: assertions.yaml

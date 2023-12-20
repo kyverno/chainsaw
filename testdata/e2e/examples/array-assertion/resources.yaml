@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: example
+spec:
+  containers:
+  - name: container-1
+    image: nginx-1
+    env:
+    - name: ENV_1
+      value: value-1
+  - name: container-2
+    image: nginx-2
+    env:
+    - name: ENV_2
+      value: value-2
+  - name: container-3
+    image: nginx-3
+    env:
+    - name: ENV_3
+      value: value-3
