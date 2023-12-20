@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"testing"
+	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
@@ -289,6 +290,9 @@ func Test_apply(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			logger := &tlogging.FakeLogger{}
 			ctx := logging.IntoContext(context.TODO(), logger)
+			toCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			defer cancel()
+			ctx = toCtx
 			operation := New(
 				tt.client,
 				tt.object,
