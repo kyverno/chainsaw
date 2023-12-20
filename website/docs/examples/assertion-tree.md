@@ -54,7 +54,7 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: basic
+  name: assertion-tree
 spec:
   steps:
   - try:
