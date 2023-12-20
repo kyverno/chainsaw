@@ -6,10 +6,10 @@ metadata:
 spec:
   steps:
   - try:
-    - sleep:
-        duration: 15s
-    - script:
-        content: kubectl get sa -n $NAMESPACE
+    # - sleep:
+    #     duration: 15s
+    # - script:
+    #     content: kubectl get sa -n $NAMESPACE
     - apply:
         file: resources.yaml
     - assert:

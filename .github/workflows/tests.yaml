@@ -51,7 +51,10 @@ jobs:
       - name: Create test cluster
         run: make kind-cluster
       - name: Run tests
-        run: ./chainsaw test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --no-color=false
+        run: |
+          set -e
+          sleep 15
+          ./chainsaw test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --no-color=false
 
   required:
     needs:

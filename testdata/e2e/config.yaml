@@ -7,3 +7,4 @@ spec:
   fullName: true
   failFast: true
   forceTerminationGracePeriod: 5s
+  parallel: 1
