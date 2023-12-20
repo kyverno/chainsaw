@@ -111,7 +111,7 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 
 func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, folder string, save bool) error {
 	for f, file := range s.OtherFiles {
-		resources, err := resource.Load(filepath.Join(folder, file))
+		resources, err := resource.Load(filepath.Join(folder, file), true)
 		if err != nil {
 			return err
 		}
@@ -147,7 +147,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		}
 	}
 	for f, file := range s.AssertFiles {
-		resources, err := resource.Load(filepath.Join(folder, file))
+		resources, err := resource.Load(filepath.Join(folder, file), false)
 		if err != nil {
 			return err
 		}
@@ -166,7 +166,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 				}
 				step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 					Assert: &v1alpha1.Assert{
-						FileRefOrResource: v1alpha1.FileRefOrResource{
+						FileRefOrCheck: v1alpha1.FileRefOrCheck{
 							FileRef: v1alpha1.FileRef{
 								File: file,
 							},
@@ -177,7 +177,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		}
 	}
 	for f, file := range s.ErrorFiles {
-		resources, err := resource.Load(filepath.Join(folder, file))
+		resources, err := resource.Load(filepath.Join(folder, file), false)
 		if err != nil {
 			return err
 		}
@@ -196,7 +196,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 				}
 				step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 					Error: &v1alpha1.Error{
-						FileRefOrResource: v1alpha1.FileRefOrResource{
+						FileRefOrCheck: v1alpha1.FileRefOrCheck{
 							FileRef: v1alpha1.FileRef{
 								File: file,
 							},

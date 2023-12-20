@@ -348,9 +348,8 @@ spec:
                           description: File is the path to the referenced file.
                           type: string
                         resource:
-                          description: Resource provides a resource to be applied.
+                          description: Resource provides a check used in assertions.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         timeout:
                           description: Timeout for the operation. Overrides the global
@@ -498,9 +497,8 @@ spec:
                           description: File is the path to the referenced file.
                           type: string
                         resource:
-                          description: Resource provides a resource to be applied.
+                          description: Resource provides a check used in assertions.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         timeout:
                           description: Timeout for the operation. Overrides the global

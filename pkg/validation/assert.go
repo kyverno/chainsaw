@@ -8,7 +8,7 @@ import (
 func ValidateAssert(path *field.Path, obj *v1alpha1.Assert) field.ErrorList {
 	var errs field.ErrorList
 	if obj != nil {
-		errs = append(errs, ValidateFileRefOrResource(path, obj.FileRefOrResource)...)
+		errs = append(errs, ValidateFileRefOrCheck(path, obj.FileRefOrCheck)...)
 	}
 	return errs
 }

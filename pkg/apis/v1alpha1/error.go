@@ -11,6 +11,6 @@ type Error struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
-	// FileRefOrResource provides a reference to the expected error.
-	FileRefOrResource `json:",inline"`
+	// FileRefOrAssert provides a reference to the expected error.
+	FileRefOrCheck `json:",inline"`
 }

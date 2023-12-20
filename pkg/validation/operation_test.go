@@ -21,7 +21,7 @@ func TestValidateOperation(t *testing.T) {
 		},
 	}
 	exampleAssert := &v1alpha1.Assert{
-		FileRefOrResource: v1alpha1.FileRefOrResource{
+		FileRefOrCheck: v1alpha1.FileRefOrCheck{
 			FileRef: v1alpha1.FileRef{
 				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
@@ -51,7 +51,7 @@ func TestValidateOperation(t *testing.T) {
 		},
 	}
 	exampleError := &v1alpha1.Error{
-		FileRefOrResource: v1alpha1.FileRefOrResource{
+		FileRefOrCheck: v1alpha1.FileRefOrCheck{
 			FileRef: v1alpha1.FileRef{
 				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},

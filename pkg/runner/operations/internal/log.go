@@ -14,6 +14,11 @@ func GetLogger(ctx context.Context, obj client.Object) logging.Logger {
 	if logger == nil {
 		return logger
 	}
+	if obj != nil {
+		if obj.GetObjectKind().GroupVersionKind().Kind == "" {
+			return logger
+		}
+	}
 	return logger.WithResource(obj)
 }
 
