@@ -7,10 +7,10 @@ permissions: {}
 on:
   pull_request:
     branches:
-      - main
+    - main
   push:
     branches:
-      - main
+    - main
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,41 +20,48 @@ jobs:
   unit-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
-      - name: Create test cluster
-        run: make kind-cluster
-      - name: Run tests
-        run: make tests
-      - name: Upload Report to Codecov
-        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
-        with:
-          file: ./coverage.out
-          fail_ci_if_error: true
-          verbose: true
+    - name: Checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+    - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+      with:
+        go-version-file: go.mod
+        cache-dependency-path: go.sum
+    - name: Create test cluster
+      run: |
+        set -e
+        make kind-cluster
+    - name: Run tests
+      run: |
+        set -e
+        make tests
+    - name: Upload Report to Codecov
+      uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d # v3.1.4
+      with:
+        file: ./coverage.out
+        fail_ci_if_error: true
+        verbose: true
 
   e2e-tests:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
-        with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
-      - name: Build
-        run: make build
-      - name: Create test cluster
-        run: make kind-cluster
-      - name: Run tests
-        run: |
-          set -e
-          sleep 15
-          ./chainsaw test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --no-color=false
+    - name: Checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+    - uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
+      with:
+        go-version-file: go.mod
+        cache-dependency-path: go.sum
+    - name: Build
+      run: |
+        set -e
+        make build
+    - name: Create test cluster
+      run: |
+        set -e
+        make kind-cluster
+    - name: Run tests
+      run: |
+        set -e
+        ./chainsaw test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --no-color=false
 
   required:
     needs:
