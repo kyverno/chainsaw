@@ -38,8 +38,10 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 	defer func() {
 		internal.LogEnd(logger, logging.Assert, err)
 	}()
-	if err := internal.ApplyNamespacer(o.namespacer, &o.expected); err != nil {
-		return err
+	if o.expected.GetKind() != "" {
+		if err := internal.ApplyNamespacer(o.namespacer, &o.expected); err != nil {
+			return err
+		}
 	}
 	internal.LogStart(logger, logging.Assert)
 	return o.execute(ctx)
@@ -55,30 +57,45 @@ func (o *operation) execute(ctx context.Context) error {
 				lastErrs = errs
 			}
 		}()
-		if candidates, err := internal.Read(ctx, &o.expected, o.client); err != nil {
-			if kerrors.IsNotFound(err) {
-				errs = append(errs, errors.New("actual resource not found"))
-				return false, nil
+		bindings := binding.NewBindings()
+		bindings = bindings.Register("$client", binding.NewBinding(o.client))
+		if !(o.expected.GetAPIVersion() != "" && o.expected.GetKind() != "") {
+			_errs, err := check.Check(ctx, nil, bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
+			if err != nil {
+				return false, err
 			}
-			return false, err
-		} else if len(candidates) == 0 {
-			errs = append(errs, errors.New("no actual resource found"))
-		} else {
-			bindings := binding.NewBindings()
-			bindings = bindings.Register("$client", binding.NewBinding(o.client))
-			for i := range candidates {
-				candidate := candidates[i]
-				_errs, err := check.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
-				if err != nil {
-					return false, err
+			if len(_errs) != 0 {
+				for _, _err := range _errs {
+					errs = append(errs, _err)
 				}
-				if len(_errs) != 0 {
-					for _, _err := range _errs {
-						errs = append(errs, fmt.Errorf("%s/%s/%s - %w", candidate.GetAPIVersion(), candidate.GetKind(), client.Name(client.ObjectKey(&candidate)), _err))
+			} else {
+				// at least one match found
+				return true, nil
+			}
+		} else {
+			if candidates, err := internal.Read(ctx, &o.expected, o.client); err != nil {
+				if kerrors.IsNotFound(err) {
+					errs = append(errs, errors.New("actual resource not found"))
+					return false, nil
+				}
+				return false, err
+			} else if len(candidates) == 0 {
+				errs = append(errs, errors.New("no actual resource found"))
+			} else {
+				for i := range candidates {
+					candidate := candidates[i]
+					_errs, err := check.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
+					if err != nil {
+						return false, err
 					}
-				} else {
-					// at least one match found
-					return true, nil
+					if len(_errs) != 0 {
+						for _, _err := range _errs {
+							errs = append(errs, fmt.Errorf("%s/%s/%s - %w", candidate.GetAPIVersion(), candidate.GetKind(), client.Name(client.ObjectKey(&candidate)), _err))
+						}
+					} else {
+						// at least one match found
+						return true, nil
+					}
 				}
 			}
 		}

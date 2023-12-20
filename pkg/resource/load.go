@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/go-getter"
 	extyaml "github.com/kyverno/kyverno/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
@@ -100,7 +101,7 @@ func parse(content []byte, splitter splitter, converter converter) ([]unstructur
 			return nil, err
 		}
 		var resource unstructured.Unstructured
-		if err := resource.UnmarshalJSON(jsonBytes); err != nil {
+		if err := resource.UnmarshalJSON(jsonBytes); err != nil && !runtime.IsMissingKind(err) {
 			return nil, err
 		}
 		resources = append(resources, resource)
