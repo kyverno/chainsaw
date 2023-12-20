@@ -333,7 +333,6 @@ spec:
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         timeout:
                           description: Timeout for the operation. Overrides the global
@@ -350,7 +349,6 @@ spec:
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         timeout:
                           description: Timeout for the operation. Overrides the global
@@ -423,7 +421,6 @@ spec:
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         timeout:
                           description: Timeout for the operation. Overrides the global
@@ -500,7 +497,6 @@ spec:
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         timeout:
                           description: Timeout for the operation. Overrides the global

@@ -10,3 +10,12 @@ spec:
         file: assert.yaml
     - error:
         file: error.yaml
+  - try:
+    - assert:
+        resource:
+          (x_k8s_list($client, 'v1', 'Node')):
+            (length(@)): 1
+    # - error:
+    #     resource:
+    #       (x_k8s_list($client, 'v1', 'Node')):
+    #         (length(@)): 2
