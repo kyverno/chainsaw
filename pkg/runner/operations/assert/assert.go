@@ -49,6 +49,8 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 
 func (o *operation) execute(ctx context.Context) error {
 	var lastErrs []error
+	bindings := binding.NewBindings()
+	bindings = bindings.Register("$client", binding.NewBinding(o.client))
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
 		defer func() {
@@ -57,8 +59,6 @@ func (o *operation) execute(ctx context.Context) error {
 				lastErrs = errs
 			}
 		}()
-		bindings := binding.NewBindings()
-		bindings = bindings.Register("$client", binding.NewBinding(o.client))
 		if !(o.expected.GetAPIVersion() != "" && o.expected.GetKind() != "") {
 			_errs, err := check.Check(ctx, nil, bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
 			if err != nil {

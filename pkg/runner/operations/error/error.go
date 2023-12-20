@@ -37,8 +37,10 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 	defer func() {
 		internal.LogEnd(logger, logging.Error, err)
 	}()
-	if err := internal.ApplyNamespacer(o.namespacer, &o.expected); err != nil {
-		return err
+	if o.expected.GetKind() != "" {
+		if err := internal.ApplyNamespacer(o.namespacer, &o.expected); err != nil {
+			return err
+		}
 	}
 	internal.LogStart(logger, logging.Error)
 	return o.execute(ctx)
@@ -46,6 +48,8 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 
 func (o *operation) execute(ctx context.Context) error {
 	var lastErrs []error
+	bindings := binding.NewBindings()
+	bindings = bindings.Register("$client", binding.NewBinding(o.client))
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
 		defer func() {
@@ -54,27 +58,36 @@ func (o *operation) execute(ctx context.Context) error {
 				lastErrs = errs
 			}
 		}()
-		if candidates, err := internal.Read(ctx, &o.expected, o.client); err != nil {
-			if kerrors.IsNotFound(err) {
-				return true, nil
+		if !(o.expected.GetAPIVersion() != "" && o.expected.GetKind() != "") {
+			_errs, err := check.Check(ctx, nil, bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
+			if err != nil {
+				return false, err
 			}
-			return false, err
-		} else if len(candidates) == 0 {
-			return true, nil
-		} else {
-			bindings := binding.NewBindings()
-			bindings = bindings.Register("$client", binding.NewBinding(o.client))
-			for i := range candidates {
-				candidate := candidates[i]
-				_errs, err := check.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
-				if err != nil {
-					return false, err
-				}
-				if len(_errs) == 0 {
-					errs = append(errs, fmt.Errorf("%s/%s/%s - resource matches expectation", candidate.GetAPIVersion(), candidate.GetKind(), client.Name(client.ObjectKey(&candidate))))
-				}
+			if len(_errs) == 0 {
+				errs = append(errs, fmt.Errorf("expectation matched"))
 			}
 			return len(errs) == 0, nil
+		} else {
+			if candidates, err := internal.Read(ctx, &o.expected, o.client); err != nil {
+				if kerrors.IsNotFound(err) {
+					return true, nil
+				}
+				return false, err
+			} else if len(candidates) == 0 {
+				return true, nil
+			} else {
+				for i := range candidates {
+					candidate := candidates[i]
+					_errs, err := check.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
+					if err != nil {
+						return false, err
+					}
+					if len(_errs) == 0 {
+						errs = append(errs, fmt.Errorf("%s/%s/%s - resource matches expectation", candidate.GetAPIVersion(), candidate.GetKind(), client.Name(client.ObjectKey(&candidate))))
+					}
+				}
+				return len(errs) == 0, nil
+			}
 		}
 	})
 	// if no error, return success
