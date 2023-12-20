@@ -249,7 +249,7 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 }
 
 func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.FileRefOrResource, true)
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
 	}
@@ -272,7 +272,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) (
 }
 
 func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(op.FileRefOrCheck, false)
+	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
 	if err != nil {
 		return nil, err
 	}
@@ -304,7 +304,7 @@ func (p *stepProcessor) commandOperation(ctx context.Context, op v1alpha1.Comman
 }
 
 func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.FileRefOrResource, true)
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
 	}
@@ -345,7 +345,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete)
 }
 
 func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(op.FileRefOrCheck, false)
+	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
 	if err != nil {
 		return nil, err
 	}
@@ -387,31 +387,35 @@ func (p *stepProcessor) sleepOperation(ctx context.Context, sleep v1alpha1.Sleep
 	}
 }
 
-func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.FileRefOrCheck, manifest bool) ([]unstructured.Unstructured, error) {
-	// if ref.Resource != nil {
-	// 	return []unstructured.Unstructured{*ref.Resource}, nil
-	// }
+func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.FileRefOrCheck) ([]unstructured.Unstructured, error) {
+	if ref.Resource != nil && ref.Resource.Value != nil {
+		if object, ok := ref.Resource.Value.(map[string]any); !ok {
+			return nil, errors.New("resource must be an object")
+		} else {
+			return []unstructured.Unstructured{{Object: object}}, nil
+		}
+	}
 	if ref.File != "" {
 		url, err := url.ParseRequestURI(ref.File)
 		if err != nil {
-			return resource.Load(filepath.Join(p.test.BasePath, ref.File), manifest)
+			return resource.Load(filepath.Join(p.test.BasePath, ref.File), false)
 		} else {
-			return resource.LoadFromURI(url, manifest)
+			return resource.LoadFromURI(url, false)
 		}
 	}
 	return nil, errors.New("file or resource must be set")
 }
 
-func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource, manifest bool) ([]unstructured.Unstructured, error) {
+func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]unstructured.Unstructured, error) {
 	if ref.Resource != nil {
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}
 	if ref.File != "" {
 		url, err := url.ParseRequestURI(ref.File)
 		if err != nil {
-			return resource.Load(filepath.Join(p.test.BasePath, ref.File), manifest)
+			return resource.Load(filepath.Join(p.test.BasePath, ref.File), true)
 		} else {
-			return resource.LoadFromURI(url, manifest)
+			return resource.LoadFromURI(url, true)
 		}
 	}
 	return nil, errors.New("file or resource must be set")

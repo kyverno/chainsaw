@@ -15,7 +15,7 @@ spec:
         resource:
           (x_k8s_list($client, 'v1', 'Node')):
             (length(@)): 1
-    # - error:
-    #     resource:
-    #       (x_k8s_list($client, 'v1', 'Node')):
-    #         (length(@)): 2
+    - error:
+        resource:
+          (x_k8s_list($client, 'v1', 'Node')):
+            (length(@)): 2
