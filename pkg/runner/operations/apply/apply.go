@@ -51,10 +51,19 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 }
 
 func (o *operation) execute(ctx context.Context) error {
-	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
-		err := o.tryApplyResource(ctx)
-		return err == nil, err
+	var lastErr error
+	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
+		lastErr = o.tryApplyResource(ctx)
+		// TODO: determine if the error can be retried
+		return lastErr == nil, nil
 	})
+	if err == nil {
+		return nil
+	}
+	if lastErr != nil {
+		return lastErr
+	}
+	return err
 }
 
 func (o *operation) tryApplyResource(ctx context.Context) error {

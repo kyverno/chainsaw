@@ -45,14 +45,23 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		return err
 	}
 	internal.LogStart(logger, logging.Create)
-	return o.createResource(ctx, logger)
+	return o.execute(ctx, logger)
 }
 
-func (o *operation) createResource(ctx context.Context, logger logging.Logger) error {
-	return wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
-		err := o.tryCreateResource(ctx)
-		return err == nil, err
+func (o *operation) execute(ctx context.Context, logger logging.Logger) error {
+	var lastErr error
+	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
+		lastErr = o.tryCreateResource(ctx)
+		// TODO: determine if the error can be retried
+		return lastErr == nil, nil
 	})
+	if err == nil {
+		return nil
+	}
+	if lastErr != nil {
+		return lastErr
+	}
+	return err
 }
 
 func (o *operation) tryCreateResource(ctx context.Context) error {
@@ -63,12 +72,12 @@ func (o *operation) tryCreateResource(ctx context.Context) error {
 		return errors.New("the resource already exists in the cluster")
 	}
 	if kerrors.IsNotFound(err) {
-		return o.create_Resource(ctx)
+		return o.createResource(ctx)
 	}
 	return err
 }
 
-func (o *operation) create_Resource(ctx context.Context) error {
+func (o *operation) createResource(ctx context.Context) error {
 	err := o.client.Create(ctx, &o.obj)
 	if err == nil && o.cleaner != nil {
 		o.cleaner(o.obj, o.client)
