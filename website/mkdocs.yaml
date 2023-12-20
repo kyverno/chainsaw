@@ -66,6 +66,7 @@ nav:
       - commands/chainsaw_docs.md
       - commands/chainsaw_export.md
       - commands/chainsaw_export_schemas.md
+      - commands/chainsaw_lint.md
       - commands/chainsaw_migrate.md
       - commands/chainsaw_migrate_kuttl.md
       - commands/chainsaw_migrate_kuttl_config.md
