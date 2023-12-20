@@ -64,7 +64,7 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: assertion-tree
+  name: array-assertions
 spec:
   steps:
   - try:
