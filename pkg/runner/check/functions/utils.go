@@ -4,6 +4,14 @@ import (
 	"fmt"
 )
 
+func stable(in string) string {
+	return in
+}
+
+func experimental(in string) string {
+	return "x_" + in
+}
+
 func getArg[T any](arguments []any, index int, out *T) error {
 	if index >= len(arguments) {
 		return fmt.Errorf("index out of range (%d / %d)", index, len(arguments))
