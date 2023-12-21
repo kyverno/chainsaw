@@ -221,7 +221,7 @@ KIND_IMAGE     ?= kindest/node:v1.28.0
 .PHONY: kind-cluster
 kind-cluster: $(KIND) ## Create kind cluster
 	@echo Create kind cluster... >&2
-	@$(KIND) create cluster --image $(KIND_IMAGE)
+	@$(KIND) create cluster --image $(KIND_IMAGE) --wait 1m
 
 ########
 # HELP #
