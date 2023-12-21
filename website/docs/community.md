@@ -18,6 +18,14 @@ Chainsaw is built and maintained under the Kyverno umbrella but decisions are
 
 Join our slack channel [#kyverno-chainsaw](https://kubernetes.slack.com/archives/C067LUFL43U) to meet with users, contributors and maintainers.
 
+## Community Meetings
+
+This is a public, weekly for Kyverno-Chainsaw maintainers to make announcements and provide project updates, and request input and feedback. This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
+
+Weekly every Thursday at 2:00 PM UTC
+[Agenda and meeting notes](https://docs.google.com/document/d/1csszreCpCyPsls4S_GuM0o_D1W-N7vQqQcyd4lxSkJk)
+
+
 ## RoadMap
 
 For detailed information on our planned features and upcoming updates, please [view our Roadmap](https://github.com/kyverno/chainsaw/blob/main/ROADMAP.md).
