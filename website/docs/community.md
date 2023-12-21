@@ -23,6 +23,12 @@ Join our slack channel [#kyverno-chainsaw](https://kubernetes.slack.com/archives
 This is a public, weekly for Kyverno-Chainsaw maintainers to make announcements and provide project updates, and request input and feedback. This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
 
 Weekly every Thursday at 2:00 PM UTC
+<<<<<<< HEAD
+=======
+
+[Zoom Meeting](https://zoom.us/j/99815137900)
+
+>>>>>>> 1616007 (Added Zoom Meeting link)
 [Agenda and meeting notes](https://docs.google.com/document/d/1csszreCpCyPsls4S_GuM0o_D1W-N7vQqQcyd4lxSkJk)
 
 
