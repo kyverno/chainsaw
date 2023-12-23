@@ -9,7 +9,6 @@ import (
 )
 
 func jpKubernetesExists(arguments []any) (any, error) {
-
 	var client client.Client
 	var apiVersion, kind string
 	var key ctrlclient.ObjectKey
