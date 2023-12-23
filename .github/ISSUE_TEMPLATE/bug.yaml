@@ -1,5 +1,5 @@
 name: "Bug Report"
-description: Report a bug in the Kyverno JSON.
+description: Report a bug in the chainsaw.
 title: "[Bug]"
 labels: ["bug", "triage"]
 body:
@@ -8,11 +8,11 @@ body:
       value: |
         Please tell us about the bug.
   - type: dropdown
-    id: kyverno-json-version
+    id: chainsaw-version
     attributes:
-      label: Kyverno JSON Version
+      label: chainsaw version Version
       description: >-
-        What version of the Kyverno JSON are you running?
+        What version of the chainsaw are you running?
       options:
         - 0.1.0
     validations:
@@ -65,7 +65,7 @@ body:
       label: Logs
       description: >-
         Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-        Kyverno JSON logs may be found by passing the -v flag to any command.
+        chainsaw logs may be found by passing the -v flag to any command.
       render: Shell
   - type: input
     id: slack

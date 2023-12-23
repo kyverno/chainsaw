@@ -1,5 +1,5 @@
 name: "Feature Request"
-description: Suggest a new feature for Kyverno JSON to support.
+description: Suggest a new feature for chainsaw to support.
 title: "[Feature] "
 labels: ["enhancement", "triage"]
 body:
