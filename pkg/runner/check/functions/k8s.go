@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/client"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -28,9 +29,11 @@ func jpKubernetesExists(arguments []any) (any, error) {
 		return false, err
 	}
 
-	// Attempt to get the object, but only check for a NotFound error
-	if err := client.Get(context.TODO(), key, &unstructured.Unstructured{}); err != nil {
-		return false, err
+	err := client.Get(context.TODO(), key, &unstructured.Unstructured{})
+	if apierrors.IsNotFound(err) {
+		return false, nil // Object does not exist
+	} else if err != nil {
+		return false, err // Other error occurred
 	}
 
 	// Object exists
