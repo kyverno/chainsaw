@@ -4,9 +4,40 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/client"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+func jpKubernetesExists(arguments []any) (any, error) {
+	var client client.Client
+	var apiVersion, kind string
+	var key ctrlclient.ObjectKey
+	if err := getArg(arguments, 0, &client); err != nil {
+		return false, err
+	}
+	if err := getArg(arguments, 1, &apiVersion); err != nil {
+		return false, err
+	}
+	if err := getArg(arguments, 2, &kind); err != nil {
+		return false, err
+	}
+	if err := getArg(arguments, 3, &key.Namespace); err != nil {
+		return false, err
+	}
+	if err := getArg(arguments, 4, &key.Name); err != nil {
+		return false, err
+	}
+
+	err := client.Get(context.TODO(), key, &unstructured.Unstructured{})
+	if err == nil {
+		return true, nil
+	}
+	if apierrors.IsNotFound(err) {
+		return false, nil
+	}
+	return false, err
+}
 
 func jpKubernetesGet(arguments []any) (any, error) {
 	var client client.Client
