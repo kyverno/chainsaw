@@ -30,14 +30,13 @@ func jpKubernetesExists(arguments []any) (any, error) {
 	}
 
 	err := client.Get(context.TODO(), key, &unstructured.Unstructured{})
-	if apierrors.IsNotFound(err) {
-		return false, nil // Object does not exist
-	} else if err != nil {
-		return false, err // Other error occurred
+	if err == nil {
+		return true, nil
 	}
-
-	// Object exists
-	return true, nil
+	if apierrors.IsNotFound(err) {
+		return false, nil
+	}
+	return false, err
 }
 
 func jpKubernetesGet(arguments []any) (any, error) {
