@@ -8,9 +8,10 @@ var (
 	// stable functions
 	env = stable("env")
 	// experimental functions
-	k8sGet    = experimental("k8s_get")
-	k8sList   = experimental("k8s_list")
-	k8sExists = experimental("k8s_exists")
+	k8sGet            = experimental("k8s_get")
+	k8sList           = experimental("k8s_list")
+	k8sExists         = experimental("k8s_exists")
+	k8sResourceExists = experimental("k8s_list")
 )
 
 func GetFunctions() []functions.FunctionEntry {
@@ -49,5 +50,15 @@ func GetFunctions() []functions.FunctionEntry {
 			{Types: []functions.JpType{functions.JpString}},
 		},
 		Handler: jpKubernetesExists,
+	}, {
+		Name: k8sResourceExists,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpAny}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
+		},
+		Handler: jpKubernetesResourceExists,
 	}}
 }
