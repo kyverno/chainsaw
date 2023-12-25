@@ -11,7 +11,7 @@ var (
 	k8sGet            = experimental("k8s_get")
 	k8sList           = experimental("k8s_list")
 	k8sExists         = experimental("k8s_exists")
-	k8sResourceExists = experimental("k8s_list")
+	k8sResourceExists = experimental("k8s_resource_exists")
 )
 
 func GetFunctions() []functions.FunctionEntry {
