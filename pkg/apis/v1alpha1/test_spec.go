@@ -14,6 +14,9 @@ type TestSpec struct {
 	// +optional
 	Timeouts *Timeouts `json:"timeouts,omitempty"`
 
+	// Kubeconfig contains the kubeconfig to use for the test.
+	Kubeconfig *FileRef `json:"kubeconfig,omitempty"`
+
 	// Skip determines whether the test should skipped.
 	// +optional
 	Skip *bool `json:"skip,omitempty"`

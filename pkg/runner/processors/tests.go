@@ -18,6 +18,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/utils/clock"
 )
 
@@ -87,6 +88,19 @@ func (p *testsProcessor) Run(ctx context.Context) {
 		}
 	}
 	for _, test := range p.tests {
+		if test.Spec.Kubeconfig != nil && test.Spec.Kubeconfig.File != "" {
+			config, err := clientcmd.BuildConfigFromFlags("", test.Spec.Kubeconfig.File)
+			if err != nil {
+				logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				t.FailNow()
+			}
+			kClient, err := client.New(config)
+			if err != nil {
+				logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				t.FailNow()
+			}
+			p.client = kClient
+		}
 		name, err := names.Test(p.config, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
