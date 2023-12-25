@@ -115,3 +115,4 @@
 | x_k8s_list | `x_k8s_list(any, string, string, string)` |
 | x_k8s_exists | `x_k8s_exists(any, string, string, string, string)` |
 | x_k8s_resource_exists | `x_k8s_resource_exists(any, string, string, string, string)` |
+
