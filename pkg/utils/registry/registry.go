@@ -1,11 +1,11 @@
 package registry
 
 import (
-	"k8s.io/client-go/kubernetes"
+	"github.com/kyverno/chainsaw/pkg/client"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
-type KubeConfigRegistry map[string]*kubernetes.Clientset
+type KubeConfigRegistry map[string]client.Client
 
 func New() *KubeConfigRegistry {
 	return new(KubeConfigRegistry)
@@ -17,15 +17,15 @@ func (r *KubeConfigRegistry) AddToRegistry(name, kubeconfigPath string) error {
 		return err
 	}
 
-	clientset, err := kubernetes.NewForConfig(config)
+	client, err := client.New(config)
 	if err != nil {
 		return err
 	}
-	(*r)[name] = clientset
+	(*r)[name] = client
 	return nil
 }
 
-func (r KubeConfigRegistry) GetFromRegistry(name string) (*kubernetes.Clientset, bool) {
-	clientset, exists := r[name]
-	return clientset, exists
+func (r KubeConfigRegistry) GetFromRegistry(name string) (client.Client, bool) {
+	client, exists := r[name]
+	return client, exists
 }
