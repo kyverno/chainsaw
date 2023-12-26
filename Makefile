@@ -139,7 +139,7 @@ codegen-schemas-openapi: codegen-crds $(KIND) ## Generate openapi schemas (v2 an
 
 .PHONY: codegen-schemas-json
 codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas
-	@$(PIP) install openapi2jsonschema
+	@$(PIP) install openapi2jsonschema --no-build-isolation
 	@rm -rf ./.temp/.schemas/json
 	@rm -rf ./.schemas/json
 	@openapi2jsonschema ./.temp/.schemas/openapi/v2/schema.json --kubernetes --stand-alone --expanded -o ./.temp/.schemas/json

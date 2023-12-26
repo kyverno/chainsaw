@@ -113,4 +113,5 @@
 | env | `env(string)` |
 | x_k8s_get | `x_k8s_get(any, string, string, string, string)` |
 | x_k8s_list | `x_k8s_list(any, string, string, string)` |
+| x_k8s_exists | `x_k8s_exists(any, string, string, string, string)` |
 
