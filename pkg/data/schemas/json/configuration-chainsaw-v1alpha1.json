@@ -318,6 +318,35 @@
             "null"
           ]
         },
+        "kubeconfigs": {
+          "description": "Kubeconfigs is a list of kubeconfig files to use for tests.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "clusterRef": {
+                "description": "ClusterRef is the name of the cluster to use.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "file": {
+                "description": "File is the path to the referenced file.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              }
+            }
+          }
+        },
         "namespace": {
           "description": "Namespace defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.",
           "type": [
