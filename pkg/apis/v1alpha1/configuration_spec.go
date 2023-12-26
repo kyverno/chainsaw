@@ -77,4 +77,8 @@ type ConfigurationSpec struct {
 	// DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.
 	// +optional
 	DelayBeforeCleanup *metav1.Duration `json:"delayBeforeCleanup,omitempty"`
+
+	// Kubeconfigs is a list of kubeconfig files to use for tests.
+	// +optional
+	Kubeconfigs *[]Kubeconfig `json:"kubeconfigs,omitempty"`
 }

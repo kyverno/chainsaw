@@ -14,6 +14,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/chainsaw/pkg/utils/registry"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 )
@@ -29,6 +30,8 @@ func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, m mainstart, tests ...discovery.Test) (*summary.Summary, error) {
 	var summary summary.Summary
 	var testsReport *report.TestsReport
+	var kubeRegistry *registry.KubeConfigRegistry
+
 	if config.ReportFormat != "" {
 		testsReport = report.NewTests(config.ReportName)
 	}
@@ -43,13 +46,21 @@ func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	if err != nil {
 		return nil, err
 	}
+	if config.Kubeconfigs != nil {
+		kubeRegistry = registry.New()
+		for _, kubeconfig := range *config.Kubeconfigs {
+			if err := kubeRegistry.AddToRegistry(kubeconfig.ClusterRef, kubeconfig.File); err != nil {
+				return nil, err
+			}
+		}
+	}
 	client = runnerclient.New(client)
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			processor := processors.NewTestsProcessor(config, client, clock, &summary, testsReport, tests...)
+			processor := processors.NewTestsProcessor(config, client, kubeRegistry, clock, &summary, testsReport, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx)

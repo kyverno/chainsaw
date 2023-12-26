@@ -157,6 +157,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			processor := NewTestsProcessor(
 				tc.config,
 				tc.client,
+				nil,
 				tc.clock,
 				tc.summary,
 				tc.testsReport,

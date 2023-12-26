@@ -314,6 +314,7 @@ func Test_operationAssert(t *testing.T) {
 			}
 			operation := New(
 				tt.client,
+				nil,
 				tt.expected,
 				nspacer,
 			)

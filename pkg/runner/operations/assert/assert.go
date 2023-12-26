@@ -13,6 +13,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	"github.com/kyverno/chainsaw/pkg/utils/registry"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -20,16 +21,18 @@ import (
 )
 
 type operation struct {
-	client     client.Client
-	expected   unstructured.Unstructured
-	namespacer namespacer.Namespacer
+	client             client.Client
+	kubeConfigRegistry *registry.KubeConfigRegistry
+	expected           unstructured.Unstructured
+	namespacer         namespacer.Namespacer
 }
 
-func New(client client.Client, expected unstructured.Unstructured, namespacer namespacer.Namespacer) operations.Operation {
+func New(client client.Client, kubeConfigRegistry *registry.KubeConfigRegistry, expected unstructured.Unstructured, namespacer namespacer.Namespacer) operations.Operation {
 	return &operation{
-		client:     client,
-		expected:   expected,
-		namespacer: namespacer,
+		client:             client,
+		kubeConfigRegistry: kubeConfigRegistry,
+		expected:           expected,
+		namespacer:         namespacer,
 	}
 }
 

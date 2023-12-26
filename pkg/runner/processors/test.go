@@ -16,6 +16,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/chainsaw/pkg/utils/registry"
 	"github.com/kyverno/kyverno/ext/output/color"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -30,6 +31,7 @@ type TestProcessor interface {
 func NewTestProcessor(
 	config v1alpha1.ConfigurationSpec,
 	client client.Client,
+	kubeConfigRegistry *registry.KubeConfigRegistry,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
 	testReport *report.TestReport,
@@ -49,14 +51,15 @@ func NewTestProcessor(
 }
 
 type testProcessor struct {
-	config         v1alpha1.ConfigurationSpec
-	client         client.Client
-	clock          clock.PassiveClock
-	summary        *summary.Summary
-	testReport     *report.TestReport
-	test           discovery.Test
-	shouldFailFast *atomic.Bool
-	timeouts       v1alpha1.Timeouts
+	config             v1alpha1.ConfigurationSpec
+	client             client.Client
+	kubeConfigRegistry *registry.KubeConfigRegistry
+	clock              clock.PassiveClock
+	summary            *summary.Summary
+	testReport         *report.TestReport
+	test               discovery.Test
+	shouldFailFast     *atomic.Bool
+	timeouts           v1alpha1.Timeouts
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
@@ -163,5 +166,5 @@ func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, clean
 	if p.testReport != nil {
 		p.testReport.AddTestStep(stepReport)
 	}
-	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner)
+	return NewStepProcessor(p.config, p.client, p.kubeConfigRegistry, nspacer, p.clock, p.test, step, stepReport, cleaner)
 }
