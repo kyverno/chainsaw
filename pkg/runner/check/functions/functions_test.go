@@ -7,5 +7,5 @@ import (
 )
 
 func TestGetFunctions(t *testing.T) {
-	assert.Equal(t, 3, len(GetFunctions()))
+	assert.Equal(t, 4, len(GetFunctions()))
 }
