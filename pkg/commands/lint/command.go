@@ -1,7 +1,6 @@
 package lint
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -14,70 +13,12 @@ import (
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
-func getTestSchema() (string, error) {
-	startingDir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-	var findSchemasDir func(dir string) (string, error)
-	findSchemasDir = func(dir string) (string, error) {
-		if dir == "" || dir == "/" {
-			return "", errors.New(".schemas directory not found")
-		}
-
-		schemasPath := filepath.Join(dir, ".schemas")
-		if _, err := os.Stat(schemasPath); err == nil {
-			return schemasPath, nil
-		}
-		parentDir := filepath.Dir(dir)
-		return findSchemasDir(parentDir)
-	}
-
-	schemasDir, err := findSchemasDir(startingDir)
-	if err != nil {
-		return "", err
-	}
-	testSchemaPath := filepath.Join(schemasDir, "json", "test-chainsaw-v1alpha1.json")
-	canonicalPath := filepath.Clean(testSchemaPath)
-	return "file://" + canonicalPath, nil
-}
-
-func getConfigurationSchema() (string, error) {
-	startingDir, err := os.Getwd()
-	if err != nil {
-		return "", err
-	}
-
-	var findSchemasDir func(dir string) (string, error)
-	findSchemasDir = func(dir string) (string, error) {
-		if dir == "" || dir == "/" {
-			return "", errors.New(".schemas directory not found")
-		}
-		schemasPath := filepath.Join(dir, ".schemas")
-		if _, err := os.Stat(schemasPath); err == nil {
-			return schemasPath, nil
-		}
-		parentDir := filepath.Dir(dir)
-		return findSchemasDir(parentDir)
-	}
-
-	schemasDir, err := findSchemasDir(startingDir)
-	if err != nil {
-		return "", err
-	}
-
-	configSchemaPath := filepath.Join(schemasDir, "json", "configuration-chainsaw-v1alpha1.json")
-	canonicalPath := filepath.Clean(configSchemaPath)
-	return "file://" + canonicalPath, nil
-}
-
 func Command() *cobra.Command {
 	var fileFlag string
-
 	cmd := &cobra.Command{
 		Use:       "lint [test|configuration]",
 		Short:     "Lint a file or read from standard input",
-		Long:      `Use chainsaw lint to lint a specific file or read from standard input for either test or configuration.`,
+		Long:      "Use chainsaw lint to lint a specific file or read from standard input for either test or configuration.",
 		Args:      cobra.MatchAll(cobra.ExactArgs(1), cobra.OnlyValidArgs),
 		ValidArgs: []string{"test", "configuration"},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -98,9 +39,7 @@ func Command() *cobra.Command {
 			}
 		},
 	}
-
 	cmd.Flags().StringVarP(&fileFlag, "file", "f", "", "Specify the file to lint or '-' for standard input")
-
 	return cmd
 }
 
@@ -131,14 +70,12 @@ func lintSchema(input []byte, schema string, format string, writer io.Writer) er
 	if err != nil {
 		return err
 	}
-	schemaLoader := gojsonschema.NewReferenceLoader(goschema)
+	schemaLoader := gojsonschema.NewBytesLoader(goschema)
 	documentLoader := gojsonschema.NewBytesLoader(jsonInput)
-
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
 		return err
 	}
-
 	if !result.Valid() {
 		fmt.Fprintln(writer, "The schema is not valid. See errors:")
 		for _, desc := range result.Errors() {
@@ -155,15 +92,4 @@ func lintBusinessLogic(input []byte, writer io.Writer) error {
 		return err
 	}
 	return validation.ValidateTest(test).ToAggregate()
-}
-
-func getScheme(schema string) (string, error) {
-	switch schema {
-	case "test":
-		return getTestSchema()
-	case "configuration":
-		return getConfigurationSchema()
-	default:
-		return "", fmt.Errorf("unknown schema: %s", schema)
-	}
 }
