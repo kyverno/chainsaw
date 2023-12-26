@@ -14,7 +14,8 @@ body:
       description: >-
         What version of the chainsaw are you running?
       options:
-        - 0.1.0
+        - v0.1.0
+        - v0.1.1
     validations:
       required: true
   - type: textarea
@@ -31,8 +32,7 @@ body:
     attributes:
       label: Steps to reproduce
       description: >-
-        What are the exact steps needed to reproduce the bug you experienced? Please provide any and all manifests needed to reproduce your issue, including Kyverno policies and test resources.
-        GitHub supports [syntax highlighting](https://docs.github.com/en/github/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks#syntax-highlighting) with code blocks.
+        What are the exact steps needed to reproduce the bug you experienced?
       # placeholder: Tell us what you see!
       value: |-
         1. 
@@ -64,8 +64,7 @@ body:
     attributes:
       label: Logs
       description: >-
-        Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-        chainsaw logs may be found by passing the -v flag to any command.
+        Please copy and paste any relevant log output. 
       render: Shell
   - type: input
     id: slack
