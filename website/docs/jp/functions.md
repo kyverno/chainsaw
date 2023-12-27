@@ -1,5 +1,11 @@
 # Functions
 
+!!! warning "Experimental functions"
+
+    Experimental functions are denoted by the `x_` prefix.
+
+    These are functions that are subject to signature change in a future version.
+
 ## built-in functions
 
 | Name | Signature |
@@ -7,7 +13,7 @@
 | abs | `abs(number)` |
 | avg | `avg(array[number])` |
 | ceil | `ceil(number)` |
-| contains | `contains(array\|string, any)` |
+| contains | `contains(array|string, any)` |
 | ends_with | `ends_with(string, string)` |
 | find_first | `find_first(string, string, number, number)` |
 | find_last | `find_last(string, string, number, number)` |
@@ -17,20 +23,20 @@
 | items | `items(object)` |
 | join | `join(string, array[string])` |
 | keys | `keys(object)` |
-| length | `length(string\|array\|object)` |
+| length | `length(string|array|object)` |
 | lower | `lower(string)` |
 | map | `map(expref, array)` |
-| max | `max(array[number]\|array[string])` |
+| max | `max(array[number]|array[string])` |
 | max_by | `max_by(array, expref)` |
 | merge | `merge(object)` |
-| min | `min(array[number]\|array[string])` |
+| min | `min(array[number]|array[string])` |
 | min_by | `min_by(array, expref)` |
 | not_null | `not_null(any)` |
 | pad_left | `pad_left(string, number, string)` |
 | pad_right | `pad_right(string, number, string)` |
 | replace | `replace(string, string, string, number)` |
-| reverse | `reverse(array\|string)` |
-| sort | `sort(array[string]\|array[number])` |
+| reverse | `reverse(array|string)` |
+| sort | `sort(array[string]|array[number])` |
 | sort_by | `sort_by(array, expref)` |
 | split | `split(string, string, number)` |
 | starts_with | `starts_with(string, string)` |
@@ -68,10 +74,10 @@
 | trim | `trim(string, string)` |
 | trim_prefix | `trim_prefix(string, string)` |
 | split | `split(string, string)` |
-| regex_replace_all | `regex_replace_all(string, string\|number, string\|number)` |
-| regex_replace_all_literal | `regex_replace_all_literal(string, string\|number, string\|number)` |
-| regex_match | `regex_match(string, string\|number)` |
-| pattern_match | `pattern_match(string, string\|number)` |
+| regex_replace_all | `regex_replace_all(string, string|number, string|number)` |
+| regex_replace_all_literal | `regex_replace_all_literal(string, string|number, string|number)` |
+| regex_match | `regex_match(string, string|number)` |
+| pattern_match | `pattern_match(string, string|number)` |
 | label_match | `label_match(object, object)` |
 | to_boolean | `to_boolean(string)` |
 | add | `add(any, any)` |
@@ -91,8 +97,8 @@
 | semver_compare | `semver_compare(string, string)` |
 | parse_json | `parse_json(string)` |
 | parse_yaml | `parse_yaml(string)` |
-| lookup | `lookup(object\|array, string\|number)` |
-| items | `items(object\|array, string, string)` |
+| lookup | `lookup(object|array, string|number)` |
+| items | `items(object|array, string, string)` |
 | object_from_lists | `object_from_lists(array, array)` |
 | random | `random(string)` |
 | x509_decode | `x509_decode(string)` |

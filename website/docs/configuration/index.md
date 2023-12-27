@@ -18,5 +18,5 @@ Please pay attention to the configuration options below, they may or may not be 
 
 - [Timeouts](./timeouts.md)
 - [Termination graceful period](./grace.md)
-- [Cleanup before delay](./cleanup-delay.md)
+- [Delay before cleanup](./cleanup-delay.md)
 - [Label selectors](./selector.md)
