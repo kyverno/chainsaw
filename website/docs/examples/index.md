@@ -4,7 +4,7 @@ To use Chainsaw you will need a [Kubernetes](https://kybernetes.io) cluster, Cha
 
 In these examples, we will use [kind](https://kind.sigs.k8s.io) but feel free to use the tool of your choice.
 
-!!! warning "Not a cluster management tool"
+!!! note "Not a cluster management tool"
 
     We consider this is not the responsibility of Chainsaw to manage clusters.
 
