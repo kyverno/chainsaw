@@ -39,14 +39,15 @@ func NewTestProcessor(
 	shouldFailFast *atomic.Bool,
 ) TestProcessor {
 	return &testProcessor{
-		config:         config,
-		client:         client,
-		clock:          clock,
-		summary:        summary,
-		testReport:     testReport,
-		test:           test,
-		shouldFailFast: shouldFailFast,
-		timeouts:       config.Timeouts.Combine(test.Spec.Timeouts),
+		config:             config,
+		client:             client,
+		kubeConfigRegistry: kubeConfigRegistry,
+		clock:              clock,
+		summary:            summary,
+		testReport:         testReport,
+		test:               test,
+		shouldFailFast:     shouldFailFast,
+		timeouts:           config.Timeouts.Combine(test.Spec.Timeouts),
 	}
 }
 

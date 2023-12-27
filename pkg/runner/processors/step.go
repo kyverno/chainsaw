@@ -476,7 +476,7 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 }
 
 func (p *stepProcessor) checkClusterRef(clusterRef *string) (client.Client, error) {
-	if clusterRef != nil {
+	if p.kubeConfigRegistry != nil && clusterRef != nil {
 		client, ok := p.kubeConfigRegistry.GetFromRegistry(*clusterRef)
 		if !ok {
 			return nil, errors.New("cluster not found")
