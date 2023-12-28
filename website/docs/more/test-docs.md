@@ -71,7 +71,7 @@ This is a very simple test that creates a configmap and checks the content is as
 
 ## Step: `step-1`
 
-This steps applies the configmap in the cluster and checks the configmap content.
+This step applies the configmap in the cluster and checks the configmap content.
 
 ### Try
 

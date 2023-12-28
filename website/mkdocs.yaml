@@ -48,6 +48,7 @@ nav:
   - Other resources:
     - more/events.md
     - more/crds.md
+    - more/lint.md
     - more/test-docs.md
     - more/kuttl-migration.md
   - Rerference Documentation:

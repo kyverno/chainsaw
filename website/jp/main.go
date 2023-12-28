@@ -13,6 +13,12 @@ import (
 func main() {
 	fmt.Println("# Functions")
 	fmt.Println()
+	fmt.Println(`!!! warning "Experimental functions"`)
+	fmt.Println()
+	fmt.Println("    Experimental functions are denoted by the `x_` prefix.")
+	fmt.Println()
+	fmt.Println("    These are functions that are subject to signature change in a future version.")
+	fmt.Println()
 	fmt.Println("## built-in functions")
 	fmt.Println()
 	printFunctions(jpfunctions.GetDefaultFunctions()...)
@@ -35,7 +41,7 @@ func printFunctions(funcs ...jpfunctions.FunctionEntry) {
 	fmt.Println("| Name | Signature |")
 	fmt.Println("|---|---|")
 	for _, function := range funcs {
-		fmt.Println("|", function.Name, "|", "`"+strings.ReplaceAll(functionString(function), "|", `\|`)+"`", "|")
+		fmt.Println("|", function.Name, "|", "`"+functionString(function)+"`", "|")
 	}
 }
 
