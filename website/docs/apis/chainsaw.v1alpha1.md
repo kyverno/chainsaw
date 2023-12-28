@@ -80,6 +80,7 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `clusterRef` | `string` |  |  | <p>ClusterRef is the name of the cluster to run the test on.</p> |
 | `FileRefOrCheck` | [`FileRefOrCheck`](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck) | :white_check_mark: | :white_check_mark: | <p>FileRefOrAssert provides a reference to the assertion.</p> |
 
 ## `Catch`     {#chainsaw-kyverno-io-v1alpha1-Catch}
@@ -144,6 +145,7 @@ during the testing process.</p>
 | `testFile` | `string` |  |  | <p>TestFile is the name of the file containing the test to run.</p> |
 | `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 | `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
+| `kubeconfigs` | [`[]github.com/kyverno/chainsaw/pkg/apis/v1alpha1.Kubeconfig`](#chainsaw-kyverno-io-v1alpha1-[]github-com-kyverno-chainsaw-pkg-apis-v1alpha1-Kubeconfig) |  |  | <p>Kubeconfigs is a list of kubeconfig files to use for tests.</p> |
 
 ## `Create`     {#chainsaw-kyverno-io-v1alpha1-Create}
 

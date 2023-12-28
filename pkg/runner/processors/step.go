@@ -25,6 +25,7 @@ import (
 	opsleep "github.com/kyverno/chainsaw/pkg/runner/operations/sleep"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/chainsaw/pkg/utils/registry"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/clock"
@@ -40,6 +41,7 @@ type StepProcessor interface {
 func NewStepProcessor(
 	config v1alpha1.ConfigurationSpec,
 	client client.Client,
+	kubeConfigRegistry *registry.KubeConfigRegistry,
 	namespacer namespacer.Namespacer,
 	clock clock.PassiveClock,
 	test discovery.Test,
@@ -48,28 +50,30 @@ func NewStepProcessor(
 	cleaner *cleaner,
 ) StepProcessor {
 	return &stepProcessor{
-		config:     config,
-		client:     client,
-		namespacer: namespacer,
-		clock:      clock,
-		test:       test,
-		step:       step,
-		stepReport: stepReport,
-		timeouts:   config.Timeouts.Combine(test.Spec.Timeouts).Combine(step.Timeouts),
-		cleaner:    cleaner,
+		config:             config,
+		client:             client,
+		kubeConfigRegistry: kubeConfigRegistry,
+		namespacer:         namespacer,
+		clock:              clock,
+		test:               test,
+		step:               step,
+		stepReport:         stepReport,
+		timeouts:           config.Timeouts.Combine(test.Spec.Timeouts).Combine(step.Timeouts),
+		cleaner:            cleaner,
 	}
 }
 
 type stepProcessor struct {
-	config     v1alpha1.ConfigurationSpec
-	client     client.Client
-	namespacer namespacer.Namespacer
-	clock      clock.PassiveClock
-	test       discovery.Test
-	step       v1alpha1.TestSpecStep
-	stepReport *report.TestSpecStepReport
-	timeouts   v1alpha1.Timeouts
-	cleaner    *cleaner
+	config             v1alpha1.ConfigurationSpec
+	client             client.Client
+	kubeConfigRegistry *registry.KubeConfigRegistry
+	namespacer         namespacer.Namespacer
+	clock              clock.PassiveClock
+	test               discovery.Test
+	step               v1alpha1.TestSpecStep
+	stepReport         *report.TestSpecStepReport
+	timeouts           v1alpha1.Timeouts
+	cleaner            *cleaner
 }
 
 func (p *stepProcessor) Run(ctx context.Context) {
@@ -276,6 +280,10 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert)
 	if err != nil {
 		return nil, err
 	}
+	client, err := p.checkClusterRef(op.ClusterRef)
+	if err != nil {
+		return nil, err
+	}
 	var ops []operation
 	operationReport := report.NewOperation("Assert ", report.OperationTypeAssert)
 	if p.stepReport != nil {
@@ -284,7 +292,7 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert)
 	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:         timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
-			operation:       opassert.New(p.client, resource, p.namespacer),
+			operation:       opassert.New(client, resource, p.namespacer),
 			operationReport: operationReport,
 		})
 	}
@@ -465,4 +473,15 @@ func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cle
 	return func(obj unstructured.Unstructured, c client.Client) {
 		p.cleaner.register(obj, c, timeout.Get(nil, p.timeouts.CleanupDuration()))
 	}
+}
+
+func (p *stepProcessor) checkClusterRef(clusterRef *string) (client.Client, error) {
+	if p.kubeConfigRegistry != nil && clusterRef != nil {
+		client, ok := p.kubeConfigRegistry.GetFromRegistry(*clusterRef)
+		if !ok {
+			return nil, errors.New("cluster not found")
+		}
+		return client, nil
+	}
+	return p.client, nil
 }

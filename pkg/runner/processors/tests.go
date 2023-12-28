@@ -16,6 +16,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/chainsaw/pkg/utils/registry"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/clock"
@@ -29,29 +30,32 @@ type TestsProcessor interface {
 func NewTestsProcessor(
 	config v1alpha1.ConfigurationSpec,
 	client client.Client,
+	kubeConfigRegistry *registry.KubeConfigRegistry,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
 	testsReport *report.TestsReport,
 	tests ...discovery.Test,
 ) TestsProcessor {
 	return &testsProcessor{
-		config:      config,
-		client:      client,
-		clock:       clock,
-		summary:     summary,
-		testsReport: testsReport,
-		tests:       tests,
+		config:             config,
+		client:             client,
+		kubeConfigRegistry: kubeConfigRegistry,
+		clock:              clock,
+		summary:            summary,
+		testsReport:        testsReport,
+		tests:              tests,
 	}
 }
 
 type testsProcessor struct {
-	config         v1alpha1.ConfigurationSpec
-	client         client.Client
-	clock          clock.PassiveClock
-	summary        *summary.Summary
-	testsReport    *report.TestsReport
-	tests          []discovery.Test
-	shouldFailFast atomic.Bool
+	config             v1alpha1.ConfigurationSpec
+	client             client.Client
+	kubeConfigRegistry *registry.KubeConfigRegistry
+	clock              clock.PassiveClock
+	summary            *summary.Summary
+	testsReport        *report.TestsReport
+	tests              []discovery.Test
+	shouldFailFast     atomic.Bool
 }
 
 func (p *testsProcessor) Run(ctx context.Context) {
@@ -110,5 +114,5 @@ func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor 
 	if p.testsReport != nil {
 		p.testsReport.AddTest(testReport)
 	}
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast)
+	return NewTestProcessor(p.config, p.client, p.kubeConfigRegistry, p.clock, p.summary, testReport, test, &p.shouldFailFast)
 }

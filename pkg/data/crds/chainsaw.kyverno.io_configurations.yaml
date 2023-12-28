@@ -59,6 +59,19 @@ spec:
                 description: IncludeTestRegex is used to include tests based on a
                   regular expression.
                 type: string
+              kubeconfigs:
+                description: Kubeconfigs is a list of kubeconfig files to use for
+                  tests.
+                items:
+                  properties:
+                    clusterRef:
+                      description: ClusterRef is the name of the cluster to use.
+                      type: string
+                    file:
+                      description: File is the path to the referenced file.
+                      type: string
+                  type: object
+                type: array
               namespace:
                 description: Namespace defines the namespace to use for tests. If
                   not specified, every test will execute in a random ephemeral namespace

@@ -11,6 +11,10 @@ type Assert struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// ClusterRef is the name of the cluster to run the test on.
+	// +optional
+	ClusterRef *string `json:"clusterRef,omitempty"`
+
 	// FileRefOrAssert provides a reference to the assertion.
 	FileRefOrCheck `json:",inline"`
 }

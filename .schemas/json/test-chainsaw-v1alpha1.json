@@ -908,6 +908,13 @@
                         "null"
                       ],
                       "properties": {
+                        "clusterRef": {
+                          "description": "ClusterRef is the name of the cluster to run the test on.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "file": {
                           "description": "File is the path to the referenced file.",
                           "type": [

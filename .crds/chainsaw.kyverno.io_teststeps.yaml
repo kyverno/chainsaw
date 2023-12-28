@@ -344,6 +344,10 @@ spec:
                       description: Assert represents an assertion to be made. It checks
                         whether the conditions specified in the assertion hold true.
                       properties:
+                        clusterRef:
+                          description: ClusterRef is the name of the cluster to run
+                            the test on.
+                          type: string
                         file:
                           description: File is the path to the referenced file.
                           type: string
