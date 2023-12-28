@@ -14,7 +14,7 @@ func New() *KubeConfigRegistry {
 }
 
 func (r *KubeConfigRegistry) AddToRegistry(name, kubeconfigPath string) error {
-	if *r == nil {
+	if r == nil {
 		return fmt.Errorf("kubeconfig registry is nil")
 	}
 	config, err := clientcmd.BuildConfigFromFlags("", kubeconfigPath)
@@ -31,7 +31,7 @@ func (r *KubeConfigRegistry) AddToRegistry(name, kubeconfigPath string) error {
 }
 
 func (r *KubeConfigRegistry) GetFromRegistry(name string) (client.Client, bool) {
-	if *r == nil {
+	if r == nil {
 		return nil, false
 	}
 	client, exists := (*r)[name]
