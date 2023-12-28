@@ -3,6 +3,7 @@ package testing
 import (
 	"context"
 
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -15,6 +16,7 @@ type FakeClient struct {
 	ListFn               func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error
 	PatchFn              func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error
 	IsObjectNamespacedFn func(call int, obj runtime.Object) (bool, error)
+	RESTMapperFn         func(call int) meta.RESTMapper
 	numCalls             int
 }
 
@@ -46,6 +48,11 @@ func (c *FakeClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctr
 func (c *FakeClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 	defer func() { c.numCalls++ }()
 	return c.IsObjectNamespacedFn(c.numCalls, obj)
+}
+
+func (c *FakeClient) RESTMapper() meta.RESTMapper {
+	defer func() { c.numCalls++ }()
+	return c.RESTMapperFn(c.numCalls)
 }
 
 func (c *FakeClient) NumCalls() int {

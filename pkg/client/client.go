@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/rest"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -32,6 +33,9 @@ type Client interface {
 
 	// IsObjectNamespaced returns true if the GroupVersionKind of the object is namespaced.
 	IsObjectNamespaced(obj runtime.Object) (bool, error)
+
+	// RESTMapper returns the rest this client is using.
+	RESTMapper() meta.RESTMapper
 }
 
 func New(cfg *rest.Config) (Client, error) {

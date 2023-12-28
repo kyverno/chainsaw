@@ -3,6 +3,7 @@ package client
 import (
 	"context"
 
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -34,6 +35,10 @@ func (c *dryRunClient) List(ctx context.Context, list client.ObjectList, opts ..
 
 func (c *dryRunClient) Patch(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
 	return c.inner.Patch(ctx, obj, patch, append(opts, client.DryRunAll)...)
+}
+
+func (c *dryRunClient) RESTMapper() meta.RESTMapper {
+	return c.inner.RESTMapper()
 }
 
 func DryRun(inner Client) Client {
