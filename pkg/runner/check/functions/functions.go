@@ -56,8 +56,6 @@ func GetFunctions() []functions.FunctionEntry {
 			{Types: []functions.JpType{functions.JpAny}},
 			{Types: []functions.JpType{functions.JpString}},
 			{Types: []functions.JpType{functions.JpString}},
-			{Types: []functions.JpType{functions.JpString}},
-			{Types: []functions.JpType{functions.JpString}},
 		},
 		Handler: jpKubernetesResourceExists,
 	}}
