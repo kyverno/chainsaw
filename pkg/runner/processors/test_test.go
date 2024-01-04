@@ -123,32 +123,6 @@ func TestTestProcessor_Run(t *testing.T) {
 			namespacer:     nil,
 			expectedFail:   false,
 		},
-		// {
-		// 	name: "nil namespacer",
-		// 	config: v1alpha1.ConfigurationSpec{
-		// 		Timeouts: v1alpha1.Timeouts{},
-		// 	},
-		// 	client:      nil,
-		// 	clock:       tclock.NewFakePassiveClock(time.Now()),
-		// 	summary:     &summary.Summary{},
-		// 	testsReport: nil,
-		// 	tests: discovery.Test{
-		// 		Err: nil,
-		// 		Test: &v1alpha1.Test{
-		// 			Spec: v1alpha1.TestSpec{
-		// 				Timeouts: &v1alpha1.Timeouts{},
-		// 				Skip:     ptr.To[bool](true),
-		// 				Steps: []v1alpha1.TestSpecStep{
-		// 					{
-		// 						TestStepSpec: v1alpha1.TestStepSpec{},
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// 	shouldFailFast: false,
-		// 	expectedFail:   false,
-		// },
 		{
 			name: "skip test",
 			config: v1alpha1.ConfigurationSpec{
