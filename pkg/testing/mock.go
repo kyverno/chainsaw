@@ -71,6 +71,7 @@ func (c *MockT) Skip(args ...any) {
 }
 
 func (c *MockT) SkipNow() {
+	c.SkippedVar = true
 }
 
 func (c *MockT) Skipf(format string, args ...any) {
