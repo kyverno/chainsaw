@@ -6,8 +6,46 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+func jpKubernetesResourceExists(arguments []any) (any, error) {
+	var client client.Client
+	var apiVersion, kind string
+	if err := getArg(arguments, 0, &client); err != nil {
+		return false, err
+	}
+	if err := getArg(arguments, 1, &apiVersion); err != nil {
+		return false, err
+	}
+	if err := getArg(arguments, 2, &kind); err != nil {
+		return false, err
+	}
+
+	mapper := client.RESTMapper()
+
+	gvk := schema.GroupVersionKind{Group: "", Version: apiVersion, Kind: kind}
+	mapping, err := mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
+	if err != nil {
+		return false, err
+	}
+
+	obj := unstructured.Unstructured{}
+	obj.SetGroupVersionKind(mapping.GroupVersionKind)
+
+	err = client.List(context.TODO(), &unstructured.UnstructuredList{
+		Object: obj.Object,
+	}, ctrlclient.InNamespace(""))
+
+	if err == nil {
+		return true, nil
+	}
+	if apierrors.IsNotFound(err) {
+		return false, nil
+	}
+	return false, err
+}
 
 func jpKubernetesExists(arguments []any) (any, error) {
 	var client client.Client
