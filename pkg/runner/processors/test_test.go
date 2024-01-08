@@ -31,7 +31,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		clock          clock.PassiveClock
 		summary        *summary.Summary
 		testsReport    *report.TestReport
-		tests          discovery.Test
+		test           discovery.Test
 		shouldFailFast bool
 		namespacer     *fakeNamespacer.FakeNamespacer
 		expectedFail   bool
@@ -50,7 +50,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -75,7 +75,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -106,7 +106,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -136,7 +136,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -168,7 +168,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -199,7 +199,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -229,7 +229,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -263,7 +263,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -297,7 +297,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -331,7 +331,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			clock:       tclock.NewFakePassiveClock(time.Now()),
 			summary:     &summary.Summary{},
 			testsReport: nil,
-			tests: discovery.Test{
+			test: discovery.Test{
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
@@ -361,7 +361,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				tc.clock,
 				tc.summary,
 				tc.testsReport,
-				tc.tests,
+				tc.test,
 				shouldFailVar,
 			)
 			nt := &testing.MockT{}
