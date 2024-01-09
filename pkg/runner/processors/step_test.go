@@ -116,7 +116,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					Finally: []v1alpha1.Finally{},
 				},
 			},
-			stepReport: nil,
+			stepReport: report.NewTestSpecStep("fake"),
 			cleaner:    &cleaner{},
 		},
 		{
@@ -165,7 +165,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					Finally: []v1alpha1.Finally{},
 				},
 			},
-			stepReport: nil,
+			stepReport: report.NewTestSpecStep("fake"),
 			cleaner:    &cleaner{},
 		},
 		{
@@ -238,7 +238,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					Finally: []v1alpha1.Finally{},
 				},
 			},
-			stepReport: nil,
+			stepReport: report.NewTestSpecStep("fake"),
 			cleaner:    &cleaner{},
 		},
 		{
@@ -311,7 +311,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					Finally: []v1alpha1.Finally{},
 				},
 			},
-			stepReport: nil,
+			stepReport: report.NewTestSpecStep("fake"),
 			cleaner:    &cleaner{},
 		},
 		{
@@ -353,7 +353,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					Finally: []v1alpha1.Finally{},
 				},
 			},
-			stepReport: nil,
+			stepReport: report.NewTestSpecStep("fake"),
 			cleaner:    &cleaner{},
 		},
 		{
@@ -394,7 +394,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					Finally: []v1alpha1.Finally{},
 				},
 			},
-			stepReport: nil,
+			stepReport: report.NewTestSpecStep("fake"),
 			cleaner:    &cleaner{},
 		},
 		{
@@ -428,7 +428,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					Finally: []v1alpha1.Finally{},
 				},
 			},
-			stepReport: nil,
+			stepReport: report.NewTestSpecStep("fake"),
 			cleaner:    &cleaner{},
 		},
 		{
@@ -477,7 +477,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					Finally: []v1alpha1.Finally{},
 				},
 			},
-			stepReport: nil,
+			stepReport: report.NewTestSpecStep("fake"),
 			cleaner:    &cleaner{},
 		},
 		{
@@ -844,7 +844,8 @@ func TestStepProcessor_Run(t *testing.T) {
 		{
 			name: "try, catch and finally operation with apply handler",
 			config: v1alpha1.ConfigurationSpec{
-				Timeouts: v1alpha1.Timeouts{},
+				ForceTerminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
+				Timeouts:                    v1alpha1.Timeouts{},
 			},
 			client: &fake.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -969,6 +970,65 @@ func TestStepProcessor_Run(t *testing.T) {
 							},
 						},
 					},
+				},
+			},
+			stepReport: report.NewTestSpecStep("fake"),
+			cleaner:    &cleaner{},
+		},
+		{
+			name: "termination with create handler",
+			config: v1alpha1.ConfigurationSpec{
+				Timeouts: v1alpha1.Timeouts{},
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerror.NewNotFound(v1alpha1.Resource("Deployment"), "chainsaw")
+				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
+			},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+			},
+			clock: tclock.NewFakePassiveClock(time.Now()),
+			test: discovery.Test{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					Spec: v1alpha1.TestSpec{
+						ForceTerminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
+						Timeouts:                    &v1alpha1.Timeouts{},
+					},
+				},
+				BasePath: testData,
+			},
+			stepSpec: v1alpha1.TestSpecStep{
+				TestStepSpec: v1alpha1.TestStepSpec{
+					Timeouts: &v1alpha1.Timeouts{},
+					Try: []v1alpha1.Operation{
+						{
+							Create: &v1alpha1.Create{
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									FileRef: v1alpha1.FileRef{
+										File: "deployment.yaml",
+									},
+								},
+							},
+						},
+						{
+							Create: &v1alpha1.Create{
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									FileRef: v1alpha1.FileRef{
+										File: "cron-job.yaml",
+									},
+								},
+							},
+						},
+					},
+					Catch:   []v1alpha1.Catch{},
+					Finally: []v1alpha1.Finally{},
 				},
 			},
 			stepReport: nil,
