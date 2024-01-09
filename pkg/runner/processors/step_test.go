@@ -20,6 +20,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/clock"
 	tclock "k8s.io/utils/clock/testing"
+	"k8s.io/utils/ptr"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -116,7 +117,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				},
 			},
 			stepReport: nil,
-			cleaner:    nil,
+			cleaner:    &cleaner{},
 		},
 		{
 			name: "try operation with create handler",
@@ -467,6 +468,367 @@ func TestStepProcessor_Run(t *testing.T) {
 									ObjectSelector: v1alpha1.ObjectSelector{
 										Namespace: "chainsaw",
 										Name:      "myapp",
+									},
+								},
+							},
+						},
+					},
+					Catch:   []v1alpha1.Catch{},
+					Finally: []v1alpha1.Finally{},
+				},
+			},
+			stepReport: nil,
+			cleaner:    &cleaner{},
+		},
+		{
+			name: "dry run with create handler",
+			config: v1alpha1.ConfigurationSpec{
+				Timeouts: v1alpha1.Timeouts{},
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
+				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
+			},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+			},
+			clock: tclock.NewFakePassiveClock(time.Now()),
+			test: discovery.Test{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					Spec: v1alpha1.TestSpec{
+						Timeouts: &v1alpha1.Timeouts{},
+					},
+				},
+				BasePath: testData,
+			},
+			stepSpec: v1alpha1.TestSpecStep{
+				TestStepSpec: v1alpha1.TestStepSpec{
+					Timeouts: &v1alpha1.Timeouts{},
+					Try: []v1alpha1.Operation{
+						{
+							Create: &v1alpha1.Create{
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									FileRef: v1alpha1.FileRef{
+										File: "pod.yaml",
+									},
+								},
+								DryRun: ptr.To[bool](true),
+							},
+						},
+					},
+					Catch:   []v1alpha1.Catch{},
+					Finally: []v1alpha1.Finally{},
+				},
+			},
+			stepReport: nil,
+			cleaner:    &cleaner{},
+		},
+		{
+			name: "skip delete with create handler",
+			config: v1alpha1.ConfigurationSpec{
+				Timeouts: v1alpha1.Timeouts{},
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
+				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
+			},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+			},
+			clock: tclock.NewFakePassiveClock(time.Now()),
+			test: discovery.Test{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					Spec: v1alpha1.TestSpec{
+						Timeouts: &v1alpha1.Timeouts{},
+					},
+				},
+				BasePath: testData,
+			},
+			stepSpec: v1alpha1.TestSpecStep{
+				TestStepSpec: v1alpha1.TestStepSpec{
+					SkipDelete: ptr.To[bool](true),
+					Timeouts:   &v1alpha1.Timeouts{},
+					Try: []v1alpha1.Operation{
+						{
+							Create: &v1alpha1.Create{
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									FileRef: v1alpha1.FileRef{
+										File: "pod.yaml",
+									},
+								},
+							},
+						},
+					},
+					Catch:   []v1alpha1.Catch{},
+					Finally: []v1alpha1.Finally{},
+				},
+			},
+			stepReport: nil,
+			cleaner:    &cleaner{},
+		},
+		{
+			name: "try-raw resource with create handler",
+			config: v1alpha1.ConfigurationSpec{
+				Timeouts: v1alpha1.Timeouts{},
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
+				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
+			},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+			},
+			clock: tclock.NewFakePassiveClock(time.Now()),
+			test: discovery.Test{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					Spec: v1alpha1.TestSpec{
+						Timeouts: &v1alpha1.Timeouts{},
+					},
+				},
+				BasePath: testData,
+			},
+			stepSpec: v1alpha1.TestSpecStep{
+				TestStepSpec: v1alpha1.TestStepSpec{
+					SkipDelete: ptr.To[bool](true),
+					Timeouts:   &v1alpha1.Timeouts{},
+					Try: []v1alpha1.Operation{
+						{
+							Create: &v1alpha1.Create{
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									Resource: &unstructured.Unstructured{
+										Object: map[string]interface{}{
+											"apiVersion": "v1",
+											"kind":       "Pod",
+											"metadata": map[string]interface{}{
+												"name": "chainsaw",
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Catch:   []v1alpha1.Catch{},
+					Finally: []v1alpha1.Finally{},
+				},
+			},
+			stepReport: nil,
+			cleaner:    &cleaner{},
+		},
+		{
+			name: "try-url resource with create handler",
+			config: v1alpha1.ConfigurationSpec{
+				Timeouts: v1alpha1.Timeouts{},
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
+				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
+			},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+			},
+			clock: tclock.NewFakePassiveClock(time.Now()),
+			test: discovery.Test{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					Spec: v1alpha1.TestSpec{
+						Timeouts: &v1alpha1.Timeouts{},
+					},
+				},
+				BasePath: testData,
+			},
+			stepSpec: v1alpha1.TestSpecStep{
+				TestStepSpec: v1alpha1.TestStepSpec{
+					SkipDelete: ptr.To[bool](true),
+					Timeouts:   &v1alpha1.Timeouts{},
+					Try: []v1alpha1.Operation{
+						{
+							Create: &v1alpha1.Create{
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									FileRef: v1alpha1.FileRef{
+										File: "https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/test/configmap.yaml",
+									},
+								},
+							},
+						},
+					},
+					Catch:   []v1alpha1.Catch{},
+					Finally: []v1alpha1.Finally{},
+				},
+			},
+			stepReport: nil,
+			cleaner:    &cleaner{},
+		},
+		{
+			name: "raw resource with assert handler",
+			config: v1alpha1.ConfigurationSpec{
+				Timeouts: v1alpha1.Timeouts{},
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+						"apiVersion": "v1",
+						"kind":       "Pod",
+						"metadata": map[string]interface{}{
+							"name": "myapp",
+							"labels": map[string]string{
+								"name": "myapp",
+							},
+						},
+						"spec": map[string]interface{}{
+							"containers": []map[string]interface{}{
+								{
+									"name":  "myapp",
+									"image": "myapp:latest",
+									"resources": map[string]interface{}{
+										"limits": map[string]string{
+											"memory": "128Mi",
+											"cpu":    "500m",
+										},
+									},
+								},
+							},
+						},
+					}
+					return nil
+				},
+				ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+					return nil
+				},
+			},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+			},
+			clock: tclock.NewFakePassiveClock(time.Now()),
+			test: discovery.Test{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					Spec: v1alpha1.TestSpec{
+						Timeouts: &v1alpha1.Timeouts{},
+					},
+				},
+				BasePath: testData,
+			},
+			stepSpec: v1alpha1.TestSpecStep{
+				TestStepSpec: v1alpha1.TestStepSpec{
+					Timeouts: &v1alpha1.Timeouts{},
+					Try: []v1alpha1.Operation{
+						{
+							Assert: &v1alpha1.Assert{
+								FileRefOrCheck: v1alpha1.FileRefOrCheck{
+									Resource: &v1alpha1.Check{
+										Value: map[string]interface{}{
+											"apiVersion": "v1",
+											"kind":       "Pod",
+											"metadata": map[string]interface{}{
+												"name": "myapp",
+												"labels": map[string]string{
+													"name": "myapp",
+												},
+											},
+											"spec": map[string]interface{}{
+												"containers": []map[string]interface{}{
+													{
+														"name":  "myapp",
+														"image": "myapp:latest",
+														"resources": map[string]interface{}{
+															"limits": map[string]string{
+																"memory": "128Mi",
+																"cpu":    "500m",
+															},
+														},
+													},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Catch:   []v1alpha1.Catch{},
+					Finally: []v1alpha1.Finally{},
+				},
+			},
+			stepReport: nil,
+			cleaner:    &cleaner{},
+		},
+		{
+			name: "try url-resource with assert handler",
+			config: v1alpha1.ConfigurationSpec{
+				Timeouts: v1alpha1.Timeouts{},
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+						"apiVersion": "v1",
+						"kind":       "ConfigMap",
+						"metadata": map[string]interface{}{
+							"name": "default",
+						},
+						"data": map[string]string{
+							"foo": "bar",
+						},
+					}
+					return nil
+				},
+				ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+					return nil
+				},
+			},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+			},
+			clock: tclock.NewFakePassiveClock(time.Now()),
+			test: discovery.Test{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					Spec: v1alpha1.TestSpec{
+						Timeouts: &v1alpha1.Timeouts{},
+					},
+				},
+				BasePath: testData,
+			},
+			stepSpec: v1alpha1.TestSpecStep{
+				TestStepSpec: v1alpha1.TestStepSpec{
+					Timeouts: &v1alpha1.Timeouts{},
+					Try: []v1alpha1.Operation{
+						{
+							Assert: &v1alpha1.Assert{
+								FileRefOrCheck: v1alpha1.FileRefOrCheck{
+									FileRef: v1alpha1.FileRef{
+										File: "https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/test/configmap.yaml",
 									},
 								},
 							},
