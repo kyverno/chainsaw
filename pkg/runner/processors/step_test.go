@@ -841,6 +841,139 @@ func TestStepProcessor_Run(t *testing.T) {
 			stepReport: nil,
 			cleaner:    &cleaner{},
 		},
+		{
+			name: "try, catch and finally operation with apply handler",
+			config: v1alpha1.ConfigurationSpec{
+				Timeouts: v1alpha1.Timeouts{},
+			},
+			client: &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+						"apiVersion": "v1",
+						"kind":       "Pod",
+						"metadata": map[string]interface{}{
+							"name":      "myapp",
+							"namespace": "chainsaw",
+							"labels": map[string]string{
+								"name": "myapp",
+							},
+						},
+						"spec": map[string]interface{}{
+							"containers": []map[string]interface{}{
+								{
+									"name":  "myapp",
+									"image": "myapp:latest",
+									"resources": map[string]interface{}{
+										"limits": map[string]string{
+											"memory": "128Mi",
+											"cpu":    "500m",
+										},
+									},
+								},
+							},
+						},
+					}
+					return nil
+				},
+				PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
+					return nil
+				},
+			},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+				GetNamespaceFn: func(call int) string {
+					return "chainsaw"
+				},
+			},
+			clock: tclock.NewFakePassiveClock(time.Now()),
+			test: discovery.Test{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					Spec: v1alpha1.TestSpec{
+						Timeouts: &v1alpha1.Timeouts{},
+					},
+				},
+				BasePath: testData,
+			},
+			stepSpec: v1alpha1.TestSpecStep{
+				TestStepSpec: v1alpha1.TestStepSpec{
+					Timeouts: &v1alpha1.Timeouts{},
+					Try: []v1alpha1.Operation{
+						{
+							Apply: &v1alpha1.Apply{
+								FileRefOrResource: v1alpha1.FileRefOrResource{
+									FileRef: v1alpha1.FileRef{
+										File: "pod.yaml",
+									},
+								},
+							},
+						},
+					},
+					Catch: []v1alpha1.Catch{
+						{
+							Command: &v1alpha1.Command{
+								Entrypoint: "echo",
+								Args:       []string{"hello"},
+							},
+						},
+
+						{
+							Script: &v1alpha1.Script{
+								Content: "echo hello",
+							},
+						},
+						{
+							Sleep: &v1alpha1.Sleep{
+								Duration: metav1.Duration{Duration: time.Duration(1) * time.Second},
+							},
+						},
+						{
+							PodLogs: &v1alpha1.PodLogs{
+								Selector: "name=myapp",
+							},
+						},
+						{
+							Events: &v1alpha1.Events{
+								Selector: "name=myapp",
+							},
+						},
+					},
+					Finally: []v1alpha1.Finally{
+						{
+							Command: &v1alpha1.Command{
+								Entrypoint: "echo",
+								Args:       []string{"hello"},
+							},
+						},
+
+						{
+							Script: &v1alpha1.Script{
+								Content: "echo hello",
+							},
+						},
+						{
+							Sleep: &v1alpha1.Sleep{
+								Duration: metav1.Duration{Duration: time.Duration(1) * time.Second},
+							},
+						},
+						{
+							PodLogs: &v1alpha1.PodLogs{
+								Selector: "name=myapp",
+							},
+						},
+						{
+							Events: &v1alpha1.Events{
+								Selector: "name=myapp",
+							},
+						},
+					},
+				},
+			},
+			stepReport: nil,
+			cleaner:    &cleaner{},
+		},
 	}
 
 	for _, tc := range testCases {
