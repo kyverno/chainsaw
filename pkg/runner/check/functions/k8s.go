@@ -28,23 +28,15 @@ func jpKubernetesResourceExists(arguments []any) (any, error) {
 	gvk := schema.GroupVersionKind{Group: "", Version: apiVersion, Kind: kind}
 	mapping, err := mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
 	if err != nil {
+		if apierrors.IsNotFound(err) {
+			// If the error is due to the resource not being found, return false without an error.
+			return false, nil
+		}
+		// For any other error, return it.
 		return false, err
 	}
-
-	obj := unstructured.Unstructured{}
-	obj.SetGroupVersionKind(mapping.GroupVersionKind)
-
-	err = client.List(context.TODO(), &unstructured.UnstructuredList{
-		Object: obj.Object,
-	}, ctrlclient.InNamespace(""))
-
-	if err == nil {
-		return true, nil
-	}
-	if apierrors.IsNotFound(err) {
-		return false, nil
-	}
-	return false, err
+	// If a mapping for the resource is found, it means the resource exists.
+	return mapping != nil, nil
 }
 
 func jpKubernetesExists(arguments []any) (any, error) {
