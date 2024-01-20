@@ -6,8 +6,38 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+func jpKubernetesResourceExists(arguments []any) (any, error) {
+	var client client.Client
+	var apiVersion, kind string
+	if err := getArg(arguments, 0, &client); err != nil {
+		return false, err
+	}
+	if err := getArg(arguments, 1, &apiVersion); err != nil {
+		return false, err
+	}
+	if err := getArg(arguments, 2, &kind); err != nil {
+		return false, err
+	}
+
+	mapper := client.RESTMapper()
+
+	gvk := schema.GroupVersionKind{Group: "", Version: apiVersion, Kind: kind}
+	mapping, err := mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
+	if err != nil {
+		if apierrors.IsNotFound(err) {
+			// If the error is due to the resource not being found, return false without an error.
+			return false, nil
+		}
+		// For any other error, return it.
+		return false, err
+	}
+	// If a mapping for the resource is found, it means the resource exists.
+	return mapping != nil, nil
+}
 
 func jpKubernetesExists(arguments []any) (any, error) {
 	var client client.Client
