@@ -51,7 +51,7 @@ nav:
     - more/lint.md
     - more/test-docs.md
     - more/kuttl-migration.md
-  - Rerference Documentation:
+  - Reference Documentation:
     - Command Line:
       - commands/chainsaw.md
       - commands/chainsaw_assert.md
