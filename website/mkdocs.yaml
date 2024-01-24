@@ -89,5 +89,6 @@ nav:
     - examples/array-assertions.md
     - examples/non-resource-assertion.md
     - examples/labels-selector.md
+    - examples/test-output.md
 - Blog:
   - blog/index.md
