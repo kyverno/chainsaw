@@ -1,3 +1,4 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
@@ -6,10 +7,8 @@ metadata:
 spec:
   steps:
   - catch:
-    - command:
-        args:
-        - hello
-        entrypoint: echo
+    - script:
+        content: echo hello
     - podLogs:
         name: nginx
     name: step-01
@@ -38,14 +37,10 @@ spec:
           apiVersion: v1
           kind: Pod
   - catch:
-    - command:
-        args:
-        - hello
-        entrypoint: echo
-    - command:
-        args:
-        - "1"
-        entrypoint: sleep
+    - script:
+        content: echo hello
+    - script:
+        content: sleep 1
     name: step-02
     try:
     - script:
