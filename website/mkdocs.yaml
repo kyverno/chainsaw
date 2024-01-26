@@ -51,7 +51,7 @@ nav:
     - more/lint.md
     - more/test-docs.md
     - more/kuttl-migration.md
-  - Rerference Documentation:
+  - Reference Documentation:
     - Command Line:
       - commands/chainsaw.md
       - commands/chainsaw_assert.md
@@ -89,5 +89,6 @@ nav:
     - examples/array-assertions.md
     - examples/non-resource-assertion.md
     - examples/labels-selector.md
+    - examples/test-output.md
 - Blog:
   - blog/index.md
