@@ -17,7 +17,7 @@ func TestPatchObject(t *testing.T) {
 		want     runtime.Object
 		wantErr  bool
 	}{{
-		name:     "acutal nil",
+		name:     "actual nil",
 		actual:   nil,
 		expected: &unstructured.Unstructured{},
 		wantErr:  true,

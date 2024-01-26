@@ -1,0 +1,57 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
+name: Spell Checker
+
+permissions: {}
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  spelling:
+    permissions:
+      contents: read
+      pull-requests: read
+      actions: read
+    runs-on: ubuntu-22.04
+    steps:
+      - name: check-spelling
+        uses: check-spelling/check-spelling@00c989c97749eb0cb2d256bdc55ac61b0096c6d3 # v0.0.22
+        with:
+          checkout: true
+          check_file_names: 1
+          spell_check_this: check-spelling/spell-check-this@main
+          post_comment: 0
+          use_magic_file: 1
+          report-timing: 1
+          warnings:
+            bad-regex
+            binary-file
+            deprecated-feature
+            large-file
+            limited-references
+            no-newline-at-eof
+            noisy-file
+            non-alpha-in-dictionary
+            token-is-substring
+            unexpected-line-ending
+            whitespace-in-dictionary
+            minified-file
+            unsupported-configuration
+            no-files-to-check
+          use_sarif: false
+          extra_dictionary_limit: 20
+          extra_dictionaries:
+            cspell:software-terms/dict/softwareTerms.txt
+            cspell:k8s/dict/k8s.txt
+            cspell:golang/dict/go.txt
+            cspell:html/dict/html.txt
