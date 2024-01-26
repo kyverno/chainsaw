@@ -434,20 +434,18 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 				},
 			})
 		} else if cmd.Command != "" {
-			splitCmd, err := shlex.Split(cmd.Command)
-			if err != nil {
-				return err
-			}
 			to.Catch = append(to.Catch, v1alpha1.Catch{
-				Command: &v1alpha1.Command{
-					Entrypoint:    splitCmd[0],
-					Args:          splitCmd[1:],
+				Script: &v1alpha1.Script{
+					Content:       cmd.Command,
 					SkipLogOutput: cmd.SkipLogOutput,
 				},
 			})
 		}
 	}
 	for _, collector := range from.Collectors {
+		if collector.Type == "" && collector.Cmd != "" {
+			collector.Type = "command"
+		}
 		switch collector.Type {
 		case "pod":
 			op := &v1alpha1.PodLogs{
@@ -464,14 +462,9 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			if collector.Cmd == "" {
 				return fmt.Errorf("cmd must be set when tyme is command")
 			}
-			splitCmd, err := shlex.Split(collector.Cmd)
-			if err != nil {
-				return err
-			}
 			to.Catch = append(to.Catch, v1alpha1.Catch{
-				Command: &v1alpha1.Command{
-					Entrypoint: splitCmd[0],
-					Args:       splitCmd[1:],
+				Script: &v1alpha1.Script{
+					Content: collector.Cmd,
 				},
 			})
 		case "events":

@@ -7,10 +7,8 @@ metadata:
 spec:
   steps:
   - catch:
-    - command:
-        args:
-        - hello
-        entrypoint: echo
+    - script:
+        content: echo hello
     - podLogs:
         name: nginx
     name: step-01
@@ -39,14 +37,10 @@ spec:
           apiVersion: v1
           kind: Pod
   - catch:
-    - command:
-        args:
-        - hello
-        entrypoint: echo
-    - command:
-        args:
-        - "1"
-        entrypoint: sleep
+    - script:
+        content: echo hello
+    - script:
+        content: sleep 1
     name: step-02
     try:
     - script:
