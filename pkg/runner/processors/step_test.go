@@ -175,21 +175,21 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			client: &fake.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+					obj.(*unstructured.Unstructured).Object = map[string]any{
 						"apiVersion": "v1",
 						"kind":       "Pod",
-						"metadata": map[string]interface{}{
+						"metadata": map[string]any{
 							"name": "myapp",
 							"labels": map[string]string{
 								"name": "myapp",
 							},
 						},
-						"spec": map[string]interface{}{
-							"containers": []map[string]interface{}{
+						"spec": map[string]any{
+							"containers": []map[string]any{
 								{
 									"name":  "myapp",
 									"image": "myapp:latest",
-									"resources": map[string]interface{}{
+									"resources": map[string]any{
 										"limits": map[string]string{
 											"memory": "128Mi",
 											"cpu":    "500m",
@@ -248,21 +248,21 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			client: &fake.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+					obj.(*unstructured.Unstructured).Object = map[string]any{
 						"apiVersion": "v1",
 						"kind":       "Pod",
-						"metadata": map[string]interface{}{
+						"metadata": map[string]any{
 							"name": "myapp",
 							"labels": map[string]string{
 								"name": "myapp",
 							},
 						},
-						"spec": map[string]interface{}{
-							"containers": []map[string]interface{}{
+						"spec": map[string]any{
+							"containers": []map[string]any{
 								{
 									"name":  "myapp",
 									"image": "myapp:fake",
-									"resources": map[string]interface{}{
+									"resources": map[string]any{
 										"limits": map[string]string{
 											"memory": "128Mi",
 											"cpu":    "500m",
@@ -617,10 +617,10 @@ func TestStepProcessor_Run(t *testing.T) {
 							Create: &v1alpha1.Create{
 								FileRefOrResource: v1alpha1.FileRefOrResource{
 									Resource: &unstructured.Unstructured{
-										Object: map[string]interface{}{
+										Object: map[string]any{
 											"apiVersion": "v1",
 											"kind":       "Pod",
-											"metadata": map[string]interface{}{
+											"metadata": map[string]any{
 												"name": "chainsaw",
 											},
 										},
@@ -693,21 +693,21 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			client: &fake.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+					obj.(*unstructured.Unstructured).Object = map[string]any{
 						"apiVersion": "v1",
 						"kind":       "Pod",
-						"metadata": map[string]interface{}{
+						"metadata": map[string]any{
 							"name": "myapp",
 							"labels": map[string]string{
 								"name": "myapp",
 							},
 						},
-						"spec": map[string]interface{}{
-							"containers": []map[string]interface{}{
+						"spec": map[string]any{
+							"containers": []map[string]any{
 								{
 									"name":  "myapp",
 									"image": "myapp:latest",
-									"resources": map[string]interface{}{
+									"resources": map[string]any{
 										"limits": map[string]string{
 											"memory": "128Mi",
 											"cpu":    "500m",
@@ -746,21 +746,21 @@ func TestStepProcessor_Run(t *testing.T) {
 							Assert: &v1alpha1.Assert{
 								FileRefOrCheck: v1alpha1.FileRefOrCheck{
 									Resource: &v1alpha1.Check{
-										Value: map[string]interface{}{
+										Value: map[string]any{
 											"apiVersion": "v1",
 											"kind":       "Pod",
-											"metadata": map[string]interface{}{
+											"metadata": map[string]any{
 												"name": "myapp",
 												"labels": map[string]string{
 													"name": "myapp",
 												},
 											},
-											"spec": map[string]interface{}{
-												"containers": []map[string]interface{}{
+											"spec": map[string]any{
+												"containers": []map[string]any{
 													{
 														"name":  "myapp",
 														"image": "myapp:latest",
-														"resources": map[string]interface{}{
+														"resources": map[string]any{
 															"limits": map[string]string{
 																"memory": "128Mi",
 																"cpu":    "500m",
@@ -789,10 +789,10 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			client: &fake.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+					obj.(*unstructured.Unstructured).Object = map[string]any{
 						"apiVersion": "v1",
 						"kind":       "ConfigMap",
-						"metadata": map[string]interface{}{
+						"metadata": map[string]any{
 							"name": "default",
 						},
 						"data": map[string]string{
@@ -849,22 +849,22 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			client: &fake.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					obj.(*unstructured.Unstructured).Object = map[string]interface{}{
+					obj.(*unstructured.Unstructured).Object = map[string]any{
 						"apiVersion": "v1",
 						"kind":       "Pod",
-						"metadata": map[string]interface{}{
+						"metadata": map[string]any{
 							"name":      "myapp",
 							"namespace": "chainsaw",
 							"labels": map[string]string{
 								"name": "myapp",
 							},
 						},
-						"spec": map[string]interface{}{
-							"containers": []map[string]interface{}{
+						"spec": map[string]any{
+							"containers": []map[string]any{
 								{
 									"name":  "myapp",
 									"image": "myapp:latest",
-									"resources": map[string]interface{}{
+									"resources": map[string]any{
 										"limits": map[string]string{
 											"memory": "128Mi",
 											"cpu":    "500m",
