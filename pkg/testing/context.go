@@ -18,23 +18,23 @@ type contextKey struct{}
 type tTest interface {
 	Cleanup(func())
 	Deadline() (deadline time.Time, ok bool)
-	Error(args ...interface{})
-	Errorf(format string, args ...interface{})
+	Error(args ...any)
+	Errorf(format string, args ...any)
 	Fail()
 	FailNow()
 	Failed() bool
-	Fatal(args ...interface{})
-	Fatalf(format string, args ...interface{})
+	Fatal(args ...any)
+	Fatalf(format string, args ...any)
 	Helper()
-	Log(args ...interface{})
-	Logf(format string, args ...interface{})
+	Log(args ...any)
+	Logf(format string, args ...any)
 	Name() string
 	Parallel()
 	Run(name string, f func(t *T)) bool
 	Setenv(key, value string)
-	Skip(args ...interface{})
+	Skip(args ...any)
 	SkipNow()
-	Skipf(format string, args ...interface{})
+	Skipf(format string, args ...any)
 	Skipped() bool
 	TempDir() string
 }
