@@ -89,8 +89,16 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 		if save {
 			path := filepath.Join(folder, "chainsaw-test.yaml")
 			fmt.Fprintf(out, "Saving file %s ...\n", path)
-			if err := os.WriteFile(path, data, os.ModePerm); err != nil {
-				return err
+			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+			if err != nil {
+				return fmt.Errorf("failed to open file: %w", err)
+			}
+			defer f.Close()
+			if _, err := f.WriteString("# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json\n"); err != nil {
+				return fmt.Errorf("failed to write in file: %w", err)
+			}
+			if _, err := f.Write(data); err != nil {
+				return fmt.Errorf("failed to write in file: %w", err)
 			}
 		} else {
 			fmt.Fprintln(out, string(data))
