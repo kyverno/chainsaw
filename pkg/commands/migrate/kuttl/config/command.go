@@ -5,6 +5,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	kuttlapi "github.com/kudobuilder/kuttl/pkg/apis/testharness/v1beta1"
@@ -69,9 +70,13 @@ func execute(out io.Writer, save, cleanup bool, path string) error {
 	return nil
 }
 
+func isKuttl(resource unstructured.Unstructured) bool {
+	return strings.HasPrefix(resource.GetAPIVersion(), "kuttl.dev/")
+}
+
 func migrate(out io.Writer, path string, resource unstructured.Unstructured) (*v1alpha1.Configuration, error) {
 	fmt.Fprintf(out, "Converting config %s ...\n", path)
-	if resource.GetAPIVersion() == "kuttl.dev/v1beta1" {
+	if isKuttl(resource) {
 		switch resource.GetKind() {
 		case "TestSuite":
 			configuration, err := testSuite(resource)

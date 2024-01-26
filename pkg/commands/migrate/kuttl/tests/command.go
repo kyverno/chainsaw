@@ -103,15 +103,21 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 				files = append(files, step.OtherFiles...)
 			}
 			for _, file := range files {
-				path := filepath.Join(folder, file)
-				fmt.Fprintf(out, "Deleting file %s ...\n", path)
-				if err := os.Remove(path); err != nil {
-					return err
+				if file != "" {
+					path := filepath.Join(folder, file)
+					fmt.Fprintf(out, "Deleting file %s ...\n", path)
+					if err := os.Remove(path); err != nil {
+						return err
+					}
 				}
 			}
 		}
 	}
 	return nil
+}
+
+func isKuttl(resource unstructured.Unstructured) bool {
+	return strings.HasPrefix(resource.GetAPIVersion(), "kuttl.dev/")
 }
 
 func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, folder string, save bool) error {
@@ -120,8 +126,28 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		if err != nil {
 			return err
 		}
+		needsSplit := false
+		for _, resource := range resources {
+			if isKuttl(resource) {
+				needsSplit = true
+			}
+		}
+		if !needsSplit {
+			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+				Apply: &v1alpha1.Apply{
+					FileRefOrResource: v1alpha1.FileRefOrResource{
+						FileRef: v1alpha1.FileRef{
+							File: file,
+						},
+					},
+				},
+			})
+			// no cleanup
+			s.OtherFiles[f] = ""
+			continue
+		}
 		for i, resource := range resources {
-			if resource.GetAPIVersion() == "kuttl.dev/v1beta1" {
+			if isKuttl(resource) {
 				switch resource.GetKind() {
 				case "TestStep":
 					err := testStep(&step.TestStepSpec, resource)
@@ -162,8 +188,28 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		if err != nil {
 			return err
 		}
+		needsSplit := false
+		for _, resource := range resources {
+			if isKuttl(resource) {
+				needsSplit = true
+			}
+		}
+		if !needsSplit {
+			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+				Assert: &v1alpha1.Assert{
+					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+						FileRef: v1alpha1.FileRef{
+							File: file,
+						},
+					},
+				},
+			})
+			// no cleanup
+			s.AssertFiles[f] = ""
+			continue
+		}
 		for i, resource := range resources {
-			if resource.GetAPIVersion() == "kuttl.dev/v1beta1" {
+			if isKuttl(resource) {
 				switch resource.GetKind() {
 				case "TestAssert":
 					err := testAssert(&step.TestStepSpec, resource)
@@ -198,8 +244,28 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		if err != nil {
 			return err
 		}
+		needsSplit := false
+		for _, resource := range resources {
+			if isKuttl(resource) {
+				needsSplit = true
+			}
+		}
+		if !needsSplit {
+			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+				Error: &v1alpha1.Error{
+					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+						FileRef: v1alpha1.FileRef{
+							File: file,
+						},
+					},
+				},
+			})
+			// no cleanup
+			s.ErrorFiles[f] = ""
+			continue
+		}
 		for i, resource := range resources {
-			if resource.GetAPIVersion() == "kuttl.dev/v1beta1" {
+			if isKuttl(resource) {
 				switch resource.GetKind() {
 				case "TestAssert":
 					err := testAssert(&step.TestStepSpec, resource)
@@ -247,9 +313,50 @@ func saveResource(out io.Writer, folder, file string, resource unstructured.Unst
 
 func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 	from, err := convert.To[kuttlapi.TestStep](in)
-	// TODO: verify order in kuttl
 	if err != nil {
 		return err
+	}
+	for _, operation := range from.Commands {
+		var timeout *metav1.Duration
+		if operation.Timeout != 0 {
+			timeout = &metav1.Duration{Duration: time.Second * time.Duration(operation.Timeout)}
+		}
+		if operation.Background {
+			return errors.New("found a command with background=true, this is not supported in chainsaw")
+		}
+		if operation.Namespaced {
+			return errors.New("found a command with namespaced=true, this is not supported in chainsaw")
+		}
+		if operation.IgnoreFailure {
+			return errors.New("found a command with ignoreFailure=true, this is not supported in chainsaw")
+		}
+		if operation.Script != "" {
+			to.Try = append(to.Try, v1alpha1.Operation{
+				Script: &v1alpha1.Script{
+					Timeout:       timeout,
+					Content:       operation.Script,
+					SkipLogOutput: operation.SkipLogOutput,
+				},
+			})
+		} else if operation.Command != "" {
+			split, err := shlex.Split(operation.Command)
+			if err != nil {
+				return err
+			}
+			entrypoint := split[0]
+			var args []string
+			if len(split) > 1 {
+				args = split[1:]
+			}
+			to.Try = append(to.Try, v1alpha1.Operation{
+				Command: &v1alpha1.Command{
+					Timeout:       timeout,
+					Entrypoint:    entrypoint,
+					Args:          args,
+					SkipLogOutput: operation.SkipLogOutput,
+				},
+			})
+		}
 	}
 	for _, operation := range from.Apply {
 		to.Try = append(
@@ -301,48 +408,6 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 				},
 			},
 		})
-	}
-	for _, operation := range from.Commands {
-		var timeout *metav1.Duration
-		if operation.Timeout != 0 {
-			timeout = &metav1.Duration{Duration: time.Second * time.Duration(operation.Timeout)}
-		}
-		if operation.Background {
-			return errors.New("found a command with background=true, this is not supported in chainsaw")
-		}
-		if operation.Namespaced {
-			return errors.New("found a command with namespaced=true, this is not supported in chainsaw")
-		}
-		if operation.IgnoreFailure {
-			return errors.New("found a command with ignoreFailure=true, this is not supported in chainsaw")
-		}
-		if operation.Script != "" {
-			to.Try = append(to.Try, v1alpha1.Operation{
-				Script: &v1alpha1.Script{
-					Timeout:       timeout,
-					Content:       operation.Script,
-					SkipLogOutput: operation.SkipLogOutput,
-				},
-			})
-		} else if operation.Command != "" {
-			split, err := shlex.Split(operation.Command)
-			if err != nil {
-				return err
-			}
-			entrypoint := split[0]
-			var args []string
-			if len(split) > 1 {
-				args = split[1:]
-			}
-			to.Try = append(to.Try, v1alpha1.Operation{
-				Command: &v1alpha1.Command{
-					Timeout:       timeout,
-					Entrypoint:    entrypoint,
-					Args:          args,
-					SkipLogOutput: operation.SkipLogOutput,
-				},
-			})
-		}
 	}
 	return nil
 }
