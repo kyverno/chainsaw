@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/utils/clock"
 )
@@ -50,6 +51,7 @@ type options struct {
 	forceTerminationGracePeriod metav1.Duration
 	delayBeforeCleanup          metav1.Duration
 	selector                    []string
+	noCluster                   bool
 }
 
 func Command() *cobra.Command {
@@ -185,6 +187,7 @@ func Command() *cobra.Command {
 			if len(options.selector) != 0 {
 				fmt.Fprintf(out, "- Selector %v\n", options.selector)
 			}
+			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
 			if err := fsutils.CheckFolders(options.testDirs...); err != nil {
@@ -213,11 +216,15 @@ func Command() *cobra.Command {
 			}
 			// run tests
 			fmt.Fprintln(out, "Running tests...")
-			cfg, err := restutils.Config(options.kubeConfigOverrides)
-			if err != nil {
-				return err
+			var restConfig *rest.Config
+			if !options.noCluster {
+				cfg, err := restutils.Config(options.kubeConfigOverrides)
+				if err != nil {
+					return err
+				}
+				restConfig = cfg
 			}
-			summary, err := runner.Run(cfg, clock, configuration.Spec, testToRun...)
+			summary, err := runner.Run(restConfig, clock, configuration.Spec, testToRun...)
 			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Passed  tests", summary.Passed())
@@ -258,6 +265,7 @@ func Command() *cobra.Command {
 	cmd.Flags().DurationVar(&options.forceTerminationGracePeriod.Duration, "force-termination-grace-period", 0, "If specified, overrides termination grace periods in applicable resources")
 	cmd.Flags().DurationVar(&options.delayBeforeCleanup.Duration, "cleanup-delay", 0, "Adds a delay between the time a test ends and the time cleanup starts")
 	cmd.Flags().StringSliceVar(&options.selector, "selector", []string{}, "Selector (label query) to filter on")
+	cmd.Flags().BoolVar(&options.noCluster, "no-cluster", false, "Runs without cluster")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)

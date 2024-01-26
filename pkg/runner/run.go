@@ -32,24 +32,26 @@ func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 	if config.ReportFormat != "" {
 		testsReport = report.NewTests(config.ReportName)
 	}
-
 	if len(tests) == 0 {
 		return &summary, nil
 	}
 	if err := internal.SetupFlags(config); err != nil {
 		return nil, err
 	}
-	client, err := client.New(cfg)
-	if err != nil {
-		return nil, err
+	var clusterClient client.Client
+	if cfg != nil {
+		client, err := client.New(cfg)
+		if err != nil {
+			return nil, err
+		}
+		clusterClient = runnerclient.New(client)
 	}
-	client = runnerclient.New(client)
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			processor := processors.NewTestsProcessor(config, client, clock, &summary, testsReport, tests...)
+			processor := processors.NewTestsProcessor(config, clusterClient, clock, &summary, testsReport, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx)

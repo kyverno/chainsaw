@@ -296,9 +296,13 @@ func (p *stepProcessor) commandOperation(ctx context.Context, op v1alpha1.Comman
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
+	ns := ""
+	if p.namespacer != nil {
+		ns = p.namespacer.GetNamespace()
+	}
 	return operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		operation:       opcommand.New(op, p.test.BasePath, p.namespacer.GetNamespace()),
+		operation:       opcommand.New(op, p.test.BasePath, ns),
 		operationReport: operationReport,
 	}
 }
@@ -369,9 +373,13 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, op v1alpha1.Script)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
+	ns := ""
+	if p.namespacer != nil {
+		ns = p.namespacer.GetNamespace()
+	}
 	return operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		operation:       opscript.New(op, p.test.BasePath, p.namespacer.GetNamespace()),
+		operation:       opscript.New(op, p.test.BasePath, ns),
 		operationReport: operationReport,
 	}
 }
