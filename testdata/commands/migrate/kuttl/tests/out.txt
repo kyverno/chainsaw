@@ -15,6 +15,14 @@ spec:
         name: nginx
     name: step-01
     try:
+    - script:
+        content: echo "hello world"
+        skipLogOutput: true
+    - command:
+        args:
+        - hello world
+        entrypoint: echo
+        skipLogOutput: true
     - delete:
         ref:
           apiVersion: v1
@@ -30,14 +38,6 @@ spec:
         ref:
           apiVersion: v1
           kind: Pod
-    - script:
-        content: echo "hello world"
-        skipLogOutput: true
-    - command:
-        args:
-        - hello world
-        entrypoint: echo
-        skipLogOutput: true
   - catch:
     - command:
         args:
@@ -49,6 +49,14 @@ spec:
         entrypoint: sleep
     name: step-02
     try:
+    - script:
+        content: echo "hello world"
+        skipLogOutput: true
+    - command:
+        args:
+        - hello world
+        entrypoint: echo
+        skipLogOutput: true
     - delete:
         ref:
           apiVersion: v1
@@ -64,12 +72,4 @@ spec:
         ref:
           apiVersion: v1
           kind: Pod
-    - script:
-        content: echo "hello world"
-        skipLogOutput: true
-    - command:
-        args:
-        - hello world
-        entrypoint: echo
-        skipLogOutput: true
 
