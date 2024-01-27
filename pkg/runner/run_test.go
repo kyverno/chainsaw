@@ -54,7 +54,7 @@ func TestRun(t *testing.T) {
 				ReportFormat: v1alpha1.JSONFormat,
 			},
 			restConfig: nil,
-			wantErr:    true,
+			wantErr:    false,
 		},
 		{
 			name:  "Zero Tests with JSON Report",
