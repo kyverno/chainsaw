@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test
+spec:
+  steps:
+  - name: Check bad kubectl command
+    try:
+    - script:
+        content: kubectl foo
+        check:
+          # This checks that the result of the content was an error.
+          ($error != null): true
+          # This check below ensures that the string 'top' is found in stderr or else fails
+          (contains($stderr, 'top')): true

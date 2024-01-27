@@ -62,27 +62,29 @@ func (p *testsProcessor) Run(ctx context.Context) {
 		}
 	})
 	var nspacer namespacer.Namespacer
-	if p.config.Namespace != "" {
-		namespace := client.Namespace(p.config.Namespace)
-		nspacer = namespacer.New(p.client, p.config.Namespace)
-		if err := p.client.Get(ctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
-			if !errors.IsNotFound(err) {
-				// Get doesn't log
-				logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				t.FailNow()
-			}
-			if !cleanup.Skip(p.config.SkipDelete, nil, nil) {
-				t.Cleanup(func() {
-					operation := operation{
-						continueOnError: false,
-						timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-						operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer),
-					}
-					operation.execute(ctx)
-				})
-			}
-			if err := p.client.Create(ctx, namespace.DeepCopy()); err != nil {
-				t.FailNow()
+	if p.client != nil {
+		if p.config.Namespace != "" {
+			namespace := client.Namespace(p.config.Namespace)
+			nspacer = namespacer.New(p.client, p.config.Namespace)
+			if err := p.client.Get(ctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
+				if !errors.IsNotFound(err) {
+					// Get doesn't log
+					logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+					t.FailNow()
+				}
+				if !cleanup.Skip(p.config.SkipDelete, nil, nil) {
+					t.Cleanup(func() {
+						operation := operation{
+							continueOnError: false,
+							timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
+							operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer),
+						}
+						operation.execute(ctx)
+					})
+				}
+				if err := p.client.Create(ctx, namespace.DeepCopy()); err != nil {
+					t.FailNow()
+				}
 			}
 		}
 	}
