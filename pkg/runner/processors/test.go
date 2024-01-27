@@ -106,37 +106,39 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
-	if nspacer == nil || p.test.Spec.Namespace != "" {
-		var ns corev1.Namespace
-		if p.test.Spec.Namespace != "" {
-			ns = client.Namespace(p.test.Spec.Namespace)
-		} else {
-			ns = client.PetNamespace()
+	if p.client != nil {
+		if nspacer == nil || p.test.Spec.Namespace != "" {
+			var ns corev1.Namespace
+			if p.test.Spec.Namespace != "" {
+				ns = client.Namespace(p.test.Spec.Namespace)
+			} else {
+				ns = client.PetNamespace()
+			}
+			namespace = &ns
 		}
-		namespace = &ns
-	}
-	if namespace != nil {
-		nspacer = namespacer.New(p.client, namespace.Name)
-		setupCtx := logging.IntoContext(ctx, setupLogger)
-		cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
-		if err := p.client.Get(setupCtx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
-			if !errors.IsNotFound(err) {
-				// Get doesn't log
-				setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				t.FailNow()
-			}
-			if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, nil) {
-				t.Cleanup(func() {
-					operation := operation{
-						continueOnError: false,
-						timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
-						operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
-					}
-					operation.execute(cleanupCtx)
-				})
-			}
-			if err := p.client.Create(logging.IntoContext(setupCtx, setupLogger), namespace.DeepCopy()); err != nil {
-				t.FailNow()
+		if namespace != nil {
+			nspacer = namespacer.New(p.client, namespace.Name)
+			setupCtx := logging.IntoContext(ctx, setupLogger)
+			cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
+			if err := p.client.Get(setupCtx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
+				if !errors.IsNotFound(err) {
+					// Get doesn't log
+					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+					t.FailNow()
+				}
+				if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, nil) {
+					t.Cleanup(func() {
+						operation := operation{
+							continueOnError: false,
+							timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
+							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
+						}
+						operation.execute(cleanupCtx)
+					})
+				}
+				if err := p.client.Create(logging.IntoContext(setupCtx, setupLogger), namespace.DeepCopy()); err != nil {
+					t.FailNow()
+				}
 			}
 		}
 	}
