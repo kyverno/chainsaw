@@ -1,0 +1,50 @@
+apiVersion: krew.googlecontainertools.github.com/v1alpha2
+kind: Plugin
+metadata:
+  name: chainsaw
+spec:
+  version: {{ .TagName }}
+  homepage: https://github.com/kyverno/chainsaw
+  platforms:
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: amd64
+    {{ addURIAndSha "https://github.com/kyverno/chainsaw/releases/download/{{ .TagName }}/chainsaw_darwin_amd64.tar.gz" .TagName }}
+    bin: chainsaw
+  - selector:
+      matchLabels:
+        os: darwin
+        arch: arm64
+    {{ addURIAndSha "https://github.com/kyverno/chainsaw/releases/download/{{ .TagName }}/chainsaw_darwin_arm64.tar.gz" .TagName }}
+    bin: chainsaw
+  - selector:
+      matchLabels:
+        os: linux
+        arch: amd64
+    {{ addURIAndSha "https://github.com/kyverno/chainsaw/releases/download/{{ .TagName }}/chainsaw_linux_amd64.tar.gz" .TagName }}
+    bin: chainsaw
+  - selector:
+      matchLabels:
+        os: linux
+        arch: arm64
+    {{ addURIAndSha "https://github.com/kyverno/chainsaw/releases/download/{{ .TagName }}/chainsaw_linux_arm64.tar.gz" .TagName }}
+    bin: chainsaw
+  - selector:
+      matchLabels:
+        os: windows
+        arch: amd64
+    {{ addURIAndSha "https://github.com/kyverno/chainsaw/releases/download/{{ .TagName }}/chainsaw_windows_amd64.tar.gz" .TagName }}
+    bin: chainsaw.exe
+  - selector:
+      matchLabels:
+        os: windows
+        arch: arm64
+    {{ addURIAndSha "https://github.com/kyverno/chainsaw/releases/download/{{ .TagName }}/chainsaw_windows_arm64.tar.gz" .TagName }}
+    bin: chainsaw.exe
+  shortDescription: Declarative K8s e2e testing
+  description: |
+    Usage:
+      kubectl chainsaw test --test-dir <tests folder>
+      Run tests.
+      Read more documentation at: https://kyverno.github.io/chainsaw
