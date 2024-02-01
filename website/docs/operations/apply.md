@@ -72,8 +72,8 @@ Below is an example of using an [operation check](./check.md#apply).
 !!! example "With check"
 
     ```yaml
-    # ..
- .   - apply:
+    # ...   
+    - apply:
         file: my-configmap.yaml
         expect:
         - match:
