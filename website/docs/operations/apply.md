@@ -65,61 +65,6 @@ Below is an example of using `apply` in a `Test` resource.
         # ...
     ```
 
-## Usage in `TestStep`
-
-Below is an example of using `apply` in a `TestStep` resource.
-
-!!! example "Using a file"
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - apply:
-          file: my-configmap.yaml
-      # ...
-    ```
-
-!!! example "Using an URL"
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - apply:
-          file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/step/configmap.yaml
-      # ...
-    ```
-
-!!! example "Using an inline resource"
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - apply:
-          resource:
-            apiVersion: v1
-            kind: ConfigMap
-            metadata:
-              name: chainsaw-quick-start
-            data:
-              foo: bar
-      # ...
-    ```
-
 ## Operation check
 
 Below is an example of using an [operation check](./check.md#apply).
@@ -127,8 +72,8 @@ Below is an example of using an [operation check](./check.md#apply).
 !!! example "With check"
 
     ```yaml
-    # ...
-    - apply:
+    # ..
+ .   - apply:
         file: my-configmap.yaml
         expect:
         - match:

@@ -68,61 +68,6 @@ Below is an example of using `create` in a `Test` resource.
         # ...
     ```
 
-## Usage in `TestStep`
-
-Below is an example of using `create` in a `TestStep` resource.
-
-!!! example "Using a file"
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - create:
-          file: my-configmap.yaml
-      # ...
-    ```
-
-!!! example "Using an URL"
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - create:
-          file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml
-      # ...
-    ```
-
-!!! example "Using an inline resource"
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - create:
-          resource:
-            apiVersion: v1
-            kind: ConfigMap
-            metadata:
-              name: chainsaw-quick-start
-            data:
-              foo: bar
-      # ...
-    ```
-
 ## Operation check
 
 Below is an example of using an [operation check](./check.md#create).

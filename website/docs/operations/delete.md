@@ -29,29 +29,6 @@ Below is an example of using `delete` in a `Test` resource.
         # ...
     ```
 
-## Usage in `TestStep`
-
-Below is an example of using `delete` in a `TestStep` resource.
-
-!!! example
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - delete:
-          ref:
-            apiVersion: v1
-            kind: Pod
-            namespace: default
-            name: my-test-pod
-      # ...
-    ```
-
 ## Operation check
 
 Below is an example of using an [operation check](./check.md#delete).
