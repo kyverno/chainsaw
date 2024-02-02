@@ -17,3 +17,24 @@ A test step is made of three main components used to dermine the actions Chainsa
     1. If an operation fails in the `try` statement
         1. If a `catch` statement is present, **all operations** and collectors are executed
     1. If a `finally` statement is present, **all operations** and collectors are executed
+
+## Example
+
+!!! example
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: test-example
+    spec:
+      steps:
+      - try:
+          - description: "Description of the try operation"
+            apply:
+              file: "path/to/apply.yaml"
+            assert:
+              file: "path/to/assert.yaml"
+        catch: []
+        finally: []
+    ```

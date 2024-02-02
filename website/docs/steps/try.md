@@ -25,3 +25,28 @@ A `try` statement supports all [operations](../operations/index.md):
 - [Error](../operations/error.md)
 - [Script](../operations/script.md)
 - [Sleep](../operations/sleep.md)
+
+## Example
+
+!!! example
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: try
+    spec:
+      steps:
+      - try:
+          - description: "Description of the try operation"
+            command:
+              entrypoint: "/bin/bash"
+              args: ["-c", "echo 'try block'"]
+            sleep:
+              duration: 1s
+            apply: {}
+            assert: {}
+            error: {}
+        catch: []
+        finally: []
+    ```
