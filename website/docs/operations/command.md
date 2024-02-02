@@ -27,27 +27,6 @@ Below is an example of using `command` in a `Test` resource.
         # ...
     ```
 
-## Usage in `TestStep`
-
-Below is an example of using `command` in a `TestStep` resource.
-
-!!! example
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - command:
-          entrypoint: echo
-          args:
-          - hello chainsaw
-      # ...
-    ```
-
 ## Operation check
 
 Below is an example of using an [operation check](./check.md#command).

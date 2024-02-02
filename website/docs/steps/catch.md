@@ -28,22 +28,20 @@ A `catch` statement supports all [collectors](../collectors/index.md):
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
+    kind: Test
     metadata:
-      name: example
+      name: catch
     spec:
-      try:
-      #...
-      catch:
-      # collect events in the test namespace
-      - events: {}
-      # collect pods logs in the test namespace
-      - podLogs: {}
-      # take a small break
-      - sleep:
-          duration: 15s
-      # execute a custom script
-      - script:
-          content: echo "An error has occured"
-      # ...
+      steps:
+      - try: []
+        catch:
+          - description: "Description of the catch operation"
+            command:
+              entrypoint: "/bin/bash"
+              args: ["-c", "echo 'catch block'"]
+            events: {}
+            sleep:
+              duration: 1s
+            podLogs: {}
+        finally: []
     ```

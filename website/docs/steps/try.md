@@ -32,22 +32,21 @@ A `try` statement supports all [operations](../operations/index.md):
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
+    kind: Test
     metadata:
-      name: example
+      name: try
     spec:
-      try:
-      # apply a couple of resources in the cluster
-      - apply:
-          file: resources.yaml
-      # evaluate a couple of assertions
-      - assert:
-          file: asserts.yaml
-      # take a small break
-      - sleep:
-          duration: 15s
-      # execute a custom script
-      - script:
-          content: echo "Hello Chainsaw"
-      # ...
+      steps:
+      - try:
+          - description: "Description of the try operation"
+            command:
+              entrypoint: "/bin/bash"
+              args: ["-c", "echo 'try block'"]
+            sleep:
+              duration: 1s
+            apply: {}
+            assert: {}
+            error: {}
+        catch: []
+        finally: []
     ```

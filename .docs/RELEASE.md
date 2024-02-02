@@ -38,6 +38,10 @@ git tag $TAG -m "tag $TAG" -a
 git push origin $TAG
 ```
 
+## Misc
+
+- Add to the drop-down list in the bug template
+
 ## Publish GitHub action
 
 Once the release is cut, bump the default version in the GH action [here](https://github.com/kyverno/action-install-chainsaw/blob/main/action.yml).
