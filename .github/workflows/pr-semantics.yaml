@@ -12,8 +12,8 @@
 
 # Example:
 # test(runner): Add test for the runner
-# ^    ^    ^
-# |    |    |__ Subject
+# ^    ^        ^
+# |    |        |__ Subject
 # |    |_______ Scope
 # |____________ Type
 
