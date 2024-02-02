@@ -20,24 +20,21 @@ A test step is made of three main components used to dermine the actions Chainsa
 
 ## Example
 
-The test step below highlights the basic structure of test step containing all `try`, `catch` and `finally` statements.
-
 !!! example
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
+    kind: Test
     metadata:
-      name: example
+      name: test-example
     spec:
-      # try to apply a couple of resources
-      try:
-      - apply:
-          file: resources.yaml
-      # in case of error, collect pod logs
-      catch:
-      - podLogs: {}
-      # in all cases, collect events in the test namespace
-      finally:
-      - events: {}
+      steps:
+      - try:
+          - description: "Description of the try operation"
+            apply:
+              file: "path/to/apply.yaml"
+            assert:
+              file: "path/to/assert.yaml"
+        catch: []
+        finally: []
     ```

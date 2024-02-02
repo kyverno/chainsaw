@@ -20,20 +20,22 @@ Join our slack channel [#kyverno-chainsaw](https://kubernetes.slack.com/archives
 
 ## Community Meetings
 
-This is a public, weekly for Kyverno-Chainsaw maintainers to make announcements and provide project updates, and request input and feedback. This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
+To attend our community meetings, join the [Chainsaw group](https://groups.google.com/g/kyverno-chainsaw).
+You will then be sent a meeting invite and will have access to the agenda and meeting notes.
+Any member may suggest topics for discussion.
+
+This is a public, weekly for Kyverno-Chainsaw maintainers to make announcements and provide project updates, and request input and feedback.
+This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
 
 Weekly every Thursday at 2:00 PM UTC
 
+- [Chainsaw group](https://groups.google.com/g/kyverno-chainsaw)
 - [Zoom Meeting](https://zoom.us/j/99815137900)
 - [Agenda and meeting notes](https://docs.google.com/document/d/1csszreCpCyPsls4S_GuM0o_D1W-N7vQqQcyd4lxSkJk)
 
 ## RoadMap
 
 For detailed information on our planned features and upcoming updates, please [view our Roadmap](https://github.com/kyverno/chainsaw/blob/main/ROADMAP.md).
-
-## Community, Events, Discussion, Contribution, and Support
-
-Learn more on how to engage with the [Kyverno](https://kyverno.io) community on our [community page](https://kyverno.io/community/).
 
 ## Contributing
 
@@ -45,4 +47,4 @@ Please read the [contributing guide](https://github.com/kyverno/kyverno/blob/mai
 
 ## Adopters
 
-If you are using Chainsaw and want to share it publicly we always appreciate a bit of support. Pull requests to the [ADOPTERS LIST](https://github.com/kyverno/chainsaw/blob/main/ADOPTERS.md) will put a smile on our face :smile:.
+If you are using Chainsaw and want to share it publicly we always appreciate a bit of support. Pull requests to the [ADOPTERS LIST](https://github.com/kyverno/chainsaw/blob/main/ADOPTERS.md) will put a smile on our faces :smile:

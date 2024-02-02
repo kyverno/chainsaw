@@ -24,22 +24,3 @@ Below is an example of using `sleep` in a `Test` resource.
             duration: 30s
         # ...
     ```
-
-## Usage in `TestStep`
-
-Below is an example of using `sleep` in a `TestStep` resource.
-
-!!! example
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - sleep:
-          duration: 30s
-      # ...
-    ```

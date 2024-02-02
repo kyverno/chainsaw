@@ -8,7 +8,7 @@
 [![Release docs](https://github.com/kyverno/chainsaw/actions/workflows/docs-release.yaml/badge.svg)](https://github.com/kyverno/chainsaw/actions/workflows/docs-release.yaml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyverno/chainsaw)](https://goreportcard.com/report/github.com/kyverno/chainsaw)
 [![License: Apache-2.0](https://img.shields.io/github/license/kyverno/chainsaw?color=blue)](https://github.com/kyverno/chainsaw/blob/main/LICENSE)
-[![codecov](https://codecov.io/gh/kyverno/chainsaw/branch/main/graph/badge.svg)](https://app.codecov.io/gh/kyverno/chainsaw/branch/main)
+[![Codecov](https://codecov.io/gh/kyverno/chainsaw/branch/main/graph/badge.svg)](https://app.codecov.io/gh/kyverno/chainsaw/branch/main)
 
 <a href="https://kyverno.github.io/chainsaw" rel="https://kyverno.github.io/chainsaw">![logo](.assets/kyverno-chainsaw-horizontal.png)</a>
 
@@ -33,6 +33,7 @@ Built under the Kyverno umbrella, you can use the Kyverno Chainsaw **Slack chann
 - [Kyverno Chainsaw - The ultimate end-to-end testing tool!](https://kyverno.io/blog/2023/12/12/kyverno-chainsaw-the-ultimate-end-to-end-testing-tool/)
 - [Kyverno Chainsaw - Exploring the Power of Assertion Trees!](https://kyverno.io/blog/2023/12/13/kyverno-chainsaw-exploring-the-power-of-assertion-trees/)
 - [Nirmata Office Hours for Kyverno- Episode 9- Demonstrate Kyverno Chainsaw](https://www.youtube.com/watch?v=IrIteTTjlbU)
+- [Kubebuilder Community Meeting - February 1, 2024](https://www.youtube.com/watch?v=Ejof-wtAdQM)
 
 ## Getting Started
 
@@ -42,9 +43,20 @@ Please refer to the [Getting Started](https://kyverno.github.io/chainsaw/latest/
 
 For detailed information on our planned features and upcoming updates, please [view our Roadmap](./ROADMAP.md).
 
-## Community, Events, Discussion, Contribution, and Support
+## Community Meetings
 
-Learn more on how to engage with the [Kyverno](https://kyverno.io) community on our [community page](https://kyverno.io/community/).
+To attend our community meetings, join the [Chainsaw group](https://groups.google.com/g/kyverno-chainsaw).
+You will then be sent a meeting invite and will have access to the agenda and meeting notes.
+Any member may suggest topics for discussion.
+
+This is a public, weekly for Kyverno-Chainsaw maintainers to make announcements and provide project updates, and request input and feedback.
+This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
+
+Weekly every Thursday at 2:00 PM UTC
+
+- [Chainsaw group](https://groups.google.com/g/kyverno-chainsaw)
+- [Zoom Meeting](https://zoom.us/j/99815137900)
+- [Agenda and meeting notes](https://docs.google.com/document/d/1csszreCpCyPsls4S_GuM0o_D1W-N7vQqQcyd4lxSkJk)
 
 ## Contributions
 

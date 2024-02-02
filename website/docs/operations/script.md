@@ -26,26 +26,6 @@ Below is an example of using `script` in a `Test` resource.
         # ...
     ```
 
-## Usage in `TestStep`
-
-Below is an example of using `script` in a `TestStep` resource.
-
-!!! example
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
-    metadata:
-      name: example
-    spec:
-      try:
-      # ...
-      - script:
-          content: |
-            echo "hello chainsaw"
-      # ...
-    ```
-
 ## Operation check
 
 Below is an example of using an [operation check](./check.md#script).

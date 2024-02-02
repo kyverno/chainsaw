@@ -26,24 +26,20 @@ A `finally` statement supports all [collectors](../collectors/index.md):
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: TestStep
+    kind: Test
     metadata:
-      name: example
+      name: finally
     spec:
-      try:
-      #...
-      catch:
-      #...
-      finally:
-      # collect events in the test namespace
-      - events: {}
-      # collect pods logs in the test namespace
-      - podLogs: {}
-      # take a small break
-      - sleep:
-          duration: 15s
-      # execute a custom script
-      - script:
-          content: echo "That's all folks"
-      # ...
+      steps:
+      - try: []
+        catch: []
+        finally:
+          - description: "Description of the finally operation"
+            command:
+              entrypoint: "/bin/bash"
+              args: ["-c", "echo 'finally block'"]
+            events: {}
+            sleep:
+              duration: 1s
+            podLogs: {}
     ```
