@@ -24,10 +24,10 @@ Release notes for `TODO`.
 - Fixed a couple of kuttl to chainsaw migration bugs
 
 ## 📚 Docs 📚
+
 - Remove TestStep reference examples
 
 ## 🎸 Misc 🎸
+
 - Added makefile target to check go code coverage
 - Added CI to check PR semantics
-  
--->
