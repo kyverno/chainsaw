@@ -17,23 +17,41 @@ func TestLoad(t *testing.T) {
 		fileName    string
 		expectError bool
 		expectedLen int
-	}{{
-		fileName:    filepath.Join(baseDir, "valid.yaml"),
-		expectError: false,
-		expectedLen: 2,
-	}, {
-		fileName:    filepath.Join(baseDir, "empty.yaml"),
-		expectError: true,
-		expectedLen: 0,
-	}, {
-		fileName:    filepath.Join(baseDir, "invalid.yaml"),
-		expectError: true,
-		expectedLen: 0,
-	}, {
-		fileName:    filepath.Join(baseDir, "nonexistent.yaml"),
-		expectError: true,
-		expectedLen: 0,
-	}}
+	}{
+		{
+			fileName:    filepath.Join(baseDir, "valid.yaml"),
+			expectError: false,
+			expectedLen: 2,
+		}, {
+			fileName:    filepath.Join(baseDir, "empty.yaml"),
+			expectError: true,
+			expectedLen: 0,
+		}, {
+			fileName:    filepath.Join(baseDir, "invalid.yaml"),
+			expectError: true,
+			expectedLen: 0,
+		}, {
+			fileName:    filepath.Join(baseDir, "nonexistent.yaml"),
+			expectError: true,
+			expectedLen: 0,
+		}, {
+			fileName:    filepath.Join(baseDir, "folder-valid"),
+			expectError: false,
+			expectedLen: 3,
+		}, {
+			fileName:    filepath.Join(baseDir, "folder-invalid"),
+			expectError: true,
+			expectedLen: 0,
+		}, {
+			fileName:    filepath.Join(baseDir, "folder-empty"),
+			expectError: true,
+			expectedLen: 0,
+		}, {
+			fileName:    filepath.Join(baseDir, "folder-nonexistent"),
+			expectError: true,
+			expectedLen: 0,
+		},
+	}
 	for _, tt := range tests {
 		resources, err := Load(tt.fileName, true)
 		if !tt.expectError {
