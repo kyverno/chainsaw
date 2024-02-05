@@ -22,7 +22,7 @@ type mainstart interface {
 	Run() int
 }
 
-func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, tests ...discovery.Test) (*summary.Summary, error) {
+func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, values map[string]any, tests ...discovery.Test) (*summary.Summary, error) {
 	return run(cfg, clock, config, nil, tests...)
 }
 
