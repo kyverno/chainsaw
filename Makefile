@@ -154,7 +154,7 @@ codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas
 .PHONY: codegen-tests-catalog
 codegen-tests-catalog: $(CLI_BIN) ## Generate tests catalog files
 	@echo Generate tests catalog... >&2
-	@$(CLI_BIN) build docs --test-dir ./testdata/e2e --catalog ./testdata/e2e/examples/CATALOG.md
+	@./$(CLI_BIN) build docs --test-dir ./testdata/e2e --catalog ./testdata/e2e/examples/CATALOG.md
 
 .PHONY: codegen
 codegen: ## Rebuild all generated code and docs
