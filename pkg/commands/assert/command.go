@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/resource"
@@ -69,6 +70,6 @@ func Command() *cobra.Command {
 func assert(options options, client client.Client, resource unstructured.Unstructured, namespacer namespacer.Namespacer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), options.timeout.Duration)
 	defer cancel()
-	op := opassert.New(client, resource, namespacer)
+	op := opassert.New(client, resource, namespacer, binding.NewBindings())
 	return op.Exec(ctx)
 }

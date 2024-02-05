@@ -4,6 +4,7 @@ import (
 	"context"
 	"sync/atomic"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -32,6 +33,7 @@ func NewTestsProcessor(
 	clock clock.PassiveClock,
 	summary *summary.Summary,
 	testsReport *report.TestsReport,
+	bindings binding.Bindings,
 	tests ...discovery.Test,
 ) TestsProcessor {
 	return &testsProcessor{
@@ -40,17 +42,20 @@ func NewTestsProcessor(
 		clock:       clock,
 		summary:     summary,
 		testsReport: testsReport,
+		bindings:    bindings,
 		tests:       tests,
 	}
 }
 
 type testsProcessor struct {
-	config         v1alpha1.ConfigurationSpec
-	client         client.Client
-	clock          clock.PassiveClock
-	summary        *summary.Summary
-	testsReport    *report.TestsReport
-	tests          []discovery.Test
+	config      v1alpha1.ConfigurationSpec
+	client      client.Client
+	clock       clock.PassiveClock
+	summary     *summary.Summary
+	testsReport *report.TestsReport
+	bindings    binding.Bindings
+	tests       []discovery.Test
+	// state
 	shouldFailFast atomic.Bool
 }
 
@@ -77,7 +82,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer),
+							operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer, p.bindings),
 						}
 						operation.execute(ctx)
 					})
@@ -112,5 +117,5 @@ func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor 
 	if p.testsReport != nil {
 		p.testsReport.AddTest(testReport)
 	}
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast)
+	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast, p.bindings)
 }

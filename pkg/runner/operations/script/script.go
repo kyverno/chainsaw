@@ -19,13 +19,23 @@ type operation struct {
 	script    v1alpha1.Script
 	basePath  string
 	namespace string
+	bindings  binding.Bindings
 }
 
-func New(script v1alpha1.Script, basePath string, namespace string) operations.Operation {
+func New(
+	script v1alpha1.Script,
+	basePath string,
+	namespace string,
+	bindings binding.Bindings,
+) operations.Operation {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	return &operation{
 		script:    script,
 		basePath:  basePath,
 		namespace: namespace,
+		bindings:  bindings,
 	}
 }
 
@@ -74,14 +84,13 @@ func (o *operation) execute(ctx context.Context, cmd *exec.Cmd) error {
 	if o.script.Check == nil || o.script.Check.Value == nil {
 		return err
 	}
-	bindings := binding.NewBindings()
+	bindings := o.bindings.Register("$stdout", binding.NewBinding(output.Out()))
+	bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {
 		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
-	bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
-	bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
 	if errs, err := check.Check(ctx, nil, bindings, o.script.Check); err != nil {
 		return err
 	} else {

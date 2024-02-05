@@ -53,6 +53,7 @@ chainsaw test [flags]... [test directories]...
       --skip-delete                               If set, do not delete the resources after running the tests
       --test-dir stringArray                      Directories containing test cases to run
       --test-file string                          Name of the test file (default "chainsaw-test.yaml")
+      --values strings                            Values passed to the tests
 ```
 
 ### SEE ALSO
