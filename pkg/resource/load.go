@@ -22,18 +22,29 @@ type (
 )
 
 func Load(path string, manifest bool) ([]unstructured.Unstructured, error) {
-	content, err := os.ReadFile(filepath.Clean(path))
+	var resources []unstructured.Unstructured
+	matchingFiles, err := filepath.Glob(path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to match files \"%s\": %v", path, err)
 	}
-	tests, err := Parse(content, manifest)
-	if err != nil {
-		return nil, err
+	if len(matchingFiles) == 0 {
+		return nil, fmt.Errorf("no files found matching path: %s", path)
 	}
-	if len(tests) == 0 {
-		return nil, fmt.Errorf("found no resource in %s", path)
+	for _, file := range matchingFiles {
+		content, err := os.ReadFile(file)
+		if err != nil {
+			return nil, err
+		}
+		tests, err := Parse(content, manifest)
+		if err != nil {
+			return nil, err
+		}
+		if len(tests) == 0 {
+			return nil, fmt.Errorf("found no resource in %s", file)
+		}
+		resources = append(resources, tests...)
 	}
-	return tests, nil
+	return resources, nil
 }
 
 func LoadFromURI(url *url.URL, manifest bool) ([]unstructured.Unstructured, error) {

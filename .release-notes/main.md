@@ -16,6 +16,7 @@ Release notes for `TODO`.
 
 - Added support for running chainsaw without a Kubernetes cluster
 - Automatically add json schemas when converting tests from kuttl to chainsaw
+- Added support for glob patterns in operation `file` i.e. filepath
 - Added support for passing arbitrary values when invoking `chainsaw test`
 
 ## 🔧 Fixes 🔧
@@ -32,3 +33,4 @@ Release notes for `TODO`.
 
 - Added kubebuilder community recording link where chainsaw was presented
 - Added a `MAINTAINERS.md` file
+- Added CI to check PR semantics
