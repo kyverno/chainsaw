@@ -9,10 +9,10 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-func Load(paths ...string) (map[string]interface{}, error) {
-	base := map[string]interface{}{}
+func Load(paths ...string) (map[string]any, error) {
+	base := map[string]any{}
 	for _, path := range paths {
-		currentMap := map[string]interface{}{}
+		currentMap := map[string]any{}
 		bytes, err := readFile(path)
 		if err != nil {
 			return nil, err
@@ -25,15 +25,15 @@ func Load(paths ...string) (map[string]interface{}, error) {
 	return base, nil
 }
 
-func mergeMaps(a, b map[string]interface{}) map[string]interface{} {
-	out := make(map[string]interface{}, len(a))
+func mergeMaps(a, b map[string]any) map[string]any {
+	out := make(map[string]any, len(a))
 	for k, v := range a {
 		out[k] = v
 	}
 	for k, v := range b {
-		if v, ok := v.(map[string]interface{}); ok {
+		if v, ok := v.(map[string]any); ok {
 			if bv, ok := out[k]; ok {
-				if bv, ok := bv.(map[string]interface{}); ok {
+				if bv, ok := bv.(map[string]any); ok {
 					out[k] = mergeMaps(bv, v)
 					continue
 				}

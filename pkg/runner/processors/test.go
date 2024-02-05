@@ -135,7 +135,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
+							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, p.bindings),
 						}
 						operation.execute(cleanupCtx)
 					})
@@ -169,5 +169,5 @@ func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, clean
 	if p.testReport != nil {
 		p.testReport.AddTestStep(stepReport)
 	}
-	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner)
+	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner, p.bindings)
 }

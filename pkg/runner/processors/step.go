@@ -269,7 +269,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) (
 		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
+			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), p.bindings, op.Expect...),
 		})
 	}
 	return ops, nil
@@ -288,7 +288,7 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert)
 	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:         timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
-			operation:       opassert.New(p.client, resource, p.namespacer),
+			operation:       opassert.New(p.client, resource, p.namespacer, p.bindings),
 			operationReport: operationReport,
 		})
 	}
@@ -306,7 +306,7 @@ func (p *stepProcessor) commandOperation(ctx context.Context, op v1alpha1.Comman
 	}
 	return operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		operation:       opcommand.New(op, p.test.BasePath, ns),
+		operation:       opcommand.New(op, p.test.BasePath, ns, p.bindings),
 		operationReport: operationReport,
 	}
 }
@@ -328,7 +328,7 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create)
 		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), op.Expect...),
+			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), p.bindings, op.Expect...),
 		})
 	}
 	return ops, nil
@@ -347,7 +347,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete)
 	}
 	return &operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
-		operation:       opdelete.New(p.client, resource, p.namespacer, op.Expect...),
+		operation:       opdelete.New(p.client, resource, p.namespacer, p.bindings, op.Expect...),
 		operationReport: operationReport,
 	}, nil
 }
@@ -365,7 +365,7 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) (
 	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:         timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
-			operation:       operror.New(p.client, resource, p.namespacer),
+			operation:       operror.New(p.client, resource, p.namespacer, p.bindings),
 			operationReport: operationReport,
 		})
 	}
@@ -383,7 +383,7 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, op v1alpha1.Script)
 	}
 	return operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		operation:       opscript.New(op, p.test.BasePath, ns),
+		operation:       opscript.New(op, p.test.BasePath, ns, p.bindings),
 		operationReport: operationReport,
 	}
 }

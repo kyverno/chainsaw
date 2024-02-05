@@ -160,6 +160,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				tc.clock,
 				tc.summary,
 				tc.testsReport,
+				nil,
 				tc.tests...,
 			)
 			nt := testing.MockT{}

@@ -30,9 +30,7 @@ func Run(
 	values map[string]any,
 	tests ...discovery.Test,
 ) (*summary.Summary, error) {
-	bindings := binding.NewBindings()
-	bindings = bindings.Register("$values", binding.NewBinding(values))
-	return run(cfg, clock, config, nil, bindings, tests...)
+	return run(cfg, clock, config, nil, values, tests...)
 }
 
 func run(
@@ -40,7 +38,7 @@ func run(
 	clock clock.PassiveClock,
 	config v1alpha1.ConfigurationSpec,
 	m mainstart,
-	bindings binding.Bindings,
+	values map[string]any,
 	tests ...discovery.Test,
 ) (*summary.Summary, error) {
 	var summary summary.Summary
@@ -54,6 +52,8 @@ func run(
 	if err := internal.SetupFlags(config); err != nil {
 		return nil, err
 	}
+	bindings := binding.NewBindings()
+	bindings = bindings.Register("$values", binding.NewBinding(values))
 	var clusterClient client.Client
 	if cfg != nil {
 		client, err := client.New(cfg)
@@ -61,6 +61,7 @@ func run(
 			return nil, err
 		}
 		clusterClient = runnerclient.New(client)
+		bindings = bindings.Register("$client", binding.NewBinding(clusterClient))
 	}
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",

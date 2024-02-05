@@ -82,7 +82,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer),
+							operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer, p.bindings),
 						}
 						operation.execute(ctx)
 					})
@@ -117,5 +117,5 @@ func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor 
 	if p.testsReport != nil {
 		p.testsReport.AddTest(testReport)
 	}
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast)
+	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast, p.bindings)
 }

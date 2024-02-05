@@ -28,6 +28,9 @@ func New(
 	namespace string,
 	bindings binding.Bindings,
 ) operations.Operation {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	return &operation{
 		script:    script,
 		basePath:  basePath,

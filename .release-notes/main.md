@@ -16,6 +16,7 @@ Release notes for `TODO`.
 
 - Added support for running chainsaw without a Kubernetes cluster
 - Automatically add json schemas when converting tests from kuttl to chainsaw
+- Added support for passing arbitrary values when invoking `chainsaw test`
 
 ## 🔧 Fixes 🔧
 

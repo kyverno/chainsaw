@@ -18,13 +18,13 @@ func RootCommand() *cobra.Command {
 	cmd := root.Command()
 	cmd.AddCommand(
 		assert.Command(),
+		build.Command(),
 		create.Command(),
 		docs.Command(),
 		export.Command(),
-		build.Command(),
+		lint.Command(),
 		migrate.Command(),
 		test.Command(),
-		lint.Command(),
 		version.Command(),
 	)
 	return cmd

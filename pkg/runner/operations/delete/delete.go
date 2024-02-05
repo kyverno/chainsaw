@@ -32,6 +32,9 @@ func New(
 	bindings binding.Bindings,
 	expect ...v1alpha1.Expectation,
 ) operations.Operation {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	return &operation{
 		client:     client,
 		obj:        obj,
@@ -121,7 +124,7 @@ func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.U
 }
 
 func (o *operation) handleCheck(ctx context.Context, resource unstructured.Unstructured, err error) error {
-	bindings := o.bindings.Register("$client", binding.NewBinding(o.client))
+	bindings := o.bindings
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {

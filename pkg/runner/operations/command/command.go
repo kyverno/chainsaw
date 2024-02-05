@@ -24,6 +24,9 @@ type operation struct {
 }
 
 func New(command v1alpha1.Command, basePath string, namespace string, bindings binding.Bindings) operations.Operation {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	return &operation{
 		command:   command,
 		basePath:  basePath,
