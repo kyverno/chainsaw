@@ -23,16 +23,13 @@ type (
 
 func Load(path string, manifest bool) ([]unstructured.Unstructured, error) {
 	var resources []unstructured.Unstructured
-
 	matchingFiles, err := filepath.Glob(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to match files \"%s\": %v", path, err)
 	}
-
 	if len(matchingFiles) == 0 {
 		return nil, fmt.Errorf("no files found matching path: %s", path)
 	}
-
 	for _, file := range matchingFiles {
 		content, err := os.ReadFile(file)
 		if err != nil {
