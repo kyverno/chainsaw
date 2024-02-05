@@ -189,6 +189,9 @@ func Command() *cobra.Command {
 			if len(options.selector) != 0 {
 				fmt.Fprintf(out, "- Selector %v\n", options.selector)
 			}
+			if len(options.values) != 0 {
+				fmt.Fprintf(out, "- Values %v\n", options.values)
+			}
 			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")

@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"path/filepath"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -46,6 +47,7 @@ func NewStepProcessor(
 	step v1alpha1.TestSpecStep,
 	stepReport *report.TestSpecStepReport,
 	cleaner *cleaner,
+	bindings binding.Bindings,
 ) StepProcessor {
 	return &stepProcessor{
 		config:     config,
@@ -55,8 +57,9 @@ func NewStepProcessor(
 		test:       test,
 		step:       step,
 		stepReport: stepReport,
-		timeouts:   config.Timeouts.Combine(test.Spec.Timeouts).Combine(step.Timeouts),
 		cleaner:    cleaner,
+		bindings:   bindings,
+		timeouts:   config.Timeouts.Combine(test.Spec.Timeouts).Combine(step.Timeouts),
 	}
 }
 
@@ -68,8 +71,9 @@ type stepProcessor struct {
 	test       discovery.Test
 	step       v1alpha1.TestSpecStep
 	stepReport *report.TestSpecStepReport
-	timeouts   v1alpha1.Timeouts
 	cleaner    *cleaner
+	bindings   binding.Bindings
+	timeouts   v1alpha1.Timeouts
 }
 
 func (p *stepProcessor) Run(ctx context.Context) {

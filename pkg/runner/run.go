@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -22,11 +23,26 @@ type mainstart interface {
 	Run() int
 }
 
-func Run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, values map[string]any, tests ...discovery.Test) (*summary.Summary, error) {
-	return run(cfg, clock, config, nil, tests...)
+func Run(
+	cfg *rest.Config,
+	clock clock.PassiveClock,
+	config v1alpha1.ConfigurationSpec,
+	values map[string]any,
+	tests ...discovery.Test,
+) (*summary.Summary, error) {
+	bindings := binding.NewBindings()
+	bindings = bindings.Register("$values", binding.NewBinding(values))
+	return run(cfg, clock, config, nil, bindings, tests...)
 }
 
-func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.ConfigurationSpec, m mainstart, tests ...discovery.Test) (*summary.Summary, error) {
+func run(
+	cfg *rest.Config,
+	clock clock.PassiveClock,
+	config v1alpha1.ConfigurationSpec,
+	m mainstart,
+	bindings binding.Bindings,
+	tests ...discovery.Test,
+) (*summary.Summary, error) {
 	var summary summary.Summary
 	var testsReport *report.TestsReport
 	if config.ReportFormat != "" {
@@ -51,7 +67,7 @@ func run(cfg *rest.Config, clock clock.PassiveClock, config v1alpha1.Configurati
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			processor := processors.NewTestsProcessor(config, clusterClient, clock, &summary, testsReport, tests...)
+			processor := processors.NewTestsProcessor(config, clusterClient, clock, &summary, testsReport, bindings, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx)

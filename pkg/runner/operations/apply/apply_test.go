@@ -298,6 +298,7 @@ func Test_apply(t *testing.T) {
 				tt.object,
 				nil,
 				nil,
+				nil,
 				tt.expect...,
 			)
 			err := operation.Exec(ctx)

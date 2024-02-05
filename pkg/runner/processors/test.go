@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync/atomic"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -35,6 +36,7 @@ func NewTestProcessor(
 	testReport *report.TestReport,
 	test discovery.Test,
 	shouldFailFast *atomic.Bool,
+	bindings binding.Bindings,
 ) TestProcessor {
 	return &testProcessor{
 		config:         config,
@@ -44,6 +46,7 @@ func NewTestProcessor(
 		testReport:     testReport,
 		test:           test,
 		shouldFailFast: shouldFailFast,
+		bindings:       bindings,
 		timeouts:       config.Timeouts.Combine(test.Spec.Timeouts),
 	}
 }
@@ -56,6 +59,7 @@ type testProcessor struct {
 	testReport     *report.TestReport
 	test           discovery.Test
 	shouldFailFast *atomic.Bool
+	bindings       binding.Bindings
 	timeouts       v1alpha1.Timeouts
 }
 

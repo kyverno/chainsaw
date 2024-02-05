@@ -22,13 +22,20 @@ type operation struct {
 	client     client.Client
 	expected   unstructured.Unstructured
 	namespacer namespacer.Namespacer
+	bindings   binding.Bindings
 }
 
-func New(client client.Client, expected unstructured.Unstructured, namespacer namespacer.Namespacer) operations.Operation {
+func New(
+	client client.Client,
+	expected unstructured.Unstructured,
+	namespacer namespacer.Namespacer,
+	bindings binding.Bindings,
+) operations.Operation {
 	return &operation{
 		client:     client,
 		expected:   expected,
 		namespacer: namespacer,
+		bindings:   bindings,
 	}
 }
 
@@ -48,8 +55,7 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 
 func (o *operation) execute(ctx context.Context) error {
 	var lastErrs []error
-	bindings := binding.NewBindings()
-	bindings = bindings.Register("$client", binding.NewBinding(o.client))
+	bindings := o.bindings.Register("$client", binding.NewBinding(o.client))
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
 		defer func() {

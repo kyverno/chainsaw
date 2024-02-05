@@ -21,14 +21,22 @@ type operation struct {
 	client     client.Client
 	obj        unstructured.Unstructured
 	namespacer namespacer.Namespacer
+	bindings   binding.Bindings
 	expect     []v1alpha1.Expectation
 }
 
-func New(client client.Client, obj unstructured.Unstructured, namespacer namespacer.Namespacer, expect ...v1alpha1.Expectation) operations.Operation {
+func New(
+	client client.Client,
+	obj unstructured.Unstructured,
+	namespacer namespacer.Namespacer,
+	bindings binding.Bindings,
+	expect ...v1alpha1.Expectation,
+) operations.Operation {
 	return &operation{
 		client:     client,
 		obj:        obj,
 		namespacer: namespacer,
+		bindings:   bindings,
 		expect:     expect,
 	}
 }
@@ -113,8 +121,7 @@ func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.U
 }
 
 func (o *operation) handleCheck(ctx context.Context, resource unstructured.Unstructured, err error) error {
-	bindings := binding.NewBindings()
-	bindings = bindings.Register("$client", binding.NewBinding(o.client))
+	bindings := o.bindings.Register("$client", binding.NewBinding(o.client))
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {

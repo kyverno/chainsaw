@@ -20,13 +20,15 @@ type operation struct {
 	command   v1alpha1.Command
 	basePath  string
 	namespace string
+	bindings  binding.Bindings
 }
 
-func New(command v1alpha1.Command, basePath string, namespace string) operations.Operation {
+func New(command v1alpha1.Command, basePath string, namespace string, bindings binding.Bindings) operations.Operation {
 	return &operation{
 		command:   command,
 		basePath:  basePath,
 		namespace: namespace,
+		bindings:  bindings,
 	}
 }
 
@@ -76,14 +78,13 @@ func (o *operation) execute(ctx context.Context, cmd *exec.Cmd) error {
 	if o.command.Check == nil || o.command.Check.Value == nil {
 		return err
 	}
-	bindings := binding.NewBindings()
+	bindings := o.bindings.Register("$stdout", binding.NewBinding(output.Out()))
+	bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {
 		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
-	bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
-	bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
 	if errs, err := check.Check(ctx, nil, bindings, o.command.Check); err != nil {
 		return err
 	} else {
