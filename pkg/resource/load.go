@@ -24,32 +24,28 @@ type (
 func Load(path string, manifest bool) ([]unstructured.Unstructured, error) {
 	var resources []unstructured.Unstructured
 
-	err := filepath.Walk(filepath.Clean(path), func(path string, info os.FileInfo, err error) error {
+	matchingFiles, err := filepath.Glob(path)
+	if err != nil {
+		return nil, fmt.Errorf("failed to match files \"%s\": %v", path, err)
+	}
+
+	if len(matchingFiles) == 0 {
+		return nil, fmt.Errorf("no files found matching path: %s", path)
+	}
+
+	for _, file := range matchingFiles {
+		content, err := os.ReadFile(file)
 		if err != nil {
-			return err
-		}
-		if info.IsDir() {
-			return nil
-		}
-		content, err := os.ReadFile(path)
-		if err != nil {
-			return err
+			return nil, err
 		}
 		tests, err := Parse(content, manifest)
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if len(tests) == 0 {
-			return fmt.Errorf("found no resource in %s", path)
+			return nil, fmt.Errorf("found no resource in %s", file)
 		}
 		resources = append(resources, tests...)
-		return nil
-	})
-	if err != nil {
-		return nil, err
-	}
-	if len(resources) == 0 {
-		return nil, fmt.Errorf("found no resources in %s", path)
 	}
 	return resources, nil
 }
