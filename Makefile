@@ -139,6 +139,7 @@ codegen-schemas-openapi: codegen-crds $(KIND) ## Generate openapi schemas (v2 an
 
 .PHONY: codegen-schemas-json
 codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas
+	@echo Generate json schema... >&2
 	@$(PIP) install openapi2jsonschema --no-build-isolation
 	@rm -rf ./.temp/.schemas/json
 	@rm -rf ./.schemas/json
@@ -150,8 +151,21 @@ codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas
 	@rm -rf pkg/data/schemas/json && mkdir -p pkg/data/schemas/json
 	@cp ./.schemas/json/* pkg/data/schemas/json
 
+.PHONY: codegen-tests-catalog
+codegen-tests-catalog: $(CLI_BIN) ## Generate tests catalog files
+	@echo Generate tests catalog... >&2
+	@./$(CLI_BIN) build docs --test-dir ./testdata/e2e --catalog ./testdata/e2e/examples/CATALOG.md
+
 .PHONY: codegen
-codegen: codegen-crds codegen-deepcopy codegen-register codegen-mkdocs codegen-cli-docs codegen-api-docs codegen-schemas-json ## Rebuild all generated code and docs
+codegen: ## Rebuild all generated code and docs
+codegen: codegen-api-docs
+codegen: codegen-cli-docs
+codegen: codegen-crds
+codegen: codegen-deepcopy
+codegen: codegen-mkdocs
+codegen: codegen-register
+codegen: codegen-schemas-json
+codegen: codegen-tests-catalog
 
 .PHONY: verify-codegen
 verify-codegen: codegen ## Verify all generated code and docs are up to date

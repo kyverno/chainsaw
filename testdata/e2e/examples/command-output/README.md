@@ -1,4 +1,4 @@
-# Test: `test`
+# Test: `command-output`
 
 *No description*
 

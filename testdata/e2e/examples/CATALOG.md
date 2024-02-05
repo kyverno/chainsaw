@@ -4,7 +4,7 @@
 - [assertion-tree](assertion-tree/README.md)
 - [basic](basic/README.md)
 - [catch](catch/README.md)
-- [test](command-output/README.md)
+- [command-output](command-output/README.md)
 - [delete](delete/README.md)
 - [finally](finally/README.md)
 - [inline](inline/README.md)
