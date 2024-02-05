@@ -33,4 +33,5 @@ Release notes for `TODO`.
 
 - Added kubebuilder community recording link where chainsaw was presented
 - Added a `MAINTAINERS.md` file
-- Added CI to check PR semantics
+- Added CI job to check PR semantics
+- Added CI job to check test catalog

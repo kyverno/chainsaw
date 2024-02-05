@@ -157,7 +157,15 @@ codegen-tests-catalog: $(CLI_BIN) ## Generate tests catalog files
 	@$(CLI_BIN) build docs --test-dir ./testdata/e2e --catalog ./testdata/e2e/examples/CATALOG.md
 
 .PHONY: codegen
-codegen: codegen-crds codegen-deepcopy codegen-register codegen-mkdocs codegen-cli-docs codegen-api-docs codegen-schemas-json ## Rebuild all generated code and docs
+codegen: ## Rebuild all generated code and docs
+codegen: codegen-api-docs
+codegen: codegen-cli-docs
+codegen: codegen-crds
+codegen: codegen-deepcopy
+codegen: codegen-mkdocs
+codegen: codegen-register
+codegen: codegen-schemas-json
+codegen: codegen-tests-catalog
 
 .PHONY: verify-codegen
 verify-codegen: codegen ## Verify all generated code and docs are up to date
