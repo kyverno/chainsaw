@@ -211,7 +211,7 @@ build: $(CLI_BIN) ## Build
 tests: $(CLI_BIN) ## Run tests
 	@echo Running tests... >&2
 	@go test ./... -race -coverprofile=coverage.out -covermode=atomic
-	
+
 ########
 # KIND #
 ########
