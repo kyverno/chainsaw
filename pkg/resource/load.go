@@ -45,7 +45,6 @@ func Load(path string, manifest bool) ([]unstructured.Unstructured, error) {
 		resources = append(resources, tests...)
 		return nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
