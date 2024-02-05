@@ -212,6 +212,10 @@ tests: $(CLI_BIN) ## Run tests
 	@echo Running tests... >&2
 	@go test ./... -race -coverprofile=coverage.out -covermode=atomic
 
+.PHONY: tests/cover
+tests/cover:
+	go tool cover -html=coverage.out
+
 ########
 # KIND #
 ########
