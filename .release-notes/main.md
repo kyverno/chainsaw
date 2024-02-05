@@ -25,9 +25,14 @@ Release notes for `TODO`.
 
 ## 📚 Docs 📚
 
+- Added community meetings docs
+- Added google groups in community docs and README
+- Removed all references to `TestStep` in the docs as this is not supported anymore
 - Remove TestStep reference examples
 
 ## 🎸 Misc 🎸
 
+- Added kubebuilder community recording link where chainsaw was presented
+- Added a `MAINTAINERS.md` file
 - Added makefile target to check go code coverage
 - Added CI to check PR semantics
