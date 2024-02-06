@@ -21,6 +21,7 @@ nav:
     - configuration/cleanup-delay.md
     - configuration/reports.md
     - configuration/selector.md
+    - configuration/values.md
     - configuration/no-cluster.md
   - Tests:
     - tests/index.md
