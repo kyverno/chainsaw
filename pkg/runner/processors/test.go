@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync/atomic"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -35,6 +36,7 @@ func NewTestProcessor(
 	testReport *report.TestReport,
 	test discovery.Test,
 	shouldFailFast *atomic.Bool,
+	bindings binding.Bindings,
 ) TestProcessor {
 	return &testProcessor{
 		config:         config,
@@ -44,6 +46,7 @@ func NewTestProcessor(
 		testReport:     testReport,
 		test:           test,
 		shouldFailFast: shouldFailFast,
+		bindings:       bindings,
 		timeouts:       config.Timeouts.Combine(test.Spec.Timeouts),
 	}
 }
@@ -56,6 +59,7 @@ type testProcessor struct {
 	testReport     *report.TestReport
 	test           discovery.Test
 	shouldFailFast *atomic.Bool
+	bindings       binding.Bindings
 	timeouts       v1alpha1.Timeouts
 }
 
@@ -131,7 +135,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer),
+							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, p.bindings),
 						}
 						operation.execute(cleanupCtx)
 					})
@@ -165,5 +169,5 @@ func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, clean
 	if p.testReport != nil {
 		p.testReport.AddTestStep(stepReport)
 	}
-	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner)
+	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner, p.bindings)
 }

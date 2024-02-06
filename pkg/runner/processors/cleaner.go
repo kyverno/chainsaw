@@ -28,7 +28,7 @@ func (c *cleaner) register(obj unstructured.Unstructured, client client.Client, 
 	c.operations = append(c.operations, operation{
 		continueOnError: true,
 		timeout:         timeout,
-		operation:       opdelete.New(client, obj, c.namespacer),
+		operation:       opdelete.New(client, obj, c.namespacer, nil),
 	})
 }
 

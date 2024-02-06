@@ -106,6 +106,7 @@ func Test_operationCommand(t *testing.T) {
 				tt.command,
 				tt.basePath,
 				tt.namespace,
+				nil,
 			)
 			err := operation.Exec(ctx)
 			if tt.wantErr {

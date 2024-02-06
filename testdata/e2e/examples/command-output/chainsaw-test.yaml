@@ -2,7 +2,7 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: test
+  name: command-output
 spec:
   steps:
   - name: Check bad kubectl command

@@ -1047,6 +1047,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				tc.stepSpec,
 				tc.stepReport,
 				tc.cleaner,
+				nil,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)

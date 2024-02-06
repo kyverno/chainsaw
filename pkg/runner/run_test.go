@@ -143,8 +143,7 @@ func TestRun(t *testing.T) {
 			mockMainStart := &MockMainStart{
 				code: tt.mockReturn,
 			}
-			_, err := run(tt.restConfig, fakeClock, tt.config, mockMainStart, tt.tests...)
-
+			_, err := run(tt.restConfig, fakeClock, tt.config, mockMainStart, nil, tt.tests...)
 			if tt.wantErr {
 				assert.Error(t, err, "Run() should return an error")
 			} else {

@@ -16,6 +16,7 @@ import (
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
+	"github.com/kyverno/chainsaw/pkg/values"
 	"github.com/kyverno/chainsaw/pkg/version"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"github.com/spf13/cobra"
@@ -52,6 +53,7 @@ type options struct {
 	delayBeforeCleanup          metav1.Duration
 	selector                    []string
 	noCluster                   bool
+	values                      []string
 }
 
 func Command() *cobra.Command {
@@ -187,6 +189,9 @@ func Command() *cobra.Command {
 			if len(options.selector) != 0 {
 				fmt.Fprintf(out, "- Selector %v\n", options.selector)
 			}
+			if len(options.values) != 0 {
+				fmt.Fprintf(out, "- Values %v\n", options.values)
+			}
 			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
@@ -214,6 +219,12 @@ func Command() *cobra.Command {
 					testToRun = append(testToRun, test)
 				}
 			}
+			// loading tests
+			fmt.Fprintln(out, "Loading values...")
+			values, err := values.Load(options.values...)
+			if err != nil {
+				return err
+			}
 			// run tests
 			fmt.Fprintln(out, "Running tests...")
 			var restConfig *rest.Config
@@ -224,7 +235,7 @@ func Command() *cobra.Command {
 				}
 				restConfig = cfg
 			}
-			summary, err := runner.Run(restConfig, clock, configuration.Spec, testToRun...)
+			summary, err := runner.Run(restConfig, clock, configuration.Spec, values, testToRun...)
 			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Passed  tests", summary.Passed())
@@ -266,6 +277,7 @@ func Command() *cobra.Command {
 	cmd.Flags().DurationVar(&options.delayBeforeCleanup.Duration, "cleanup-delay", 0, "Adds a delay between the time a test ends and the time cleanup starts")
 	cmd.Flags().StringSliceVar(&options.selector, "selector", []string{}, "Selector (label query) to filter on")
 	cmd.Flags().BoolVar(&options.noCluster, "no-cluster", false, "Runs without cluster")
+	cmd.Flags().StringSliceVar(&options.values, "values", []string{}, "Values passed to the tests")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)

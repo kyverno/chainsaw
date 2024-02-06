@@ -21,19 +21,30 @@ type (
 	converter = func([]byte) ([]byte, error)
 )
 
-func Load(path string, manifest bool) ([]unstructured.Unstructured, error) {
-	content, err := os.ReadFile(filepath.Clean(path))
+func Load(pattern string, manifest bool) ([]unstructured.Unstructured, error) {
+	matchingFiles, err := filepath.Glob(pattern)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf(`failed to match files "%s": %w`, pattern, err)
 	}
-	tests, err := Parse(content, manifest)
-	if err != nil {
-		return nil, err
+	if len(matchingFiles) == 0 {
+		return nil, fmt.Errorf("no files found matching path: %s", pattern)
 	}
-	if len(tests) == 0 {
-		return nil, fmt.Errorf("found no resource in %s", path)
+	var resources []unstructured.Unstructured
+	for _, file := range matchingFiles {
+		content, err := os.ReadFile(file)
+		if err != nil {
+			return nil, err
+		}
+		tests, err := Parse(content, manifest)
+		if err != nil {
+			return nil, err
+		}
+		resources = append(resources, tests...)
 	}
-	return tests, nil
+	if len(resources) == 0 {
+		return nil, fmt.Errorf("found no resource in %s", pattern)
+	}
+	return resources, nil
 }
 
 func LoadFromURI(url *url.URL, manifest bool) ([]unstructured.Unstructured, error) {
