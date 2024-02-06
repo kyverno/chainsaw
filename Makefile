@@ -227,6 +227,11 @@ tests: $(CLI_BIN) ## Run tests
 	@go test ./... -race -coverprofile=coverage.out -covermode=atomic
 	@go tool cover -html=coverage.out
 
+.PHONY: e2e-tests
+e2e-tests: $(CLI_BIN) ## Run e2e tests
+	@echo Running e2e tests... >&2
+	@echo "foo: bar" | ./$(CLI_BIN) test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --values -
+
 ########
 # KIND #
 ########
