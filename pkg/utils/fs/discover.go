@@ -1,23 +1,22 @@
 package fs
 
 import (
-	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
-	"strings"
 
+	"go.uber.org/multierr"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
 func DiscoverFolders(paths ...string) ([]string, error) {
 	folders := sets.New[string]()
-	var errorMessages []string
+	var errors []error
 
 	for _, path := range paths {
 		_, err := os.Stat(path)
 		if err != nil {
-			errorMessages = append(errorMessages, fmt.Sprintf("error checking path %s: %v", path, err))
+			errors = append(errors, fmt.Errorf("error checking path %s: %v", path, err))
 			continue
 		}
 		err = filepath.Walk(path, func(file string, info os.FileInfo, err error) error {
@@ -31,11 +30,11 @@ func DiscoverFolders(paths ...string) ([]string, error) {
 		})
 
 		if err != nil {
-			errorMessages = append(errorMessages, fmt.Sprintf("error walking the path %s: %v", path, err))
+			return nil, err
 		}
 	}
-	if len(errorMessages) > 0 {
-		return nil, errors.New(strings.Join(errorMessages, "; "))
+	if len(errors) > 0 {
+		return nil, multierr.Combine(errors...)
 	}
 	return sets.List(folders), nil
 }
