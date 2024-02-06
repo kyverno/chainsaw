@@ -328,7 +328,10 @@ spec:
                             type: object
                           type: array
                         file:
-                          description: File is the path to the referenced file.
+                          description: File is the path to the referenced file. This
+                            can be a direct path to a file or an expression that matches
+                            multiple files, such as "manifest/*.yaml" for all YAML
+                            files within the "manifest" directory.
                           type: string
                         resource:
                           description: Resource provides a resource to be applied.
@@ -345,7 +348,10 @@ spec:
                         whether the conditions specified in the assertion hold true.
                       properties:
                         file:
-                          description: File is the path to the referenced file.
+                          description: File is the path to the referenced file. This
+                            can be a direct path to a file or an expression that matches
+                            multiple files, such as "manifest/*.yaml" for all YAML
+                            files within the "manifest" directory.
                           type: string
                         resource:
                           description: Resource provides a check used in assertions.
@@ -417,7 +423,10 @@ spec:
                             type: object
                           type: array
                         file:
-                          description: File is the path to the referenced file.
+                          description: File is the path to the referenced file. This
+                            can be a direct path to a file or an expression that matches
+                            multiple files, such as "manifest/*.yaml" for all YAML
+                            files within the "manifest" directory.
                           type: string
                         resource:
                           description: Resource provides a resource to be applied.
@@ -494,7 +503,10 @@ spec:
                         failures.
                       properties:
                         file:
-                          description: File is the path to the referenced file.
+                          description: File is the path to the referenced file. This
+                            can be a direct path to a file or an expression that matches
+                            multiple files, such as "manifest/*.yaml" for all YAML
+                            files within the "manifest" directory.
                           type: string
                         resource:
                           description: Resource provides a check used in assertions.
