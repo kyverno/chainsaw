@@ -51,6 +51,7 @@ jobs:
             style
             test
             revert
+            release
           # Configure which scopes are allowed.
           scopes: |
             api
