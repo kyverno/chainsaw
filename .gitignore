@@ -5,3 +5,4 @@ chainsaw
 coverage.out
 website/site
 pkg/runner/chainsaw.xml
+pkg/runner/.json
