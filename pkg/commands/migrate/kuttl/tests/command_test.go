@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	mockName "github.com/dustinkirkland/golang-petname"
+	petname "github.com/dustinkirkland/golang-petname"
 	"github.com/kyverno/chainsaw/pkg/commands/root"
 	"github.com/stretchr/testify/assert"
 )
@@ -55,7 +55,7 @@ func Test_Execute(t *testing.T) {
 		name: "bad folder",
 		args: []string{
 			"tests",
-			mockName.Name(),
+			petname.Name(),
 		},
 		wantErr: true,
 	}}

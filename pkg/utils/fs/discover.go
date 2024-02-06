@@ -13,7 +13,6 @@ import (
 func DiscoverFolders(paths ...string) ([]string, error) {
 	folders := sets.New[string]()
 	var errors []error
-
 	for _, path := range paths {
 		_, err := os.Stat(path)
 		if err != nil {
@@ -29,9 +28,8 @@ func DiscoverFolders(paths ...string) ([]string, error) {
 			}
 			return nil
 		})
-
 		if err != nil {
-			return nil, err
+			errors = append(errors, err)
 		}
 	}
 	if len(errors) > 0 {
