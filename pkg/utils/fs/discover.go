@@ -2,6 +2,7 @@ package fs
 
 import (
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -19,7 +20,7 @@ func DiscoverFolders(paths ...string) ([]string, error) {
 			errors = append(errors, fmt.Errorf("error checking path %s: %v", path, err))
 			continue
 		}
-		err = filepath.Walk(path, func(file string, info os.FileInfo, err error) error {
+		err = filepath.Walk(path, func(file string, info fs.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
