@@ -8,7 +8,7 @@ For example, after applying resources, you might want to ensure that a particula
 
     Assertions in Chainsaw are based on **assertion trees**.
 
-    Assertion trees is a solution to declaratively represent complex conditions like partial array comparisons or complex operations against an incoming data structure.
+    Assertion trees are a solution to declaratively represent complex conditions like partial array comparisons or complex operations against an incoming data structure.
 
     Assertion trees are compatible with standard assertions that exist in tools like KUTTL but can do a lot more.
     Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/policies/asserts/) in kyverno-json for details.
@@ -20,7 +20,7 @@ For example, after applying resources, you might want to ensure that a particula
 
 Below is an example of using `assert` in a `Test` resource.
 
-!!! example "Using a file"
+!!! example "Using a specific file for assertions"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -33,6 +33,22 @@ Below is an example of using `assert` in a `Test` resource.
         # ...
         - assert:
             file: ../resources/deployment-assert.yaml
+        # ...
+    ```
+
+!!! example "Using file path expressions for assertions"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example-multi
+    spec:
+      steps:
+      - try:
+        # ...
+        - assert:
+            file: "../assertions/*.yaml"
         # ...
     ```
 

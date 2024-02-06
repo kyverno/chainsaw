@@ -21,6 +21,7 @@ nav:
     - configuration/cleanup-delay.md
     - configuration/reports.md
     - configuration/selector.md
+    - configuration/values.md
   - Tests:
     - tests/index.md
     - tests/manifests-based.md
@@ -41,6 +42,7 @@ nav:
     - operations/error.md
     - operations/script.md
     - operations/sleep.md
+    - operations/non-resource-assert.md
   - Collectors:
     - collectors/index.md
     - collectors/pod-logs.md
@@ -51,6 +53,7 @@ nav:
     - more/lint.md
     - more/test-docs.md
     - more/kuttl-migration.md
+    - Examples: examples/index.md
   - Reference Documentation:
     - Command Line:
       - commands/chainsaw.md

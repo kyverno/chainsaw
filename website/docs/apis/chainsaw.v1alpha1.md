@@ -238,7 +238,7 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file.</p> |
+| `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
 
 ## `FileRefOrCheck`     {#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck}
 

@@ -33,6 +33,18 @@ func TestLoad(t *testing.T) {
 		fileName:    filepath.Join(baseDir, "nonexistent.yaml"),
 		expectError: true,
 		expectedLen: 0,
+	}, {
+		fileName:    filepath.Join(baseDir, "folder-valid/*.yaml"),
+		expectError: false,
+		expectedLen: 3,
+	}, {
+		fileName:    filepath.Join(baseDir, "folder-invalid/*.yaml"),
+		expectError: true,
+		expectedLen: 0,
+	}, {
+		fileName:    filepath.Join(baseDir, "folder-nonexistent/*.yaml"),
+		expectError: true,
+		expectedLen: 0,
 	}}
 	for _, tt := range tests {
 		resources, err := Load(tt.fileName, true)

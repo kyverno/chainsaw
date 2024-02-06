@@ -58,6 +58,7 @@ jobs:
             commands
             config
             data
+            deps
             discovery
             internal
             report

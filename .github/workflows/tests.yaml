@@ -63,7 +63,7 @@ jobs:
     - name: Run tests
       run: |
         set -e
-        ./chainsaw test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --no-color=false
+        make e2e-tests
 
   required:
     needs:
