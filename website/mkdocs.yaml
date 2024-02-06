@@ -21,6 +21,7 @@ nav:
     - configuration/cleanup-delay.md
     - configuration/reports.md
     - configuration/selector.md
+    - configuration/values.md
   - Tests:
     - tests/index.md
     - tests/manifests-based.md
