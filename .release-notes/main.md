@@ -22,6 +22,7 @@ Release notes for `TODO`.
 ## 🔧 Fixes 🔧
 
 - Fixed a couple of kuttl to chainsaw migration bugs
+- Fixed a bug where chainsaw don't throw an error when a wrong path is provided
 
 ## 📚 Docs 📚
 
