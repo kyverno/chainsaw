@@ -2,13 +2,13 @@
 
 While tests are made of test steps, test steps can be considered made of operations.
 
-Every operation in a test steps runs sequentially.
+Every operation in a test step runs sequentially.
 
 !!! warning "Only one action per operation"
 
     Every operation consists of a single action. While it is syntactically possible to create an operation with multiple actions, Chainsaw will verify and reject tests if operations containing multiple actions are found.
 
-    The reasoning behind this intentional choice is that it becomes harder to understand in which order actions will be executed in case an operation consists of multiple actions. For this reason operations consisting of multiple actions are disallowed.
+    The reasoning behind this intentional choice is that it becomes harder to understand in which order actions will be executed in case an operation consists of multiple actions. For this reason, operations consisting of multiple actions are disallowed.
 
 ### Common fields
 
@@ -19,7 +19,7 @@ All operations share some configuration fields.
 
 #### ContinueOnError
 
-Determines whether a test step should continue or not in case the operation was not successful.
+Determines whether a test step should continue or not in case the operation is not successful.
 
 !!! note ""
     Even if the test continues executing, it will still be reported as failed.
@@ -34,6 +34,13 @@ Determines whether a test step should continue or not in case the operation was 
 - [Error](./error.md)
 - [Script](./script.md)
 - [Sleep](./sleep.md)
+
+## Non-resource assertions
+
+It is possible to evaluate assertions that do not depend on resources.
+
+See [Non-resource assertions](./non-resource-assert.md) for details.
+
 
 ## Operation checks
 
