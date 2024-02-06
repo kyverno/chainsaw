@@ -18,7 +18,7 @@ The `error` operation lets you define a set of expected errors for a test step. 
 
 Below is an example of using `error` in a `Test` resource.
 
-!!! example "Using a file"
+!!! example "Expecting an error from a specific file"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -31,6 +31,22 @@ Below is an example of using `error` in a `Test` resource.
         # ...
         - error:
             file: ../resources/deployment-error.yaml
+        # ...
+    ```
+
+!!! example "Using file path expressions to expect errors from multiple files"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example-multi
+    spec:
+      steps:
+      - try:
+        # ...
+        - error:
+            file: "../errors/*.yaml"
         # ...
     ```
 

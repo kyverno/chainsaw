@@ -11,7 +11,7 @@ These can be configurations, deployments, services, or any other Kubernetes reso
 
 Below is an example of using `apply` in a `Test` resource.
 
-!!! example "Using a file"
+!!! example "Using a specific file"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -24,6 +24,22 @@ Below is an example of using `apply` in a `Test` resource.
         # ...
         - apply:
             file: my-configmap.yaml
+        # ...
+    ```
+
+!!! example "Using file path expressions"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example-multi
+    spec:
+      steps:
+      - try:
+        # ...
+        - apply:
+            file: "configs/*.yaml"
         # ...
     ```
 
