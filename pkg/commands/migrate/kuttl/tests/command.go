@@ -57,6 +57,9 @@ func execute(out io.Writer, save, cleanup bool, paths ...string) error {
 }
 
 func processFolder(out io.Writer, folder string, save, cleanup bool) error {
+	if _, err := os.Stat(filepath.Join(folder, "chainsaw-test.yaml")); err == nil {
+		return nil
+	}
 	steps, err := discovery.TryFindStepFiles(folder)
 	if err != nil {
 		fmt.Fprintf(out, "ERROR: failed to collect test files: %v\n", err)
@@ -319,11 +322,23 @@ func saveResource(out io.Writer, folder, file string, resource unstructured.Unst
 	return nil
 }
 
+func prepend[T any](slice []T, elems ...T) []T {
+	var out []T
+	if len(elems) != 0 {
+		out = append(out, elems...)
+	}
+	if len(slice) != 0 {
+		out = append(out, slice...)
+	}
+	return out
+}
+
 func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 	from, err := convert.To[kuttlapi.TestStep](in)
 	if err != nil {
 		return err
 	}
+	var operations []v1alpha1.Operation
 	for _, operation := range from.Commands {
 		var timeout *metav1.Duration
 		if operation.Timeout != 0 {
@@ -339,7 +354,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			return errors.New("found a command with ignoreFailure=true, this is not supported in chainsaw")
 		}
 		if operation.Script != "" {
-			to.Try = append(to.Try, v1alpha1.Operation{
+			operations = append(operations, v1alpha1.Operation{
 				Script: &v1alpha1.Script{
 					Timeout:       timeout,
 					Content:       operation.Script,
@@ -356,7 +371,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			if len(split) > 1 {
 				args = split[1:]
 			}
-			to.Try = append(to.Try, v1alpha1.Operation{
+			operations = append(operations, v1alpha1.Operation{
 				Command: &v1alpha1.Command{
 					Timeout:       timeout,
 					Entrypoint:    entrypoint,
@@ -367,21 +382,18 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		}
 	}
 	for _, operation := range from.Apply {
-		to.Try = append(
-			to.Try,
-			v1alpha1.Operation{
-				Apply: &v1alpha1.Apply{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
-						FileRef: v1alpha1.FileRef{
-							File: operation,
-						},
+		operations = append(operations, v1alpha1.Operation{
+			Apply: &v1alpha1.Apply{
+				FileRefOrResource: v1alpha1.FileRefOrResource{
+					FileRef: v1alpha1.FileRef{
+						File: operation,
 					},
 				},
 			},
-		)
+		})
 	}
 	for _, operation := range from.Assert {
-		to.Try = append(to.Try, v1alpha1.Operation{
+		operations = append(operations, v1alpha1.Operation{
 			Assert: &v1alpha1.Assert{
 				FileRefOrCheck: v1alpha1.FileRefOrCheck{
 					FileRef: v1alpha1.FileRef{
@@ -392,7 +404,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		})
 	}
 	for _, operation := range from.Error {
-		to.Try = append(to.Try, v1alpha1.Operation{
+		operations = append(operations, v1alpha1.Operation{
 			Error: &v1alpha1.Error{
 				FileRefOrCheck: v1alpha1.FileRefOrCheck{
 					FileRef: v1alpha1.FileRef{
@@ -403,7 +415,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		})
 	}
 	for _, operation := range from.Delete {
-		to.Try = append(to.Try, v1alpha1.Operation{
+		operations = append(operations, v1alpha1.Operation{
 			Delete: &v1alpha1.Delete{
 				ObjectReference: v1alpha1.ObjectReference{
 					APIVersion: operation.APIVersion,
@@ -417,6 +429,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			},
 		})
 	}
+	to.Try = prepend(to.Try, operations...)
 	return nil
 }
 
