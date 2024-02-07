@@ -52,6 +52,9 @@ func execute(out io.Writer, save, cleanup bool, paths ...string) error {
 }
 
 func processFolder(out io.Writer, folder string, save, cleanup bool) error {
+	if _, err := os.Stat(filepath.Join(folder, "chainsaw-test.yaml")); err == nil {
+		return nil
+	}
 	steps, err := discovery.TryFindStepFiles(folder)
 	if err != nil {
 		fmt.Fprintf(out, "ERROR: failed to collect test files: %v\n", err)
