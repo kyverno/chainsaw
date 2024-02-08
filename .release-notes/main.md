@@ -18,6 +18,10 @@ Release notes for `TODO`.
 ## 🎸 Misc 🎸
 -->
 
+## 💫 New features 💫
+
+- Allowed passing test folders by args (`chainsaw test ./folder` instead of `chainsaw test --test-dir ./folder`)
+
 ## 🔧 Fixes 🔧
 
 - Fixed an issue when running `chainsaw migrate kuttl tests` twice on the same folder
@@ -25,4 +29,4 @@ Release notes for `TODO`.
 
 ## 📚 Docs 📚
 
-- Immproved API docs for types coming from Kyverno-JOSN
+- Improved API docs for types coming from Kyverno-JSON
