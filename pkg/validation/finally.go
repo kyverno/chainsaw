@@ -16,6 +16,9 @@ func ValidateFinally(path *field.Path, obj v1alpha1.Finally) field.ErrorList {
 	if obj.Events != nil {
 		count++
 	}
+	if obj.Describe != nil {
+		count++
+	}
 	if obj.Command != nil {
 		count++
 	}
@@ -34,6 +37,8 @@ func ValidateFinally(path *field.Path, obj v1alpha1.Finally) field.ErrorList {
 		errs = append(errs, ValidateEvents(path.Child("events"), obj.Events)...)
 		errs = append(errs, ValidateCommand(path.Child("command"), obj.Command)...)
 		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
+		// TODO
+		// errs = append(errs, ValidateDescribe(path.Child("describe"), obj.Describe)...)
 	}
 	return errs
 }
