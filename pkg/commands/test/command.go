@@ -61,9 +61,8 @@ func Command() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "test [flags]... [test directories]...",
 		Short:        "Run tests",
-		Args:         cobra.NoArgs,
 		SilenceUsage: true,
-		RunE: func(cmd *cobra.Command, _ []string) error {
+		RunE: func(cmd *cobra.Command, args []string) error {
 			color.Init(options.noColor, true)
 			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
@@ -155,6 +154,7 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "cleanup-delay") {
 				configuration.Spec.DelayBeforeCleanup = &options.delayBeforeCleanup
 			}
+			options.testDirs = append(options.testDirs, args...)
 			if len(options.testDirs) == 0 {
 				options.testDirs = append(options.testDirs, ".")
 			}
