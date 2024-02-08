@@ -117,7 +117,7 @@ during the testing process.</p>
 | `entrypoint` | `string` | :white_check_mark: |  | <p>Entrypoint is the command entry point to run.</p> |
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
-| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
+| `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -223,8 +223,8 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `match` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
-| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` | :white_check_mark: |  | <p>Match defines the matching statement.</p> |
+| `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
+| `check` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Match defines the matching statement.</p> |
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
@@ -253,7 +253,7 @@ with a match filter to determine if the verification should be considered.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
-| `resource` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Resource provides a check used in assertions.</p> |
+| `resource` | `policy/v1alpha1.Any` |  |  | <p>Resource provides a check used in assertions.</p> |
 
 ## `FileRefOrResource`     {#chainsaw-kyverno-io-v1alpha1-FileRefOrResource}
 
@@ -387,7 +387,7 @@ For multiple objects use labels.</p>
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
-| `check` | `github.com/kyverno/kyverno-json/pkg/apis/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
+| `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
 ## `Sleep`     {#chainsaw-kyverno-io-v1alpha1-Sleep}
 

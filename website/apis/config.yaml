@@ -28,6 +28,7 @@ externalPackages:
 stripPrefix:
   - k8s.io/api/
   - k8s.io/apimachinery/pkg/apis/
+  - github.com/kyverno/kyverno-json/pkg/apis/
   - github.com/tengqm/kubeconfig/config/kubeadm/v1beta2.
   - github.com/tengqm/kubeconfig/config/kubeadm/v1beta3.
   - github.com/tengqm/kubeconfig/config/bootstraptoken/v1.

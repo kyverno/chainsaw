@@ -22,3 +22,7 @@ Release notes for `TODO`.
 
 - Fixed an issue when running `chainsaw migrate kuttl tests` twice on the same folder
 - Fixed an issue with `chainsaw migrate kuttl tests` potentially incorrect when a `TestStep` is present
+
+## 📚 Docs 📚
+
+- Immproved API docs for types coming from Kyverno-JOSN
