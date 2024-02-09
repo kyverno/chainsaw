@@ -745,7 +745,7 @@ func TestStepProcessor_Run(t *testing.T) {
 						{
 							Assert: &v1alpha1.Assert{
 								FileRefOrCheck: v1alpha1.FileRefOrCheck{
-									Resource: &v1alpha1.Check{
+									Check: &v1alpha1.Check{
 										Value: map[string]any{
 											"apiVersion": "v1",
 											"kind":       "Pod",

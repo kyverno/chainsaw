@@ -1004,7 +1004,7 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource provides a check used in assertions.",
+                          "description": "Check provides a check used in assertions.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "timeout": {
@@ -1245,7 +1245,7 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource provides a check used in assertions.",
+                          "description": "Check provides a check used in assertions.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "timeout": {
