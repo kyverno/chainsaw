@@ -3,6 +3,7 @@ package apply
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -13,6 +14,8 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	mapsutils "github.com/kyverno/chainsaw/pkg/utils/maps"
+	"github.com/kyverno/kyverno-json/pkg/engine/mutate"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
@@ -22,10 +25,11 @@ import (
 
 type operation struct {
 	client     client.Client
-	obj        unstructured.Unstructured
+	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
 	bindings   binding.Bindings
+	patches    []v1alpha1.Patch
 	expect     []v1alpha1.Expectation
 }
 
@@ -35,37 +39,65 @@ func New(
 	namespacer namespacer.Namespacer,
 	cleaner cleanup.Cleaner,
 	bindings binding.Bindings,
-	expect ...v1alpha1.Expectation,
+	patches []v1alpha1.Patch,
+	expect []v1alpha1.Expectation,
 ) operations.Operation {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
 	return &operation{
 		client:     client,
-		obj:        obj,
+		base:       obj,
 		namespacer: namespacer,
 		cleaner:    cleaner,
 		bindings:   bindings,
+		patches:    patches,
 		expect:     expect,
 	}
 }
 
+func clean(in any) map[string]any {
+	data, ok := in.(map[any]any)
+	if !ok {
+		return nil
+	}
+	out := map[string]any{}
+	for k, v := range data {
+		if c := clean(v); c != nil {
+			out[k.(string)] = c
+		} else {
+			out[k.(string)] = v
+		}
+	}
+	return out
+}
+
 func (o *operation) Exec(ctx context.Context) (err error) {
-	logger := internal.GetLogger(ctx, &o.obj)
+	obj := o.base
+	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
 		internal.LogEnd(logger, logging.Apply, err)
 	}()
-	if err := internal.ApplyNamespacer(o.namespacer, &o.obj); err != nil {
+	for _, patch := range o.patches {
+		// TODO: match
+		patch, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, patch.Patch.Value), obj.UnstructuredContent(), o.bindings)
+		if err != nil {
+			return err
+		}
+		obj.SetUnstructuredContent(mapsutils.Merge(obj.UnstructuredContent(), clean(patch)))
+	}
+	fmt.Println(obj)
+	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
 		return err
 	}
 	internal.LogStart(logger, logging.Apply)
-	return o.execute(ctx)
+	return o.execute(ctx, obj)
 }
 
-func (o *operation) execute(ctx context.Context) error {
+func (o *operation) execute(ctx context.Context, obj unstructured.Unstructured) error {
 	var lastErr error
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
-		lastErr = o.tryApplyResource(ctx)
+		lastErr = o.tryApplyResource(ctx, obj)
 		// TODO: determine if the error can be retried
 		return lastErr == nil, nil
 	})
@@ -78,21 +110,21 @@ func (o *operation) execute(ctx context.Context) error {
 	return err
 }
 
-func (o *operation) tryApplyResource(ctx context.Context) error {
+func (o *operation) tryApplyResource(ctx context.Context, obj unstructured.Unstructured) error {
 	var actual unstructured.Unstructured
-	actual.SetGroupVersionKind(o.obj.GetObjectKind().GroupVersionKind())
-	err := o.client.Get(ctx, client.ObjectKey(&o.obj), &actual)
+	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
+	err := o.client.Get(ctx, client.ObjectKey(&obj), &actual)
 	if err == nil {
-		return o.updateResource(ctx, &actual)
+		return o.updateResource(ctx, &actual, obj)
 	}
 	if kerrors.IsNotFound(err) {
-		return o.createResource(ctx)
+		return o.createResource(ctx, obj)
 	}
 	return err
 }
 
-func (o *operation) updateResource(ctx context.Context, actual *unstructured.Unstructured) error {
-	patched, err := client.PatchObject(actual, &o.obj)
+func (o *operation) updateResource(ctx context.Context, actual *unstructured.Unstructured, obj unstructured.Unstructured) error {
+	patched, err := client.PatchObject(actual, &obj)
 	if err != nil {
 		return err
 	}
@@ -100,25 +132,25 @@ func (o *operation) updateResource(ctx context.Context, actual *unstructured.Uns
 	if err != nil {
 		return err
 	}
-	return o.handleCheck(ctx, o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes)))
+	return o.handleCheck(ctx, obj, o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes)))
 }
 
-func (o *operation) createResource(ctx context.Context) error {
-	err := o.client.Create(ctx, &o.obj)
+func (o *operation) createResource(ctx context.Context, obj unstructured.Unstructured) error {
+	err := o.client.Create(ctx, &obj)
 	if err == nil && o.cleaner != nil {
-		o.cleaner(o.obj, o.client)
+		o.cleaner(obj, o.client)
 	}
-	return o.handleCheck(ctx, err)
+	return o.handleCheck(ctx, obj, err)
 }
 
-func (o *operation) handleCheck(ctx context.Context, err error) error {
+func (o *operation) handleCheck(ctx context.Context, obj unstructured.Unstructured, err error) error {
 	bindings := o.bindings
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {
 		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
-	if matched, err := check.Expectations(ctx, o.obj, bindings, o.expect...); matched {
+	if matched, err := check.Expectations(ctx, obj, bindings, o.expect...); matched {
 		return err
 	}
 	return err

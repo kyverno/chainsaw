@@ -870,7 +870,7 @@
                             ],
                             "properties": {
                               "check": {
-                                "description": "Match defines the matching statement.",
+                                "description": "Check defines the verification statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
@@ -886,6 +886,31 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "patches": {
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "patch"
+                            ],
+                            "properties": {
+                              "match": {
+                                "description": "Match defines the matching statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "patch": {
+                                "description": "Check defines the verification statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
                         },
                         "resource": {
                           "description": "Resource provides a resource to be applied.",
@@ -1013,7 +1038,7 @@
                             ],
                             "properties": {
                               "check": {
-                                "description": "Match defines the matching statement.",
+                                "description": "Check defines the verification statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
@@ -1071,7 +1096,7 @@
                             ],
                             "properties": {
                               "check": {
-                                "description": "Match defines the matching statement.",
+                                "description": "Check defines the verification statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {

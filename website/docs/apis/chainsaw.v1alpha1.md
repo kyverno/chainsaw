@@ -64,6 +64,7 @@ should be applied during testing.</p>
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the resources to be applied.</p> |
+| `patches` | [`[]Patch`](#chainsaw-kyverno-io-v1alpha1-Patch) | :white_check_mark: |  | *No description provided.* |
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
@@ -224,7 +225,7 @@ with a match filter to determine if the verification should be considered.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
-| `check` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Match defines the matching statement.</p> |
+| `check` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
@@ -343,6 +344,17 @@ For multiple objects use labels.</p>
 | `error` | [`Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
+
+## `Patch`     {#chainsaw-kyverno-io-v1alpha1-Patch}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
+| `patch` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
 
 ## `PodLogs`     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 

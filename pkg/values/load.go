@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 
+	mapsutils "github.com/kyverno/chainsaw/pkg/utils/maps"
 	"sigs.k8s.io/yaml"
 )
 
@@ -20,28 +21,9 @@ func Load(paths ...string) (map[string]any, error) {
 		if err := yaml.Unmarshal(bytes, &currentMap); err != nil {
 			return nil, fmt.Errorf("failed to parse %s (%w)", path, err)
 		}
-		base = mergeMaps(base, currentMap)
+		base = mapsutils.Merge(base, currentMap)
 	}
 	return base, nil
-}
-
-func mergeMaps(a, b map[string]any) map[string]any {
-	out := make(map[string]any, len(a))
-	for k, v := range a {
-		out[k] = v
-	}
-	for k, v := range b {
-		if v, ok := v.(map[string]any); ok {
-			if bv, ok := out[k]; ok {
-				if bv, ok := bv.(map[string]any); ok {
-					out[k] = mergeMaps(bv, v)
-					continue
-				}
-			}
-		}
-		out[k] = v
-	}
-	return out
 }
 
 func readFile(filePath string) ([]byte, error) {

@@ -55,9 +55,37 @@ func Test_apply(t *testing.T) {
 		name        string
 		object      unstructured.Unstructured
 		client      *tclient.FakeClient
+		patches     []v1alpha1.Patch
 		expect      []v1alpha1.Expectation
 		expectedErr error
 	}{{
+		name:   "Resource already exists, patch it",
+		object: podv2,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+				*obj.(*unstructured.Unstructured) = podv1
+				return nil
+			},
+			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+				return nil
+			},
+		},
+		patches: []v1alpha1.Patch{
+			{
+				Patch: v1alpha1.Check{
+					Value: map[string]any{
+						"metadata": map[string]any{
+							"labels": map[string]any{
+								"foo": "bar",
+							},
+						},
+					},
+				},
+			},
+		},
+		expect:      nil,
+		expectedErr: nil,
+	}, {
 		name:   "Resource already exists, patch it",
 		object: podv2,
 		client: &tclient.FakeClient{
@@ -299,7 +327,8 @@ func Test_apply(t *testing.T) {
 				nil,
 				nil,
 				nil,
-				tt.expect...,
+				tt.patches,
+				tt.expect,
 			)
 			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {

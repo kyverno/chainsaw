@@ -12,7 +12,7 @@ require (
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240117150817-e430401a2172
 	github.com/kudobuilder/kuttl v0.15.0
 	github.com/kyverno/kyverno v1.5.0-rc1.0.20240202083228-5f0d53fe3482
-	github.com/kyverno/kyverno-json v0.0.3-0.20240206211742-5157e647a59b
+	github.com/kyverno/kyverno-json v0.0.3-0.20240209170647-44d153c1ce9d
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.4

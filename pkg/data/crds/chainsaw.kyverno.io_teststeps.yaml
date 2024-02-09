@@ -316,7 +316,7 @@ spec:
                               determine if the verification should be considered.
                             properties:
                               check:
-                                description: Match defines the matching statement.
+                                description: Check defines the verification statement.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               match:
@@ -333,6 +333,21 @@ spec:
                             multiple files, such as "manifest/*.yaml" for all YAML
                             files within the "manifest" directory.
                           type: string
+                        patches:
+                          items:
+                            properties:
+                              match:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              patch:
+                                description: Check defines the verification statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - patch
+                            type: object
+                          type: array
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object
@@ -411,7 +426,7 @@ spec:
                               determine if the verification should be considered.
                             properties:
                               check:
-                                description: Match defines the matching statement.
+                                description: Check defines the verification statement.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               match:
@@ -450,7 +465,7 @@ spec:
                               determine if the verification should be considered.
                             properties:
                               check:
-                                description: Match defines the matching statement.
+                                description: Check defines the verification statement.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               match:
