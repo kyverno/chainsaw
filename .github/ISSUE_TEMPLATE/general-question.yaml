@@ -1,0 +1,36 @@
+name: General Question
+description: Ask a question or need support
+title: "[Question] " 
+labels: ["question"]
+
+body:
+  - type: markdown
+    attributes:
+      value: "Please answer these questions before submitting your issue. Thanks!"
+
+  - type: textarea
+    id: describe-your-question
+    attributes:
+      label: Describe your question
+      description: "Provide details about your question or the support needed."
+      placeholder: "Type your question here..."
+    validations:
+      required: true
+
+  - type: input
+    id: chainsaw-version
+    attributes:
+      label: What version of chainsaw are you using?
+      description: "chainsaw version:"
+      placeholder: "e.g., 1.2.3"
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional context
+      description: "Add any other context or screenshots about the question here."
+      placeholder: "Additional details..."
+    validations:
+      required: false
