@@ -7,6 +7,6 @@ type Expectation struct {
 	// +optional
 	Match *Check `json:"match,omitempty"`
 
-	// Match defines the matching statement.
+	// Check defines the verification statement.
 	Check Check `json:"check"`
 }
