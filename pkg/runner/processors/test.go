@@ -25,7 +25,7 @@ import (
 
 type TestProcessor interface {
 	Run(context.Context, namespacer.Namespacer)
-	CreateStepProcessor(namespacer.Namespacer, *cleaner, v1alpha1.TestSpecStep) StepProcessor
+	CreateStepProcessor(namespacer.Namespacer, binding.Bindings, *cleaner, v1alpha1.TestSpecStep) StepProcessor
 }
 
 func NewTestProcessor(
@@ -122,14 +122,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			namespace = &ns
 		}
 		if namespace != nil {
-			bindings = p.bindings.Register("$namespace", binding.NewBinding(namespace.Name))
-		} else if nspacer != nil {
-			bindings = p.bindings.Register("$namespace", binding.NewBinding(nspacer.GetNamespace()))
-		} else {
-			bindings = p.bindings.Register("$namespace", binding.NewBinding(""))
-		}
-		if namespace != nil {
 			nspacer = namespacer.New(p.client, namespace.Name)
+			bindings = p.bindings.Register("$namespace", binding.NewBinding(nspacer.GetNamespace()))
 			setupCtx := logging.IntoContext(ctx, setupLogger)
 			cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
 			if err := p.client.Get(setupCtx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
@@ -163,7 +157,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		cleaner.run(logging.IntoContext(ctx, cleanupLogger))
 	})
 	for i, step := range p.test.Spec.Steps {
-		processor := p.CreateStepProcessor(nspacer, cleaner, step)
+		processor := p.CreateStepProcessor(nspacer, bindings, cleaner, step)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
@@ -172,10 +166,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	}
 }
 
-func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, cleaner *cleaner, step v1alpha1.TestSpecStep) StepProcessor {
+func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, bindings binding.Bindings, cleaner *cleaner, step v1alpha1.TestSpecStep) StepProcessor {
 	stepReport := report.NewTestSpecStep(step.Name)
 	if p.testReport != nil {
 		p.testReport.AddTestStep(stepReport)
 	}
-	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner, p.bindings)
+	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner, bindings)
 }

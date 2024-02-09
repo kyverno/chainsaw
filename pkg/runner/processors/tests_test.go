@@ -220,7 +220,7 @@ func TestCreateTestProcessor(t *testing.T) {
 			}
 			processor.shouldFailFast.Store(false)
 
-			result := processor.CreateTestProcessor(localTC.test[0])
+			result := processor.CreateTestProcessor(localTC.test[0], nil)
 
 			assert.NotNil(t, result, "TestProcessor should not be nil")
 			if localTC.testsReport != nil {
