@@ -37,8 +37,7 @@ func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
 		errs = append(errs, ValidateEvents(path.Child("events"), obj.Events)...)
 		errs = append(errs, ValidateCommand(path.Child("command"), obj.Command)...)
 		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
-		// TODO
-		// errs = append(errs, ValidateDescribe(path.Child("describe"), obj.Describe)...)
+		errs = append(errs, ValidateDescribe(path.Child("describe"), obj.Describe)...)
 	}
 	return errs
 }
