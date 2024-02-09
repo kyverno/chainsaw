@@ -110,6 +110,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
+	bindings := p.bindings
 	if p.client != nil {
 		if nspacer == nil || p.test.Spec.Namespace != "" {
 			var ns corev1.Namespace
@@ -120,13 +121,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			}
 			namespace = &ns
 		}
-		bindings := p.bindings
-		if p.bindings != nil {
-			if namespace != nil {
-				bindings = p.bindings.Register("$namespace", binding.NewBinding(namespace.Name))
-			} else {
-				bindings = p.bindings.Register("$namespace", binding.NewBinding(""))
-			}
+		if namespace != nil {
+			bindings = p.bindings.Register("$namespace", binding.NewBinding(namespace.Name))
+		} else {
+			bindings = p.bindings.Register("$namespace", binding.NewBinding(""))
 		}
 		if namespace != nil {
 			nspacer = namespacer.New(p.client, namespace.Name)

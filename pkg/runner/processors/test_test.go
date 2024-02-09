@@ -376,7 +376,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				tc.testsReport,
 				tc.test,
 				shouldFailVar,
-				nil,
+				tc.binding,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
