@@ -158,9 +158,13 @@ func TestTestProcessor_Run(t *testing.T) {
 			},
 			shouldFailFast: false,
 			binding:        binding.NewBindings(),
-			namespacer:     &fakeNamespacer.FakeNamespacer{},
-			expectedFail:   false,
-			skipped:        true,
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				GetNamespaceFn: func(call int) string {
+					return "chainsaw"
+				},
+			},
+			expectedFail: false,
+			skipped:      true,
 		},
 		{
 			name: "with test namespace",
@@ -189,7 +193,11 @@ func TestTestProcessor_Run(t *testing.T) {
 					},
 				},
 			},
-			namespacer:     &fakeNamespacer.FakeNamespacer{},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				GetNamespaceFn: func(call int) string {
+					return "chainsaw"
+				},
+			},
 			shouldFailFast: false,
 			binding:        binding.NewBindings(),
 			expectedFail:   false,
@@ -287,7 +295,11 @@ func TestTestProcessor_Run(t *testing.T) {
 					},
 				},
 			},
-			namespacer:     &fakeNamespacer.FakeNamespacer{},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				GetNamespaceFn: func(call int) string {
+					return "chainsaw"
+				},
+			},
 			shouldFailFast: false,
 			binding:        binding.NewBindings(),
 			expectedFail:   false,
@@ -322,7 +334,11 @@ func TestTestProcessor_Run(t *testing.T) {
 					},
 				},
 			},
-			namespacer:     &fakeNamespacer.FakeNamespacer{},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				GetNamespaceFn: func(call int) string {
+					return "chainsaw"
+				},
+			},
 			shouldFailFast: false,
 			binding:        binding.NewBindings(),
 			expectedFail:   true,
@@ -357,7 +373,11 @@ func TestTestProcessor_Run(t *testing.T) {
 					},
 				},
 			},
-			namespacer:     &fakeNamespacer.FakeNamespacer{},
+			namespacer: &fakeNamespacer.FakeNamespacer{
+				GetNamespaceFn: func(call int) string {
+					return "chainsaw"
+				},
+			},
 			shouldFailFast: false,
 			binding:        binding.NewBindings(),
 			expectedFail:   true,
