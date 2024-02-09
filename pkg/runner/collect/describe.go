@@ -26,6 +26,7 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
+	// TODO: what if cluster scoped resource ?
 	namespace := collector.Namespace
 	if collector.Namespace == "" {
 		namespace = "$NAMESPACE"

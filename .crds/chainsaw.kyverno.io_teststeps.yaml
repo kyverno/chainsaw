@@ -362,7 +362,7 @@ spec:
                               determine if the verification should be considered.
                             properties:
                               check:
-                                description: Match defines the matching statement.
+                                description: Check defines the verification statement.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               match:
@@ -457,7 +457,7 @@ spec:
                               determine if the verification should be considered.
                             properties:
                               check:
-                                description: Match defines the matching statement.
+                                description: Check defines the verification statement.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               match:
@@ -496,7 +496,7 @@ spec:
                               determine if the verification should be considered.
                             properties:
                               check:
-                                description: Match defines the matching statement.
+                                description: Check defines the verification statement.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               match:

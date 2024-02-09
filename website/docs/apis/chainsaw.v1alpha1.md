@@ -243,7 +243,7 @@ with a match filter to determine if the verification should be considered.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
-| `check` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Match defines the matching statement.</p> |
+| `check` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
