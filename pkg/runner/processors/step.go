@@ -412,8 +412,8 @@ func (p *stepProcessor) sleepOperation(ctx context.Context, sleep v1alpha1.Sleep
 }
 
 func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.FileRefOrCheck) ([]unstructured.Unstructured, error) {
-	if ref.Resource != nil && ref.Resource.Value != nil {
-		if object, ok := ref.Resource.Value.(map[string]any); !ok {
+	if ref.Check != nil && ref.Check.Value != nil {
+		if object, ok := ref.Check.Value.(map[string]any); !ok {
 			return nil, errors.New("resource must be an object")
 		} else {
 			return []unstructured.Unstructured{{Object: object}}, nil

@@ -6,7 +6,7 @@ type FileRefOrCheck struct {
 	// +optional
 	FileRef `json:",inline"`
 
-	// Resource provides a check used in assertions.
+	// Check provides a check used in assertions.
 	// +optional
-	Resource *Check `json:"resource,omitempty"`
+	Check *Check `json:"resource,omitempty"`
 }

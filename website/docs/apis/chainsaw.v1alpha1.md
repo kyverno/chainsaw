@@ -272,7 +272,7 @@ with a match filter to determine if the verification should be considered.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
-| `resource` | `policy/v1alpha1.Any` |  |  | <p>Resource provides a check used in assertions.</p> |
+| `resource` | `policy/v1alpha1.Any` |  |  | <p>Check provides a check used in assertions.</p> |
 
 ## `FileRefOrResource`     {#chainsaw-kyverno-io-v1alpha1-FileRefOrResource}
 
