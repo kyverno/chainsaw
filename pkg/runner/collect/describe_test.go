@@ -5,6 +5,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/utils/ptr"
 )
 
 func TestDescribe(t *testing.T) {
@@ -101,6 +102,28 @@ func TestDescribe(t *testing.T) {
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
 			Args:       []string{"describe", "foos", "-l", "foo=bar", "-n", "bar"},
+		},
+		wantErr: false,
+	}, {
+		name: "with show-events marked as true",
+		collector: &v1alpha1.Describe{
+			Resource:   "foos",
+			ShowEvents: ptr.To[bool](true),
+		},
+		want: &v1alpha1.Command{
+			Entrypoint: "kubectl",
+			Args:       []string{"describe", "foos", "-n", "$NAMESPACE", "--show-events=true"},
+		},
+		wantErr: false,
+	}, {
+		name: "with show-events marked as false",
+		collector: &v1alpha1.Describe{
+			Resource:   "foos",
+			ShowEvents: ptr.To[bool](false),
+		},
+		want: &v1alpha1.Command{
+			Entrypoint: "kubectl",
+			Args:       []string{"describe", "foos", "-n", "$NAMESPACE", "--show-events=false"},
 		},
 		wantErr: false,
 	}}
