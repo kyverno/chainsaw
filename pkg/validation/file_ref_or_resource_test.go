@@ -33,51 +33,45 @@ func TestValidateFileRefOrResource(t *testing.T) {
 		input     v1alpha1.FileRefOrResource
 		expectErr bool
 		errMsg    string
-	}{
-		{
-			name: "Both File and Resource are empty",
-			input: v1alpha1.FileRefOrResource{
-				FileRef: v1alpha1.FileRef{
-					File: "",
-				},
-				Resource: nil,
+	}{{
+		name: "Both File and Resource are empty",
+		input: v1alpha1.FileRefOrResource{
+			FileRef: v1alpha1.FileRef{
+				File: "",
 			},
-			expectErr: true,
-			errMsg:    "a file reference or raw resource must be specified",
+			Resource: nil,
 		},
-		{
-			name: "Both File and Resource are provided",
-			input: v1alpha1.FileRefOrResource{
-				FileRef: v1alpha1.FileRef{
-					File: "file",
-				},
-				Resource: pod,
+		expectErr: true,
+		errMsg:    "a file reference or raw resource must be specified",
+	}, {
+		name: "Both File and Resource are provided",
+		input: v1alpha1.FileRefOrResource{
+			FileRef: v1alpha1.FileRef{
+				File: "file",
 			},
-			expectErr: true,
-			errMsg:    "a file reference or raw resource must be specified (found both)",
+			Resource: pod,
 		},
-		{
-			name: "Only File is provided",
-			input: v1alpha1.FileRefOrResource{
-				FileRef: v1alpha1.FileRef{
-					File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
-				},
-				Resource: nil,
+		expectErr: true,
+		errMsg:    "a file reference or raw resource must be specified (found both)",
+	}, {
+		name: "Only File is provided",
+		input: v1alpha1.FileRefOrResource{
+			FileRef: v1alpha1.FileRef{
+				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
-			expectErr: false,
+			Resource: nil,
 		},
-		{
-			name: "Only Resource is provided",
-			input: v1alpha1.FileRefOrResource{
-				FileRef: v1alpha1.FileRef{
-					File: "",
-				},
-				Resource: pod,
+		expectErr: false,
+	}, {
+		name: "Only Resource is provided",
+		input: v1alpha1.FileRefOrResource{
+			FileRef: v1alpha1.FileRef{
+				File: "",
 			},
-			expectErr: false,
+			Resource: pod,
 		},
-	}
-
+		expectErr: false,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			errs := ValidateFileRefOrResource(field.NewPath("testPath"), tt.input)
