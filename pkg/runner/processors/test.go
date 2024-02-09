@@ -120,7 +120,12 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			}
 			namespace = &ns
 		}
-		bindings := p.bindings.Register("$namespace", binding.NewBinding(namespace))
+		bindings := p.bindings
+		if namespace != nil {
+			bindings = p.bindings.Register("$namespace", binding.NewBinding(namespace.GetName()))
+		} else {
+			bindings = p.bindings.Register("$namespace", binding.NewBinding(""))
+		}
 		if namespace != nil {
 			nspacer = namespacer.New(p.client, namespace.Name)
 			setupCtx := logging.IntoContext(ctx, setupLogger)
