@@ -21,7 +21,7 @@ Release notes for `TODO`.
 ## 💫 New features 💫
 
 - Allowed passing test folders by args (`chainsaw test ./folder` instead of `chainsaw test --test-dir ./folder`)
-- Add $namespace binding to check
+- Added new binding `$namespace` containing the test namespace name
 
 ## 🔧 Fixes 🔧
 
