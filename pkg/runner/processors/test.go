@@ -123,6 +123,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		}
 		if namespace != nil {
 			bindings = p.bindings.Register("$namespace", binding.NewBinding(namespace.Name))
+		} else if nspacer != nil {
+			bindings = p.bindings.Register("$namespace", binding.NewBinding(nspacer.GetNamespace()))
 		} else {
 			bindings = p.bindings.Register("$namespace", binding.NewBinding(""))
 		}
