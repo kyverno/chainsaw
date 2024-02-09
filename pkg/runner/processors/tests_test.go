@@ -5,6 +5,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
@@ -27,6 +28,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 		clock        clock.PassiveClock
 		summary      *summary.Summary
 		testsReport  *report.TestsReport
+		bindings     binding.Bindings
 		tests        []discovery.Test
 		expectedFail bool
 	}{
@@ -43,6 +45,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			clock:        nil,
 			summary:      &summary.Summary{},
 			testsReport:  &report.TestsReport{},
+			bindings:     binding.NewBindings(),
 			tests:        []discovery.Test{},
 			expectedFail: false,
 		},
@@ -65,6 +68,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			clock:        nil,
 			summary:      &summary.Summary{},
 			testsReport:  &report.TestsReport{},
+			bindings:     binding.NewBindings(),
 			tests:        []discovery.Test{},
 			expectedFail: false,
 		},
@@ -84,6 +88,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			clock:        nil,
 			summary:      &summary.Summary{},
 			testsReport:  &report.TestsReport{},
+			bindings:     binding.NewBindings(),
 			tests:        []discovery.Test{},
 			expectedFail: true,
 		},
@@ -103,6 +108,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			clock:        nil,
 			summary:      &summary.Summary{},
 			testsReport:  &report.TestsReport{},
+			bindings:     binding.NewBindings(),
 			tests:        []discovery.Test{},
 			expectedFail: true,
 		},
@@ -119,6 +125,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			clock:       nil,
 			summary:     &summary.Summary{},
 			testsReport: &report.TestsReport{},
+			bindings:    binding.NewBindings(),
 			tests: []discovery.Test{
 				{
 					Err:      nil,
@@ -141,6 +148,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			clock:       nil,
 			summary:     &summary.Summary{},
 			testsReport: &report.TestsReport{},
+			bindings:    binding.NewBindings(),
 			tests: []discovery.Test{
 				{
 					Err:      errors.NewBadRequest("failed to get test"),
@@ -160,7 +168,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				tc.clock,
 				tc.summary,
 				tc.testsReport,
-				nil,
+				tc.bindings,
 				tc.tests...,
 			)
 			nt := testing.MockT{}
@@ -220,7 +228,7 @@ func TestCreateTestProcessor(t *testing.T) {
 			}
 			processor.shouldFailFast.Store(false)
 
-			result := processor.CreateTestProcessor(localTC.test[0])
+			result := processor.CreateTestProcessor(localTC.test[0], nil)
 
 			assert.NotNil(t, result, "TestProcessor should not be nil")
 			if localTC.testsReport != nil {

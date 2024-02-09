@@ -25,7 +25,7 @@ import (
 
 type TestProcessor interface {
 	Run(context.Context, namespacer.Namespacer)
-	CreateStepProcessor(namespacer.Namespacer, *cleaner, v1alpha1.TestSpecStep) StepProcessor
+	CreateStepProcessor(namespacer.Namespacer, binding.Bindings, *cleaner, v1alpha1.TestSpecStep) StepProcessor
 }
 
 func NewTestProcessor(
@@ -110,6 +110,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
+	bindings := p.bindings
 	if p.client != nil {
 		if nspacer == nil || p.test.Spec.Namespace != "" {
 			var ns corev1.Namespace
@@ -122,6 +123,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		}
 		if namespace != nil {
 			nspacer = namespacer.New(p.client, namespace.Name)
+			bindings = p.bindings.Register("$namespace", binding.NewBinding(nspacer.GetNamespace()))
 			setupCtx := logging.IntoContext(ctx, setupLogger)
 			cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
 			if err := p.client.Get(setupCtx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
@@ -135,7 +137,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, p.bindings),
+							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, bindings),
 						}
 						operation.execute(cleanupCtx)
 					})
@@ -155,7 +157,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		cleaner.run(logging.IntoContext(ctx, cleanupLogger))
 	})
 	for i, step := range p.test.Spec.Steps {
-		processor := p.CreateStepProcessor(nspacer, cleaner, step)
+		processor := p.CreateStepProcessor(nspacer, bindings, cleaner, step)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
@@ -164,10 +166,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	}
 }
 
-func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, cleaner *cleaner, step v1alpha1.TestSpecStep) StepProcessor {
+func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, bindings binding.Bindings, cleaner *cleaner, step v1alpha1.TestSpecStep) StepProcessor {
 	stepReport := report.NewTestSpecStep(step.Name)
 	if p.testReport != nil {
 		p.testReport.AddTestStep(stepReport)
 	}
-	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner, p.bindings)
+	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner, bindings)
 }
