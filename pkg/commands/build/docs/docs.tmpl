@@ -25,6 +25,8 @@ command
 events
 {{- else if .PodLogs -}}
 pod logs
+{{- else if .Describe -}}
+describe
 {{- else if .Script -}}
 script
 {{- else if .Sleep -}}
@@ -39,6 +41,8 @@ command
 events
 {{- else if .PodLogs -}}
 pod logs
+{{- else if .Describe -}}
+describe
 {{- else if .Script -}}
 script
 {{- else if .Sleep -}}

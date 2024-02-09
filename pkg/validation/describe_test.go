@@ -8,23 +8,27 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func TestValidatePodLogs(t *testing.T) {
+func TestValidateDescribe(t *testing.T) {
 	tests := []struct {
 		name      string
-		input     *v1alpha1.PodLogs
+		input     *v1alpha1.Describe
 		expectErr bool
 		errMsg    string
 	}{{
-		name: "Neither Name nor Selector provided",
-		input: &v1alpha1.PodLogs{
-			Name:     "",
-			Selector: "",
-		},
+		name:      "No resource provided",
+		input:     &v1alpha1.Describe{},
 		expectErr: true,
-		errMsg:    "name or label selector must be specified",
+		errMsg:    "a resource must be specified",
+	}, {
+		name: "Neither Name nor Selector provided",
+		input: &v1alpha1.Describe{
+			Resource: "pods",
+		},
+		expectErr: false,
 	}, {
 		name: "Both Name and Selector provided",
-		input: &v1alpha1.PodLogs{
+		input: &v1alpha1.Describe{
+			Resource: "pods",
 			Name:     "example-name",
 			Selector: "example-selector",
 		},
@@ -32,22 +36,22 @@ func TestValidatePodLogs(t *testing.T) {
 		errMsg:    "a name or label selector must be specified (found both)",
 	}, {
 		name: "Only Name provided",
-		input: &v1alpha1.PodLogs{
+		input: &v1alpha1.Describe{
+			Resource: "pods",
 			Name:     "example-name",
-			Selector: "",
 		},
 		expectErr: false,
 	}, {
 		name: "Only Selector provided",
-		input: &v1alpha1.PodLogs{
-			Name:     "",
+		input: &v1alpha1.Describe{
+			Resource: "pods",
 			Selector: "example-selector",
 		},
 		expectErr: false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			errs := ValidatePodLogs(field.NewPath("testPath"), tt.input)
+			errs := ValidateDescribe(field.NewPath("testPath"), tt.input)
 			if tt.expectErr {
 				assert.NotEmpty(t, errs)
 				assert.Contains(t, errs.ToAggregate().Error(), tt.errMsg)

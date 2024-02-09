@@ -22,6 +22,7 @@ Release notes for `TODO`.
 
 - Allowed passing test folders by args (`chainsaw test ./folder` instead of `chainsaw test --test-dir ./folder`)
 - Added new binding `$namespace` containing the test namespace name
+- Added new `describe` collector to invoke `kubectl describe ...`
 
 ## 🔧 Fixes 🔧
 

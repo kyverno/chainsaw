@@ -24,3 +24,5 @@ spec:
             foo: bar
     catch:
     - events: {}
+    - describe:
+        resource: crds

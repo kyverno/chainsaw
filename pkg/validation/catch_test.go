@@ -28,6 +28,9 @@ func TestValidateCatch(t *testing.T) {
 	exampleSleep := &v1alpha1.Sleep{
 		Duration: metav1.Duration{Duration: 5 * time.Second},
 	}
+	exampleDescribe := &v1alpha1.Describe{
+		Resource: "pods",
+	}
 	tests := []struct {
 		name      string
 		input     v1alpha1.Catch
@@ -75,6 +78,12 @@ func TestValidateCatch(t *testing.T) {
 		name: "Only Sleep statement provided",
 		input: v1alpha1.Catch{
 			Sleep: exampleSleep,
+		},
+		expectErr: false,
+	}, {
+		name: "Only Describe statement provided",
+		input: v1alpha1.Catch{
+			Describe: exampleDescribe,
 		},
 		expectErr: false,
 	}}

@@ -205,6 +205,12 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 				return nil, err
 			}
 			register(p.commandOperation(ctx, *cmd))
+		} else if handler.Describe != nil {
+			cmd, err := collect.Describe(handler.Describe)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Command != nil {
 			register(p.commandOperation(ctx, *handler.Command))
 		} else if handler.Script != nil {
@@ -235,6 +241,12 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Events != nil {
 			cmd, err := collect.Events(handler.Events)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, *cmd))
+		} else if handler.Describe != nil {
+			cmd, err := collect.Describe(handler.Describe)
 			if err != nil {
 				return nil, err
 			}
