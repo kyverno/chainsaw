@@ -205,6 +205,12 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 				return nil, err
 			}
 			register(p.commandOperation(ctx, *cmd))
+		} else if handler.Describe != nil {
+			cmd, err := collect.Describe(handler.Describe)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Command != nil {
 			register(p.commandOperation(ctx, *handler.Command))
 		} else if handler.Script != nil {
@@ -235,6 +241,12 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Events != nil {
 			cmd, err := collect.Events(handler.Events)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, *cmd))
+		} else if handler.Describe != nil {
+			cmd, err := collect.Describe(handler.Describe)
 			if err != nil {
 				return nil, err
 			}
@@ -400,8 +412,8 @@ func (p *stepProcessor) sleepOperation(ctx context.Context, sleep v1alpha1.Sleep
 }
 
 func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.FileRefOrCheck) ([]unstructured.Unstructured, error) {
-	if ref.Resource != nil && ref.Resource.Value != nil {
-		if object, ok := ref.Resource.Value.(map[string]any); !ok {
+	if ref.Check != nil && ref.Check.Value != nil {
+		if object, ok := ref.Check.Value.(map[string]any); !ok {
 			return nil, errors.New("resource must be an object")
 		} else {
 			return []unstructured.Unstructured{{Object: object}}, nil

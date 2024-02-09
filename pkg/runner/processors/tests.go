@@ -23,8 +23,8 @@ import (
 )
 
 type TestsProcessor interface {
-	Run(ctx context.Context)
-	CreateTestProcessor(test discovery.Test) TestProcessor
+	Run(context.Context)
+	CreateTestProcessor(discovery.Test, binding.Bindings) TestProcessor
 }
 
 func NewTestsProcessor(
@@ -67,10 +67,12 @@ func (p *testsProcessor) Run(ctx context.Context) {
 		}
 	})
 	var nspacer namespacer.Namespacer
+	bindings := p.bindings
 	if p.client != nil {
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
 			nspacer = namespacer.New(p.client, p.config.Namespace)
+			bindings = bindings.Register("$namespace", binding.NewBinding(nspacer.GetNamespace()))
 			if err := p.client.Get(ctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
@@ -82,7 +84,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer, p.bindings),
+							operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer, bindings),
 						}
 						operation.execute(ctx)
 					})
@@ -106,16 +108,16 @@ func (p *testsProcessor) Run(ctx context.Context) {
 					p.shouldFailFast.Store(true)
 				}
 			})
-			processor := p.CreateTestProcessor(test)
+			processor := p.CreateTestProcessor(test, bindings)
 			processor.Run(testing.IntoContext(ctx, t), nspacer)
 		})
 	}
 }
 
-func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor {
+func (p *testsProcessor) CreateTestProcessor(test discovery.Test, bindings binding.Bindings) TestProcessor {
 	testReport := report.NewTest(test.Name)
 	if p.testsReport != nil {
 		p.testsReport.AddTest(testReport)
 	}
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast, p.bindings)
+	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast, bindings)
 }

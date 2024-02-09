@@ -101,6 +101,30 @@ spec:
                             required:
                             - entrypoint
                             type: object
+                          describe:
+                            description: Describe determines the resource describe
+                              collector to execute.
+                            properties:
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                type: string
+                              namespace:
+                                description: 'Namespace of the referent. More info:
+                                  https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                type: string
+                              resource:
+                                description: Resource type.
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            required:
+                            - resource
+                            type: object
                           description:
                             description: Description contains a description of the
                               operation.
@@ -226,6 +250,30 @@ spec:
                                 type: string
                             required:
                             - entrypoint
+                            type: object
+                          describe:
+                            description: Describe determines the resource describe
+                              collector to execute.
+                            properties:
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                type: string
+                              namespace:
+                                description: 'Namespace of the referent. More info:
+                                  https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                type: string
+                              resource:
+                                description: Resource type.
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            required:
+                            - resource
                             type: object
                           description:
                             description: Description contains a description of the
@@ -427,7 +475,7 @@ spec:
                                   for all YAML files within the "manifest" directory.
                                 type: string
                               resource:
-                                description: Resource provides a check used in assertions.
+                                description: Check provides a check used in assertions.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               timeout:
@@ -593,7 +641,7 @@ spec:
                                   for all YAML files within the "manifest" directory.
                                 type: string
                               resource:
-                                description: Resource provides a check used in assertions.
+                                description: Check provides a check used in assertions.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               timeout:

@@ -401,6 +401,50 @@
                         }
                       }
                     },
+                    "describe": {
+                      "description": "Describe determines the resource describe collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "resource"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "resource": {
+                          "description": "Resource type.",
+                          "type": "string"
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
                     "description": {
                       "description": "Description contains a description of the operation.",
                       "type": [
@@ -604,6 +648,50 @@
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
                           "type": [
                             "boolean",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "describe": {
+                      "description": "Describe determines the resource describe collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "resource"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "resource": {
+                          "description": "Resource type.",
+                          "type": "string"
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
                             "null"
                           ]
                         },
@@ -941,7 +1029,7 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource provides a check used in assertions.",
+                          "description": "Check provides a check used in assertions.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "timeout": {
@@ -1182,7 +1270,7 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource provides a check used in assertions.",
+                          "description": "Check provides a check used in assertions.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "timeout": {

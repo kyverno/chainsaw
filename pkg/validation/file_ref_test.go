@@ -15,24 +15,20 @@ func TestValidateFileRef(t *testing.T) {
 		input     v1alpha1.FileRef
 		expectErr bool
 		errMsg    string
-	}{
-		{
-			name: "File field is empty",
-			input: v1alpha1.FileRef{
-				File: "",
-			},
-			expectErr: true,
-			errMsg:    "a file reference must be specified",
+	}{{
+		name: "File field is empty",
+		input: v1alpha1.FileRef{
+			File: "",
 		},
-		{
-			name: "File field is provided",
-			input: v1alpha1.FileRef{
-				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
-			},
-			expectErr: false,
+		expectErr: true,
+		errMsg:    "a file reference must be specified",
+	}, {
+		name: "File field is provided",
+		input: v1alpha1.FileRef{
+			File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 		},
-	}
-
+		expectErr: false,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			errs := ValidateFileRef(field.NewPath("testPath"), tt.input)

@@ -14,6 +14,10 @@ type Finally struct {
 	// +optional
 	Events *Events `json:"events,omitempty"`
 
+	// Describe determines the resource describe collector to execute.
+	// +optional
+	Describe *Describe `json:"describe,omitempty"`
+
 	// Command defines a command to run.
 	// +optional
 	Command *Command `json:"command,omitempty"`
