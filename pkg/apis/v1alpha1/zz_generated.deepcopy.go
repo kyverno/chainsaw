@@ -390,8 +390,8 @@ func (in *FileRef) DeepCopy() *FileRef {
 func (in *FileRefOrCheck) DeepCopyInto(out *FileRefOrCheck) {
 	*out = *in
 	out.FileRef = in.FileRef
-	if in.Resource != nil {
-		in, out := &in.Resource, &out.Resource
+	if in.Check != nil {
+		in, out := &in.Check, &out.Check
 		*out = (*in).DeepCopy()
 	}
 	return

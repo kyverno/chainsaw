@@ -400,7 +400,7 @@ spec:
                             files within the "manifest" directory.
                           type: string
                         resource:
-                          description: Resource provides a check used in assertions.
+                          description: Check provides a check used in assertions.
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         timeout:
@@ -555,7 +555,7 @@ spec:
                             files within the "manifest" directory.
                           type: string
                         resource:
-                          description: Resource provides a check used in assertions.
+                          description: Check provides a check used in assertions.
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         timeout:

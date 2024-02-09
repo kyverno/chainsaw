@@ -7,10 +7,10 @@ import (
 
 func ValidateFileRefOrCheck(path *field.Path, obj v1alpha1.FileRefOrCheck) field.ErrorList {
 	var errs field.ErrorList
-	if obj.File == "" && obj.Resource == nil {
-		errs = append(errs, field.Invalid(path, obj, "a file reference or raw resource must be specified"))
-	} else if obj.File != "" && obj.Resource != nil {
-		errs = append(errs, field.Invalid(path, obj, "a file reference or raw resource must be specified (found both)"))
+	if obj.File == "" && obj.Check == nil {
+		errs = append(errs, field.Invalid(path, obj, "a file reference or raw check must be specified"))
+	} else if obj.File != "" && obj.Check != nil {
+		errs = append(errs, field.Invalid(path, obj, "a file reference or raw check must be specified (found both)"))
 	}
 	return errs
 }
