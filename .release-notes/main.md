@@ -27,6 +27,7 @@ Release notes for `TODO`.
 
 - Fixed an issue when running `chainsaw migrate kuttl tests` twice on the same folder
 - Fixed an issue with `chainsaw migrate kuttl tests` potentially incorrect when a `TestStep` is present
+- Fixed an incorrect `Expectation` API docs
 
 ## 📚 Docs 📚
 
