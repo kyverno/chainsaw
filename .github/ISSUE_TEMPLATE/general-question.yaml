@@ -17,12 +17,17 @@ body:
     validations:
       required: true
 
-  - type: input
+  - type: dropdown
     id: chainsaw-version
     attributes:
-      label: What version of chainsaw are you using?
-      description: "chainsaw version:"
-      placeholder: "e.g., 1.2.3"
+      label: chainsaw version Version
+      description: >-
+        What version of the chainsaw are you running?
+      options:
+        - v0.1.0
+        - v0.1.1
+        - v0.1.2
+        - v0.1.3
     validations:
       required: true
 
