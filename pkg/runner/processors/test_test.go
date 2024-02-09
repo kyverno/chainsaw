@@ -6,6 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
@@ -33,6 +34,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport    *report.TestReport
 		test           discovery.Test
 		shouldFailFast bool
+		binding        binding.Bindings
 		namespacer     *fakeNamespacer.FakeNamespacer
 		expectedFail   bool
 		skipped        bool
@@ -54,11 +56,13 @@ func TestTestProcessor_Run(t *testing.T) {
 				Err: nil,
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
-						Timeouts: &v1alpha1.Timeouts{},
+						Namespace: "chainsaw",
+						Timeouts:  &v1alpha1.Timeouts{},
 					},
 				},
 			},
 			shouldFailFast: false,
+			binding:        binding.NewBindings(),
 			namespacer:     nil,
 			expectedFail:   false,
 		},
@@ -89,6 +93,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				},
 			},
 			shouldFailFast: false,
+			binding:        binding.NewBindings(),
 			namespacer:     nil,
 			expectedFail:   false,
 		},
@@ -120,6 +125,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				},
 			},
 			shouldFailFast: true,
+			binding:        binding.NewBindings(),
 			namespacer:     nil,
 			expectedFail:   false,
 		},
@@ -151,6 +157,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				},
 			},
 			shouldFailFast: false,
+			binding:        binding.NewBindings(),
 			namespacer:     &fakeNamespacer.FakeNamespacer{},
 			expectedFail:   false,
 			skipped:        true,
@@ -184,6 +191,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			},
 			namespacer:     &fakeNamespacer.FakeNamespacer{},
 			shouldFailFast: false,
+			binding:        binding.NewBindings(),
 			expectedFail:   false,
 		},
 		{
@@ -214,6 +222,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			},
 			namespacer:     nil,
 			shouldFailFast: false,
+			binding:        binding.NewBindings(),
 			expectedFail:   false,
 		},
 		{
@@ -245,6 +254,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			},
 			namespacer:     nil,
 			shouldFailFast: false,
+			binding:        binding.NewBindings(),
 			expectedFail:   false,
 		},
 		{
@@ -279,6 +289,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			},
 			namespacer:     &fakeNamespacer.FakeNamespacer{},
 			shouldFailFast: false,
+			binding:        binding.NewBindings(),
 			expectedFail:   false,
 		},
 		{
@@ -313,6 +324,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			},
 			namespacer:     &fakeNamespacer.FakeNamespacer{},
 			shouldFailFast: false,
+			binding:        binding.NewBindings(),
 			expectedFail:   true,
 		},
 		{
@@ -347,6 +359,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			},
 			namespacer:     &fakeNamespacer.FakeNamespacer{},
 			shouldFailFast: false,
+			binding:        binding.NewBindings(),
 			expectedFail:   true,
 		},
 	}
