@@ -120,6 +120,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			}
 			namespace = &ns
 		}
+		bindings := p.bindings.Register("$namespace", binding.NewBinding(namespace))
 		if namespace != nil {
 			nspacer = namespacer.New(p.client, namespace.Name)
 			setupCtx := logging.IntoContext(ctx, setupLogger)
@@ -135,7 +136,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, p.bindings),
+							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, bindings),
 						}
 						operation.execute(cleanupCtx)
 					})
