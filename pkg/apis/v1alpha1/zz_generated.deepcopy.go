@@ -293,6 +293,11 @@ func (in *Describe) DeepCopyInto(out *Describe) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.ShowEvents != nil {
+		in, out := &in.ShowEvents, &out.ShowEvents
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
