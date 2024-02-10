@@ -2,6 +2,7 @@ package collect
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
@@ -32,5 +33,8 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 		namespace = "$NAMESPACE"
 	}
 	cmd.Args = append(cmd.Args, "-n", namespace)
+	if collector.ShowEvents != nil {
+		cmd.Args = append(cmd.Args, fmt.Sprintf("--show-events=%t", *collector.ShowEvents))
+	}
 	return &cmd, nil
 }

@@ -26,4 +26,8 @@ type Describe struct {
 	// Selector defines labels selector.
 	// +optional
 	Selector string `json:"selector,omitempty"`
+
+	// Show Events indicates whether to include related events.
+	// +optional
+	ShowEvents *bool `json:"showEvents,omitempty"`
 }
