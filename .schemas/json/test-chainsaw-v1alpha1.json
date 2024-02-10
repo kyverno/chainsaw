@@ -436,6 +436,13 @@
                             "null"
                           ]
                         },
+                        "showEvents": {
+                          "description": "Show Events indicates whether to include related events.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
                           "type": [
@@ -692,6 +699,13 @@
                           "description": "Selector defines labels selector.",
                           "type": [
                             "string",
+                            "null"
+                          ]
+                        },
+                        "showEvents": {
+                          "description": "Show Events indicates whether to include related events.",
+                          "type": [
+                            "boolean",
                             "null"
                           ]
                         },

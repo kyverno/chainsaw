@@ -196,6 +196,7 @@ If a resource already exists in the cluster it will fail.</p>
 | `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 | `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+| `showEvents` | `bool` |  |  | <p>Show Events indicates whether to include related events.</p> |
 
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
 

@@ -84,6 +84,10 @@ spec:
                         selector:
                           description: Selector defines labels selector.
                           type: string
+                        showEvents:
+                          description: Show Events indicates whether to include related
+                            events.
+                          type: boolean
                         timeout:
                           description: Timeout for the operation. Overrides the global
                             timeout set in the Configuration.
@@ -223,6 +227,10 @@ spec:
                         selector:
                           description: Selector defines labels selector.
                           type: string
+                        showEvents:
+                          description: Show Events indicates whether to include related
+                            events.
+                          type: boolean
                         timeout:
                           description: Timeout for the operation. Overrides the global
                             timeout set in the Configuration.
