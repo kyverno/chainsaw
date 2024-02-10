@@ -238,6 +238,13 @@ func (in *Create) DeepCopyInto(out *Create) {
 		**out = **in
 	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
+	if in.Modifiers != nil {
+		in, out := &in.Modifiers, &out.Modifiers
+		*out = make([]Modifier, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	if in.DryRun != nil {
 		in, out := &in.DryRun, &out.DryRun
 		*out = new(bool)

@@ -990,22 +990,24 @@
                           ]
                         },
                         "modifiers": {
+                          "description": "Modifiers defines a list of mutations applied to object before the operation runs.",
                           "type": [
                             "array",
                             "null"
                           ],
                           "items": {
+                            "description": "Modifier represents an object mutation.",
                             "type": [
                               "object",
                               "null"
                             ],
                             "properties": {
                               "annotate": {
-                                "description": "Any can be any type.",
+                                "description": "Annotate defines a mutation of object annotations.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "label": {
-                                "description": "Any can be any type.",
+                                "description": "Label defines a mutation of object labels.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
@@ -1013,7 +1015,7 @@
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "merge": {
-                                "description": "Any can be any type.",
+                                "description": "Merge defines an arbitrary merge mutation.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               }
                             }
@@ -1161,6 +1163,38 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "modifiers": {
+                          "description": "Modifiers defines a list of mutations applied to object before the operation runs.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Modifier represents an object mutation.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "properties": {
+                              "annotate": {
+                                "description": "Annotate defines a mutation of object annotations.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "label": {
+                                "description": "Label defines a mutation of object labels.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "merge": {
+                                "description": "Merge defines an arbitrary merge mutation.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
                         },
                         "resource": {
                           "description": "Resource provides a resource to be applied.",

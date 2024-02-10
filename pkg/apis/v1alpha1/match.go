@@ -1,4 +1,4 @@
 package v1alpha1
 
-// Check represents a check to be applied on the result of an operation.
+// Match represents a match condition against an evaluated object.
 type Match = Any
