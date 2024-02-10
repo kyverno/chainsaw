@@ -40,7 +40,7 @@ jobs:
         run: |
           set -e
           git fetch --force --tags
-      - name: Set up Go
+      - name: Setup Go
         uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
         with:
           go-version-file: go.mod
