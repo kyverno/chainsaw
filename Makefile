@@ -104,6 +104,8 @@ codegen-cli-docs: build ## Generate CLI docs
 
 .PHONY: codegen-api-docs
 codegen-api-docs: $(REFERENCE_DOCS) ## Generate markdown API docs
+codegen-api-docs: codegen-deepcopy
+codegen-api-docs: codegen-register
 	@echo Generate api docs... >&2
 	@rm -rf ./website/docs/apis
 	@cd ./website/apis && $(REFERENCE_DOCS) -c config.yaml -f markdown -o ../docs/apis

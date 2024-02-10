@@ -390,8 +390,22 @@ spec:
                         modifiers:
                           items:
                             properties:
-                              merge:
+                              annotate:
+                                description: Any can be any type.
                                 type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              label:
+                                description: Any can be any type.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              match:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              merge:
+                                description: Any can be any type.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
                             type: object
                           type: array
                         resource:

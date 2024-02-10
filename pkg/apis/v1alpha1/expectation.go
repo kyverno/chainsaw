@@ -5,7 +5,7 @@ package v1alpha1
 type Expectation struct {
 	// Match defines the matching statement.
 	// +optional
-	Match *Check `json:"match,omitempty"`
+	Match *Match `json:"match,omitempty"`
 
 	// Check defines the verification statement.
 	Check Check `json:"check"`

@@ -2,7 +2,7 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: patch
+  name: modifiers
 spec:
   steps:
   - try:
@@ -12,6 +12,12 @@ spec:
           kind: Namespace
           metadata:
             name: foo
-        patches:
-        - patch:
-            metadata: "(merge(@, { annotations: { foo: 'bar' } }))"
+        modifiers:
+        - merge:
+            metadata:
+              labels:
+                lorem: ipsum
+        - label:
+            foo: bar
+        - annotate:
+            foo: bar

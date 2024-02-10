@@ -220,7 +220,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 - [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
 
-<p>Events defines how to collects events.</p>
+<p>Events defines how to collect events.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -310,12 +310,6 @@ with a match filter to determine if the verification should be considered.</p>
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 
-## `Merge`     {#chainsaw-kyverno-io-v1alpha1-Merge}
-
-**Appears in:**
-    
-- [Modifier](#chainsaw-kyverno-io-v1alpha1-Modifier)
-
 ## `Modifier`     {#chainsaw-kyverno-io-v1alpha1-Modifier}
 
 **Appears in:**
@@ -324,7 +318,10 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `merge` | [`Merge`](#chainsaw-kyverno-io-v1alpha1-Merge) | :white_check_mark: |  | *No description provided.* |
+| `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
+| `annotate` | `policy/v1alpha1.Any` | :white_check_mark: |  | *No description provided.* |
+| `label` | `policy/v1alpha1.Any` | :white_check_mark: |  | *No description provided.* |
+| `merge` | `policy/v1alpha1.Any` | :white_check_mark: |  | *No description provided.* |
 
 ## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
 
@@ -389,7 +386,7 @@ For multiple objects use labels.</p>
 - [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
 
-<p>PodLogs defines how to collects pod logs.</p>
+<p>PodLogs defines how to collect pod logs.</p>
 
 
 | Field | Type | Required | Inline | Description |

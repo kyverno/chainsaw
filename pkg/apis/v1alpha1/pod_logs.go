@@ -4,7 +4,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// PodLogs defines how to collects pod logs.
+// PodLogs defines how to collect pod logs.
 type PodLogs struct {
 	// Timeout for the operation. Overrides the global timeout set in the Configuration.
 	// +optional

@@ -1000,11 +1000,21 @@
                               "null"
                             ],
                             "properties": {
+                              "annotate": {
+                                "description": "Any can be any type.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "label": {
+                                "description": "Any can be any type.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
                               "merge": {
-                                "type": [
-                                  "object",
-                                  "null"
-                                ]
+                                "description": "Any can be any type.",
+                                "x-kubernetes-preserve-unknown-fields": true
                               }
                             }
                           }

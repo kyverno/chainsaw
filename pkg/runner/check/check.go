@@ -8,7 +8,7 @@ import (
 	jpfunctions "github.com/jmespath-community/go-jmespath/pkg/functions"
 	"github.com/jmespath-community/go-jmespath/pkg/interpreter"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/runner/check/functions"
+	"github.com/kyverno/chainsaw/pkg/runner/functions"
 	"github.com/kyverno/kyverno-json/pkg/engine/assert"
 	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"k8s.io/apimachinery/pkg/util/validation/field"

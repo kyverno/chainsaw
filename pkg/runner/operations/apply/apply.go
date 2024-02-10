@@ -3,7 +3,6 @@ package apply
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -14,6 +13,8 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	mapsutils "github.com/kyverno/chainsaw/pkg/utils/maps"
+	"github.com/kyverno/kyverno-json/pkg/engine/mutate"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
@@ -76,15 +77,41 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 	defer func() {
 		internal.LogEnd(logger, logging.Apply, err)
 	}()
-	// for _, patch := range o.patches {
-	// 	// TODO: match
-	// 	patch, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, patch.Patch.Value), obj.UnstructuredContent(), o.bindings)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	obj.SetUnstructuredContent(mapsutils.Merge(obj.UnstructuredContent(), clean(patch)))
-	// }
-	fmt.Println(obj)
+	for _, modifier := range o.modifiers {
+		// if a match is specified, skip the check if the resource doesn't match
+		if modifier.Match != nil && modifier.Match.Value != nil {
+			if errs, err := check.Check(ctx, obj.UnstructuredContent(), nil, modifier.Match); err != nil {
+				return err
+			} else if len(errs) != 0 {
+				continue
+			}
+		}
+		merge := modifier.Merge
+		if modifier.Label != nil {
+			merge = &v1alpha1.Any{
+				Value: map[string]any{
+					"metadata": map[string]any{
+						"labels": modifier.Label.Value,
+					},
+				},
+			}
+		} else if modifier.Annotate != nil {
+			merge = &v1alpha1.Any{
+				Value: map[string]any{
+					"metadata": map[string]any{
+						"annotations": modifier.Annotate.Value,
+					},
+				},
+			}
+		}
+		if merge != nil {
+			patch, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, merge.Value), obj.UnstructuredContent(), o.bindings)
+			if err != nil {
+				return err
+			}
+			obj.SetUnstructuredContent(mapsutils.Merge(obj.UnstructuredContent(), clean(patch)))
+		}
+	}
 	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
 		return err
 	}
