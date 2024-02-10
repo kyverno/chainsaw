@@ -24,7 +24,7 @@ type Apply struct {
 	// FileRefOrResource provides a reference to the resources to be applied.
 	FileRefOrResource `json:",inline"`
 
-	Patches []Patch `json:"patches,omitempty"`
+	Modifiers []Modifier `json:"modifiers,omitempty"`
 
 	// DryRun determines whether the file should be applied in dry run mode.
 	// +optional

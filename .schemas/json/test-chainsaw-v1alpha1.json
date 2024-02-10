@@ -989,7 +989,7 @@
                             "null"
                           ]
                         },
-                        "patches": {
+                        "modifiers": {
                           "type": [
                             "array",
                             "null"
@@ -999,17 +999,12 @@
                               "object",
                               "null"
                             ],
-                            "required": [
-                              "patch"
-                            ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
-                                "x-kubernetes-preserve-unknown-fields": true
-                              },
-                              "patch": {
-                                "description": "Check defines the verification statement.",
-                                "x-kubernetes-preserve-unknown-fields": true
+                              "merge": {
+                                "type": [
+                                  "object",
+                                  "null"
+                                ]
                               }
                             }
                           }

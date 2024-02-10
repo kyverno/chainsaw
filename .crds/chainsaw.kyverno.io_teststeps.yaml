@@ -387,19 +387,11 @@ spec:
                             multiple files, such as "manifest/*.yaml" for all YAML
                             files within the "manifest" directory.
                           type: string
-                        patches:
+                        modifiers:
                           items:
                             properties:
-                              match:
-                                description: Match defines the matching statement.
+                              merge:
                                 type: object
-                                x-kubernetes-preserve-unknown-fields: true
-                              patch:
-                                description: Check defines the verification statement.
-                                type: object
-                                x-kubernetes-preserve-unknown-fields: true
-                            required:
-                            - patch
                             type: object
                           type: array
                         resource:

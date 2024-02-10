@@ -55,7 +55,7 @@ func Test_apply(t *testing.T) {
 		name        string
 		object      unstructured.Unstructured
 		client      *tclient.FakeClient
-		patches     []v1alpha1.Patch
+		modifiers   []v1alpha1.Modifier
 		expect      []v1alpha1.Expectation
 		expectedErr error
 	}{{
@@ -70,18 +70,18 @@ func Test_apply(t *testing.T) {
 				return nil
 			},
 		},
-		patches: []v1alpha1.Patch{
-			{
-				Patch: v1alpha1.Check{
-					Value: map[string]any{
-						"metadata": map[string]any{
-							"labels": map[string]any{
-								"foo": "bar",
-							},
-						},
-					},
-				},
-			},
+		modifiers: []v1alpha1.Modifier{
+			// {
+			// 	Merge: &v1alpha1.Check{
+			// 		Value: map[string]any{
+			// 			"metadata": map[string]any{
+			// 				"labels": map[string]any{
+			// 					"foo": "bar",
+			// 				},
+			// 			},
+			// 		},
+			// 	},
+			// },
 		},
 		expect:      nil,
 		expectedErr: nil,
@@ -327,7 +327,7 @@ func Test_apply(t *testing.T) {
 				nil,
 				nil,
 				nil,
-				tt.patches,
+				tt.modifiers,
 				tt.expect,
 			)
 			err := operation.Exec(ctx)

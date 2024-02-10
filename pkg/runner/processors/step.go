@@ -281,7 +281,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) (
 		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), p.bindings, op.Patches, op.Expect),
+			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), p.bindings, op.Modifiers, op.Expect),
 		})
 	}
 	return ops, nil

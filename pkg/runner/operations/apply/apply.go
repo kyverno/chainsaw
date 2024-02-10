@@ -14,8 +14,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	mapsutils "github.com/kyverno/chainsaw/pkg/utils/maps"
-	"github.com/kyverno/kyverno-json/pkg/engine/mutate"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
@@ -29,7 +27,7 @@ type operation struct {
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
 	bindings   binding.Bindings
-	patches    []v1alpha1.Patch
+	modifiers  []v1alpha1.Modifier
 	expect     []v1alpha1.Expectation
 }
 
@@ -39,7 +37,7 @@ func New(
 	namespacer namespacer.Namespacer,
 	cleaner cleanup.Cleaner,
 	bindings binding.Bindings,
-	patches []v1alpha1.Patch,
+	modifiers []v1alpha1.Modifier,
 	expect []v1alpha1.Expectation,
 ) operations.Operation {
 	if bindings == nil {
@@ -51,7 +49,7 @@ func New(
 		namespacer: namespacer,
 		cleaner:    cleaner,
 		bindings:   bindings,
-		patches:    patches,
+		modifiers:  modifiers,
 		expect:     expect,
 	}
 }
@@ -78,14 +76,14 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 	defer func() {
 		internal.LogEnd(logger, logging.Apply, err)
 	}()
-	for _, patch := range o.patches {
-		// TODO: match
-		patch, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, patch.Patch.Value), obj.UnstructuredContent(), o.bindings)
-		if err != nil {
-			return err
-		}
-		obj.SetUnstructuredContent(mapsutils.Merge(obj.UnstructuredContent(), clean(patch)))
-	}
+	// for _, patch := range o.patches {
+	// 	// TODO: match
+	// 	patch, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, patch.Patch.Value), obj.UnstructuredContent(), o.bindings)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	obj.SetUnstructuredContent(mapsutils.Merge(obj.UnstructuredContent(), clean(patch)))
+	// }
 	fmt.Println(obj)
 	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
 		return err
