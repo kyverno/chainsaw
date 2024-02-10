@@ -13,11 +13,13 @@ spec:
           metadata:
             name: foo
         modifiers:
-        - merge:
-            metadata:
-              labels:
-                lorem: ipsum
         - label:
             foo: bar
         - annotate:
             foo: bar
+        - merge:
+            metadata:
+              labels:
+                lorem: ipsum
+              annotations:
+                lorem: ipsum
