@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-issue-forms.json
+
 name: General Question
 description: Ask a question or need support
 title: "[Question] " 
