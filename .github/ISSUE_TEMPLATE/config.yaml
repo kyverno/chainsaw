@@ -1,0 +1,12 @@
+blank_issues_enabled: true
+
+contact_links:
+  - name: Chainsaw discussions
+    url: https://github.com/kyverno/chainsaw/discussions
+    about: Please ask and answer questions related to chainsaw here.
+  - name: Chainsaw documentation
+    url: https://kyverno.github.io/chainsaw
+    about: Browse chainsaw documentation here.
+  - name: Chainsaw slack channel
+    url: https://kubernetes.slack.com/archives/C067LUFL43U
+    about: Please ask and answer any chainsaw usage questions here.
