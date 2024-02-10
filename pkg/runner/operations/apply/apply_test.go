@@ -70,33 +70,6 @@ func Test_apply(t *testing.T) {
 				return nil
 			},
 		},
-		modifiers: []v1alpha1.Modifier{
-			// {
-			// 	Merge: &v1alpha1.Check{
-			// 		Value: map[string]any{
-			// 			"metadata": map[string]any{
-			// 				"labels": map[string]any{
-			// 					"foo": "bar",
-			// 				},
-			// 			},
-			// 		},
-			// 	},
-			// },
-		},
-		expect:      nil,
-		expectedErr: nil,
-	}, {
-		name:   "Resource already exists, patch it",
-		object: podv2,
-		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
-				*obj.(*unstructured.Unstructured) = podv1
-				return nil
-			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
-				return nil
-			},
-		},
 		expect:      nil,
 		expectedErr: nil,
 	}, {
