@@ -13,8 +13,9 @@
             "cwd": "${workspaceFolder}",
             "args": [
                 "test",
-                "--test-dir",
                 "./testdata/e2e/examples",
+                "--config",
+                "./testdata/e2e/config.yaml",
             ]
         }
     ]
