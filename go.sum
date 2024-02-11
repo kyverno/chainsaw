@@ -479,8 +479,8 @@ github.com/kudobuilder/kuttl v0.15.0 h1:OmCbpY3ebn+myJaatD+IT1AL1OTz34+Cv6ettiXd
 github.com/kudobuilder/kuttl v0.15.0/go.mod h1:UtAOt+GE8HQZFveEN8p1fk3j+H1Cp5Fk1eMdQkXPqH0=
 github.com/kyverno/kyverno v1.5.0-rc1.0.20240202083228-5f0d53fe3482 h1:mGQbOhxoHBhPCGkxYjy+u3qtWH43BLjIxUs4zWtvKSg=
 github.com/kyverno/kyverno v1.5.0-rc1.0.20240202083228-5f0d53fe3482/go.mod h1:uEm7WtaqOsPP3Jx6EOkO2PjHu6vf0MFaMD6w1ol7hAQ=
-github.com/kyverno/kyverno-json v0.0.3-0.20240209170647-44d153c1ce9d h1:tkzm7fVI/muDDOBJkFs0kAH1OsbWdmDA02txUu9y8Lk=
-github.com/kyverno/kyverno-json v0.0.3-0.20240209170647-44d153c1ce9d/go.mod h1:oz27arF3YFnUuUTNngae/6OTaEWQ/8gxmCp7CavXYt8=
+github.com/kyverno/kyverno-json v0.0.3-0.20240211090543-b139511f7c17 h1:6eMgQzTnM6Q5ANFJP/hfd3a4MvhyDlBdf39mgZE+dcY=
+github.com/kyverno/kyverno-json v0.0.3-0.20240211090543-b139511f7c17/go.mod h1:oz27arF3YFnUuUTNngae/6OTaEWQ/8gxmCp7CavXYt8=
 github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0=
 github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=

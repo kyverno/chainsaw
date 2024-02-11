@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
@@ -57,6 +58,11 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 	defer func() {
 		internal.LogEnd(logger, logging.Create, err)
 	}()
+	if merged, err := mutate.Merge(ctx, obj, o.bindings, o.modifiers...); err != nil {
+		return err
+	} else {
+		obj = merged
+	}
 	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
 		return err
 	}
