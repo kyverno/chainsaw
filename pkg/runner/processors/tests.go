@@ -11,6 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
@@ -71,9 +72,15 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	if p.client != nil {
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
-			nspacer = namespacer.New(p.client, p.config.Namespace)
+			object := client.ToUnstructured(&namespace)
+			if merged, err := mutate.Merge(ctx, object, bindings, p.config.NamespaceModifiers...); err != nil {
+				t.FailNow()
+			} else {
+				object = merged
+			}
+			nspacer = namespacer.New(p.client, object.GetName())
 			bindings = bindings.Register("$namespace", binding.NewBinding(nspacer.GetNamespace()))
-			if err := p.client.Get(ctx, client.ObjectKey(&namespace), namespace.DeepCopy()); err != nil {
+			if err := p.client.Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -84,12 +91,12 @@ func (p *testsProcessor) Run(ctx context.Context) {
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, client.ToUnstructured(namespace.DeepCopy()), nspacer, bindings),
+							operation:       opdelete.New(p.client, object, nspacer, bindings),
 						}
 						operation.execute(ctx)
 					})
 				}
-				if err := p.client.Create(ctx, namespace.DeepCopy()); err != nil {
+				if err := p.client.Create(ctx, object.DeepCopy()); err != nil {
 					t.FailNow()
 				}
 			}

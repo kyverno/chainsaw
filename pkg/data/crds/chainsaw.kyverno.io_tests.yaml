@@ -53,6 +53,30 @@ spec:
                 description: Namespace determines whether the test should run in a
                   random ephemeral namespace or not.
                 type: string
+              namespaceModifiers:
+                description: NamespaceModifiers defines a list of mutations applied
+                  to namespace before creation.
+                items:
+                  description: Modifier represents an object mutation.
+                  properties:
+                    annotate:
+                      description: Annotate defines a mutation of object annotations.
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                    label:
+                      description: Label defines a mutation of object labels.
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                    match:
+                      description: Match defines the matching statement.
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                    merge:
+                      description: Merge defines an arbitrary merge mutation.
+                      type: object
+                      x-kubernetes-preserve-unknown-fields: true
+                  type: object
+                type: array
               skip:
                 description: Skip determines whether the test should skipped.
                 type: boolean

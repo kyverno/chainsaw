@@ -47,6 +47,10 @@ type ConfigurationSpec struct {
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 
+	// NamespaceModifiers defines a list of mutations applied to namespace before creation.
+	// +optional
+	NamespaceModifiers []Modifier `json:"namespaceModifiers,omitempty"`
+
 	// FullName makes use of the full test case folder path instead of the folder name.
 	// +optional
 	FullName bool `json:"fullName,omitempty"`

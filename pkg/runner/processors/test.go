@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
@@ -122,11 +123,17 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			namespace = &ns
 		}
 		if namespace != nil {
-			nspacer = namespacer.New(p.client, namespace.Name)
+			object := client.ToUnstructured(namespace)
+			if merged, err := mutate.Merge(ctx, object, bindings, p.test.Spec.NamespaceModifiers...); err != nil {
+				t.FailNow()
+			} else {
+				object = merged
+			}
+			nspacer = namespacer.New(p.client, object.GetName())
 			bindings = p.bindings.Register("$namespace", binding.NewBinding(nspacer.GetNamespace()))
 			setupCtx := logging.IntoContext(ctx, setupLogger)
 			cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
-			if err := p.client.Get(setupCtx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
+			if err := p.client.Get(setupCtx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -137,12 +144,12 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, client.ToUnstructured(namespace), nspacer, bindings),
+							operation:       opdelete.New(p.client, object, nspacer, bindings),
 						}
 						operation.execute(cleanupCtx)
 					})
 				}
-				if err := p.client.Create(logging.IntoContext(setupCtx, setupLogger), namespace.DeepCopy()); err != nil {
+				if err := p.client.Create(logging.IntoContext(setupCtx, setupLogger), object.DeepCopy()); err != nil {
 					t.FailNow()
 				}
 			}
