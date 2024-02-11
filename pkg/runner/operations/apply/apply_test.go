@@ -55,6 +55,7 @@ func Test_apply(t *testing.T) {
 		name        string
 		object      unstructured.Unstructured
 		client      *tclient.FakeClient
+		modifiers   []v1alpha1.Modifier
 		expect      []v1alpha1.Expectation
 		expectedErr error
 	}{{
@@ -299,7 +300,8 @@ func Test_apply(t *testing.T) {
 				nil,
 				nil,
 				nil,
-				tt.expect...,
+				tt.modifiers,
+				tt.expect,
 			)
 			err := operation.Exec(ctx)
 			if tt.expectedErr != nil {

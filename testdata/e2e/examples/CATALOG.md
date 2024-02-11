@@ -8,6 +8,7 @@
 - [delete](delete/README.md)
 - [finally](finally/README.md)
 - [inline](inline/README.md)
+- [modifiers](modifiers/README.md)
 - [non-resource-assertion](non-resource-assertion/README.md)
 - [sleep](sleep/README.md)
 - [timeout](timeout/README.md)

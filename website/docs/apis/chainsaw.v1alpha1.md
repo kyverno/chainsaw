@@ -64,6 +64,7 @@ should be applied during testing.</p>
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the resources to be applied.</p> |
+| `modifiers` | [`[]Modifier`](#chainsaw-kyverno-io-v1alpha1-Modifier) |  |  | <p>Modifiers defines a list of mutations applied to object before the operation runs.</p> |
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
@@ -160,6 +161,7 @@ If a resource already exists in the cluster it will fail.</p>
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be created.</p> |
+| `modifiers` | [`[]Modifier`](#chainsaw-kyverno-io-v1alpha1-Modifier) |  |  | <p>Modifiers defines a list of mutations applied to object before the operation runs.</p> |
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
@@ -219,7 +221,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 - [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
 
-<p>Events defines how to collects events.</p>
+<p>Events defines how to collect events.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -309,6 +311,23 @@ with a match filter to determine if the verification should be considered.</p>
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 
+## `Modifier`     {#chainsaw-kyverno-io-v1alpha1-Modifier}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+
+<p>Modifier represents an object mutation.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
+| `annotate` | `policy/v1alpha1.Any` |  |  | <p>Annotate defines a mutation of object annotations.</p> |
+| `label` | `policy/v1alpha1.Any` |  |  | <p>Label defines a mutation of object labels.</p> |
+| `merge` | `policy/v1alpha1.Any` |  |  | <p>Merge defines an arbitrary merge mutation.</p> |
+
 ## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
 
 **Appears in:**
@@ -372,7 +391,7 @@ For multiple objects use labels.</p>
 - [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
 
-<p>PodLogs defines how to collects pod logs.</p>
+<p>PodLogs defines how to collect pod logs.</p>
 
 
 | Field | Type | Required | Inline | Description |

@@ -445,6 +445,33 @@ spec:
                                   that matches multiple files, such as "manifest/*.yaml"
                                   for all YAML files within the "manifest" directory.
                                 type: string
+                              modifiers:
+                                description: Modifiers defines a list of mutations
+                                  applied to object before the operation runs.
+                                items:
+                                  description: Modifier represents an object mutation.
+                                  properties:
+                                    annotate:
+                                      description: Annotate defines a mutation of
+                                        object annotations.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    label:
+                                      description: Label defines a mutation of object
+                                        labels.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    match:
+                                      description: Match defines the matching statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    merge:
+                                      description: Merge defines an arbitrary merge
+                                        mutation.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  type: object
+                                type: array
                               resource:
                                 description: Resource provides a resource to be applied.
                                 type: object
@@ -545,6 +572,33 @@ spec:
                                   that matches multiple files, such as "manifest/*.yaml"
                                   for all YAML files within the "manifest" directory.
                                 type: string
+                              modifiers:
+                                description: Modifiers defines a list of mutations
+                                  applied to object before the operation runs.
+                                items:
+                                  description: Modifier represents an object mutation.
+                                  properties:
+                                    annotate:
+                                      description: Annotate defines a mutation of
+                                        object annotations.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    label:
+                                      description: Label defines a mutation of object
+                                        labels.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    match:
+                                      description: Match defines the matching statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    merge:
+                                      description: Merge defines an arbitrary merge
+                                        mutation.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  type: object
+                                type: array
                               resource:
                                 description: Resource provides a resource to be applied.
                                 type: object

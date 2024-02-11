@@ -4,7 +4,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-// Events defines how to collects events.
+// Events defines how to collect events.
 type Events struct {
 	// Timeout for the operation. Overrides the global timeout set in the Configuration.
 	// +optional
