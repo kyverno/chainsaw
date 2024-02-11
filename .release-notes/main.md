@@ -5,17 +5,11 @@ Release notes for `TODO`.
 <!--
 ## ‼️ Breaking changes ‼️
 
-## 💫 New features 💫
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
-
-## 📚 Docs 📚
-
-## 🎸 Misc 🎸
 -->
 
 ## 💫 New features 💫
@@ -34,3 +28,8 @@ Release notes for `TODO`.
 ## 📚 Docs 📚
 
 - Improved API docs for types coming from Kyverno-JSON
+
+## 🎸 Misc 🎸
+
+- Added an issue template for general question
+- Added issue templates config with blank issues and various links
