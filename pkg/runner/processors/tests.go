@@ -72,14 +72,14 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	if p.client != nil {
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
-			nspacer = namespacer.New(p.client, namespace.GetName())
-			bindings = bindings.Register("$namespace", binding.NewBinding(nspacer.GetNamespace()))
 			object := client.ToUnstructured(&namespace)
 			if merged, err := mutate.Merge(ctx, object, bindings, p.config.NamespaceModifiers...); err != nil {
 				t.FailNow()
 			} else {
 				object = merged
 			}
+			nspacer = namespacer.New(p.client, object.GetName())
+			bindings = bindings.Register("$namespace", binding.NewBinding(nspacer.GetNamespace()))
 			if err := p.client.Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
