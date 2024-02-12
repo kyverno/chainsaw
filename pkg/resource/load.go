@@ -117,7 +117,17 @@ func parse(content []byte, splitter splitter, converter converter, manifest bool
 				return nil, err
 			}
 		}
-		resources = append(resources, resource)
+		if resource.IsList() {
+			if err := resource.EachListItem(func(item runtime.Object) error {
+				resource := item.(*unstructured.Unstructured)
+				resources = append(resources, *resource)
+				return nil
+			}); err != nil {
+				return nil, err
+			}
+		} else {
+			resources = append(resources, resource)
+		}
 	}
 	return resources, nil
 }
