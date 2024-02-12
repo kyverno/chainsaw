@@ -64,30 +64,11 @@ spec:
                   not specified, every test will execute in a random ephemeral namespace
                   unless the namespace is overridden in a the test spec.
                 type: string
-              namespaceModifiers:
-                description: NamespaceModifiers defines a list of mutations applied
-                  to namespace before creation.
-                items:
-                  description: Modifier represents an object mutation.
-                  properties:
-                    annotate:
-                      description: Annotate defines a mutation of object annotations.
-                      type: object
-                      x-kubernetes-preserve-unknown-fields: true
-                    label:
-                      description: Label defines a mutation of object labels.
-                      type: object
-                      x-kubernetes-preserve-unknown-fields: true
-                    match:
-                      description: Match defines the matching statement.
-                      type: object
-                      x-kubernetes-preserve-unknown-fields: true
-                    merge:
-                      description: Merge defines an arbitrary merge mutation.
-                      type: object
-                      x-kubernetes-preserve-unknown-fields: true
-                  type: object
-                type: array
+              namespaceTemplate:
+                description: NamespaceTemplate defines a template to create the test
+                  namespace.
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
               parallel:
                 description: The maximum number of tests to run at once.
                 format: int

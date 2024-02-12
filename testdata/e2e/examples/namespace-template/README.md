@@ -1,4 +1,4 @@
-# Test: `namespace-modifiers`
+# Test: `namespace-template`
 
 *No description*
 

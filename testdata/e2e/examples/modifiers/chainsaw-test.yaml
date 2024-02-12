@@ -6,6 +6,14 @@ metadata:
 spec:
   steps:
   - try:
+    # - apply:
+    #     resource:
+    #       apiVersion: v1
+    #       kind: Namespace
+    #       metadata:
+    #         name: ($namespace)
+    #         annotations:
+    #           keptn.sh/lifecycle-toolkit: enabled
     - apply:
         resource:
           apiVersion: v1

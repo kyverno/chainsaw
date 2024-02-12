@@ -201,12 +201,9 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		*out = new(int)
 		**out = **in
 	}
-	if in.NamespaceModifiers != nil {
-		in, out := &in.NamespaceModifiers, &out.NamespaceModifiers
-		*out = make([]Modifier, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
+	if in.NamespaceTemplate != nil {
+		in, out := &in.NamespaceTemplate, &out.NamespaceTemplate
+		*out = (*in).DeepCopy()
 	}
 	if in.RepeatCount != nil {
 		in, out := &in.RepeatCount, &out.RepeatCount
@@ -751,12 +748,9 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		*out = new(bool)
 		**out = **in
 	}
-	if in.NamespaceModifiers != nil {
-		in, out := &in.NamespaceModifiers, &out.NamespaceModifiers
-		*out = make([]Modifier, len(*in))
-		for i := range *in {
-			(*in)[i].DeepCopyInto(&(*out)[i])
-		}
+	if in.NamespaceTemplate != nil {
+		in, out := &in.NamespaceTemplate, &out.NamespaceTemplate
+		*out = (*in).DeepCopy()
 	}
 	if in.Steps != nil {
 		in, out := &in.Steps, &out.Steps

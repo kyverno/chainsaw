@@ -30,9 +30,9 @@ type TestSpec struct {
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 
-	// NamespaceModifiers defines a list of mutations applied to namespace before creation.
+	// NamespaceTemplate defines a template to create the test namespace.
 	// +optional
-	NamespaceModifiers []Modifier `json:"namespaceModifiers,omitempty"`
+	NamespaceTemplate *Any `json:"namespaceTemplate,omitempty"`
 
 	// Steps defining the test.
 	Steps []TestSpecStep `json:"steps"`

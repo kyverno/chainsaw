@@ -325,37 +325,9 @@
             "null"
           ]
         },
-        "namespaceModifiers": {
-          "description": "NamespaceModifiers defines a list of mutations applied to namespace before creation.",
-          "type": [
-            "array",
-            "null"
-          ],
-          "items": {
-            "description": "Modifier represents an object mutation.",
-            "type": [
-              "object",
-              "null"
-            ],
-            "properties": {
-              "annotate": {
-                "description": "Annotate defines a mutation of object annotations.",
-                "x-kubernetes-preserve-unknown-fields": true
-              },
-              "label": {
-                "description": "Label defines a mutation of object labels.",
-                "x-kubernetes-preserve-unknown-fields": true
-              },
-              "match": {
-                "description": "Match defines the matching statement.",
-                "x-kubernetes-preserve-unknown-fields": true
-              },
-              "merge": {
-                "description": "Merge defines an arbitrary merge mutation.",
-                "x-kubernetes-preserve-unknown-fields": true
-              }
-            }
-          }
+        "namespaceTemplate": {
+          "description": "NamespaceTemplate defines a template to create the test namespace.",
+          "x-kubernetes-preserve-unknown-fields": true
         },
         "parallel": {
           "description": "The maximum number of tests to run at once.",
