@@ -2,14 +2,13 @@
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: namespace-modifiers
+  name: namespace-template
 spec:
-  namespaceModifiers: 
-  - label:
-      foo: bar
-  - merge:
-      metadata:
-        name: foo
+  namespaceTemplate:
+    metadata:
+      name: foo
+      annotations:
+        keptn.sh/lifecycle-toolkit: enabled
   steps:
   - try:
     - assert:
@@ -18,5 +17,5 @@ spec:
           kind: Namespace
           metadata:
             name: foo
-            labels:
-              foo: bar
+            annotations:
+              keptn.sh/lifecycle-toolkit: enabled
