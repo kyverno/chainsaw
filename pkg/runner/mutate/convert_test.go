@@ -28,7 +28,7 @@ func Test_convert(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := convert(tt.in)
+			got := convertMap(tt.in)
 			assert.Equal(t, tt.out, got)
 		})
 	}
