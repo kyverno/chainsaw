@@ -46,7 +46,7 @@ func Merge(ctx context.Context, obj unstructured.Unstructured, bindings binding.
 			if err != nil {
 				return obj, err
 			}
-			obj.SetUnstructuredContent(mapsutils.Merge(obj.UnstructuredContent(), clean(patch)))
+			obj.SetUnstructuredContent(mapsutils.Merge(obj.UnstructuredContent(), convert(patch)))
 		}
 	}
 	return obj, nil
