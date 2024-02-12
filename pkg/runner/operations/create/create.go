@@ -58,6 +58,16 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 	defer func() {
 		internal.LogEnd(logger, logging.Create, err)
 	}()
+	selfModifier := v1alpha1.Modifier{
+		Merge: &v1alpha1.Any{
+			Value: obj.UnstructuredContent(),
+		},
+	}
+	if merged, err := mutate.Merge(ctx, obj, o.bindings, selfModifier); err != nil {
+		return err
+	} else {
+		obj = merged
+	}
 	if merged, err := mutate.Merge(ctx, obj, o.bindings, o.modifiers...); err != nil {
 		return err
 	} else {
