@@ -15,6 +15,7 @@ Release notes for `TODO`.
 ## 💫 New features 💫
 
 - Allowed passing test folders by args (`chainsaw test ./folder` instead of `chainsaw test --test-dir ./folder`)
+- Added diff output in `assert` when an assertion fails
 - Added new binding `$namespace` containing the test namespace name
 - Added new `describe` collector to invoke `kubectl describe ...`
 - Added `modifiers` support in `apply` and `create` operations to modify resources before they are submitted to the cluster
