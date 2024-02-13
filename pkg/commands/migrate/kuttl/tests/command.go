@@ -137,13 +137,13 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		if err != nil {
 			return err
 		}
-		needsSplit := false
+		containsKuttlResources := false
 		for _, resource := range resources {
 			if isKuttl(resource) {
-				needsSplit = true
+				containsKuttlResources = true
 			}
 		}
-		if !needsSplit {
+		if !containsKuttlResources {
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Apply: &v1alpha1.Apply{
 					FileRefOrResource: v1alpha1.FileRefOrResource{
@@ -157,7 +157,8 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 			s.OtherFiles[f] = ""
 			continue
 		}
-		for i, resource := range resources {
+		var filteredResources []unstructured.Unstructured
+		for _, resource := range resources {
 			if isKuttl(resource) {
 				switch resource.GetKind() {
 				case "TestStep":
@@ -176,22 +177,26 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 					return fmt.Errorf("type not supported %s / %s", resource.GetAPIVersion(), resource.GetKind())
 				}
 			} else {
-				file := fmt.Sprintf("chainsaw-%s-apply-%d-%d.yaml", step.Name, f+1, i+1)
-				if save {
-					if err := saveResource(out, folder, file, resource); err != nil {
-						return err
-					}
+				filteredResources = append(filteredResources, resource)
+			}
+		}
+		if len(filteredResources) != 0 {
+			if save {
+				if err := saveResources(out, folder, file, filteredResources...); err != nil {
+					return err
 				}
-				step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
-					Apply: &v1alpha1.Apply{
-						FileRefOrResource: v1alpha1.FileRefOrResource{
-							FileRef: v1alpha1.FileRef{
-								File: file,
-							},
+			}
+			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+				Apply: &v1alpha1.Apply{
+					FileRefOrResource: v1alpha1.FileRefOrResource{
+						FileRef: v1alpha1.FileRef{
+							File: file,
 						},
 					},
-				})
-			}
+				},
+			})
+			// no cleanup
+			s.OtherFiles[f] = ""
 		}
 	}
 	for f, file := range s.AssertFiles {
@@ -199,13 +204,13 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		if err != nil {
 			return err
 		}
-		needsSplit := false
+		containsKuttlResources := false
 		for _, resource := range resources {
 			if isKuttl(resource) {
-				needsSplit = true
+				containsKuttlResources = true
 			}
 		}
-		if !needsSplit {
+		if !containsKuttlResources {
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Assert: &v1alpha1.Assert{
 					FileRefOrCheck: v1alpha1.FileRefOrCheck{
@@ -219,7 +224,8 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 			s.AssertFiles[f] = ""
 			continue
 		}
-		for i, resource := range resources {
+		var filteredResources []unstructured.Unstructured
+		for _, resource := range resources {
 			if isKuttl(resource) {
 				switch resource.GetKind() {
 				case "TestAssert":
@@ -232,22 +238,26 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 					return fmt.Errorf("type not supported %s / %s", resource.GetAPIVersion(), resource.GetKind())
 				}
 			} else {
-				file := fmt.Sprintf("chainsaw-%s-assert-%d-%d.yaml", step.Name, f+1, i+1)
-				if save {
-					if err := saveResource(out, folder, file, resource); err != nil {
-						return err
-					}
+				filteredResources = append(filteredResources, resource)
+			}
+		}
+		if len(filteredResources) != 0 {
+			if save {
+				if err := saveResources(out, folder, file, filteredResources...); err != nil {
+					return err
 				}
-				step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
-					Assert: &v1alpha1.Assert{
-						FileRefOrCheck: v1alpha1.FileRefOrCheck{
-							FileRef: v1alpha1.FileRef{
-								File: file,
-							},
+			}
+			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+				Assert: &v1alpha1.Assert{
+					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+						FileRef: v1alpha1.FileRef{
+							File: file,
 						},
 					},
-				})
-			}
+				},
+			})
+			// no cleanup
+			s.AssertFiles[f] = ""
 		}
 	}
 	for f, file := range s.ErrorFiles {
@@ -255,13 +265,13 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		if err != nil {
 			return err
 		}
-		needsSplit := false
+		containsKuttlResources := false
 		for _, resource := range resources {
 			if isKuttl(resource) {
-				needsSplit = true
+				containsKuttlResources = true
 			}
 		}
-		if !needsSplit {
+		if !containsKuttlResources {
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Error: &v1alpha1.Error{
 					FileRefOrCheck: v1alpha1.FileRefOrCheck{
@@ -275,7 +285,8 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 			s.ErrorFiles[f] = ""
 			continue
 		}
-		for i, resource := range resources {
+		var filteredResources []unstructured.Unstructured
+		for _, resource := range resources {
 			if isKuttl(resource) {
 				switch resource.GetKind() {
 				case "TestAssert":
@@ -288,36 +299,52 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 					return fmt.Errorf("type not supported %s / %s", resource.GetAPIVersion(), resource.GetKind())
 				}
 			} else {
-				file := fmt.Sprintf("chainsaw-%s-error-%d-%d.yaml", step.Name, f+1, i+1)
-				if save {
-					if err := saveResource(out, folder, file, resource); err != nil {
-						return err
-					}
+				filteredResources = append(filteredResources, resource)
+			}
+		}
+		if len(filteredResources) != 0 {
+			if save {
+				if err := saveResources(out, folder, file, filteredResources...); err != nil {
+					return err
 				}
-				step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
-					Error: &v1alpha1.Error{
-						FileRefOrCheck: v1alpha1.FileRefOrCheck{
-							FileRef: v1alpha1.FileRef{
-								File: file,
-							},
+			}
+			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+				Error: &v1alpha1.Error{
+					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+						FileRef: v1alpha1.FileRef{
+							File: file,
 						},
 					},
-				})
-			}
+				},
+			})
+			// no cleanup
+			s.ErrorFiles[f] = ""
 		}
 	}
 	return nil
 }
 
-func saveResource(out io.Writer, folder, file string, resource unstructured.Unstructured) error {
+func saveResources(out io.Writer, folder, file string, resources ...unstructured.Unstructured) error {
 	path := filepath.Join(folder, file)
 	fmt.Fprintf(out, "Saving file %s ...\n", path)
-	yamlData, err := yaml.Marshal(&resource)
+	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
-		return fmt.Errorf("converting to yaml: %w", err)
+		return fmt.Errorf("failed to open file: %w", err)
 	}
-	if err := os.WriteFile(path, yamlData, os.ModePerm); err != nil {
-		return err
+	defer f.Close()
+	for i := range resources {
+		yamlData, err := yaml.Marshal(&resources[i])
+		if err != nil {
+			return fmt.Errorf("converting to yaml: %w", err)
+		}
+		if _, err := f.Write(yamlData); err != nil {
+			return fmt.Errorf("failed to write in file: %w", err)
+		}
+		if i < len(resources)-1 {
+			if _, err := f.WriteString("---\n"); err != nil {
+				return fmt.Errorf("failed to write in file: %w", err)
+			}
+		}
 	}
 	return nil
 }
@@ -458,6 +485,9 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 	for _, collector := range from.Collectors {
 		if collector.Type == "" && collector.Cmd != "" {
 			collector.Type = "command"
+		}
+		if collector.Type == "" && (collector.Pod != "" || collector.Selector != "") {
+			collector.Type = "pod"
 		}
 		switch collector.Type {
 		case "pod":

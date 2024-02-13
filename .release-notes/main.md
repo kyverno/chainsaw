@@ -19,6 +19,7 @@ Release notes for `TODO`.
 - Added new `describe` collector to invoke `kubectl describe ...`
 - Added `modifiers` support in `apply` and `create` operations to modify resources before they are submitted to the cluster
 - Added `namespaceModifiers` support in `Test` and `Configuration` to modify test namespaces before they are submitted to the cluster
+- Improved KUTTL tests migration files rewrite logic, keeping the same file names
 
 ## 🔧 Fixes 🔧
 
