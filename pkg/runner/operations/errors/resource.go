@@ -34,12 +34,14 @@ func (e resourceError) Error() string {
 	header := fmt.Sprintf("%s/%s/%s", e.actual.GetAPIVersion(), e.actual.GetKind(), client.Name(client.ObjectKey(&e.actual)))
 	sep := strings.Repeat("-", len(header))
 	lines = append(lines, sep, header, sep)
-	var errLines []string
-	for _, err := range e.errs {
-		errLines = append(errLines, fmt.Sprintf("* %s", err))
+	if len(e.errs) != 0 {
+		errLines := make([]string, 0, len(e.errs))
+		for _, err := range e.errs {
+			errLines = append(errLines, fmt.Sprintf("* %s", err))
+		}
+		slices.Sort(errLines)
+		lines = append(lines, errLines...)
 	}
-	slices.Sort(errLines)
-	lines = append(lines, errLines...)
 	diff, err := diffutils.PrettyDiff(e.expected, *e.actual.DeepCopy())
 	if err != nil {
 		lines = append(lines, fmt.Sprintf("* %s", err))
