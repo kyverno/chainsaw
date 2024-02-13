@@ -6,6 +6,7 @@
 - [catch](catch/README.md)
 - [command-output](command-output/README.md)
 - [delete](delete/README.md)
+- [deployment](deployment/README.md)
 - [finally](finally/README.md)
 - [inline](inline/README.md)
 - [list](list/README.md)

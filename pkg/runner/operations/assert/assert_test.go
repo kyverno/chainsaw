@@ -97,7 +97,7 @@ func Test_operationAssert(t *testing.T) {
 		expectErr: true,
 		expectedLogs: []string{
 			"ASSERT: RUN - []",
-			"ASSERT: ERROR - [=== ERROR\nv1/Pod/test-pod - spec.containers[0].image: Invalid value: \"fake-image\": Expected value: \"test-image\"\nv1/Pod/test-pod - spec.containers[0].name: Invalid value: \"fake-container\": Expected value: \"test-container\"]",
+			"ASSERT: ERROR - [=== ERROR\n---------------\nv1/Pod/test-pod\n---------------\n* spec.containers[0].name: Invalid value: \"fake-container\": Expected value: \"test-container\"\n* spec.containers[0].image: Invalid value: \"fake-image\": Expected value: \"test-image\"\n\n--- expected\n+++ actual\n@@ -4,6 +4,6 @@\n   name: test-pod\n spec:\n   containers:\n-  - image: test-image\n-    name: test-container\n+  - image: fake-image\n+    name: fake-container]",
 		},
 	}, {
 		name: "Not found using Get",

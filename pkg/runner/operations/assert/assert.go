@@ -3,7 +3,6 @@ package assert
 import (
 	"context"
 	"errors"
-	"fmt"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -12,6 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
+	operrors "github.com/kyverno/chainsaw/pkg/runner/operations/errors"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -98,9 +98,7 @@ func (o *operation) execute(ctx context.Context) error {
 						return false, err
 					}
 					if len(_errs) != 0 {
-						for _, _err := range _errs {
-							errs = append(errs, fmt.Errorf("%s/%s/%s - %w", candidate.GetAPIVersion(), candidate.GetKind(), client.Name(client.ObjectKey(&candidate)), _err))
-						}
+						errs = append(errs, operrors.ResourceError(o.expected, candidate, _errs))
 					} else {
 						// at least one match found
 						return true, nil
