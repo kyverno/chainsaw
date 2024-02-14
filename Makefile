@@ -241,7 +241,7 @@ e2e-tests: $(CLI_BIN) ## Run e2e tests
 
 .PHONY: e2e-tests-ko 
 e2e-tests-ko:
-	@echo Running e2e tests... >&2
+	@echo Running e2e tests in docker... >&2
 	@docker run \
 	-v ./testdata/e2e/:/chainsaw/ \
 	-v ${HOME}/.kube/:/etc/kubeconfig/ \
