@@ -81,6 +81,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/collectors/describe/</loc>
+         <lastmod>2024-02-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/collectors/events/</loc>
          <lastmod>2024-02-14</lastmod>
          <changefreq>daily</changefreq>
@@ -241,6 +246,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/templating/</loc>
+         <lastmod>2024-02-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/configuration/timeouts/</loc>
          <lastmod>2024-02-14</lastmod>
          <changefreq>daily</changefreq>
@@ -372,6 +382,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/operations/sleep/</loc>
+         <lastmod>2024-02-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/operations/templating/</loc>
          <lastmod>2024-02-14</lastmod>
          <changefreq>daily</changefreq>
     </url>
