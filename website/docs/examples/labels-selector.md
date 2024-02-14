@@ -61,5 +61,5 @@ spec:
 
 ```bash
 # invoke chainsaw with `--selector` to filter tests to run
-$ chainsaw test --selector test-suite=examples
+chainsaw test --selector test-suite=examples
 ```

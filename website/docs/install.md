@@ -11,13 +11,13 @@ We also provide a [GitHub action](#github-action) to easily install Chainsaw in 
 **add tap:**
 
 ```bash
-$ brew tap kyverno/chainsaw https://github.com/kyverno/chainsaw
+brew tap kyverno/chainsaw https://github.com/kyverno/chainsaw
 ```
 
 **install chainsaw:**
 
 ```bash
-$ brew install kyverno/chainsaw/chainsaw
+brew install kyverno/chainsaw/chainsaw
 ```
 
 !!! warning "Don't forget to specify the tap name"
@@ -34,7 +34,7 @@ Download the pre-compiled binaries for your system from the [releases page](http
 You can install with `go install` with:
 
 ```bash
-$ go install github.com/kyverno/chainsaw@latest
+go install github.com/kyverno/chainsaw@latest
 ```
 
 ## Running with Docker
@@ -42,7 +42,7 @@ $ go install github.com/kyverno/chainsaw@latest
 Chainsaw is also available as a Docker image which you can pull and run:
 
 ```bash
-$ docker pull ghcr.io/kyverno/chainsaw:<version>
+docker pull ghcr.io/kyverno/chainsaw:<version>
 ```
 
 !!! info
@@ -50,7 +50,7 @@ $ docker pull ghcr.io/kyverno/chainsaw:<version>
     Since Chainsaw relies on files for its operation (like test definitions), you will need to bind mount the necessary directories when running it via Docker.
 
 ```bash
-$ docker run --rm                           \
+docker run --rm                             \
     -v ./testdata/e2e/:/chainsaw/           \
     -v ${HOME}/.kube/:/etc/kubeconfig/      \
     -e KUBECONFIG=/etc/kubeconfig/config    \
@@ -64,20 +64,20 @@ $ docker run --rm                           \
 **clone:**
 
 ```bash
-$ git clone https://github.com/kyverno/chainsaw.git
+git clone https://github.com/kyverno/chainsaw.git
 ```
 **build the binaries:**
 
 ```bash
-$ cd chainsaw
-$ go mod tidy
-$ make build
+cd chainsaw
+go mod tidy
+make build
 ```
 
 **verify it works:**
 
 ```bash
-$ ./chainsaw version
+./chainsaw version
 ```
 
 ## GitHub action

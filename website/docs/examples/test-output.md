@@ -7,7 +7,8 @@ Chainsaw can be used to easily check terminal output from CLIs and other command
 One basic use case for content checking is that the output simply contains a given string or piece of content. For example, you might want to run automated tests on a CLI binary you build to ensure that a given command produces output that contains some content you specify somewhere in the output. Let's use the following output from the `kubectl version` command to show these examples.
 
 ```sh
-$ kubectl version
+kubectl version
+
 Client Version: v1.28.2
 Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
 Server Version: v1.27.4+k3s1
@@ -72,7 +73,8 @@ spec:
 In addition to testing that commands succeed and with output in a given shape, it's equally valuable and necessary to perform negative tests; that tests fail and with contents that are as expected. Similarly, those checks can be for output which has some contents as well as output which appears exactly as desired. For example, you may wish to check that running the `kubectl foo` command not only fails as expected but that the output shown to users contains a certain word or sentence.
 
 ```sh
-$ kubectl foo
+kubectl foo
+
 error: unknown command "foo" for "kubectl"
 
 Did you mean this?

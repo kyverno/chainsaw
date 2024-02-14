@@ -5,7 +5,7 @@ Even after a [configuration file](./file.md) is loaded, you can override specifi
 ## Example
 
 ```bash
-$ chainsaw test                         \
+chainsaw test                         \
     path/to/test/dir                    \
     --config path/to/your/config.yaml   \
     --assert-timeout 45s                \
@@ -22,7 +22,7 @@ In this example, Chainsaw will load a configuration file but the timeout configu
 The command below will run tests using the configuration from `my-config.yaml`, taking tests from `/path/to/tests`, and running a maximum of `10` tests simultaneously.
 
 ```bash
-$ chainsaw test /path/to/tests --config my-config.yaml --parallel 10
+chainsaw test /path/to/tests --config my-config.yaml --parallel 10
 ```
 
 ## Reference documentation

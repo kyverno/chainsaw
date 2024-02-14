@@ -59,7 +59,7 @@ spec:
 ## Flag
 
 ```bash
-$ chainsaw test                     \
+chainsaw test                     \
     --apply-timeout 45s             \
     --assert-timeout 45s            \
     --cleanup-timeout 45s           \
