@@ -13,5 +13,6 @@
 - [namespace-template](namespace-template/README.md)
 - [non-resource-assertion](non-resource-assertion/README.md)
 - [sleep](sleep/README.md)
+- [template](template/README.md)
 - [timeout](timeout/README.md)
 - [values](values/README.md)

@@ -283,6 +283,11 @@ func (in *Delete) DeepCopyInto(out *Delete) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.Template != nil {
+		in, out := &in.Template, &out.Template
+		*out = new(bool)
+		**out = **in
+	}
 	in.ObjectReference.DeepCopyInto(&out.ObjectReference)
 	if in.Expect != nil {
 		in, out := &in.Expect, &out.Expect

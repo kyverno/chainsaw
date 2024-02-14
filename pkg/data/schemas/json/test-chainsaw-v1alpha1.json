@@ -1253,6 +1253,13 @@
                             }
                           }
                         },
+                        "template": {
+                          "description": "Template determines whether resources should be considered for templating.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
                           "type": [
