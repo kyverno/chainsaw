@@ -234,7 +234,12 @@ e2e-tests: $(CLI_BIN) ## Run e2e tests
 	@echo Running e2e tests... >&2
 	@echo "foo: bar" | ./$(CLI_BIN) test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --values -
 
-########
+.PHONY: e2e-tests-ko 
+e2e-tests-ko: 
+	@echo Running e2e tests... >&2
+	@docker run -v $(PWD)/testdata/e2e/:/chainsaw/ -v ${HOME}/.kube/config:/etc/kubeconfig/config -e KUBECONFIG=/etc/kubeconfig/config --network=host --name chainsaw --rm -it ko.local/main.go:latest test /chainsaw
+
+########	
 # KIND #
 ########
 

@@ -67,6 +67,32 @@ jobs:
         set -e
         make e2e-tests
 
+  e2e-test-ko:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+
+    - name: Create test cluster
+      run: |
+        set -e
+        make kind-cluster
+
+    - name: Install ko
+      run: go install github.com/google/ko@latest
+
+    - name: Build Docker image locally with ko
+      run: |
+        set -e
+        ko build --bare $(pwd)/main.go
+      env:
+        KO_DOCKER_REPO: ko.local
+        
+    - name: Run tests
+      run: |
+        set -e
+        make e2e-tests-ko
+
   required:
     needs:
     - unit-tests
