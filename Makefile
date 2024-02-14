@@ -1,5 +1,11 @@
 .DEFAULT_GOAL := build
 
+#############
+# VARIABLES #
+#############
+
+GIT_SHA                            := $(shell git rev-parse HEAD)
+
 #########
 # TOOLS #
 #########
@@ -14,7 +20,9 @@ REFERENCE_DOCS                     := $(TOOLS_DIR)/genref
 REFERENCE_DOCS_VERSION             := latest
 KIND                               := $(TOOLS_DIR)/kind
 KIND_VERSION                       := v0.20.0
-TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(REFERENCE_DOCS) $(KIND)
+KO                                 ?= $(TOOLS_DIR)/ko
+KO_VERSION                         ?= v0.14.1
+TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(REFERENCE_DOCS) $(KIND) $(KO)
 PIP                                ?= "pip"
 ifeq ($(GOOS), darwin)
 SED                                := gsed
@@ -42,6 +50,10 @@ $(REFERENCE_DOCS):
 $(KIND):
 	@echo Install kind... >&2
 	@GOBIN=$(TOOLS_DIR) go install sigs.k8s.io/kind@$(KIND_VERSION)
+
+$(KO):
+	@echo Install ko... >&2
+	@GOBIN=$(TOOLS_DIR) go install github.com/google/ko@$(KO_VERSION)
 
 .PHONY: install-tools
 install-tools: $(TOOLS) ## Install tools
@@ -219,11 +231,18 @@ $(CLI_BIN): fmt vet
 
 build: $(CLI_BIN) ## Build
 
+##############
+# BUILD (KO) #
+##############
+
+KO_REGISTRY         := ko.local
+KO_TAGS             := $(GIT_SHA)
+
 .PHONY: build-ko
-build-ko: ## Build Docker image with ko
+build-ko: fmt vet $(KO) ## Build Docker image with ko
 	@echo "Build Docker image with ko..." >&2
-	export KO_DOCKER_REPO=ko.local
-	ko build --base-import-paths main.go
+	@LD_FLAGS=$(LD_FLAGS) KO_DOCKER_REPO=$(KO_REGISTRY) \
+		$(KO) build . --preserve-import-paths --tags=$(KO_TAGS)
 
 ########
 # TEST #
@@ -238,22 +257,21 @@ tests: $(CLI_BIN) ## Run tests
 .PHONY: e2e-tests
 e2e-tests: $(CLI_BIN) ## Run e2e tests
 	@echo Running e2e tests... >&2
-	@echo "foo: bar" | ./$(CLI_BIN) test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --values -
+	@./$(CLI_BIN) test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml
 
 .PHONY: e2e-tests-ko 
-e2e-tests-ko:
+e2e-tests-ko: build-ko ## Run e2e tests from a docker container
 	@echo Running e2e tests in docker... >&2
 	@docker run \
-	-v ./testdata/e2e/:/chainsaw/ \
-	-v ${HOME}/.kube/:/etc/kubeconfig/ \
-	-e KUBECONFIG=/etc/kubeconfig/config \
-	--network=host \
-	--user $(id -u):$(id -g) \
-	--name chainsaw \
-	--rm ko.local/main.go:latest \
-	test --test-dir /chainsaw \
-	--config /chainsaw/config.yaml \
-	--values /chainsaw/values.yaml
+		-v ./testdata/e2e/:/chainsaw/ \
+		-v ${HOME}/.kube/:/etc/kubeconfig/ \
+		-e KUBECONFIG=/etc/kubeconfig/config \
+		--network=host \
+		--user $(id -u):$(id -g) \
+		--name chainsaw \
+		--rm \
+		ko.local/github.com/kyverno/chainsaw:$(KO_TAGS) \
+		test /chainsaw --config /chainsaw/config.yaml --values /chainsaw/values.yaml
 
 ########	
 # KIND #
