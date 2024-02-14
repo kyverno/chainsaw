@@ -1,5 +1,11 @@
 .DEFAULT_GOAL := build
 
+#############
+# VARIABLES #
+#############
+
+GIT_SHA                            := $(shell git rev-parse HEAD)
+
 #########
 # TOOLS #
 #########
