@@ -81,11 +81,12 @@ jobs:
       uses: imjasonh/setup-ko@ace48d793556083a76f1e3e6068850c1f4a369aa   #v0.6
       with:
         version: v0.15.1
-        
     - name: Build Docker image locally with ko
       run: |
         set -e
         make build-ko
+      env:
+        KO_DOCKER_REPO: ko.local
     - name: Create test cluster
       run: |
         set -e
@@ -99,6 +100,7 @@ jobs:
     needs:
     - unit-tests
     - e2e-tests
+    - e2e-test-ko
     runs-on: ubuntu-latest
     steps:
     - run: echo "Required jobs success!"
