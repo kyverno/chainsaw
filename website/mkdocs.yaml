@@ -22,6 +22,7 @@ nav:
     - configuration/reports.md
     - configuration/selector.md
     - configuration/values.md
+    - configuration/templating.md
     - configuration/no-cluster.md
   - Tests:
     - tests/index.md
