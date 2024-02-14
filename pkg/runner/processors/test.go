@@ -126,10 +126,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			object := client.ToUnstructured(namespace)
 			bindings = p.bindings.Register("$namespace", binding.NewBinding(object.GetName()))
 			if p.test.Spec.NamespaceTemplate != nil && p.test.Spec.NamespaceTemplate.Value != nil {
-				template := v1alpha1.Modifier{
-					Merge: &v1alpha1.Any{
-						Value: p.test.Spec.NamespaceTemplate.Value,
-					},
+				template := v1alpha1.Any{
+					Value: p.test.Spec.NamespaceTemplate.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
 					t.FailNow()

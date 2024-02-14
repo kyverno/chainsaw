@@ -10,7 +10,6 @@
 - [finally](finally/README.md)
 - [inline](inline/README.md)
 - [list](list/README.md)
-- [modifiers](modifiers/README.md)
 - [namespace-template](namespace-template/README.md)
 - [non-resource-assertion](non-resource-assertion/README.md)
 - [sleep](sleep/README.md)
