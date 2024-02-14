@@ -483,6 +483,10 @@ spec:
                                 description: Check provides a check used in assertions.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
+                              template:
+                                description: Template determines whether resources
+                                  should be considered for templating.
+                                type: boolean
                               timeout:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
@@ -657,6 +661,10 @@ spec:
                                 description: Check provides a check used in assertions.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
+                              template:
+                                description: Template determines whether resources
+                                  should be considered for templating.
+                                type: boolean
                               timeout:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.

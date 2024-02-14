@@ -13,4 +13,8 @@ type Assert struct {
 
 	// FileRefOrAssert provides a reference to the assertion.
 	FileRefOrCheck `json:",inline"`
+
+	// Template determines whether resources should be considered for templating.
+	// +optional
+	Template *bool `json:"template,omitempty"`
 }

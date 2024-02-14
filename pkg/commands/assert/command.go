@@ -70,6 +70,6 @@ func Command() *cobra.Command {
 func assert(options options, client client.Client, resource unstructured.Unstructured, namespacer namespacer.Namespacer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), options.timeout.Duration)
 	defer cancel()
-	op := opassert.New(client, resource, namespacer, binding.NewBindings())
+	op := opassert.New(client, resource, namespacer, binding.NewBindings(), false)
 	return op.Exec(ctx)
 }

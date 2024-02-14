@@ -299,10 +299,11 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
+	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:         timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
-			operation:       opassert.New(p.client, resource, p.namespacer, p.bindings),
+			operation:       opassert.New(p.client, resource, p.namespacer, p.bindings, template),
 			operationReport: operationReport,
 		})
 	}
@@ -378,10 +379,11 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) (
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
+	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:         timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
-			operation:       operror.New(p.client, resource, p.namespacer, p.bindings),
+			operation:       operror.New(p.client, resource, p.namespacer, p.bindings, template),
 			operationReport: operationReport,
 		})
 	}

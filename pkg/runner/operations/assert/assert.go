@@ -13,6 +13,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	operrors "github.com/kyverno/chainsaw/pkg/runner/operations/errors"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	"github.com/kyverno/chainsaw/pkg/runner/template"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -21,9 +22,10 @@ import (
 
 type operation struct {
 	client     client.Client
-	expected   unstructured.Unstructured
+	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
 	bindings   binding.Bindings
+	template   bool
 }
 
 func New(
@@ -31,33 +33,41 @@ func New(
 	expected unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
 	bindings binding.Bindings,
+	template bool,
 ) operations.Operation {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
 	return &operation{
 		client:     client,
-		expected:   expected,
+		base:       expected,
 		namespacer: namespacer,
 		bindings:   bindings,
+		template:   template,
 	}
 }
 
 func (o *operation) Exec(ctx context.Context) (err error) {
-	logger := internal.GetLogger(ctx, &o.expected)
+	obj := o.base
+	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
 		internal.LogEnd(logger, logging.Assert, err)
 	}()
-	if o.expected.GetKind() != "" {
-		if err := internal.ApplyNamespacer(o.namespacer, &o.expected); err != nil {
+	if o.template {
+		if err := template.ResourceRef(ctx, &obj, o.bindings); err != nil {
+			return err
+		}
+	}
+	if obj.GetKind() != "" {
+		if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
 			return err
 		}
 	}
 	internal.LogStart(logger, logging.Assert)
-	return o.execute(ctx)
+	return o.execute(ctx, obj)
 }
 
-func (o *operation) execute(ctx context.Context) error {
+func (o *operation) execute(ctx context.Context, obj unstructured.Unstructured) error {
 	var lastErrs []error
 	bindings := o.bindings
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
@@ -68,8 +78,8 @@ func (o *operation) execute(ctx context.Context) error {
 				lastErrs = errs
 			}
 		}()
-		if !(o.expected.GetAPIVersion() != "" && o.expected.GetKind() != "") {
-			_errs, err := check.Check(ctx, nil, bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
+		if !(obj.GetAPIVersion() != "" && obj.GetKind() != "") {
+			_errs, err := check.Check(ctx, nil, bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
 			if err != nil {
 				return false, err
 			}
@@ -82,7 +92,7 @@ func (o *operation) execute(ctx context.Context) error {
 				return true, nil
 			}
 		} else {
-			if candidates, err := internal.Read(ctx, &o.expected, o.client); err != nil {
+			if candidates, err := internal.Read(ctx, &obj, o.client); err != nil {
 				if kerrors.IsNotFound(err) {
 					errs = append(errs, errors.New("actual resource not found"))
 					return false, nil
@@ -93,12 +103,12 @@ func (o *operation) execute(ctx context.Context) error {
 			} else {
 				for i := range candidates {
 					candidate := candidates[i]
-					_errs, err := check.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: o.expected.UnstructuredContent()})
+					_errs, err := check.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
 					if err != nil {
 						return false, err
 					}
 					if len(_errs) != 0 {
-						errs = append(errs, operrors.ResourceError(o.expected, candidate, _errs))
+						errs = append(errs, operrors.ResourceError(obj, candidate, _errs))
 					} else {
 						// at least one match found
 						return true, nil
