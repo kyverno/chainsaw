@@ -238,7 +238,7 @@ e2e-tests: $(CLI_BIN) ## Run e2e tests
 e2e-tests-ko: 
 	@echo Running e2e tests... >&2
 	@docker run \
-	-v $(pwd)/testdata/e2e/:/chainsaw/ \
+	-v ./testdata/e2e/:/chainsaw/ \
 	-v ${HOME}/.kube/:/etc/kubeconfig/ \
 	-e KUBECONFIG=/etc/kubeconfig/config \
 	--network=host \
