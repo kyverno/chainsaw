@@ -21,5 +21,5 @@ spec:
 ## Flag
 
 ```bash
-$ chainsaw test --report-format JSON --report-name chainsaw-report.json ...
+chainsaw test --report-format JSON --report-name chainsaw-report.json ...
 ```

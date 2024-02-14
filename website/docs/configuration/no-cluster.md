@@ -9,5 +9,5 @@ To run chainsaw in this mode pass the `--no-cluster` flag.
 
 ```bash
 # run chainsaw without connection to a Kubernetes cluster
-$ chainsaw test --no-cluster
+chainsaw test --no-cluster
 ```

@@ -34,19 +34,24 @@ A `try` statement supports all [operations](../operations/index.md):
     apiVersion: chainsaw.kyverno.io/v1alpha1
     kind: Test
     metadata:
-      name: try
+      name: example
     spec:
       steps:
       - try:
-          - description: "Description of the try operation"
-            command:
-              entrypoint: "/bin/bash"
-              args: ["-c", "echo 'try block'"]
-            sleep:
-              duration: 1s
-            apply: {}
-            assert: {}
-            error: {}
+        - command:
+            # ...
+        - sleep:
+            # ...
+        - script:
+            # ...
+        - apply:
+            # ...
+        - assert:
+            # ...
+        - error:
+            # ...
+        - create:
+            # ...
         catch: []
         finally: []
     ```

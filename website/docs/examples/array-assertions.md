@@ -77,5 +77,5 @@ spec:
 ## Execute
 
 ```bash
-$ chainsaw test
+chainsaw test
 ```

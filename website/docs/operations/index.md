@@ -41,9 +41,14 @@ It is possible to evaluate assertions that do not depend on resources.
 
 See [Non-resource assertions](./non-resource-assert.md) for details.
 
-
 ## Operation checks
 
 Some operations support checking the operation execution result against specific expectations.
 
 See [Operation checks](./check.md) for use case details and supported operations.
+
+## Resource templating
+
+Chainsaw can apply transformations to the resources before they are processed by the operation.
+
+See [Resource templating](./templating.md) for use case details and supported operations.

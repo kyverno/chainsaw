@@ -22,5 +22,5 @@ spec:
 Invoking Chainsaw with the command below will take the test above into account:
 
 ```bash
-$ chainsaw test --selector foo=bar
+chainsaw test --selector foo=bar
 ```

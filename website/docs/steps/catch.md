@@ -21,6 +21,7 @@ A `catch` statement supports all [collectors](../collectors/index.md):
 
 - [Pod logs](../collectors/pod-logs.md)
 - [Events](../collectors/events.md)
+- [Describe](../collectors/describe.md)
 
 ## Example
 
@@ -30,18 +31,22 @@ A `catch` statement supports all [collectors](../collectors/index.md):
     apiVersion: chainsaw.kyverno.io/v1alpha1
     kind: Test
     metadata:
-      name: catch
+      name: example
     spec:
       steps:
       - try: []
         catch:
-          - description: "Description of the catch operation"
-            command:
-              entrypoint: "/bin/bash"
-              args: ["-c", "echo 'catch block'"]
-            events: {}
-            sleep:
-              duration: 1s
-            podLogs: {}
+        - command:
+            # ...
+        - script:
+            # ...
+        - events:
+            # ...
+        - podLogs:
+            # ...
+        - describe:
+            # ...
+        - sleep:
+            # ...
         finally: []
     ```

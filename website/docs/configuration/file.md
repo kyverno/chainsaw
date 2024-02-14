@@ -44,7 +44,7 @@ spec:
 To use a custom configuration file:
 
 ```bash
-$ chainsaw test --config path/to/your/config.yaml
+chainsaw test --config path/to/your/config.yaml
 ```
 
 !!! note "Defaults"

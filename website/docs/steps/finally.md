@@ -19,6 +19,7 @@ A `finally` statement supports all [collectors](../collectors/index.md):
 
 - [Pod logs](../collectors/pod-logs.md)
 - [Events](../collectors/events.md)
+- [Describe](../collectors/describe.md)
 
 ## Example
 
@@ -28,18 +29,22 @@ A `finally` statement supports all [collectors](../collectors/index.md):
     apiVersion: chainsaw.kyverno.io/v1alpha1
     kind: Test
     metadata:
-      name: finally
+      name: example
     spec:
       steps:
       - try: []
         catch: []
         finally:
-          - description: "Description of the finally operation"
-            command:
-              entrypoint: "/bin/bash"
-              args: ["-c", "echo 'finally block'"]
-            events: {}
-            sleep:
-              duration: 1s
-            podLogs: {}
+        - command:
+            # ...
+        - script:
+            # ...
+        - events:
+            # ...
+        - podLogs:
+            # ...
+        - describe:
+            # ...
+        - sleep:
+            # ...
     ```

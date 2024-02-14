@@ -22,5 +22,5 @@ spec:
 ## Flag
 
 ```bash
-$ chainsaw test --delay-before-cleanup 5s ...
+chainsaw test --delay-before-cleanup 5s ...
 ```

@@ -26,15 +26,14 @@ A test step is made of three main components used to dermine the actions Chainsa
     apiVersion: chainsaw.kyverno.io/v1alpha1
     kind: Test
     metadata:
-      name: test-example
+      name: example
     spec:
       steps:
       - try:
-          - description: "Description of the try operation"
-            apply:
-              file: "path/to/apply.yaml"
-            assert:
-              file: "path/to/assert.yaml"
+        - apply:
+            file: path/to/apply.yaml
+        - assert:
+            file: path/to/assert.yaml
         catch: []
         finally: []
     ```
