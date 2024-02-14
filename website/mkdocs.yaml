@@ -44,6 +44,7 @@ nav:
     - operations/error.md
     - operations/script.md
     - operations/sleep.md
+    - operations/templating.md
     - operations/non-resource-assert.md
   - Collectors:
     - collectors/index.md
