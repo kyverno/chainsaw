@@ -1,1 +1,1 @@
-defaultBaseImage: cgr.dev/chainguard/bash:latest
+defaultBaseImage: cgr.dev/chainguard/kubectl:latest-dev
