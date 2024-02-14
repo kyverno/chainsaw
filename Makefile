@@ -244,7 +244,7 @@ e2e-tests-ko:
 	--network=host \
 	--user $(id -u):$(id -g) \
 	--name chainsaw \
-	--rm -it ko.local/main.go:latest \
+	--rm ko.local/main.go:latest \
 	test /chainsaw
 
 ########	
