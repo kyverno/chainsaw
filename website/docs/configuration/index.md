@@ -20,3 +20,5 @@ Please pay attention to the configuration options below, they may or may not be 
 - [Termination graceful period](./grace.md)
 - [Delay before cleanup](./cleanup-delay.md)
 - [Label selectors](./selector.md)
+- [Resource templating](./templating.md)
+- [Running without a cluster](./no-cluster.md)

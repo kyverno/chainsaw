@@ -44,17 +44,17 @@ For this quick start, we will create a `Test` with one step and two operations:
 
 ```bash
 # create test folder
-$ mkdir chainsaw-quick-start
+mkdir chainsaw-quick-start
 
 # enter test folder
-$ cd chainsaw-quick-start
+cd chainsaw-quick-start
 ```
 
 ### Create a `ConfigMap`
 
 ```bash
 # create a ConfigMap
-$ cat > configmap.yaml << EOF
+cat > configmap.yaml << EOF
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -70,7 +70,7 @@ By default, Chainsaw will look for a file named `chainsaw-test.yaml` in every fo
 
 ```bash
 # create test file
-$ cat > chainsaw-test.yaml << EOF
+cat > chainsaw-test.yaml << EOF
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
@@ -94,7 +94,7 @@ EOF
 We finished writing our first test, now we can run Chainsaw to verify the test runs as expected:
 
 ```bash
-$ chainsaw test
+chainsaw test
 
 Version: (devel)
 Loading default configuration...

@@ -27,5 +27,5 @@ spec:
 ## Flag
 
 ```bash
-$ chainsaw test --force-termination-grace-period 5s ...
+chainsaw test --force-termination-grace-period 5s ...
 ```

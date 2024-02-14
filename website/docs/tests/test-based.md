@@ -72,7 +72,7 @@ spec:
 If you have your test defined in a different file, you can specify it when running Chainsaw:
 
 ```bash
-$ chainsaw test --test-dir . --test-file=<custom-test-file-name>.yaml
+chainsaw test . --test-file=<custom-test-file-name>.yaml
 ```
 
 ## Raw Resource Support

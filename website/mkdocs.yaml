@@ -22,6 +22,7 @@ nav:
     - configuration/reports.md
     - configuration/selector.md
     - configuration/values.md
+    - configuration/templating.md
     - configuration/no-cluster.md
   - Tests:
     - tests/index.md
@@ -43,11 +44,13 @@ nav:
     - operations/error.md
     - operations/script.md
     - operations/sleep.md
+    - operations/templating.md
     - operations/non-resource-assert.md
   - Collectors:
     - collectors/index.md
     - collectors/pod-logs.md
     - collectors/events.md
+    - collectors/describe.md
   - Other resources:
     - more/events.md
     - more/crds.md

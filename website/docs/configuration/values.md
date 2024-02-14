@@ -27,5 +27,13 @@ Now you can invoke chainsaw like this:
 ```bash
 # pass object { "foo": "bar" } as values to the executed tests
 # `--values -` means values are read from standard input
-$ echo "foo: bar" | chainsaw test --values -
+echo "foo: bar" | chainsaw test --values -
+
+# read values from a file
+chainsaw test --values ./values.yaml
+
+# pass values using heredoc
+chainsaw test --values - <<EOF
+foo: bar
+EOF
 ```
