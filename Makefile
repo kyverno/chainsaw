@@ -222,8 +222,8 @@ build: $(CLI_BIN) ## Build
 .PHONY: build-ko
 build-ko: ## Build Docker image with ko
 	@echo "Build Docker image with ko..." >&2
-	export KO_DOCKER_REPO=ko.local; \
-	ko build --base-import-paths $(pwd)/main.go
+	export KO_DOCKER_REPO=ko.local
+	ko build --base-import-paths main.go
 
 ########
 # TEST #
