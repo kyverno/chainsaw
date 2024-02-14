@@ -72,17 +72,15 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-    - name: Setup Go
-      uses: actions/setup-go@0c52d547c9bc32b1aa3301fd7a9cb496313a4491 # v5.0.0
-      with:
-        go-version-file: go.mod
-        cache-dependency-path: go.sum
     - name: Install ko
-      run: go install github.com/google/ko@latest
+      uses: imjasonh/setup-ko@ace48d7   #v0.6
+      with:
+        version: v0.15.1
+        
     - name: Build Docker image locally with ko
       run: |
         set -e
-        ko build --base-import-paths $(pwd)/main.go
+        make build-ko
       env:
         KO_DOCKER_REPO: ko.local
     - name: Create test cluster
