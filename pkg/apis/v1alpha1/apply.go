@@ -14,6 +14,10 @@ type Apply struct {
 	// FileRefOrResource provides a reference to the resources to be applied.
 	FileRefOrResource `json:",inline"`
 
+	// Template determines whether resources should be considered for templating.
+	// +optional
+	Template *bool `json:"template,omitempty"`
+
 	// DryRun determines whether the file should be applied in dry run mode.
 	// +optional
 	DryRun *bool `json:"dryRun,omitempty"`

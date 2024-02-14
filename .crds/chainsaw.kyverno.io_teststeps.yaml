@@ -321,6 +321,10 @@ spec:
                 description: SkipDelete determines whether the resources created by
                   the step should be deleted after the test step is executed.
                 type: boolean
+              template:
+                description: Template determines whether resources should be considered
+                  for templating.
+                type: boolean
               timeouts:
                 description: Timeouts for the test step. Overrides the global timeouts
                   set in the Configuration and the timeouts eventually set in the
@@ -392,6 +396,10 @@ spec:
                           type: object
                           x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
+                        template:
+                          description: Template determines whether resources should
+                            be considered for templating.
+                          type: boolean
                         timeout:
                           description: Timeout for the operation. Overrides the global
                             timeout set in the Configuration.
@@ -487,6 +495,10 @@ spec:
                           type: object
                           x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
+                        template:
+                          description: Template determines whether resources should
+                            be considered for templating.
+                          type: boolean
                         timeout:
                           description: Timeout for the operation. Overrides the global
                             timeout set in the Configuration.

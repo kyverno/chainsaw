@@ -884,6 +884,13 @@
                   "null"
                 ]
               },
+              "template": {
+                "description": "Template determines whether resources should be considered for templating.",
+                "type": [
+                  "boolean",
+                  "null"
+                ]
+              },
               "timeouts": {
                 "description": "Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.",
                 "type": [
@@ -997,6 +1004,13 @@
                           "description": "Resource provides a resource to be applied.",
                           "x-kubernetes-embedded-resource": true,
                           "x-kubernetes-preserve-unknown-fields": true
+                        },
+                        "template": {
+                          "description": "Template determines whether resources should be considered for templating.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1140,6 +1154,13 @@
                           "description": "Resource provides a resource to be applied.",
                           "x-kubernetes-embedded-resource": true,
                           "x-kubernetes-preserve-unknown-fields": true
+                        },
+                        "template": {
+                          "description": "Template determines whether resources should be considered for templating.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1330,6 +1351,13 @@
               }
             }
           }
+        },
+        "template": {
+          "description": "Template determines whether resources should be considered for templating.",
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "timeouts": {
           "description": "Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.",

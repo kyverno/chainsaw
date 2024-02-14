@@ -27,6 +27,7 @@ type operation struct {
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
 	bindings   binding.Bindings
+	template   bool
 	expect     []v1alpha1.Expectation
 }
 
@@ -36,6 +37,7 @@ func New(
 	namespacer namespacer.Namespacer,
 	cleaner cleanup.Cleaner,
 	bindings binding.Bindings,
+	template bool,
 	expect []v1alpha1.Expectation,
 ) operations.Operation {
 	if bindings == nil {
@@ -47,6 +49,7 @@ func New(
 		namespacer: namespacer,
 		cleaner:    cleaner,
 		bindings:   bindings,
+		template:   template,
 		expect:     expect,
 	}
 }
@@ -57,13 +60,15 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 	defer func() {
 		internal.LogEnd(logger, logging.Apply, err)
 	}()
-	selfModifier := v1alpha1.Any{
-		Value: obj.UnstructuredContent(),
-	}
-	if merged, err := mutate.Merge(ctx, obj, o.bindings, selfModifier); err != nil {
-		return err
-	} else {
-		obj = merged
+	if o.template {
+		template := v1alpha1.Any{
+			Value: obj.UnstructuredContent(),
+		}
+		if merged, err := mutate.Merge(ctx, obj, o.bindings, template); err != nil {
+			return err
+		} else {
+			obj = merged
+		}
 	}
 	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
 		return err

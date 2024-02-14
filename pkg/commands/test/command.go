@@ -13,6 +13,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner"
+	"github.com/kyverno/chainsaw/pkg/runner/template"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
@@ -38,6 +39,7 @@ type options struct {
 	execTimeout                 metav1.Duration
 	testDirs                    []string
 	skipDelete                  bool
+	template                    bool
 	failFast                    bool
 	parallel                    int
 	repeatCount                 int
@@ -121,6 +123,9 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "skip-delete") {
 				configuration.Spec.SkipDelete = options.skipDelete
 			}
+			if flagutils.IsSet(flags, "template") {
+				configuration.Spec.Template = &options.template
+			}
 			if flagutils.IsSet(flags, "fail-fast") {
 				configuration.Spec.FailFast = options.failFast
 			}
@@ -191,6 +196,9 @@ func Command() *cobra.Command {
 			}
 			if len(options.values) != 0 {
 				fmt.Fprintf(out, "- Values %v\n", options.values)
+			}
+			if configuration.Spec.Template != nil {
+				fmt.Fprintf(out, "- Template %v\n", configuration.Spec.Template)
 			}
 			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
 			// loading tests
@@ -263,6 +271,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file")
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run")
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests")
+	cmd.Flags().BoolVar(&options.template, "template", template.DefaultTemplate, "If set, resources will be considered for templating")
 	cmd.Flags().BoolVar(&options.failFast, "fail-fast", false, "Stop the test upon encountering the first failure")
 	cmd.Flags().IntVar(&options.parallel, "parallel", 0, "The maximum number of tests to run at once")
 	cmd.Flags().IntVar(&options.repeatCount, "repeat-count", 1, "Number of times to repeat each test")
