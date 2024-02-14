@@ -220,9 +220,10 @@ $(CLI_BIN): fmt vet
 build: $(CLI_BIN) ## Build
 
 .PHONY: build-ko
-build-ko: ## Build with ko
-	@echo Build Docker image with ko... >&2
-	@ko build --base-import-paths $(pwd)/main.go
+build-ko: ## Build Docker image with ko
+	@echo "Build Docker image with ko..." >&2
+	export KO_DOCKER_REPO=ko.local; \
+	ko build --base-import-paths $(pwd)/main.go
 
 ########
 # TEST #
