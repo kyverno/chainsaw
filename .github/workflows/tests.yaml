@@ -84,7 +84,7 @@ jobs:
     - name: Build Docker image locally with ko
       run: |
         set -e
-        ko build --bare $(pwd)/main.go
+        ko build --base-import-paths $(pwd)/main.go
       env:
         KO_DOCKER_REPO: ko.local
         
