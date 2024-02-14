@@ -19,7 +19,7 @@ func TestMerge(t *testing.T) {
 		name      string
 		in        unstructured.Unstructured
 		out       unstructured.Unstructured
-		modifiers []v1alpha1.Modifier
+		modifiers []v1alpha1.Any
 		wantErr   bool
 	}{{
 		name: "nil",
@@ -28,81 +28,19 @@ func TestMerge(t *testing.T) {
 	}, {
 		name:      "empty",
 		in:        in,
-		modifiers: []v1alpha1.Modifier{},
+		modifiers: []v1alpha1.Any{},
 		out:       in,
-	}, {
-		name: "annotate",
-		in:   in,
-		modifiers: []v1alpha1.Modifier{{
-			Annotate: &v1alpha1.Any{
-				Value: map[string]any{
-					"foo": "bar",
-				},
-			},
-		}},
-		out: unstructured.Unstructured{
-			Object: map[string]any{
-				"foo": "bar",
-				"metadata": map[string]any{
-					"annotations": map[string]any{
-						"foo": "bar",
-					},
-				},
-			},
-		},
-	}, {
-		name: "label",
-		in:   in,
-		modifiers: []v1alpha1.Modifier{{
-			Label: &v1alpha1.Any{
-				Value: map[string]any{
-					"foo": "bar",
-				},
-			},
-		}},
-		out: unstructured.Unstructured{
-			Object: map[string]any{
-				"foo": "bar",
-				"metadata": map[string]any{
-					"labels": map[string]any{
-						"foo": "bar",
-					},
-				},
-			},
-		},
 	}, {
 		name: "merge",
 		in:   in,
-		modifiers: []v1alpha1.Modifier{{
-			Merge: &v1alpha1.Any{
-				Value: map[string]any{
-					"foo": "baz",
-				},
+		modifiers: []v1alpha1.Any{{
+			Value: map[string]any{
+				"foo": "baz",
 			},
 		}},
 		out: unstructured.Unstructured{
 			Object: map[string]any{
 				"foo": "baz",
-			},
-		},
-	}, {
-		name: "merge",
-		in:   in,
-		modifiers: []v1alpha1.Modifier{{
-			Match: &v1alpha1.Any{
-				Value: map[string]any{
-					"foo": "baz",
-				},
-			},
-			Merge: &v1alpha1.Any{
-				Value: map[string]any{
-					"foo": "bar",
-				},
-			},
-		}},
-		out: unstructured.Unstructured{
-			Object: map[string]any{
-				"foo": "bar",
 			},
 		},
 	}}
