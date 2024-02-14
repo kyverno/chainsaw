@@ -219,6 +219,12 @@ $(CLI_BIN): fmt vet
 
 build: $(CLI_BIN) ## Build
 
+.PHONY: build-ko
+build-ko: ## Build Docker image with ko
+	@echo "Build Docker image with ko..." >&2
+	export KO_DOCKER_REPO=ko.local
+	ko build --base-import-paths main.go
+
 ########
 # TEST #
 ########
@@ -234,7 +240,22 @@ e2e-tests: $(CLI_BIN) ## Run e2e tests
 	@echo Running e2e tests... >&2
 	@echo "foo: bar" | ./$(CLI_BIN) test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --values -
 
-########
+.PHONY: e2e-tests-ko 
+e2e-tests-ko:
+	@echo Running e2e tests in docker... >&2
+	@docker run \
+	-v ./testdata/e2e/:/chainsaw/ \
+	-v ${HOME}/.kube/:/etc/kubeconfig/ \
+	-e KUBECONFIG=/etc/kubeconfig/config \
+	--network=host \
+	--user $(id -u):$(id -g) \
+	--name chainsaw \
+	--rm ko.local/main.go:latest \
+	test --test-dir /chainsaw \
+	--config /chainsaw/config.yaml \
+	--values /chainsaw/values.yaml
+
+########	
 # KIND #
 ########
 
