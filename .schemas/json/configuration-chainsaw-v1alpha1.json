@@ -372,6 +372,13 @@
             "null"
           ]
         },
+        "template": {
+          "description": "Template determines whether resources should be considered for templating.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "testFile": {
           "description": "TestFile is the name of the file containing the test to run.",
           "type": [

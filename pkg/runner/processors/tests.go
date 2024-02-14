@@ -75,10 +75,8 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			object := client.ToUnstructured(&namespace)
 			bindings = p.bindings.Register("$namespace", binding.NewBinding(object.GetName()))
 			if p.config.NamespaceTemplate != nil && p.config.NamespaceTemplate.Value != nil {
-				template := v1alpha1.Modifier{
-					Merge: &v1alpha1.Any{
-						Value: p.config.NamespaceTemplate.Value,
-					},
+				template := v1alpha1.Any{
+					Value: p.config.NamespaceTemplate.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
 					t.FailNow()
@@ -99,7 +97,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, object, nspacer, bindings),
+							operation:       opdelete.New(p.client, object, nspacer, bindings, false),
 						}
 						operation.execute(ctx)
 					})

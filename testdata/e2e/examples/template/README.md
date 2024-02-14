@@ -1,4 +1,4 @@
-# Test: `modifiers`
+# Test: `template`
 
 *No description*
 
@@ -17,4 +17,4 @@
 | # | Operation | Description |
 |:-:|---|---|
 | 1 | `apply` | *No description* |
-| 2 | `apply` | *No description* |
+| 2 | `delete` | *No description* |

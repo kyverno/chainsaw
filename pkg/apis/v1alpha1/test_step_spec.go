@@ -14,6 +14,10 @@ type TestStepSpec struct {
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
 
+	// Template determines whether resources should be considered for templating.
+	// +optional
+	Template *bool `json:"template,omitempty"`
+
 	// Try defines what the step will try to execute.
 	Try []Operation `json:"try"`
 

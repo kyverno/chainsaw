@@ -14,9 +14,9 @@ type Apply struct {
 	// FileRefOrResource provides a reference to the resources to be applied.
 	FileRefOrResource `json:",inline"`
 
-	// Modifiers defines a list of mutations applied to object before the operation runs.
+	// Template determines whether resources should be considered for templating.
 	// +optional
-	Modifiers []Modifier `json:"modifiers,omitempty"`
+	Template *bool `json:"template,omitempty"`
 
 	// DryRun determines whether the file should be applied in dry run mode.
 	// +optional

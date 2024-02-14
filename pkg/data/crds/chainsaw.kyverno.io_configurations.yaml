@@ -97,6 +97,10 @@ spec:
                 description: If set, do not delete the resources after running the
                   tests (implies SkipClusterDelete).
                 type: boolean
+              template:
+                description: Template determines whether resources should be considered
+                  for templating.
+                type: boolean
               testFile:
                 default: chainsaw-test.yaml
                 description: TestFile is the name of the file containing the test

@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
@@ -19,9 +20,10 @@ import (
 
 type operation struct {
 	client     client.Client
-	obj        unstructured.Unstructured
+	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
 	bindings   binding.Bindings
+	template   bool
 	expect     []v1alpha1.Expectation
 }
 
@@ -30,6 +32,7 @@ func New(
 	obj unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
 	bindings binding.Bindings,
+	template bool,
 	expect ...v1alpha1.Expectation,
 ) operations.Operation {
 	if bindings == nil {
@@ -37,35 +40,47 @@ func New(
 	}
 	return &operation{
 		client:     client,
-		obj:        obj,
+		base:       obj,
 		namespacer: namespacer,
 		bindings:   bindings,
+		template:   template,
 		expect:     expect,
 	}
 }
 
 func (o *operation) Exec(ctx context.Context) (err error) {
-	logger := internal.GetLogger(ctx, &o.obj)
+	obj := o.base
+	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
 		internal.LogEnd(logger, logging.Delete, err)
 	}()
-	if err := internal.ApplyNamespacer(o.namespacer, &o.obj); err != nil {
+	if o.template {
+		template := v1alpha1.Any{
+			Value: obj.UnstructuredContent(),
+		}
+		if merged, err := mutate.Merge(ctx, obj, o.bindings, template); err != nil {
+			return err
+		} else {
+			obj = merged
+		}
+	}
+	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
 		return err
 	}
 	internal.LogStart(logger, logging.Delete)
-	return o.execute(ctx)
+	return o.execute(ctx, obj)
 }
 
-func (o *operation) execute(ctx context.Context) error {
-	resources, err := o.getResourcesToDelete(ctx)
+func (o *operation) execute(ctx context.Context, obj unstructured.Unstructured) error {
+	resources, err := o.getResourcesToDelete(ctx, obj)
 	if err != nil {
 		return err
 	}
 	return o.deleteResources(ctx, resources...)
 }
 
-func (o *operation) getResourcesToDelete(ctx context.Context) ([]unstructured.Unstructured, error) {
-	resources, err := internal.Read(ctx, &o.obj, o.client)
+func (o *operation) getResourcesToDelete(ctx context.Context, obj unstructured.Unstructured) ([]unstructured.Unstructured, error) {
+	resources, err := internal.Read(ctx, &obj, o.client)
 	if err != nil {
 		if kerrors.IsNotFound(err) {
 			return nil, nil

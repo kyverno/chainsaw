@@ -10,6 +10,10 @@ type Delete struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Template determines whether resources should be considered for templating.
+	// +optional
+	Template *bool `json:"template,omitempty"`
+
 	// ObjectReference determines objects to be deleted.
 	ObjectReference `json:"ref"`
 

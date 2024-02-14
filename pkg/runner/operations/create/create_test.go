@@ -40,7 +40,6 @@ func Test_create(t *testing.T) {
 		object      unstructured.Unstructured
 		client      *tclient.FakeClient
 		cleaner     cleanup.Cleaner
-		modifiers   []v1alpha1.Modifier
 		expect      []v1alpha1.Expectation
 		expectedErr error
 	}{{
@@ -225,7 +224,7 @@ func Test_create(t *testing.T) {
 				nil,
 				tt.cleaner,
 				nil,
-				tt.modifiers,
+				false,
 				tt.expect,
 			)
 			err := operation.Exec(ctx)
