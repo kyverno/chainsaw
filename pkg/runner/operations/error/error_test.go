@@ -214,6 +214,7 @@ func Test_operationError(t *testing.T) {
 				tt.expected,
 				nspacer,
 				nil,
+				false,
 			)
 			logger := &tlogging.FakeLogger{}
 			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t))

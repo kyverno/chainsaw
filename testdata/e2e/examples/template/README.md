@@ -6,7 +6,7 @@
 
 | # | Name | Try | Catch | Finally |
 |:-:|---|:-:|:-:|:-:|
-| 1 | [step-1](#step-step-1) | 2 | 0 | 0 |
+| 1 | [step-1](#step-step-1) | 3 | 0 | 0 |
 
 ## Step: `step-1`
 
@@ -17,4 +17,5 @@
 | # | Operation | Description |
 |:-:|---|---|
 | 1 | `apply` | *No description* |
-| 2 | `delete` | *No description* |
+| 2 | `assert` | *No description* |
+| 3 | `delete` | *No description* |

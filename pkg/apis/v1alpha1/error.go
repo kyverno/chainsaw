@@ -13,4 +13,8 @@ type Error struct {
 
 	// FileRefOrAssert provides a reference to the expected error.
 	FileRefOrCheck `json:",inline"`
+
+	// Template determines whether resources should be considered for templating.
+	// +optional
+	Template *bool `json:"template,omitempty"`
 }

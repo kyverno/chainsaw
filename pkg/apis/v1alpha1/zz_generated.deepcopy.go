@@ -74,6 +74,11 @@ func (in *Assert) DeepCopyInto(out *Assert) {
 		**out = **in
 	}
 	in.FileRefOrCheck.DeepCopyInto(&out.FileRefOrCheck)
+	if in.Template != nil {
+		in, out := &in.Template, &out.Template
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
@@ -344,6 +349,11 @@ func (in *Error) DeepCopyInto(out *Error) {
 		**out = **in
 	}
 	in.FileRefOrCheck.DeepCopyInto(&out.FileRefOrCheck)
+	if in.Template != nil {
+		in, out := &in.Template, &out.Template
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 
