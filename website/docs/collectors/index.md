@@ -12,3 +12,4 @@ A test step can have an arbitrary number of collectors.
 
 - [Pod logs](./pod-logs.md)
 - [Events](./events.md)
+- [Describe](./describe.md)

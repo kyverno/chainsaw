@@ -50,10 +50,13 @@ $ docker pull ghcr.io/kyverno/chainsaw:<version>
     Since Chainsaw relies on files for its operation (like test definitions), you will need to bind mount the necessary directories when running it via Docker.
 
 ```bash
-$ docker run --rm                       \
-    -v /path/on/host:/path/in/container \
-    ghcr.io/kyverno/chainsaw:<version>  \
-    <chainsaw-command>
+$ docker run --rm                           \
+    -v ./testdata/e2e/:/chainsaw/           \
+    -v ${HOME}/.kube/:/etc/kubeconfig/      \
+    -e KUBECONFIG=/etc/kubeconfig/config    \
+    --network=host                          \
+    ghcr.io/kyverno/chainsaw:<version>      \
+    test /chainsaw --config /chainsaw/config.yaml
 ```
 
 ## Compiling from sources

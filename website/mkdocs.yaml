@@ -48,6 +48,7 @@ nav:
     - collectors/index.md
     - collectors/pod-logs.md
     - collectors/events.md
+    - collectors/describe.md
   - Other resources:
     - more/events.md
     - more/crds.md
