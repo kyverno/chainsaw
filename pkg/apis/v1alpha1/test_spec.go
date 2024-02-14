@@ -26,6 +26,10 @@ type TestSpec struct {
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
 
+	// Template determines whether resources should be considered for templating.
+	// +optional
+	Template *bool `json:"template,omitempty"`
+
 	// Namespace determines whether the test should run in a random ephemeral namespace or not.
 	// +optional
 	Namespace string `json:"namespace,omitempty"`

@@ -20,6 +20,10 @@ type ConfigurationSpec struct {
 	// +optional
 	SkipDelete bool `json:"skipDelete,omitempty"`
 
+	// Template determines whether resources should be considered for templating.
+	// +optional
+	Template *bool `json:"template,omitempty"`
+
 	// FailFast determines whether the test should stop upon encountering the first failure.
 	// +optional
 	FailFast bool `json:"failFast,omitempty"`

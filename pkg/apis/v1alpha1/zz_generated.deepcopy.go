@@ -35,6 +35,11 @@ func (in *Apply) DeepCopyInto(out *Apply) {
 		**out = **in
 	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
+	if in.Template != nil {
+		in, out := &in.Template, &out.Template
+		*out = new(bool)
+		**out = **in
+	}
 	if in.DryRun != nil {
 		in, out := &in.DryRun, &out.DryRun
 		*out = new(bool)
@@ -189,6 +194,11 @@ func (in *Configuration) DeepCopyObject() runtime.Object {
 func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 	*out = *in
 	in.Timeouts.DeepCopyInto(&out.Timeouts)
+	if in.Template != nil {
+		in, out := &in.Template, &out.Template
+		*out = new(bool)
+		**out = **in
+	}
 	if in.Parallel != nil {
 		in, out := &in.Parallel, &out.Parallel
 		*out = new(int)
@@ -235,6 +245,11 @@ func (in *Create) DeepCopyInto(out *Create) {
 		**out = **in
 	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
+	if in.Template != nil {
+		in, out := &in.Template, &out.Template
+		*out = new(bool)
+		**out = **in
+	}
 	if in.DryRun != nil {
 		in, out := &in.DryRun, &out.DryRun
 		*out = new(bool)
@@ -702,6 +717,11 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.Template != nil {
+		in, out := &in.Template, &out.Template
+		*out = new(bool)
+		**out = **in
+	}
 	if in.NamespaceTemplate != nil {
 		in, out := &in.NamespaceTemplate, &out.NamespaceTemplate
 		*out = (*in).DeepCopy()
@@ -790,6 +810,11 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 	}
 	if in.SkipDelete != nil {
 		in, out := &in.SkipDelete, &out.SkipDelete
+		*out = new(bool)
+		**out = **in
+	}
+	if in.Template != nil {
+		in, out := &in.Template, &out.Template
 		*out = new(bool)
 		**out = **in
 	}

@@ -25,6 +25,7 @@ type operation struct {
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
 	bindings   binding.Bindings
+	template   bool
 	expect     []v1alpha1.Expectation
 }
 
@@ -34,6 +35,7 @@ func New(
 	namespacer namespacer.Namespacer,
 	cleaner cleanup.Cleaner,
 	bindings binding.Bindings,
+	template bool,
 	expect []v1alpha1.Expectation,
 ) operations.Operation {
 	if bindings == nil {
@@ -45,6 +47,7 @@ func New(
 		namespacer: namespacer,
 		cleaner:    cleaner,
 		bindings:   bindings,
+		template:   template,
 		expect:     expect,
 	}
 }

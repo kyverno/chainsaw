@@ -14,6 +14,10 @@ type Create struct {
 	// FileRefOrResource provides a reference to the file containing the resources to be created.
 	FileRefOrResource `json:",inline"`
 
+	// Template determines whether resources should be considered for templating.
+	// +optional
+	Template *bool `json:"template,omitempty"`
+
 	// DryRun determines whether the file should be applied in dry run mode.
 	// +optional
 	DryRun *bool `json:"dryRun,omitempty"`

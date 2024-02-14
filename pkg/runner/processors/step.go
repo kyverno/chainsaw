@@ -24,6 +24,7 @@ import (
 	operror "github.com/kyverno/chainsaw/pkg/runner/operations/error"
 	opscript "github.com/kyverno/chainsaw/pkg/runner/operations/script"
 	opsleep "github.com/kyverno/chainsaw/pkg/runner/operations/sleep"
+	"github.com/kyverno/chainsaw/pkg/runner/template"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -275,13 +276,14 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) (
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
+	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), p.bindings, op.Expect),
+			operation: opapply.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), p.bindings, template, op.Expect),
 		})
 	}
 	return ops, nil
@@ -334,13 +336,14 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create)
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
+	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
 		ops = append(ops, operation{
 			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), p.bindings, op.Expect),
+			operation: opcreate.New(p.getClient(dryRun), resource, p.namespacer, p.getCleaner(ctx, dryRun), p.bindings, template, op.Expect),
 		})
 	}
 	return ops, nil
