@@ -171,6 +171,7 @@ func Test_operationDelete(t *testing.T) {
 				tt.object,
 				nspacer,
 				nil,
+				false,
 				tt.expect...,
 			)
 			logger := &tlogging.FakeLogger{}

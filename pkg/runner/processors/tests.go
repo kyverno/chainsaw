@@ -97,7 +97,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, object, nspacer, bindings),
+							operation:       opdelete.New(p.client, object, nspacer, bindings, false),
 						}
 						operation.execute(ctx)
 					})

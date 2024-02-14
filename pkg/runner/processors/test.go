@@ -150,7 +150,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, object, nspacer, bindings),
+							operation:       opdelete.New(p.client, object, nspacer, bindings, false),
 						}
 						operation.execute(cleanupCtx)
 					})

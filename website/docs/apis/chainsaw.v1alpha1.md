@@ -179,6 +179,7 @@ If a resource already exists in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: |  | <p>ObjectReference determines objects to be deleted.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 

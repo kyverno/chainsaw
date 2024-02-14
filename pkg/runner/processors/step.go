@@ -360,9 +360,10 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
+	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	return &operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
-		operation:       opdelete.New(p.client, resource, p.namespacer, p.bindings, op.Expect...),
+		operation:       opdelete.New(p.client, resource, p.namespacer, p.bindings, template, op.Expect...),
 		operationReport: operationReport,
 	}, nil
 }
