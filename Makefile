@@ -245,7 +245,7 @@ e2e-tests-ko:
 	--user $(id -u):$(id -g) \
 	--name chainsaw \
 	--rm ko.local/main.go:latest \
-	test /chainsaw
+	test --values foo=bar /chainsaw 
 
 ########	
 # KIND #
