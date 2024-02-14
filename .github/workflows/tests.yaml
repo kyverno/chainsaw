@@ -86,8 +86,6 @@ jobs:
       run: |
         set -e
         make build-ko
-      env:
-        KO_DOCKER_REPO: ko.local
     - name: Create test cluster
       run: |
         set -e
