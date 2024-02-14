@@ -1039,6 +1039,13 @@
                           "description": "Check provides a check used in assertions.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
+                        "template": {
+                          "description": "Template determines whether resources should be considered for templating.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
                           "type": [
@@ -1293,6 +1300,13 @@
                         "resource": {
                           "description": "Check provides a check used in assertions.",
                           "x-kubernetes-preserve-unknown-fields": true
+                        },
+                        "template": {
+                          "description": "Template determines whether resources should be considered for templating.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
