@@ -3,12 +3,13 @@
 Evaluate assertion
 
 ```
-chainsaw assert [flags]
+chainsaw assert [flags] [FILE]
 ```
 
 ### Options
 
 ```
+  -f, --file string                         Path to the file to assert or '-' to read from stdin
   -h, --help                                help for assert
       --kube-as string                      Username to impersonate for the operation
       --kube-as-group stringArray           Group to impersonate for the operation, this flag can be repeated to specify multiple groups.
