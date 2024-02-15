@@ -13,6 +13,7 @@ The list of organizations that have publicly shared the usage of Chainsaw:
 | [Redis-operator](https://github.com/OT-CONTAINER-KIT/redis-operator) | Chainsaw helped a lot for declarative assertion of Redis Cluster state against various e2e test  |
 | [rbac-manager](https://github.com/fairwindsops/rbac-manager) | Chainsaw replaced and improved upon our bash test framework for testing the RbacDefinition CRD |
 | [skiperator](https://github.com/kartverket/skiperator) (Norwegian Mapping Authority) | Chainsaw replaced kuttl and made our tests more reliable |
+| [Grafana-operator](https://github.com/grafana/grafana-operator) | Chainsaw enabled easier e2e testing and CI debugging after replacing kuttl |
 
 <!-- append the line below to the table
 | [name](URL) | brief description of how you are using Chainsaw | 
