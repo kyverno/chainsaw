@@ -19,9 +19,9 @@ CODE_GEN_VERSION                   := v0.28.0
 REFERENCE_DOCS                     := $(TOOLS_DIR)/genref
 REFERENCE_DOCS_VERSION             := latest
 KIND                               := $(TOOLS_DIR)/kind
-KIND_VERSION                       := v0.20.0
+KIND_VERSION                       := v0.22.0
 KO                                 ?= $(TOOLS_DIR)/ko
-KO_VERSION                         ?= v0.14.1
+KO_VERSION                         ?= v0.15.1
 TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(REFERENCE_DOCS) $(KIND) $(KO)
 PIP                                ?= "pip"
 ifeq ($(GOOS), darwin)
