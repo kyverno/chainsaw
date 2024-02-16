@@ -24,7 +24,7 @@ require (
 	k8s.io/apimachinery v0.29.2
 	k8s.io/client-go v0.29.2
 	k8s.io/utils v0.0.0-20240102154912-e7106e64919e
-	sigs.k8s.io/controller-runtime v0.17.1
+	sigs.k8s.io/controller-runtime v0.17.2
 	sigs.k8s.io/kubectl-validate v0.0.2-0.20240102223437-fe143bcde89f
 	sigs.k8s.io/yaml v1.4.0
 )
