@@ -10,6 +10,7 @@ The list of organizations that have publicly shared the usage of Chainsaw:
 |:--|:--|
 | [Keptn](https://github.com/keptn/lifecycle-toolkit)| Chainsaw replaced Kuttl, and helped us get rid of many unreadable bash scripts |
 | [Kyverno](https://kyverno.io) | Running all end to end tests for both Kyverno and the policies catalog |
+| [Nirmata](https://nirmata.com/) | Using Chainsaw extensively to test curated Kyverno policies, Kyverno Operator and other e2e internal testing |
 | [Redis-operator](https://github.com/OT-CONTAINER-KIT/redis-operator) | Chainsaw helped a lot for declarative assertion of Redis Cluster state against various e2e test  |
 | [rbac-manager](https://github.com/fairwindsops/rbac-manager) | Chainsaw replaced and improved upon our bash test framework for testing the RbacDefinition CRD |
 | [skiperator](https://github.com/kartverket/skiperator) (Norwegian Mapping Authority) | Chainsaw replaced kuttl and made our tests more reliable |
