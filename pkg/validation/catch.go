@@ -19,6 +19,9 @@ func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
 	if obj.Describe != nil {
 		count++
 	}
+	if obj.Get != nil {
+		count++
+	}
 	if obj.Command != nil {
 		count++
 	}

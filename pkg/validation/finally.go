@@ -19,6 +19,9 @@ func ValidateFinally(path *field.Path, obj v1alpha1.Finally) field.ErrorList {
 	if obj.Describe != nil {
 		count++
 	}
+	if obj.Get != nil {
+		count++
+	}
 	if obj.Command != nil {
 		count++
 	}
