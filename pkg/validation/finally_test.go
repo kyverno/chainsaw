@@ -29,6 +29,9 @@ func TestValidateFinally(t *testing.T) {
 	exampleDescribe := &v1alpha1.Describe{
 		Resource: "pods",
 	}
+	exampleGet := &v1alpha1.Get{
+		Resource: "pods",
+	}
 	tests := []struct {
 		name      string
 		input     v1alpha1.Finally
@@ -82,6 +85,12 @@ func TestValidateFinally(t *testing.T) {
 		name: "Only Describe statement provided",
 		input: v1alpha1.Finally{
 			Describe: exampleDescribe,
+		},
+		expectErr: false,
+	}, {
+		name: "Only Get statement provided",
+		input: v1alpha1.Finally{
+			Get: exampleGet,
 		},
 		expectErr: false,
 	}}
