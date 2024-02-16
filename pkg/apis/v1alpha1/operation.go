@@ -37,6 +37,10 @@ type Operation struct {
 	// +optional
 	Error *Error `json:"error,omitempty"`
 
+	// Patch represents a patch operation.
+	// +optional
+	Patch *Patch `json:"patch,omitempty"`
+
 	// Script defines a script to run.
 	// +optional
 	Script *Script `json:"script,omitempty"`

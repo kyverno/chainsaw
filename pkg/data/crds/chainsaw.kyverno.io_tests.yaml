@@ -718,6 +718,55 @@ spec:
                                   the global timeout set in the Configuration.
                                 type: string
                             type: object
+                          patch:
+                            description: Patch represents a patch operation.
+                            properties:
+                              dryRun:
+                                description: DryRun determines whether the file should
+                                  be applied in dry run mode.
+                                type: boolean
+                              expect:
+                                description: Expect defines a list of matched checks
+                                  to validate the operation outcome.
+                                items:
+                                  description: Expectation represents a check to be
+                                    applied on the result of an operation with a match
+                                    filter to determine if the verification should
+                                    be considered.
+                                  properties:
+                                    check:
+                                      description: Check defines the verification
+                                        statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    match:
+                                      description: Match defines the matching statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - check
+                                  type: object
+                                type: array
+                              file:
+                                description: File is the path to the referenced file.
+                                  This can be a direct path to a file or an expression
+                                  that matches multiple files, such as "manifest/*.yaml"
+                                  for all YAML files within the "manifest" directory.
+                                type: string
+                              resource:
+                                description: Resource provides a resource to be applied.
+                                type: object
+                                x-kubernetes-embedded-resource: true
+                                x-kubernetes-preserve-unknown-fields: true
+                              template:
+                                description: Template determines whether resources
+                                  should be considered for templating.
+                                type: boolean
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            type: object
                           script:
                             description: Script defines a script to run.
                             properties:

@@ -244,6 +244,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 - [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
 - [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
 
 <p>Expectation represents a check to be applied on the result of an operation
 with a match filter to determine if the verification should be considered.</p>
@@ -289,6 +290,7 @@ with a match filter to determine if the verification should be considered.</p>
     
 - [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
 
 <p>FileRefOrResource represents a file reference or resource.</p>
 
@@ -389,8 +391,27 @@ For multiple objects use labels.</p>
 | `create` | [`Create`](#chainsaw-kyverno-io-v1alpha1-Create) |  |  | <p>Create represents a creation operation.</p> |
 | `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a creation operation.</p> |
 | `error` | [`Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
+| `patch` | [`Patch`](#chainsaw-kyverno-io-v1alpha1-Patch) |  |  | <p>Patch represents a patch operation.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
+
+## `Patch`     {#chainsaw-kyverno-io-v1alpha1-Patch}
+
+**Appears in:**
+    
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
+
+<p>Patch represents a set of resources that should be patched.
+If a resource doesn't exist yet in the cluster it will fail.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be patched.</p> |
+| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
+| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
 ## `PodLogs`     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 

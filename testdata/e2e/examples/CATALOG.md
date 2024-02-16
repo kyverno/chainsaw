@@ -12,6 +12,7 @@
 - [list](list/README.md)
 - [namespace-template](namespace-template/README.md)
 - [non-resource-assertion](non-resource-assertion/README.md)
+- [patch](patch/README.md)
 - [sleep](sleep/README.md)
 - [template](template/README.md)
 - [timeout](timeout/README.md)

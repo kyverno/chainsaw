@@ -1405,6 +1405,75 @@
                         }
                       }
                     },
+                    "patch": {
+                      "description": "Patch represents a patch operation.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "dryRun": {
+                          "description": "DryRun determines whether the file should be applied in dry run mode.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "expect": {
+                          "description": "Expect defines a list of matched checks to validate the operation outcome.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "check"
+                            ],
+                            "properties": {
+                              "check": {
+                                "description": "Check defines the verification statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
+                        "file": {
+                          "description": "File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML files within the \"manifest\" directory.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "resource": {
+                          "description": "Resource provides a resource to be applied.",
+                          "x-kubernetes-embedded-resource": true,
+                          "x-kubernetes-preserve-unknown-fields": true
+                        },
+                        "template": {
+                          "description": "Template determines whether resources should be considered for templating.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
                     "script": {
                       "description": "Script defines a script to run.",
                       "type": [
