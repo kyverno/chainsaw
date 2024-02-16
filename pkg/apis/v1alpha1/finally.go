@@ -18,6 +18,10 @@ type Finally struct {
 	// +optional
 	Describe *Describe `json:"describe,omitempty"`
 
+	// Get determines the resource get collector to execute.
+	// +optional
+	Get *Get `json:"get,omitempty"`
+
 	// Command defines a command to run.
 	// +optional
 	Command *Command `json:"command,omitempty"`

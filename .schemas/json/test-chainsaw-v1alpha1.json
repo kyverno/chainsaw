@@ -500,6 +500,50 @@
                         }
                       }
                     },
+                    "get": {
+                      "description": "Get determines the resource get collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "resource"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "resource": {
+                          "description": "Resource type.",
+                          "type": "string"
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
                     "podLogs": {
                       "description": "PodLogs determines the pod logs collector to execute.",
                       "type": [
@@ -749,6 +793,50 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "get": {
+                      "description": "Get determines the resource get collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "resource"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "resource": {
+                          "description": "Resource type.",
+                          "type": "string"
                         },
                         "selector": {
                           "description": "Selector defines labels selector.",

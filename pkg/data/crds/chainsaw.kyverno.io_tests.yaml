@@ -157,6 +157,30 @@ spec:
                                   the global timeout set in the Configuration.
                                 type: string
                             type: object
+                          get:
+                            description: Get determines the resource get collector
+                              to execute.
+                            properties:
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                type: string
+                              namespace:
+                                description: 'Namespace of the referent. More info:
+                                  https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                type: string
+                              resource:
+                                description: Resource type.
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            required:
+                            - resource
+                            type: object
                           podLogs:
                             description: PodLogs determines the pod logs collector
                               to execute.
@@ -310,6 +334,30 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
+                            type: object
+                          get:
+                            description: Get determines the resource get collector
+                              to execute.
+                            properties:
+                              name:
+                                description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                                type: string
+                              namespace:
+                                description: 'Namespace of the referent. More info:
+                                  https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                                type: string
+                              resource:
+                                description: Resource type.
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            required:
+                            - resource
                             type: object
                           podLogs:
                             description: PodLogs determines the pod logs collector
