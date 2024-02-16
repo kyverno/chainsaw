@@ -465,16 +465,17 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 	if err != nil {
 		return err
 	}
+	// TODO: timeout
 	for _, cmd := range from.Commands {
 		if cmd.Script != "" {
-			to.Catch = append(to.Catch, v1alpha1.Catch{
+			to.Try = append(to.Try, v1alpha1.Operation{
 				Script: &v1alpha1.Script{
 					Content:       cmd.Script,
 					SkipLogOutput: cmd.SkipLogOutput,
 				},
 			})
 		} else if cmd.Command != "" {
-			to.Catch = append(to.Catch, v1alpha1.Catch{
+			to.Try = append(to.Try, v1alpha1.Operation{
 				Script: &v1alpha1.Script{
 					Content:       cmd.Command,
 					SkipLogOutput: cmd.SkipLogOutput,

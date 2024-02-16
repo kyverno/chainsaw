@@ -7,8 +7,6 @@ metadata:
 spec:
   steps:
   - catch:
-    - script:
-        content: echo hello
     - podLogs:
         name: nginx
     name: step-01
@@ -36,9 +34,9 @@ spec:
         ref:
           apiVersion: v1
           kind: Pod
-  - catch:
     - script:
         content: echo hello
+  - catch:
     - script:
         content: sleep 1
     name: step-02
@@ -66,4 +64,6 @@ spec:
         ref:
           apiVersion: v1
           kind: Pod
+    - script:
+        content: echo hello
 
