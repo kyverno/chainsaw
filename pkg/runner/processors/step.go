@@ -13,7 +13,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
-	"github.com/kyverno/chainsaw/pkg/runner/collect"
+	"github.com/kyverno/chainsaw/pkg/runner/kubectl"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opapply "github.com/kyverno/chainsaw/pkg/runner/operations/apply"
@@ -202,25 +202,29 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 	}
 	for _, handler := range handlers {
 		if handler.PodLogs != nil {
-			cmd, err := collect.PodLogs(handler.PodLogs)
+			cmd, err := kubectl.Logs(handler.PodLogs)
 			if err != nil {
 				return nil, err
 			}
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Events != nil {
-			cmd, err := collect.Events(handler.Events)
+			cmd, err := kubectl.Get(&v1alpha1.Get{
+				Timeout:              handler.Events.Timeout,
+				Resource:             "events",
+				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
+			})
 			if err != nil {
 				return nil, err
 			}
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Describe != nil {
-			cmd, err := collect.Describe(handler.Describe)
+			cmd, err := kubectl.Describe(handler.Describe)
 			if err != nil {
 				return nil, err
 			}
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Get != nil {
-			cmd, err := collect.Get(handler.Get)
+			cmd, err := kubectl.Get(handler.Get)
 			if err != nil {
 				return nil, err
 			}
@@ -248,25 +252,29 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 	}
 	for _, handler := range handlers {
 		if handler.PodLogs != nil {
-			cmd, err := collect.PodLogs(handler.PodLogs)
+			cmd, err := kubectl.Logs(handler.PodLogs)
 			if err != nil {
 				return nil, err
 			}
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Events != nil {
-			cmd, err := collect.Events(handler.Events)
+			cmd, err := kubectl.Get(&v1alpha1.Get{
+				Timeout:              handler.Events.Timeout,
+				Resource:             "events",
+				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
+			})
 			if err != nil {
 				return nil, err
 			}
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Describe != nil {
-			cmd, err := collect.Describe(handler.Describe)
+			cmd, err := kubectl.Describe(handler.Describe)
 			if err != nil {
 				return nil, err
 			}
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Get != nil {
-			cmd, err := collect.Get(handler.Get)
+			cmd, err := kubectl.Get(handler.Get)
 			if err != nil {
 				return nil, err
 			}

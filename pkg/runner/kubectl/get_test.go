@@ -1,4 +1,4 @@
-package collect
+package kubectl
 
 import (
 	"testing"

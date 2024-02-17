@@ -1,4 +1,4 @@
-package collect
+package kubectl
 
 import (
 	"testing"
@@ -118,7 +118,7 @@ func TestPodLogs(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := PodLogs(tt.collector)
+			got, err := Logs(tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
