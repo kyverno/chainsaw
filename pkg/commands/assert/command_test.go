@@ -13,6 +13,7 @@ import (
 	fakeClient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/commands/root"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
+	mockReader "github.com/kyverno/chainsaw/pkg/utils/reader"
 	"github.com/spf13/cobra"
 	testify "github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -325,6 +326,48 @@ data:
 				},
 			},
 			wantErr: false,
+		},
+		{
+			name: "Failure case - can't read from stdin",
+			setupFunc: func() *cobra.Command {
+				cmd := &cobra.Command{}
+				cmd.Args = cobra.RangeArgs(0, 1)
+				cmd.SilenceUsage = true
+				cmd.SetOut(bytes.NewBufferString(""))
+				cmd.SetIn(&mockReader.ErrReader{})
+				return cmd
+			},
+			opts: options{
+				filePath:  "-",
+				noColor:   true,
+				namespace: "default",
+				timeout:   metav1.Duration{Duration: 5 * time.Second},
+			},
+			client: &fakeClient.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					obj.(*unstructured.Unstructured).Object = map[string]any{
+						"apiVersion": "v1",
+						"kind":       "ConfigMap",
+						"metadata": map[string]any{
+							"name": "quick-start",
+						},
+						"data": map[string]any{
+							"foo": "bar",
+						},
+					}
+					return nil
+				},
+			},
+			nspacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+				GetNamespaceFn: func(call int) string {
+					return "default"
+				},
+			},
+			wantErrMsg: "failed to read from stdin: error reading from stdin",
+			wantErr:    true,
 		},
 	}
 
