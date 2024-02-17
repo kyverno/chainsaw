@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/validation"
+	testvalidation "github.com/kyverno/chainsaw/pkg/validation/test"
 	"github.com/spf13/cobra"
 	"github.com/xeipuuv/gojsonschema"
 	"k8s.io/apimachinery/pkg/util/yaml"
@@ -91,5 +91,5 @@ func lintBusinessLogic(input []byte, writer io.Writer) error {
 	if err := yaml.UnmarshalStrict(input, test); err != nil {
 		return err
 	}
-	return validation.ValidateTest(test).ToAggregate()
+	return testvalidation.ValidateTest(test).ToAggregate()
 }

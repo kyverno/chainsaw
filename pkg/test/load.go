@@ -7,7 +7,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	internalloader "github.com/kyverno/chainsaw/pkg/internal/loader"
-	"github.com/kyverno/chainsaw/pkg/validation"
+	testvalidation "github.com/kyverno/chainsaw/pkg/validation/test"
 	"github.com/kyverno/kyverno/ext/resource/convert"
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/kyverno/kyverno/ext/yaml"
@@ -52,7 +52,7 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 		converter = convert.To[v1alpha1.Test]
 	}
 	if validator == nil {
-		validator = validation.ValidateTest
+		validator = testvalidation.ValidateTest
 	}
 	var loader loader.Loader
 	if loaderFactory != nil {
