@@ -142,6 +142,13 @@ spec:
                             description: Events determines the events collector to
                               execute.
                             properties:
+                              format:
+                                description: Format determines the output format (json
+                                  or yaml).
+                                enum:
+                                - json
+                                - yaml
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -161,6 +168,13 @@ spec:
                             description: Get determines the resource get collector
                               to execute.
                             properties:
+                              format:
+                                description: Format determines the output format (json
+                                  or yaml).
+                                enum:
+                                - json
+                                - yaml
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -320,6 +334,13 @@ spec:
                             description: Events determines the events collector to
                               execute.
                             properties:
+                              format:
+                                description: Format determines the output format (json
+                                  or yaml).
+                                enum:
+                                - json
+                                - yaml
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -339,6 +360,13 @@ spec:
                             description: Get determines the resource get collector
                               to execute.
                             properties:
+                              format:
+                                description: Format determines the output format (json
+                                  or yaml).
+                                enum:
+                                - json
+                                - yaml
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string

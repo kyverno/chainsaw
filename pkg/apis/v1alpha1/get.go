@@ -15,4 +15,8 @@ type Get struct {
 
 	// ObjectLabelsSelector determines the selection process of referenced objects.
 	ObjectLabelsSelector `json:",inline"`
+
+	// Format determines the output format (json or yaml).
+	// +optional
+	Format Format `json:"format,omitempty"`
 }

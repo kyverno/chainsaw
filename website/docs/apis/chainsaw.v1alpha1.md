@@ -232,6 +232,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
 
 ## `Expectation`     {#chainsaw-kyverno-io-v1alpha1-Expectation}
 
@@ -316,6 +317,18 @@ with a match filter to determine if the verification should be considered.</p>
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 
+## `Format`     {#chainsaw-kyverno-io-v1alpha1-Format}
+
+(Alias of `string`)
+
+**Appears in:**
+    
+- [Events](#chainsaw-kyverno-io-v1alpha1-Events)
+- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
+
+<p>Format determines the output format (json or yaml).</p>
+
+
 ## `Get`     {#chainsaw-kyverno-io-v1alpha1-Get}
 
 **Appears in:**
@@ -331,6 +344,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `resource` | `string` | :white_check_mark: |  | <p>Resource type.</p> |
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
 
 ## `ObjectLabelsSelector`     {#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector}
 
