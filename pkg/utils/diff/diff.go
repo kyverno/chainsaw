@@ -35,6 +35,9 @@ func pruneMetadata(expected map[string]any, actual map[string]any) {
 
 func pruneRoot(expected map[string]any, actual map[string]any) {
 	for k, v := range actual {
+		if k == "apiVersion" || k == "kind" {
+			continue
+		}
 		if expected[k] == nil {
 			delete(actual, k)
 		} else {
