@@ -1,14 +1,9 @@
-## chainsaw assert
-
 Evaluate assertion
 
-```
-chainsaw assert [flags] [FILE]
-```
+Usage:
+  chainsaw assert [flags] [FILE]
 
-### Options
-
-```
+Flags:
   -f, --file string                         Path to the file to assert or '-' to read from stdin
   -h, --help                                help for assert
       --kube-as string                      Username to impersonate for the operation
@@ -33,9 +28,3 @@ chainsaw assert [flags] [FILE]
       --namespace string                    Namespace to use (default "default")
       --no-color                            Removes output colors
       --timeout duration                    The assert timeout to use (default 30s)
-```
-
-### SEE ALSO
-
-* [chainsaw](chainsaw.md)	 - Stronger tool for e2e testing
-
