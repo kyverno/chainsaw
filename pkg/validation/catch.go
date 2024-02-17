@@ -22,6 +22,9 @@ func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
 	if obj.Get != nil {
 		count++
 	}
+	if obj.Delete != nil {
+		count++
+	}
 	if obj.Command != nil {
 		count++
 	}
@@ -42,6 +45,7 @@ func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
 		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
 		errs = append(errs, ValidateDescribe(path.Child("describe"), obj.Describe)...)
 		errs = append(errs, ValidateGet(path.Child("get"), obj.Get)...)
+		errs = append(errs, ValidateDelete(path.Child("delete"), obj.Delete)...)
 	}
 	return errs
 }

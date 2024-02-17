@@ -68,6 +68,65 @@ spec:
                       required:
                       - entrypoint
                       type: object
+                    delete:
+                      description: Delete represents a deletion operation.
+                      properties:
+                        expect:
+                          description: Expect defines a list of matched checks to
+                            validate the operation outcome.
+                          items:
+                            description: Expectation represents a check to be applied
+                              on the result of an operation with a match filter to
+                              determine if the verification should be considered.
+                            properties:
+                              check:
+                                description: Check defines the verification statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              match:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - check
+                            type: object
+                          type: array
+                        ref:
+                          description: ObjectReference determines objects to be deleted.
+                          properties:
+                            apiVersion:
+                              description: API version of the referent.
+                              type: string
+                            kind:
+                              description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                              type: string
+                            labels:
+                              additionalProperties:
+                                type: string
+                              description: Label selector to match objects to delete
+                              type: object
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                              type: string
+                            namespace:
+                              description: 'Namespace of the referent. More info:
+                                https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                              type: string
+                          required:
+                          - apiVersion
+                          - kind
+                          type: object
+                        template:
+                          description: Template determines whether resources should
+                            be considered for templating.
+                          type: boolean
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
+                      required:
+                      - ref
+                      type: object
                     describe:
                       description: Describe determines the resource describe collector
                         to execute.
@@ -246,6 +305,65 @@ spec:
                           type: string
                       required:
                       - entrypoint
+                      type: object
+                    delete:
+                      description: Delete represents a deletion operation.
+                      properties:
+                        expect:
+                          description: Expect defines a list of matched checks to
+                            validate the operation outcome.
+                          items:
+                            description: Expectation represents a check to be applied
+                              on the result of an operation with a match filter to
+                              determine if the verification should be considered.
+                            properties:
+                              check:
+                                description: Check defines the verification statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              match:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - check
+                            type: object
+                          type: array
+                        ref:
+                          description: ObjectReference determines objects to be deleted.
+                          properties:
+                            apiVersion:
+                              description: API version of the referent.
+                              type: string
+                            kind:
+                              description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                              type: string
+                            labels:
+                              additionalProperties:
+                                type: string
+                              description: Label selector to match objects to delete
+                              type: object
+                            name:
+                              description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                              type: string
+                            namespace:
+                              description: 'Namespace of the referent. More info:
+                                https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                              type: string
+                          required:
+                          - apiVersion
+                          - kind
+                          type: object
+                        template:
+                          description: Template determines whether resources should
+                            be considered for templating.
+                          type: boolean
+                        timeout:
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
+                          type: string
+                      required:
+                      - ref
                       type: object
                     describe:
                       description: Describe determines the resource describe collector

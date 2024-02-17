@@ -405,6 +405,104 @@
                         }
                       }
                     },
+                    "delete": {
+                      "description": "Delete represents a deletion operation.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "ref"
+                      ],
+                      "properties": {
+                        "expect": {
+                          "description": "Expect defines a list of matched checks to validate the operation outcome.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "check"
+                            ],
+                            "properties": {
+                              "check": {
+                                "description": "Check defines the verification statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
+                        "ref": {
+                          "description": "ObjectReference determines objects to be deleted.",
+                          "type": "object",
+                          "required": [
+                            "apiVersion",
+                            "kind"
+                          ],
+                          "properties": {
+                            "apiVersion": {
+                              "description": "API version of the referent.",
+                              "type": "string"
+                            },
+                            "kind": {
+                              "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                              "type": "string"
+                            },
+                            "labels": {
+                              "description": "Label selector to match objects to delete",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "additionalProperties": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "name": {
+                              "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "namespace": {
+                              "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          }
+                        },
+                        "template": {
+                          "description": "Template determines whether resources should be considered for templating.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
                     "describe": {
                       "description": "Describe determines the resource describe collector to execute.",
                       "type": [
@@ -723,6 +821,104 @@
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "delete": {
+                      "description": "Delete represents a deletion operation.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "ref"
+                      ],
+                      "properties": {
+                        "expect": {
+                          "description": "Expect defines a list of matched checks to validate the operation outcome.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "check"
+                            ],
+                            "properties": {
+                              "check": {
+                                "description": "Check defines the verification statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
+                        "ref": {
+                          "description": "ObjectReference determines objects to be deleted.",
+                          "type": "object",
+                          "required": [
+                            "apiVersion",
+                            "kind"
+                          ],
+                          "properties": {
+                            "apiVersion": {
+                              "description": "API version of the referent.",
+                              "type": "string"
+                            },
+                            "kind": {
+                              "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                              "type": "string"
+                            },
+                            "labels": {
+                              "description": "Label selector to match objects to delete",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "additionalProperties": {
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              }
+                            },
+                            "name": {
+                              "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "namespace": {
+                              "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
+                          }
+                        },
+                        "template": {
+                          "description": "Template determines whether resources should be considered for templating.",
                           "type": [
                             "boolean",
                             "null"
