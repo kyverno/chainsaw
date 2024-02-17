@@ -1,4 +1,4 @@
-package collect
+package kubectl
 
 import (
 	"errors"
@@ -6,16 +6,19 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
 
-func Events(collector *v1alpha1.Events) (*v1alpha1.Command, error) {
+func Get(collector *v1alpha1.Get) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, nil
+	}
+	if collector.Resource == "" {
+		return nil, errors.New("a resource must be specified")
 	}
 	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
 	cmd := v1alpha1.Command{
 		Entrypoint: "kubectl",
-		Args:       []string{"get", "events"},
+		Args:       []string{"get", collector.Resource},
 	}
 	if collector.Name != "" {
 		cmd.Args = append(cmd.Args, collector.Name)
@@ -23,6 +26,7 @@ func Events(collector *v1alpha1.Events) (*v1alpha1.Command, error) {
 	if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
+	// TODO: what if cluster scoped resource ?
 	namespace := collector.Namespace
 	if collector.Namespace == "" {
 		namespace = "$NAMESPACE"

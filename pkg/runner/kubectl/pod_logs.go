@@ -1,4 +1,4 @@
-package collect
+package kubectl
 
 import (
 	"errors"
@@ -7,19 +7,19 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
 
-func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
+func Logs(collector *v1alpha1.PodLogs) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, nil
 	}
-	if collector.Resource == "" {
-		return nil, errors.New("a resource must be specified")
+	if collector.Name == "" && collector.Selector == "" {
+		return nil, errors.New("a name or selector must be specified")
 	}
 	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
 	cmd := v1alpha1.Command{
 		Entrypoint: "kubectl",
-		Args:       []string{"describe", collector.Resource},
+		Args:       []string{"logs", "--prefix"},
 	}
 	if collector.Name != "" {
 		cmd.Args = append(cmd.Args, collector.Name)
@@ -27,14 +27,18 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
-	// TODO: what if cluster scoped resource ?
 	namespace := collector.Namespace
 	if collector.Namespace == "" {
 		namespace = "$NAMESPACE"
 	}
 	cmd.Args = append(cmd.Args, "-n", namespace)
-	if collector.ShowEvents != nil {
-		cmd.Args = append(cmd.Args, fmt.Sprintf("--show-events=%t", *collector.ShowEvents))
+	if collector.Container == "" {
+		cmd.Args = append(cmd.Args, "--all-containers")
+	} else {
+		cmd.Args = append(cmd.Args, "-c", collector.Container)
+	}
+	if collector.Tail != nil {
+		cmd.Args = append(cmd.Args, "--tail", fmt.Sprint(*collector.Tail))
 	}
 	return &cmd, nil
 }
