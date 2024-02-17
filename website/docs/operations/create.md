@@ -61,6 +61,7 @@ Below is an example of using `create` in a `Test` resource.
         - create:
             file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml
         # ...
+    ```
 
 !!! example "Using an inline resource"
 
