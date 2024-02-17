@@ -3,11 +3,15 @@ package assert
 import (
 	"bytes"
 	"context"
+	"io"
+	"os"
 	"path"
+	"path/filepath"
 	"testing"
 	"time"
 
 	fakeClient "github.com/kyverno/chainsaw/pkg/client/testing"
+	"github.com/kyverno/chainsaw/pkg/commands/root"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
 	"github.com/spf13/cobra"
 	testify "github.com/stretchr/testify/assert"
@@ -15,6 +19,62 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+func Test_Execute(t *testing.T) {
+	basePath := path.Join("..", "..", "..", "testdata", "commands", "assert")
+	tests := []struct {
+		name    string
+		args    []string
+		wantErr bool
+		out     string
+	}{
+		{
+			name: "help",
+			args: []string{
+				"assert",
+				"--help",
+			},
+			out:     filepath.Join(basePath, "help.txt"),
+			wantErr: false,
+		},
+		{
+			name:    "no args",
+			args:    []string{"assert"},
+			wantErr: true,
+		},
+		{
+			name: "unknow flag",
+			args: []string{
+				"assert",
+				"--foo",
+			},
+			wantErr: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			cmd := root.Command()
+			cmd.AddCommand(Command())
+			testify.NotNil(t, cmd)
+			cmd.SetArgs(tt.args)
+			out := bytes.NewBufferString("")
+			cmd.SetOut(out)
+			err := cmd.Execute()
+			if tt.wantErr {
+				testify.Error(t, err)
+			} else {
+				testify.NoError(t, err)
+			}
+			actual, err := io.ReadAll(out)
+			testify.NoError(t, err)
+			if tt.out != "" {
+				expected, err := os.ReadFile(tt.out)
+				testify.NoError(t, err)
+				testify.Equal(t, string(expected), string(actual))
+			}
+		})
+	}
+}
 
 func Test_preRunE(t *testing.T) {
 	tests := []struct {
@@ -176,6 +236,48 @@ func Test_runE(t *testing.T) {
 				" kind: ConfigMap\n" +
 				" metadata:\n" +
 				"   name: quick-start\n",
+			wantErr: true,
+		},
+		{
+			name: "Failure case - Non-exist file input",
+			setupFunc: func() *cobra.Command {
+				cmd := &cobra.Command{}
+				cmd.Args = cobra.RangeArgs(0, 1)
+				cmd.SilenceUsage = true
+				cmd.SetOut(bytes.NewBufferString(""))
+				return cmd
+			},
+			opts: options{
+				filePath:  path.Join(basePath, "non-exist-file.yaml"),
+				noColor:   true,
+				namespace: "default",
+				timeout:   metav1.Duration{Duration: 5 * time.Second},
+			},
+			client: &fakeClient.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					obj.(*unstructured.Unstructured).Object = map[string]any{
+						"apiVersion": "v1",
+						"kind":       "ConfigMap",
+						"metadata": map[string]any{
+							"name": "quick-start",
+						},
+						"data": map[string]any{
+							"foo": "bar",
+						},
+					}
+					return nil
+				},
+			},
+			nspacer: &fakeNamespacer.FakeNamespacer{
+				ApplyFn: func(obj ctrlclient.Object, call int) error {
+					return nil
+				},
+				GetNamespaceFn: func(call int) string {
+					return "default"
+				},
+			},
+			wantErrMsg: "failed to load file '../../../testdata/commands/assert/non-exist-file.yaml': " +
+				"no files found matching path: ../../../testdata/commands/assert/non-exist-file.yaml",
 			wantErr: true,
 		},
 		{
