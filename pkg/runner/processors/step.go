@@ -212,6 +212,7 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 				Timeout:              handler.Events.Timeout,
 				Resource:             "events",
 				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
+				Format:               handler.Events.Format,
 			})
 			if err != nil {
 				return nil, err
@@ -262,6 +263,7 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 				Timeout:              handler.Events.Timeout,
 				Resource:             "events",
 				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
+				Format:               handler.Events.Format,
 			})
 			if err != nil {
 				return nil, err

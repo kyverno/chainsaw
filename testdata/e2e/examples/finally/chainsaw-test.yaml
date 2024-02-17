@@ -23,5 +23,7 @@ spec:
           data:
             foo: bar
     finally:
+    - events:
+        format: yaml
     - script:
         content: echo goodbye

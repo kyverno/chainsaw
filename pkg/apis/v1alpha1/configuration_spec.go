@@ -37,7 +37,7 @@ type ConfigurationSpec struct {
 	// ReportFormat determines test report format (JSON|XML|nil) nil == no report.
 	// maps to report.Type, however we don't want generated.deepcopy to have reference to it.
 	// +optional
-	// +kubebuilder:validation:Enum=JSON;XML;
+	// +kubebuilder:validation:Enum:=JSON;XML;
 	ReportFormat ReportFormatType `json:"reportFormat,omitempty"`
 
 	// ReportName defines the name of report to create. It defaults to "chainsaw-report".

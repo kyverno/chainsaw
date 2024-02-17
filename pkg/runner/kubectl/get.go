@@ -31,6 +31,9 @@ func Get(collector *v1alpha1.Get) (*v1alpha1.Command, error) {
 	if collector.Namespace == "" {
 		namespace = "$NAMESPACE"
 	}
+	if collector.Format != "" {
+		cmd.Args = append(cmd.Args, "-o", string(collector.Format))
+	}
 	cmd.Args = append(cmd.Args, "-n", namespace)
 	return &cmd, nil
 }

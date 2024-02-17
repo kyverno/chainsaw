@@ -11,6 +11,8 @@ create
 delete
 {{- else if .Error -}}
 error
+{{- else if .Patch -}}
+patch
 {{- else if .Script -}}
 script
 {{- else if .Sleep -}}
@@ -27,6 +29,8 @@ events
 pod logs
 {{- else if .Describe -}}
 describe
+{{- else if .Get -}}
+get
 {{- else if .Script -}}
 script
 {{- else if .Sleep -}}
@@ -43,6 +47,8 @@ events
 pod logs
 {{- else if .Describe -}}
 describe
+{{- else if .Get -}}
+get
 {{- else if .Script -}}
 script
 {{- else if .Sleep -}}
