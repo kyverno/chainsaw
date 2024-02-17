@@ -8,10 +8,12 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/data"
+	configvalidation "github.com/kyverno/chainsaw/pkg/validation/config"
 	"github.com/kyverno/kyverno/ext/resource/convert"
 	"github.com/kyverno/kyverno/ext/resource/loader"
 	"github.com/kyverno/kyverno/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/client-go/openapi"
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
 )
@@ -24,6 +26,7 @@ type (
 	splitter      = func([]byte) ([][]byte, error)
 	loaderFactory = func(openapi.Client) (loader.Loader, error)
 	converter     = func(unstructured.Unstructured) (*v1alpha1.Configuration, error)
+	validator     = func(obj *v1alpha1.Configuration) field.ErrorList
 )
 
 var configuration_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Configuration")
@@ -55,10 +58,10 @@ func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
 }
 
 func Parse(content []byte) ([]*v1alpha1.Configuration, error) {
-	return parse(content, nil, nil, nil)
+	return parse(content, nil, nil, nil, nil)
 }
 
-func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter) ([]*v1alpha1.Configuration, error) {
+func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter, validator validator) ([]*v1alpha1.Configuration, error) {
 	if splitter == nil {
 		splitter = yaml.SplitDocuments
 	}
@@ -68,11 +71,14 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 	if converter == nil {
 		converter = convert.To[v1alpha1.Configuration]
 	}
+	if validator == nil {
+		validator = configvalidation.ValidateConfiguration
+	}
 	documents, err := splitter(content)
 	if err != nil {
 		return nil, err
 	}
-	var policies []*v1alpha1.Configuration
+	var configs []*v1alpha1.Configuration
 	// TODO: no need to allocate a validator every time
 	loader, err := loaderFactory(openapiclient.NewLocalCRDFiles(data.Crds(), data.CrdsFolder))
 	if err != nil {
@@ -85,14 +91,17 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 		}
 		switch gvk {
 		case configuration_v1alpha1:
-			policy, err := converter(untyped)
+			config, err := converter(untyped)
 			if err != nil {
 				return nil, err
 			}
-			policies = append(policies, policy)
+			if err := validator(config).ToAggregate(); err != nil {
+				return nil, err
+			}
+			configs = append(configs, config)
 		default:
 			return nil, fmt.Errorf("type not supported %s", gvk)
 		}
 	}
-	return policies, nil
+	return configs, nil
 }
