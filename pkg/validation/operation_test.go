@@ -57,6 +57,13 @@ func TestValidateOperation(t *testing.T) {
 			},
 		},
 	}
+	examplePatch := &v1alpha1.Patch{
+		FileRefOrResource: v1alpha1.FileRefOrResource{
+			FileRef: v1alpha1.FileRef{
+				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
+			},
+		},
+	}
 	exampleScript := &v1alpha1.Script{
 		Content: "echo 'hello world'",
 	}
@@ -116,6 +123,12 @@ func TestValidateOperation(t *testing.T) {
 		name: "Only Error operation statement provided",
 		input: v1alpha1.Operation{
 			Error: exampleError,
+		},
+		expectErr: false,
+	}, {
+		name: "Only Patch operation statement provided",
+		input: v1alpha1.Operation{
+			Patch: examplePatch,
 		},
 		expectErr: false,
 	}, {

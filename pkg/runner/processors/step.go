@@ -22,6 +22,7 @@ import (
 	opcreate "github.com/kyverno/chainsaw/pkg/runner/operations/create"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
 	operror "github.com/kyverno/chainsaw/pkg/runner/operations/error"
+	oppatch "github.com/kyverno/chainsaw/pkg/runner/operations/patch"
 	opscript "github.com/kyverno/chainsaw/pkg/runner/operations/script"
 	opsleep "github.com/kyverno/chainsaw/pkg/runner/operations/sleep"
 	"github.com/kyverno/chainsaw/pkg/runner/template"
@@ -170,6 +171,12 @@ func (p *stepProcessor) tryOperations(ctx context.Context, handlers ...v1alpha1.
 			register(*loaded)
 		} else if handler.Error != nil {
 			loaded, err := p.errorOperation(ctx, *handler.Error)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
+		} else if handler.Patch != nil {
+			loaded, err := p.patchOperation(ctx, *handler.Patch)
 			if err != nil {
 				return nil, err
 			}
@@ -397,6 +404,30 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) (
 			timeout:         timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
 			operation:       operror.New(p.client, resource, p.namespacer, p.bindings, template),
 			operationReport: operationReport,
+		})
+	}
+	return ops, nil
+}
+
+func (p *stepProcessor) patchOperation(ctx context.Context, op v1alpha1.Patch) ([]operation, error) {
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
+	if err != nil {
+		return nil, err
+	}
+	var ops []operation
+	operationReport := report.NewOperation("Patch ", report.OperationTypeCreate)
+	if p.stepReport != nil {
+		p.stepReport.AddOperation(operationReport)
+	}
+	dryRun := op.DryRun != nil && *op.DryRun
+	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
+	for _, resource := range resources {
+		if err := p.prepareResource(resource); err != nil {
+			return nil, err
+		}
+		ops = append(ops, operation{
+			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
+			operation: oppatch.New(p.getClient(dryRun), resource, p.namespacer, p.bindings, template, op.Expect),
 		})
 	}
 	return ops, nil
