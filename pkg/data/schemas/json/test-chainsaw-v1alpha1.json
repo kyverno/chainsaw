@@ -1507,7 +1507,7 @@
                       }
                     },
                     "delete": {
-                      "description": "Delete represents a creation operation.",
+                      "description": "Delete represents a deletion operation.",
                       "type": [
                         "object",
                         "null"
