@@ -209,11 +209,9 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Events != nil {
 			cmd, err := kubectl.Get(&v1alpha1.Get{
-				Timeout:   handler.Events.Timeout,
-				Resource:  "events",
-				Namespace: handler.Events.Namespace,
-				Name:      handler.Events.Name,
-				Selector:  handler.Events.Selector,
+				Timeout:              handler.Events.Timeout,
+				Resource:             "events",
+				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
 			})
 			if err != nil {
 				return nil, err
@@ -261,11 +259,9 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 			register(p.commandOperation(ctx, *cmd))
 		} else if handler.Events != nil {
 			cmd, err := kubectl.Get(&v1alpha1.Get{
-				Timeout:   handler.Events.Timeout,
-				Resource:  "events",
-				Namespace: handler.Events.Namespace,
-				Name:      handler.Events.Name,
-				Selector:  handler.Events.Selector,
+				Timeout:              handler.Events.Timeout,
+				Resource:             "events",
+				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
 			})
 			if err != nil {
 				return nil, err

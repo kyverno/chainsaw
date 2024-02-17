@@ -84,8 +84,10 @@ func TestLoad(t *testing.T) {
 							},
 						}, {
 							Events: &v1alpha1.Events{
-								Namespace: "foo",
-								Name:      "bar",
+								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+									Namespace: "foo",
+									Name:      "bar",
+								},
 							},
 						}, {
 							Command: &v1alpha1.Command{
@@ -115,8 +117,10 @@ func TestLoad(t *testing.T) {
 							},
 						}, {
 							Events: &v1alpha1.Events{
-								Namespace: "foo",
-								Name:      "bar",
+								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+									Namespace: "foo",
+									Name:      "bar",
+								},
 							},
 						}, {
 							Command: &v1alpha1.Command{

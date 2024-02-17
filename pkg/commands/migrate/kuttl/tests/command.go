@@ -514,9 +514,11 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		case "events":
 			to.Catch = append(to.Catch, v1alpha1.Catch{
 				Events: &v1alpha1.Events{
-					Name:      collector.Pod,
-					Namespace: collector.Namespace,
-					Selector:  collector.Selector,
+					ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+						Name:      collector.Pod,
+						Namespace: collector.Namespace,
+						Selector:  collector.Selector,
+					},
 				},
 			})
 		default:

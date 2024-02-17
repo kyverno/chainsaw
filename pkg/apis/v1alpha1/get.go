@@ -13,17 +13,6 @@ type Get struct {
 	// Resource type.
 	Resource string `json:"resource"`
 
-	// Namespace of the referent.
-	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
-	// +optional
-	Namespace string `json:"namespace,omitempty"`
-
-	// Name of the referent.
-	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-	// +optional
-	Name string `json:"name,omitempty"`
-
-	// Selector defines labels selector.
-	// +optional
-	Selector string `json:"selector,omitempty"`
+	// ObjectLabelsSelector determines the selection process of referenced objects.
+	ObjectLabelsSelector `json:",inline"`
 }

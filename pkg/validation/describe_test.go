@@ -29,8 +29,10 @@ func TestValidateDescribe(t *testing.T) {
 		name: "Both Name and Selector provided",
 		input: &v1alpha1.Describe{
 			Resource: "pods",
-			Name:     "example-name",
-			Selector: "example-selector",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:     "example-name",
+				Selector: "example-selector",
+			},
 		},
 		expectErr: true,
 		errMsg:    "a name or label selector must be specified (found both)",
@@ -38,14 +40,18 @@ func TestValidateDescribe(t *testing.T) {
 		name: "Only Name provided",
 		input: &v1alpha1.Describe{
 			Resource: "pods",
-			Name:     "example-name",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name: "example-name",
+			},
 		},
 		expectErr: false,
 	}, {
 		name: "Only Selector provided",
 		input: &v1alpha1.Describe{
 			Resource: "pods",
-			Selector: "example-selector",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Selector: "example-selector",
+			},
 		},
 		expectErr: false,
 	}}

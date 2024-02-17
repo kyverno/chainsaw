@@ -18,8 +18,10 @@ func TestValidateEvents(t *testing.T) {
 		{
 			name: "Both Name and Selector provided",
 			input: &v1alpha1.Events{
-				Name:     "example-name",
-				Selector: "example-selector",
+				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+					Name:     "example-name",
+					Selector: "example-selector",
+				},
 			},
 			expectErr: true,
 			errMsg:    "a name or label selector must be specified (found both)",
@@ -27,16 +29,20 @@ func TestValidateEvents(t *testing.T) {
 		{
 			name: "Only Name provided",
 			input: &v1alpha1.Events{
-				Name:     "example-name",
-				Selector: "",
+				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+					Name:     "example-name",
+					Selector: "",
+				},
 			},
 			expectErr: false,
 		},
 		{
 			name: "Only Selector provided",
 			input: &v1alpha1.Events{
-				Name:     "",
-				Selector: "example-selector",
+				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+					Name:     "",
+					Selector: "example-selector",
+				},
 			},
 			expectErr: false,
 		},
