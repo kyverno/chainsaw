@@ -25,7 +25,9 @@ func TestGet(t *testing.T) {
 	}, {
 		name: "without resource",
 		collector: &v1alpha1.Get{
-			Name: "foo",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name: "foo",
+			},
 		},
 		wantErr: true,
 	}, {
@@ -42,7 +44,9 @@ func TestGet(t *testing.T) {
 		name: "with name",
 		collector: &v1alpha1.Get{
 			Resource: "foos",
-			Name:     "foo",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name: "foo",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -52,8 +56,10 @@ func TestGet(t *testing.T) {
 	}, {
 		name: "with namespace",
 		collector: &v1alpha1.Get{
-			Resource:  "foos",
-			Namespace: "bar",
+			Resource: "foos",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Namespace: "bar",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -63,9 +69,11 @@ func TestGet(t *testing.T) {
 	}, {
 		name: "with name and namespace",
 		collector: &v1alpha1.Get{
-			Resource:  "foos",
-			Name:      "foo",
-			Namespace: "bar",
+			Resource: "foos",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:      "foo",
+				Namespace: "bar",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -76,7 +84,9 @@ func TestGet(t *testing.T) {
 		name: "with selector",
 		collector: &v1alpha1.Get{
 			Resource: "foos",
-			Selector: "foo=bar",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Selector: "foo=bar",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -87,16 +97,20 @@ func TestGet(t *testing.T) {
 		name: "with name and selector",
 		collector: &v1alpha1.Get{
 			Resource: "foos",
-			Name:     "foo",
-			Selector: "foo=bar",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:     "foo",
+				Selector: "foo=bar",
+			},
 		},
 		wantErr: true,
 	}, {
 		name: "with namespace and selector",
 		collector: &v1alpha1.Get{
-			Resource:  "foos",
-			Namespace: "bar",
-			Selector:  "foo=bar",
+			Resource: "foos",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Namespace: "bar",
+				Selector:  "foo=bar",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",

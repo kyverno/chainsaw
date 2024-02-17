@@ -116,7 +116,9 @@ func sampleSteps(description bool) []v1alpha1.TestSpecStep {
 			Catch: []v1alpha1.Catch{{
 				Description: getDescription(description, "sample events collector"),
 				Events: &v1alpha1.Events{
-					Name: "foo",
+					ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+						Name: "foo",
+					},
 				},
 			}, {
 				Description: getDescription(description, "sample pod logs collector"),
