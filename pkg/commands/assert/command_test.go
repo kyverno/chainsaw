@@ -39,7 +39,7 @@ func Test_Execute(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name:    "no args",
+			name:    "no args and no flags",
 			args:    []string{"assert"},
 			wantErr: true,
 		},
