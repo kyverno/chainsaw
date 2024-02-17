@@ -6,7 +6,7 @@
 
 | # | Name | Try | Catch | Finally |
 |:-:|---|:-:|:-:|:-:|
-| 1 | [step-1](#step-step-1) | 2 | 0 | 1 |
+| 1 | [step-1](#step-step-1) | 2 | 0 | 2 |
 
 ## Step: `step-1`
 
@@ -23,4 +23,5 @@
 
 | # | Operation | Description |
 |:-:|---|---|
-| 1 | `script` | *No description* |
+| 1 | `events` | *No description* |
+| 2 | `script` | *No description* |
