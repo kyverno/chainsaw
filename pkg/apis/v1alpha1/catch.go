@@ -22,6 +22,10 @@ type Catch struct {
 	// +optional
 	Get *Get `json:"get,omitempty"`
 
+	// Delete represents a deletion operation.
+	// +optional
+	Delete *Delete `json:"delete,omitempty"`
+
 	// Command defines a command to run.
 	// +optional
 	Command *Command `json:"command,omitempty"`

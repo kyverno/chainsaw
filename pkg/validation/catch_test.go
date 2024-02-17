@@ -34,6 +34,18 @@ func TestValidateCatch(t *testing.T) {
 	exampleGet := &v1alpha1.Get{
 		Resource: "pods",
 	}
+	exampleDelete := &v1alpha1.Delete{
+		ObjectReference: v1alpha1.ObjectReference{
+			APIVersion: "v1",
+			Kind:       "Pod",
+			ObjectSelector: v1alpha1.ObjectSelector{
+				Namespace: "chainsaw",
+				Labels: map[string]string{
+					"app": "chainsaw",
+				},
+			},
+		},
+	}
 	tests := []struct {
 		name      string
 		input     v1alpha1.Catch
@@ -93,6 +105,12 @@ func TestValidateCatch(t *testing.T) {
 		name: "Only Get statement provided",
 		input: v1alpha1.Catch{
 			Get: exampleGet,
+		},
+		expectErr: false,
+	}, {
+		name: "Only Delete statement provided",
+		input: v1alpha1.Catch{
+			Delete: exampleDelete,
 		},
 		expectErr: false,
 	}}
