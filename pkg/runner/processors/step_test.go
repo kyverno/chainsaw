@@ -937,7 +937,9 @@ func TestStepProcessor_Run(t *testing.T) {
 						},
 						{
 							Events: &v1alpha1.Events{
-								Selector: "name=myapp",
+								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+									Selector: "name=myapp",
+								},
 							},
 						},
 					},
@@ -966,7 +968,9 @@ func TestStepProcessor_Run(t *testing.T) {
 						},
 						{
 							Events: &v1alpha1.Events{
-								Selector: "name=myapp",
+								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+									Selector: "name=myapp",
+								},
 							},
 						},
 					},

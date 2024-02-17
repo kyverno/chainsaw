@@ -29,7 +29,9 @@ func TestEvents(t *testing.T) {
 	}, {
 		name: "with name",
 		collector: &v1alpha1.Events{
-			Name: "foo",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name: "foo",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -39,7 +41,9 @@ func TestEvents(t *testing.T) {
 	}, {
 		name: "with namespace",
 		collector: &v1alpha1.Events{
-			Namespace: "foo",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Namespace: "foo",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -49,8 +53,10 @@ func TestEvents(t *testing.T) {
 	}, {
 		name: "with name and namespace",
 		collector: &v1alpha1.Events{
-			Name:      "bar",
-			Namespace: "foo",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:      "bar",
+				Namespace: "foo",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -60,7 +66,9 @@ func TestEvents(t *testing.T) {
 	}, {
 		name: "with selector",
 		collector: &v1alpha1.Events{
-			Selector: "foo=bar",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Selector: "foo=bar",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -70,16 +78,20 @@ func TestEvents(t *testing.T) {
 	}, {
 		name: "with name and selector",
 		collector: &v1alpha1.Events{
-			Name:     "foo",
-			Selector: "foo=bar",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:     "foo",
+				Selector: "foo=bar",
+			},
 		},
 		want:    nil,
 		wantErr: true,
 	}, {
 		name: "with namespace and selector",
 		collector: &v1alpha1.Events{
-			Namespace: "foo",
-			Selector:  "foo=bar",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Namespace: "foo",
+				Selector:  "foo=bar",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",

@@ -199,9 +199,7 @@ If a resource already exists in the cluster it will fail.</p>
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `resource` | `string` | :white_check_mark: |  | <p>Resource type.</p> |
-| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
-| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
-| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `showEvents` | `bool` |  |  | <p>Show Events indicates whether to include related events.</p> |
 
 ## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
@@ -233,9 +231,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
-| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
-| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 
 ## `Expectation`     {#chainsaw-kyverno-io-v1alpha1-Expectation}
 
@@ -334,6 +330,23 @@ with a match filter to determine if the verification should be considered.</p>
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `resource` | `string` | :white_check_mark: |  | <p>Resource type.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+
+## `ObjectLabelsSelector`     {#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector}
+
+**Appears in:**
+    
+- [Describe](#chainsaw-kyverno-io-v1alpha1-Describe)
+- [Events](#chainsaw-kyverno-io-v1alpha1-Events)
+- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
+
+<p>ObjectLabelsSelector represents a strategy to select objects.
+For a single object name and namespace are used to identify the object.
+For multiple objects use selector.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
 | `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 | `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
