@@ -28,7 +28,7 @@ type Operation struct {
 	// +optional
 	Create *Create `json:"create,omitempty"`
 
-	// Delete represents a creation operation.
+	// Delete represents a deletion operation.
 	// +optional
 	Delete *Delete `json:"delete,omitempty"`
 
