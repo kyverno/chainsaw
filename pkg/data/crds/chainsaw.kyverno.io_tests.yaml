@@ -653,7 +653,7 @@ spec:
                                 type: string
                             type: object
                           delete:
-                            description: Delete represents a creation operation.
+                            description: Delete represents a deletion operation.
                             properties:
                               expect:
                                 description: Expect defines a list of matched checks
