@@ -27,6 +27,9 @@ kos:
     sbom: none
     platforms:
       - all
+    labels:
+      org.opencontainers.image.source: https://github.com/kyverno/chainsaw
+      org.opencontainers.image.description: Chainsaw - declarative K8s e2e testing
 
 signs:
   - cmd: cosign
