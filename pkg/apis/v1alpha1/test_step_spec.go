@@ -10,6 +10,10 @@ type TestStepSpec struct {
 	// +optional
 	Timeouts *Timeouts `json:"timeouts,omitempty"`
 
+	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
+
 	// SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`

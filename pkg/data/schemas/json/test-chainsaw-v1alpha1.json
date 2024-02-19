@@ -279,6 +279,13 @@
         "steps"
       ],
       "properties": {
+        "cluster": {
+          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "concurrent": {
           "description": "Concurrent determines whether the test should run concurrently with other tests.",
           "type": [
@@ -385,6 +392,13 @@
                           "description": "Check is an assertion tree to validate the operation outcome.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "entrypoint": {
                           "description": "Entrypoint is the command entry point to run.",
                           "type": "string"
@@ -415,6 +429,13 @@
                         "ref"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
                           "type": [
@@ -513,6 +534,13 @@
                         "resource"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "name": {
                           "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -568,6 +596,13 @@
                         "null"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "format": {
                           "description": "Format determines the output format (json or yaml).",
                           "type": [
@@ -619,6 +654,13 @@
                         "resource"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "format": {
                           "description": "Format determines the output format (json or yaml).",
                           "type": [
@@ -671,6 +713,13 @@
                         "null"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "container": {
                           "description": "Container in pod to get logs from else --all-containers is used.",
                           "type": [
@@ -726,6 +775,13 @@
                           "description": "Check is an assertion tree to validate the operation outcome.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "content": {
                           "description": "Content defines a shell script (run with \"sh -c ...\").",
                           "type": [
@@ -767,6 +823,13 @@
                     }
                   }
                 }
+              },
+              "cluster": {
+                "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                "type": [
+                  "string",
+                  "null"
+                ]
               },
               "description": {
                 "description": "Description contains a description of the test step.",
@@ -815,6 +878,13 @@
                           "description": "Check is an assertion tree to validate the operation outcome.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "entrypoint": {
                           "description": "Entrypoint is the command entry point to run.",
                           "type": "string"
@@ -845,6 +915,13 @@
                         "ref"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
                           "type": [
@@ -943,6 +1020,13 @@
                         "resource"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "name": {
                           "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -998,6 +1082,13 @@
                         "null"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "format": {
                           "description": "Format determines the output format (json or yaml).",
                           "type": [
@@ -1049,6 +1140,13 @@
                         "resource"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "format": {
                           "description": "Format determines the output format (json or yaml).",
                           "type": [
@@ -1101,6 +1199,13 @@
                         "null"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "container": {
                           "description": "Container in pod to get logs from else --all-containers is used.",
                           "type": [
@@ -1155,6 +1260,13 @@
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
                           "x-kubernetes-preserve-unknown-fields": true
+                        },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "content": {
                           "description": "Content defines a shell script (run with \"sh -c ...\").",
@@ -1287,6 +1399,13 @@
                         "null"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "dryRun": {
                           "description": "DryRun determines whether the file should be applied in dry run mode.",
                           "type": [
@@ -1356,6 +1475,13 @@
                         "null"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "file": {
                           "description": "File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML files within the \"manifest\" directory.",
                           "type": [
@@ -1410,6 +1536,13 @@
                           "description": "Check is an assertion tree to validate the operation outcome.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "entrypoint": {
                           "description": "Entrypoint is the command entry point to run.",
                           "type": "string"
@@ -1444,6 +1577,13 @@
                         "null"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "dryRun": {
                           "description": "DryRun determines whether the file should be applied in dry run mode.",
                           "type": [
@@ -1516,6 +1656,13 @@
                         "ref"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
                           "type": [
@@ -1618,6 +1765,13 @@
                         "null"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "file": {
                           "description": "File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML files within the \"manifest\" directory.",
                           "type": [
@@ -1652,6 +1806,13 @@
                         "null"
                       ],
                       "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "dryRun": {
                           "description": "DryRun determines whether the file should be applied in dry run mode.",
                           "type": [
@@ -1724,6 +1885,13 @@
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
                           "x-kubernetes-preserve-unknown-fields": true
+                        },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "content": {
                           "description": "Content defines a shell script (run with \"sh -c ...\").",

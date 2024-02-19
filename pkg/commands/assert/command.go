@@ -82,7 +82,7 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 	}
 
 	if client == nil {
-		cfg, err := restutils.Config(opts.kubeConfigOverrides)
+		cfg, err := restutils.DefaultConfig(opts.kubeConfigOverrides)
 		if err != nil {
 			return err
 		}

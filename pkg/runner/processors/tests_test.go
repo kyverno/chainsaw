@@ -162,9 +162,13 @@ func TestTestsProcessor_Run(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			clusters := NewClusters()
+			if tc.client != nil {
+				clusters.clients[DefaultClient] = tc.client
+			}
 			processor := NewTestsProcessor(
 				tc.config,
-				tc.client,
+				clusters,
 				tc.clock,
 				tc.summary,
 				tc.testsReport,
@@ -217,9 +221,13 @@ func TestCreateTestProcessor(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			localTC := tc
+			clusters := NewClusters()
+			if localTC.client != nil {
+				clusters.clients[DefaultClient] = localTC.client
+			}
 			processor := testsProcessor{
 				config:         localTC.config,
-				client:         localTC.client,
+				clusters:       clusters,
 				clock:          localTC.clock,
 				summary:        localTC.summary,
 				testsReport:    localTC.testsReport,

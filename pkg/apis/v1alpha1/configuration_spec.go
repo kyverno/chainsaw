@@ -85,4 +85,8 @@ type ConfigurationSpec struct {
 	// DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.
 	// +optional
 	DelayBeforeCleanup *metav1.Duration `json:"delayBeforeCleanup,omitempty"`
+
+	// Clusters holds a registry to clusters to support multi-cluster tests.
+	// +optional
+	Clusters map[string]Cluster `json:"clusters,omitempty"`
 }

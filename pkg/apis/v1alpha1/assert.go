@@ -11,6 +11,10 @@ type Assert struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
+
 	// FileRefOrAssert provides a reference to the assertion.
 	FileRefOrCheck `json:",inline"`
 
