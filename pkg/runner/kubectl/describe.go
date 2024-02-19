@@ -37,5 +37,8 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	if collector.ShowEvents != nil {
 		cmd.Args = append(cmd.Args, fmt.Sprintf("--show-events=%t", *collector.ShowEvents))
 	}
+	if collector.Timeout != nil {
+		cmd.Timeout = collector.Timeout
+	}
 	return &cmd, nil
 }
