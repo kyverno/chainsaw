@@ -37,6 +37,9 @@ func NewTestsProcessor(
 	bindings binding.Bindings,
 	tests ...discovery.Test,
 ) TestsProcessor {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	return &testsProcessor{
 		config:      config,
 		clusters:    clusters,
@@ -69,7 +72,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	})
 	var nspacer namespacer.Namespacer
 	bindings := p.bindings
-	cluster := p.clusters.client()
+	_, cluster := p.clusters.client()
 	if cluster != nil {
 		bindings = bindings.Register("$client", binding.NewBinding(cluster))
 		if p.config.Namespace != "" {

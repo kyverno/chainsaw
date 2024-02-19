@@ -14,3 +14,5 @@ spec:
     - description: Check the configmap content.
       assert:
         file: configmap-assert.yaml
+    - script:
+        content: kubectl get pod -A

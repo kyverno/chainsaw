@@ -39,6 +39,9 @@ func NewTestProcessor(
 	shouldFailFast *atomic.Bool,
 	bindings binding.Bindings,
 ) TestProcessor {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	return &testProcessor{
 		config:         config,
 		clusters:       clusters,
@@ -112,7 +115,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
 	bindings := p.bindings
-	cluster := p.clusters.client(p.test.Spec.Cluster)
+	_, cluster := p.clusters.client(p.test.Spec.Cluster)
 	if cluster != nil {
 		bindings = bindings.Register("$client", binding.NewBinding(cluster))
 		if nspacer == nil || p.test.Spec.Namespace != "" {
