@@ -39,13 +39,10 @@ func TestDescribe(t *testing.T) {
 			name: "with resource",
 			collector: &v1alpha1.Describe{
 				Resource: "foos",
-				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-					Name: "foo",
-				},
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
-				Args:       []string{"describe", "foos", "foo", "-n", "$NAMESPACE"},
+				Args:       []string{"describe", "foos", "-n", "$NAMESPACE"},
 			},
 			wantErr: false,
 		},
@@ -69,12 +66,11 @@ func TestDescribe(t *testing.T) {
 				Resource: "foos",
 				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 					Namespace: "bar",
-					Selector:  "foo=bar",
 				},
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
-				Args:       []string{"describe", "foos", "-l", "foo=bar", "-n", "bar"},
+				Args:       []string{"describe", "foos", "-n", "bar"},
 			},
 			wantErr: false,
 		},
@@ -90,6 +86,18 @@ func TestDescribe(t *testing.T) {
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
 				Args:       []string{"describe", "foos", "foo", "-n", "bar"},
+			},
+			wantErr: false,
+		},
+		{
+			name: "without name and selector",
+			collector: &v1alpha1.Describe{
+				Resource:             "foos",
+				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{},
+			},
+			want: &v1alpha1.Command{
+				Entrypoint: "kubectl",
+				Args:       []string{"describe", "foos", "-n", "$NAMESPACE"},
 			},
 			wantErr: false,
 		},
@@ -119,14 +127,6 @@ func TestDescribe(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name: "withou name and selector",
-			collector: &v1alpha1.Describe{
-				Resource:             "foos",
-				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{},
-			},
-			wantErr: true,
-		},
-		{
 			name: "with namespace and selector",
 			collector: &v1alpha1.Describe{
 				Resource: "foos",
@@ -144,30 +144,24 @@ func TestDescribe(t *testing.T) {
 		{
 			name: "with show-events marked as true",
 			collector: &v1alpha1.Describe{
-				Resource: "foos",
-				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-					Name: "bar",
-				},
+				Resource:   "foos",
 				ShowEvents: ptr.To[bool](true),
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
-				Args:       []string{"describe", "foos", "bar", "-n", "$NAMESPACE", "--show-events=true"},
+				Args:       []string{"describe", "foos", "-n", "$NAMESPACE", "--show-events=true"},
 			},
 			wantErr: false,
 		},
 		{
 			name: "with show-events marked as false",
 			collector: &v1alpha1.Describe{
-				Resource: "foos",
-				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-					Name: "bar",
-				},
+				Resource:   "foos",
 				ShowEvents: ptr.To[bool](false),
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
-				Args:       []string{"describe", "foos", "bar", "-n", "$NAMESPACE", "--show-events=false"},
+				Args:       []string{"describe", "foos", "-n", "$NAMESPACE", "--show-events=false"},
 			},
 			wantErr: false,
 		},
