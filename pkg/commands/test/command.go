@@ -269,7 +269,7 @@ func Command() *cobra.Command {
 	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", v1alpha1.DefaultCleanupTimeout, "The cleanup timeout to use as default for configuration")
 	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", v1alpha1.DefaultExecTimeout, "The exec timeout to use as default for configuration")
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file")
-	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run")
+	cmd.Flags().StringSliceVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run")
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests")
 	cmd.Flags().BoolVar(&options.template, "template", template.DefaultTemplate, "If set, resources will be considered for templating")
 	cmd.Flags().BoolVar(&options.failFast, "fail-fast", false, "Stop the test upon encountering the first failure")
