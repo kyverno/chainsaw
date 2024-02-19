@@ -4,7 +4,7 @@ import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 // Wait specifies how to perform wait operations on resources.
 type Wait struct {
-	// Timeout for the operation. Overrides the global timeout set in the Configuration. Specifies how long to wait for the condition to be met before timing out.
+	// Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
