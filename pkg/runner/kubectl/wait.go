@@ -49,6 +49,7 @@ func WaitForResource(waiter *v1alpha1.Wait) (*v1alpha1.Command, error) {
 
 	cmd := v1alpha1.Command{
 		Cluster:    waiter.Cluster,
+		Timeout:    waiter.Timeout,
 		Entrypoint: "kubectl",
 		Args:       args,
 	}
