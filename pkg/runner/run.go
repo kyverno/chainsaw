@@ -13,7 +13,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/utils/clock"
 )
 
@@ -54,11 +56,22 @@ func run(
 	bindings = bindings.Register("$values", binding.NewBinding(values))
 	clusters := processors.NewClusters()
 	if cfg != nil {
-		client, err := clusters.Register(cfg)
+		client, err := clusters.Register(processors.DefaultClient, cfg)
 		if err != nil {
 			return nil, err
 		}
 		bindings = bindings.Register("$client", binding.NewBinding(client))
+	}
+	for name, cluster := range config.Clusters {
+		cfg, err := restutils.Config(cluster.Kubeconfig, clientcmd.ConfigOverrides{
+			CurrentContext: cluster.Context,
+		})
+		if err != nil {
+			return nil, err
+		}
+		if _, err := clusters.Register(name, cfg); err != nil {
+			return nil, err
+		}
 	}
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",

@@ -390,7 +390,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			shouldFailVar.Store(tc.shouldFailFast)
 			clusters := NewClusters()
 			if tc.client != nil {
-				clusters.clients[defaultClient] = tc.client
+				clusters.clients[DefaultClient] = tc.client
 			}
 			processor := NewTestProcessor(
 				tc.config,

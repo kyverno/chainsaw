@@ -6,7 +6,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-const defaultClient = ""
+const DefaultClient = ""
 
 type clusters struct {
 	clients map[string]client.Client
@@ -18,18 +18,18 @@ func NewClusters() clusters {
 	}
 }
 
-func (c *clusters) Register(cfg *rest.Config) (client.Client, error) {
+func (c *clusters) Register(name string, cfg *rest.Config) (client.Client, error) {
 	client, err := client.New(cfg)
 	if err != nil {
 		return nil, err
 	}
-	c.clients[defaultClient] = runnerclient.New(client)
+	c.clients[DefaultClient] = runnerclient.New(client)
 	return client, nil
 }
 
 func (c *clusters) client(name string) client.Client {
 	if name == "" {
-		name = defaultClient
+		name = DefaultClient
 	}
 	return c.clients[name]
 }

@@ -268,7 +268,7 @@ func Command() *cobra.Command {
 			fmt.Fprintln(out, "Running tests...")
 			var restConfig *rest.Config
 			if !options.noCluster {
-				cfg, err := restutils.Config(options.kubeConfigOverrides)
+				cfg, err := restutils.DefaultConfig(options.kubeConfigOverrides)
 				if err != nil {
 					return err
 				}

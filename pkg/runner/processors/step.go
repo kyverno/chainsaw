@@ -341,7 +341,7 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert)
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	cluster := p.clusters.client(defaultClient)
+	cluster := p.clusters.client(DefaultClient)
 	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:         timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
@@ -404,7 +404,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete)
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	cluster := p.clusters.client(defaultClient)
+	cluster := p.clusters.client(DefaultClient)
 	return &operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
 		operation:       opdelete.New(cluster, resource, p.namespacer, p.bindings, template, op.Expect...),
@@ -423,7 +423,7 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) (
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	cluster := p.clusters.client(defaultClient)
+	cluster := p.clusters.client(DefaultClient)
 	for _, resource := range resources {
 		ops = append(ops, operation{
 			timeout:         timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
@@ -547,7 +547,7 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 }
 
 func (p *stepProcessor) getClient(dryRun bool) client.Client {
-	cluster := p.clusters.client(defaultClient)
+	cluster := p.clusters.client(DefaultClient)
 	if !dryRun {
 		return cluster
 	}
