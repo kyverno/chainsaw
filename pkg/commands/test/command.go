@@ -56,6 +56,7 @@ type options struct {
 	selector                    []string
 	noCluster                   bool
 	values                      []string
+	clusters                    []string
 }
 
 func Command() *cobra.Command {
@@ -159,6 +160,28 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "cleanup-delay") {
 				configuration.Spec.DelayBeforeCleanup = &options.delayBeforeCleanup
 			}
+			if flagutils.IsSet(flags, "cluster") {
+				for _, cluster := range options.clusters {
+					parts1 := strings.Split(cluster, "=")
+					if len(parts1) != 2 {
+						return fmt.Errorf("failed to decode cluster argument %s", cluster)
+					}
+					name := parts1[0]
+					parts2 := strings.Split(parts1[1], ":")
+					if len(parts2) == 1 {
+						configuration.Spec.Clusters[name] = v1alpha1.Cluster{
+							Kubeconfig: parts2[0],
+						}
+					} else if len(parts2) == 2 {
+						configuration.Spec.Clusters[name] = v1alpha1.Cluster{
+							Kubeconfig: parts2[0],
+							Context:    parts2[1],
+						}
+					} else {
+						return fmt.Errorf("failed to decode cluster argument %s", cluster)
+					}
+				}
+			}
 			options.testDirs = append(options.testDirs, args...)
 			if len(options.testDirs) == 0 {
 				options.testDirs = append(options.testDirs, ".")
@@ -199,6 +222,9 @@ func Command() *cobra.Command {
 			}
 			if configuration.Spec.Template != nil {
 				fmt.Fprintf(out, "- Template %v\n", configuration.Spec.Template)
+			}
+			if configuration.Spec.Clusters != nil {
+				fmt.Fprintf(out, "- Clusters %v\n", configuration.Spec.Clusters)
 			}
 			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
 			// loading tests
@@ -287,6 +313,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringSliceVar(&options.selector, "selector", []string{}, "Selector (label query) to filter on")
 	cmd.Flags().BoolVar(&options.noCluster, "no-cluster", false, "Runs without cluster")
 	cmd.Flags().StringSliceVar(&options.values, "values", []string{}, "Values passed to the tests")
+	cmd.Flags().StringSliceVar(&options.clusters, "cluster", nil, "Register cluster (format <cluster name>=<kubeconfig path>:[context name])")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)

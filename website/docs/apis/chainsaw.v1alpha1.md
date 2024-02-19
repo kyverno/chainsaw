@@ -105,6 +105,17 @@ during the testing process.</p>
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 
+## `Cluster`     {#chainsaw-kyverno-io-v1alpha1-Cluster}
+
+**Appears in:**
+    
+- [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `kubeconfig` | `string` | :white_check_mark: |  | <p>Kubeconfig is the path to the referenced file.</p> |
+| `context` | `string` |  |  | <p>Context is the name of the context to use.</p> |
+
 ## `Command`     {#chainsaw-kyverno-io-v1alpha1-Command}
 
 **Appears in:**
@@ -151,6 +162,7 @@ during the testing process.</p>
 | `testFile` | `string` |  |  | <p>TestFile is the name of the file containing the test to run.</p> |
 | `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 | `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
+| `clusters` | [`map[string]Cluster`](#chainsaw-kyverno-io-v1alpha1-Cluster) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 
 ## `Create`     {#chainsaw-kyverno-io-v1alpha1-Create}
 
