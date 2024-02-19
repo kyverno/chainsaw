@@ -168,18 +168,23 @@ func Command() *cobra.Command {
 					}
 					name := parts1[0]
 					parts2 := strings.Split(parts1[1], ":")
+					var c v1alpha1.Cluster
 					if len(parts2) == 1 {
-						configuration.Spec.Clusters[name] = v1alpha1.Cluster{
+						c = v1alpha1.Cluster{
 							Kubeconfig: parts2[0],
 						}
 					} else if len(parts2) == 2 {
-						configuration.Spec.Clusters[name] = v1alpha1.Cluster{
+						c = v1alpha1.Cluster{
 							Kubeconfig: parts2[0],
 							Context:    parts2[1],
 						}
 					} else {
 						return fmt.Errorf("failed to decode cluster argument %s", cluster)
 					}
+					if configuration.Spec.Clusters == nil {
+						configuration.Spec.Clusters = map[string]v1alpha1.Cluster{}
+					}
+					configuration.Spec.Clusters[name] = c
 				}
 			}
 			options.testDirs = append(options.testDirs, args...)
@@ -223,7 +228,7 @@ func Command() *cobra.Command {
 			if configuration.Spec.Template != nil {
 				fmt.Fprintf(out, "- Template %v\n", configuration.Spec.Template)
 			}
-			if configuration.Spec.Clusters != nil {
+			if len(configuration.Spec.Clusters) != 0 {
 				fmt.Fprintf(out, "- Clusters %v\n", configuration.Spec.Clusters)
 			}
 			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
