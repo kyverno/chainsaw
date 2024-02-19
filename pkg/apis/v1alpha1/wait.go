@@ -24,9 +24,8 @@ type Wait struct {
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 
-	// Selector to filter resources based on label.
-	// +optional
-	Selector string `json:"selector,omitempty"`
+	// ObjectLabelsSelector determines the selection process of referenced objects.
+	ObjectLabelsSelector `json:",inline"`
 
 	// Condition represents the specific condition to wait for.
 	// Example: "Available", "Ready", etc.
