@@ -19,6 +19,7 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	}
 	cmd := v1alpha1.Command{
 		Cluster:    collector.Cluster,
+		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
 		Args:       []string{"describe", collector.Resource},
 	}

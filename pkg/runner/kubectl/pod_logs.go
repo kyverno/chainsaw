@@ -19,6 +19,7 @@ func Logs(collector *v1alpha1.PodLogs) (*v1alpha1.Command, error) {
 	}
 	cmd := v1alpha1.Command{
 		Cluster:    collector.Cluster,
+		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
 		Args:       []string{"logs", "--prefix"},
 	}
