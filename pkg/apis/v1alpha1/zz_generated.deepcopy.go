@@ -141,6 +141,11 @@ func (in *Catch) DeepCopyInto(out *Catch) {
 		*out = new(Describe)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Wait != nil {
+		in, out := &in.Wait, &out.Wait
+		*out = new(Wait)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.Get != nil {
 		in, out := &in.Get, &out.Get
 		*out = new(Get)
@@ -584,6 +589,11 @@ func (in *Finally) DeepCopyInto(out *Finally) {
 	if in.Describe != nil {
 		in, out := &in.Describe, &out.Describe
 		*out = new(Describe)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.Wait != nil {
+		in, out := &in.Wait, &out.Wait
+		*out = new(Wait)
 		(*in).DeepCopyInto(*out)
 	}
 	if in.Get != nil {
