@@ -15,15 +15,6 @@ type Wait struct {
 	// Resource type on which the wait operation will be applied.
 	Resource string `json:"resource"`
 
-	// Name specifies the name of the resource to wait for.
-	// If empty, wait for all resources of the type.
-	// +optional
-	Name string `json:"name,omitempty"`
-
-	// Namespace specifies the namespace of the resources to wait for.
-	// +optional
-	Namespace string `json:"namespace,omitempty"`
-
 	// ObjectLabelsSelector determines the selection process of referenced objects.
 	ObjectLabelsSelector `json:",inline"`
 

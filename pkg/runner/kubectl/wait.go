@@ -9,7 +9,7 @@ import (
 
 func WaitForResource(waiter *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	if waiter == nil {
-		return nil, errors.New("waiter configuration cannot be nil")
+		return nil, nil
 	}
 	if waiter.Resource == "" {
 		return nil, errors.New("a resource must be specified")
@@ -23,6 +23,16 @@ func WaitForResource(waiter *v1alpha1.Wait) (*v1alpha1.Command, error) {
 
 	args := []string{"wait"}
 
+	if waiter.Name != "" {
+		args = append(args, fmt.Sprintf("%s/%s", waiter.Resource, waiter.Name))
+	} else {
+		args = append(args, waiter.Resource)
+	}
+	args = append(args, fmt.Sprintf("--for=condition=%s", waiter.Condition))
+
+	if waiter.Selector != "" {
+		args = append(args, "-l", waiter.Selector)
+	}
 	if waiter.AllNamespaces {
 		args = append(args, "--all-namespaces")
 	} else if waiter.Namespace != "" {
@@ -30,29 +40,14 @@ func WaitForResource(waiter *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	} else {
 		args = append(args, "-n", "$NAMESPACE")
 	}
-
-	if waiter.Name != "" {
-		args = append(args, fmt.Sprintf("%s/%s", waiter.Resource, waiter.Name))
-	} else {
-		args = append(args, waiter.Resource)
-	}
-
-	if waiter.Selector != "" {
-		args = append(args, "-l", waiter.Selector)
-	}
-
-	args = append(args, fmt.Sprintf("--for=%s", waiter.Condition))
-
 	if waiter.Timeout != nil {
-		args = append(args, fmt.Sprintf("--timeout=%s", waiter.Timeout.String()))
+		args = append(args, fmt.Sprintf("--timeout=%s", waiter.Timeout.Duration.String()))
 	}
-
 	cmd := v1alpha1.Command{
 		Cluster:    waiter.Cluster,
 		Timeout:    waiter.Timeout,
 		Entrypoint: "kubectl",
 		Args:       args,
 	}
-
 	return &cmd, nil
 }
