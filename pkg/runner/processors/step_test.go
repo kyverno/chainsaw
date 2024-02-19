@@ -1025,7 +1025,9 @@ func TestStepProcessor_Run(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			clusters := NewClusters()
 			if tc.client != nil {
-				clusters.clients[DefaultClient] = tc.client
+				clusters.clients[DefaultClient] = cluster{
+					client: tc.client,
+				}
 			}
 			stepProcessor := NewStepProcessor(
 				tc.config,

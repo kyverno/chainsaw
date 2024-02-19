@@ -30,6 +30,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 )
 
@@ -51,6 +52,9 @@ func NewStepProcessor(
 	cleaner *cleaner,
 	bindings binding.Bindings,
 ) StepProcessor {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	return &stepProcessor{
 		config:     config,
 		clusters:   clusters,
@@ -318,7 +322,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) (
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	cluster := p.getClient(op.Cluster, dryRun)
+	_, cluster := p.getClient(op.Cluster, dryRun)
 	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
@@ -343,7 +347,7 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert)
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	_, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
 		ops = append(ops, operation{
@@ -364,11 +368,11 @@ func (p *stepProcessor) commandOperation(ctx context.Context, op v1alpha1.Comman
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
 	return operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		operation:       opcommand.New(op, p.test.BasePath, ns, bindings),
+		operation:       opcommand.New(op, p.test.BasePath, ns, bindings, config),
 		operationReport: operationReport,
 	}
 }
@@ -385,7 +389,7 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	cluster := p.getClient(op.Cluster, dryRun)
+	_, cluster := p.getClient(op.Cluster, dryRun)
 	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
@@ -411,7 +415,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete)
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	_, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
 	return &operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
@@ -431,7 +435,7 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) (
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	_, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
 		ops = append(ops, operation{
@@ -455,7 +459,7 @@ func (p *stepProcessor) patchOperation(ctx context.Context, op v1alpha1.Patch) (
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	cluster := p.getClient(op.Cluster, dryRun)
+	_, cluster := p.getClient(op.Cluster, dryRun)
 	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
@@ -478,11 +482,11 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, op v1alpha1.Script)
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
 	return operation{
 		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		operation:       opscript.New(op, p.test.BasePath, ns, bindings),
+		operation:       opscript.New(op, p.test.BasePath, ns, bindings, config),
 		operationReport: operationReport,
 	}
 }
@@ -559,12 +563,12 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 	return nil
 }
 
-func (p *stepProcessor) getClient(opCluster string, dryRun bool) client.Client {
-	cluster := p.clusters.client(opCluster, p.step.Cluster, p.test.Spec.Cluster)
+func (p *stepProcessor) getClient(opCluster string, dryRun bool) (*rest.Config, client.Client) {
+	config, cluster := p.clusters.client(opCluster, p.step.Cluster, p.test.Spec.Cluster)
 	if !dryRun {
-		return cluster
+		return config, cluster
 	}
-	return client.DryRun(cluster)
+	return config, client.DryRun(cluster)
 }
 
 func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cleaner {

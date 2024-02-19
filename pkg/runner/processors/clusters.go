@@ -8,30 +8,40 @@ import (
 
 const DefaultClient = ""
 
+type cluster struct {
+	config *rest.Config
+	client client.Client
+}
+
 type clusters struct {
-	clients map[string]client.Client
+	clients map[string]cluster
 }
 
 func NewClusters() clusters {
 	return clusters{
-		clients: map[string]client.Client{},
+		clients: map[string]cluster{},
 	}
 }
 
-func (c *clusters) Register(name string, cfg *rest.Config) error {
-	client, err := client.New(cfg)
+func (c *clusters) Register(name string, config *rest.Config) error {
+	client, err := client.New(config)
 	if err != nil {
 		return err
 	}
-	c.clients[DefaultClient] = runnerclient.New(client)
+	c.clients[DefaultClient] = cluster{
+		config: config,
+		client: runnerclient.New(client),
+	}
 	return nil
 }
 
-func (c *clusters) client(names ...string) client.Client {
+func (c *clusters) client(names ...string) (*rest.Config, client.Client) {
 	for _, name := range names {
 		if name != "" {
-			return c.clients[name]
+			cluster := c.clients[name]
+			return cluster.config, cluster.client
 		}
 	}
-	return c.clients[DefaultClient]
+	cluster := c.clients[DefaultClient]
+	return cluster.config, cluster.client
 }
