@@ -11,6 +11,10 @@ type Patch struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
+
 	// FileRefOrResource provides a reference to the file containing the resources to be patched.
 	FileRefOrResource `json:",inline"`
 

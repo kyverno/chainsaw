@@ -10,6 +10,10 @@ type Script struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
+
 	// Content defines a shell script (run with "sh -c ...").
 	// +optional
 	Content string `json:"content,omitempty"`

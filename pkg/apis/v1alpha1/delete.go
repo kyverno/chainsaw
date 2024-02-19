@@ -10,6 +10,10 @@ type Delete struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
+
 	// Template determines whether resources should be considered for templating.
 	// +optional
 	Template *bool `json:"template,omitempty"`
