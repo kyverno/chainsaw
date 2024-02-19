@@ -18,13 +18,13 @@ func NewClusters() clusters {
 	}
 }
 
-func (c *clusters) Register(name string, cfg *rest.Config) (client.Client, error) {
+func (c *clusters) Register(name string, cfg *rest.Config) error {
 	client, err := client.New(cfg)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	c.clients[DefaultClient] = runnerclient.New(client)
-	return client, nil
+	return nil
 }
 
 func (c *clusters) client(names ...string) client.Client {

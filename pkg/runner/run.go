@@ -56,11 +56,10 @@ func run(
 	bindings = bindings.Register("$values", binding.NewBinding(values))
 	clusters := processors.NewClusters()
 	if cfg != nil {
-		client, err := clusters.Register(processors.DefaultClient, cfg)
+		err := clusters.Register(processors.DefaultClient, cfg)
 		if err != nil {
 			return nil, err
 		}
-		bindings = bindings.Register("$client", binding.NewBinding(client))
 	}
 	for name, cluster := range config.Clusters {
 		cfg, err := restutils.Config(cluster.Kubeconfig, clientcmd.ConfigOverrides{
@@ -69,7 +68,7 @@ func run(
 		if err != nil {
 			return nil, err
 		}
-		if _, err := clusters.Register(name, cfg); err != nil {
+		if err := clusters.Register(name, cfg); err != nil {
 			return nil, err
 		}
 	}
