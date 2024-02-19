@@ -1149,6 +1149,7 @@ func (in *Wait) DeepCopyInto(out *Wait) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	out.ObjectLabelsSelector = in.ObjectLabelsSelector
 	return
 }
 
