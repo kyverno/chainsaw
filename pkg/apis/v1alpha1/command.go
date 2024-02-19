@@ -10,6 +10,10 @@ type Command struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
+
 	// Entrypoint is the command entry point to run.
 	Entrypoint string `json:"entrypoint"`
 

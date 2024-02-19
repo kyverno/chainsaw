@@ -14,6 +14,10 @@ type TestSpec struct {
 	// +optional
 	Timeouts *Timeouts `json:"timeouts,omitempty"`
 
+	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
+
 	// Skip determines whether the test should skipped.
 	// +optional
 	Skip *bool `json:"skip,omitempty"`

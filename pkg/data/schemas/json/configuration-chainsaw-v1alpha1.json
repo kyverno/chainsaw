@@ -276,6 +276,35 @@
         "null"
       ],
       "properties": {
+        "clusters": {
+          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "kubeconfig"
+            ],
+            "properties": {
+              "context": {
+                "description": "Context is the name of the context to use.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kubeconfig": {
+                "description": "Kubeconfig is the path to the referenced file.",
+                "type": "string"
+              }
+            }
+          }
+        },
         "delayBeforeCleanup": {
           "description": "DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.",
           "type": [

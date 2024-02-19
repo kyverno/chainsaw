@@ -30,7 +30,7 @@ type TestsProcessor interface {
 
 func NewTestsProcessor(
 	config v1alpha1.ConfigurationSpec,
-	client client.Client,
+	clusters clusters,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
 	testsReport *report.TestsReport,
@@ -39,7 +39,7 @@ func NewTestsProcessor(
 ) TestsProcessor {
 	return &testsProcessor{
 		config:      config,
-		client:      client,
+		clusters:    clusters,
 		clock:       clock,
 		summary:     summary,
 		testsReport: testsReport,
@@ -50,7 +50,7 @@ func NewTestsProcessor(
 
 type testsProcessor struct {
 	config      v1alpha1.ConfigurationSpec
-	client      client.Client
+	clusters    clusters
 	clock       clock.PassiveClock
 	summary     *summary.Summary
 	testsReport *report.TestsReport
@@ -69,7 +69,8 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	})
 	var nspacer namespacer.Namespacer
 	bindings := p.bindings
-	if p.client != nil {
+	cluster := p.clusters.client()
+	if cluster != nil {
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
 			object := client.ToUnstructured(&namespace)
@@ -85,8 +86,8 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				}
 				bindings = p.bindings.Register("$namespace", binding.NewBinding(object.GetName()))
 			}
-			nspacer = namespacer.New(p.client, object.GetName())
-			if err := p.client.Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
+			nspacer = namespacer.New(cluster, object.GetName())
+			if err := cluster.Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -97,12 +98,12 @@ func (p *testsProcessor) Run(ctx context.Context) {
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, object, nspacer, bindings, false),
+							operation:       opdelete.New(cluster, object, nspacer, bindings, false),
 						}
 						operation.execute(ctx)
 					})
 				}
-				if err := p.client.Create(ctx, object.DeepCopy()); err != nil {
+				if err := cluster.Create(ctx, object.DeepCopy()); err != nil {
 					t.FailNow()
 				}
 			}
@@ -132,5 +133,5 @@ func (p *testsProcessor) CreateTestProcessor(test discovery.Test, bindings bindi
 	if p.testsReport != nil {
 		p.testsReport.AddTest(testReport)
 	}
-	return NewTestProcessor(p.config, p.client, p.clock, p.summary, testReport, test, &p.shouldFailFast, bindings)
+	return NewTestProcessor(p.config, p.clusters, p.clock, p.summary, testReport, test, &p.shouldFailFast, bindings)
 }

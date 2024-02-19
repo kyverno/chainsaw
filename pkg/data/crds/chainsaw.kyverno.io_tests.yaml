@@ -34,6 +34,10 @@ spec:
           spec:
             description: Test spec.
             properties:
+              cluster:
+                description: Cluster defines the target cluster (default cluster will
+                  be used if not specified and/or overridden).
+                type: string
               concurrent:
                 description: Concurrent determines whether the test should run concurrently
                   with other tests.
@@ -90,6 +94,10 @@ spec:
                                   the operation outcome.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -109,6 +117,10 @@ spec:
                           delete:
                             description: Delete represents a deletion operation.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               expect:
                                 description: Expect defines a list of matched checks
                                   to validate the operation outcome.
@@ -175,6 +187,10 @@ spec:
                             description: Describe determines the resource describe
                               collector to execute.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -207,6 +223,10 @@ spec:
                             description: Events determines the events collector to
                               execute.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
@@ -233,6 +253,10 @@ spec:
                             description: Get determines the resource get collector
                               to execute.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
@@ -264,6 +288,10 @@ spec:
                             description: PodLogs determines the pod logs collector
                               to execute.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               container:
                                 description: Container in pod to get logs from else
                                   --all-containers is used.
@@ -298,6 +326,10 @@ spec:
                                   the operation outcome.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
@@ -323,6 +355,10 @@ spec:
                             type: object
                         type: object
                       type: array
+                    cluster:
+                      description: Cluster defines the target cluster (default cluster
+                        will be used if not specified and/or overridden).
+                      type: string
                     description:
                       description: Description contains a description of the test
                         step.
@@ -347,6 +383,10 @@ spec:
                                   the operation outcome.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -366,6 +406,10 @@ spec:
                           delete:
                             description: Delete represents a deletion operation.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               expect:
                                 description: Expect defines a list of matched checks
                                   to validate the operation outcome.
@@ -432,6 +476,10 @@ spec:
                             description: Describe determines the resource describe
                               collector to execute.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -464,6 +512,10 @@ spec:
                             description: Events determines the events collector to
                               execute.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
@@ -490,6 +542,10 @@ spec:
                             description: Get determines the resource get collector
                               to execute.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
@@ -521,6 +577,10 @@ spec:
                             description: PodLogs determines the pod logs collector
                               to execute.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               container:
                                 description: Container in pod to get logs from else
                                   --all-containers is used.
@@ -555,6 +615,10 @@ spec:
                                   the operation outcome.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
@@ -628,6 +692,10 @@ spec:
                               like configuration settings or any other resources that
                               need to be available during the test.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               dryRun:
                                 description: DryRun determines whether the file should
                                   be applied in dry run mode.
@@ -679,6 +747,10 @@ spec:
                               It checks whether the conditions specified in the assertion
                               hold true.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               file:
                                 description: File is the path to the referenced file.
                                   This can be a direct path to a file or an expression
@@ -711,6 +783,10 @@ spec:
                                   the operation outcome.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -736,6 +812,10 @@ spec:
                           create:
                             description: Create represents a creation operation.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               dryRun:
                                 description: DryRun determines whether the file should
                                   be applied in dry run mode.
@@ -785,6 +865,10 @@ spec:
                           delete:
                             description: Delete represents a deletion operation.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               expect:
                                 description: Expect defines a list of matched checks
                                   to validate the operation outcome.
@@ -857,6 +941,10 @@ spec:
                               will consider them as expected; otherwise, they will
                               be treated as test failures.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               file:
                                 description: File is the path to the referenced file.
                                   This can be a direct path to a file or an expression
@@ -879,6 +967,10 @@ spec:
                           patch:
                             description: Patch represents a patch operation.
                             properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               dryRun:
                                 description: DryRun determines whether the file should
                                   be applied in dry run mode.
@@ -933,6 +1025,10 @@ spec:
                                   the operation outcome.
                                 type: object
                                 x-kubernetes-preserve-unknown-fields: true
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
