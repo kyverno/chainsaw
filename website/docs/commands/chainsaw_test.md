@@ -53,7 +53,7 @@ chainsaw test [flags]... [test directories]...
       --selector strings                          Selector (label query) to filter on
       --skip-delete                               If set, do not delete the resources after running the tests
       --template                                  If set, resources will be considered for templating
-      --test-dir stringArray                      Directories containing test cases to run
+      --test-dir strings                          Directories containing test cases to run
       --test-file string                          Name of the test file (default "chainsaw-test.yaml")
       --values strings                            Values passed to the tests
 ```
