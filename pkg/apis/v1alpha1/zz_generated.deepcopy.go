@@ -1149,17 +1149,6 @@ func (in *Wait) DeepCopyInto(out *Wait) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
-	out.ObjectLabelsSelector = in.ObjectLabelsSelector
-	if in.IncludeUninitialized != nil {
-		in, out := &in.IncludeUninitialized, &out.IncludeUninitialized
-		*out = new(bool)
-		**out = **in
-	}
-	if in.PollInterval != nil {
-		in, out := &in.PollInterval, &out.PollInterval
-		*out = new(v1.Duration)
-		**out = **in
-	}
 	return
 }
 

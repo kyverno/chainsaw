@@ -15,22 +15,24 @@ type Wait struct {
 	// Resource type on which the wait operation will be applied.
 	Resource string `json:"resource"`
 
-	// ResourceName specifies the name of the resource to wait for.
+	// Name specifies the name of the resource to wait for.
+	// If empty, wait for all resources of the type.
 	// +optional
-	ResourceName string `json:"resourceName,omitempty"`
+	Name string `json:"name,omitempty"`
+
+	// Namespace specifies the namespace of the resources to wait for.
+	// +optional
+	Namespace string `json:"namespace,omitempty"`
+
+	// Selector to filter resources based on label.
+	// +optional
+	Selector string `json:"selector,omitempty"`
 
 	// Condition represents the specific condition to wait for.
 	// Example: "Available", "Ready", etc.
 	Condition string `json:"condition"`
 
-	// ObjectLabelsSelector determines the selection process of objects based on their labels, applicable when waiting for a condition on multiple resources.
-	ObjectLabelsSelector `json:",inline"`
-
-	// IncludeUninitialized indicates whether to include uninitialized resources in the wait operation.
+	// AllNamespaces indicates whether to wait for resources in all namespaces.
 	// +optional
-	IncludeUninitialized *bool `json:"includeUninitialized,omitempty"`
-
-	// PollInterval specifies how often to check the condition's status before the timeout is reached.
-	// +optional
-	PollInterval *metav1.Duration `json:"pollInterval,omitempty"`
+	AllNamespaces bool `json:"allNamespaces,omitempty"`
 }

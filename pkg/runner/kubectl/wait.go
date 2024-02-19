@@ -18,32 +18,34 @@ func WaitForResource(waiter *v1alpha1.Wait) (*v1alpha1.Command, error) {
 		return nil, errors.New("a condition must be specified")
 	}
 
+	args := []string{"wait"}
+
+	if waiter.AllNamespaces {
+		args = append(args, "--all-namespaces")
+	} else if waiter.Namespace != "" {
+		args = append(args, "-n", waiter.Namespace)
+	}
+
+	resource := waiter.Resource
+	if waiter.Name != "" {
+		resource += "/" + waiter.Name
+	}
+	args = append(args, resource)
+
+	if waiter.Selector != "" {
+		args = append(args, "-l", waiter.Selector)
+	}
+
+	args = append(args, fmt.Sprintf("--for=%s", waiter.Condition))
+
+	if waiter.Timeout != nil {
+		args = append(args, fmt.Sprintf("--timeout=%s", waiter.Timeout.String()))
+	}
+
 	cmd := v1alpha1.Command{
 		Cluster:    waiter.Cluster,
 		Entrypoint: "kubectl",
-		Args:       []string{"wait", waiter.Resource},
-	}
-
-	if waiter.ResourceName != "" {
-		cmd.Args = append(cmd.Args, waiter.ResourceName)
-	}
-
-	if waiter.ObjectLabelsSelector.Selector != "" {
-		cmd.Args = append(cmd.Args, "-l", waiter.ObjectLabelsSelector.Selector)
-	}
-
-	if waiter.Timeout != nil {
-		cmd.Args = append(cmd.Args, fmt.Sprintf("--timeout=%s", waiter.Timeout.String()))
-	}
-
-	if waiter.IncludeUninitialized != nil {
-		cmd.Args = append(cmd.Args, fmt.Sprintf("--include-uninitialized=%t", *waiter.IncludeUninitialized))
-	}
-
-	cmd.Args = append(cmd.Args, fmt.Sprintf("--for=condition=%s", waiter.Condition))
-
-	if waiter.PollInterval != nil {
-		cmd.Args = append(cmd.Args, fmt.Sprintf("--poll-interval=%s", waiter.PollInterval.String()))
+		Args:       args,
 	}
 
 	return &cmd, nil
