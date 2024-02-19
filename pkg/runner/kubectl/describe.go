@@ -19,6 +19,7 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	}
 	cmd := v1alpha1.Command{
 		Cluster:    collector.Cluster,
+		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
 		Args:       []string{"describe", collector.Resource},
 	}
@@ -36,9 +37,6 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	cmd.Args = append(cmd.Args, "-n", namespace)
 	if collector.ShowEvents != nil {
 		cmd.Args = append(cmd.Args, fmt.Sprintf("--show-events=%t", *collector.ShowEvents))
-	}
-	if collector.Timeout != nil {
-		cmd.Timeout = collector.Timeout
 	}
 	return &cmd, nil
 }
