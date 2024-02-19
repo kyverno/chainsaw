@@ -35,6 +35,21 @@ spec:
           spec:
             description: Configuration spec.
             properties:
+              clusters:
+                additionalProperties:
+                  properties:
+                    context:
+                      description: Context is the name of the context to use.
+                      type: string
+                    kubeconfig:
+                      description: Kubeconfig is the path to the referenced file.
+                      type: string
+                  required:
+                  - kubeconfig
+                  type: object
+                description: Clusters holds a registry to clusters to support multi-cluster
+                  tests.
+                type: object
               delayBeforeCleanup:
                 description: DelayBeforeCleanup adds a delay between the time a test
                   ends and the time cleanup starts.

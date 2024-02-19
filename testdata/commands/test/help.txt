@@ -8,6 +8,7 @@ Flags:
       --assert-timeout duration                   The assert timeout to use as default for configuration (default 30s)
       --cleanup-delay duration                    Adds a delay between the time a test ends and the time cleanup starts
       --cleanup-timeout duration                  The cleanup timeout to use as default for configuration (default 30s)
+      --cluster strings                           Register cluster (format <cluster name>=<kubeconfig path>:[context name])
       --config string                             Chainsaw configuration file
       --delete-timeout duration                   The delete timeout to use as default for configuration (default 15s)
       --error-timeout duration                    The error timeout to use as default for configuration (default 30s)

@@ -6,8 +6,8 @@ import (
 )
 
 func Config(overrides clientcmd.ConfigOverrides) (*rest.Config, error) {
-	loadingRules := clientcmd.NewDefaultClientConfigLoadingRules()
-	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loadingRules, &overrides)
+	loader := clientcmd.NewDefaultClientConfigLoadingRules()
+	kubeConfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(loader, &overrides)
 	config, err := kubeConfig.ClientConfig()
 	if err != nil {
 		return nil, err
