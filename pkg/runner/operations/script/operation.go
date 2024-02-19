@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -12,7 +13,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/kyverno/kyverno/ext/output/color"
+	"k8s.io/client-go/rest"
 )
 
 type operation struct {
@@ -20,6 +23,7 @@ type operation struct {
 	basePath  string
 	namespace string
 	bindings  binding.Bindings
+	cfg       *rest.Config
 }
 
 func New(
@@ -27,6 +31,7 @@ func New(
 	basePath string,
 	namespace string,
 	bindings binding.Bindings,
+	cfg *rest.Config,
 ) operations.Operation {
 	if bindings == nil {
 		bindings = binding.NewBindings()
@@ -36,6 +41,7 @@ func New(
 		basePath:  basePath,
 		namespace: namespace,
 		bindings:  bindings,
+		cfg:       cfg,
 	}
 }
 
@@ -44,7 +50,10 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 	defer func() {
 		internal.LogEnd(logger, logging.Script, err)
 	}()
-	cmd, err := o.createCommand(ctx)
+	cmd, cancel, err := o.createCommand(ctx)
+	if cancel != nil {
+		defer cancel()
+	}
 	if err != nil {
 		return err
 	}
@@ -52,20 +61,38 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 	return o.execute(ctx, cmd)
 }
 
-func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, error) {
+func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, context.CancelFunc, error) {
+	var cancel context.CancelFunc
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
 	env := os.Environ()
 	if cwd, err := os.Getwd(); err != nil {
-		return nil, fmt.Errorf("failed to get current working directory (%w)", err)
+		return nil, nil, fmt.Errorf("failed to get current working directory (%w)", err)
 	} else {
 		env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	}
 	env = append(env, fmt.Sprintf("NAMESPACE=%s", o.namespace))
-	// TODO
-	// env = append(env, fmt.Sprintf("KUBECONFIG=%s/bin/:%s", cwd, os.Getenv("PATH")))
+	if o.cfg != nil {
+		f, err := os.CreateTemp(o.basePath, "chainsaw-kubeconfig-")
+		if err != nil {
+			return nil, nil, err
+		}
+		path := f.Name()
+		cancel = func() {
+			err := os.Remove(path)
+			if err != nil {
+				logger := internal.GetLogger(ctx, nil)
+				logger.Log(logging.Script, logging.ErrorStatus, color.BoldYellow, logging.ErrSection(err))
+			}
+		}
+		defer f.Close()
+		if err := restutils.Save(o.cfg, f); err != nil {
+			return nil, cancel, err
+		}
+		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Base(path)))
+	}
 	cmd.Env = env
 	cmd.Dir = o.basePath
-	return cmd, nil
+	return cmd, cancel, nil
 }
 
 func (o *operation) execute(ctx context.Context, cmd *exec.Cmd) error {

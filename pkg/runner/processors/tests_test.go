@@ -164,7 +164,9 @@ func TestTestsProcessor_Run(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			clusters := NewClusters()
 			if tc.client != nil {
-				clusters.clients[DefaultClient] = tc.client
+				clusters.clients[DefaultClient] = cluster{
+					client: tc.client,
+				}
 			}
 			processor := NewTestsProcessor(
 				tc.config,
@@ -223,7 +225,9 @@ func TestCreateTestProcessor(t *testing.T) {
 			localTC := tc
 			clusters := NewClusters()
 			if localTC.client != nil {
-				clusters.clients[DefaultClient] = localTC.client
+				clusters.clients[DefaultClient] = cluster{
+					client: localTC.client,
+				}
 			}
 			processor := testsProcessor{
 				config:         localTC.config,

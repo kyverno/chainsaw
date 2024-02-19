@@ -101,6 +101,7 @@ func Test_operationScript(t *testing.T) {
 				tt.basePath,
 				tt.namespace,
 				nil,
+				nil,
 			)
 			err := operation.Exec(ctx)
 			if tt.wantErr {
