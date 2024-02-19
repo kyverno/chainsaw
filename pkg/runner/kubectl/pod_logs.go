@@ -18,6 +18,7 @@ func Logs(collector *v1alpha1.PodLogs) (*v1alpha1.Command, error) {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
 	cmd := v1alpha1.Command{
+		Cluster:    collector.Cluster,
 		Entrypoint: "kubectl",
 		Args:       []string{"logs", "--prefix"},
 	}

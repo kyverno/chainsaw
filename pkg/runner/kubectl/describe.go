@@ -18,6 +18,7 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
 	cmd := v1alpha1.Command{
+		Cluster:    collector.Cluster,
 		Entrypoint: "kubectl",
 		Args:       []string{"describe", collector.Resource},
 	}
