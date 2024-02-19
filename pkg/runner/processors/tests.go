@@ -71,10 +71,11 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	bindings := p.bindings
 	cluster := p.clusters.client()
 	if cluster != nil {
+		bindings = bindings.Register("$client", binding.NewBinding(cluster))
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
 			object := client.ToUnstructured(&namespace)
-			bindings = p.bindings.Register("$namespace", binding.NewBinding(object.GetName()))
+			bindings = bindings.Register("$namespace", binding.NewBinding(object.GetName()))
 			if p.config.NamespaceTemplate != nil && p.config.NamespaceTemplate.Value != nil {
 				template := v1alpha1.Any{
 					Value: p.config.NamespaceTemplate.Value,
@@ -84,7 +85,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				} else {
 					object = merged
 				}
-				bindings = p.bindings.Register("$namespace", binding.NewBinding(object.GetName()))
+				bindings = bindings.Register("$namespace", binding.NewBinding(object.GetName()))
 			}
 			nspacer = namespacer.New(cluster, object.GetName())
 			if err := cluster.Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
