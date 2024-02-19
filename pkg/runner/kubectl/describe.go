@@ -17,6 +17,9 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
+	if collector.Name == "" && collector.Selector == "" {
+		return nil, errors.New("a name or label selector must be specified")
+	}
 	cmd := v1alpha1.Command{
 		Cluster:    collector.Cluster,
 		Entrypoint: "kubectl",
