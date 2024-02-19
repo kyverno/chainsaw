@@ -388,9 +388,13 @@ func TestTestProcessor_Run(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			shouldFailVar := &atomic.Bool{}
 			shouldFailVar.Store(tc.shouldFailFast)
+			clusters := NewClusters()
+			if tc.client != nil {
+				clusters.clients[defaultClient] = tc.client
+			}
 			processor := NewTestProcessor(
 				tc.config,
-				tc.client,
+				clusters,
 				tc.clock,
 				tc.summary,
 				tc.testsReport,

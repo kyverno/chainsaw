@@ -1042,9 +1042,13 @@ func TestStepProcessor_Run(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			clusters := NewClusters()
+			if tc.client != nil {
+				clusters.clients[defaultClient] = tc.client
+			}
 			stepProcessor := NewStepProcessor(
 				tc.config,
-				tc.client,
+				clusters,
 				tc.namespacer,
 				tc.clock,
 				tc.test,

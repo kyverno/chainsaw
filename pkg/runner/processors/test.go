@@ -31,7 +31,7 @@ type TestProcessor interface {
 
 func NewTestProcessor(
 	config v1alpha1.ConfigurationSpec,
-	client client.Client,
+	clusters clusters,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
 	testReport *report.TestReport,
@@ -41,7 +41,7 @@ func NewTestProcessor(
 ) TestProcessor {
 	return &testProcessor{
 		config:         config,
-		client:         client,
+		clusters:       clusters,
 		clock:          clock,
 		summary:        summary,
 		testReport:     testReport,
@@ -54,7 +54,7 @@ func NewTestProcessor(
 
 type testProcessor struct {
 	config         v1alpha1.ConfigurationSpec
-	client         client.Client
+	clusters       clusters
 	clock          clock.PassiveClock
 	summary        *summary.Summary
 	testReport     *report.TestReport
@@ -112,7 +112,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
 	bindings := p.bindings
-	if p.client != nil {
+	cluster := p.clusters.client(defaultClient)
+	if cluster != nil {
 		if nspacer == nil || p.test.Spec.Namespace != "" {
 			var ns corev1.Namespace
 			if p.test.Spec.Namespace != "" {
@@ -136,10 +137,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 				}
 				bindings = p.bindings.Register("$namespace", binding.NewBinding(object.GetName()))
 			}
-			nspacer = namespacer.New(p.client, object.GetName())
+			nspacer = namespacer.New(cluster, object.GetName())
 			setupCtx := logging.IntoContext(ctx, setupLogger)
 			cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
-			if err := p.client.Get(setupCtx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
+			if err := cluster.Get(setupCtx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -150,12 +151,12 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 						operation := operation{
 							continueOnError: false,
 							timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
-							operation:       opdelete.New(p.client, object, nspacer, bindings, false),
+							operation:       opdelete.New(cluster, object, nspacer, bindings, false),
 						}
 						operation.execute(cleanupCtx)
 					})
 				}
-				if err := p.client.Create(logging.IntoContext(setupCtx, setupLogger), object.DeepCopy()); err != nil {
+				if err := cluster.Create(logging.IntoContext(setupCtx, setupLogger), object.DeepCopy()); err != nil {
 					t.FailNow()
 				}
 			}
@@ -184,5 +185,5 @@ func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, bindi
 	if p.testReport != nil {
 		p.testReport.AddTestStep(stepReport)
 	}
-	return NewStepProcessor(p.config, p.client, nspacer, p.clock, p.test, step, stepReport, cleaner, bindings)
+	return NewStepProcessor(p.config, p.clusters, nspacer, p.clock, p.test, step, stepReport, cleaner, bindings)
 }

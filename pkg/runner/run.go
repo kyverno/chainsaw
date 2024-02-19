@@ -6,10 +6,8 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
-	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
@@ -54,21 +52,20 @@ func run(
 	}
 	bindings := binding.NewBindings()
 	bindings = bindings.Register("$values", binding.NewBinding(values))
-	var clusterClient client.Client
+	clusters := processors.NewClusters()
 	if cfg != nil {
-		client, err := client.New(cfg)
+		client, err := clusters.Register(cfg)
 		if err != nil {
 			return nil, err
 		}
-		clusterClient = runnerclient.New(client)
-		bindings = bindings.Register("$client", binding.NewBinding(clusterClient))
+		bindings = bindings.Register("$client", binding.NewBinding(client))
 	}
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			processor := processors.NewTestsProcessor(config, clusterClient, clock, &summary, testsReport, bindings, tests...)
+			processor := processors.NewTestsProcessor(config, clusters, clock, &summary, testsReport, bindings, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx)
