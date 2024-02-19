@@ -27,9 +27,11 @@ func (c *clusters) Register(name string, cfg *rest.Config) (client.Client, error
 	return client, nil
 }
 
-func (c *clusters) client(name string) client.Client {
-	if name == "" {
-		name = DefaultClient
+func (c *clusters) client(names ...string) client.Client {
+	for _, name := range names {
+		if name != "" {
+			return c.clients[name]
+		}
 	}
-	return c.clients[name]
+	return c.clients[DefaultClient]
 }
