@@ -20,6 +20,9 @@ func WaitForResource(waiter *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	if waiter.Name != "" && waiter.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
+	if waiter.Name == "" && waiter.Selector == "" {
+		return nil, errors.New("either a name or a label selector must be specified")
+	}
 
 	args := []string{"wait"}
 
