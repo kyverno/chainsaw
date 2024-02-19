@@ -10,6 +10,10 @@ type Events struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
+	// +optional
+	Cluster string `json:"cluster,omitempty"`
+
 	// ObjectLabelsSelector determines the selection process of referenced objects.
 	ObjectLabelsSelector `json:",inline"`
 
