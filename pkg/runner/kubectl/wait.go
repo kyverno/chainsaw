@@ -24,13 +24,15 @@ func WaitForResource(waiter *v1alpha1.Wait) (*v1alpha1.Command, error) {
 		args = append(args, "--all-namespaces")
 	} else if waiter.Namespace != "" {
 		args = append(args, "-n", waiter.Namespace)
+	} else {
+		args = append(args, "-n", "$NAMESPACE")
 	}
 
-	resource := waiter.Resource
 	if waiter.Name != "" {
-		resource += "/" + waiter.Name
+		args = append(args, fmt.Sprintf("%s/%s", waiter.Resource, waiter.Name))
+	} else {
+		args = append(args, waiter.Resource)
 	}
-	args = append(args, resource)
 
 	if waiter.Selector != "" {
 		args = append(args, "-l", waiter.Selector)
