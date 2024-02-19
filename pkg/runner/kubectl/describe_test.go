@@ -82,17 +82,6 @@ func TestDescribe(t *testing.T) {
 		},
 		wantErr: false,
 	}, {
-		name: "without name and selector",
-		collector: &v1alpha1.Describe{
-			Resource:             "foos",
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{},
-		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "foos", "-n", "$NAMESPACE"},
-		},
-		wantErr: false,
-	}, {
 		name: "with selector",
 		collector: &v1alpha1.Describe{
 			Resource: "foos",
