@@ -69,7 +69,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	})
 	var nspacer namespacer.Namespacer
 	bindings := p.bindings
-	cluster := p.clusters.client(DefaultClient)
+	cluster := p.clusters.client()
 	if cluster != nil {
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)

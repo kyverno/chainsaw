@@ -112,7 +112,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
 	bindings := p.bindings
-	cluster := p.clusters.client(DefaultClient)
+	cluster := p.clusters.client(p.test.Spec.Cluster)
 	if cluster != nil {
 		if nspacer == nil || p.test.Spec.Namespace != "" {
 			var ns corev1.Namespace
