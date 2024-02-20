@@ -394,6 +394,13 @@
             "null"
           ]
         },
+        "reportPath": {
+          "description": "ReportPath defines the path.",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
         "skipDelete": {
           "description": "If set, do not delete the resources after running the tests (implies SkipClusterDelete).",
           "type": [

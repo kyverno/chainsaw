@@ -44,6 +44,7 @@ type options struct {
 	parallel                    int
 	repeatCount                 int
 	reportFormat                string
+	reportPath                  string
 	reportName                  string
 	namespace                   string
 	fullName                    bool
@@ -139,6 +140,9 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "report-format") {
 				configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
 			}
+			if flagutils.IsSet(flags, "report-path") {
+				configuration.Spec.ReportPath = options.reportPath
+			}
 			if flagutils.IsSet(flags, "report-name") {
 				configuration.Spec.ReportName = options.reportName
 			}
@@ -197,6 +201,9 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
 			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
 			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.ReportName)
+			if configuration.Spec.ReportPath != "" {
+				fmt.Fprintf(out, "- ReportPath '%v'\n", configuration.Spec.ReportPath)
+			}
 			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
 			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
 			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.IncludeTestRegex)
@@ -308,6 +315,7 @@ func Command() *cobra.Command {
 	cmd.Flags().IntVar(&options.repeatCount, "repeat-count", 1, "Number of times to repeat each test")
 	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil)")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create")
+	cmd.Flags().StringVar(&options.reportPath, "report-path", "", "The path of the report to create")
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests")
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name")
 	cmd.Flags().StringVar(&options.includeTestRegex, "include-test-regex", "", "Regular expression to include tests")
