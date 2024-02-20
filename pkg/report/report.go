@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -130,12 +131,16 @@ func GetSerializer(format v1alpha1.ReportFormatType) (ReportSerializer, error) {
 	}
 }
 
-func (report *TestsReport) SaveReportBasedOnType(reportFormat v1alpha1.ReportFormatType, reportName string) error {
+func (report *TestsReport) SaveReportBasedOnType(reportFormat v1alpha1.ReportFormatType, reportPath, reportName string) error {
 	serializer, err := GetSerializer(reportFormat)
 	if err != nil {
 		return err
 	}
-	filePath := reportName + "." + strings.ToLower(string(reportFormat))
+	fileName := reportName + "." + strings.ToLower(string(reportFormat))
+	filePath := fileName
+	if reportPath != "" {
+		filepath.Join(reportPath, fileName)
+	}
 	return SaveReport(report, serializer, filePath)
 }
 

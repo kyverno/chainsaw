@@ -110,7 +110,7 @@ func TestSaveReportBasedOnType(t *testing.T) {
 			report.AddTest(NewTest("Test1"))
 
 			reportName := filepath.Join(t.TempDir(), "test_report")
-			err := report.SaveReportBasedOnType(tc.format, reportName)
+			err := report.SaveReportBasedOnType(tc.format, "", reportName)
 
 			if tc.expectError {
 				assert.Error(t, err, "Expected an error")

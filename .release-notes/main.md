@@ -21,6 +21,7 @@ Release notes for `TODO`.
 - Added format support (`json` or `yaml`) in `get` and `events` collectors
 - Added support for reading input from stdin in `chainsaw assert` command
 - Added programmatic `Configuration` validation
+- Added `--report-path` flag and config equivalent to configure the report path
 
 ## 🔧 Fixes 🔧
 

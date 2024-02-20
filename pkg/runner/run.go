@@ -97,7 +97,7 @@ func run(
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
 	if testsReport != nil && config.ReportFormat != "" {
-		if err := testsReport.SaveReportBasedOnType(config.ReportFormat, config.ReportName); err != nil {
+		if err := testsReport.SaveReportBasedOnType(config.ReportFormat, config.ReportPath, config.ReportName); err != nil {
 			return &summary, fmt.Errorf("failed to save test report: %v", err)
 		}
 	}

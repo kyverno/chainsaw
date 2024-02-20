@@ -108,6 +108,9 @@ spec:
                 description: ReportName defines the name of report to create. It defaults
                   to "chainsaw-report".
                 type: string
+              reportPath:
+                description: ReportPath defines the path.
+                type: string
               skipDelete:
                 description: If set, do not delete the resources after running the
                   tests (implies SkipClusterDelete).

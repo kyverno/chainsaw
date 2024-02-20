@@ -50,6 +50,7 @@ chainsaw test [flags]... [test directories]...
       --repeat-count int                          Number of times to repeat each test (default 1)
       --report-format string                      Test report format (JSON|XML|nil)
       --report-name string                        The name of the report to create (default "chainsaw-report")
+      --report-path string                        The path of the report to create
       --selector strings                          Selector (label query) to filter on
       --skip-delete                               If set, do not delete the resources after running the tests
       --template                                  If set, resources will be considered for templating

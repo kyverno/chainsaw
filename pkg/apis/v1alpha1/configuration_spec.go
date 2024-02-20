@@ -40,6 +40,10 @@ type ConfigurationSpec struct {
 	// +kubebuilder:validation:Enum:=JSON;XML;
 	ReportFormat ReportFormatType `json:"reportFormat,omitempty"`
 
+	// ReportPath defines the path.
+	// +optional
+	ReportPath string `json:"reportPath,omitempty"`
+
 	// ReportName defines the name of report to create. It defaults to "chainsaw-report".
 	// +optional
 	// +kubebuilder:default:="chainsaw-report"
