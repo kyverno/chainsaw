@@ -25,6 +25,7 @@ Release notes for `TODO`.
 
 ## 🔧 Fixes 🔧
 
+- Fixed a concurrency issue in Kyverno-JSON
 - Fixed an issue with timeouts not correctly considered in collectors
 - Fixed `--test-dir` flag not parsed correctly when folders were separated by a comma
 - Preserve `apiVersion` and `kind` when showing resource diff
