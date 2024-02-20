@@ -43,7 +43,7 @@ func TestValidateWait(t *testing.T) {
 				Selector: "foo=bar",
 			},
 		},
-		expectErr: false,
+		expectErr: true,
 		errMsg:    "a name or label selector must be specified (found both)",
 	}, {
 		name: "Only Name provided",
