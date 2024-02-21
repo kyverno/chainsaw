@@ -1016,6 +1016,69 @@
                           "type": "string"
                         }
                       }
+                    },
+                    "wait": {
+                      "description": "Wait determines the resource wait collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "condition",
+                        "resource"
+                      ],
+                      "properties": {
+                        "allNamespaces": {
+                          "description": "AllNamespaces indicates whether to wait for resources in all namespaces.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "condition": {
+                          "description": "Condition represents the specific condition to wait for. Example: \"Available\", \"Ready\", etc.",
+                          "type": "string"
+                        },
+                        "name": {
+                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "resource": {
+                          "description": "Resource type on which the wait operation will be applied.",
+                          "type": "string"
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
                     }
                   }
                 }
@@ -1640,6 +1703,69 @@
                         "duration": {
                           "description": "Duration is the delay used for sleeping.",
                           "type": "string"
+                        }
+                      }
+                    },
+                    "wait": {
+                      "description": "Wait determines the resource wait collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "condition",
+                        "resource"
+                      ],
+                      "properties": {
+                        "allNamespaces": {
+                          "description": "AllNamespaces indicates whether to wait for resources in all namespaces.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "condition": {
+                          "description": "Condition represents the specific condition to wait for. Example: \"Available\", \"Ready\", etc.",
+                          "type": "string"
+                        },
+                        "name": {
+                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "resource": {
+                          "description": "Resource type on which the wait operation will be applied.",
+                          "type": "string"
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         }
                       }
                     }

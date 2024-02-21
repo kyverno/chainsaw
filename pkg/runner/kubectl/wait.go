@@ -7,45 +7,45 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
 
-func WaitForResource(waiter *v1alpha1.Wait) (*v1alpha1.Command, error) {
-	if waiter == nil {
+func WaitForResource(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
+	if collector == nil {
 		return nil, nil
 	}
-	if waiter.Resource == "" {
+	if collector.Resource == "" {
 		return nil, errors.New("a resource must be specified")
 	}
-	if waiter.Condition == "" {
+	if collector.Condition == "" {
 		return nil, errors.New("a condition must be specified")
 	}
-	if waiter.Name != "" && waiter.Selector != "" {
+	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
 
 	args := []string{"wait"}
 
-	if waiter.Name != "" {
-		args = append(args, fmt.Sprintf("%s/%s", waiter.Resource, waiter.Name))
+	if collector.Name != "" {
+		args = append(args, fmt.Sprintf("%s/%s", collector.Resource, collector.Name))
 	} else {
-		args = append(args, waiter.Resource)
+		args = append(args, collector.Resource)
 	}
-	args = append(args, fmt.Sprintf("--for=condition=%s", waiter.Condition))
+	args = append(args, fmt.Sprintf("--for=condition=%s", collector.Condition))
 
-	if waiter.Selector != "" {
-		args = append(args, "-l", waiter.Selector)
+	if collector.Selector != "" {
+		args = append(args, "-l", collector.Selector)
 	}
-	if waiter.AllNamespaces {
+	if collector.AllNamespaces {
 		args = append(args, "--all-namespaces")
-	} else if waiter.Namespace != "" {
-		args = append(args, "-n", waiter.Namespace)
+	} else if collector.Namespace != "" {
+		args = append(args, "-n", collector.Namespace)
 	} else {
 		args = append(args, "-n", "$NAMESPACE")
 	}
-	if waiter.Timeout != nil {
-		args = append(args, fmt.Sprintf("--timeout=%s", waiter.Timeout.Duration.String()))
+	if collector.Timeout != nil {
+		args = append(args, fmt.Sprintf("--timeout=%s", collector.Timeout.Duration.String()))
 	}
 	cmd := v1alpha1.Command{
-		Cluster:    waiter.Cluster,
-		Timeout:    waiter.Timeout,
+		Cluster:    collector.Cluster,
+		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
 		Args:       args,
 	}
