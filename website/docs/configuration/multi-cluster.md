@@ -141,7 +141,6 @@ In the example below, `$client` binding is a client to the configured `cluster-1
         # ...
     ```
 
-
 ### KUBECONFIG in scripts and commands
 
 When a cluster is specified (whatever the `test`, `step` or `operation` level), a temporary `KUBECONFIG` is automatically created and the `KUBECONFIG` is set to this temporary file for every `command` and `script` operation.
