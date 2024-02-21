@@ -50,6 +50,7 @@ nav:
     - collectors/index.md
     - collectors/pod-logs.md
     - collectors/events.md
+    - collectors/get.md
     - collectors/describe.md
   - Other resources:
     - more/events.md

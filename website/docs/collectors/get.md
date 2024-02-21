@@ -1,16 +1,16 @@
-# Events
+# Get
 
-Collecting namespace events can help understand what happened inside the cluster.
+The `get` collector is used to list and print resources in the cluster.
 
 ## Configuration
 
-The full structure of the `Events` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Events).
+The full structure of the `Get` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Get).
 
-### Single event
+### Single resource
 
-If a `name` is specified, Chainsaw will retrieve the specified event in the test namespace.
+If a `name` is specified, Chainsaw will retrieve the specified resource in the test namespace.
 
-!!! example "Collect event in the test namespace"
+!!! example "Get pod in the test namespace"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -22,18 +22,20 @@ If a `name` is specified, Chainsaw will retrieve the specified event in the test
       - try:
         # ...
         catch:
-        - events:
-            name: my-event
+        - get:
+            resource: pods
+            name: my-pod
         # ...
         finally:
-        - events:
-            name: my-event
+        - get:
+            resource: pods
+            name: my-pod
         # ...
     ```
 
-If a `namespace` is specified, Chainsaw will retrieve the specified event in the specified namespace.
+If a `namespace` is specified, Chainsaw will retrieve the specified resource in the specified namespace.
 
-!!! example "Collect event in a specific namespace"
+!!! example "Collect pod in a specific namespace"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -45,22 +47,24 @@ If a `namespace` is specified, Chainsaw will retrieve the specified event in the
       - try:
         # ...
         catch:
-        - events:
-            name: my-event
+        - get:
+            resource: pods
+            name: my-pod
             namespace: foo
         # ...
         finally:
-        - events:
-            name: my-event
+        - get:
+            resource: pods
+            name: my-pod
             namespace: foo
         # ...
     ```
 
-### All events
+### All resources
 
-If no `name` and `namespace` are specified, Chainsaw will retrieve all events in the test namespace.
+If no `name` and `namespace` are specified, Chainsaw will retrieve all resources in the test namespace.
 
-!!! example "Collect all events in the test namespace"
+!!! example "Collect all resources in the test namespace"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -72,16 +76,18 @@ If no `name` and `namespace` are specified, Chainsaw will retrieve all events in
       - try:
         # ...
         catch:
-        - events: {}
+        - get:
+            resource: pods
         # ...
         finally:
-        - events: {}
+        - get:
+            resource: pods
         # ...
     ```
 
-On the other hand, if a `namespace` is specified, Chainsaw will retrieve all events in the specified namespace.
+On the other hand, if a `namespace` is specified, Chainsaw will retrieve all resources in the specified namespace.
 
-!!! example "Collect all events in a specific namespace"
+!!! example "Collect all resources in a specific namespace"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -93,20 +99,22 @@ On the other hand, if a `namespace` is specified, Chainsaw will retrieve all eve
       - try:
         # ...
         catch:
-        - events:
+        - get:
+            resource: pods
             namespace: foo
         # ...
         finally:
-        - events:
+        - get:
+            resource: pods
             namespace: foo
         # ...
     ```
 
 ### Label selector
 
-An optional [label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors) can be configured to refine the events to be retrieved.
+An optional [label selector](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors) can be configured to refine the resources to be retrieved.
 
-!!! example "Collect events using a label selector in the test namespace"
+!!! example "Collect resources using a label selector in the test namespace"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -118,18 +126,20 @@ An optional [label selector](https://kubernetes.io/docs/concepts/overview/workin
       - try:
         # ...
         catch:
-        - events:
+        - get:
+            resource: pods
             selector: app=my-app
         # ...
         finally:
-        - events:
+        - get:
+            resource: pods
             selector: app=my-app
         # ...
     ```
 
-If a `namespace` is specified, Chainsaw will retrieve events using the specified namespace.
+If a `namespace` is specified, Chainsaw will retrieve resources using the specified namespace.
 
-!!! example "Collect events using a label selector in a specific namespace"
+!!! example "Collect resources using a label selector in a specific namespace"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -141,12 +151,14 @@ If a `namespace` is specified, Chainsaw will retrieve events using the specified
       - try:
         # ...
         catch:
-        - events:
+        - get:
+            resource: pods
             selector: app=my-app
             namespace: foo
         # ...
         finally:
-        - events:
+        - get:
+            resource: pods
             selector: app=my-app
             namespace: foo
         # ...
@@ -170,11 +182,13 @@ If `format` is not specified, results will be returned in text format.
       - try:
         # ...
         catch:
-        - events:
+        - get:
+            resource: pods
             format: json
         # ...
         finally:
-        - events:
+        - get:
+            resource: pods
             format: json
         # ...
     ```
@@ -191,11 +205,13 @@ If `format` is not specified, results will be returned in text format.
       - try:
         # ...
         catch:
-        - events:
+        - get:
+            resource: pods
             format: yaml
         # ...
         finally:
-        - events:
+        - get:
+            resource: pods
             format: yaml
         # ...
     ```
