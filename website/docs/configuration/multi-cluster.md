@@ -140,3 +140,35 @@ In the example below, `$client` binding is a client to the configured `cluster-1
                     (length(@)): 1
         # ...
     ```
+
+### KUBECONFIG in scripts and commands
+
+When a cluster is specified (whatever the `test`, `step` or `operation` level), a temporary `KUBECONFIG` is automatically created and the `KUBECONFIG` is set to this temporary file for every `command` and `script` operation.
+
+This way `command` and `script` operations are executed in the context of the configured cluster.
+
+!!! warning "Temporary KUBECONFIG"
+    The default `KUBECONFIG` you usually observe in your local shell will be different in `script` and `command` operations.
+
+!!! example "Temporary KUBECONFIG"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      steps:
+      - try:
+        # ...
+        - script:
+            # operation will be executed against the
+            # cluster specified below
+            cluster: cluster-1
+            # the kubectl command below will use a 
+            # KUBECONFIG environment variable pointing
+            # to a temporary kubeconfig file configured
+            # for the specified cluster
+            content: kubectl get pods
+        # ...
+    ```
