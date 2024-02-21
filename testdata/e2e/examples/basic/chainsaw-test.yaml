@@ -15,4 +15,4 @@ spec:
       assert:
         file: configmap-assert.yaml
     - script:
-        content: kubectl get pod -A
+        content: cd .. && kubectl get pod -A
