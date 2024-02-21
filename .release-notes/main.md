@@ -37,6 +37,7 @@ Release notes for `TODO`.
 - Fixed incorrect `delete` operation in docs
 - Fixed some typos in the docs
 - Added missing links in the configuration docs
+- Fixed some incorrect examples in the docs
 
 ## 🎸 Misc 🎸
 
