@@ -12,6 +12,7 @@ A `finally` statement supports only the following [operations](../operations/ind
 - [Command](../operations/command.md)
 - [Script](../operations/script.md)
 - [Sleep](../operations/sleep.md)
+- [Delete](../operations/delete.md)
 
 ## Collectors
 
@@ -39,6 +40,8 @@ A `finally` statement supports all [collectors](../collectors/index.md):
         - command:
             # ...
         - script:
+            # ...
+        - delete:
             # ...
         - events:
             # ...
