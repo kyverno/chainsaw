@@ -139,9 +139,9 @@ func (report *TestsReport) SaveReportBasedOnType(reportFormat v1alpha1.ReportFor
 	if filepath.Ext(reportName) == "" {
 		reportName += "." + strings.ToLower(string(reportFormat))
 	}
-	filePath := filepath.Join(reportPath, reportName)
-	if reportPath == "" {
-		filePath = reportName
+	filePath := reportName
+	if reportPath != "" {
+		filePath = filepath.Join(reportPath, reportName)
 	}
 	return SaveReport(report, serializer, filePath)
 }
