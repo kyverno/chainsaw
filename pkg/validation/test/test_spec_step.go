@@ -7,9 +7,9 @@ import (
 
 func ValidateTestSpecStep(path *field.Path, obj v1alpha1.TestSpecStep) field.ErrorList {
 	var errs field.ErrorList
-	if obj.Name == "" {
-		errs = append(errs, field.Required(path.Child("name"), "a name is required"))
-	}
+	// if obj.Name == "" {
+	// 	errs = append(errs, field.Required(path.Child("name"), "a name is required"))
+	// }
 	errs = append(errs, ValidateTestStepSpec(path, obj.TestStepSpec)...)
 	return errs
 }

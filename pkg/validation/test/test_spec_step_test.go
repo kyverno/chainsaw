@@ -33,7 +33,7 @@ func TestValidateTestSpecStep(t *testing.T) {
 			Name:         "",
 			TestStepSpec: validTestStepSpec,
 		},
-		expectErr: true,
+		expectErr: false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -43,9 +43,6 @@ func TestValidateTestSpecStep(t *testing.T) {
 			} else {
 				assert.Empty(t, errs)
 			}
-			// if got := ValidateTestSpecStep(tt.args.path, tt.args.obj); !reflect.DeepEqual(got, tt.want) {
-			// 	t.Errorf("ValidateTestSpecStep() = %v, want %v", got, tt.want)
-			// }
 		})
 	}
 }
