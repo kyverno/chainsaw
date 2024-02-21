@@ -7,5 +7,9 @@ import (
 
 func ValidateConfigurationSpec(path *field.Path, obj v1alpha1.ConfigurationSpec) field.ErrorList {
 	var errs field.ErrorList
+	path = path.Child("clusters")
+	for name, cluster := range obj.Clusters {
+		errs = append(errs, ValidateCluster(path.Key(name), cluster)...)
+	}
 	return errs
 }

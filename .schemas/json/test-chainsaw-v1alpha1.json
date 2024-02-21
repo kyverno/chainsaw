@@ -1385,6 +1385,7 @@
               "try": {
                 "description": "Try defines what the step will try to execute.",
                 "type": "array",
+                "minItems": 1,
                 "items": {
                   "description": "Operation defines a single operation, only one action is permitted for a given operation.",
                   "type": [

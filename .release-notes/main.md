@@ -30,6 +30,7 @@ Release notes for `TODO`.
 - Fixed `--test-dir` flag not parsed correctly when folders were separated by a comma
 - Preserve `apiVersion` and `kind` when showing resource diff
 - Fixed an incorrect KUTTL `TestAssert` conversion
+- Validate empty `try` blocks
 
 ## 📚 Docs 📚
 

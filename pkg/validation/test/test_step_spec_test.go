@@ -56,7 +56,6 @@ func TestValidateTestStepSpec(t *testing.T) {
 			},
 		},
 	}
-
 	validFinally := []v1alpha1.Finally{
 		{
 			Command: &v1alpha1.Command{
@@ -76,50 +75,55 @@ func TestValidateTestStepSpec(t *testing.T) {
 			},
 		},
 	}
-
 	tests := []struct {
 		name      string
 		input     v1alpha1.TestStepSpec
 		expectErr bool
-	}{
-		{
-			name: "Valid TestStepSpec",
-			input: v1alpha1.TestStepSpec{
-				Try:     validTry,
-				Catch:   validCatch,
-				Finally: validFinally,
-			},
-			expectErr: false,
+	}{{
+		name: "Valid TestStepSpec",
+		input: v1alpha1.TestStepSpec{
+			Try:     validTry,
+			Catch:   validCatch,
+			Finally: validFinally,
 		},
-		{
-			name: "Invalid Try in TestStepSpec",
-			input: v1alpha1.TestStepSpec{
-				Try:     invalidTry,
-				Catch:   validCatch,
-				Finally: validFinally,
-			},
-			expectErr: true,
+		expectErr: false,
+	}, {
+		name: "Invalid Try in TestStepSpec",
+		input: v1alpha1.TestStepSpec{
+			Try:     invalidTry,
+			Catch:   validCatch,
+			Finally: validFinally,
 		},
-		{
-			name: "Invalid Catch in TestStepSpec",
-			input: v1alpha1.TestStepSpec{
-				Try:     validTry,
-				Catch:   invalidCatch,
-				Finally: validFinally,
-			},
-			expectErr: true,
+		expectErr: true,
+	}, {
+		name: "Invalid Catch in TestStepSpec",
+		input: v1alpha1.TestStepSpec{
+			Try:     validTry,
+			Catch:   invalidCatch,
+			Finally: validFinally,
 		},
-		{
-			name: "Invalid Finally in TestStepSpec",
-			input: v1alpha1.TestStepSpec{
-				Try:     validTry,
-				Catch:   validCatch,
-				Finally: invalidFinally,
-			},
-			expectErr: true,
+		expectErr: true,
+	}, {
+		name: "Invalid Finally in TestStepSpec",
+		input: v1alpha1.TestStepSpec{
+			Try:     validTry,
+			Catch:   validCatch,
+			Finally: invalidFinally,
 		},
-	}
-
+		expectErr: true,
+	}, {
+		name: "Empty try block",
+		input: v1alpha1.TestStepSpec{
+			Try: []v1alpha1.Operation{},
+		},
+		expectErr: true,
+	}, {
+		name: "Nil try block",
+		input: v1alpha1.TestStepSpec{
+			Try: nil,
+		},
+		expectErr: true,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			errs := ValidateTestStepSpec(field.NewPath("testPath"), tt.input)
