@@ -42,6 +42,7 @@ nav:
     - operations/command.md
     - operations/delete.md
     - operations/error.md
+    - operations/patch.md
     - operations/script.md
     - operations/sleep.md
     - operations/templating.md

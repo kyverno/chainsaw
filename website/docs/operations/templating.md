@@ -22,6 +22,7 @@ Resource templating is supported in the following operations:
 - [Apply](./apply.md)
 - [Create](./create.md)
 - [Delete](./delete.md)
+- [Patch](./patch.md)
 
 ### Assert and Error
 
@@ -63,9 +64,9 @@ Other fields are not, they are part of the assertion tree only.
               bar: ($namespace)
     ```
 
-### Apply and Create
+### Apply, Create and Patch
 
-When templating `apply` or `create` operations, the whole content is considered for templating.
+When templating `apply`, `create` or `patch` operations, the whole content is considered for templating.
 
 !!! example "apply and create example"
 
@@ -87,6 +88,15 @@ When templating `apply` or `create` operations, the whole content is considered 
             data:
               foo: ($namespace)
       - create:
+          resource:
+            # the whole content is considered for templating
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: ($namespace)
+            data:
+              foo: ($namespace)
+      - patch:
           resource:
             # the whole content is considered for templating
             apiVersion: v1
