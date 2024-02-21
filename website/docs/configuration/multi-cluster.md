@@ -112,3 +112,31 @@ If specified at multiple levels, the most granular one is selected, effectively 
                 (replicas > 3): true
         # ...
     ```
+
+### `$client` binding
+
+When a cluster is specified (whatever the `test`, `step` or `operation` level), the `$client` binding visible in operation expressions is always the Kubernetes client corresponding to the configured cluster.
+
+In the example below, `$client` binding is a client to the configured `cluster-1`.
+
+!!! example "`$client` binding"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      steps:
+      - try:
+        # ...
+        - assert:
+            # operation will be executed against the
+            # cluster specified below
+            cluster: cluster-1
+            resource:
+              resource:
+                (x_k8s_list($client, 'v1', 'Node')):
+                    (length(@)): 1
+        # ...
+    ```
