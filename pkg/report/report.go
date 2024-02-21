@@ -136,7 +136,12 @@ func (report *TestsReport) SaveReportBasedOnType(reportFormat v1alpha1.ReportFor
 	if err != nil {
 		return err
 	}
-	fileName := reportName + "." + strings.ToLower(string(reportFormat))
+	var fileName string
+	if filepath.Ext(reportName) != "" {
+		fileName = reportName
+	} else {
+		fileName = reportName + "." + strings.ToLower(string(reportFormat))
+	}
 	filePath := fileName
 	if reportPath != "" {
 		filepath.Join(reportPath, fileName)
