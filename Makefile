@@ -277,7 +277,7 @@ e2e-tests-ko: build-ko ## Run e2e tests from a docker container
 # KIND #
 ########
 
-KIND_IMAGE     ?= kindest/node:v1.28.0
+KIND_IMAGE     ?= kindest/node:v1.29.2
 
 .PHONY: kind-cluster
 kind-cluster: $(KIND) ## Create kind cluster
