@@ -136,15 +136,12 @@ func (report *TestsReport) SaveReportBasedOnType(reportFormat v1alpha1.ReportFor
 	if err != nil {
 		return err
 	}
-	var fileName string
-	if filepath.Ext(reportName) != "" {
-		fileName = reportName
-	} else {
-		fileName = reportName + "." + strings.ToLower(string(reportFormat))
+	if filepath.Ext(reportName) == "" {
+		reportName += "." + strings.ToLower(string(reportFormat))
 	}
-	filePath := fileName
-	if reportPath != "" {
-		filepath.Join(reportPath, fileName)
+	filePath := filepath.Join(reportPath, reportName)
+	if reportPath == "" {
+		filePath = reportName
 	}
 	return SaveReport(report, serializer, filePath)
 }
