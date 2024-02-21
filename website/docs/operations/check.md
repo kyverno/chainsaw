@@ -85,6 +85,18 @@ This way it is possible to control the scope of a `check`.
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
+## Patch
+
+`patch` supports `expect` and has the following elements to be checked:
+
+| Name | Purpose | Type |
+|---|---|---|
+| `$values` | Values provided when invoking chainsaw with `--values` flag | `object` |
+| `$namespace` | Name of the current test namespace | `string` |
+| `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$error` | The error message (if any) at the end of the operation | `string` |
+| `@` | The state of the resource (if any) at the end of the operation | `object` |
+
 ## Script
 
 `script` supports `check` and has the following elements to be checked:
