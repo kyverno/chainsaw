@@ -7,6 +7,9 @@ import (
 
 func ValidateTestStepSpec(path *field.Path, obj v1alpha1.TestStepSpec) field.ErrorList {
 	var errs field.ErrorList
+	if len(obj.Try) == 0 {
+		errs = append(errs, field.Required(path.Child("try"), "try block cannot be empty"))
+	}
 	for i, try := range obj.Try {
 		errs = append(errs, ValidateOperation(path.Child("try").Index(i), try)...)
 	}

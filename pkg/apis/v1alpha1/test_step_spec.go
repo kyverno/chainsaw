@@ -23,6 +23,7 @@ type TestStepSpec struct {
 	Template *bool `json:"template,omitempty"`
 
 	// Try defines what the step will try to execute.
+	// +kubebuilder:validation:MinItems:=1
 	Try []Operation `json:"try"`
 
 	// Catch defines what the step will execute when an error happens.
