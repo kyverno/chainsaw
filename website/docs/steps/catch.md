@@ -21,6 +21,7 @@ A `catch` statement supports all [collectors](../collectors/index.md):
 
 - [Pod logs](../collectors/pod-logs.md)
 - [Events](../collectors/events.md)
+- [Get](../collectors/get.md)
 - [Describe](../collectors/describe.md)
 
 ## Example
