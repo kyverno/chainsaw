@@ -32,6 +32,7 @@ Determines whether a test step should continue or not in case the operation is n
 - [Create](./create.md)
 - [Delete](./delete.md)
 - [Error](./error.md)
+- [Patch](./patch.md)
 - [Script](./script.md)
 - [Sleep](./sleep.md)
 
