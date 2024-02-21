@@ -67,11 +67,11 @@ func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, context.Cance
 	args := env.Expand(map[string]string{"NAMESPACE": o.namespace}, o.command.Args...)
 	cmd := exec.CommandContext(ctx, o.command.Entrypoint, args...) //nolint:gosec
 	env := os.Environ()
-	if cwd, err := os.Getwd(); err != nil {
+	cwd, err := os.Getwd()
+	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get current working directory (%w)", err)
-	} else {
-		env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	}
+	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	env = append(env, fmt.Sprintf("NAMESPACE=%s", o.namespace))
 	if o.cfg != nil {
 		f, err := os.CreateTemp(o.basePath, "chainsaw-kubeconfig-")
@@ -90,7 +90,9 @@ func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, context.Cance
 		if err := restutils.Save(o.cfg, f); err != nil {
 			return nil, cancel, err
 		}
-		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Base(path)))
+		fmt.Println(f.Name())
+		fmt.Println(o.basePath)
+		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Join(cwd, path)))
 	}
 	cmd.Env = env
 	cmd.Dir = o.basePath
