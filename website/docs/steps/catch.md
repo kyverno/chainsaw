@@ -14,6 +14,7 @@ A `catch` statement supports only the following [operations](../operations/index
 - [Command](../operations/command.md)
 - [Script](../operations/script.md)
 - [Sleep](../operations/sleep.md)
+- [Delete](../operations/delete.md)
 
 ## Collectors
 
@@ -40,6 +41,8 @@ A `catch` statement supports all [collectors](../collectors/index.md):
         - command:
             # ...
         - script:
+            # ...
+        - delete:
             # ...
         - events:
             # ...
