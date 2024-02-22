@@ -77,7 +77,7 @@ func (o *operation) execute(ctx context.Context, obj unstructured.Unstructured) 
 				lastErrs = errs
 			}
 		}()
-		if !(obj.GetAPIVersion() != "" && obj.GetKind() != "") {
+		if obj.GetAPIVersion() == "" || obj.GetKind() == "" {
 			_errs, err := check.Check(ctx, nil, bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
 			if err != nil {
 				return false, err
