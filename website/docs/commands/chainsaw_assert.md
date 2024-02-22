@@ -9,6 +9,7 @@ chainsaw assert [flags] [FILE]
 ### Options
 
 ```
+      --clustered                           Defines if the resource is clustered (only applies when resource is loaded from a file)
   -f, --file string                         Path to the file to assert or '-' to read from stdin
   -h, --help                                help for assert
       --kube-as string                      Username to impersonate for the operation
@@ -32,6 +33,7 @@ chainsaw assert [flags] [FILE]
       --kube-username string                Username for basic authentication to the API server
       --namespace string                    Namespace to use (default "default")
       --no-color                            Removes output colors
+  -r, --resource string                     Path to the file containing the resource
       --timeout duration                    The assert timeout to use (default 30s)
 ```
 
