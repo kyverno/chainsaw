@@ -17,7 +17,7 @@ spec:
   - name: v1alpha1
     schema:
       openAPIV3Schema:
-        description: Test is the resource that contains aa test definition.
+        description: Test is the resource that contains a test definition.
         properties:
           apiVersion:
             description: 'APIVersion defines the versioned schema of this representation
@@ -34,6 +34,22 @@ spec:
           spec:
             description: Test spec.
             properties:
+              bindings:
+                items:
+                  description: Binding represents a key/value set as a binding in
+                    an executing test.
+                  properties:
+                    name:
+                      description: Name the name of the binding.
+                      type: string
+                    value:
+                      description: Value value of the binding.
+                      x-kubernetes-preserve-unknown-fields: true
+                  required:
+                  - name
+                  - value
+                  type: object
+                type: array
               cluster:
                 description: Cluster defines the target cluster (default cluster will
                   be used if not specified and/or overridden).

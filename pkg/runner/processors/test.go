@@ -9,8 +9,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	mutation "github.com/kyverno/chainsaw/pkg/mutate"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
+	"github.com/kyverno/chainsaw/pkg/runner/functions"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -18,6 +20,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"github.com/kyverno/kyverno/ext/output/color"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -111,10 +114,19 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			t.SkipNow()
 		}
 	}
+	bindings := p.bindings
+	for _, b := range p.test.Spec.Bindings {
+		// TODO: check binding name is allowed ?
+		patched, err := mutation.Mutate(ctx, nil, mutation.Parse(ctx, b.Value.Value), nil, bindings, template.WithFunctionCaller(functions.Caller))
+		if err != nil {
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			t.FailNow()
+		}
+		bindings = bindings.Register("$"+b.Name, binding.NewBinding(patched))
+	}
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
-	bindings := p.bindings
 	_, cluster := p.clusters.client(p.test.Spec.Cluster)
 	if cluster != nil {
 		bindings = bindings.Register("$client", binding.NewBinding(cluster))

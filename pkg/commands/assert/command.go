@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -86,6 +87,7 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 		}
 	}
 	if opts.resourcePath != "" {
+		opts.timeout.Duration = time.Second
 		ressources, err := resource.Load(opts.resourcePath, false)
 		if err != nil {
 			return fmt.Errorf("failed to load file '%s': %w", opts.resourcePath, err)
