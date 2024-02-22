@@ -90,7 +90,7 @@ func Test_preRunE(t *testing.T) {
 			name: "No args and no filePath set",
 			args: []string{},
 			initialOpt: &options{
-				filePath: "",
+				assertPath: "",
 			},
 			wantErr: true,
 			errMsg:  "either a file path as an argument or the --file flag must be provided",
@@ -99,10 +99,10 @@ func Test_preRunE(t *testing.T) {
 			name: "Args provided and filePath not set",
 			args: []string{"./path/to/config.yaml"},
 			initialOpt: &options{
-				filePath: "",
+				assertPath: "",
 			},
 			expectedOpt: &options{
-				filePath: "./path/to/config.yaml",
+				assertPath: "./path/to/config.yaml",
 			},
 			wantErr: false,
 		},
@@ -110,10 +110,10 @@ func Test_preRunE(t *testing.T) {
 			name: "filePath already set, no args",
 			args: []string{},
 			initialOpt: &options{
-				filePath: "./already/set/path.yaml",
+				assertPath: "./already/set/path.yaml",
 			},
 			expectedOpt: &options{
-				filePath: "./already/set/path.yaml",
+				assertPath: "./already/set/path.yaml",
 			},
 			wantErr: false,
 		},
@@ -128,7 +128,7 @@ func Test_preRunE(t *testing.T) {
 				testify.Equal(t, tt.errMsg, err.Error())
 			} else {
 				testify.NoError(t, err)
-				testify.Equal(t, tt.expectedOpt.filePath, tt.initialOpt.filePath)
+				testify.Equal(t, tt.expectedOpt.assertPath, tt.initialOpt.assertPath)
 			}
 		})
 	}
@@ -155,10 +155,10 @@ func Test_runE(t *testing.T) {
 				return cmd
 			},
 			opts: options{
-				filePath:  path.Join(basePath, "assert.yaml"),
-				noColor:   true,
-				namespace: "default",
-				timeout:   metav1.Duration{Duration: 5 * time.Second},
+				assertPath: path.Join(basePath, "assert.yaml"),
+				noColor:    true,
+				namespace:  "default",
+				timeout:    metav1.Duration{Duration: 5 * time.Second},
 			},
 			client: &fakeClient.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -195,10 +195,10 @@ func Test_runE(t *testing.T) {
 				return cmd
 			},
 			opts: options{
-				filePath:  path.Join(basePath, "assert.yaml"),
-				noColor:   true,
-				namespace: "default",
-				timeout:   metav1.Duration{Duration: 5 * time.Second},
+				assertPath: path.Join(basePath, "assert.yaml"),
+				noColor:    true,
+				namespace:  "default",
+				timeout:    metav1.Duration{Duration: 5 * time.Second},
 			},
 			client: &fakeClient.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -249,10 +249,10 @@ func Test_runE(t *testing.T) {
 				return cmd
 			},
 			opts: options{
-				filePath:  path.Join(basePath, "non-exist-file.yaml"),
-				noColor:   true,
-				namespace: "default",
-				timeout:   metav1.Duration{Duration: 5 * time.Second},
+				assertPath: path.Join(basePath, "non-exist-file.yaml"),
+				noColor:    true,
+				namespace:  "default",
+				timeout:    metav1.Duration{Duration: 5 * time.Second},
 			},
 			client: &fakeClient.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -297,10 +297,10 @@ data:
 				return cmd
 			},
 			opts: options{
-				filePath:  "-",
-				noColor:   true,
-				namespace: "default",
-				timeout:   metav1.Duration{Duration: 5 * time.Second},
+				assertPath: "-",
+				noColor:    true,
+				namespace:  "default",
+				timeout:    metav1.Duration{Duration: 5 * time.Second},
 			},
 			client: &fakeClient.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -338,10 +338,10 @@ data:
 				return cmd
 			},
 			opts: options{
-				filePath:  "-",
-				noColor:   true,
-				namespace: "default",
-				timeout:   metav1.Duration{Duration: 5 * time.Second},
+				assertPath: "-",
+				noColor:    true,
+				namespace:  "default",
+				timeout:    metav1.Duration{Duration: 5 * time.Second},
 			},
 			client: &fakeClient.FakeClient{
 				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
