@@ -9,6 +9,7 @@
 # style: (formatting, missing semi colons, etc; no production code change)
 # test: (adding missing tests, refactoring tests; no production code change)
 # revert: (reverting a previous commit)
+# release: (release a new version of the project)
 
 # Example:
 # test(runner): Add test for the runner
