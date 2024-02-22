@@ -34,6 +34,13 @@ func (in *Apply) DeepCopyInto(out *Apply) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.Bindings != nil {
+		in, out := &in.Bindings, &out.Bindings
+		*out = make([]Binding, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -72,6 +79,13 @@ func (in *Assert) DeepCopyInto(out *Assert) {
 		in, out := &in.Timeout, &out.Timeout
 		*out = new(v1.Duration)
 		**out = **in
+	}
+	if in.Bindings != nil {
+		in, out := &in.Bindings, &out.Bindings
+		*out = make([]Binding, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	in.FileRefOrCheck.DeepCopyInto(&out.FileRefOrCheck)
 	if in.Template != nil {
@@ -299,6 +313,13 @@ func (in *Create) DeepCopyInto(out *Create) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.Bindings != nil {
+		in, out := &in.Bindings, &out.Bindings
+		*out = make([]Binding, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -337,6 +358,13 @@ func (in *Delete) DeepCopyInto(out *Delete) {
 		in, out := &in.Timeout, &out.Timeout
 		*out = new(v1.Duration)
 		**out = **in
+	}
+	if in.Bindings != nil {
+		in, out := &in.Bindings, &out.Bindings
+		*out = make([]Binding, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -398,6 +426,13 @@ func (in *Error) DeepCopyInto(out *Error) {
 		in, out := &in.Timeout, &out.Timeout
 		*out = new(v1.Duration)
 		**out = **in
+	}
+	if in.Bindings != nil {
+		in, out := &in.Bindings, &out.Bindings
+		*out = make([]Binding, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	in.FileRefOrCheck.DeepCopyInto(&out.FileRefOrCheck)
 	if in.Template != nil {
@@ -727,6 +762,13 @@ func (in *Patch) DeepCopyInto(out *Patch) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.Bindings != nil {
+		in, out := &in.Bindings, &out.Bindings
+		*out = make([]Binding, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -983,6 +1025,13 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 		in, out := &in.Template, &out.Template
 		*out = new(bool)
 		**out = **in
+	}
+	if in.Bindings != nil {
+		in, out := &in.Bindings, &out.Bindings
+		*out = make([]Binding, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	if in.Try != nil {
 		in, out := &in.Try, &out.Try

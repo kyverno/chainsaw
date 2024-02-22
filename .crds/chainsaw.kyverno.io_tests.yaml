@@ -35,6 +35,7 @@ spec:
             description: Test spec.
             properties:
               bindings:
+                description: Bindings defines additional binding key/values.
                 items:
                   description: Binding represents a key/value set as a binding in
                     an executing test.
@@ -91,6 +92,23 @@ spec:
                   description: TestSpecStep contains the test step definition used
                     in a test spec.
                   properties:
+                    bindings:
+                      description: Bindings defines additional binding key/values.
+                      items:
+                        description: Binding represents a key/value set as a binding
+                          in an executing test.
+                        properties:
+                          name:
+                            description: Name the name of the binding.
+                            type: string
+                          value:
+                            description: Value value of the binding.
+                            x-kubernetes-preserve-unknown-fields: true
+                        required:
+                        - name
+                        - value
+                        type: object
+                      type: array
                     catch:
                       description: Catch defines what the step will execute when an
                         error happens.
@@ -133,6 +151,23 @@ spec:
                           delete:
                             description: Delete represents a deletion operation.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
@@ -422,6 +457,23 @@ spec:
                           delete:
                             description: Delete represents a deletion operation.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
@@ -708,6 +760,23 @@ spec:
                               like configuration settings or any other resources that
                               need to be available during the test.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
@@ -763,6 +832,23 @@ spec:
                               It checks whether the conditions specified in the assertion
                               hold true.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
@@ -828,6 +914,23 @@ spec:
                           create:
                             description: Create represents a creation operation.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
@@ -881,6 +984,23 @@ spec:
                           delete:
                             description: Delete represents a deletion operation.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
@@ -957,6 +1077,23 @@ spec:
                               will consider them as expected; otherwise, they will
                               be treated as test failures.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
@@ -983,6 +1120,23 @@ spec:
                           patch:
                             description: Patch represents a patch operation.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
