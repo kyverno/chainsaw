@@ -22,6 +22,10 @@ type TestStepSpec struct {
 	// +optional
 	Template *bool `json:"template,omitempty"`
 
+	// Bindings defines additional binding key/values.
+	// +optional
+	Bindings []Binding `json:"bindings,omitempty"`
+
 	// Try defines what the step will try to execute.
 	// +kubebuilder:validation:MinItems:=1
 	Try []Operation `json:"try"`

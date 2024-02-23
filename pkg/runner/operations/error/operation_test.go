@@ -213,11 +213,10 @@ func Test_operationError(t *testing.T) {
 				tt.client,
 				tt.expected,
 				nspacer,
-				nil,
 				false,
 			)
 			logger := &tlogging.FakeLogger{}
-			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t))
+			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t), nil)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

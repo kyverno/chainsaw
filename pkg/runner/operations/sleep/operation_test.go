@@ -37,7 +37,7 @@ func Test_operation_Exec(t *testing.T) {
 				tt.sleep,
 			)
 			logger := &tlogging.FakeLogger{}
-			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t))
+			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t), nil)
 			assert.NoError(t, err)
 			assert.Equal(t, tt.expectedLogs, logger.Logs)
 		})

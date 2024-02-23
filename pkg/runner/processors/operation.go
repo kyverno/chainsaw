@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -14,6 +16,26 @@ type operation struct {
 	timeout         *time.Duration
 	operation       operations.Operation
 	operationReport *report.OperationReport
+	bindings        binding.Bindings
+	variables       []v1alpha1.Binding
+}
+
+func newOperation(
+	continueOnError bool,
+	timeout *time.Duration,
+	op operations.Operation,
+	operationReport *report.OperationReport,
+	bindings binding.Bindings,
+	variables ...v1alpha1.Binding,
+) operation {
+	return operation{
+		continueOnError: continueOnError,
+		timeout:         timeout,
+		operation:       op,
+		operationReport: operationReport,
+		bindings:        bindings,
+		variables:       variables,
+	}
 }
 
 func (o operation) execute(ctx context.Context) {
@@ -22,7 +44,16 @@ func (o operation) execute(ctx context.Context) {
 		ctx = toCtx
 		defer cancel()
 	}
-	if err := o.operation.Exec(ctx); err != nil {
+	bindings, err := registerBindings(ctx, o.bindings, o.variables...)
+	if err != nil {
+		t := testing.FromContext(ctx)
+		if o.continueOnError {
+			t.Fail()
+		} else {
+			t.FailNow()
+		}
+	}
+	if err := o.operation.Exec(ctx, bindings); err != nil {
 		t := testing.FromContext(ctx)
 		if o.operationReport != nil {
 			o.operationReport.MarkOperationEnd(false, err.Error())

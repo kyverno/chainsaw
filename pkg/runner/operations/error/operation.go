@@ -23,7 +23,6 @@ type operation struct {
 	client     client.Client
 	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
-	bindings   binding.Bindings
 	template   bool
 }
 
@@ -31,29 +30,27 @@ func New(
 	client client.Client,
 	expected unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
-	bindings binding.Bindings,
 	template bool,
 ) operations.Operation {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
 	return &operation{
 		client:     client,
 		base:       expected,
 		namespacer: namespacer,
-		bindings:   bindings,
 		template:   template,
 	}
 }
 
-func (o *operation) Exec(ctx context.Context) (err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err error) {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	obj := o.base
 	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
 		internal.LogEnd(logger, logging.Error, err)
 	}()
 	if o.template {
-		if err := template.ResourceRef(ctx, &obj, o.bindings); err != nil {
+		if err := template.ResourceRef(ctx, &obj, bindings); err != nil {
 			return err
 		}
 	}
@@ -63,12 +60,11 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		}
 	}
 	internal.LogStart(logger, logging.Error)
-	return o.execute(ctx, obj)
+	return o.execute(ctx, bindings, obj)
 }
 
-func (o *operation) execute(ctx context.Context, obj unstructured.Unstructured) error {
+func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
 	var lastErrs []error
-	bindings := o.bindings
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
 		defer func() {

@@ -42,6 +42,10 @@ type TestSpec struct {
 	// +optional
 	NamespaceTemplate *Any `json:"namespaceTemplate,omitempty"`
 
+	// Bindings defines additional binding key/values.
+	// +optional
+	Bindings []Binding `json:"bindings,omitempty"`
+
 	// Steps defining the test.
 	Steps []TestSpecStep `json:"steps"`
 

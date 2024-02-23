@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "chainsaw test",
+            "name": "test",
             "type": "go",
             "request": "launch",
             "mode": "auto",
@@ -17,6 +17,21 @@
                 "--config",
                 "./testdata/e2e/config.yaml",
             ]
-        }
+        },
+        {
+            "name": "assert",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}",
+            "args": [
+                "assert",
+                "-r",
+                "./resource.yaml",
+                "-f",
+                "./assert.yaml",
+            ]
+        },
     ]
 }

@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"time"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	ctrlClient "github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
@@ -86,6 +86,7 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 		}
 	}
 	if opts.resourcePath != "" {
+		opts.timeout.Duration = time.Second
 		ressources, err := resource.Load(opts.resourcePath, false)
 		if err != nil {
 			return fmt.Errorf("failed to load file '%s': %w", opts.resourcePath, err)
@@ -133,6 +134,6 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 func assert(opts options, client ctrlClient.Client, resource unstructured.Unstructured, namespacer nspacer.Namespacer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), opts.timeout.Duration)
 	defer cancel()
-	op := opassert.New(client, resource, namespacer, binding.NewBindings(), false)
-	return op.Exec(ctx)
+	op := opassert.New(client, resource, namespacer, false)
+	return op.Exec(ctx, nil)
 }

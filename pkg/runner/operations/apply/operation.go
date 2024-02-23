@@ -26,7 +26,6 @@ type operation struct {
 	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
-	bindings   binding.Bindings
 	template   bool
 	expect     []v1alpha1.Expectation
 }
@@ -36,25 +35,23 @@ func New(
 	obj unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
 	cleaner cleanup.Cleaner,
-	bindings binding.Bindings,
 	template bool,
 	expect []v1alpha1.Expectation,
 ) operations.Operation {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
 	return &operation{
 		client:     client,
 		base:       obj,
 		namespacer: namespacer,
 		cleaner:    cleaner,
-		bindings:   bindings,
 		template:   template,
 		expect:     expect,
 	}
 }
 
-func (o *operation) Exec(ctx context.Context) (err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err error) {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	obj := o.base
 	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
@@ -64,7 +61,7 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		template := v1alpha1.Any{
 			Value: obj.UnstructuredContent(),
 		}
-		if merged, err := mutate.Merge(ctx, obj, o.bindings, template); err != nil {
+		if merged, err := mutate.Merge(ctx, obj, bindings, template); err != nil {
 			return err
 		} else {
 			obj = merged
@@ -74,13 +71,13 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		return err
 	}
 	internal.LogStart(logger, logging.Apply)
-	return o.execute(ctx, obj)
+	return o.execute(ctx, bindings, obj)
 }
 
-func (o *operation) execute(ctx context.Context, obj unstructured.Unstructured) error {
+func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
 	var lastErr error
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
-		lastErr = o.tryApplyResource(ctx, obj)
+		lastErr = o.tryApplyResource(ctx, bindings, obj)
 		// TODO: determine if the error can be retried
 		return lastErr == nil, nil
 	})
@@ -93,20 +90,20 @@ func (o *operation) execute(ctx context.Context, obj unstructured.Unstructured) 
 	return err
 }
 
-func (o *operation) tryApplyResource(ctx context.Context, obj unstructured.Unstructured) error {
+func (o *operation) tryApplyResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 	err := o.client.Get(ctx, client.ObjectKey(&obj), &actual)
 	if err == nil {
-		return o.updateResource(ctx, &actual, obj)
+		return o.updateResource(ctx, bindings, &actual, obj)
 	}
 	if kerrors.IsNotFound(err) {
-		return o.createResource(ctx, obj)
+		return o.createResource(ctx, bindings, obj)
 	}
 	return err
 }
 
-func (o *operation) updateResource(ctx context.Context, actual *unstructured.Unstructured, obj unstructured.Unstructured) error {
+func (o *operation) updateResource(ctx context.Context, bindings binding.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) error {
 	patched, err := client.PatchObject(actual, &obj)
 	if err != nil {
 		return err
@@ -115,19 +112,18 @@ func (o *operation) updateResource(ctx context.Context, actual *unstructured.Uns
 	if err != nil {
 		return err
 	}
-	return o.handleCheck(ctx, obj, o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes)))
+	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes)))
 }
 
-func (o *operation) createResource(ctx context.Context, obj unstructured.Unstructured) error {
+func (o *operation) createResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
 	err := o.client.Create(ctx, &obj)
 	if err == nil && o.cleaner != nil {
 		o.cleaner(obj, o.client)
 	}
-	return o.handleCheck(ctx, obj, err)
+	return o.handleCheck(ctx, bindings, obj, err)
 }
 
-func (o *operation) handleCheck(ctx context.Context, obj unstructured.Unstructured, err error) error {
-	bindings := o.bindings
+func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured, err error) error {
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {

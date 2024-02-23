@@ -99,11 +99,13 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				}
 				if !cleanup.Skip(p.config.SkipDelete, nil, nil) {
 					t.Cleanup(func() {
-						operation := operation{
-							continueOnError: false,
-							timeout:         timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							operation:       opdelete.New(cluster, object, nspacer, bindings, false),
-						}
+						operation := newOperation(
+							false,
+							timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
+							opdelete.New(cluster, object, nspacer, false),
+							nil,
+							bindings,
+						)
 						operation.execute(ctx)
 					})
 				}

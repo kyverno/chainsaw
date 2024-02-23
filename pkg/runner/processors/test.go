@@ -111,10 +111,14 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 			t.SkipNow()
 		}
 	}
+	bindings, err := registerBindings(ctx, p.bindings, p.test.Spec.Bindings...)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		t.FailNow()
+	}
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
-	bindings := p.bindings
 	_, cluster := p.clusters.client(p.test.Spec.Cluster)
 	if cluster != nil {
 		bindings = bindings.Register("$client", binding.NewBinding(cluster))
@@ -152,11 +156,13 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 				}
 				if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, nil) {
 					t.Cleanup(func() {
-						operation := operation{
-							continueOnError: false,
-							timeout:         timeout.Get(nil, p.timeouts.CleanupDuration()),
-							operation:       opdelete.New(cluster, object, nspacer, bindings, false),
-						}
+						operation := newOperation(
+							false,
+							timeout.Get(nil, p.timeouts.CleanupDuration()),
+							opdelete.New(cluster, object, nspacer, false),
+							nil,
+							bindings,
+						)
 						operation.execute(cleanupCtx)
 					})
 				}

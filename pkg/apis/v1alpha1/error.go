@@ -11,6 +11,10 @@ type Error struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Bindings defines additional binding key/values.
+	// +optional
+	Bindings []Binding `json:"bindings,omitempty"`
+
 	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
