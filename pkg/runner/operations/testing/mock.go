@@ -1,11 +1,15 @@
 package testing
 
-import "context"
+import (
+	"context"
+
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
+)
 
 type MockOperation struct {
-	ExecFn func(ctx context.Context) error
+	ExecFn func(context.Context, binding.Bindings) error
 }
 
-func (m MockOperation) Exec(ctx context.Context) error {
-	return m.ExecFn(ctx)
+func (m MockOperation) Exec(ctx context.Context, bindings binding.Bindings) error {
+	return m.ExecFn(ctx, bindings)
 }

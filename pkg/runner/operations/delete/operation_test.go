@@ -170,12 +170,11 @@ func Test_operationDelete(t *testing.T) {
 				tt.client,
 				tt.object,
 				nspacer,
-				nil,
 				false,
 				tt.expect...,
 			)
 			logger := &tlogging.FakeLogger{}
-			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t))
+			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t), nil)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

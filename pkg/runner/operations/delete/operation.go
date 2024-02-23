@@ -22,7 +22,6 @@ type operation struct {
 	client     client.Client
 	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
-	bindings   binding.Bindings
 	template   bool
 	expect     []v1alpha1.Expectation
 }
@@ -31,24 +30,22 @@ func New(
 	client client.Client,
 	obj unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
-	bindings binding.Bindings,
 	template bool,
 	expect ...v1alpha1.Expectation,
 ) operations.Operation {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
 	return &operation{
 		client:     client,
 		base:       obj,
 		namespacer: namespacer,
-		bindings:   bindings,
 		template:   template,
 		expect:     expect,
 	}
 }
 
-func (o *operation) Exec(ctx context.Context) (err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err error) {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	obj := o.base
 	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
@@ -58,7 +55,7 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		template := v1alpha1.Any{
 			Value: obj.UnstructuredContent(),
 		}
-		if merged, err := mutate.Merge(ctx, obj, o.bindings, template); err != nil {
+		if merged, err := mutate.Merge(ctx, obj, bindings, template); err != nil {
 			return err
 		} else {
 			obj = merged
@@ -68,15 +65,15 @@ func (o *operation) Exec(ctx context.Context) (err error) {
 		return err
 	}
 	internal.LogStart(logger, logging.Delete)
-	return o.execute(ctx, obj)
+	return o.execute(ctx, bindings, obj)
 }
 
-func (o *operation) execute(ctx context.Context, obj unstructured.Unstructured) error {
+func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
 	resources, err := o.getResourcesToDelete(ctx, obj)
 	if err != nil {
 		return err
 	}
-	return o.deleteResources(ctx, resources...)
+	return o.deleteResources(ctx, bindings, resources...)
 }
 
 func (o *operation) getResourcesToDelete(ctx context.Context, obj unstructured.Unstructured) ([]unstructured.Unstructured, error) {
@@ -90,7 +87,7 @@ func (o *operation) getResourcesToDelete(ctx context.Context, obj unstructured.U
 	return resources, nil
 }
 
-func (o *operation) deleteResources(ctx context.Context, resources ...unstructured.Unstructured) error {
+func (o *operation) deleteResources(ctx context.Context, bindings binding.Bindings, resources ...unstructured.Unstructured) error {
 	var errs []error
 	var deleted []unstructured.Unstructured
 	for _, resource := range resources {
@@ -100,7 +97,7 @@ func (o *operation) deleteResources(ctx context.Context, resources ...unstructur
 			deleted = append(deleted, resource)
 		}
 		// check if the result was the expected one
-		if err := o.handleCheck(ctx, resource, err); err != nil {
+		if err := o.handleCheck(ctx, bindings, resource, err); err != nil {
 			errs = append(errs, err)
 		}
 	}
@@ -138,8 +135,7 @@ func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.U
 	})
 }
 
-func (o *operation) handleCheck(ctx context.Context, resource unstructured.Unstructured, err error) error {
-	bindings := o.bindings
+func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, resource unstructured.Unstructured, err error) error {
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {

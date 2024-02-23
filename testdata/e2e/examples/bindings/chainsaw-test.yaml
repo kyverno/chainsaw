@@ -11,11 +11,12 @@ spec:
   - bindings:
     - name: b
       value: 2
-    - name: c
-      value: ($a + $b)
     try:
-    - apply:
+    -  apply:
         template: true
+        bindings:
+        - name: c
+          value: ($a + $b)
         resource:
           apiVersion: v1
           kind: ConfigMap
@@ -26,14 +27,15 @@ spec:
   - bindings:
     - name: b
       value: 2
-    - name: c
-      value: ($a + $b)
     try:
     - assert:
+        bindings:
+        - name: c
+          value: ($a + $b)
         resource:
           apiVersion: v1
           kind: ConfigMap
           metadata:
             name: quick-start
           data:
-            foo: '3'
+            foo: (to_string($c))

@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	mock "github.com/kyverno/chainsaw/pkg/runner/operations/testing"
@@ -71,7 +72,7 @@ func Test_Cleaner_Run(t *testing.T) {
 					continueOnError: true,
 					timeout:         nil,
 					operation: mock.MockOperation{
-						ExecFn: func(ctx context.Context) error {
+						ExecFn: func(_ context.Context, _ binding.Bindings) error {
 							return nil
 						},
 					},
