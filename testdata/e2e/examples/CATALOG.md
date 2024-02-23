@@ -3,6 +3,7 @@
 - [array-assertions](array-assertion/README.md)
 - [assertion-tree](assertion-tree/README.md)
 - [basic](basic/README.md)
+- [bindings](bindings/README.md)
 - [catch](catch/README.md)
 - [command-output](command-output/README.md)
 - [delete](delete/README.md)

@@ -316,11 +316,10 @@ func Test_operationAssert(t *testing.T) {
 				tt.client,
 				tt.expected,
 				nspacer,
-				nil,
 				false,
 			)
 			logger := &tlogging.FakeLogger{}
-			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t))
+			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t), nil)
 			if tt.expectErr {
 				assert.NotNil(t, err)
 			} else {

@@ -298,11 +298,10 @@ func Test_apply(t *testing.T) {
 				tt.object,
 				nil,
 				nil,
-				nil,
 				false,
 				tt.expect,
 			)
-			err := operation.Exec(ctx)
+			err := operation.Exec(ctx, nil)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

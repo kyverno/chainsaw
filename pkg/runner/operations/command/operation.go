@@ -23,7 +23,6 @@ type operation struct {
 	command   v1alpha1.Command
 	basePath  string
 	namespace string
-	bindings  binding.Bindings
 	cfg       *rest.Config
 }
 
@@ -31,22 +30,20 @@ func New(
 	command v1alpha1.Command,
 	basePath string,
 	namespace string,
-	bindings binding.Bindings,
 	cfg *rest.Config,
 ) operations.Operation {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
 	return &operation{
 		command:   command,
 		basePath:  basePath,
 		namespace: namespace,
-		bindings:  bindings,
 		cfg:       cfg,
 	}
 }
 
-func (o *operation) Exec(ctx context.Context) (_err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_err error) {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	logger := internal.GetLogger(ctx, nil)
 	defer func() {
 		internal.LogEnd(logger, logging.Command, _err)
@@ -59,7 +56,7 @@ func (o *operation) Exec(ctx context.Context) (_err error) {
 		return err
 	}
 	internal.LogStart(logger, logging.Command, logging.Section("COMMAND", cmd.String()))
-	return o.execute(ctx, cmd)
+	return o.execute(ctx, bindings, cmd)
 }
 
 func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, context.CancelFunc, error) {
@@ -99,7 +96,7 @@ func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, context.Cance
 	return cmd, cancel, nil
 }
 
-func (o *operation) execute(ctx context.Context, cmd *exec.Cmd) error {
+func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd *exec.Cmd) error {
 	logger := logging.FromContext(ctx)
 	var output internal.CommandOutput
 	if !o.command.SkipLogOutput {
@@ -115,7 +112,7 @@ func (o *operation) execute(ctx context.Context, cmd *exec.Cmd) error {
 	if o.command.Check == nil || o.command.Check.Value == nil {
 		return err
 	}
-	bindings := o.bindings.Register("$stdout", binding.NewBinding(output.Out()))
+	bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
 	bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))

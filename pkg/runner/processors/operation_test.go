@@ -5,6 +5,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	mock "github.com/kyverno/chainsaw/pkg/runner/operations/testing"
@@ -24,7 +25,7 @@ func TestOperation_Execute(t *testing.T) {
 		{
 			name: "operation fails but continues",
 			operation: mock.MockOperation{
-				ExecFn: func(ctx context.Context) error {
+				ExecFn: func(_ context.Context, _ binding.Bindings) error {
 					return errors.New("operation failed")
 				},
 			},
@@ -36,7 +37,7 @@ func TestOperation_Execute(t *testing.T) {
 		{
 			name: "operation fails and don't continues",
 			operation: mock.MockOperation{
-				ExecFn: func(ctx context.Context) error {
+				ExecFn: func(_ context.Context, _ binding.Bindings) error {
 					return errors.New("operation failed")
 				},
 			},
@@ -47,7 +48,7 @@ func TestOperation_Execute(t *testing.T) {
 		{
 			name: "operation succeeds",
 			operation: mock.MockOperation{
-				ExecFn: func(ctx context.Context) error {
+				ExecFn: func(_ context.Context, _ binding.Bindings) error {
 					return nil
 				},
 			},

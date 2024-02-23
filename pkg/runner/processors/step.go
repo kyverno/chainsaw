@@ -25,7 +25,7 @@ import (
 	oppatch "github.com/kyverno/chainsaw/pkg/runner/operations/patch"
 	opscript "github.com/kyverno/chainsaw/pkg/runner/operations/script"
 	opsleep "github.com/kyverno/chainsaw/pkg/runner/operations/sleep"
-	"github.com/kyverno/chainsaw/pkg/runner/template"
+	runnertemplate "github.com/kyverno/chainsaw/pkg/runner/template"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
@@ -85,17 +85,22 @@ type stepProcessor struct {
 func (p *stepProcessor) Run(ctx context.Context) {
 	t := testing.FromContext(ctx)
 	logger := logging.FromContext(ctx)
-	try, err := p.tryOperations(ctx, p.step.TestStepSpec.Try...)
+	bindings, err := registerBindings(ctx, p.bindings, p.step.Bindings...)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		t.FailNow()
+	}
+	try, err := p.tryOperations(ctx, bindings, p.step.TestStepSpec.Try...)
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
-	catch, err := p.catchOperations(ctx, p.step.TestStepSpec.Catch...)
+	catch, err := p.catchOperations(ctx, bindings, p.step.TestStepSpec.Catch...)
 	if err != nil {
 		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
-	finally, err := p.finallyOperations(ctx, p.step.TestStepSpec.Finally...)
+	finally, err := p.finallyOperations(ctx, bindings, p.step.TestStepSpec.Finally...)
 	if err != nil {
 		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
@@ -137,7 +142,7 @@ func (p *stepProcessor) Run(ctx context.Context) {
 	}
 }
 
-func (p *stepProcessor) tryOperations(ctx context.Context, handlers ...v1alpha1.Operation) ([]operation, error) {
+func (p *stepProcessor) tryOperations(ctx context.Context, bindings binding.Bindings, handlers ...v1alpha1.Operation) ([]operation, error) {
 	var ops []operation
 	for _, handler := range handlers {
 		register := func(o ...operation) {
@@ -148,47 +153,44 @@ func (p *stepProcessor) tryOperations(ctx context.Context, handlers ...v1alpha1.
 			}
 		}
 		if handler.Apply != nil {
-			loaded, err := p.applyOperation(ctx, *handler.Apply)
+			loaded, err := p.applyOperation(ctx, bindings, *handler.Apply)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Assert != nil {
-			loaded, err := p.assertOperation(ctx, *handler.Assert)
+			loaded, err := p.assertOperation(ctx, bindings, *handler.Assert)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, *handler.Command))
+			register(p.commandOperation(ctx, bindings, *handler.Command))
 		} else if handler.Create != nil {
-			loaded, err := p.createOperation(ctx, *handler.Create)
+			loaded, err := p.createOperation(ctx, bindings, *handler.Create)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(ctx, *handler.Delete)
-			if err != nil {
-				return nil, err
-			}
-			register(*loaded)
+			loaded := p.deleteOperation(ctx, bindings, *handler.Delete)
+			register(loaded)
 		} else if handler.Error != nil {
-			loaded, err := p.errorOperation(ctx, *handler.Error)
+			loaded, err := p.errorOperation(ctx, bindings, *handler.Error)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Patch != nil {
-			loaded, err := p.patchOperation(ctx, *handler.Patch)
+			loaded, err := p.patchOperation(ctx, bindings, *handler.Patch)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, *handler.Script))
+			register(p.scriptOperation(ctx, bindings, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(ctx, *handler.Sleep))
+			register(p.sleepOperation(ctx, bindings, *handler.Sleep))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -196,7 +198,7 @@ func (p *stepProcessor) tryOperations(ctx context.Context, handlers ...v1alpha1.
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha1.Catch) ([]operation, error) {
+func (p *stepProcessor) catchOperations(ctx context.Context, bindings binding.Bindings, handlers ...v1alpha1.Catch) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -210,7 +212,7 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd))
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Events != nil {
 			cmd, err := kubectl.Get(&v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -222,31 +224,28 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd))
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Describe != nil {
 			cmd, err := kubectl.Describe(handler.Describe)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd))
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Get != nil {
 			cmd, err := kubectl.Get(handler.Get)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd))
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(ctx, *handler.Delete)
-			if err != nil {
-				return nil, err
-			}
-			register(*loaded)
+			loaded := p.deleteOperation(ctx, bindings, *handler.Delete)
+			register(loaded)
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, *handler.Command))
+			register(p.commandOperation(ctx, bindings, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, *handler.Script))
+			register(p.scriptOperation(ctx, bindings, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(ctx, *handler.Sleep))
+			register(p.sleepOperation(ctx, bindings, *handler.Sleep))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -254,7 +253,7 @@ func (p *stepProcessor) catchOperations(ctx context.Context, handlers ...v1alpha
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alpha1.Finally) ([]operation, error) {
+func (p *stepProcessor) finallyOperations(ctx context.Context, bindings binding.Bindings, handlers ...v1alpha1.Finally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -268,7 +267,7 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd))
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Events != nil {
 			cmd, err := kubectl.Get(&v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -280,31 +279,28 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd))
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Describe != nil {
 			cmd, err := kubectl.Describe(handler.Describe)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd))
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Get != nil {
 			cmd, err := kubectl.Get(handler.Get)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, *cmd))
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(ctx, *handler.Delete)
-			if err != nil {
-				return nil, err
-			}
-			register(*loaded)
+			loaded := p.deleteOperation(ctx, bindings, *handler.Delete)
+			register(loaded)
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, *handler.Command))
+			register(p.commandOperation(ctx, bindings, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, *handler.Script))
+			register(p.scriptOperation(ctx, bindings, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(ctx, *handler.Sleep))
+			register(p.sleepOperation(ctx, bindings, *handler.Sleep))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -312,7 +308,7 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, handlers ...v1alp
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -323,22 +319,26 @@ func (p *stepProcessor) applyOperation(ctx context.Context, op v1alpha1.Apply) (
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	_, cluster := p.getClient(op.Cluster, dryRun)
-	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
-		ops = append(ops, operation{
-			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			operation: opapply.New(cluster, resource, p.namespacer, p.getCleaner(ctx, dryRun), bindings, template, op.Expect),
-		})
+		ops = append(ops, newOperation(
+			false,
+			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
+			opapply.New(cluster, resource, p.namespacer, p.getCleaner(ctx, dryRun), template, op.Expect),
+			nil,
+			bindings,
+			op.Bindings...,
+		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert) ([]operation, error) {
+func (p *stepProcessor) assertOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Assert) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
 	if err != nil {
 		return nil, err
@@ -348,20 +348,23 @@ func (p *stepProcessor) assertOperation(ctx context.Context, op v1alpha1.Assert)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
-	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	_, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
-	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
-		ops = append(ops, operation{
-			timeout:         timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
-			operation:       opassert.New(cluster, resource, p.namespacer, bindings, template),
-			operationReport: operationReport,
-		})
+		ops = append(ops, newOperation(
+			false,
+			timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
+			opassert.New(cluster, resource, p.namespacer, template),
+			operationReport,
+			bindings,
+			op.Bindings...,
+		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(ctx context.Context, op v1alpha1.Command) operation {
+func (p *stepProcessor) commandOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Command) operation {
 	operationReport := report.NewOperation("Command ", report.OperationTypeCommand)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
@@ -371,15 +374,17 @@ func (p *stepProcessor) commandOperation(ctx context.Context, op v1alpha1.Comman
 		ns = p.namespacer.GetNamespace()
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
-	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
-	return operation{
-		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		operation:       opcommand.New(op, p.test.BasePath, ns, bindings, config),
-		operationReport: operationReport,
-	}
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	return newOperation(
+		false,
+		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		opcommand.New(op, p.test.BasePath, ns, config),
+		operationReport,
+		bindings,
+	)
 }
 
-func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -390,22 +395,26 @@ func (p *stepProcessor) createOperation(ctx context.Context, op v1alpha1.Create)
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	_, cluster := p.getClient(op.Cluster, dryRun)
-	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
-		ops = append(ops, operation{
-			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			operation: opcreate.New(cluster, resource, p.namespacer, p.getCleaner(ctx, dryRun), bindings, template, op.Expect),
-		})
+		ops = append(ops, newOperation(
+			false,
+			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
+			opcreate.New(cluster, resource, p.namespacer, p.getCleaner(ctx, dryRun), template, op.Expect),
+			nil,
+			bindings,
+			op.Bindings...,
+		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete) (*operation, error) {
+func (p *stepProcessor) deleteOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Delete) operation {
 	var resource unstructured.Unstructured
 	resource.SetAPIVersion(op.APIVersion)
 	resource.SetKind(op.Kind)
@@ -416,17 +425,20 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, op v1alpha1.Delete)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
-	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	_, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
-	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
-	return &operation{
-		timeout:         timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
-		operation:       opdelete.New(cluster, resource, p.namespacer, bindings, template, op.Expect...),
-		operationReport: operationReport,
-	}, nil
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	return newOperation(
+		false,
+		timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
+		opdelete.New(cluster, resource, p.namespacer, template, op.Expect...),
+		operationReport,
+		bindings,
+		op.Bindings...,
+	)
 }
 
-func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) ([]operation, error) {
+func (p *stepProcessor) errorOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Error) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
 	if err != nil {
 		return nil, err
@@ -436,20 +448,23 @@ func (p *stepProcessor) errorOperation(ctx context.Context, op v1alpha1.Error) (
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
-	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	_, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
-	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
-		ops = append(ops, operation{
-			timeout:         timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
-			operation:       operror.New(cluster, resource, p.namespacer, bindings, template),
-			operationReport: operationReport,
-		})
+		ops = append(ops, newOperation(
+			false,
+			timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
+			operror.New(cluster, resource, p.namespacer, template),
+			operationReport,
+			bindings,
+			op.Bindings...,
+		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) patchOperation(ctx context.Context, op v1alpha1.Patch) ([]operation, error) {
+func (p *stepProcessor) patchOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Patch) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -460,22 +475,26 @@ func (p *stepProcessor) patchOperation(ctx context.Context, op v1alpha1.Patch) (
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	template := template.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	_, cluster := p.getClient(op.Cluster, dryRun)
-	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
-		ops = append(ops, operation{
-			timeout:   timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			operation: oppatch.New(cluster, resource, p.namespacer, bindings, template, op.Expect),
-		})
+		ops = append(ops, newOperation(
+			false,
+			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
+			oppatch.New(cluster, resource, p.namespacer, template, op.Expect),
+			nil,
+			bindings,
+			op.Bindings...,
+		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) scriptOperation(ctx context.Context, op v1alpha1.Script) operation {
+func (p *stepProcessor) scriptOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Script) operation {
 	operationReport := report.NewOperation("Script ", report.OperationTypeScript)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
@@ -485,23 +504,28 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, op v1alpha1.Script)
 		ns = p.namespacer.GetNamespace()
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
-	bindings := p.bindings.Register("$client", binding.NewBinding(cluster))
-	return operation{
-		timeout:         timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		operation:       opscript.New(op, p.test.BasePath, ns, bindings, config),
-		operationReport: operationReport,
-	}
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	return newOperation(
+		false,
+		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		opscript.New(op, p.test.BasePath, ns, config),
+		operationReport,
+		bindings,
+	)
 }
 
-func (p *stepProcessor) sleepOperation(ctx context.Context, sleep v1alpha1.Sleep) operation {
+func (p *stepProcessor) sleepOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Sleep) operation {
 	operationReport := report.NewOperation("Sleep ", report.OperationTypeSleep)
 	if p.stepReport != nil {
 		p.stepReport.AddOperation(operationReport)
 	}
-	return operation{
-		operation:       opsleep.New(sleep),
-		operationReport: operationReport,
-	}
+	return newOperation(
+		false,
+		nil,
+		opsleep.New(op),
+		operationReport,
+		bindings,
+	)
 }
 
 func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.FileRefOrCheck) ([]unstructured.Unstructured, error) {

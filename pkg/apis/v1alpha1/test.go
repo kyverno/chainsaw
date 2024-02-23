@@ -9,7 +9,7 @@ import (
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:scope=Cluster
 
-// Test is the resource that contains aa test definition.
+// Test is the resource that contains a test definition.
 type Test struct {
 	metav1.TypeMeta `json:",inline"`
 

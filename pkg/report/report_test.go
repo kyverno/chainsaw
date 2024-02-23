@@ -4,9 +4,11 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
+	petName "github.com/dustinkirkland/golang-petname"
 	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 )
@@ -109,16 +111,16 @@ func TestSaveReportBasedOnType(t *testing.T) {
 			report := NewTests("SampleTestSuite")
 			report.AddTest(NewTest("Test1"))
 
-			reportName := filepath.Join(t.TempDir(), "test_report")
-			err := report.SaveReportBasedOnType(tc.format, "", reportName)
+			mockReportName := petName.Name()
+			mockReportPath := t.TempDir()
+			err := report.SaveReportBasedOnType(tc.format, mockReportPath, mockReportName)
 
 			if tc.expectError {
 				assert.Error(t, err, "Expected an error")
 			} else {
 				assert.NoError(t, err, "Expected no error")
-
-				filePath := reportName + "." + tc.fileSuffix
-				content, err := os.ReadFile(filePath)
+				fullReportPath := filepath.Join(mockReportPath, strings.Join([]string{mockReportName, tc.fileSuffix}, "."))
+				content, err := os.ReadFile(fullReportPath)
 				assert.NoError(t, err, "Failed to read saved file")
 				assert.NotEmpty(t, content, "File should not be empty")
 			}

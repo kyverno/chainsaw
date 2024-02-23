@@ -1,5 +1,5 @@
 {
-  "description": "Test is the resource that contains aa test definition.",
+  "description": "Test is the resource that contains a test definition.",
   "type": "object",
   "required": [
     "spec"
@@ -279,6 +279,34 @@
         "steps"
       ],
       "properties": {
+        "bindings": {
+          "description": "Bindings defines additional binding key/values.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "description": "Binding represents a key/value set as a binding in an executing test.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "name",
+              "value"
+            ],
+            "properties": {
+              "name": {
+                "description": "Name the name of the binding.",
+                "type": "string"
+              },
+              "value": {
+                "description": "Value value of the binding.",
+                "x-kubernetes-preserve-unknown-fields": true
+              }
+            }
+          }
+        },
         "cluster": {
           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
           "type": [
@@ -352,6 +380,34 @@
               "try"
             ],
             "properties": {
+              "bindings": {
+                "description": "Bindings defines additional binding key/values.",
+                "type": [
+                  "array",
+                  "null"
+                ],
+                "items": {
+                  "description": "Binding represents a key/value set as a binding in an executing test.",
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "required": [
+                    "name",
+                    "value"
+                  ],
+                  "properties": {
+                    "name": {
+                      "description": "Name the name of the binding.",
+                      "type": "string"
+                    },
+                    "value": {
+                      "description": "Value value of the binding.",
+                      "x-kubernetes-preserve-unknown-fields": true
+                    }
+                  }
+                }
+              },
               "catch": {
                 "description": "Catch defines what the step will execute when an error happens.",
                 "type": [
@@ -429,6 +485,34 @@
                         "ref"
                       ],
                       "properties": {
+                        "bindings": {
+                          "description": "Bindings defines additional binding key/values.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
@@ -915,6 +999,34 @@
                         "ref"
                       ],
                       "properties": {
+                        "bindings": {
+                          "description": "Bindings defines additional binding key/values.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
@@ -1400,6 +1512,34 @@
                         "null"
                       ],
                       "properties": {
+                        "bindings": {
+                          "description": "Bindings defines additional binding key/values.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
@@ -1476,6 +1616,34 @@
                         "null"
                       ],
                       "properties": {
+                        "bindings": {
+                          "description": "Bindings defines additional binding key/values.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
@@ -1578,6 +1746,34 @@
                         "null"
                       ],
                       "properties": {
+                        "bindings": {
+                          "description": "Bindings defines additional binding key/values.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
@@ -1657,6 +1853,34 @@
                         "ref"
                       ],
                       "properties": {
+                        "bindings": {
+                          "description": "Bindings defines additional binding key/values.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
@@ -1766,6 +1990,34 @@
                         "null"
                       ],
                       "properties": {
+                        "bindings": {
+                          "description": "Bindings defines additional binding key/values.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
@@ -1807,6 +2059,34 @@
                         "null"
                       ],
                       "properties": {
+                        "bindings": {
+                          "description": "Bindings defines additional binding key/values.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [

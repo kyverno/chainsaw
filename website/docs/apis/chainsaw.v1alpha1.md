@@ -28,7 +28,7 @@ auto_generated: true
 
 ## `Test`     {#chainsaw-kyverno-io-v1alpha1-Test}
 
-<p>Test is the resource that contains aa test definition.</p>
+<p>Test is the resource that contains a test definition.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -63,6 +63,7 @@ should be applied during testing.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the resources to be applied.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
@@ -82,9 +83,31 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `FileRefOrCheck` | [`FileRefOrCheck`](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck) | :white_check_mark: | :white_check_mark: | <p>FileRefOrAssert provides a reference to the assertion.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+
+## `Binding`     {#chainsaw-kyverno-io-v1alpha1-Binding}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
+- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
+<p>Binding represents a key/value set as a binding in an executing test.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `name` | `string` | :white_check_mark: |  | <p>Name the name of the binding.</p> |
+| `value` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Value value of the binding.</p> |
 
 ## `Catch`     {#chainsaw-kyverno-io-v1alpha1-Catch}
 
@@ -181,6 +204,7 @@ If a resource already exists in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be created.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
@@ -201,6 +225,7 @@ If a resource already exists in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: |  | <p>ObjectReference determines objects to be deleted.</p> |
@@ -237,6 +262,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `FileRefOrCheck` | [`FileRefOrCheck`](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck) | :white_check_mark: | :white_check_mark: | <p>FileRefOrAssert provides a reference to the expected error.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
@@ -461,6 +487,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be patched.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
@@ -549,6 +576,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `namespace` | `string` |  |  | <p>Namespace determines whether the test should run in a random ephemeral namespace or not.</p> |
 | `namespaceTemplate` | `policy/v1alpha1.Any` |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `steps` | [`[]TestSpecStep`](#chainsaw-kyverno-io-v1alpha1-TestSpecStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
 | `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 | `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
@@ -584,6 +612,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) | :white_check_mark: |  | <p>Try defines what the step will try to execute.</p> |
 | `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
 | `finally` | [`[]Finally`](#chainsaw-kyverno-io-v1alpha1-Finally) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
