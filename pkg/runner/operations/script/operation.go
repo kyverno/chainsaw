@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
-	"path/filepath"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -72,7 +71,7 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	var cancel context.CancelFunc
 	if o.cfg != nil {
-		f, err := os.CreateTemp(o.basePath, "chainsaw-kubeconfig-")
+		f, err := os.CreateTemp("", "chainsaw-kubeconfig-")
 		if err != nil {
 			return nil, nil, err
 		}
@@ -88,7 +87,7 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 		if err := restutils.Save(o.cfg, f); err != nil {
 			return nil, cancel, err
 		}
-		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Join(cwd, path)))
+		env = append(env, fmt.Sprintf("KUBECONFIG=%s", path))
 	}
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
 	cmd.Env = env
