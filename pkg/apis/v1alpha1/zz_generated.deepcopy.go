@@ -203,6 +203,13 @@ func (in *Command) DeepCopyInto(out *Command) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.Env != nil {
+		in, out := &in.Env, &out.Env
+		*out = make([]Binding, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	if in.Args != nil {
 		in, out := &in.Args, &out.Args
 		*out = make([]string, len(*in))
@@ -833,6 +840,13 @@ func (in *Script) DeepCopyInto(out *Script) {
 		in, out := &in.Timeout, &out.Timeout
 		*out = new(v1.Duration)
 		**out = **in
+	}
+	if in.Env != nil {
+		in, out := &in.Env, &out.Env
+		*out = make([]Binding, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
 	}
 	if in.Check != nil {
 		in, out := &in.Check, &out.Check

@@ -10,7 +10,7 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
-	"github.com/kyverno/chainsaw/pkg/runner/env"
+	environment "github.com/kyverno/chainsaw/pkg/runner/env"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
@@ -48,7 +48,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_err e
 	defer func() {
 		internal.LogEnd(logger, logging.Command, _err)
 	}()
-	cmd, cancel, err := o.createCommand(ctx)
+	cmd, cancel, err := o.createCommand(ctx, bindings)
 	if cancel != nil {
 		defer cancel()
 	}
@@ -59,17 +59,19 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_err e
 	return o.execute(ctx, bindings, cmd)
 }
 
-func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, context.CancelFunc, error) {
-	var cancel context.CancelFunc
-	args := env.Expand(map[string]string{"NAMESPACE": o.namespace}, o.command.Args...)
-	cmd := exec.CommandContext(ctx, o.command.Entrypoint, args...) //nolint:gosec
-	env := os.Environ()
+func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings) (*exec.Cmd, context.CancelFunc, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get current working directory (%w)", err)
 	}
+	maps, envs, err := internal.RegisterEnvs(ctx, o.namespace, bindings, o.command.Env...)
+	if err != nil {
+		return nil, nil, err
+	}
+	env := os.Environ()
+	env = append(env, envs...)
 	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
-	env = append(env, fmt.Sprintf("NAMESPACE=%s", o.namespace))
+	var cancel context.CancelFunc
 	if o.cfg != nil {
 		f, err := os.CreateTemp(o.basePath, "chainsaw-kubeconfig-")
 		if err != nil {
@@ -87,10 +89,10 @@ func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, context.Cance
 		if err := restutils.Save(o.cfg, f); err != nil {
 			return nil, cancel, err
 		}
-		fmt.Println(f.Name())
-		fmt.Println(o.basePath)
 		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Join(cwd, path)))
 	}
+	args := environment.Expand(maps, o.command.Args...)
+	cmd := exec.CommandContext(ctx, o.command.Entrypoint, args...) //nolint:gosec
 	cmd.Env = env
 	cmd.Dir = o.basePath
 	return cmd, cancel, nil

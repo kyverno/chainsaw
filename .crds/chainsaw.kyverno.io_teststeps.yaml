@@ -78,6 +78,23 @@ spec:
                         entrypoint:
                           description: Entrypoint is the command entry point to run.
                           type: string
+                        env:
+                          description: Env defines additional environment variables.
+                          items:
+                            description: Binding represents a key/value set as a binding
+                              in an executing test.
+                            properties:
+                              name:
+                                description: Name the name of the binding.
+                                type: string
+                              value:
+                                description: Value value of the binding.
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
+                          type: array
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
@@ -311,6 +328,23 @@ spec:
                           description: Content defines a shell script (run with "sh
                             -c ...").
                           type: string
+                        env:
+                          description: Env defines additional environment variables.
+                          items:
+                            description: Binding represents a key/value set as a binding
+                              in an executing test.
+                            properties:
+                              name:
+                                description: Name the name of the binding.
+                                type: string
+                              value:
+                                description: Value value of the binding.
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
+                          type: array
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
@@ -365,6 +399,23 @@ spec:
                         entrypoint:
                           description: Entrypoint is the command entry point to run.
                           type: string
+                        env:
+                          description: Env defines additional environment variables.
+                          items:
+                            description: Binding represents a key/value set as a binding
+                              in an executing test.
+                            properties:
+                              name:
+                                description: Name the name of the binding.
+                                type: string
+                              value:
+                                description: Value value of the binding.
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
+                          type: array
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
@@ -598,6 +649,23 @@ spec:
                           description: Content defines a shell script (run with "sh
                             -c ...").
                           type: string
+                        env:
+                          description: Env defines additional environment variables.
+                          items:
+                            description: Binding represents a key/value set as a binding
+                              in an executing test.
+                            properties:
+                              name:
+                                description: Name the name of the binding.
+                                type: string
+                              value:
+                                description: Value value of the binding.
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
+                          type: array
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
@@ -791,6 +859,23 @@ spec:
                         entrypoint:
                           description: Entrypoint is the command entry point to run.
                           type: string
+                        env:
+                          description: Env defines additional environment variables.
+                          items:
+                            description: Binding represents a key/value set as a binding
+                              in an executing test.
+                            properties:
+                              name:
+                                description: Name the name of the binding.
+                                type: string
+                              value:
+                                description: Value value of the binding.
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
+                          type: array
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
@@ -1089,6 +1174,23 @@ spec:
                           description: Content defines a shell script (run with "sh
                             -c ...").
                           type: string
+                        env:
+                          description: Env defines additional environment variables.
+                          items:
+                            description: Binding represents a key/value set as a binding
+                              in an executing test.
+                            properties:
+                              name:
+                                description: Name the name of the binding.
+                                type: string
+                              value:
+                                description: Value value of the binding.
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
+                          type: array
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.

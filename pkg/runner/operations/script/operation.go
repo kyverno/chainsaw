@@ -47,7 +47,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err er
 	defer func() {
 		internal.LogEnd(logger, logging.Script, err)
 	}()
-	cmd, cancel, err := o.createCommand(ctx)
+	cmd, cancel, err := o.createCommand(ctx, bindings)
 	if cancel != nil {
 		defer cancel()
 	}
@@ -58,16 +58,19 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err er
 	return o.execute(ctx, bindings, cmd)
 }
 
-func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, context.CancelFunc, error) {
-	var cancel context.CancelFunc
-	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
-	env := os.Environ()
+func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings) (*exec.Cmd, context.CancelFunc, error) {
 	cwd, err := os.Getwd()
 	if err != nil {
 		return nil, nil, fmt.Errorf("failed to get current working directory (%w)", err)
 	}
+	_, envs, err := internal.RegisterEnvs(ctx, o.namespace, bindings, o.script.Env...)
+	if err != nil {
+		return nil, nil, err
+	}
+	env := os.Environ()
+	env = append(env, envs...)
 	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
-	env = append(env, fmt.Sprintf("NAMESPACE=%s", o.namespace))
+	var cancel context.CancelFunc
 	if o.cfg != nil {
 		f, err := os.CreateTemp(o.basePath, "chainsaw-kubeconfig-")
 		if err != nil {
@@ -87,6 +90,7 @@ func (o *operation) createCommand(ctx context.Context) (*exec.Cmd, context.Cance
 		}
 		env = append(env, fmt.Sprintf("KUBECONFIG=%s", filepath.Join(cwd, path)))
 	}
+	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
 	cmd.Env = env
 	cmd.Dir = o.basePath
 	return cmd, cancel, nil
