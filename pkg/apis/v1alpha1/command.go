@@ -10,6 +10,10 @@ type Command struct {
 	// +optional
 	Timeout *metav1.Duration `json:"timeout,omitempty"`
 
+	// Bindings defines additional binding key/values.
+	// +optional
+	Bindings []Binding `json:"bindings,omitempty"`
+
 	// Env defines additional environment variables.
 	// +optional
 	Env []Binding `json:"env,omitempty"`

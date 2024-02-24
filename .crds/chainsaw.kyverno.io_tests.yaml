@@ -123,6 +123,23 @@ spec:
                                 items:
                                   type: string
                                 type: array
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
@@ -389,6 +406,23 @@ spec:
                           script:
                             description: Script defines a script to run.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
@@ -463,6 +497,23 @@ spec:
                                 items:
                                   type: string
                                 type: array
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
@@ -729,6 +780,23 @@ spec:
                           script:
                             description: Script defines a script to run.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
@@ -947,6 +1015,23 @@ spec:
                                 description: Args is the command arguments.
                                 items:
                                   type: string
+                                type: array
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
                                 type: array
                               check:
                                 description: Check is an assertion tree to validate
@@ -1275,6 +1360,23 @@ spec:
                           script:
                             description: Script defines a script to run.
                             properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
