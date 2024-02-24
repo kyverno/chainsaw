@@ -180,34 +180,27 @@ func TestMarkTestEnd(t *testing.T) {
 func TestMarkOperationEnd(t *testing.T) {
 	testCases := []struct {
 		name           string
-		success        bool
+		err            error
 		expectedResult string
-		message        string
-	}{
-		{
-			name:           "OperationSuccessful",
-			success:        true,
-			expectedResult: "Success",
-			message:        "Completed successfully",
-		},
-		{
-			name:           "OperationFailed",
-			success:        false,
-			expectedResult: "Failure",
-			message:        "An error occurred",
-		},
-	}
-
+	}{{
+		name:           "OperationSuccessful",
+		err:            nil,
+		expectedResult: "Success",
+	}, {
+		name:           "OperationFailed",
+		err:            errors.New("An error occurred"),
+		expectedResult: "Failure",
+	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			startTime := time.Now().Add(-5 * time.Second) // mock start time 5 seconds ago
 			operation := &OperationReport{TimeStamp: startTime}
-
-			operation.MarkOperationEnd(tc.success, tc.message)
-
+			operation.MarkOperationEnd(tc.err)
 			assert.Regexp(t, `\d+\.\d{3}`, operation.Time, "Duration format is incorrect")
 			assert.Equal(t, tc.expectedResult, operation.Result, "Result does not match expected value")
-			assert.Equal(t, tc.message, operation.Message, "Message does not match")
+			if tc.err != nil {
+				assert.Equal(t, tc.err.Error(), operation.Message, "Message does not match")
+			}
 		})
 	}
 }
