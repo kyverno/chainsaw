@@ -59,17 +59,12 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_err e
 }
 
 func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings) (*exec.Cmd, context.CancelFunc, error) {
-	cwd, err := os.Getwd()
-	if err != nil {
-		return nil, nil, fmt.Errorf("failed to get current working directory (%w)", err)
-	}
 	maps, envs, err := internal.RegisterEnvs(ctx, o.namespace, bindings, o.command.Env...)
 	if err != nil {
 		return nil, nil, err
 	}
 	env := os.Environ()
 	env = append(env, envs...)
-	env = append(env, fmt.Sprintf("PATH=%s/bin/:%s", cwd, os.Getenv("PATH")))
 	var cancel context.CancelFunc
 	if o.cfg != nil {
 		f, err := os.CreateTemp("", "chainsaw-kubeconfig-")
