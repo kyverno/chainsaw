@@ -384,6 +384,7 @@ func (p *stepProcessor) commandOperation(ctx context.Context, bindings binding.B
 		opcommand.New(op, p.test.BasePath, ns, config),
 		operationReport,
 		bindings,
+		op.Bindings...,
 	)
 }
 
@@ -519,6 +520,7 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, bindings binding.Bi
 		opscript.New(op, p.test.BasePath, ns, config),
 		operationReport,
 		bindings,
+		op.Bindings...,
 	)
 }
 
