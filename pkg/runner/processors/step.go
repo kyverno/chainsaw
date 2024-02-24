@@ -331,7 +331,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, bindings binding.Bin
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
 			opapply.New(cluster, resource, p.namespacer, p.getCleaner(ctx, dryRun), template, op.Expect),
-			nil,
+			operationReport,
 			bindings,
 			op.Bindings...,
 		))
@@ -410,7 +410,7 @@ func (p *stepProcessor) createOperation(ctx context.Context, bindings binding.Bi
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
 			opcreate.New(cluster, resource, p.namespacer, p.getCleaner(ctx, dryRun), template, op.Expect),
-			nil,
+			operationReport,
 			bindings,
 			op.Bindings...,
 		))
@@ -493,7 +493,7 @@ func (p *stepProcessor) patchOperation(ctx context.Context, bindings binding.Bin
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
 			oppatch.New(cluster, resource, p.namespacer, template, op.Expect),
-			nil,
+			operationReport,
 			bindings,
 			op.Bindings...,
 		))

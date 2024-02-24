@@ -215,14 +215,15 @@ func (t *TestReport) MarkTestEnd() {
 }
 
 // MarkOperationEnd marks the end time of an OperationReport and calculates its duration.
-func (op *OperationReport) MarkOperationEnd(success bool, message string) {
+func (op *OperationReport) MarkOperationEnd(err error) {
 	op.Time = calculateDuration(op.TimeStamp, time.Now())
-	if success {
+	if err == nil {
 		op.Result = "Success"
+		op.Message = "Operation completed successfully"
 	} else {
 		op.Result = "Failure"
+		op.Message = err.Error()
 	}
-	op.Message = message
 }
 
 // calculateDuration calculates the duration between two time points.

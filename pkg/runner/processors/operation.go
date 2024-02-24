@@ -44,8 +44,7 @@ func (o operation) execute(ctx context.Context) {
 		ctx = toCtx
 		defer cancel()
 	}
-	bindings, err := registerBindings(ctx, o.bindings, o.variables...)
-	if err != nil {
+	handleError := func() {
 		t := testing.FromContext(ctx)
 		if o.continueOnError {
 			t.Fail()
@@ -53,18 +52,15 @@ func (o operation) execute(ctx context.Context) {
 			t.FailNow()
 		}
 	}
-	if err := o.operation.Exec(ctx, bindings); err != nil {
-		t := testing.FromContext(ctx)
+	if bindings, err := registerBindings(ctx, o.bindings, o.variables...); err != nil {
+		handleError()
+	} else {
+		err := o.operation.Exec(ctx, bindings)
 		if o.operationReport != nil {
-			o.operationReport.MarkOperationEnd(false, err.Error())
+			o.operationReport.MarkOperationEnd(err)
 		}
-		if o.continueOnError {
-			t.Fail()
-		} else {
-			t.FailNow()
+		if err != nil {
+			handleError()
 		}
-	}
-	if o.operationReport != nil {
-		o.operationReport.MarkOperationEnd(true, "Operation completed successfully")
 	}
 }
