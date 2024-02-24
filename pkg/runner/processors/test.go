@@ -69,14 +69,14 @@ type testProcessor struct {
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
 	t := testing.FromContext(ctx)
-	t.Cleanup(func() {
-		if t.Failed() {
-			p.testReport.NewFailure("test failed")
-		}
-		if p.testReport != nil {
+	if p.testReport != nil {
+		t.Cleanup(func() {
+			if t.Failed() {
+				p.testReport.NewFailure("test failed")
+			}
 			p.testReport.MarkTestEnd()
-		}
-	})
+		})
+	}
 	size := len("@cleanup")
 	for i, step := range p.test.Spec.Steps {
 		name := step.Name
@@ -191,8 +191,9 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 }
 
 func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, bindings binding.Bindings, cleaner *cleaner, step v1alpha1.TestSpecStep) StepProcessor {
-	stepReport := report.NewTestSpecStep(step.Name)
+	var stepReport *report.TestSpecStepReport
 	if p.testReport != nil {
+		stepReport = report.NewTestSpecStep(step.Name)
 		p.testReport.AddTestStep(stepReport)
 	}
 	return NewStepProcessor(p.config, p.clusters, nspacer, p.clock, p.test, step, stepReport, cleaner, bindings)

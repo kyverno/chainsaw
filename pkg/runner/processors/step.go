@@ -314,8 +314,9 @@ func (p *stepProcessor) applyOperation(ctx context.Context, bindings binding.Bin
 		return nil, err
 	}
 	var ops []operation
-	operationReport := report.NewOperation("Apply "+op.File, report.OperationTypeApply)
+	var operationReport *report.OperationReport
 	if p.stepReport != nil {
+		operationReport = report.NewOperation("Apply "+op.File, report.OperationTypeApply)
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
@@ -344,8 +345,9 @@ func (p *stepProcessor) assertOperation(ctx context.Context, bindings binding.Bi
 		return nil, err
 	}
 	var ops []operation
-	operationReport := report.NewOperation("Assert ", report.OperationTypeAssert)
+	var operationReport *report.OperationReport
 	if p.stepReport != nil {
+		operationReport = report.NewOperation("Assert ", report.OperationTypeAssert)
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
@@ -365,8 +367,9 @@ func (p *stepProcessor) assertOperation(ctx context.Context, bindings binding.Bi
 }
 
 func (p *stepProcessor) commandOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Command) operation {
-	operationReport := report.NewOperation("Command ", report.OperationTypeCommand)
+	var operationReport *report.OperationReport
 	if p.stepReport != nil {
+		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
 		p.stepReport.AddOperation(operationReport)
 	}
 	ns := ""
@@ -390,8 +393,9 @@ func (p *stepProcessor) createOperation(ctx context.Context, bindings binding.Bi
 		return nil, err
 	}
 	var ops []operation
-	operationReport := report.NewOperation("Create ", report.OperationTypeCreate)
+	var operationReport *report.OperationReport
 	if p.stepReport != nil {
+		operationReport = report.NewOperation("Create ", report.OperationTypeCreate)
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
@@ -421,8 +425,9 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, bindings binding.Bi
 	resource.SetName(op.Name)
 	resource.SetNamespace(op.Namespace)
 	resource.SetLabels(op.Labels)
-	operationReport := report.NewOperation("Delete ", report.OperationTypeDelete)
+	var operationReport *report.OperationReport
 	if p.stepReport != nil {
+		operationReport = report.NewOperation("Delete ", report.OperationTypeDelete)
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
@@ -444,8 +449,9 @@ func (p *stepProcessor) errorOperation(ctx context.Context, bindings binding.Bin
 		return nil, err
 	}
 	var ops []operation
-	operationReport := report.NewOperation("Error ", report.OperationTypeCommand)
+	var operationReport *report.OperationReport
 	if p.stepReport != nil {
+		operationReport = report.NewOperation("Error ", report.OperationTypeCommand)
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
@@ -470,8 +476,9 @@ func (p *stepProcessor) patchOperation(ctx context.Context, bindings binding.Bin
 		return nil, err
 	}
 	var ops []operation
-	operationReport := report.NewOperation("Patch ", report.OperationTypeCreate)
+	var operationReport *report.OperationReport
 	if p.stepReport != nil {
+		operationReport = report.NewOperation("Patch ", report.OperationTypeCreate)
 		p.stepReport.AddOperation(operationReport)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
@@ -495,8 +502,9 @@ func (p *stepProcessor) patchOperation(ctx context.Context, bindings binding.Bin
 }
 
 func (p *stepProcessor) scriptOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Script) operation {
-	operationReport := report.NewOperation("Script ", report.OperationTypeScript)
+	var operationReport *report.OperationReport
 	if p.stepReport != nil {
+		operationReport = report.NewOperation("Script ", report.OperationTypeScript)
 		p.stepReport.AddOperation(operationReport)
 	}
 	ns := ""
@@ -515,8 +523,9 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, bindings binding.Bi
 }
 
 func (p *stepProcessor) sleepOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Sleep) operation {
-	operationReport := report.NewOperation("Sleep ", report.OperationTypeSleep)
+	var operationReport *report.OperationReport
 	if p.stepReport != nil {
+		operationReport = report.NewOperation("Sleep ", report.OperationTypeSleep)
 		p.stepReport.AddOperation(operationReport)
 	}
 	return newOperation(
