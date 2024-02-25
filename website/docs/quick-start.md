@@ -150,4 +150,4 @@ Done.
 
 **Resource diff in assertion failures:** Chainsaw offers detailed resource diffs upon assertion failures. It provides a clear view of discrepancies between expected and actual resource.
 
-**Resource templating support:** Chainsaw simplifies dynamic resource configuration with robust templating support. Testers can use placeholders in resource manifests to customize configurations based on specific test scenarios. This eliminates the need for preprocessing or scripting, streamlining testing setups and enhancing maintainability. Templating allows testers to define complex expressions directly within manifests for greater flexibility and efficiency in test case design and execution.
+**Resource templating support:** Chainsaw simplifies dynamic resource configuration with it's templating support. Instead on relying on `envsubst` for dynamic substitution of env-variable. This eliminates the need of any preprocessing step.
