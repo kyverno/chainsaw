@@ -146,3 +146,8 @@ Tests Summary...
 - Skipped tests 0
 Done.
 ```
+### Chainsaw Charaterstics 
+
+**Resource diff in assertion failures:** When running tests, it's crucial to quickly identify the root cause of any assertion failures. Chainsaw now provides a detailed resource diff whenever an assertion fails, offering a comprehensive view of the differences between the expected and actual resource configurations. This detailed comparison aids testers in pinpointing precisely where and why the assertion failed, streamlining the debugging process and accelerating resolution.
+
+**Resource templating support:** One common challenge in end-to-end testing is the need for dynamic resource configurations tailored to specific test scenarios. Chainsaw addresses this challenge with robust resource templating support. Testers can now create resource manifests with placeholders for dynamic values, allowing for seamless customization based on test contexts. This eliminates the need for cumbersome pre-processing steps or external scripting, simplifying testing setups and improving maintainability. With resource templating, testers can define complex expressions directly within resource manifests, enabling greater flexibility and efficiency in test case design and execution.
