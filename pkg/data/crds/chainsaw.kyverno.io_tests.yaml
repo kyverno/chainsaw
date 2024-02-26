@@ -489,13 +489,12 @@ spec:
                                       to wait for.
                                     properties:
                                       name:
-                                        description: ConditioName is the specific
-                                          condition to wait for, e.g., "Available",
-                                          "Ready".
+                                        description: Name is the specific condition
+                                          to wait for, e.g., "Available", "Ready".
                                         type: string
                                       value:
-                                        description: The specific condition status
-                                          to wait for, e.g., "True", "False".
+                                        description: Value defines the specific condition
+                                          status to wait for, e.g., "True", "False".
                                         type: string
                                     required:
                                     - name
@@ -926,13 +925,12 @@ spec:
                                       to wait for.
                                     properties:
                                       name:
-                                        description: ConditioName is the specific
-                                          condition to wait for, e.g., "Available",
-                                          "Ready".
+                                        description: Name is the specific condition
+                                          to wait for, e.g., "Available", "Ready".
                                         type: string
                                       value:
-                                        description: The specific condition status
-                                          to wait for, e.g., "True", "False".
+                                        description: Value defines the specific condition
+                                          status to wait for, e.g., "True", "False".
                                         type: string
                                     required:
                                     - name

@@ -751,15 +751,7 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml",
-                            "name",
-                            "go-template",
-                            "go-template-file",
-                            "template",
-                            "templatefile",
-                            "jsonpath",
-                            "jsonpath-as-json",
-                            "jsonpath-file"
+                            "yaml"
                           ]
                         },
                         "name": {
@@ -817,15 +809,7 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml",
-                            "name",
-                            "go-template",
-                            "go-template-file",
-                            "template",
-                            "templatefile",
-                            "jsonpath",
-                            "jsonpath-as-json",
-                            "jsonpath-file"
+                            "yaml"
                           ]
                         },
                         "name": {
@@ -1066,13 +1050,13 @@
                               ],
                               "properties": {
                                 "name": {
-                                  "description": "ConditioName is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                                  "description": "Name is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
                                   "type": "string"
                                 },
                                 "value": {
-                                  "description": "The specific condition status to wait for, e.g., \"True\", \"False\".",
+                                  "description": "Value defines the specific condition status to wait for, e.g., \"True\", \"False\".",
                                   "type": [
-                                    "boolean",
+                                    "string",
                                     "null"
                                   ]
                                 }
@@ -1109,15 +1093,7 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml",
-                            "name",
-                            "go-template",
-                            "go-template-file",
-                            "template",
-                            "templatefile",
-                            "jsonpath",
-                            "jsonpath-as-json",
-                            "jsonpath-file"
+                            "yaml"
                           ]
                         },
                         "resource": {
@@ -1500,15 +1476,7 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml",
-                            "name",
-                            "go-template",
-                            "go-template-file",
-                            "template",
-                            "templatefile",
-                            "jsonpath",
-                            "jsonpath-as-json",
-                            "jsonpath-file"
+                            "yaml"
                           ]
                         },
                         "name": {
@@ -1566,15 +1534,7 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml",
-                            "name",
-                            "go-template",
-                            "go-template-file",
-                            "template",
-                            "templatefile",
-                            "jsonpath",
-                            "jsonpath-as-json",
-                            "jsonpath-file"
+                            "yaml"
                           ]
                         },
                         "name": {
@@ -1815,13 +1775,13 @@
                               ],
                               "properties": {
                                 "name": {
-                                  "description": "ConditioName is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                                  "description": "Name is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
                                   "type": "string"
                                 },
                                 "value": {
-                                  "description": "The specific condition status to wait for, e.g., \"True\", \"False\".",
+                                  "description": "Value defines the specific condition status to wait for, e.g., \"True\", \"False\".",
                                   "type": [
-                                    "boolean",
+                                    "string",
                                     "null"
                                   ]
                                 }
@@ -1858,15 +1818,7 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml",
-                            "name",
-                            "go-template",
-                            "go-template-file",
-                            "template",
-                            "templatefile",
-                            "jsonpath",
-                            "jsonpath-as-json",
-                            "jsonpath-file"
+                            "yaml"
                           ]
                         },
                         "resource": {

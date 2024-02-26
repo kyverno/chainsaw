@@ -177,8 +177,8 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `name` | `string` | :white_check_mark: |  | <p>ConditioName is the specific condition to wait for, e.g., "Available", "Ready".</p> |
-| `value` | `string` |  |  | <p>The specific condition status to wait for, e.g., "True", "False".</p> |
+| `name` | `string` | :white_check_mark: |  | <p>Name is the specific condition to wait for, e.g., "Available", "Ready".</p> |
+| `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
