@@ -177,7 +177,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `name` | `string` | :white_check_mark: |  | <p>Name is the specific condition to wait for, e.g., "Available", "Ready".</p> |
+| `name` | `string` | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
 | `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
@@ -408,7 +408,7 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `delete` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
+| `deletion` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
 | `condition` | [`Condition`](#chainsaw-kyverno-io-v1alpha1-Condition) |  |  | <p>Condition specifies the condition to wait for.</p> |
 
 ## `Format`     {#chainsaw-kyverno-io-v1alpha1-Format}
@@ -701,6 +701,6 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `resource` | `string` | :white_check_mark: |  | <p>Resource type on which the wait operation will be applied.</p> |
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `for` | [`For`](#chainsaw-kyverno-io-v1alpha1-For) | :white_check_mark: |  | <p>For specifies the condition to wait for.</p> |
-| `output` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>OutputFormat specifies the output format for the wait operation.</p> |
+| `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
 
   

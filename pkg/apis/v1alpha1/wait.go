@@ -8,7 +8,8 @@ import (
 type For struct {
 	// Deletion specifies parameters for waiting on a resource's deletion.
 	// +optional
-	Deletion *Deletion `json:"delete,omitempty"`
+	Deletion *Deletion `json:"deletion,omitempty"`
+
 	// Condition specifies the condition to wait for.
 	// +optional
 	Condition *Condition `json:"condition,omitempty"`
@@ -19,8 +20,9 @@ type Deletion struct{}
 
 // Condition represents parameters for waiting on a specific condition of a resource.
 type Condition struct {
-	// Name is the specific condition to wait for, e.g., "Available", "Ready".
+	// Name defines the specific condition to wait for, e.g., "Available", "Ready".
 	Name string `json:"name"`
+
 	// Value defines the specific condition status to wait for, e.g., "True", "False".
 	// +optional
 	Value *string `json:"value,omitempty"`
@@ -45,7 +47,7 @@ type Wait struct {
 	// For specifies the condition to wait for.
 	For `json:"for"`
 
-	// OutputFormat specifies the output format for the wait operation.
+	// Format determines the output format (json or yaml).
 	// +optional
-	OutputFormat *Format `json:"output,omitempty"`
+	Format Format `json:"format,omitempty"`
 }
