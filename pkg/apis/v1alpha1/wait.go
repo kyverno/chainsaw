@@ -21,7 +21,7 @@ type Condition struct {
 	ConditionName string `json:"name"`
 	// The specific condition status to wait for, e.g., "True", "False".
 	// +optional
-	ConditionValue *bool `json:"value,omitempty"`
+	ConditionValue string `json:"value,omitempty"`
 }
 
 // Wait specifies how to perform wait operations on resources.

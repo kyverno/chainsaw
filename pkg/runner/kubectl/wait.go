@@ -3,6 +3,7 @@ package kubectl
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
@@ -32,8 +33,8 @@ func Wait(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 		if collector.For.Condition.ConditionName == "" {
 			return nil, errors.New("a condition name must be specified for condition wait type")
 		}
-		if collector.For.Condition.ConditionValue != nil {
-			args = append(args, fmt.Sprintf("--for=condition=%s=%t", collector.For.Condition.ConditionName, *collector.For.Condition.ConditionValue))
+		if collector.For.Condition.ConditionValue != "" {
+			args = append(args, fmt.Sprintf("--for=condition=%s=%s", collector.For.Condition.ConditionName, collector.For.Condition.ConditionValue))
 		} else {
 			args = append(args, fmt.Sprintf("--for=condition=%s", collector.For.Condition.ConditionName))
 		}
@@ -53,7 +54,7 @@ func Wait(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	if collector.Timeout != nil {
 		args = append(args, fmt.Sprintf("--timeout=%s", collector.Timeout.Duration.String()))
 	} else {
-		args = append(args, fmt.Sprintf("--timeout=%s", "infinity"))
+		args = append(args, fmt.Sprintf("--timeout=%s", (time.Duration(-1)*time.Second).String()))
 	}
 	if collector.OutputFormat != nil {
 		args = append(args, fmt.Sprintf("--output=%s", *collector.OutputFormat))

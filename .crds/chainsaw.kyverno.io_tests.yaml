@@ -318,14 +318,6 @@ spec:
                                 enum:
                                 - json
                                 - yaml
-                                - name
-                                - go-template
-                                - go-template-file
-                                - template
-                                - templatefile
-                                - jsonpath
-                                - jsonpath-as-json
-                                - jsonpath-file
                                 type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -356,14 +348,6 @@ spec:
                                 enum:
                                 - json
                                 - yaml
-                                - name
-                                - go-template
-                                - go-template-file
-                                - template
-                                - templatefile
-                                - jsonpath
-                                - jsonpath-as-json
-                                - jsonpath-file
                                 type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -512,7 +496,7 @@ spec:
                                       value:
                                         description: The specific condition status
                                           to wait for, e.g., "True", "False".
-                                        type: boolean
+                                        type: string
                                     required:
                                     - name
                                     type: object
@@ -534,14 +518,6 @@ spec:
                                 enum:
                                 - json
                                 - yaml
-                                - name
-                                - go-template
-                                - go-template-file
-                                - template
-                                - templatefile
-                                - jsonpath
-                                - jsonpath-as-json
-                                - jsonpath-file
                                 type: string
                               resource:
                                 description: Resource type on which the wait operation
@@ -779,14 +755,6 @@ spec:
                                 enum:
                                 - json
                                 - yaml
-                                - name
-                                - go-template
-                                - go-template-file
-                                - template
-                                - templatefile
-                                - jsonpath
-                                - jsonpath-as-json
-                                - jsonpath-file
                                 type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -817,14 +785,6 @@ spec:
                                 enum:
                                 - json
                                 - yaml
-                                - name
-                                - go-template
-                                - go-template-file
-                                - template
-                                - templatefile
-                                - jsonpath
-                                - jsonpath-as-json
-                                - jsonpath-file
                                 type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -973,7 +933,7 @@ spec:
                                       value:
                                         description: The specific condition status
                                           to wait for, e.g., "True", "False".
-                                        type: boolean
+                                        type: string
                                     required:
                                     - name
                                     type: object
@@ -995,14 +955,6 @@ spec:
                                 enum:
                                 - json
                                 - yaml
-                                - name
-                                - go-template
-                                - go-template-file
-                                - template
-                                - templatefile
-                                - jsonpath
-                                - jsonpath-as-json
-                                - jsonpath-file
                                 type: string
                               resource:
                                 description: Resource type on which the wait operation
