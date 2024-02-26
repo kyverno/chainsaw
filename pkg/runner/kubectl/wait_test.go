@@ -38,7 +38,7 @@ func TestWaitForResource(t *testing.T) {
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
-				Args:       []string{"wait", "pods", "--for=condition=Ready", "-n", "$NAMESPACE"},
+				Args:       []string{"wait", "pods", "--for=condition=Ready", "-n", "$NAMESPACE", "--timeout=infinity"},
 			},
 			wantErr: false,
 		},
@@ -52,7 +52,7 @@ func TestWaitForResource(t *testing.T) {
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
-				Args:       []string{"wait", "pods", "--for=delete", "-n", "$NAMESPACE"},
+				Args:       []string{"wait", "pods", "--for=delete", "-n", "$NAMESPACE", "--timeout=infinity"},
 			},
 			wantErr: false,
 		},
@@ -71,7 +71,7 @@ func TestWaitForResource(t *testing.T) {
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
-				Args:       []string{"wait", "pods/my-pod", "--for=condition=Ready", "-n", "$NAMESPACE"},
+				Args:       []string{"wait", "pods/my-pod", "--for=condition=Ready", "-n", "$NAMESPACE", "--timeout=infinity"},
 			},
 			wantErr: false,
 		},
@@ -90,7 +90,7 @@ func TestWaitForResource(t *testing.T) {
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
-				Args:       []string{"wait", "pods", "--for=condition=Ready", "-l", "app=my-app", "-n", "$NAMESPACE"},
+				Args:       []string{"wait", "pods", "--for=condition=Ready", "-l", "app=my-app", "-n", "$NAMESPACE", "--timeout=infinity"},
 			},
 			wantErr: false,
 		},
