@@ -16,6 +16,7 @@ The list of organizations that have publicly shared the usage of Chainsaw:
 | [skiperator](https://github.com/kartverket/skiperator) (Norwegian Mapping Authority) | Chainsaw replaced kuttl and made our tests more reliable |
 | [Grafana-operator](https://github.com/grafana/grafana-operator) | Chainsaw enabled easier e2e testing and CI debugging after replacing kuttl |
 | [Opentelemetry-operator](https://github.com/open-telemetry/opentelemetry-operator) | Chainsaw cut down on hacks, improved code-reuse and enhanced test debugging |
+| [Tempo-operator](https://github.com/grafana/tempo-operator) | Chainsaw cranked up the tempo, making our e2e tests dance to a rhythm of reliability and efficiency |
 
 <!-- append the line below to the table
 | [name](URL) | brief description of how you are using Chainsaw | 
