@@ -99,7 +99,7 @@ func TestWait(t *testing.T) {
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"wait", "pods/my-pod", "--for=condition=Ready", "-n", "$NAMESPACE", "--timeout=-1s"},
+			Args:       []string{"wait", "pods", "--for=condition=Ready", "my-pod", "-n", "$NAMESPACE", "--timeout=-1s"},
 		},
 		wantErr: false,
 	}, {
@@ -134,7 +134,7 @@ func TestWait(t *testing.T) {
 		want: &v1alpha1.Command{
 			Timeout:    &metav1.Duration{Duration: 120 * time.Second},
 			Entrypoint: "kubectl",
-			Args:       []string{"wait", "pods", "--for=condition=Ready", "-n", "$NAMESPACE", "--timeout=2m0s"},
+			Args:       []string{"wait", "pods", "--for=condition=Ready", "-n", "$NAMESPACE", "--timeout=-1s"},
 		},
 		wantErr: false,
 	}, {
