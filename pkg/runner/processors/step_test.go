@@ -916,7 +916,9 @@ func TestStepProcessor_Run(t *testing.T) {
 					},
 					{
 						PodLogs: &v1alpha1.PodLogs{
-							Selector: "name=myapp",
+							ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+								Selector: "name=myapp",
+							},
 						},
 					},
 					{
@@ -947,7 +949,9 @@ func TestStepProcessor_Run(t *testing.T) {
 					},
 					{
 						PodLogs: &v1alpha1.PodLogs{
-							Selector: "name=myapp",
+							ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+								Selector: "name=myapp",
+							},
 						},
 					},
 					{

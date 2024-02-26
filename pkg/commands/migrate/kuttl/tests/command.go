@@ -493,10 +493,12 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		switch collector.Type {
 		case "pod":
 			op := &v1alpha1.PodLogs{
-				Name:      collector.Pod,
-				Namespace: collector.Namespace,
+				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+					Name:      collector.Pod,
+					Namespace: collector.Namespace,
+					Selector:  collector.Selector,
+				},
 				Container: collector.Container,
-				Selector:  collector.Selector,
 			}
 			if collector.Tail != 0 {
 				op.Tail = ptr.To(collector.Tail)

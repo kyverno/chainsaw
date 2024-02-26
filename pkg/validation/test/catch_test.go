@@ -15,8 +15,10 @@ import (
 func TestValidateCatch(t *testing.T) {
 	exampleEvents := &v1alpha1.Events{}
 	examplePodLogs := &v1alpha1.PodLogs{
-		Selector: "app=example",
-		Tail:     ptr.To(10),
+		ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+			Selector: "app=example",
+		},
+		Tail: ptr.To(10),
 	}
 	exampleCommand := &v1alpha1.Command{
 		Entrypoint: "echo",

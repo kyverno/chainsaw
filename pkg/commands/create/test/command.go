@@ -123,7 +123,9 @@ func sampleSteps(description bool) []v1alpha1.TestSpecStep {
 			}, {
 				Description: getDescription(description, "sample pod logs collector"),
 				PodLogs: &v1alpha1.PodLogs{
-					Selector: "app=foo",
+					ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+						Selector: "app=foo",
+					},
 				},
 			}},
 			Finally: []v1alpha1.Finally{{
