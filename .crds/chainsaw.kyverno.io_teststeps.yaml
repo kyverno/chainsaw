@@ -435,6 +435,10 @@ spec:
                         namespace:
                           description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                           type: string
+                        output:
+                          description: OutputFormat specifies the output format for
+                            the wait operation.
+                          type: string
                         resource:
                           description: Resource type on which the wait operation will
                             be applied.
@@ -842,6 +846,10 @@ spec:
                           type: string
                         namespace:
                           description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                          type: string
+                        output:
+                          description: OutputFormat specifies the output format for
+                            the wait operation.
                           type: string
                         resource:
                           description: Resource type on which the wait operation will

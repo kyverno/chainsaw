@@ -403,6 +403,9 @@ with a match filter to determine if the verification should be considered.</p>
     
 - [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
 
+<p>For specifies the condition to wait for.</p>
+
+
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `delete` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
@@ -514,6 +517,17 @@ For multiple objects use labels.</p>
 | `patch` | [`Patch`](#chainsaw-kyverno-io-v1alpha1-Patch) |  |  | <p>Patch represents a patch operation.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
+
+## `OutputFormatType`     {#chainsaw-kyverno-io-v1alpha1-OutputFormatType}
+
+(Alias of `string`)
+
+**Appears in:**
+    
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+<p>OutputFormatType defines the enum for valid output formats.</p>
+
 
 ## `Patch`     {#chainsaw-kyverno-io-v1alpha1-Patch}
 
@@ -697,5 +711,6 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `resource` | `string` | :white_check_mark: |  | <p>Resource type on which the wait operation will be applied.</p> |
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `for` | [`For`](#chainsaw-kyverno-io-v1alpha1-For) | :white_check_mark: |  | <p>For specifies the condition to wait for.</p> |
+| `output` | [`OutputFormatType`](#chainsaw-kyverno-io-v1alpha1-OutputFormatType) |  |  | <p>OutputFormat specifies the output format for the wait operation.</p> |
 
   

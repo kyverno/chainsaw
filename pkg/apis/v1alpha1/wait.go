@@ -2,6 +2,22 @@ package v1alpha1
 
 import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+// OutputFormatType defines the enum for valid output formats.
+type OutputFormatType string
+
+const (
+	OutputFormatJSON           OutputFormatType = "json"
+	OutputFormatYAML           OutputFormatType = "yaml"
+	OutputFormatName           OutputFormatType = "name"
+	OutputFormatGoTemplate     OutputFormatType = "go-template"
+	OutputFormatGoTemplateFile OutputFormatType = "go-template-file"
+	OutputFormatTemplate       OutputFormatType = "template"
+	OutputFormatTemplateFile   OutputFormatType = "templatefile"
+	OutputFormatJSONPath       OutputFormatType = "jsonpath"
+	OutputFormatJSONPathAsJSON OutputFormatType = "jsonpath-as-json"
+	OutputFormatJSONPathFile   OutputFormatType = "jsonpath-file"
+)
+
 // For specifies the condition to wait for.
 type For struct {
 	// Deletion specifies parameters for waiting on a resource's deletion.
@@ -42,4 +58,8 @@ type Wait struct {
 
 	// For specifies the condition to wait for.
 	For `json:"for"`
+
+	// OutputFormat specifies the output format for the wait operation.
+	// +optional
+	OutputFormat *OutputFormatType `json:"output,omitempty"`
 }

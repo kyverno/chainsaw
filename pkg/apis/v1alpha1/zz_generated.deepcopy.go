@@ -1224,6 +1224,11 @@ func (in *Wait) DeepCopyInto(out *Wait) {
 	}
 	out.ObjectLabelsSelector = in.ObjectLabelsSelector
 	in.For.DeepCopyInto(&out.For)
+	if in.OutputFormat != nil {
+		in, out := &in.OutputFormat, &out.OutputFormat
+		*out = new(OutputFormatType)
+		**out = **in
+	}
 	return
 }
 

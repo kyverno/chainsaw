@@ -55,6 +55,10 @@ func WaitForResource(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	} else {
 		args = append(args, fmt.Sprintf("--timeout=%s", "infinity"))
 	}
+	if collector.OutputFormat != nil {
+		args = append(args, fmt.Sprintf("--output=%s", *collector.OutputFormat))
+	}
+
 	cmd := v1alpha1.Command{
 		Cluster:    collector.Cluster,
 		Timeout:    collector.Timeout,
