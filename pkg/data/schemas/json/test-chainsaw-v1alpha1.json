@@ -1050,7 +1050,7 @@
                               ],
                               "properties": {
                                 "name": {
-                                  "description": "Name is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                                  "description": "Name defines the specific condition to wait for, e.g., \"Available\", \"Ready\".",
                                   "type": "string"
                                 },
                                 "value": {
@@ -1062,7 +1062,7 @@
                                 }
                               }
                             },
-                            "delete": {
+                            "deletion": {
                               "description": "Deletion specifies parameters for waiting on a resource's deletion.",
                               "type": [
                                 "object",
@@ -1070,6 +1070,17 @@
                               ]
                             }
                           }
+                        },
+                        "format": {
+                          "description": "Format determines the output format (json or yaml).",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "json",
+                            "yaml"
+                          ]
                         },
                         "name": {
                           "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -1083,17 +1094,6 @@
                           "type": [
                             "string",
                             "null"
-                          ]
-                        },
-                        "output": {
-                          "description": "OutputFormat specifies the output format for the wait operation.",
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "enum": [
-                            "json",
-                            "yaml"
                           ]
                         },
                         "resource": {
@@ -1775,7 +1775,7 @@
                               ],
                               "properties": {
                                 "name": {
-                                  "description": "Name is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                                  "description": "Name defines the specific condition to wait for, e.g., \"Available\", \"Ready\".",
                                   "type": "string"
                                 },
                                 "value": {
@@ -1787,7 +1787,7 @@
                                 }
                               }
                             },
-                            "delete": {
+                            "deletion": {
                               "description": "Deletion specifies parameters for waiting on a resource's deletion.",
                               "type": [
                                 "object",
@@ -1795,6 +1795,17 @@
                               ]
                             }
                           }
+                        },
+                        "format": {
+                          "description": "Format determines the output format (json or yaml).",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "json",
+                            "yaml"
+                          ]
                         },
                         "name": {
                           "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -1808,17 +1819,6 @@
                           "type": [
                             "string",
                             "null"
-                          ]
-                        },
-                        "output": {
-                          "description": "OutputFormat specifies the output format for the wait operation.",
-                          "type": [
-                            "string",
-                            "null"
-                          ],
-                          "enum": [
-                            "json",
-                            "yaml"
                           ]
                         },
                         "resource": {

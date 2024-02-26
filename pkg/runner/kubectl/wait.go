@@ -3,7 +3,6 @@ package kubectl
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
@@ -18,53 +17,42 @@ func Wait(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
-
-	args := []string{"wait"}
-
-	if collector.Name != "" {
-		args = append(args, fmt.Sprintf("%s/%s", collector.Resource, collector.Name))
-	} else {
-		args = append(args, collector.Resource)
+	cmd := v1alpha1.Command{
+		Cluster:    collector.Cluster,
+		Timeout:    collector.Timeout,
+		Entrypoint: "kubectl",
+		Args:       []string{"wait", collector.Resource},
 	}
-
 	if collector.For.Deletion != nil {
-		args = append(args, "--for=delete")
+		cmd.Args = append(cmd.Args, "--for=delete")
 	} else if collector.For.Condition != nil {
 		if collector.For.Condition.Name == "" {
 			return nil, errors.New("a condition name must be specified for condition wait type")
 		}
 		if collector.For.Condition.Value != nil {
-			args = append(args, fmt.Sprintf(`--for=condition=%s="%s"`, collector.For.Condition.Name, *collector.For.Condition.Value))
+			cmd.Args = append(cmd.Args, fmt.Sprintf(`--for=condition=%s="%s"`, collector.For.Condition.Name, *collector.For.Condition.Value))
 		} else {
-			args = append(args, fmt.Sprintf("--for=condition=%s", collector.For.Condition.Name))
+			cmd.Args = append(cmd.Args, fmt.Sprintf("--for=condition=%s", collector.For.Condition.Name))
 		}
 	} else {
 		return nil, errors.New("either a deletion or a condition must be specified")
 	}
-
+	if collector.Name != "" {
+		cmd.Args = append(cmd.Args, collector.Name)
+	}
 	if collector.Selector != "" {
-		args = append(args, "-l", collector.Selector)
+		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
-
-	if collector.Namespace != "" {
-		args = append(args, "-n", collector.Namespace)
-	} else {
-		args = append(args, "-n", "$NAMESPACE")
+	// TODO: what if cluster scoped resource ?
+	namespace := collector.Namespace
+	if collector.Namespace == "" {
+		namespace = "$NAMESPACE"
 	}
-	if collector.Timeout != nil {
-		args = append(args, fmt.Sprintf("--timeout=%s", collector.Timeout.Duration.String()))
-	} else {
-		args = append(args, fmt.Sprintf("--timeout=%s", (time.Duration(-1)*time.Second).String()))
+	cmd.Args = append(cmd.Args, "-n", namespace)
+	if collector.Format != "" {
+		cmd.Args = append(cmd.Args, "-o", string(collector.Format))
 	}
-	if collector.OutputFormat != nil {
-		args = append(args, fmt.Sprintf("--output=%s", *collector.OutputFormat))
-	}
-
-	cmd := v1alpha1.Command{
-		Cluster:    collector.Cluster,
-		Timeout:    collector.Timeout,
-		Entrypoint: "kubectl",
-		Args:       args,
-	}
+	// disable default timeout in the command
+	cmd.Args = append(cmd.Args, "--timeout=-1s")
 	return &cmd, nil
 }
