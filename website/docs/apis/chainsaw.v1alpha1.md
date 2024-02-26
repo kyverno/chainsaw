@@ -662,7 +662,19 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).</p> |
 | `resource` | `string` | :white_check_mark: |  | <p>Resource type on which the wait operation will be applied.</p> |
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
-| `condition` | `string` | :white_check_mark: |  | <p>Condition represents the specific condition to wait for. Example: "Available", "Ready", etc.</p> |
+| `condition` | `string` |  |  | <p>Condition represents the specific condition to wait for. Example: "Available", "Ready", etc.</p> |
+| `waitType` | [`WaitType`](#chainsaw-kyverno-io-v1alpha1-WaitType) | :white_check_mark: |  | <p>WaitType specifies the type of wait operation: "condition" or "delete".</p> |
 | `allNamespaces` | `bool` |  |  | <p>AllNamespaces indicates whether to wait for resources in all namespaces.</p> |
+
+## `WaitType`     {#chainsaw-kyverno-io-v1alpha1-WaitType}
+
+(Alias of `string`)
+
+**Appears in:**
+    
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+<p>WaitType represents the type of wait operation.</p>
+
 
   

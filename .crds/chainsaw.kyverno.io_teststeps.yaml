@@ -431,9 +431,16 @@ spec:
                           description: Timeout for the operation. Specifies how long
                             to wait for the condition to be met before timing out.
                           type: string
+                        waitType:
+                          description: 'WaitType specifies the type of wait operation:
+                            "condition" or "delete".'
+                          enum:
+                          - delete
+                          - condition
+                          type: string
                       required:
-                      - condition
                       - resource
+                      - waitType
                       type: object
                   type: object
                 type: array
@@ -824,9 +831,16 @@ spec:
                           description: Timeout for the operation. Specifies how long
                             to wait for the condition to be met before timing out.
                           type: string
+                        waitType:
+                          description: 'WaitType specifies the type of wait operation:
+                            "condition" or "delete".'
+                          enum:
+                          - delete
+                          - condition
+                          type: string
                       required:
-                      - condition
                       - resource
+                      - waitType
                       type: object
                   type: object
                 type: array
