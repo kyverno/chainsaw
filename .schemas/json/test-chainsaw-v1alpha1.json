@@ -917,20 +917,24 @@
                           "type": "object",
                           "properties": {
                             "condition": {
-                              "description": "Condition represents parameters for waiting on a specific condition of a resource.",
+                              "description": "Condition specifies the condition to wait for.",
                               "type": "object",
                               "required": [
-                                "conditionName"
+                                "name"
                               ],
                               "properties": {
-                                "conditionName": {
-                                  "description": "The specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                                "name": {
+                                  "description": "ConditioName is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
                                   "type": "string"
+                                },
+                                "value": {
+                                  "description": "The specific condition status to wait for, e.g., \"True\", \"False\".",
+                                  "type": "boolean"
                                 }
                               }
                             },
                             "delete": {
-                              "description": "Deletion represents parameters for waiting on a resource's deletion.",
+                              "description": "Deletion specifies parameters for waiting on a resource's deletion.",
                               "type": "object"
                             }
                           }
@@ -944,6 +948,13 @@
                         },
                         "namespace": {
                           "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "output": {
+                          "description": "OutputFormat specifies the output format for the wait operation.",
                           "type": [
                             "string",
                             "null"
@@ -1552,20 +1563,24 @@
                           "type": "object",
                           "properties": {
                             "condition": {
-                              "description": "Condition represents parameters for waiting on a specific condition of a resource.",
+                              "description": "Condition specifies the condition to wait for.",
                               "type": "object",
                               "required": [
-                                "conditionName"
+                                "name"
                               ],
                               "properties": {
-                                "conditionName": {
-                                  "description": "The specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                                "name": {
+                                  "description": "ConditioName is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
                                   "type": "string"
+                                },
+                                "value": {
+                                  "description": "The specific condition status to wait for, e.g., \"True\", \"False\".",
+                                  "type": "boolean"
                                 }
                               }
                             },
                             "delete": {
-                              "description": "Deletion represents parameters for waiting on a resource's deletion.",
+                              "description": "Deletion specifies parameters for waiting on a resource's deletion.",
                               "type": "object"
                             }
                           }
@@ -1579,6 +1594,13 @@
                         },
                         "namespace": {
                           "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "output": {
+                          "description": "OutputFormat specifies the output format for the wait operation.",
                           "type": [
                             "string",
                             "null"
