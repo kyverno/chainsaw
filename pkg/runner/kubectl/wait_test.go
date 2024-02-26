@@ -32,7 +32,7 @@ func TestWaitForResource(t *testing.T) {
 				Resource: "pods",
 				For: v1alpha1.For{
 					Condition: &v1alpha1.Condition{
-						ConditioName: "Ready",
+						ConditionName: "Ready",
 					},
 				},
 			},
@@ -65,7 +65,7 @@ func TestWaitForResource(t *testing.T) {
 				},
 				For: v1alpha1.For{
 					Condition: &v1alpha1.Condition{
-						ConditioName: "Ready",
+						ConditionName: "Ready",
 					},
 				},
 			},
@@ -81,7 +81,7 @@ func TestWaitForResource(t *testing.T) {
 				Resource: "pods",
 				For: v1alpha1.For{
 					Condition: &v1alpha1.Condition{
-						ConditioName: "Ready",
+						ConditionName: "Ready",
 					},
 				},
 				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
@@ -100,7 +100,7 @@ func TestWaitForResource(t *testing.T) {
 				Resource: "pods",
 				For: v1alpha1.For{
 					Condition: &v1alpha1.Condition{
-						ConditioName: "Ready",
+						ConditionName: "Ready",
 					},
 				},
 				Timeout: &metav1.Duration{Duration: 120 * time.Second},
@@ -122,7 +122,7 @@ func TestWaitForResource(t *testing.T) {
 				},
 				For: v1alpha1.For{
 					Condition: &v1alpha1.Condition{
-						ConditioName: "Ready",
+						ConditionName: "Ready",
 					},
 				},
 			},

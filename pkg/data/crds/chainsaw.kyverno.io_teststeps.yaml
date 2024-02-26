@@ -410,18 +410,22 @@ spec:
                           description: For specifies the condition to wait for.
                           properties:
                             condition:
-                              description: Condition represents parameters for waiting
-                                on a specific condition of a resource.
+                              description: Condition specifies the condition to wait
+                                for.
                               properties:
                                 conditionName:
-                                  description: The specific condition to wait for,
-                                    e.g., "Available", "Ready".
+                                  description: ConditioName is the specific condition
+                                    to wait for, e.g., "Available", "Ready".
                                   type: string
+                                conditionValue:
+                                  description: The specific condition status to wait
+                                    for, e.g., "True", "False".
+                                  type: boolean
                               required:
                               - conditionName
                               type: object
                             delete:
-                              description: Deletion represents parameters for waiting
+                              description: Deletion specifies parameters for waiting
                                 on a resource's deletion.
                               type: object
                           type: object
@@ -814,18 +818,22 @@ spec:
                           description: For specifies the condition to wait for.
                           properties:
                             condition:
-                              description: Condition represents parameters for waiting
-                                on a specific condition of a resource.
+                              description: Condition specifies the condition to wait
+                                for.
                               properties:
                                 conditionName:
-                                  description: The specific condition to wait for,
-                                    e.g., "Available", "Ready".
+                                  description: ConditioName is the specific condition
+                                    to wait for, e.g., "Available", "Ready".
                                   type: string
+                                conditionValue:
+                                  description: The specific condition status to wait
+                                    for, e.g., "True", "False".
+                                  type: boolean
                               required:
                               - conditionName
                               type: object
                             delete:
-                              description: Deletion represents parameters for waiting
+                              description: Deletion specifies parameters for waiting
                                 on a resource's deletion.
                               type: object
                           type: object

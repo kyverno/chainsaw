@@ -3,8 +3,10 @@ package v1alpha1
 import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 type For struct {
+	// Deletion specifies parameters for waiting on a resource's deletion.
 	// +optional
 	Deletion *Deletion `json:"delete,omitempty"`
+	// Condition specifies the condition to wait for.
 	// +optional
 	Condition *Condition `json:"condition,omitempty"`
 }
@@ -14,8 +16,11 @@ type Deletion struct{}
 
 // Condition represents parameters for waiting on a specific condition of a resource.
 type Condition struct {
-	// The specific condition to wait for, e.g., "Available", "Ready".
-	ConditioName string `json:"conditionName"`
+	// ConditioName is the specific condition to wait for, e.g., "Available", "Ready".
+	ConditionName string `json:"conditionName"`
+	// The specific condition status to wait for, e.g., "True", "False".
+	// +optional
+	ConditionValue *bool `json:"conditionValue,omitempty"`
 }
 
 // Wait specifies how to perform wait operations on resources.

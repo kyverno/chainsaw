@@ -177,7 +177,8 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `conditionName` | `string` | :white_check_mark: |  | <p>The specific condition to wait for, e.g., "Available", "Ready".</p> |
+| `conditionName` | `string` | :white_check_mark: |  | <p>ConditioName is the specific condition to wait for, e.g., "Available", "Ready".</p> |
+| `conditionValue` | `bool` |  |  | <p>The specific condition status to wait for, e.g., "True", "False".</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -404,8 +405,8 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `delete` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | *No description provided.* |
-| `condition` | [`Condition`](#chainsaw-kyverno-io-v1alpha1-Condition) |  |  | *No description provided.* |
+| `delete` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
+| `condition` | [`Condition`](#chainsaw-kyverno-io-v1alpha1-Condition) |  |  | <p>Condition specifies the condition to wait for.</p> |
 
 ## `Format`     {#chainsaw-kyverno-io-v1alpha1-Format}
 
