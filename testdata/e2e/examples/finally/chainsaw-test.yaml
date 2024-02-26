@@ -24,6 +24,7 @@ spec:
             foo: bar
     finally:
     - events:
+        timeout: 30s
         format: yaml
     - script:
         content: echo goodbye
