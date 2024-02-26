@@ -18,6 +18,10 @@ type Finally struct {
 	// +optional
 	Describe *Describe `json:"describe,omitempty"`
 
+	// Wait determines the resource wait collector to execute.
+	// +optional
+	Wait *Wait `json:"wait,omitempty"`
+
 	// Get determines the resource get collector to execute.
 	// +optional
 	Get *Get `json:"get,omitempty"`

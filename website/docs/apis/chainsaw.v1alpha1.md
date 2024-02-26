@@ -126,6 +126,7 @@ during the testing process.</p>
 | `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
 | `describe` | [`Describe`](#chainsaw-kyverno-io-v1alpha1-Describe) |  |  | <p>Describe determines the resource describe collector to execute.</p> |
+| `wait` | [`Wait`](#chainsaw-kyverno-io-v1alpha1-Wait) |  |  | <p>Wait determines the resource wait collector to execute.</p> |
 | `get` | [`Get`](#chainsaw-kyverno-io-v1alpha1-Get) |  |  | <p>Get determines the resource get collector to execute.</p> |
 | `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a deletion operation.</p> |
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
@@ -164,6 +165,20 @@ during the testing process.</p>
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 | `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
+
+## `Condition`     {#chainsaw-kyverno-io-v1alpha1-Condition}
+
+**Appears in:**
+    
+- [For](#chainsaw-kyverno-io-v1alpha1-For)
+
+<p>Condition represents parameters for waiting on a specific condition of a resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `name` | `string` | :white_check_mark: |  | <p>Name is the specific condition to wait for, e.g., "Available", "Ready".</p> |
+| `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
 
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -234,6 +249,15 @@ If a resource already exists in the cluster it will fail.</p>
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: |  | <p>ObjectReference determines objects to be deleted.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
+
+## `Deletion`     {#chainsaw-kyverno-io-v1alpha1-Deletion}
+
+**Appears in:**
+    
+- [For](#chainsaw-kyverno-io-v1alpha1-For)
+
+<p>Deletion represents parameters for waiting on a resource's deletion.</p>
+
 
 ## `Describe`     {#chainsaw-kyverno-io-v1alpha1-Describe}
 
@@ -366,11 +390,26 @@ with a match filter to determine if the verification should be considered.</p>
 | `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
 | `describe` | [`Describe`](#chainsaw-kyverno-io-v1alpha1-Describe) |  |  | <p>Describe determines the resource describe collector to execute.</p> |
+| `wait` | [`Wait`](#chainsaw-kyverno-io-v1alpha1-Wait) |  |  | <p>Wait determines the resource wait collector to execute.</p> |
 | `get` | [`Get`](#chainsaw-kyverno-io-v1alpha1-Get) |  |  | <p>Get determines the resource get collector to execute.</p> |
 | `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a deletion operation.</p> |
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
+
+## `For`     {#chainsaw-kyverno-io-v1alpha1-For}
+
+**Appears in:**
+    
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+<p>For specifies the condition to wait for.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `delete` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
+| `condition` | [`Condition`](#chainsaw-kyverno-io-v1alpha1-Condition) |  |  | <p>Condition specifies the condition to wait for.</p> |
 
 ## `Format`     {#chainsaw-kyverno-io-v1alpha1-Format}
 
@@ -380,6 +419,7 @@ with a match filter to determine if the verification should be considered.</p>
     
 - [Events](#chainsaw-kyverno-io-v1alpha1-Events)
 - [Get](#chainsaw-kyverno-io-v1alpha1-Get)
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
 
 <p>Format determines the output format (json or yaml).</p>
 
@@ -409,6 +449,7 @@ with a match filter to determine if the verification should be considered.</p>
 - [Describe](#chainsaw-kyverno-io-v1alpha1-Describe)
 - [Events](#chainsaw-kyverno-io-v1alpha1-Events)
 - [Get](#chainsaw-kyverno-io-v1alpha1-Get)
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
 
 <p>ObjectLabelsSelector represents a strategy to select objects.
 For a single object name and namespace are used to identify the object.
@@ -642,5 +683,24 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `delete` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Delete defines the timeout for the delete operation</p> |
 | `error` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Error defines the timeout for the error operation</p> |
 | `exec` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Exec defines the timeout for exec operations</p> |
+
+## `Wait`     {#chainsaw-kyverno-io-v1alpha1-Wait}
+
+**Appears in:**
+    
+- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
+- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+
+<p>Wait specifies how to perform wait operations on resources.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.</p> |
+| `cluster` | `string` |  |  | <p>Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).</p> |
+| `resource` | `string` | :white_check_mark: |  | <p>Resource type on which the wait operation will be applied.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `for` | [`For`](#chainsaw-kyverno-io-v1alpha1-For) | :white_check_mark: |  | <p>For specifies the condition to wait for.</p> |
+| `output` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>OutputFormat specifies the output format for the wait operation.</p> |
 
   

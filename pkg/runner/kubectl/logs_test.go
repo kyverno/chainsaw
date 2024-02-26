@@ -8,7 +8,7 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-func TestPodLogs(t *testing.T) {
+func TestLogs(t *testing.T) {
 	tests := []struct {
 		name      string
 		collector *v1alpha1.PodLogs

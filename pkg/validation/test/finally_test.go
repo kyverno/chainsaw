@@ -29,6 +29,14 @@ func TestValidateFinally(t *testing.T) {
 	exampleDescribe := &v1alpha1.Describe{
 		Resource: "pods",
 	}
+	exampleWait := &v1alpha1.Wait{
+		Resource: "pods",
+		For: v1alpha1.For{
+			Condition: &v1alpha1.Condition{
+				Name: "Ready",
+			},
+		},
+	}
 	exampleGet := &v1alpha1.Get{
 		Resource: "pods",
 	}
@@ -97,6 +105,12 @@ func TestValidateFinally(t *testing.T) {
 		name: "Only Describe statement provided",
 		input: v1alpha1.Finally{
 			Describe: exampleDescribe,
+		},
+		expectErr: false,
+	}, {
+		name: "Only Wait statement provided",
+		input: v1alpha1.Finally{
+			Wait: exampleWait,
 		},
 		expectErr: false,
 	}, {

@@ -397,6 +397,66 @@ spec:
                       required:
                       - duration
                       type: object
+                    wait:
+                      description: Wait determines the resource wait collector to
+                        execute.
+                      properties:
+                        cluster:
+                          description: Cluster defines the target cluster where the
+                            wait operation will be performed (default cluster will
+                            be used if not specified).
+                          type: string
+                        for:
+                          description: For specifies the condition to wait for.
+                          properties:
+                            condition:
+                              description: Condition specifies the condition to wait
+                                for.
+                              properties:
+                                name:
+                                  description: Name is the specific condition to wait
+                                    for, e.g., "Available", "Ready".
+                                  type: string
+                                value:
+                                  description: Value defines the specific condition
+                                    status to wait for, e.g., "True", "False".
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            delete:
+                              description: Deletion specifies parameters for waiting
+                                on a resource's deletion.
+                              type: object
+                          type: object
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                          type: string
+                        namespace:
+                          description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                          type: string
+                        output:
+                          description: OutputFormat specifies the output format for
+                            the wait operation.
+                          enum:
+                          - json
+                          - yaml
+                          type: string
+                        resource:
+                          description: Resource type on which the wait operation will
+                            be applied.
+                          type: string
+                        selector:
+                          description: Selector defines labels selector.
+                          type: string
+                        timeout:
+                          description: Timeout for the operation. Specifies how long
+                            to wait for the condition to be met before timing out.
+                          type: string
+                      required:
+                      - for
+                      - resource
+                      type: object
                   type: object
                 type: array
               cluster:
@@ -751,6 +811,66 @@ spec:
                           type: string
                       required:
                       - duration
+                      type: object
+                    wait:
+                      description: Wait determines the resource wait collector to
+                        execute.
+                      properties:
+                        cluster:
+                          description: Cluster defines the target cluster where the
+                            wait operation will be performed (default cluster will
+                            be used if not specified).
+                          type: string
+                        for:
+                          description: For specifies the condition to wait for.
+                          properties:
+                            condition:
+                              description: Condition specifies the condition to wait
+                                for.
+                              properties:
+                                name:
+                                  description: Name is the specific condition to wait
+                                    for, e.g., "Available", "Ready".
+                                  type: string
+                                value:
+                                  description: Value defines the specific condition
+                                    status to wait for, e.g., "True", "False".
+                                  type: string
+                              required:
+                              - name
+                              type: object
+                            delete:
+                              description: Deletion specifies parameters for waiting
+                                on a resource's deletion.
+                              type: object
+                          type: object
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                          type: string
+                        namespace:
+                          description: 'Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
+                          type: string
+                        output:
+                          description: OutputFormat specifies the output format for
+                            the wait operation.
+                          enum:
+                          - json
+                          - yaml
+                          type: string
+                        resource:
+                          description: Resource type on which the wait operation will
+                            be applied.
+                          type: string
+                        selector:
+                          description: Selector defines labels selector.
+                          type: string
+                        timeout:
+                          description: Timeout for the operation. Specifies how long
+                            to wait for the condition to be met before timing out.
+                          type: string
+                      required:
+                      - for
+                      - resource
                       type: object
                   type: object
                 type: array
