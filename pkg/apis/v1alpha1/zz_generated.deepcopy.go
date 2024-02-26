@@ -1226,7 +1226,7 @@ func (in *Wait) DeepCopyInto(out *Wait) {
 	in.For.DeepCopyInto(&out.For)
 	if in.OutputFormat != nil {
 		in, out := &in.OutputFormat, &out.OutputFormat
-		*out = new(OutputFormatType)
+		*out = new(Format)
 		**out = **in
 	}
 	return

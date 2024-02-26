@@ -7,7 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
 
-func WaitForResource(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
+func Wait(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, nil
 	}

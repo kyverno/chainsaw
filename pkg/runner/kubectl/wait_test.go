@@ -9,7 +9,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func TestWaitForResource(t *testing.T) {
+func TestWait(t *testing.T) {
 	tests := []struct {
 		name    string
 		waiter  *v1alpha1.Wait
@@ -142,7 +142,7 @@ func TestWaitForResource(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := WaitForResource(tt.waiter)
+			got, err := Wait(tt.waiter)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
