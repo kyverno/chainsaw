@@ -10,8 +10,7 @@ type For struct {
 }
 
 // Deletion represents parameters for waiting on a resource's deletion.
-type Deletion struct {
-}
+type Deletion struct{}
 
 // Condition represents parameters for waiting on a specific condition of a resource.
 type Condition struct {
