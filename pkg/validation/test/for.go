@@ -15,7 +15,7 @@ func ValidateFor(path *field.Path, obj *v1alpha1.For) field.ErrorList {
 			errs = append(errs, field.Invalid(path, obj, "a deletion or a condition must be specified (found both)"))
 		}
 		if obj.Condition != nil && obj.Condition.Name == "" {
-			errs = append(errs, field.Invalid(path.Child("name"), obj, "a condition name must be specified"))
+			errs = append(errs, field.Invalid(path.Child("condition").Child("name"), obj, "a condition name must be specified"))
 		}
 	}
 	return errs

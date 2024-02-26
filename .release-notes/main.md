@@ -19,6 +19,7 @@ Release notes for `TODO`.
 - Added support for custom bindings (local variables) at the test, step and operation level
 - Added support for custom environment variables in `script` and `command` operations
 - Added support for loading resources from a file in `chainsaw assert` command
+- Added new `wait` collector to invoke `kubectl wait ...` 
 
 ## 🔧 Fixes 🔧
 
