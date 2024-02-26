@@ -2,6 +2,7 @@ package v1alpha1
 
 import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
+// For specifies the condition to wait for.
 type For struct {
 	// Deletion specifies parameters for waiting on a resource's deletion.
 	// +optional
