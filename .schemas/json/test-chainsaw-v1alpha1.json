@@ -2746,6 +2746,105 @@
                           "type": "string"
                         }
                       }
+                    },
+                    "wait": {
+                      "description": "Wait determines the resource wait collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "for",
+                        "resource"
+                      ],
+                      "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "for": {
+                          "description": "For specifies the condition to wait for.",
+                          "type": "object",
+                          "properties": {
+                            "condition": {
+                              "description": "Condition specifies the condition to wait for.",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "required": [
+                                "name"
+                              ],
+                              "properties": {
+                                "name": {
+                                  "description": "Name defines the specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "description": "Value defines the specific condition status to wait for, e.g., \"True\", \"False\".",
+                                  "type": [
+                                    "string",
+                                    "null"
+                                  ]
+                                }
+                              }
+                            },
+                            "deletion": {
+                              "description": "Deletion specifies parameters for waiting on a resource's deletion.",
+                              "type": [
+                                "object",
+                                "null"
+                              ]
+                            }
+                          }
+                        },
+                        "format": {
+                          "description": "Format determines the output format (json or yaml).",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "json",
+                            "yaml"
+                          ]
+                        },
+                        "name": {
+                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "resource": {
+                          "description": "Resource type on which the wait operation will be applied.",
+                          "type": "string"
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
                     }
                   }
                 }

@@ -19,3 +19,4 @@
 - [template](template/README.md)
 - [timeout](timeout/README.md)
 - [values](values/README.md)
+- [wait](wait/README.md)

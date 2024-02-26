@@ -191,6 +191,12 @@ func (p *stepProcessor) tryOperations(ctx context.Context, bindings binding.Bind
 			register(p.scriptOperation(ctx, bindings, *handler.Script))
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(ctx, bindings, *handler.Sleep))
+		} else if handler.Wait != nil {
+			cmd, err := kubectl.Wait(handler.Wait)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -246,6 +252,12 @@ func (p *stepProcessor) catchOperations(ctx context.Context, bindings binding.Bi
 			register(p.scriptOperation(ctx, bindings, *handler.Script))
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(ctx, bindings, *handler.Sleep))
+		} else if handler.Wait != nil {
+			cmd, err := kubectl.Wait(handler.Wait)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -301,6 +313,12 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, bindings binding.
 			register(p.scriptOperation(ctx, bindings, *handler.Script))
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(ctx, bindings, *handler.Sleep))
+		} else if handler.Wait != nil {
+			cmd, err := kubectl.Wait(handler.Wait)
+			if err != nil {
+				return nil, err
+			}
+			register(p.commandOperation(ctx, bindings, *cmd))
 		} else {
 			return nil, errors.New("no operation found")
 		}
