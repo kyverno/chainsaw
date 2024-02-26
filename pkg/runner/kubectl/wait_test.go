@@ -40,6 +40,18 @@ func TestWaitForResource(t *testing.T) {
 			wantErr: false,
 		},
 		{
+			name: "valid resource and delete",
+			waiter: &v1alpha1.Wait{
+				Resource: "pods",
+				WaitType: v1alpha1.WaitTypeDelete,
+			},
+			want: &v1alpha1.Command{
+				Entrypoint: "kubectl",
+				Args:       []string{"wait", "pods", "--for=delete", "-n", "$NAMESPACE"},
+			},
+			wantErr: false,
+		},
+		{
 			name: "with resource name",
 			waiter: &v1alpha1.Wait{
 				Resource: "pods",
