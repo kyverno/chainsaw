@@ -10,6 +10,9 @@
       "type": [
         "string",
         "null"
+      ],
+      "enum": [
+        "chainsaw.kyverno.io/v1alpha1"
       ]
     },
     "kind": {
@@ -17,15 +20,24 @@
       "type": [
         "string",
         "null"
+      ],
+      "enum": [
+        "Test"
       ]
     },
     "metadata": {
       "description": "ObjectMeta is metadata that all persisted resources must have, which includes all objects users must create.",
-      "type": "object",
+      "type": [
+        "object",
+        "null"
+      ],
       "properties": {
         "annotations": {
           "description": "Annotations is an unstructured key value map stored with a resource that may be set by external tools to store and retrieve arbitrary metadata. They are not queryable and should be preserved when modifying objects. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations",
-          "type": "object",
+          "type": [
+            "object",
+            "null"
+          ],
           "additionalProperties": {
             "type": [
               "string",
@@ -43,7 +55,10 @@
         },
         "deletionGracePeriodSeconds": {
           "description": "Number of seconds allowed for this object to gracefully terminate before it will be removed from the system. Only set when deletionTimestamp is also set. May only be shortened. Read-only.",
-          "type": "integer",
+          "type": [
+            "integer",
+            "null"
+          ],
           "format": "int64"
         },
         "deletionTimestamp": {
@@ -77,12 +92,18 @@
         },
         "generation": {
           "description": "A sequence number representing a specific generation of the desired state. Populated by the system. Read-only.",
-          "type": "integer",
+          "type": [
+            "integer",
+            "null"
+          ],
           "format": "int64"
         },
         "labels": {
           "description": "Map of string keys and values that can be used to organize and categorize (scope and select) objects. May match selectors of replication controllers and services. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels",
-          "type": "object",
+          "type": [
+            "object",
+            "null"
+          ],
           "additionalProperties": {
             "type": [
               "string",
@@ -98,7 +119,10 @@
           ],
           "items": {
             "description": "ManagedFieldsEntry is a workflow-id, a FieldSet and the group version of the resource that the fieldset applies to.",
-            "type": "object",
+            "type": [
+              "object",
+              "null"
+            ],
             "properties": {
               "apiVersion": {
                 "description": "APIVersion defines the version of this resource that this field set applies to. The format is \"group/version\" just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted.",
@@ -116,7 +140,10 @@
               },
               "fieldsV1": {
                 "description": "FieldsV1 stores a set of fields in a data structure like a Trie, in JSON format.\n\nEach key is either a '.' representing the field itself, and will always map to an empty set, or a string representing a sub-field or item. The string will follow one of these four formats: 'f:<name>', where <name> is the name of a field in a struct, or key in a map 'v:<value>', where <value> is the exact json formatted value of a list item 'i:<index>', where <index> is position of a item in a list 'k:<keys>', where <keys> is a map of  a list item's key fields to their unique values If a key maps to an empty Fields value, the field that key represents is part of the set.\n\nThe exact format is defined in sigs.k8s.io/structured-merge-diff",
-                "type": "object"
+                "type": [
+                  "object",
+                  "null"
+                ]
               },
               "manager": {
                 "description": "Manager is an identifier of the workflow managing these fields.",
@@ -172,7 +199,10 @@
           ],
           "items": {
             "description": "OwnerReference contains enough information to let you identify an owning object. An owning object must be in the same namespace as the dependent, or be cluster-scoped, so there is no namespace field.",
-            "type": "object",
+            "type": [
+              "object",
+              "null"
+            ],
             "required": [
               "apiVersion",
               "kind",
@@ -186,11 +216,17 @@
               },
               "blockOwnerDeletion": {
                 "description": "If true, AND if the owner has the \"foregroundDeletion\" finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. See https://kubernetes.io/docs/concepts/architecture/garbage-collection/#foreground-deletion for how the garbage collector interacts with this field and enforces the foreground deletion. Defaults to false. To set this field, a user needs \"delete\" permission of the owner, otherwise 422 (Unprocessable Entity) will be returned.",
-                "type": "boolean"
+                "type": [
+                  "boolean",
+                  "null"
+                ]
               },
               "controller": {
                 "description": "If true, this reference points to the managing controller.",
-                "type": "boolean"
+                "type": [
+                  "boolean",
+                  "null"
+                ]
               },
               "kind": {
                 "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
@@ -235,7 +271,10 @@
     },
     "spec": {
       "description": "Test spec.",
-      "type": "object",
+      "type": [
+        "object",
+        "null"
+      ],
       "required": [
         "steps"
       ],
@@ -248,7 +287,10 @@
           ],
           "items": {
             "description": "Binding represents a key/value set as a binding in an executing test.",
-            "type": "object",
+            "type": [
+              "object",
+              "null"
+            ],
             "required": [
               "name",
               "value"
@@ -274,7 +316,10 @@
         },
         "concurrent": {
           "description": "Concurrent determines whether the test should run concurrently with other tests.",
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "delayBeforeCleanup": {
           "description": "DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.",
@@ -310,18 +355,27 @@
         },
         "skip": {
           "description": "Skip determines whether the test should skipped.",
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "skipDelete": {
           "description": "SkipDelete determines whether the resources created by the test should be deleted after the test is executed.",
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "steps": {
           "description": "Steps defining the test.",
           "type": "array",
           "items": {
             "description": "TestSpecStep contains the test step definition used in a test spec.",
-            "type": "object",
+            "type": [
+              "object",
+              "null"
+            ],
             "required": [
               "try"
             ],
@@ -334,7 +388,10 @@
                 ],
                 "items": {
                   "description": "Binding represents a key/value set as a binding in an executing test.",
-                  "type": "object",
+                  "type": [
+                    "object",
+                    "null"
+                  ],
                   "required": [
                     "name",
                     "value"
@@ -359,11 +416,17 @@
                 ],
                 "items": {
                   "description": "Catch defines actions to be executed on failure.",
-                  "type": "object",
+                  "type": [
+                    "object",
+                    "null"
+                  ],
                   "properties": {
                     "command": {
                       "description": "Command defines a command to run.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "entrypoint"
                       ],
@@ -389,7 +452,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -429,7 +495,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -448,7 +517,10 @@
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -461,7 +533,10 @@
                     },
                     "delete": {
                       "description": "Delete represents a deletion operation.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "ref"
                       ],
@@ -474,7 +549,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -506,7 +584,10 @@
                           ],
                           "items": {
                             "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "check"
                             ],
@@ -540,7 +621,10 @@
                             },
                             "labels": {
                               "description": "Label selector to match objects to delete",
-                              "type": "object",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
                               "additionalProperties": {
                                 "type": [
                                   "string",
@@ -566,7 +650,10 @@
                         },
                         "template": {
                           "description": "Template determines whether resources should be considered for templating.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -579,7 +666,10 @@
                     },
                     "describe": {
                       "description": "Describe determines the resource describe collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "resource"
                       ],
@@ -618,7 +708,10 @@
                         },
                         "showEvents": {
                           "description": "Show Events indicates whether to include related events.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -638,7 +731,10 @@
                     },
                     "events": {
                       "description": "Events determines the events collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -690,7 +786,10 @@
                     },
                     "get": {
                       "description": "Get determines the resource get collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "resource"
                       ],
@@ -749,7 +848,10 @@
                     },
                     "podLogs": {
                       "description": "PodLogs determines the pod logs collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -788,7 +890,10 @@
                         },
                         "tail": {
                           "description": "Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.",
-                          "type": "integer"
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -801,7 +906,10 @@
                     },
                     "script": {
                       "description": "Script defines a script to run.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -811,7 +919,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -854,7 +965,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -873,7 +987,10 @@
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -886,7 +1003,10 @@
                     },
                     "sleep": {
                       "description": "Sleep defines zzzz.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "duration"
                       ],
@@ -899,7 +1019,10 @@
                     },
                     "wait": {
                       "description": "Wait determines the resource wait collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "for",
                         "resource"
@@ -917,21 +1040,34 @@
                           "type": "object",
                           "properties": {
                             "condition": {
-                              "description": "Condition represents parameters for waiting on a specific condition of a resource.",
-                              "type": "object",
+                              "description": "Condition specifies the condition to wait for.",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
                               "required": [
-                                "conditionName"
+                                "name"
                               ],
                               "properties": {
-                                "conditionName": {
-                                  "description": "The specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                                "name": {
+                                  "description": "ConditioName is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
                                   "type": "string"
+                                },
+                                "value": {
+                                  "description": "The specific condition status to wait for, e.g., \"True\", \"False\".",
+                                  "type": [
+                                    "boolean",
+                                    "null"
+                                  ]
                                 }
                               }
                             },
                             "delete": {
-                              "description": "Deletion represents parameters for waiting on a resource's deletion.",
-                              "type": "object"
+                              "description": "Deletion specifies parameters for waiting on a resource's deletion.",
+                              "type": [
+                                "object",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -944,6 +1080,13 @@
                         },
                         "namespace": {
                           "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "output": {
+                          "description": "OutputFormat specifies the output format for the wait operation.",
                           "type": [
                             "string",
                             "null"
@@ -994,11 +1137,17 @@
                 ],
                 "items": {
                   "description": "Finally defines actions to be executed at the end of a test.",
-                  "type": "object",
+                  "type": [
+                    "object",
+                    "null"
+                  ],
                   "properties": {
                     "command": {
                       "description": "Command defines a command to run.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "entrypoint"
                       ],
@@ -1024,7 +1173,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1064,7 +1216,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1083,7 +1238,10 @@
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1096,7 +1254,10 @@
                     },
                     "delete": {
                       "description": "Delete represents a deletion operation.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "ref"
                       ],
@@ -1109,7 +1270,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1141,7 +1305,10 @@
                           ],
                           "items": {
                             "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "check"
                             ],
@@ -1175,7 +1342,10 @@
                             },
                             "labels": {
                               "description": "Label selector to match objects to delete",
-                              "type": "object",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
                               "additionalProperties": {
                                 "type": [
                                   "string",
@@ -1201,7 +1371,10 @@
                         },
                         "template": {
                           "description": "Template determines whether resources should be considered for templating.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1214,7 +1387,10 @@
                     },
                     "describe": {
                       "description": "Describe determines the resource describe collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "resource"
                       ],
@@ -1253,7 +1429,10 @@
                         },
                         "showEvents": {
                           "description": "Show Events indicates whether to include related events.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1273,7 +1452,10 @@
                     },
                     "events": {
                       "description": "Events determines the events collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -1325,7 +1507,10 @@
                     },
                     "get": {
                       "description": "Get determines the resource get collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "resource"
                       ],
@@ -1384,7 +1569,10 @@
                     },
                     "podLogs": {
                       "description": "PodLogs determines the pod logs collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -1423,7 +1611,10 @@
                         },
                         "tail": {
                           "description": "Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.",
-                          "type": "integer"
+                          "type": [
+                            "integer",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1436,7 +1627,10 @@
                     },
                     "script": {
                       "description": "Script defines a script to run.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -1446,7 +1640,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1489,7 +1686,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1508,7 +1708,10 @@
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1521,7 +1724,10 @@
                     },
                     "sleep": {
                       "description": "Sleep defines zzzz.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "duration"
                       ],
@@ -1534,7 +1740,10 @@
                     },
                     "wait": {
                       "description": "Wait determines the resource wait collector to execute.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "for",
                         "resource"
@@ -1552,21 +1761,34 @@
                           "type": "object",
                           "properties": {
                             "condition": {
-                              "description": "Condition represents parameters for waiting on a specific condition of a resource.",
-                              "type": "object",
+                              "description": "Condition specifies the condition to wait for.",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
                               "required": [
-                                "conditionName"
+                                "name"
                               ],
                               "properties": {
-                                "conditionName": {
-                                  "description": "The specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                                "name": {
+                                  "description": "ConditioName is the specific condition to wait for, e.g., \"Available\", \"Ready\".",
                                   "type": "string"
+                                },
+                                "value": {
+                                  "description": "The specific condition status to wait for, e.g., \"True\", \"False\".",
+                                  "type": [
+                                    "boolean",
+                                    "null"
+                                  ]
                                 }
                               }
                             },
                             "delete": {
-                              "description": "Deletion represents parameters for waiting on a resource's deletion.",
-                              "type": "object"
+                              "description": "Deletion specifies parameters for waiting on a resource's deletion.",
+                              "type": [
+                                "object",
+                                "null"
+                              ]
                             }
                           }
                         },
@@ -1579,6 +1801,13 @@
                         },
                         "namespace": {
                           "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "output": {
+                          "description": "OutputFormat specifies the output format for the wait operation.",
                           "type": [
                             "string",
                             "null"
@@ -1616,15 +1845,24 @@
               },
               "skipDelete": {
                 "description": "SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.",
-                "type": "boolean"
+                "type": [
+                  "boolean",
+                  "null"
+                ]
               },
               "template": {
                 "description": "Template determines whether resources should be considered for templating.",
-                "type": "boolean"
+                "type": [
+                  "boolean",
+                  "null"
+                ]
               },
               "timeouts": {
                 "description": "Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.",
-                "type": "object",
+                "type": [
+                  "object",
+                  "null"
+                ],
                 "properties": {
                   "apply": {
                     "description": "Apply defines the timeout for the apply operation",
@@ -1676,11 +1914,17 @@
                 "minItems": 1,
                 "items": {
                   "description": "Operation defines a single operation, only one action is permitted for a given operation.",
-                  "type": "object",
+                  "type": [
+                    "object",
+                    "null"
+                  ],
                   "properties": {
                     "apply": {
                       "description": "Apply represents resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -1690,7 +1934,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1716,7 +1963,10 @@
                         },
                         "dryRun": {
                           "description": "DryRun determines whether the file should be applied in dry run mode.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
@@ -1726,7 +1976,10 @@
                           ],
                           "items": {
                             "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "check"
                             ],
@@ -1756,7 +2009,10 @@
                         },
                         "template": {
                           "description": "Template determines whether resources should be considered for templating.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1769,7 +2025,10 @@
                     },
                     "assert": {
                       "description": "Assert represents an assertion to be made. It checks whether the conditions specified in the assertion hold true.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -1779,7 +2038,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1816,7 +2078,10 @@
                         },
                         "template": {
                           "description": "Template determines whether resources should be considered for templating.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1829,7 +2094,10 @@
                     },
                     "command": {
                       "description": "Command defines a command to run.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "entrypoint"
                       ],
@@ -1855,7 +2123,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1895,7 +2166,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1914,7 +2188,10 @@
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -1927,11 +2204,17 @@
                     },
                     "continueOnError": {
                       "description": "ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.",
-                      "type": "boolean"
+                      "type": [
+                        "boolean",
+                        "null"
+                      ]
                     },
                     "create": {
                       "description": "Create represents a creation operation.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -1941,7 +2224,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -1967,7 +2253,10 @@
                         },
                         "dryRun": {
                           "description": "DryRun determines whether the file should be applied in dry run mode.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
@@ -1977,7 +2266,10 @@
                           ],
                           "items": {
                             "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "check"
                             ],
@@ -2007,7 +2299,10 @@
                         },
                         "template": {
                           "description": "Template determines whether resources should be considered for templating.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -2020,7 +2315,10 @@
                     },
                     "delete": {
                       "description": "Delete represents a deletion operation.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "ref"
                       ],
@@ -2033,7 +2331,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -2065,7 +2366,10 @@
                           ],
                           "items": {
                             "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "check"
                             ],
@@ -2099,7 +2403,10 @@
                             },
                             "labels": {
                               "description": "Label selector to match objects to delete",
-                              "type": "object",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
                               "additionalProperties": {
                                 "type": [
                                   "string",
@@ -2125,7 +2432,10 @@
                         },
                         "template": {
                           "description": "Template determines whether resources should be considered for templating.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -2145,7 +2455,10 @@
                     },
                     "error": {
                       "description": "Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -2155,7 +2468,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -2192,7 +2508,10 @@
                         },
                         "template": {
                           "description": "Template determines whether resources should be considered for templating.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -2205,7 +2524,10 @@
                     },
                     "patch": {
                       "description": "Patch represents a patch operation.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -2215,7 +2537,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -2241,7 +2566,10 @@
                         },
                         "dryRun": {
                           "description": "DryRun determines whether the file should be applied in dry run mode.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
@@ -2251,7 +2579,10 @@
                           ],
                           "items": {
                             "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "check"
                             ],
@@ -2281,7 +2612,10 @@
                         },
                         "template": {
                           "description": "Template determines whether resources should be considered for templating.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -2294,7 +2628,10 @@
                     },
                     "script": {
                       "description": "Script defines a script to run.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -2304,7 +2641,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -2347,7 +2687,10 @@
                           ],
                           "items": {
                             "description": "Binding represents a key/value set as a binding in an executing test.",
-                            "type": "object",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
                             "required": [
                               "name",
                               "value"
@@ -2366,7 +2709,10 @@
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
-                          "type": "boolean"
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "timeout": {
                           "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
@@ -2379,7 +2725,10 @@
                     },
                     "sleep": {
                       "description": "Sleep defines zzzz.",
-                      "type": "object",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
                       "required": [
                         "duration"
                       ],
@@ -2398,11 +2747,17 @@
         },
         "template": {
           "description": "Template determines whether resources should be considered for templating.",
-          "type": "boolean"
+          "type": [
+            "boolean",
+            "null"
+          ]
         },
         "timeouts": {
           "description": "Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.",
-          "type": "object",
+          "type": [
+            "object",
+            "null"
+          ],
           "properties": {
             "apply": {
               "description": "Apply defines the timeout for the apply operation",
