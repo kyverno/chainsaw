@@ -488,17 +488,17 @@ spec:
                                     description: Condition specifies the condition
                                       to wait for.
                                     properties:
-                                      conditionName:
+                                      name:
                                         description: ConditioName is the specific
                                           condition to wait for, e.g., "Available",
                                           "Ready".
                                         type: string
-                                      conditionValue:
+                                      value:
                                         description: The specific condition status
                                           to wait for, e.g., "True", "False".
                                         type: boolean
                                     required:
-                                    - conditionName
+                                    - name
                                     type: object
                                   delete:
                                     description: Deletion specifies parameters for
@@ -922,17 +922,17 @@ spec:
                                     description: Condition specifies the condition
                                       to wait for.
                                     properties:
-                                      conditionName:
+                                      name:
                                         description: ConditioName is the specific
                                           condition to wait for, e.g., "Available",
                                           "Ready".
                                         type: string
-                                      conditionValue:
+                                      value:
                                         description: The specific condition status
                                           to wait for, e.g., "True", "False".
                                         type: boolean
                                     required:
-                                    - conditionName
+                                    - name
                                     type: object
                                   delete:
                                     description: Deletion specifies parameters for
