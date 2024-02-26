@@ -14,19 +14,8 @@ type PodLogs struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
-	// Namespace of the referent.
-	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
-	// +optional
-	Namespace string `json:"namespace,omitempty"`
-
-	// Name of the referent.
-	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
-	// +optional
-	Name string `json:"name,omitempty"`
-
-	// Selector defines labels selector.
-	// +optional
-	Selector string `json:"selector,omitempty"`
+	// ObjectLabelsSelector determines the selection process of referenced objects.
+	ObjectLabelsSelector `json:",inline"`
 
 	// Container in pod to get logs from else --all-containers is used.
 	// +optional

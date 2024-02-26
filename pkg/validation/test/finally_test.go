@@ -13,7 +13,9 @@ import (
 
 func TestValidateFinally(t *testing.T) {
 	examplePodLogs := &v1alpha1.PodLogs{
-		Selector: "app=example",
+		ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+			Selector: "app=example",
+		},
 	}
 	exampleEvents := &v1alpha1.Events{}
 	exampleCommand := &v1alpha1.Command{
