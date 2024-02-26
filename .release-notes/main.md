@@ -10,8 +10,6 @@ Release notes for `TODO`.
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
-
-## 📚 Docs 📚
 -->
 
 ## 💫 New features 💫
@@ -32,3 +30,7 @@ Release notes for `TODO`.
 
 - Temporary `KUBECONFIG` files are now created in `/tmp` folder
 - Stopped overriding the `PATH` environment variable
+
+## 📚 Docs 📚
+
+- Added chainsaw capabilities in the quick start guide
