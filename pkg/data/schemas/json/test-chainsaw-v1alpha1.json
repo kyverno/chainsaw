@@ -751,7 +751,15 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml"
+                            "yaml",
+                            "name",
+                            "go-template",
+                            "go-template-file",
+                            "template",
+                            "templatefile",
+                            "jsonpath",
+                            "jsonpath-as-json",
+                            "jsonpath-file"
                           ]
                         },
                         "name": {
@@ -809,7 +817,15 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml"
+                            "yaml",
+                            "name",
+                            "go-template",
+                            "go-template-file",
+                            "template",
+                            "templatefile",
+                            "jsonpath",
+                            "jsonpath-as-json",
+                            "jsonpath-file"
                           ]
                         },
                         "name": {
@@ -1090,6 +1106,18 @@
                           "type": [
                             "string",
                             "null"
+                          ],
+                          "enum": [
+                            "json",
+                            "yaml",
+                            "name",
+                            "go-template",
+                            "go-template-file",
+                            "template",
+                            "templatefile",
+                            "jsonpath",
+                            "jsonpath-as-json",
+                            "jsonpath-file"
                           ]
                         },
                         "resource": {
@@ -1472,7 +1500,15 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml"
+                            "yaml",
+                            "name",
+                            "go-template",
+                            "go-template-file",
+                            "template",
+                            "templatefile",
+                            "jsonpath",
+                            "jsonpath-as-json",
+                            "jsonpath-file"
                           ]
                         },
                         "name": {
@@ -1530,7 +1566,15 @@
                           ],
                           "enum": [
                             "json",
-                            "yaml"
+                            "yaml",
+                            "name",
+                            "go-template",
+                            "go-template-file",
+                            "template",
+                            "templatefile",
+                            "jsonpath",
+                            "jsonpath-as-json",
+                            "jsonpath-file"
                           ]
                         },
                         "name": {
@@ -1811,6 +1855,18 @@
                           "type": [
                             "string",
                             "null"
+                          ],
+                          "enum": [
+                            "json",
+                            "yaml",
+                            "name",
+                            "go-template",
+                            "go-template-file",
+                            "template",
+                            "templatefile",
+                            "jsonpath",
+                            "jsonpath-as-json",
+                            "jsonpath-file"
                           ]
                         },
                         "resource": {
