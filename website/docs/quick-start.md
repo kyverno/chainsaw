@@ -146,3 +146,8 @@ Tests Summary...
 - Skipped tests 0
 Done.
 ```
+### Chainsaw Charaterstics 
+
+**Resource diff in assertion failures:** Chainsaw offers detailed resource diffs upon assertion failures. It provides a clear view of discrepancies between expected and actual resource.
+
+**Resource templating support:** Chainsaw simplifies dynamic resource configuration with it's templating support. Instead on relying on `envsubst` for dynamic substitution of env-variable. This eliminates the need of any preprocessing step.
