@@ -166,6 +166,19 @@ during the testing process.</p>
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 | `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
+## `Condition`     {#chainsaw-kyverno-io-v1alpha1-Condition}
+
+**Appears in:**
+    
+- [For](#chainsaw-kyverno-io-v1alpha1-For)
+
+<p>Condition represents parameters for waiting on a specific condition of a resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `conditionName` | `string` | :white_check_mark: |  | <p>The specific condition to wait for, e.g., "Available", "Ready".</p> |
+
 ## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
 **Appears in:**
@@ -235,6 +248,15 @@ If a resource already exists in the cluster it will fail.</p>
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) | :white_check_mark: |  | <p>ObjectReference determines objects to be deleted.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
+
+## `Deletion`     {#chainsaw-kyverno-io-v1alpha1-Deletion}
+
+**Appears in:**
+    
+- [For](#chainsaw-kyverno-io-v1alpha1-For)
+
+<p>Deletion represents parameters for waiting on a resource's deletion.</p>
+
 
 ## `Describe`     {#chainsaw-kyverno-io-v1alpha1-Describe}
 
@@ -373,6 +395,17 @@ with a match filter to determine if the verification should be considered.</p>
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
+
+## `For`     {#chainsaw-kyverno-io-v1alpha1-For}
+
+**Appears in:**
+    
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `delete` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | *No description provided.* |
+| `condition` | [`Condition`](#chainsaw-kyverno-io-v1alpha1-Condition) |  |  | *No description provided.* |
 
 ## `Format`     {#chainsaw-kyverno-io-v1alpha1-Format}
 
@@ -662,19 +695,6 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).</p> |
 | `resource` | `string` | :white_check_mark: |  | <p>Resource type on which the wait operation will be applied.</p> |
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
-| `condition` | `string` |  |  | <p>Condition represents the specific condition to wait for. Example: "Available", "Ready", etc.</p> |
-| `waitType` | [`WaitType`](#chainsaw-kyverno-io-v1alpha1-WaitType) | :white_check_mark: |  | <p>WaitType specifies the type of wait operation: "condition" or "delete".</p> |
-| `allNamespaces` | `bool` |  |  | <p>AllNamespaces indicates whether to wait for resources in all namespaces.</p> |
-
-## `WaitType`     {#chainsaw-kyverno-io-v1alpha1-WaitType}
-
-(Alias of `string`)
-
-**Appears in:**
-    
-- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
-
-<p>WaitType represents the type of wait operation.</p>
-
+| `for` | [`For`](#chainsaw-kyverno-io-v1alpha1-For) | :white_check_mark: |  | <p>For specifies the condition to wait for.</p> |
 
   

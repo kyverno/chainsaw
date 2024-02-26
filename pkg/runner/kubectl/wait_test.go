@@ -29,9 +29,12 @@ func TestWaitForResource(t *testing.T) {
 		{
 			name: "valid resource and condition",
 			waiter: &v1alpha1.Wait{
-				Resource:  "pods",
-				Condition: "Ready",
-				WaitType:  v1alpha1.WaitTypeCondition,
+				Resource: "pods",
+				For: v1alpha1.For{
+					Condition: &v1alpha1.Condition{
+						ConditioName: "Ready",
+					},
+				},
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
@@ -43,7 +46,9 @@ func TestWaitForResource(t *testing.T) {
 			name: "valid resource and delete",
 			waiter: &v1alpha1.Wait{
 				Resource: "pods",
-				WaitType: v1alpha1.WaitTypeDelete,
+				For: v1alpha1.For{
+					Deletion: &v1alpha1.Deletion{},
+				},
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
@@ -58,8 +63,11 @@ func TestWaitForResource(t *testing.T) {
 				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 					Name: "my-pod",
 				},
-				Condition: "Ready",
-				WaitType:  v1alpha1.WaitTypeCondition,
+				For: v1alpha1.For{
+					Condition: &v1alpha1.Condition{
+						ConditioName: "Ready",
+					},
+				},
 			},
 			want: &v1alpha1.Command{
 				Entrypoint: "kubectl",
@@ -70,9 +78,12 @@ func TestWaitForResource(t *testing.T) {
 		{
 			name: "with selector",
 			waiter: &v1alpha1.Wait{
-				Resource:  "pods",
-				Condition: "Ready",
-				WaitType:  v1alpha1.WaitTypeCondition,
+				Resource: "pods",
+				For: v1alpha1.For{
+					Condition: &v1alpha1.Condition{
+						ConditioName: "Ready",
+					},
+				},
 				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 					Selector: "app=my-app",
 				},
@@ -86,29 +97,18 @@ func TestWaitForResource(t *testing.T) {
 		{
 			name: "with timeout",
 			waiter: &v1alpha1.Wait{
-				Resource:  "pods",
-				Condition: "Ready",
-				WaitType:  v1alpha1.WaitTypeCondition,
-				Timeout:   &metav1.Duration{Duration: 120 * time.Second},
+				Resource: "pods",
+				For: v1alpha1.For{
+					Condition: &v1alpha1.Condition{
+						ConditioName: "Ready",
+					},
+				},
+				Timeout: &metav1.Duration{Duration: 120 * time.Second},
 			},
 			want: &v1alpha1.Command{
 				Timeout:    &metav1.Duration{Duration: 120 * time.Second},
 				Entrypoint: "kubectl",
 				Args:       []string{"wait", "pods", "--for=condition=Ready", "-n", "$NAMESPACE", "--timeout=2m0s"},
-			},
-			wantErr: false,
-		},
-		{
-			name: "all namespaces",
-			waiter: &v1alpha1.Wait{
-				Resource:      "pods",
-				Condition:     "Ready",
-				WaitType:      v1alpha1.WaitTypeCondition,
-				AllNamespaces: true,
-			},
-			want: &v1alpha1.Command{
-				Entrypoint: "kubectl",
-				Args:       []string{"wait", "pods", "--for=condition=Ready", "--all-namespaces"},
 			},
 			wantErr: false,
 		},
@@ -120,8 +120,11 @@ func TestWaitForResource(t *testing.T) {
 					Selector: "app=my-app",
 					Name:     "my-pod",
 				},
-				Condition: "Ready",
-				WaitType:  v1alpha1.WaitTypeCondition,
+				For: v1alpha1.For{
+					Condition: &v1alpha1.Condition{
+						ConditioName: "Ready",
+					},
+				},
 			},
 			wantErr: true,
 		},

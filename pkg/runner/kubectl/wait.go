@@ -14,9 +14,6 @@ func WaitForResource(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	if collector.Resource == "" {
 		return nil, errors.New("a resource must be specified")
 	}
-	if collector.WaitType == v1alpha1.WaitTypeCondition && collector.Condition == "" {
-		return nil, errors.New("a condition must be specified for condition wait type")
-	}
 	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
@@ -29,23 +26,19 @@ func WaitForResource(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 		args = append(args, collector.Resource)
 	}
 
-	switch collector.WaitType {
-	case v1alpha1.WaitTypeDelete:
+	if collector.For.Deletion != nil {
 		args = append(args, "--for=delete")
-	case v1alpha1.WaitTypeCondition:
-		if collector.Condition != "" {
-			args = append(args, fmt.Sprintf("--for=condition=%s", collector.Condition))
-		}
-	default:
-		return nil, errors.New("invalid wait type")
+	} else if collector.For.Condition != nil && collector.For.Condition.ConditioName != "" {
+		args = append(args, fmt.Sprintf("--for=condition=%s", collector.For.Condition.ConditioName))
+	} else {
+		return nil, errors.New("either a deletion or a condition must be specified")
 	}
 
 	if collector.Selector != "" {
 		args = append(args, "-l", collector.Selector)
 	}
-	if collector.AllNamespaces {
-		args = append(args, "--all-namespaces")
-	} else if collector.Namespace != "" {
+
+	if collector.Namespace != "" {
 		args = append(args, "-n", collector.Namespace)
 	} else {
 		args = append(args, "-n", "$NAMESPACE")

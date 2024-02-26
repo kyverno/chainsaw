@@ -29,15 +29,23 @@ func TestValidateWait(t *testing.T) {
 	}, {
 		name: "Neither Name nor Selector provided",
 		input: &v1alpha1.Wait{
-			Resource:  "pods",
-			Condition: "Ready",
+			Resource: "pods",
+			For: v1alpha1.For{
+				Condition: &v1alpha1.Condition{
+					ConditioName: "Ready",
+				},
+			},
 		},
 		expectErr: false,
 	}, {
 		name: "Both Name and Selector provided",
 		input: &v1alpha1.Wait{
-			Resource:  "pods",
-			Condition: "Ready",
+			Resource: "pods",
+			For: v1alpha1.For{
+				Condition: &v1alpha1.Condition{
+					ConditioName: "Ready",
+				},
+			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name:     "example-name",
 				Selector: "foo=bar",
@@ -48,8 +56,10 @@ func TestValidateWait(t *testing.T) {
 	}, {
 		name: "Only Name provided",
 		input: &v1alpha1.Wait{
-			Resource:  "pods",
-			Condition: "Deleted",
+			Resource: "pods",
+			For: v1alpha1.For{
+				Deletion: &v1alpha1.Deletion{},
+			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "example-name",
 			},
@@ -58,8 +68,10 @@ func TestValidateWait(t *testing.T) {
 	}, {
 		name: "Only Selector provided",
 		input: &v1alpha1.Wait{
-			Resource:  "pods",
-			Condition: "Deleted",
+			Resource: "pods",
+			For: v1alpha1.For{
+				Deletion: &v1alpha1.Deletion{},
+			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Selector: "example-selector",
 			},

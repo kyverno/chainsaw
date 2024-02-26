@@ -30,8 +30,12 @@ func TestValidateFinally(t *testing.T) {
 		Resource: "pods",
 	}
 	exampleWait := &v1alpha1.Wait{
-		Resource:  "pods",
-		Condition: "Ready",
+		Resource: "pods",
+		For: v1alpha1.For{
+			Condition: &v1alpha1.Condition{
+				ConditioName: "Ready",
+			},
+		},
 	}
 	exampleGet := &v1alpha1.Get{
 		Resource: "pods",

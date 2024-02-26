@@ -2,14 +2,22 @@ package v1alpha1
 
 import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-// WaitType represents the type of wait operation.
-type WaitType string
+type For struct {
+	// +optional
+	Deletion *Deletion `json:"delete,omitempty"`
+	// +optional
+	Condition *Condition `json:"condition,omitempty"`
+}
 
-// Define constants for WaitType values
-const (
-	WaitTypeDelete    WaitType = "delete"
-	WaitTypeCondition WaitType = "condition"
-)
+// Deletion represents parameters for waiting on a resource's deletion.
+type Deletion struct {
+}
+
+// Condition represents parameters for waiting on a specific condition of a resource.
+type Condition struct {
+	// The specific condition to wait for, e.g., "Available", "Ready".
+	ConditioName string `json:"conditionName"`
+}
 
 // Wait specifies how to perform wait operations on resources.
 type Wait struct {
@@ -27,16 +35,6 @@ type Wait struct {
 	// ObjectLabelsSelector determines the selection process of referenced objects.
 	ObjectLabelsSelector `json:",inline"`
 
-	// Condition represents the specific condition to wait for.
-	// Example: "Available", "Ready", etc.
-	// +optional
-	Condition string `json:"condition,omitempty"`
-
-	// WaitType specifies the type of wait operation: "condition" or "delete".
-	// +kubebuilder:validation:Enum=delete;condition
-	WaitType WaitType `json:"waitType"`
-
-	// AllNamespaces indicates whether to wait for resources in all namespaces.
-	// +optional
-	AllNamespaces bool `json:"allNamespaces,omitempty"`
+	// For specifies the condition to wait for.
+	For `json:"for"`
 }
