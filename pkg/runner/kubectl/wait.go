@@ -34,7 +34,7 @@ func Wait(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 			return nil, errors.New("a condition name must be specified for condition wait type")
 		}
 		if collector.For.Condition.Value != nil {
-			args = append(args, fmt.Sprintf("--for=condition=%s=%s", collector.For.Condition.Name, *collector.For.Condition.Value))
+			args = append(args, fmt.Sprintf(`--for=condition=%s="%s"`, collector.For.Condition.Name, *collector.For.Condition.Value))
 		} else {
 			args = append(args, fmt.Sprintf("--for=condition=%s", collector.For.Condition.Name))
 		}
