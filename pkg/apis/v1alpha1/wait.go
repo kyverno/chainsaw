@@ -18,10 +18,10 @@ type Deletion struct{}
 // Condition represents parameters for waiting on a specific condition of a resource.
 type Condition struct {
 	// ConditioName is the specific condition to wait for, e.g., "Available", "Ready".
-	ConditionName string `json:"name"`
+	Name string `json:"name"`
 	// The specific condition status to wait for, e.g., "True", "False".
 	// +optional
-	ConditionValue string `json:"value,omitempty"`
+	Value string `json:"value,omitempty"`
 }
 
 // Wait specifies how to perform wait operations on resources.

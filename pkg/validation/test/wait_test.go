@@ -32,7 +32,7 @@ func TestValidateWait(t *testing.T) {
 			Resource: "pods",
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
-					ConditionName: "Ready",
+					Name: "Ready",
 				},
 			},
 		},
@@ -43,7 +43,7 @@ func TestValidateWait(t *testing.T) {
 			Resource: "pods",
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
-					ConditionName: "Ready",
+					Name: "Ready",
 				},
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{

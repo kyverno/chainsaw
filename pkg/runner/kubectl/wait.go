@@ -30,13 +30,13 @@ func Wait(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	if collector.For.Deletion != nil {
 		args = append(args, "--for=delete")
 	} else if collector.For.Condition != nil {
-		if collector.For.Condition.ConditionName == "" {
+		if collector.For.Condition.Name == "" {
 			return nil, errors.New("a condition name must be specified for condition wait type")
 		}
-		if collector.For.Condition.ConditionValue != "" {
-			args = append(args, fmt.Sprintf("--for=condition=%s=%s", collector.For.Condition.ConditionName, collector.For.Condition.ConditionValue))
+		if collector.For.Condition.Value != "" {
+			args = append(args, fmt.Sprintf("--for=condition=%s=%s", collector.For.Condition.Name, collector.For.Condition.Value))
 		} else {
-			args = append(args, fmt.Sprintf("--for=condition=%s", collector.For.Condition.ConditionName))
+			args = append(args, fmt.Sprintf("--for=condition=%s", collector.For.Condition.Name))
 		}
 	} else {
 		return nil, errors.New("either a deletion or a condition must be specified")

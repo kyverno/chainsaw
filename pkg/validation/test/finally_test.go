@@ -33,7 +33,7 @@ func TestValidateFinally(t *testing.T) {
 		Resource: "pods",
 		For: v1alpha1.For{
 			Condition: &v1alpha1.Condition{
-				ConditionName: "Ready",
+				Name: "Ready",
 			},
 		},
 	}
