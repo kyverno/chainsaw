@@ -19,9 +19,6 @@ func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
 	if obj.Describe != nil {
 		count++
 	}
-	if obj.Wait != nil {
-		count++
-	}
 	if obj.Get != nil {
 		count++
 	}
@@ -37,6 +34,9 @@ func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
 	if obj.Sleep != nil {
 		count++
 	}
+	if obj.Wait != nil {
+		count++
+	}
 	if count == 0 {
 		errs = append(errs, field.Invalid(path, obj, "no statement found in operation"))
 	} else if count > 1 {
@@ -49,6 +49,7 @@ func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
 		errs = append(errs, ValidateDescribe(path.Child("describe"), obj.Describe)...)
 		errs = append(errs, ValidateGet(path.Child("get"), obj.Get)...)
 		errs = append(errs, ValidateDelete(path.Child("delete"), obj.Delete)...)
+		errs = append(errs, ValidateWait(path.Child("wait"), obj.Wait)...)
 	}
 	return errs
 }

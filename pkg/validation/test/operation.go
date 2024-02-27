@@ -37,6 +37,9 @@ func ValidateOperation(path *field.Path, obj v1alpha1.Operation) field.ErrorList
 	if obj.Sleep != nil {
 		count++
 	}
+	if obj.Wait != nil {
+		count++
+	}
 	if count == 0 {
 		errs = append(errs, field.Invalid(path, obj, "no statement found in operation"))
 	} else if count > 1 {
@@ -50,6 +53,7 @@ func ValidateOperation(path *field.Path, obj v1alpha1.Operation) field.ErrorList
 		errs = append(errs, ValidateError(path.Child("error"), obj.Error)...)
 		errs = append(errs, ValidatePatch(path.Child("error"), obj.Patch)...)
 		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
+		errs = append(errs, ValidateWait(path.Child("wait"), obj.Wait)...)
 	}
 	return errs
 }

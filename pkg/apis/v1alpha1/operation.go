@@ -48,4 +48,8 @@ type Operation struct {
 	// Sleep defines zzzz.
 	// +optional
 	Sleep *Sleep `json:"sleep,omitempty"`
+
+	// Wait determines the resource wait collector to execute.
+	// +optional
+	Wait *Wait `json:"wait,omitempty"`
 }

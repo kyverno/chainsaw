@@ -35,6 +35,11 @@ func TestValidateCatch(t *testing.T) {
 	}
 	exampleWait := &v1alpha1.Wait{
 		Resource: "pods",
+		For: v1alpha1.For{
+			Condition: &v1alpha1.Condition{
+				Name: "Ready",
+			},
+		},
 	}
 	exampleGet := &v1alpha1.Get{
 		Resource: "pods",

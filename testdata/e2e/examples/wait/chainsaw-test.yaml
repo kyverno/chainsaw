@@ -1,0 +1,58 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: wait
+spec:
+  steps:
+  - try:
+    - create:
+        resource:
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            name: example
+          spec:
+            containers:
+            - name: container
+              image: nginx
+    - wait:
+        timeout: 1m
+        resource: pods
+        name: example
+        format: yaml
+        for:
+          condition:
+            name: Ready
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+          name: example
+    - wait:
+        resource: pods
+        name: example
+        for:
+          deletion: {}
+    catch:
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+          name: example
+    - wait:
+        resource: pods
+        name: example
+        for:
+          deletion: {}
+    finally:
+    - delete:
+        ref:
+          apiVersion: v1
+          kind: Pod
+          name: example
+    - wait:
+        resource: pods
+        name: example
+        for:
+          deletion: {}
