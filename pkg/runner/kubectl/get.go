@@ -8,7 +8,7 @@ import (
 
 func Get(collector *v1alpha1.Get) (*v1alpha1.Command, error) {
 	if collector == nil {
-		return nil, nil
+		return nil, errors.New("collector is null")
 	}
 	if collector.Resource == "" {
 		return nil, errors.New("a resource must be specified")
