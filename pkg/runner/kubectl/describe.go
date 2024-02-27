@@ -9,7 +9,7 @@ import (
 
 func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	if collector == nil {
-		return nil, errors.New("collector is null")
+		return nil, nil
 	}
 	if collector.Resource == "" {
 		return nil, errors.New("a resource must be specified")
@@ -30,13 +30,30 @@ func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
 	// TODO: what if cluster scoped resource ?
-	namespace := collector.Namespace
-	if collector.Namespace == "" {
-		namespace = "$NAMESPACE"
+	if !isResourceClusterLevel(collector.Resource) {
+		namespace := collector.Namespace
+		if collector.Namespace == "" {
+			namespace = "$NAMESPACE"
+		}
+		cmd.Args = append(cmd.Args, "-n", namespace)
 	}
-	cmd.Args = append(cmd.Args, "-n", namespace)
 	if collector.ShowEvents != nil {
 		cmd.Args = append(cmd.Args, fmt.Sprintf("--show-events=%t", *collector.ShowEvents))
 	}
 	return &cmd, nil
+}
+
+func isResourceClusterLevel(resourceKind string) bool {
+
+	clusterScopedKinds := []string{
+		"namespace", "node", "persistentvolume", "storageclass",
+		"clusterrole", "clusterroleBinding", "customresourcedefinition",
+	}
+	for _, kind := range clusterScopedKinds {
+		if resourceKind == kind {
+			return true
+		}
+	}
+	return false
+
 }
