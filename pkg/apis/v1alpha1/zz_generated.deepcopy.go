@@ -828,6 +828,11 @@ func (in *Operation) DeepCopyInto(out *Operation) {
 		*out = new(Sleep)
 		**out = **in
 	}
+	if in.Wait != nil {
+		in, out := &in.Wait, &out.Wait
+		*out = new(Wait)
+		(*in).DeepCopyInto(*out)
+	}
 	return
 }
 

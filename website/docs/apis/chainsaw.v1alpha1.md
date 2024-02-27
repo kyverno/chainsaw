@@ -519,6 +519,7 @@ For multiple objects use labels.</p>
 | `patch` | [`Patch`](#chainsaw-kyverno-io-v1alpha1-Patch) |  |  | <p>Patch represents a patch operation.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
+| `wait` | [`Wait`](#chainsaw-kyverno-io-v1alpha1-Wait) |  |  | <p>Wait determines the resource wait collector to execute.</p> |
 
 ## `Patch`     {#chainsaw-kyverno-io-v1alpha1-Patch}
 
@@ -689,6 +690,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
     
 - [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Wait specifies how to perform wait operations on resources.</p>
 
