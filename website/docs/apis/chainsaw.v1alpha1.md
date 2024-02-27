@@ -449,6 +449,7 @@ with a match filter to determine if the verification should be considered.</p>
 - [Describe](#chainsaw-kyverno-io-v1alpha1-Describe)
 - [Events](#chainsaw-kyverno-io-v1alpha1-Events)
 - [Get](#chainsaw-kyverno-io-v1alpha1-Get)
+- [PodLogs](#chainsaw-kyverno-io-v1alpha1-PodLogs)
 - [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
 
 <p>ObjectLabelsSelector represents a strategy to select objects.
@@ -554,9 +555,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
-| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
-| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `container` | `string` |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
 | `tail` | `int` |  |  | <p>Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.</p> |
 

@@ -17,31 +17,39 @@ func TestValidatePodLogs(t *testing.T) {
 	}{{
 		name: "Neither Name nor Selector provided",
 		input: &v1alpha1.PodLogs{
-			Name:     "",
-			Selector: "",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:     "",
+				Selector: "",
+			},
 		},
 		expectErr: true,
 		errMsg:    "name or label selector must be specified",
 	}, {
 		name: "Both Name and Selector provided",
 		input: &v1alpha1.PodLogs{
-			Name:     "example-name",
-			Selector: "example-selector",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:     "example-name",
+				Selector: "example-selector",
+			},
 		},
 		expectErr: true,
 		errMsg:    "a name or label selector must be specified (found both)",
 	}, {
 		name: "Only Name provided",
 		input: &v1alpha1.PodLogs{
-			Name:     "example-name",
-			Selector: "",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:     "example-name",
+				Selector: "",
+			},
 		},
 		expectErr: false,
 	}, {
 		name: "Only Selector provided",
 		input: &v1alpha1.PodLogs{
-			Name:     "",
-			Selector: "example-selector",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:     "",
+				Selector: "example-selector",
+			},
 		},
 		expectErr: false,
 	}}

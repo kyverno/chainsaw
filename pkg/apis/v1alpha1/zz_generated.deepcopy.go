@@ -900,6 +900,7 @@ func (in *PodLogs) DeepCopyInto(out *PodLogs) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	out.ObjectLabelsSelector = in.ObjectLabelsSelector
 	if in.Tail != nil {
 		in, out := &in.Tail, &out.Tail
 		*out = new(int)

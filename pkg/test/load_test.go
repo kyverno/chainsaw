@@ -79,8 +79,10 @@ func TestLoad(t *testing.T) {
 						}},
 						Catch: []v1alpha1.Catch{{
 							PodLogs: &v1alpha1.PodLogs{
-								Namespace: "foo",
-								Name:      "bar",
+								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+									Namespace: "foo",
+									Name:      "bar",
+								},
 							},
 						}, {
 							Events: &v1alpha1.Events{
@@ -112,8 +114,10 @@ func TestLoad(t *testing.T) {
 						}},
 						Finally: []v1alpha1.Finally{{
 							PodLogs: &v1alpha1.PodLogs{
-								Namespace: "foo",
-								Name:      "bar",
+								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+									Namespace: "foo",
+									Name:      "bar",
+								},
 							},
 						}, {
 							Events: &v1alpha1.Events{

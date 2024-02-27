@@ -26,7 +26,9 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with name",
 		collector: &v1alpha1.PodLogs{
-			Name: "foo",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name: "foo",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -36,14 +38,18 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with namespace",
 		collector: &v1alpha1.PodLogs{
-			Namespace: "foo",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Namespace: "foo",
+			},
 		},
 		wantErr: true,
 	}, {
 		name: "with name and namespace",
 		collector: &v1alpha1.PodLogs{
-			Name:      "foo",
-			Namespace: "bar",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:      "foo",
+				Namespace: "bar",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -53,7 +59,9 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with name and container",
 		collector: &v1alpha1.PodLogs{
-			Name:      "foo",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name: "foo",
+			},
 			Container: "bar",
 		},
 		want: &v1alpha1.Command{
@@ -64,8 +72,10 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with name, namespace and container",
 		collector: &v1alpha1.PodLogs{
-			Name:      "foo",
-			Namespace: "lorem",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:      "foo",
+				Namespace: "lorem",
+			},
 			Container: "bar",
 		},
 		want: &v1alpha1.Command{
@@ -76,8 +86,10 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with tail",
 		collector: &v1alpha1.PodLogs{
-			Name:      "foo",
-			Namespace: "lorem",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:      "foo",
+				Namespace: "lorem",
+			},
 			Container: "bar",
 			Tail:      ptr.To(100),
 		},
@@ -89,7 +101,9 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with selector",
 		collector: &v1alpha1.PodLogs{
-			Selector: "foo=bar",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Selector: "foo=bar",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -99,16 +113,20 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with name and selector",
 		collector: &v1alpha1.PodLogs{
-			Name:     "foo",
-			Selector: "foo=bar",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Name:     "foo",
+				Selector: "foo=bar",
+			},
 		},
 		want:    nil,
 		wantErr: true,
 	}, {
 		name: "with namespace and selector",
 		collector: &v1alpha1.PodLogs{
-			Namespace: "foo",
-			Selector:  "foo=bar",
+			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+				Namespace: "foo",
+				Selector:  "foo=bar",
+			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
