@@ -3,7 +3,8 @@
 The `command` operation provides a means to execute a specific command during the test step.
 
 !!! tip "Reference documentation"
-    The full structure of the `Command` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
+    - The full structure of the `Command` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
+    - This operation supports [bindings](../bindings/index.md).
 
 ## Usage in `Test`
 

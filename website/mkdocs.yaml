@@ -46,6 +46,7 @@ nav:
     - operations/patch.md
     - operations/script.md
     - operations/sleep.md
+    - operations/wait.md
     - operations/templating.md
     - operations/non-resource-assert.md
   - Collectors:
@@ -54,6 +55,7 @@ nav:
     - collectors/events.md
     - collectors/get.md
     - collectors/describe.md
+  - bindings/index.md
   - Other resources:
     - more/events.md
     - more/crds.md

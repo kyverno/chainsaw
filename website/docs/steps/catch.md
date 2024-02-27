@@ -15,6 +15,7 @@ A `catch` statement supports only the following [operations](../operations/index
 - [Script](../operations/script.md)
 - [Sleep](../operations/sleep.md)
 - [Delete](../operations/delete.md)
+- [Wait](../operations/wait.md)
 
 ## Collectors
 
@@ -53,6 +54,8 @@ A `catch` statement supports all [collectors](../collectors/index.md):
         - get:
             # ...
         - sleep:
+            # ...
+        - wait:
             # ...
         finally: []
     ```
