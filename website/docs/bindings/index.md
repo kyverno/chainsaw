@@ -7,11 +7,12 @@ Bindings are used in [assertion trees](../operations/check.md) and [resource tem
 While some bindings are built-in and provided by chainsaw, it's possible to define custom bindings at the test, step, or individual operation level.
 Those bindings can in turn be used to create custom environment variables in `command` and `script` operations.
 
-!!! note "Immutability"
+## Immutability
 
-    It's important to note that bindings are **immutable**, it's not possible to overwrite a binding and **two bindings with the same name can exist without overwriting each other**.
-    
-    When a binding value is resolved, chainsaw will walk the binding chain upwards until it finds a binding with the expected name. Effectively, the last one registered in the chain will be used.
+It's important to note that bindings are **immutable**, it's not possible to overwrite a binding and **two bindings with the same name can exist without overwriting each other**.
+
+When a binding value is resolved, chainsaw will walk the binding chain upwards until it finds a binding with the expected name.
+Effectively, the last one registered in the chain will be used.
 
 ## Usage
 

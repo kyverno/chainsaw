@@ -22,6 +22,7 @@ Release notes for `TODO`.
 ## 🔧 Fixes 🔧
 
 - Fixed report path configuration not being used when saving a report
+- Fixed wrong based image used in released docker image (missing `kubectl` and `sh`)
 - Prevent double extension in the report output file
 - Fixed a potential crash related to reports
 - Fixed potentially missing operations in reports
