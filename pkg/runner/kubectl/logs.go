@@ -9,7 +9,7 @@ import (
 
 func Logs(collector *v1alpha1.PodLogs) (*v1alpha1.Command, error) {
 	if collector == nil {
-		return nil, nil
+		return nil, errors.New("collector is null")
 	}
 	if collector.Name == "" && collector.Selector == "" {
 		return nil, errors.New("a name or selector must be specified")

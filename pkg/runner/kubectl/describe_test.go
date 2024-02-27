@@ -18,7 +18,7 @@ func TestDescribe(t *testing.T) {
 		name:      "nil",
 		collector: nil,
 		want:      nil,
-		wantErr:   false,
+		wantErr:   true,
 	}, {
 		name:      "empty",
 		collector: &v1alpha1.Describe{},

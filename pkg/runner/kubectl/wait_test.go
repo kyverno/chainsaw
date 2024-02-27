@@ -19,7 +19,7 @@ func TestWait(t *testing.T) {
 	}{{
 		name:    "nil waiter",
 		waiter:  nil,
-		wantErr: false,
+		wantErr: true,
 	}, {
 		name:    "empty waiter",
 		waiter:  &v1alpha1.Wait{},
