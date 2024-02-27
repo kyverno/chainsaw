@@ -8,8 +8,8 @@ These can be configurations, deployments, services, or any other Kubernetes reso
     If the resource to be modified does not exist in the cluster, the step will fail.
 
 !!! tip "Reference documentation"
-    The full structure of the `Patch` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Patch).
-
+    - The full structure of the `Patch` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Patch).
+    - This operation supports [bindings](../bindings/index.md).
 
 ## Usage in `Test`
 

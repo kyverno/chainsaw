@@ -8,7 +8,8 @@ These can be configurations, deployments, services, or any other Kubernetes reso
     If the resource to be created already exists in the cluster, the step will fail.
 
 !!! tip "Reference documentation"
-    The full structure of the `Create` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
+    - The full structure of the `Create` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
+    - This operation supports [bindings](../bindings/index.md).
 
 
 ## Usage in `Test`

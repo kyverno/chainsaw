@@ -14,7 +14,8 @@ For example, after applying resources, you might want to ensure that a particula
     Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/policies/asserts/) in kyverno-json for details.
 
 !!! tip "Reference documentation"
-    The full structure of the `Assert` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Assert).
+    - The full structure of the `Assert` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Assert).
+    - This operation supports [bindings](../bindings/index.md).
 
 ## Usage in `Test`
 

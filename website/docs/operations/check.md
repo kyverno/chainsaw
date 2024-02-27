@@ -5,19 +5,19 @@ Considering an operation success or failure is not always as simple as checking 
 - Sometimes an operation can fail but the failure is what you expected, hence the operation should be reported as successful.
 - Sometimes an operation can succeed but the result is not what you expected, in this case the operation should be reported as a failure.
 
-To support those kind of use cases, some operations support an additional `check` field to evaluate the operation result against an assertion tree.
+To support those kinds of use cases, some operations support an additional `check` field to evaluate the operation result against an assertion tree.
 
 !!! info "Assertion trees"
 
     Assertions in Chainsaw are based on **assertion trees**.
 
-    Assertion trees is a solution to declaratively represent complex conditions like partial array comparisons or complex operations against an incoming data structure.
+    Assertion trees are a solution to declaratively represent complex conditions like partial array comparisons or complex operations against an incoming data structure.
 
     Assertion trees are compatible with standard assertions that exist in tools like KUTTL but can do a lot more.
     Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/policies/asserts/) in kyverno-json for details.
 
 !!! tip "Checked model"
-    Different operation have a different model passed through the assertion tree.
+    Different operations have a different model passed through the assertion tree.
 
     The object passed to the assertion tree is the output object of the operation. Additional data like error or standard logs are passed using bindings (`$error`, `$stdout`, `$stderr`)
 
@@ -25,7 +25,7 @@ To support those kind of use cases, some operations support an additional `check
 
 While a simple check is enough to determine the result of a single operation, we needed a more advanced construct to cover `apply` and `create` operations. Those operations can operate on files containing multiple manifests and every manifest can have a different result.
 
-To support more granular checks we use the `expect` field that contains an array of [Expectation](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Expectation).
+To support more granular checks we use the `expect` field that contains an array of [Expectations](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Expectation).
 Every expectation is made of an optional `match` and a `check` statement.
 
 This way it is possible to control the scope of a `check`.
@@ -33,7 +33,7 @@ This way it is possible to control the scope of a `check`.
 !!! tip "Null match"
     If the `match` statement is null, the `check` statement applies to all manifests in the operation.
 
-    If no expectation matches a given manifest, the default expectation will be used, checking that no error occured.
+    If no expectation matches a given manifest, the default expectation will be used, checking that no error occurred.
 
 ## Apply
 

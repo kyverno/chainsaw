@@ -9,9 +9,9 @@ The `try` statement is at the heart of a test step, it represents what the step 
 
 !!! tip "Continue on error"
 
-    By default a test step stops executing when an operation fails and the following operations are not executed.
+    By default, a test step stops executing when an operation fails and the following operations are not executed.
 
-    This behaviour can be changed using the `continueOnError` field, if `continueOnError` is set to `true` the step will still be considered failed but execution will continue with the next operations.
+    This behavior can be changed using the `continueOnError` field, if `continueOnError` is set to `true` the step will still be considered failed but execution will continue with the next operations.
 
 ## Operations
 
@@ -26,6 +26,7 @@ A `try` statement supports all [operations](../operations/index.md):
 - [Patch](../operations/patch.md)
 - [Script](../operations/script.md)
 - [Sleep](../operations/sleep.md)
+- [Wait](../operations/wait.md)
 
 ## Example
 
@@ -54,6 +55,8 @@ A `try` statement supports all [operations](../operations/index.md):
         - create:
             # ...
         - patch:
+            # ...
+        - wait:
             # ...
         catch: []
         finally: []

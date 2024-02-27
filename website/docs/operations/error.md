@@ -12,7 +12,8 @@ The `error` operation lets you define a set of expected errors for a test step. 
     Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/policies/asserts/) in kyverno-json for details.
 
 !!! tip "Reference documentation"
-    The full structure of the `Error` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Error).
+    - The full structure of the `Error` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Error).
+    - This operation supports [bindings](../bindings/index.md).
 
 ## Usage in `Test`
 
