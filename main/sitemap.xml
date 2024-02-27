@@ -56,6 +56,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/bindings/</loc>
+         <lastmod>2024-02-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/blog/</loc>
          <lastmod>2024-02-27</lastmod>
          <changefreq>daily</changefreq>
@@ -402,6 +407,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/operations/templating/</loc>
+         <lastmod>2024-02-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/operations/wait/</loc>
          <lastmod>2024-02-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
