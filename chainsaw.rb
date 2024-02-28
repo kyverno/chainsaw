@@ -5,20 +5,20 @@
 class Chainsaw < Formula
   desc "Declarative Kubernetes end-to-end testing."
   homepage "https://kyverno.github.io/chainsaw"
-  version "0.1.6"
+  version "0.1.7"
 
   on_macos do
     if Hardware::CPU.arm?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.1.6/chainsaw_darwin_arm64.tar.gz"
-      sha256 "eff2777cc3138fbc2ebf92e76019189c2b41cbc4128ef9ce94f0a024076ddf1a"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.1.7/chainsaw_darwin_arm64.tar.gz"
+      sha256 "1e3fe36cf78af53935c4a5343d19ac54a28161e6bd18add5c1241045c3f4ecdf"
 
       def install
         bin.install "chainsaw"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.1.6/chainsaw_darwin_amd64.tar.gz"
-      sha256 "a4a0c0d058140d7657c2f675579bb002a0b66f74a3dd708318cf27e78321446d"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.1.7/chainsaw_darwin_amd64.tar.gz"
+      sha256 "7aa4637b616832bb35fbb829f275417c9d13e6bc86126b042336b154f6b637f2"
 
       def install
         bin.install "chainsaw"
@@ -28,16 +28,16 @@ class Chainsaw < Formula
 
   on_linux do
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.1.6/chainsaw_linux_arm64.tar.gz"
-      sha256 "42c5c86e4d0ae81aedc0be4a474029220c513b9907e351181db6d9b76c751258"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.1.7/chainsaw_linux_arm64.tar.gz"
+      sha256 "a2fd8ff00b512f5288eebbd64b5a34c1018db40d949d5b83bf69f3e852162974"
 
       def install
         bin.install "chainsaw"
       end
     end
     if Hardware::CPU.intel?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.1.6/chainsaw_linux_amd64.tar.gz"
-      sha256 "dd9a386485c70d95e9d64ce2cf7c6949556b55fb642a8b603a857176ee8542c2"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.1.7/chainsaw_linux_amd64.tar.gz"
+      sha256 "a10ae8ace6ff479565f4061f9a3fcd127f2bbe827a2a24c595a42a7fabefb1f9"
 
       def install
         bin.install "chainsaw"
