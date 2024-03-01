@@ -120,9 +120,10 @@ spec:
                   for templating.
                 type: boolean
               testFile:
-                default: chainsaw-test.yaml
+                default: chainsaw-test
                 description: TestFile is the name of the file containing the test
-                  to run.
+                  to run. If no extension is provided, chainsaw will try with .yaml
+                  first and .yml if needed.
                 type: string
               timeouts:
                 description: Global timeouts configuration. Applies to all tests/test

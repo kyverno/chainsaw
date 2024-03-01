@@ -1,6 +1,6 @@
 Version: ---
 Loading default configuration...
-- Using test file: chainsaw-test.yaml
+- Using test file: chainsaw-test
 - Timeout 30s
 - TestDirs [.]
 - SkipDelete false
