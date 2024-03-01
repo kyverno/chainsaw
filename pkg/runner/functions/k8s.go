@@ -57,7 +57,10 @@ func jpKubernetesExists(arguments []any) (any, error) {
 	if err := getArg(arguments, 4, &key.Name); err != nil {
 		return nil, err
 	}
-	err := client.Get(context.TODO(), key, &unstructured.Unstructured{})
+	var obj unstructured.Unstructured
+	obj.SetAPIVersion(apiVersion)
+	obj.SetKind(kind)
+	err := client.Get(context.TODO(), key, &obj)
 	if err == nil {
 		return true, nil
 	}
