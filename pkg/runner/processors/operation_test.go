@@ -21,56 +21,51 @@ func TestOperation_Execute(t *testing.T) {
 		operation       operations.Operation
 		operationReport *report.OperationReport
 		timeout         time.Duration
-	}{
-		{
-			name: "operation fails but continues",
-			operation: mock.MockOperation{
-				ExecFn: func(_ context.Context, _ binding.Bindings) error {
-					return errors.New("operation failed")
-				},
+	}{{
+		name: "operation fails but continues",
+		operation: mock.MockOperation{
+			ExecFn: func(_ context.Context, _ binding.Bindings) error {
+				return errors.New("operation failed")
 			},
-			continueOnError: true,
-			expectedFail:    true,
-			timeout:         1 * time.Second,
-			operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
 		},
-		{
-			name: "operation fails and don't continues",
-			operation: mock.MockOperation{
-				ExecFn: func(_ context.Context, _ binding.Bindings) error {
-					return errors.New("operation failed")
-				},
+		continueOnError: true,
+		expectedFail:    true,
+		timeout:         1 * time.Second,
+		operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
+	}, {
+		name: "operation fails and don't continues",
+		operation: mock.MockOperation{
+			ExecFn: func(_ context.Context, _ binding.Bindings) error {
+				return errors.New("operation failed")
 			},
-			continueOnError: false,
-			expectedFail:    true,
-			operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
 		},
-		{
-			name: "operation succeeds",
-			operation: mock.MockOperation{
-				ExecFn: func(_ context.Context, _ binding.Bindings) error {
-					return nil
-				},
+		continueOnError: false,
+		expectedFail:    true,
+		operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
+	}, {
+		name: "operation succeeds",
+		operation: mock.MockOperation{
+			ExecFn: func(_ context.Context, _ binding.Bindings) error {
+				return nil
 			},
-			expectedFail:    false,
-			timeout:         1 * time.Second,
-			operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
 		},
-	}
-
+		expectedFail:    false,
+		timeout:         1 * time.Second,
+		operationReport: report.NewOperation("FakeOperation", report.OperationTypeCreate),
+	}}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			localTC := tc
-			op := operation{
-				continueOnError: localTC.continueOnError,
-				timeout:         &localTC.timeout,
-				operation:       localTC.operation,
-				operationReport: localTC.operationReport,
-			}
+			op := newOperation(
+				localTC.continueOnError,
+				&localTC.timeout,
+				localTC.operation,
+				localTC.operationReport,
+				nil,
+			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
 			op.execute(ctx)
-
 			if localTC.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {

@@ -5,9 +5,10 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
 )
 
-func Describe(collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
+func Describe(client client.Client, collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
