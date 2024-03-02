@@ -47,6 +47,21 @@ func TestWait(t *testing.T) {
 		},
 		wantErr: false,
 	}, {
+		name: "valid clustered resource and condition",
+		waiter: &v1alpha1.Wait{
+			Resource: "clusterroles.v1.rbac.authorization.k8s.io",
+			For: v1alpha1.For{
+				Condition: &v1alpha1.Condition{
+					Name: "Ready",
+				},
+			},
+		},
+		want: &v1alpha1.Command{
+			Entrypoint: "kubectl",
+			Args:       []string{"wait", "clusterroles.v1.rbac.authorization.k8s.io", "--for=condition=Ready", "--timeout=-1s"},
+		},
+		wantErr: false,
+	}, {
 		name: "valid resource and condition with value",
 		waiter: &v1alpha1.Wait{
 			Resource: "pods",

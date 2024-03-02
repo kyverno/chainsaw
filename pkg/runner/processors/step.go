@@ -217,25 +217,18 @@ func (p *stepProcessor) catchOperations(bindings binding.Bindings, handlers ...v
 			}
 			register(p.commandOperation(bindings, *cmd))
 		} else if handler.Events != nil {
-			cmd, err := kubectl.Get(&v1alpha1.Get{
+			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
 				Timeout:              handler.Events.Timeout,
 				Resource:             "events",
 				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
 				Format:               handler.Events.Format,
-			})
-			if err != nil {
-				return nil, err
 			}
-			register(p.commandOperation(bindings, *cmd))
+			register(p.getOperation(bindings, get))
 		} else if handler.Describe != nil {
 			register(p.describeOperation(bindings, *handler.Describe))
 		} else if handler.Get != nil {
-			cmd, err := kubectl.Get(handler.Get)
-			if err != nil {
-				return nil, err
-			}
-			register(p.commandOperation(bindings, *cmd))
+			register(p.getOperation(bindings, *handler.Get))
 		} else if handler.Delete != nil {
 			loaded := p.deleteOperation(bindings, *handler.Delete)
 			register(loaded)
@@ -270,25 +263,18 @@ func (p *stepProcessor) finallyOperations(bindings binding.Bindings, handlers ..
 			}
 			register(p.commandOperation(bindings, *cmd))
 		} else if handler.Events != nil {
-			cmd, err := kubectl.Get(&v1alpha1.Get{
+			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
 				Timeout:              handler.Events.Timeout,
 				Resource:             "events",
 				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
 				Format:               handler.Events.Format,
-			})
-			if err != nil {
-				return nil, err
 			}
-			register(p.commandOperation(bindings, *cmd))
+			register(p.getOperation(bindings, get))
 		} else if handler.Describe != nil {
 			register(p.describeOperation(bindings, *handler.Describe))
 		} else if handler.Get != nil {
-			cmd, err := kubectl.Get(handler.Get)
-			if err != nil {
-				return nil, err
-			}
-			register(p.commandOperation(bindings, *cmd))
+			register(p.getOperation(bindings, *handler.Get))
 		} else if handler.Delete != nil {
 			loaded := p.deleteOperation(bindings, *handler.Delete)
 			register(loaded)
@@ -495,6 +481,33 @@ func (p *stepProcessor) errorOperation(bindings binding.Bindings, op v1alpha1.Er
 		))
 	}
 	return ops, nil
+}
+
+func (p *stepProcessor) getOperation(bindings binding.Bindings, op v1alpha1.Get) operation {
+	var operationReport *report.OperationReport
+	if p.stepReport != nil {
+		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
+		p.stepReport.AddOperation(operationReport)
+	}
+	ns := ""
+	if p.namespacer != nil {
+		ns = p.namespacer.GetNamespace()
+	}
+	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	return newLazyOperation(
+		false,
+		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		func() (operations.Operation, error) {
+			cmd, err := kubectl.Get(cluster, &op)
+			if err != nil {
+				return nil, err
+			}
+			return opcommand.New(*cmd, p.test.BasePath, ns, config), nil
+		},
+		operationReport,
+		bindings,
+	)
 }
 
 func (p *stepProcessor) patchOperation(bindings binding.Bindings, op v1alpha1.Patch) ([]operation, error) {

@@ -4,10 +4,17 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
+	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/client-go/tools/clientcmd"
 )
 
 func TestGet(t *testing.T) {
+	config, err := restutils.DefaultConfig(clientcmd.ConfigOverrides{})
+	assert.NoError(t, err)
+	client, err := client.New(config)
+	assert.NoError(t, err)
 	tests := []struct {
 		name      string
 		collector *v1alpha1.Get
@@ -33,43 +40,53 @@ func TestGet(t *testing.T) {
 	}, {
 		name: "with resource",
 		collector: &v1alpha1.Get{
-			Resource: "foos",
+			Resource: "pods",
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"get", "foos", "-n", "$NAMESPACE"},
+			Args:       []string{"get", "pods", "-n", "$NAMESPACE"},
+		},
+		wantErr: false,
+	}, {
+		name: "with clustered resource",
+		collector: &v1alpha1.Get{
+			Resource: "clusterroles.v1.rbac.authorization.k8s.io",
+		},
+		want: &v1alpha1.Command{
+			Entrypoint: "kubectl",
+			Args:       []string{"get", "clusterroles.v1.rbac.authorization.k8s.io"},
 		},
 		wantErr: false,
 	}, {
 		name: "with name",
 		collector: &v1alpha1.Get{
-			Resource: "foos",
+			Resource: "pods",
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "foo",
 			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"get", "foos", "foo", "-n", "$NAMESPACE"},
+			Args:       []string{"get", "pods", "foo", "-n", "$NAMESPACE"},
 		},
 		wantErr: false,
 	}, {
 		name: "with namespace",
 		collector: &v1alpha1.Get{
-			Resource: "foos",
+			Resource: "pods",
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Namespace: "bar",
 			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"get", "foos", "-n", "bar"},
+			Args:       []string{"get", "pods", "-n", "bar"},
 		},
 		wantErr: false,
 	}, {
 		name: "with name and namespace",
 		collector: &v1alpha1.Get{
-			Resource: "foos",
+			Resource: "pods",
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name:      "foo",
 				Namespace: "bar",
@@ -77,26 +94,26 @@ func TestGet(t *testing.T) {
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"get", "foos", "foo", "-n", "bar"},
+			Args:       []string{"get", "pods", "foo", "-n", "bar"},
 		},
 		wantErr: false,
 	}, {
 		name: "with selector",
 		collector: &v1alpha1.Get{
-			Resource: "foos",
+			Resource: "pods",
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Selector: "foo=bar",
 			},
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"get", "foos", "-l", "foo=bar", "-n", "$NAMESPACE"},
+			Args:       []string{"get", "pods", "-l", "foo=bar", "-n", "$NAMESPACE"},
 		},
 		wantErr: false,
 	}, {
 		name: "with name and selector",
 		collector: &v1alpha1.Get{
-			Resource: "foos",
+			Resource: "pods",
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name:     "foo",
 				Selector: "foo=bar",
@@ -106,7 +123,7 @@ func TestGet(t *testing.T) {
 	}, {
 		name: "with namespace and selector",
 		collector: &v1alpha1.Get{
-			Resource: "foos",
+			Resource: "pods",
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Namespace: "bar",
 				Selector:  "foo=bar",
@@ -114,13 +131,13 @@ func TestGet(t *testing.T) {
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"get", "foos", "-l", "foo=bar", "-n", "bar"},
+			Args:       []string{"get", "pods", "-l", "foo=bar", "-n", "bar"},
 		},
 		wantErr: false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Get(tt.collector)
+			got, err := Get(client, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
