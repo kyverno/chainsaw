@@ -13,8 +13,9 @@ func Wait(client client.Client, collector *v1alpha1.Wait) (*v1alpha1.Command, er
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
-	if collector.Resource == "" {
-		return nil, errors.New("a resource must be specified")
+	resource, scope, err := mapResource(client, collector.ResourceReference)
+	if err != nil {
+		return nil, err
 	}
 	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
@@ -23,7 +24,7 @@ func Wait(client client.Client, collector *v1alpha1.Wait) (*v1alpha1.Command, er
 		Cluster:    collector.Cluster,
 		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
-		Args:       []string{"wait", collector.Resource},
+		Args:       []string{"wait", resource},
 	}
 	if collector.For.Deletion != nil {
 		cmd.Args = append(cmd.Args, "--for=delete")
@@ -45,11 +46,7 @@ func Wait(client client.Client, collector *v1alpha1.Wait) (*v1alpha1.Command, er
 	if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
-	mapping, err := getMapping(client, collector.Resource)
-	if err != nil {
-		return nil, err
-	}
-	clustered := mapping.Scope.Name() == meta.RESTScopeNameRoot
+	clustered := scope.Name() == meta.RESTScopeNameRoot
 	if !clustered {
 		namespace := collector.Namespace
 		if collector.Namespace == "" {

@@ -38,8 +38,8 @@ type Wait struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
-	// Resource type on which the wait operation will be applied.
-	Resource string `json:"resource"`
+	// ResourceReference referenced resource type.
+	ResourceReference `json:",inline"`
 
 	// ObjectLabelsSelector determines the selection process of referenced objects.
 	ObjectLabelsSelector `json:",inline"`

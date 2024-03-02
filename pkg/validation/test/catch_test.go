@@ -31,10 +31,14 @@ func TestValidateCatch(t *testing.T) {
 		Duration: metav1.Duration{Duration: 5 * time.Second},
 	}
 	exampleDescribe := &v1alpha1.Describe{
-		Resource: "pods",
+		ResourceReference: v1alpha1.ResourceReference{
+			Resource: "pods",
+		},
 	}
 	exampleWait := &v1alpha1.Wait{
-		Resource: "pods",
+		ResourceReference: v1alpha1.ResourceReference{
+			Resource: "pods",
+		},
 		For: v1alpha1.For{
 			Condition: &v1alpha1.Condition{
 				Name: "Ready",
@@ -42,7 +46,9 @@ func TestValidateCatch(t *testing.T) {
 		},
 	}
 	exampleGet := &v1alpha1.Get{
-		Resource: "pods",
+		ResourceReference: v1alpha1.ResourceReference{
+			Resource: "pods",
+		},
 	}
 	exampleDelete := &v1alpha1.Delete{
 		ObjectReference: v1alpha1.ObjectReference{

@@ -14,8 +14,8 @@ type Get struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
-	// Resource type.
-	Resource string `json:"resource"`
+	// ResourceReference referenced resource type.
+	ResourceReference `json:",inline"`
 
 	// ObjectLabelsSelector determines the selection process of referenced objects.
 	ObjectLabelsSelector `json:",inline"`

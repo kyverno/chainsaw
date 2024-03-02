@@ -12,17 +12,18 @@ func Get(client client.Client, collector *v1alpha1.Get) (*v1alpha1.Command, erro
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
-	if collector.Resource == "" {
-		return nil, errors.New("a resource must be specified")
-	}
 	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
+	}
+	resource, scope, err := mapResource(client, collector.ResourceReference)
+	if err != nil {
+		return nil, err
 	}
 	cmd := v1alpha1.Command{
 		Cluster:    collector.Cluster,
 		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
-		Args:       []string{"get", collector.Resource},
+		Args:       []string{"get", resource},
 	}
 	if collector.Name != "" {
 		cmd.Args = append(cmd.Args, collector.Name)
@@ -30,11 +31,7 @@ func Get(client client.Client, collector *v1alpha1.Get) (*v1alpha1.Command, erro
 	if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
-	mapping, err := getMapping(client, collector.Resource)
-	if err != nil {
-		return nil, err
-	}
-	clustered := mapping.Scope.Name() == meta.RESTScopeNameRoot
+	clustered := scope.Name() == meta.RESTScopeNameRoot
 	if !clustered {
 		namespace := collector.Namespace
 		if collector.Namespace == "" {

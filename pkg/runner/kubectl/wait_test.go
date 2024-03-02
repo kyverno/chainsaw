@@ -34,7 +34,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "valid resource and condition",
 		waiter: &v1alpha1.Wait{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
 					Name: "Ready",
@@ -49,7 +51,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "valid clustered resource and condition",
 		waiter: &v1alpha1.Wait{
-			Resource: "clusterroles.v1.rbac.authorization.k8s.io",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "clusterroles.v1.rbac.authorization.k8s.io",
+			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
 					Name: "Ready",
@@ -64,7 +68,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "valid resource and condition with value",
 		waiter: &v1alpha1.Wait{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
 					Name:  "Ready",
@@ -80,7 +86,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "valid resource and condition with empty value",
 		waiter: &v1alpha1.Wait{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
 					Name:  "Ready",
@@ -96,7 +104,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "valid resource and delete",
 		waiter: &v1alpha1.Wait{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			For: v1alpha1.For{
 				Deletion: &v1alpha1.Deletion{},
 			},
@@ -109,7 +119,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "with resource name",
 		waiter: &v1alpha1.Wait{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "my-pod",
 			},
@@ -127,7 +139,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "with selector",
 		waiter: &v1alpha1.Wait{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
 					Name: "Ready",
@@ -145,7 +159,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "with timeout",
 		waiter: &v1alpha1.Wait{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
 					Name: "Ready",
@@ -162,7 +178,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "name and selector error",
 		waiter: &v1alpha1.Wait{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Selector: "app=my-app",
 				Name:     "my-pod",
@@ -177,7 +195,9 @@ func TestWait(t *testing.T) {
 	}, {
 		name: "missing condition",
 		waiter: &v1alpha1.Wait{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "my-pod",
 			},

@@ -670,12 +670,23 @@
                         "object",
                         "null"
                       ],
-                      "required": [
-                        "resource"
-                      ],
                       "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kind": {
+                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": [
                             "string",
                             "null"
@@ -696,8 +707,11 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource type.",
-                          "type": "string"
+                          "description": "Resource name of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "selector": {
                           "description": "Selector defines labels selector.",
@@ -790,10 +804,14 @@
                         "object",
                         "null"
                       ],
-                      "required": [
-                        "resource"
-                      ],
                       "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
@@ -812,6 +830,13 @@
                             "yaml"
                           ]
                         },
+                        "kind": {
+                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "name": {
                           "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -827,8 +852,11 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource type.",
-                          "type": "string"
+                          "description": "Resource name of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "selector": {
                           "description": "Selector defines labels selector.",
@@ -1024,10 +1052,16 @@
                         "null"
                       ],
                       "required": [
-                        "for",
-                        "resource"
+                        "for"
                       ],
                       "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
                           "type": [
@@ -1082,6 +1116,13 @@
                             "yaml"
                           ]
                         },
+                        "kind": {
+                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "name": {
                           "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -1097,8 +1138,11 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource type on which the wait operation will be applied.",
-                          "type": "string"
+                          "description": "Resource name of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "selector": {
                           "description": "Selector defines labels selector.",
@@ -1395,12 +1439,23 @@
                         "object",
                         "null"
                       ],
-                      "required": [
-                        "resource"
-                      ],
                       "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kind": {
+                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": [
                             "string",
                             "null"
@@ -1421,8 +1476,11 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource type.",
-                          "type": "string"
+                          "description": "Resource name of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "selector": {
                           "description": "Selector defines labels selector.",
@@ -1515,10 +1573,14 @@
                         "object",
                         "null"
                       ],
-                      "required": [
-                        "resource"
-                      ],
                       "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
@@ -1537,6 +1599,13 @@
                             "yaml"
                           ]
                         },
+                        "kind": {
+                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "name": {
                           "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -1552,8 +1621,11 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource type.",
-                          "type": "string"
+                          "description": "Resource name of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "selector": {
                           "description": "Selector defines labels selector.",
@@ -1749,10 +1821,16 @@
                         "null"
                       ],
                       "required": [
-                        "for",
-                        "resource"
+                        "for"
                       ],
                       "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
                           "type": [
@@ -1807,6 +1885,13 @@
                             "yaml"
                           ]
                         },
+                        "kind": {
+                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "name": {
                           "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -1822,8 +1907,11 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource type on which the wait operation will be applied.",
-                          "type": "string"
+                          "description": "Resource name of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "selector": {
                           "description": "Selector defines labels selector.",
@@ -2754,10 +2842,16 @@
                         "null"
                       ],
                       "required": [
-                        "for",
-                        "resource"
+                        "for"
                       ],
                       "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "cluster": {
                           "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
                           "type": [
@@ -2812,6 +2906,13 @@
                             "yaml"
                           ]
                         },
+                        "kind": {
+                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "name": {
                           "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -2827,8 +2928,11 @@
                           ]
                         },
                         "resource": {
-                          "description": "Resource type on which the wait operation will be applied.",
-                          "type": "string"
+                          "description": "Resource name of the referent.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         },
                         "selector": {
                           "description": "Selector defines labels selector.",
