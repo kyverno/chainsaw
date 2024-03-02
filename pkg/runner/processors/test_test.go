@@ -418,8 +418,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			} else {
 				assert.False(t, nt.FailedVar, "expected no error but got one")
 			}
-
-			if (shouldFailVar != nil && shouldFailVar.Load()) || tc.skipped {
+			if shouldFailVar.Load() || tc.skipped {
 				assert.True(t, nt.SkippedVar, "test should be skipped but it was not")
 			} else {
 				assert.False(t, nt.SkippedVar, "test should not be skipped but it was")

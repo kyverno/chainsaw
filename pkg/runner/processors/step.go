@@ -432,7 +432,7 @@ func (p *stepProcessor) deleteOperation(bindings binding.Bindings, op v1alpha1.D
 func (p *stepProcessor) describeOperation(bindings binding.Bindings, op v1alpha1.Describe) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
-		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
+		operationReport = report.NewOperation("Describe ", report.OperationTypeCommand)
 		p.stepReport.AddOperation(operationReport)
 	}
 	ns := ""
@@ -486,7 +486,7 @@ func (p *stepProcessor) errorOperation(bindings binding.Bindings, op v1alpha1.Er
 func (p *stepProcessor) getOperation(bindings binding.Bindings, op v1alpha1.Get) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
-		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
+		operationReport = report.NewOperation("Get ", report.OperationTypeCommand)
 		p.stepReport.AddOperation(operationReport)
 	}
 	ns := ""
@@ -581,7 +581,7 @@ func (p *stepProcessor) sleepOperation(bindings binding.Bindings, op v1alpha1.Sl
 func (p *stepProcessor) waitOperation(bindings binding.Bindings, op v1alpha1.Wait) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
-		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
+		operationReport = report.NewOperation("Wait ", report.OperationTypeCommand)
 		p.stepReport.AddOperation(operationReport)
 	}
 	ns := ""
