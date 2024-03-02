@@ -454,8 +454,10 @@ func TestStepProcessor_Run(t *testing.T) {
 					{
 						Delete: &v1alpha1.Delete{
 							ObjectReference: v1alpha1.ObjectReference{
-								APIVersion: "apps/v1",
-								Kind:       "Deployment",
+								ObjectType: v1alpha1.ObjectType{
+									APIVersion: "apps/v1",
+									Kind:       "Deployment",
+								},
 								ObjectSelector: v1alpha1.ObjectSelector{
 									Namespace: "chainsaw",
 									Name:      "myapp",

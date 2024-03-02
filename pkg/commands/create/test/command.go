@@ -103,8 +103,10 @@ func sampleSteps(description bool) []v1alpha1.TestSpecStep {
 						ObjectSelector: v1alpha1.ObjectSelector{
 							Name: "foo",
 						},
-						APIVersion: "v1",
-						Kind:       "Pod",
+						ObjectType: v1alpha1.ObjectType{
+							APIVersion: "v1",
+							Kind:       "Pod",
+						},
 					},
 				},
 			}, {

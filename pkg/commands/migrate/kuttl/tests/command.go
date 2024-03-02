@@ -445,8 +445,10 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		operations = append(operations, v1alpha1.Operation{
 			Delete: &v1alpha1.Delete{
 				ObjectReference: v1alpha1.ObjectReference{
-					APIVersion: operation.APIVersion,
-					Kind:       operation.Kind,
+					ObjectType: v1alpha1.ObjectType{
+						APIVersion: operation.APIVersion,
+						Kind:       operation.Kind,
+					},
 					ObjectSelector: v1alpha1.ObjectSelector{
 						Namespace: operation.Namespace,
 						Name:      operation.Name,

@@ -476,9 +476,8 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `ObjectType` | [`ObjectType`](#chainsaw-kyverno-io-v1alpha1-ObjectType) | :white_check_mark: | :white_check_mark: | <p>ObjectType determines the type of referenced objects.</p> |
 | `ObjectSelector` | [`ObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectSelector determines the selection process of referenced objects.</p> |
-| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
-| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
 
 ## `ObjectSelector`     {#chainsaw-kyverno-io-v1alpha1-ObjectSelector}
 
@@ -496,6 +495,20 @@ For multiple objects use labels.</p>
 | `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 | `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
+
+## `ObjectType`     {#chainsaw-kyverno-io-v1alpha1-ObjectType}
+
+**Appears in:**
+    
+- [ObjectReference](#chainsaw-kyverno-io-v1alpha1-ObjectReference)
+
+<p>ObjectType represents a specific apiVersion and kind.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
+| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
 
 ## `Operation`     {#chainsaw-kyverno-io-v1alpha1-Operation}
 
