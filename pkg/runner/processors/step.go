@@ -193,11 +193,7 @@ func (p *stepProcessor) tryOperations(bindings binding.Bindings, handlers ...v1a
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(bindings, *handler.Sleep))
 		} else if handler.Wait != nil {
-			cmd, err := kubectl.Wait(handler.Wait)
-			if err != nil {
-				return nil, err
-			}
-			register(p.commandOperation(bindings, *cmd))
+			register(p.waitOperation(bindings, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -250,11 +246,7 @@ func (p *stepProcessor) catchOperations(bindings binding.Bindings, handlers ...v
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(bindings, *handler.Sleep))
 		} else if handler.Wait != nil {
-			cmd, err := kubectl.Wait(handler.Wait)
-			if err != nil {
-				return nil, err
-			}
-			register(p.commandOperation(bindings, *cmd))
+			register(p.waitOperation(bindings, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -307,11 +299,7 @@ func (p *stepProcessor) finallyOperations(bindings binding.Bindings, handlers ..
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(bindings, *handler.Sleep))
 		} else if handler.Wait != nil {
-			cmd, err := kubectl.Wait(handler.Wait)
-			if err != nil {
-				return nil, err
-			}
-			register(p.commandOperation(bindings, *cmd))
+			register(p.waitOperation(bindings, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -572,6 +560,33 @@ func (p *stepProcessor) sleepOperation(bindings binding.Bindings, op v1alpha1.Sl
 		false,
 		nil,
 		opsleep.New(op),
+		operationReport,
+		bindings,
+	)
+}
+
+func (p *stepProcessor) waitOperation(bindings binding.Bindings, op v1alpha1.Wait) operation {
+	var operationReport *report.OperationReport
+	if p.stepReport != nil {
+		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
+		p.stepReport.AddOperation(operationReport)
+	}
+	ns := ""
+	if p.namespacer != nil {
+		ns = p.namespacer.GetNamespace()
+	}
+	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	return newLazyOperation(
+		false,
+		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		func() (operations.Operation, error) {
+			cmd, err := kubectl.Wait(cluster, &op)
+			if err != nil {
+				return nil, err
+			}
+			return opcommand.New(*cmd, p.test.BasePath, ns, config), nil
+		},
 		operationReport,
 		bindings,
 	)

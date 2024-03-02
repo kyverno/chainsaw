@@ -5,9 +5,11 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
+	"k8s.io/apimachinery/pkg/api/meta"
 )
 
-func Wait(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
+func Wait(client client.Client, collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
@@ -43,12 +45,18 @@ func Wait(collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
 	if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
-	// TODO: what if cluster scoped resource ?
-	namespace := collector.Namespace
-	if collector.Namespace == "" {
-		namespace = "$NAMESPACE"
+	mapping, err := getMapping(client, collector.Resource)
+	if err != nil {
+		return nil, err
 	}
-	cmd.Args = append(cmd.Args, "-n", namespace)
+	clustered := mapping.Scope.Name() == meta.RESTScopeNameRoot
+	if !clustered {
+		namespace := collector.Namespace
+		if collector.Namespace == "" {
+			namespace = "$NAMESPACE"
+		}
+		cmd.Args = append(cmd.Args, "-n", namespace)
+	}
 	if collector.Format != "" {
 		cmd.Args = append(cmd.Args, "-o", string(collector.Format))
 	}

@@ -7,20 +7,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"k8s.io/apimachinery/pkg/api/meta"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 func Describe(client client.Client, collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
-	mapper := client.RESTMapper()
-	gvk, err := mapper.KindFor(schema.GroupVersionResource{Resource: collector.Resource})
-	if err != nil {
-		return nil, err
-	}
-	mapping, err := mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
-	if err != nil {
-		return nil, err
-	}
-	clustered := mapping.Scope.Name() == meta.RESTScopeNameRoot
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
@@ -42,6 +31,11 @@ func Describe(client client.Client, collector *v1alpha1.Describe) (*v1alpha1.Com
 	if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
+	mapping, err := getMapping(client, collector.Resource)
+	if err != nil {
+		return nil, err
+	}
+	clustered := mapping.Scope.Name() == meta.RESTScopeNameRoot
 	if !clustered {
 		namespace := collector.Namespace
 		if collector.Namespace == "" {

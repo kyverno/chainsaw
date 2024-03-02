@@ -5,12 +5,19 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
+	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/utils/ptr"
 )
 
 func TestWait(t *testing.T) {
+	config, err := restutils.DefaultConfig(clientcmd.ConfigOverrides{})
+	assert.NoError(t, err)
+	client, err := client.New(config)
+	assert.NoError(t, err)
 	tests := []struct {
 		name    string
 		waiter  *v1alpha1.Wait
@@ -164,7 +171,7 @@ func TestWait(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Wait(tt.waiter)
+			got, err := Wait(client, tt.waiter)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
