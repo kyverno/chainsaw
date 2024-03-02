@@ -16,6 +16,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/kubectl"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	opapply "github.com/kyverno/chainsaw/pkg/runner/operations/apply"
 	opassert "github.com/kyverno/chainsaw/pkg/runner/operations/assert"
 	opcommand "github.com/kyverno/chainsaw/pkg/runner/operations/command"
@@ -232,11 +233,7 @@ func (p *stepProcessor) catchOperations(ctx context.Context, bindings binding.Bi
 			}
 			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Describe != nil {
-			cmd, err := kubectl.Describe(handler.Describe)
-			if err != nil {
-				return nil, err
-			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.describeOperation(ctx, bindings, *handler.Describe))
 		} else if handler.Get != nil {
 			cmd, err := kubectl.Get(handler.Get)
 			if err != nil {
@@ -293,11 +290,7 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, bindings binding.
 			}
 			register(p.commandOperation(ctx, bindings, *cmd))
 		} else if handler.Describe != nil {
-			cmd, err := kubectl.Describe(handler.Describe)
-			if err != nil {
-				return nil, err
-			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.describeOperation(ctx, bindings, *handler.Describe))
 		} else if handler.Get != nil {
 			cmd, err := kubectl.Get(handler.Get)
 			if err != nil {
@@ -459,6 +452,33 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, bindings binding.Bi
 		operationReport,
 		bindings,
 		op.Bindings...,
+	)
+}
+
+func (p *stepProcessor) describeOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Describe) operation {
+	var operationReport *report.OperationReport
+	if p.stepReport != nil {
+		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
+		p.stepReport.AddOperation(operationReport)
+	}
+	ns := ""
+	if p.namespacer != nil {
+		ns = p.namespacer.GetNamespace()
+	}
+	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	return newLazyOperation(
+		false,
+		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		func() (operations.Operation, error) {
+			cmd, err := kubectl.Describe(cluster, &op)
+			if err != nil {
+				return nil, err
+			}
+			return opcommand.New(*cmd, p.test.BasePath, ns, config), nil
+		},
+		operationReport,
+		bindings,
 	)
 }
 

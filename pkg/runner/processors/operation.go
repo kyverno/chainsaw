@@ -14,7 +14,7 @@ import (
 type operation struct {
 	continueOnError bool
 	timeout         *time.Duration
-	operation       operations.Operation
+	operation       func() (operations.Operation, error)
 	operationReport *report.OperationReport
 	bindings        binding.Bindings
 	variables       []v1alpha1.Binding
@@ -24,6 +24,26 @@ func newOperation(
 	continueOnError bool,
 	timeout *time.Duration,
 	op operations.Operation,
+	operationReport *report.OperationReport,
+	bindings binding.Bindings,
+	variables ...v1alpha1.Binding,
+) operation {
+	return operation{
+		continueOnError: continueOnError,
+		timeout:         timeout,
+		operation: func() (operations.Operation, error) {
+			return op, nil
+		},
+		operationReport: operationReport,
+		bindings:        bindings,
+		variables:       variables,
+	}
+}
+
+func newLazyOperation(
+	continueOnError bool,
+	timeout *time.Duration,
+	op func() (operations.Operation, error),
 	operationReport *report.OperationReport,
 	bindings binding.Bindings,
 	variables ...v1alpha1.Binding,
@@ -52,10 +72,14 @@ func (o operation) execute(ctx context.Context) {
 			t.FailNow()
 		}
 	}
+	operation, err := o.operation()
+	if err != nil {
+		handleError()
+	}
 	if bindings, err := registerBindings(ctx, o.bindings, o.variables...); err != nil {
 		handleError()
 	} else {
-		err := o.operation.Exec(ctx, bindings)
+		err := operation.Exec(ctx, bindings)
 		if o.operationReport != nil {
 			o.operationReport.MarkOperationEnd(err)
 		}
