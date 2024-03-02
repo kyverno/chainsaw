@@ -18,8 +18,10 @@ func TestValidateObjectReference(t *testing.T) {
 		{
 			name: "Both Kind and APIVersion are empty",
 			input: v1alpha1.ObjectReference{
-				Kind:       "",
-				APIVersion: "",
+				ObjectType: v1alpha1.ObjectType{
+					Kind:       "",
+					APIVersion: "",
+				},
 			},
 			expectErr: true,
 			errMsgs:   []string{"kind must be specified", "apiVersion must be specified"},
@@ -27,8 +29,10 @@ func TestValidateObjectReference(t *testing.T) {
 		{
 			name: "Kind is provided, APIVersion is empty",
 			input: v1alpha1.ObjectReference{
-				Kind:       "Pod",
-				APIVersion: "",
+				ObjectType: v1alpha1.ObjectType{
+					Kind:       "Pod",
+					APIVersion: "",
+				},
 			},
 			expectErr: true,
 			errMsgs:   []string{"apiVersion must be specified"},
@@ -36,8 +40,10 @@ func TestValidateObjectReference(t *testing.T) {
 		{
 			name: "APIVersion is provided, Kind is empty",
 			input: v1alpha1.ObjectReference{
-				Kind:       "",
-				APIVersion: "v1",
+				ObjectType: v1alpha1.ObjectType{
+					Kind:       "",
+					APIVersion: "v1",
+				},
 			},
 			expectErr: true,
 			errMsgs:   []string{"kind must be specified"},
@@ -45,8 +51,10 @@ func TestValidateObjectReference(t *testing.T) {
 		{
 			name: "Both Kind and APIVersion are provided",
 			input: v1alpha1.ObjectReference{
-				Kind:       "Pod",
-				APIVersion: "v1",
+				ObjectType: v1alpha1.ObjectType{
+					Kind:       "Pod",
+					APIVersion: "v1",
+				},
 			},
 			expectErr: false,
 		},

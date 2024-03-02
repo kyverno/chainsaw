@@ -44,8 +44,10 @@ func TestValidateFinally(t *testing.T) {
 	}
 	exampleDelete := &v1alpha1.Delete{
 		ObjectReference: v1alpha1.ObjectReference{
-			APIVersion: "v1",
-			Kind:       "Pod",
+			ObjectType: v1alpha1.ObjectType{
+				APIVersion: "v1",
+				Kind:       "Pod",
+			},
 			ObjectSelector: v1alpha1.ObjectSelector{
 				Namespace: "chainsaw",
 				Labels: map[string]string{
