@@ -8,12 +8,10 @@ import (
 func ValidateDescribe(path *field.Path, obj *v1alpha1.Describe) field.ErrorList {
 	var errs field.ErrorList
 	if obj != nil {
-		if obj.Resource == "" {
-			errs = append(errs, field.Invalid(path.Child("resource"), obj, "a resource must be specified"))
-		}
 		if obj.Name != "" && obj.Selector != "" {
 			errs = append(errs, field.Invalid(path, obj, "a name or label selector must be specified (found both)"))
 		}
+		errs = append(errs, ValidateResourceReference(path, obj.ResourceReference)...)
 	}
 	return errs
 }

@@ -30,7 +30,8 @@ spec:
           kind: Pod
           name: example
     - wait:
-        resource: pods
+        apiVersion: v1
+        kind: Pod
         name: example
         for:
           deletion: {}

@@ -18,17 +18,21 @@ func TestValidateDescribe(t *testing.T) {
 		name:      "No resource provided",
 		input:     &v1alpha1.Describe{},
 		expectErr: true,
-		errMsg:    "a resource must be specified",
+		errMsg:    "kind or resource must be specified",
 	}, {
 		name: "Neither Name nor Selector provided",
 		input: &v1alpha1.Describe{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 		},
 		expectErr: false,
 	}, {
 		name: "Both Name and Selector provided",
 		input: &v1alpha1.Describe{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name:     "example-name",
 				Selector: "example-selector",
@@ -39,7 +43,9 @@ func TestValidateDescribe(t *testing.T) {
 	}, {
 		name: "Only Name provided",
 		input: &v1alpha1.Describe{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "example-name",
 			},
@@ -48,7 +54,9 @@ func TestValidateDescribe(t *testing.T) {
 	}, {
 		name: "Only Selector provided",
 		input: &v1alpha1.Describe{
-			Resource: "pods",
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Selector: "example-selector",
 			},

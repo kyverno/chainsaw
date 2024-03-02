@@ -220,9 +220,9 @@ func (p *stepProcessor) catchOperations(bindings binding.Bindings, handlers ...v
 			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
 				Timeout:              handler.Events.Timeout,
-				Resource:             "events",
 				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
 				Format:               handler.Events.Format,
+				ResourceReference:    v1alpha1.ResourceReference{Resource: "events"},
 			}
 			register(p.getOperation(bindings, get))
 		} else if handler.Describe != nil {
@@ -266,9 +266,9 @@ func (p *stepProcessor) finallyOperations(bindings binding.Bindings, handlers ..
 			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
 				Timeout:              handler.Events.Timeout,
-				Resource:             "events",
 				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
 				Format:               handler.Events.Format,
+				ResourceReference:    v1alpha1.ResourceReference{Resource: "events"},
 			}
 			register(p.getOperation(bindings, get))
 		} else if handler.Describe != nil {

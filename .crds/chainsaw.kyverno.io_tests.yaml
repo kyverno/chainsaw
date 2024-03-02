@@ -272,9 +272,15 @@ spec:
                             description: Describe determines the resource describe
                               collector to execute.
                             properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
+                                type: string
+                              kind:
+                                description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                                 type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -284,7 +290,7 @@ spec:
                                   https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                                 type: string
                               resource:
-                                description: Resource type.
+                                description: Resource name of the referent.
                                 type: string
                               selector:
                                 description: Selector defines labels selector.
@@ -297,8 +303,6 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
-                            required:
-                            - resource
                             type: object
                           description:
                             description: Description contains a description of the
@@ -338,6 +342,9 @@ spec:
                             description: Get determines the resource get collector
                               to execute.
                             properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
@@ -349,6 +356,9 @@ spec:
                                 - json
                                 - yaml
                                 type: string
+                              kind:
+                                description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -357,7 +367,7 @@ spec:
                                   https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                                 type: string
                               resource:
-                                description: Resource type.
+                                description: Resource name of the referent.
                                 type: string
                               selector:
                                 description: Selector defines labels selector.
@@ -366,8 +376,6 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
-                            required:
-                            - resource
                             type: object
                           podLogs:
                             description: PodLogs determines the pod logs collector
@@ -476,6 +484,9 @@ spec:
                             description: Wait determines the resource wait collector
                               to execute.
                             properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
                               cluster:
                                 description: Cluster defines the target cluster where
                                   the wait operation will be performed (default cluster
@@ -511,6 +522,9 @@ spec:
                                 - json
                                 - yaml
                                 type: string
+                              kind:
+                                description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -519,8 +533,7 @@ spec:
                                   https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                                 type: string
                               resource:
-                                description: Resource type on which the wait operation
-                                  will be applied.
+                                description: Resource name of the referent.
                                 type: string
                               selector:
                                 description: Selector defines labels selector.
@@ -532,7 +545,6 @@ spec:
                                 type: string
                             required:
                             - for
-                            - resource
                             type: object
                         type: object
                       type: array
@@ -708,9 +720,15 @@ spec:
                             description: Describe determines the resource describe
                               collector to execute.
                             properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
+                                type: string
+                              kind:
+                                description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
                                 type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -720,7 +738,7 @@ spec:
                                   https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                                 type: string
                               resource:
-                                description: Resource type.
+                                description: Resource name of the referent.
                                 type: string
                               selector:
                                 description: Selector defines labels selector.
@@ -733,8 +751,6 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
-                            required:
-                            - resource
                             type: object
                           description:
                             description: Description contains a description of the
@@ -774,6 +790,9 @@ spec:
                             description: Get determines the resource get collector
                               to execute.
                             properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
                               cluster:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
@@ -785,6 +804,9 @@ spec:
                                 - json
                                 - yaml
                                 type: string
+                              kind:
+                                description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -793,7 +815,7 @@ spec:
                                   https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                                 type: string
                               resource:
-                                description: Resource type.
+                                description: Resource name of the referent.
                                 type: string
                               selector:
                                 description: Selector defines labels selector.
@@ -802,8 +824,6 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
-                            required:
-                            - resource
                             type: object
                           podLogs:
                             description: PodLogs determines the pod logs collector
@@ -912,6 +932,9 @@ spec:
                             description: Wait determines the resource wait collector
                               to execute.
                             properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
                               cluster:
                                 description: Cluster defines the target cluster where
                                   the wait operation will be performed (default cluster
@@ -947,6 +970,9 @@ spec:
                                 - json
                                 - yaml
                                 type: string
+                              kind:
+                                description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -955,8 +981,7 @@ spec:
                                   https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                                 type: string
                               resource:
-                                description: Resource type on which the wait operation
-                                  will be applied.
+                                description: Resource name of the referent.
                                 type: string
                               selector:
                                 description: Selector defines labels selector.
@@ -968,7 +993,6 @@ spec:
                                 type: string
                             required:
                             - for
-                            - resource
                             type: object
                         type: object
                       type: array
@@ -1554,6 +1578,9 @@ spec:
                             description: Wait determines the resource wait collector
                               to execute.
                             properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
                               cluster:
                                 description: Cluster defines the target cluster where
                                   the wait operation will be performed (default cluster
@@ -1589,6 +1616,9 @@ spec:
                                 - json
                                 - yaml
                                 type: string
+                              kind:
+                                description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                                type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
                                 type: string
@@ -1597,8 +1627,7 @@ spec:
                                   https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/'
                                 type: string
                               resource:
-                                description: Resource type on which the wait operation
-                                  will be applied.
+                                description: Resource name of the referent.
                                 type: string
                               selector:
                                 description: Selector defines labels selector.
@@ -1610,7 +1639,6 @@ spec:
                                 type: string
                             required:
                             - for
-                            - resource
                             type: object
                         type: object
                       minItems: 1
