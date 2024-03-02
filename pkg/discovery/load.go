@@ -28,6 +28,20 @@ func tryLoadTestFile(file string) ([]*v1alpha1.Test, error) {
 	return tests, nil
 }
 
+func tryLoadTestFiles(fileName string, path string) ([]*v1alpha1.Test, error) {
+	if filepath.Ext(fileName) != "" {
+		return tryLoadTestFile(filepath.Join(path, fileName))
+	}
+	tests, err := tryLoadTestFile(filepath.Join(path, fileName+".yaml"))
+	if err != nil {
+		return nil, err
+	}
+	if tests != nil {
+		return tests, nil
+	}
+	return tryLoadTestFile(filepath.Join(path, fileName+".yml"))
+}
+
 func LoadTest(fileName string, path string) ([]Test, error) {
 	// first, try to load a test manifest
 	if path == "" {
@@ -35,7 +49,7 @@ func LoadTest(fileName string, path string) ([]Test, error) {
 	}
 	var tests []Test
 	if fileName != "" {
-		apiTests, err := tryLoadTestFile(filepath.Join(path, fileName))
+		apiTests, err := tryLoadTestFiles(fileName, path)
 		if err != nil {
 			return nil, err
 		}
