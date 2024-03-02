@@ -91,17 +91,17 @@ func (p *stepProcessor) Run(ctx context.Context) {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
-	try, err := p.tryOperations(ctx, bindings, p.step.TestStepSpec.Try...)
+	try, err := p.tryOperations(bindings, p.step.TestStepSpec.Try...)
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
-	catch, err := p.catchOperations(ctx, bindings, p.step.TestStepSpec.Catch...)
+	catch, err := p.catchOperations(bindings, p.step.TestStepSpec.Catch...)
 	if err != nil {
 		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
-	finally, err := p.finallyOperations(ctx, bindings, p.step.TestStepSpec.Finally...)
+	finally, err := p.finallyOperations(bindings, p.step.TestStepSpec.Finally...)
 	if err != nil {
 		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
@@ -143,7 +143,7 @@ func (p *stepProcessor) Run(ctx context.Context) {
 	}
 }
 
-func (p *stepProcessor) tryOperations(ctx context.Context, bindings binding.Bindings, handlers ...v1alpha1.Operation) ([]operation, error) {
+func (p *stepProcessor) tryOperations(bindings binding.Bindings, handlers ...v1alpha1.Operation) ([]operation, error) {
 	var ops []operation
 	for _, handler := range handlers {
 		register := func(o ...operation) {
@@ -154,50 +154,50 @@ func (p *stepProcessor) tryOperations(ctx context.Context, bindings binding.Bind
 			}
 		}
 		if handler.Apply != nil {
-			loaded, err := p.applyOperation(ctx, bindings, *handler.Apply)
+			loaded, err := p.applyOperation(bindings, *handler.Apply)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Assert != nil {
-			loaded, err := p.assertOperation(ctx, bindings, *handler.Assert)
+			loaded, err := p.assertOperation(bindings, *handler.Assert)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, bindings, *handler.Command))
+			register(p.commandOperation(bindings, *handler.Command))
 		} else if handler.Create != nil {
-			loaded, err := p.createOperation(ctx, bindings, *handler.Create)
+			loaded, err := p.createOperation(bindings, *handler.Create)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(ctx, bindings, *handler.Delete)
+			loaded := p.deleteOperation(bindings, *handler.Delete)
 			register(loaded)
 		} else if handler.Error != nil {
-			loaded, err := p.errorOperation(ctx, bindings, *handler.Error)
+			loaded, err := p.errorOperation(bindings, *handler.Error)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Patch != nil {
-			loaded, err := p.patchOperation(ctx, bindings, *handler.Patch)
+			loaded, err := p.patchOperation(bindings, *handler.Patch)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, bindings, *handler.Script))
+			register(p.scriptOperation(bindings, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(ctx, bindings, *handler.Sleep))
+			register(p.sleepOperation(bindings, *handler.Sleep))
 		} else if handler.Wait != nil {
 			cmd, err := kubectl.Wait(handler.Wait)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.commandOperation(bindings, *cmd))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -205,7 +205,7 @@ func (p *stepProcessor) tryOperations(ctx context.Context, bindings binding.Bind
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperations(ctx context.Context, bindings binding.Bindings, handlers ...v1alpha1.Catch) ([]operation, error) {
+func (p *stepProcessor) catchOperations(bindings binding.Bindings, handlers ...v1alpha1.Catch) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -219,7 +219,7 @@ func (p *stepProcessor) catchOperations(ctx context.Context, bindings binding.Bi
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.commandOperation(bindings, *cmd))
 		} else if handler.Events != nil {
 			cmd, err := kubectl.Get(&v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -231,30 +231,30 @@ func (p *stepProcessor) catchOperations(ctx context.Context, bindings binding.Bi
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.commandOperation(bindings, *cmd))
 		} else if handler.Describe != nil {
-			register(p.describeOperation(ctx, bindings, *handler.Describe))
+			register(p.describeOperation(bindings, *handler.Describe))
 		} else if handler.Get != nil {
 			cmd, err := kubectl.Get(handler.Get)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.commandOperation(bindings, *cmd))
 		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(ctx, bindings, *handler.Delete)
+			loaded := p.deleteOperation(bindings, *handler.Delete)
 			register(loaded)
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, bindings, *handler.Command))
+			register(p.commandOperation(bindings, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, bindings, *handler.Script))
+			register(p.scriptOperation(bindings, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(ctx, bindings, *handler.Sleep))
+			register(p.sleepOperation(bindings, *handler.Sleep))
 		} else if handler.Wait != nil {
 			cmd, err := kubectl.Wait(handler.Wait)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.commandOperation(bindings, *cmd))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -262,7 +262,7 @@ func (p *stepProcessor) catchOperations(ctx context.Context, bindings binding.Bi
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(ctx context.Context, bindings binding.Bindings, handlers ...v1alpha1.Finally) ([]operation, error) {
+func (p *stepProcessor) finallyOperations(bindings binding.Bindings, handlers ...v1alpha1.Finally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -276,7 +276,7 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, bindings binding.
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.commandOperation(bindings, *cmd))
 		} else if handler.Events != nil {
 			cmd, err := kubectl.Get(&v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -288,30 +288,30 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, bindings binding.
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.commandOperation(bindings, *cmd))
 		} else if handler.Describe != nil {
-			register(p.describeOperation(ctx, bindings, *handler.Describe))
+			register(p.describeOperation(bindings, *handler.Describe))
 		} else if handler.Get != nil {
 			cmd, err := kubectl.Get(handler.Get)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.commandOperation(bindings, *cmd))
 		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(ctx, bindings, *handler.Delete)
+			loaded := p.deleteOperation(bindings, *handler.Delete)
 			register(loaded)
 		} else if handler.Command != nil {
-			register(p.commandOperation(ctx, bindings, *handler.Command))
+			register(p.commandOperation(bindings, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(ctx, bindings, *handler.Script))
+			register(p.scriptOperation(bindings, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(ctx, bindings, *handler.Sleep))
+			register(p.sleepOperation(bindings, *handler.Sleep))
 		} else if handler.Wait != nil {
 			cmd, err := kubectl.Wait(handler.Wait)
 			if err != nil {
 				return nil, err
 			}
-			register(p.commandOperation(ctx, bindings, *cmd))
+			register(p.commandOperation(bindings, *cmd))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -319,7 +319,7 @@ func (p *stepProcessor) finallyOperations(ctx context.Context, bindings binding.
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(bindings binding.Bindings, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -341,7 +341,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, bindings binding.Bin
 		ops = append(ops, newOperation(
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			opapply.New(cluster, resource, p.namespacer, p.getCleaner(ctx, dryRun), template, op.Expect),
+			opapply.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect),
 			operationReport,
 			bindings,
 			op.Bindings...,
@@ -350,7 +350,7 @@ func (p *stepProcessor) applyOperation(ctx context.Context, bindings binding.Bin
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Assert) ([]operation, error) {
+func (p *stepProcessor) assertOperation(bindings binding.Bindings, op v1alpha1.Assert) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
 	if err != nil {
 		return nil, err
@@ -377,7 +377,7 @@ func (p *stepProcessor) assertOperation(ctx context.Context, bindings binding.Bi
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Command) operation {
+func (p *stepProcessor) commandOperation(bindings binding.Bindings, op v1alpha1.Command) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
@@ -399,7 +399,7 @@ func (p *stepProcessor) commandOperation(ctx context.Context, bindings binding.B
 	)
 }
 
-func (p *stepProcessor) createOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(bindings binding.Bindings, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -421,7 +421,7 @@ func (p *stepProcessor) createOperation(ctx context.Context, bindings binding.Bi
 		ops = append(ops, newOperation(
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			opcreate.New(cluster, resource, p.namespacer, p.getCleaner(ctx, dryRun), template, op.Expect),
+			opcreate.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect),
 			operationReport,
 			bindings,
 			op.Bindings...,
@@ -430,7 +430,7 @@ func (p *stepProcessor) createOperation(ctx context.Context, bindings binding.Bi
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Delete) operation {
+func (p *stepProcessor) deleteOperation(bindings binding.Bindings, op v1alpha1.Delete) operation {
 	var resource unstructured.Unstructured
 	resource.SetAPIVersion(op.APIVersion)
 	resource.SetKind(op.Kind)
@@ -455,7 +455,7 @@ func (p *stepProcessor) deleteOperation(ctx context.Context, bindings binding.Bi
 	)
 }
 
-func (p *stepProcessor) describeOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Describe) operation {
+func (p *stepProcessor) describeOperation(bindings binding.Bindings, op v1alpha1.Describe) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
@@ -482,7 +482,7 @@ func (p *stepProcessor) describeOperation(ctx context.Context, bindings binding.
 	)
 }
 
-func (p *stepProcessor) errorOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Error) ([]operation, error) {
+func (p *stepProcessor) errorOperation(bindings binding.Bindings, op v1alpha1.Error) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
 	if err != nil {
 		return nil, err
@@ -509,7 +509,7 @@ func (p *stepProcessor) errorOperation(ctx context.Context, bindings binding.Bin
 	return ops, nil
 }
 
-func (p *stepProcessor) patchOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Patch) ([]operation, error) {
+func (p *stepProcessor) patchOperation(bindings binding.Bindings, op v1alpha1.Patch) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -540,7 +540,7 @@ func (p *stepProcessor) patchOperation(ctx context.Context, bindings binding.Bin
 	return ops, nil
 }
 
-func (p *stepProcessor) scriptOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Script) operation {
+func (p *stepProcessor) scriptOperation(bindings binding.Bindings, op v1alpha1.Script) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Script ", report.OperationTypeScript)
@@ -562,7 +562,7 @@ func (p *stepProcessor) scriptOperation(ctx context.Context, bindings binding.Bi
 	)
 }
 
-func (p *stepProcessor) sleepOperation(ctx context.Context, bindings binding.Bindings, op v1alpha1.Sleep) operation {
+func (p *stepProcessor) sleepOperation(bindings binding.Bindings, op v1alpha1.Sleep) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Sleep ", report.OperationTypeSleep)
@@ -646,7 +646,7 @@ func (p *stepProcessor) getClient(opCluster string, dryRun bool) (*rest.Config, 
 	return config, client.DryRun(cluster)
 }
 
-func (p *stepProcessor) getCleaner(ctx context.Context, dryRun bool) cleanup.Cleaner {
+func (p *stepProcessor) getCleaner(dryRun bool) cleanup.Cleaner {
 	if dryRun {
 		return nil
 	}
