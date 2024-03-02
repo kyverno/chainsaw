@@ -55,7 +55,7 @@ chainsaw test [flags]... [test directories]...
       --skip-delete                               If set, do not delete the resources after running the tests
       --template                                  If set, resources will be considered for templating
       --test-dir strings                          Directories containing test cases to run
-      --test-file string                          Name of the test file (default "chainsaw-test.yaml")
+      --test-file string                          Name of the test file (default "chainsaw-test")
       --values strings                            Values passed to the tests
 ```
 

@@ -56,7 +56,7 @@ func Command() *cobra.Command {
 			return nil
 		},
 	}
-	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test.yaml", "Name of the test file")
+	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test", "Name of the test file")
 	cmd.Flags().StringVar(&options.readmeFile, "readme-file", "README.md", "Name of the built docs file")
 	cmd.Flags().StringVar(&options.catalog, "catalog", "", "Path to the built test catalog file")
 	cmd.Flags().StringArrayVar(&options.testDirs, "test-dir", []string{}, "Directories containing test cases to run")
@@ -82,7 +82,7 @@ func generateDocs(out io.Writer, fileName string, tests ...discovery.Test) error
 	return nil
 }
 
-func generateCatalog(out io.Writer, readme string, catalog string, tests ...discovery.Test) error {
+func generateCatalog(_ io.Writer, readme string, catalog string, tests ...discovery.Test) error {
 	file, err := os.Create(catalog)
 	if err != nil {
 		return err

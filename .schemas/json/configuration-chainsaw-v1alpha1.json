@@ -416,7 +416,7 @@
           ]
         },
         "testFile": {
-          "description": "TestFile is the name of the file containing the test to run.",
+          "description": "TestFile is the name of the file containing the test to run. If no extension is provided, chainsaw will try with .yaml first and .yml if needed.",
           "type": [
             "string",
             "null"

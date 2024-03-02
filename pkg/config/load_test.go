@@ -49,7 +49,7 @@ func TestLoad(t *testing.T) {
 				Name: "default",
 			},
 			Spec: v1alpha1.ConfigurationSpec{
-				TestFile:         "chainsaw-test.yaml",
+				TestFile:         "chainsaw-test",
 				SkipDelete:       false,
 				FailFast:         false,
 				ReportFormat:     "",

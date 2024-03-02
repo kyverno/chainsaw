@@ -13,7 +13,7 @@ chainsaw build docs [flags]
   -h, --help                   help for docs
       --readme-file string     Name of the built docs file (default "README.md")
       --test-dir stringArray   Directories containing test cases to run
-      --test-file string       Name of the test file (default "chainsaw-test.yaml")
+      --test-file string       Name of the test file (default "chainsaw-test")
 ```
 
 ### SEE ALSO
