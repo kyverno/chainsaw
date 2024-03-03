@@ -306,8 +306,9 @@ func (p *stepProcessor) applyOperation(bindings binding.Bindings, op v1alpha1.Ap
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	_, cluster := p.getClient(op.Cluster, dryRun)
+	config, cluster := p.getClient(op.Cluster, dryRun)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
@@ -336,8 +337,9 @@ func (p *stepProcessor) assertOperation(bindings binding.Bindings, op v1alpha1.A
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	_, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	for _, resource := range resources {
 		ops = append(ops, newOperation(
 			false,
@@ -363,6 +365,7 @@ func (p *stepProcessor) commandOperation(bindings binding.Bindings, op v1alpha1.
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	return newOperation(
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
@@ -386,8 +389,9 @@ func (p *stepProcessor) createOperation(bindings binding.Bindings, op v1alpha1.C
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	_, cluster := p.getClient(op.Cluster, dryRun)
+	config, cluster := p.getClient(op.Cluster, dryRun)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
@@ -417,8 +421,9 @@ func (p *stepProcessor) deleteOperation(bindings binding.Bindings, op v1alpha1.D
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	_, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	return newOperation(
 		false,
 		timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
@@ -441,6 +446,7 @@ func (p *stepProcessor) describeOperation(bindings binding.Bindings, op v1alpha1
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	return newLazyOperation(
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
@@ -468,8 +474,9 @@ func (p *stepProcessor) errorOperation(bindings binding.Bindings, op v1alpha1.Er
 		p.stepReport.AddOperation(operationReport)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	_, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	for _, resource := range resources {
 		ops = append(ops, newOperation(
 			false,
@@ -495,6 +502,7 @@ func (p *stepProcessor) getOperation(bindings binding.Bindings, op v1alpha1.Get)
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	return newLazyOperation(
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
@@ -523,8 +531,9 @@ func (p *stepProcessor) patchOperation(bindings binding.Bindings, op v1alpha1.Pa
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	_, cluster := p.getClient(op.Cluster, dryRun)
+	config, cluster := p.getClient(op.Cluster, dryRun)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	for _, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
@@ -553,6 +562,7 @@ func (p *stepProcessor) scriptOperation(bindings binding.Bindings, op v1alpha1.S
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	return newOperation(
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
@@ -590,6 +600,7 @@ func (p *stepProcessor) waitOperation(bindings binding.Bindings, op v1alpha1.Wai
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	bindings = bindings.Register("$client", binding.NewBinding(cluster))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	return newLazyOperation(
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
