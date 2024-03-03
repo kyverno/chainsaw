@@ -8,6 +8,8 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/client-go/discovery"
+	"k8s.io/client-go/rest"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -126,4 +128,20 @@ func jpKubernetesList(arguments []any) (any, error) {
 		return nil, err
 	}
 	return list.Items, nil
+}
+
+func jpKubernetesServerVersion(arguments []any) (any, error) {
+	var config *rest.Config
+	if err := getArg(arguments, 0, &config); err != nil {
+		return nil, err
+	}
+	client, err := discovery.NewDiscoveryClientForConfig(config)
+	if err != nil {
+		return nil, err
+	}
+	version, err := client.ServerVersion()
+	if err != nil {
+		return nil, err
+	}
+	return version, nil
 }
