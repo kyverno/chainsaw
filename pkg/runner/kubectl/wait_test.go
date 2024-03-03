@@ -45,7 +45,7 @@ func TestWait(t *testing.T) {
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"wait", "pods", "--for=condition=Ready", "-n", "$NAMESPACE", "--timeout=-1s"},
+			Args:       []string{"wait", "pods", "--for=condition=Ready", "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
 		},
 		wantErr: false,
 	}, {
@@ -62,7 +62,7 @@ func TestWait(t *testing.T) {
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"wait", "clusterroles.v1.rbac.authorization.k8s.io", "--for=condition=Ready", "--timeout=-1s"},
+			Args:       []string{"wait", "clusterroles.v1.rbac.authorization.k8s.io", "--for=condition=Ready", "--all", "--timeout=-1s"},
 		},
 		wantErr: false,
 	}, {
@@ -80,7 +80,7 @@ func TestWait(t *testing.T) {
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"wait", "pods", `--for=condition=Ready="test"`, "-n", "$NAMESPACE", "--timeout=-1s"},
+			Args:       []string{"wait", "pods", `--for=condition=Ready="test"`, "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
 		},
 		wantErr: false,
 	}, {
@@ -98,7 +98,7 @@ func TestWait(t *testing.T) {
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"wait", "pods", `--for=condition=Ready=""`, "-n", "$NAMESPACE", "--timeout=-1s"},
+			Args:       []string{"wait", "pods", `--for=condition=Ready=""`, "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
 		},
 		wantErr: false,
 	}, {
@@ -113,7 +113,7 @@ func TestWait(t *testing.T) {
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"wait", "pods", "--for=delete", "-n", "$NAMESPACE", "--timeout=-1s"},
+			Args:       []string{"wait", "pods", "--for=delete", "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
 		},
 		wantErr: false,
 	}, {
@@ -172,7 +172,7 @@ func TestWait(t *testing.T) {
 		want: &v1alpha1.Command{
 			Timeout:    &metav1.Duration{Duration: 120 * time.Second},
 			Entrypoint: "kubectl",
-			Args:       []string{"wait", "pods", "--for=condition=Ready", "-n", "$NAMESPACE", "--timeout=-1s"},
+			Args:       []string{"wait", "pods", "--for=condition=Ready", "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
 		},
 		wantErr: false,
 	}, {

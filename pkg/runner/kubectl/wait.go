@@ -13,12 +13,12 @@ func Wait(client client.Client, collector *v1alpha1.Wait) (*v1alpha1.Command, er
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
+	if collector.Name != "" && collector.Selector != "" {
+		return nil, errors.New("name cannot be provided when a selector is specified")
+	}
 	resource, scope, err := mapResource(client, collector.ResourceReference)
 	if err != nil {
 		return nil, err
-	}
-	if collector.Name != "" && collector.Selector != "" {
-		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
 	cmd := v1alpha1.Command{
 		Cluster:    collector.Cluster,
@@ -42,14 +42,15 @@ func Wait(client client.Client, collector *v1alpha1.Wait) (*v1alpha1.Command, er
 	}
 	if collector.Name != "" {
 		cmd.Args = append(cmd.Args, collector.Name)
-	}
-	if collector.Selector != "" {
+	} else if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
+	} else {
+		cmd.Args = append(cmd.Args, "--all")
 	}
 	clustered := scope.Name() == meta.RESTScopeNameRoot
 	if !clustered {
 		namespace := collector.Namespace
-		if collector.Namespace == "" {
+		if namespace == "" {
 			namespace = "$NAMESPACE"
 		}
 		cmd.Args = append(cmd.Args, "-n", namespace)

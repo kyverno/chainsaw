@@ -28,14 +28,13 @@ func Describe(client client.Client, collector *v1alpha1.Describe) (*v1alpha1.Com
 	}
 	if collector.Name != "" {
 		cmd.Args = append(cmd.Args, collector.Name)
-	}
-	if collector.Selector != "" {
+	} else if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
 	clustered := scope.Name() == meta.RESTScopeNameRoot
 	if !clustered {
 		namespace := collector.Namespace
-		if collector.Namespace == "" {
+		if namespace == "" {
 			namespace = "$NAMESPACE"
 		}
 		cmd.Args = append(cmd.Args, "-n", namespace)

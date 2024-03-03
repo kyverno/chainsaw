@@ -25,12 +25,11 @@ func Logs(collector *v1alpha1.PodLogs) (*v1alpha1.Command, error) {
 	}
 	if collector.Name != "" {
 		cmd.Args = append(cmd.Args, collector.Name)
-	}
-	if collector.Selector != "" {
+	} else if collector.Selector != "" {
 		cmd.Args = append(cmd.Args, "-l", collector.Selector)
 	}
 	namespace := collector.Namespace
-	if collector.Namespace == "" {
+	if namespace == "" {
 		namespace = "$NAMESPACE"
 	}
 	cmd.Args = append(cmd.Args, "-n", namespace)
