@@ -33,11 +33,15 @@ func Describe(client client.Client, collector *v1alpha1.Describe) (*v1alpha1.Com
 	}
 	clustered := scope.Name() == meta.RESTScopeNameRoot
 	if !clustered {
-		namespace := collector.Namespace
-		if namespace == "" {
-			namespace = "$NAMESPACE"
+		if collector.Namespace == "*" {
+			cmd.Args = append(cmd.Args, "--all-namespaces")
+		} else {
+			namespace := collector.Namespace
+			if namespace == "" {
+				namespace = "$NAMESPACE"
+			}
+			cmd.Args = append(cmd.Args, "-n", namespace)
 		}
-		cmd.Args = append(cmd.Args, "-n", namespace)
 	}
 	if collector.ShowEvents != nil {
 		cmd.Args = append(cmd.Args, fmt.Sprintf("--show-events=%t", *collector.ShowEvents))

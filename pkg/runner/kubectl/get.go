@@ -32,11 +32,15 @@ func Get(client client.Client, collector *v1alpha1.Get) (*v1alpha1.Command, erro
 	}
 	clustered := scope.Name() == meta.RESTScopeNameRoot
 	if !clustered {
-		namespace := collector.Namespace
-		if namespace == "" {
-			namespace = "$NAMESPACE"
+		if collector.Namespace == "*" {
+			cmd.Args = append(cmd.Args, "--all-namespaces")
+		} else {
+			namespace := collector.Namespace
+			if namespace == "" {
+				namespace = "$NAMESPACE"
+			}
+			cmd.Args = append(cmd.Args, "-n", namespace)
 		}
-		cmd.Args = append(cmd.Args, "-n", namespace)
 	}
 	if collector.Format != "" {
 		cmd.Args = append(cmd.Args, "-o", string(collector.Format))
