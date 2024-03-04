@@ -276,6 +276,761 @@
         "null"
       ],
       "properties": {
+        "catch": {
+          "description": "Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.",
+          "type": [
+            "array",
+            "null"
+          ],
+          "items": {
+            "description": "Catch defines actions to be executed on failure.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "properties": {
+              "command": {
+                "description": "Command defines a command to run.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "required": [
+                  "entrypoint"
+                ],
+                "properties": {
+                  "args": {
+                    "description": "Args is the command arguments.",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    }
+                  },
+                  "bindings": {
+                    "description": "Bindings defines additional binding key/values.",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "description": "Binding represents a key/value set as a binding in an executing test.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name the name of the binding.",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "Value value of the binding.",
+                          "x-kubernetes-preserve-unknown-fields": true
+                        }
+                      }
+                    }
+                  },
+                  "check": {
+                    "description": "Check is an assertion tree to validate the operation outcome.",
+                    "x-kubernetes-preserve-unknown-fields": true
+                  },
+                  "cluster": {
+                    "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "entrypoint": {
+                    "description": "Entrypoint is the command entry point to run.",
+                    "type": "string"
+                  },
+                  "env": {
+                    "description": "Env defines additional environment variables.",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "description": "Binding represents a key/value set as a binding in an executing test.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name the name of the binding.",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "Value value of the binding.",
+                          "x-kubernetes-preserve-unknown-fields": true
+                        }
+                      }
+                    }
+                  },
+                  "skipLogOutput": {
+                    "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "timeout": {
+                    "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "delete": {
+                "description": "Delete represents a deletion operation.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "required": [
+                  "ref"
+                ],
+                "properties": {
+                  "bindings": {
+                    "description": "Bindings defines additional binding key/values.",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "description": "Binding represents a key/value set as a binding in an executing test.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name the name of the binding.",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "Value value of the binding.",
+                          "x-kubernetes-preserve-unknown-fields": true
+                        }
+                      }
+                    }
+                  },
+                  "cluster": {
+                    "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "expect": {
+                    "description": "Expect defines a list of matched checks to validate the operation outcome.",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "check"
+                      ],
+                      "properties": {
+                        "check": {
+                          "description": "Check defines the verification statement.",
+                          "x-kubernetes-preserve-unknown-fields": true
+                        },
+                        "match": {
+                          "description": "Match defines the matching statement.",
+                          "x-kubernetes-preserve-unknown-fields": true
+                        }
+                      }
+                    }
+                  },
+                  "ref": {
+                    "description": "ObjectReference determines objects to be deleted.",
+                    "type": "object",
+                    "required": [
+                      "apiVersion",
+                      "kind"
+                    ],
+                    "properties": {
+                      "apiVersion": {
+                        "description": "API version of the referent.",
+                        "type": "string"
+                      },
+                      "kind": {
+                        "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                        "type": "string"
+                      },
+                      "labels": {
+                        "description": "Label selector to match objects to delete",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      },
+                      "name": {
+                        "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "namespace": {
+                        "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      }
+                    }
+                  },
+                  "template": {
+                    "description": "Template determines whether resources should be considered for templating.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "timeout": {
+                    "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "describe": {
+                "description": "Describe determines the resource describe collector to execute.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "apiVersion": {
+                    "description": "API version of the referent.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "cluster": {
+                    "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "kind": {
+                    "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "name": {
+                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "namespace": {
+                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "resource": {
+                    "description": "Resource name of the referent.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "selector": {
+                    "description": "Selector defines labels selector.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "showEvents": {
+                    "description": "Show Events indicates whether to include related events.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "timeout": {
+                    "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "description": {
+                "description": "Description contains a description of the operation.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "events": {
+                "description": "Events determines the events collector to execute.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "cluster": {
+                    "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "format": {
+                    "description": "Format determines the output format (json or yaml).",
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "json",
+                      "yaml"
+                    ]
+                  },
+                  "name": {
+                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "namespace": {
+                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "selector": {
+                    "description": "Selector defines labels selector.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "timeout": {
+                    "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "get": {
+                "description": "Get determines the resource get collector to execute.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "apiVersion": {
+                    "description": "API version of the referent.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "cluster": {
+                    "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "format": {
+                    "description": "Format determines the output format (json or yaml).",
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "json",
+                      "yaml"
+                    ]
+                  },
+                  "kind": {
+                    "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "name": {
+                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "namespace": {
+                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "resource": {
+                    "description": "Resource name of the referent.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "selector": {
+                    "description": "Selector defines labels selector.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "timeout": {
+                    "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "podLogs": {
+                "description": "PodLogs determines the pod logs collector to execute.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "cluster": {
+                    "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "container": {
+                    "description": "Container in pod to get logs from else --all-containers is used.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "name": {
+                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "namespace": {
+                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "selector": {
+                    "description": "Selector defines labels selector.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "tail": {
+                    "description": "Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.",
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "timeout": {
+                    "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "script": {
+                "description": "Script defines a script to run.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "properties": {
+                  "bindings": {
+                    "description": "Bindings defines additional binding key/values.",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "description": "Binding represents a key/value set as a binding in an executing test.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name the name of the binding.",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "Value value of the binding.",
+                          "x-kubernetes-preserve-unknown-fields": true
+                        }
+                      }
+                    }
+                  },
+                  "check": {
+                    "description": "Check is an assertion tree to validate the operation outcome.",
+                    "x-kubernetes-preserve-unknown-fields": true
+                  },
+                  "cluster": {
+                    "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "content": {
+                    "description": "Content defines a shell script (run with \"sh -c ...\").",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "env": {
+                    "description": "Env defines additional environment variables.",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "description": "Binding represents a key/value set as a binding in an executing test.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name the name of the binding.",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "Value value of the binding.",
+                          "x-kubernetes-preserve-unknown-fields": true
+                        }
+                      }
+                    }
+                  },
+                  "skipLogOutput": {
+                    "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
+                  },
+                  "timeout": {
+                    "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              },
+              "sleep": {
+                "description": "Sleep defines zzzz.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "required": [
+                  "duration"
+                ],
+                "properties": {
+                  "duration": {
+                    "description": "Duration is the delay used for sleeping.",
+                    "type": "string"
+                  }
+                }
+              },
+              "wait": {
+                "description": "Wait determines the resource wait collector to execute.",
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "required": [
+                  "for"
+                ],
+                "properties": {
+                  "apiVersion": {
+                    "description": "API version of the referent.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "cluster": {
+                    "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "for": {
+                    "description": "For specifies the condition to wait for.",
+                    "type": "object",
+                    "properties": {
+                      "condition": {
+                        "description": "Condition specifies the condition to wait for.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "required": [
+                          "name"
+                        ],
+                        "properties": {
+                          "name": {
+                            "description": "Name defines the specific condition to wait for, e.g., \"Available\", \"Ready\".",
+                            "type": "string"
+                          },
+                          "value": {
+                            "description": "Value defines the specific condition status to wait for, e.g., \"True\", \"False\".",
+                            "type": [
+                              "string",
+                              "null"
+                            ]
+                          }
+                        }
+                      },
+                      "deletion": {
+                        "description": "Deletion specifies parameters for waiting on a resource's deletion.",
+                        "type": [
+                          "object",
+                          "null"
+                        ]
+                      }
+                    }
+                  },
+                  "format": {
+                    "description": "Format determines the output format (json or yaml).",
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "json",
+                      "yaml"
+                    ]
+                  },
+                  "kind": {
+                    "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "name": {
+                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "namespace": {
+                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "resource": {
+                    "description": "Resource name of the referent.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "selector": {
+                    "description": "Selector defines labels selector.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "timeout": {
+                    "description": "Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
         "clusters": {
           "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
           "type": [

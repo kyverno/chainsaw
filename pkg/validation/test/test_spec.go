@@ -10,6 +10,9 @@ func ValidateTestSpec(path *field.Path, obj v1alpha1.TestSpec) field.ErrorList {
 	for i, step := range obj.Steps {
 		errs = append(errs, ValidateTestSpecStep(path.Child("steps").Index(i), step)...)
 	}
+	for i, catch := range obj.Catch {
+		errs = append(errs, ValidateCatch(path.Child("catch").Index(i), catch)...)
+	}
 	errs = append(errs, ValidateCheck(path.Child("namespaceTemplate"), obj.NamespaceTemplate)...)
 	return errs
 }

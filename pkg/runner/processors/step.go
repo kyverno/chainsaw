@@ -91,17 +91,17 @@ func (p *stepProcessor) Run(ctx context.Context) {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
-	try, err := p.tryOperations(bindings, p.step.TestStepSpec.Try...)
+	try, err := p.tryOperations(bindings)
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
-	catch, err := p.catchOperations(bindings, p.step.TestStepSpec.Catch...)
+	catch, err := p.catchOperations(bindings)
 	if err != nil {
 		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
 	}
-	finally, err := p.finallyOperations(bindings, p.step.TestStepSpec.Finally...)
+	finally, err := p.finallyOperations(bindings)
 	if err != nil {
 		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
@@ -143,9 +143,9 @@ func (p *stepProcessor) Run(ctx context.Context) {
 	}
 }
 
-func (p *stepProcessor) tryOperations(bindings binding.Bindings, handlers ...v1alpha1.Operation) ([]operation, error) {
+func (p *stepProcessor) tryOperations(bindings binding.Bindings) ([]operation, error) {
 	var ops []operation
-	for _, handler := range handlers {
+	for _, handler := range p.step.Try {
 		register := func(o ...operation) {
 			continueOnError := handler.ContinueOnError != nil && *handler.ContinueOnError
 			for _, o := range o {
@@ -201,7 +201,7 @@ func (p *stepProcessor) tryOperations(bindings binding.Bindings, handlers ...v1a
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperations(bindings binding.Bindings, handlers ...v1alpha1.Catch) ([]operation, error) {
+func (p *stepProcessor) catchOperations(bindings binding.Bindings) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -209,6 +209,10 @@ func (p *stepProcessor) catchOperations(bindings binding.Bindings, handlers ...v
 			ops = append(ops, o)
 		}
 	}
+	var handlers []v1alpha1.Catch
+	handlers = append(handlers, p.config.Catch...)
+	handlers = append(handlers, p.test.Spec.Catch...)
+	handlers = append(handlers, p.step.Catch...)
 	for _, handler := range handlers {
 		if handler.PodLogs != nil {
 			cmd, err := kubectl.Logs(handler.PodLogs)
@@ -247,7 +251,7 @@ func (p *stepProcessor) catchOperations(bindings binding.Bindings, handlers ...v
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(bindings binding.Bindings, handlers ...v1alpha1.Finally) ([]operation, error) {
+func (p *stepProcessor) finallyOperations(bindings binding.Bindings) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -255,7 +259,7 @@ func (p *stepProcessor) finallyOperations(bindings binding.Bindings, handlers ..
 			ops = append(ops, o)
 		}
 	}
-	for _, handler := range handlers {
+	for _, handler := range p.step.Finally {
 		if handler.PodLogs != nil {
 			cmd, err := kubectl.Logs(handler.PodLogs)
 			if err != nil {
