@@ -10,46 +10,51 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func getGroupVersionKind(mapper meta.RESTMapper, resource v1alpha1.ResourceReference) (schema.GroupVersionKind, error) {
+func mapResource(client client.Client, resource v1alpha1.ResourceReference) (string, bool, error) {
 	if resource.Resource != "" {
-		gvr, gv := schema.ParseResourceArg(resource.Resource)
-		if gvr == nil {
-			gvr = &schema.GroupVersionResource{Group: gv.Group, Resource: gv.Resource}
-		}
-		return mapper.KindFor(*gvr)
+		return mapResourceFromResource(client, resource.Resource)
 	}
 	if resource.Kind != "" {
-		gv, err := schema.ParseGroupVersion(resource.APIVersion)
-		if err != nil {
-			return schema.GroupVersionKind{}, err
-		}
-		return gv.WithKind(resource.Kind), nil
+		return mapResourceFromKind(client, resource.APIVersion, resource.Kind)
 	}
-	return schema.GroupVersionKind{}, errors.New("failed to get GVK")
+	return "", false, errors.New("failed to map resource, either kind or resource must be specified")
 }
 
-func getMapping(client client.Client, resource v1alpha1.ResourceReference) (*meta.RESTMapping, error) {
-	mapper := client.RESTMapper()
-	gvk, err := getGroupVersionKind(mapper, resource)
-	if err != nil {
-		return nil, err
+func mapResourceFromResource(client client.Client, resource string) (string, bool, error) {
+	gvr, gv := schema.ParseResourceArg(resource)
+	if gvr == nil {
+		gvr = &schema.GroupVersionResource{Group: gv.Group, Resource: gv.Resource}
 	}
+	mapper := client.RESTMapper()
+	gvk, err := mapper.KindFor(*gvr)
+	// if we have an error, it may be because the resource name is a short one
+	if err != nil {
+		return resource, false, nil
+	}
+	return mapResourceFromGVK(mapper, gvk)
+}
+
+func mapResourceFromKind(client client.Client, apiVersion string, kind string) (string, bool, error) {
+	gv, err := schema.ParseGroupVersion(apiVersion)
+	if err != nil {
+		return "", false, err
+	}
+	return mapResourceFromGVK(client.RESTMapper(), gv.WithKind(kind))
+}
+
+func mapResourceFromGVK(mapper meta.RESTMapper, gvk schema.GroupVersionKind) (string, bool, error) {
 	mapping, err := mapper.RESTMapping(gvk.GroupKind(), gvk.Version)
 	if err != nil {
-		return nil, err
+		return "", false, err
 	}
-	return mapping, nil
-}
-
-func mapResource(client client.Client, resource v1alpha1.ResourceReference) (string, meta.RESTScope, error) {
-	mapping, err := getMapping(client, resource)
-	if err != nil {
-		return "", nil, err
+	clustered := mapping.Scope.Name() == meta.RESTScopeNameRoot
+	if mapping.Resource.Group == "" {
+		return mapping.Resource.Resource, clustered, nil
 	}
-	parts := make([]string, 0, 3)
-	parts = append(parts, mapping.Resource.Resource)
-	if mapping.Resource.Group != "" {
-		parts = append(parts, mapping.Resource.Version, mapping.Resource.Group)
+	parts := []string{
+		mapping.Resource.Resource,
+		mapping.Resource.Version,
+		mapping.Resource.Group,
 	}
-	return strings.Join(parts, "."), mapping.Scope, nil
+	return strings.Join(parts, "."), clustered, nil
 }
