@@ -14,8 +14,8 @@ spec:
     - assert:
         resource:
           (x_k8s_list($client, 'v1', 'Node')):
-            (length(@)): 1
+            (length(items)): 1
     - error:
         resource:
           (x_k8s_list($client, 'v1', 'Node')):
-            (length(@)): 2
+            (length(items)): 2
