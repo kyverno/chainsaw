@@ -1,2 +1,2 @@
 (x_k8s_list($client, 'v1', 'Node')):
-  (length(@)): 2
+  (length(items)): 2

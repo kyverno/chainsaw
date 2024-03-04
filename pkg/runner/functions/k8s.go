@@ -127,7 +127,7 @@ func jpKubernetesList(arguments []any) (any, error) {
 	if err := client.List(context.TODO(), &list, listOptions...); err != nil {
 		return nil, err
 	}
-	return list.Items, nil
+	return list.UnstructuredContent(), nil
 }
 
 func jpKubernetesServerVersion(arguments []any) (any, error) {
