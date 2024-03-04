@@ -10,6 +10,7 @@ func ValidateDelete(path *field.Path, obj *v1alpha1.Delete) field.ErrorList {
 	if obj != nil {
 		errs = append(errs, ValidateObjectReference(path.Child("ref"), obj.ObjectReference)...)
 		errs = append(errs, ValidateExpectations(path.Child("expect"), obj.Expect...)...)
+		errs = append(errs, ValidateBindings(path.Child("bindings"), obj.Bindings...)...)
 	}
 	return errs
 }

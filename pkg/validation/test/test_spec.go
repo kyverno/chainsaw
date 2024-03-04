@@ -14,5 +14,6 @@ func ValidateTestSpec(path *field.Path, obj v1alpha1.TestSpec) field.ErrorList {
 		errs = append(errs, ValidateCatch(path.Child("catch").Index(i), catch)...)
 	}
 	errs = append(errs, ValidateCheck(path.Child("namespaceTemplate"), obj.NamespaceTemplate)...)
+	errs = append(errs, ValidateBindings(path.Child("bindings"), obj.Bindings...)...)
 	return errs
 }

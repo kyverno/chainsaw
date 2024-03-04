@@ -12,6 +12,7 @@ func ValidateCommand(path *field.Path, obj *v1alpha1.Command) field.ErrorList {
 			errs = append(errs, field.Invalid(path.Child("entrypoint"), obj, "entrypoint must be specified"))
 		}
 		errs = append(errs, ValidateCheck(path.Child("check"), obj.Check)...)
+		errs = append(errs, ValidateBindings(path.Child("bindings"), obj.Bindings...)...)
 	}
 	return errs
 }

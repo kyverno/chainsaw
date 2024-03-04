@@ -10,6 +10,7 @@ func ValidatePatch(path *field.Path, obj *v1alpha1.Patch) field.ErrorList {
 	if obj != nil {
 		errs = append(errs, ValidateFileRefOrResource(path, obj.FileRefOrResource)...)
 		errs = append(errs, ValidateExpectations(path.Child("expect"), obj.Expect...)...)
+		errs = append(errs, ValidateBindings(path.Child("bindings"), obj.Bindings...)...)
 	}
 	return errs
 }

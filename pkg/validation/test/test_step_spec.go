@@ -19,5 +19,6 @@ func ValidateTestStepSpec(path *field.Path, obj v1alpha1.TestStepSpec) field.Err
 	for i, finally := range obj.Finally {
 		errs = append(errs, ValidateFinally(path.Child("finally").Index(i), finally)...)
 	}
+	errs = append(errs, ValidateBindings(path.Child("bindings"), obj.Bindings...)...)
 	return errs
 }
