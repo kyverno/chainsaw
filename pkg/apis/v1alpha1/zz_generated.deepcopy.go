@@ -332,6 +332,13 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 			(*out)[key] = val
 		}
 	}
+	if in.Catch != nil {
+		in, out := &in.Catch, &out.Catch
+		*out = make([]Catch, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	return
 }
 
@@ -1079,6 +1086,13 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 	if in.Steps != nil {
 		in, out := &in.Steps, &out.Steps
 		*out = make([]TestSpecStep, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
+	if in.Catch != nil {
+		in, out := &in.Catch, &out.Catch
+		*out = make([]Catch, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
