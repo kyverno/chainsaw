@@ -13,6 +13,7 @@ func ValidateCommand(path *field.Path, obj *v1alpha1.Command) field.ErrorList {
 		}
 		errs = append(errs, ValidateCheck(path.Child("check"), obj.Check)...)
 		errs = append(errs, ValidateBindings(path.Child("bindings"), obj.Bindings...)...)
+		errs = append(errs, ValidateBindings(path.Child("outputs"), obj.Outputs...)...)
 	}
 	return errs
 }

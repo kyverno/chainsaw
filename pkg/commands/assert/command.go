@@ -56,7 +56,7 @@ func Command() *cobra.Command {
 	return cmd
 }
 
-func preRunE(opts *options, cmd *cobra.Command, args []string) error {
+func preRunE(opts *options, _ *cobra.Command, args []string) error {
 	if len(args) > 0 && opts.assertPath == "" {
 		opts.assertPath = args[0]
 	} else if opts.assertPath == "" {
@@ -135,5 +135,6 @@ func assert(opts options, client ctrlClient.Client, resource unstructured.Unstru
 	ctx, cancel := context.WithTimeout(context.Background(), opts.timeout.Duration)
 	defer cancel()
 	op := opassert.New(client, resource, namespacer, false)
-	return op.Exec(ctx, nil)
+	_, err := op.Exec(ctx, nil)
+	return err
 }

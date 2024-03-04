@@ -31,6 +31,7 @@ func (c *cleaner) register(obj unstructured.Unstructured, client client.Client, 
 		opdelete.New(client, obj, c.namespacer, false),
 		nil,
 		nil,
+		client,
 	))
 }
 
@@ -39,6 +40,6 @@ func (c *cleaner) run(ctx context.Context) {
 		time.Sleep(c.delay.Duration)
 	}
 	for i := len(c.operations) - 1; i >= 0; i-- {
-		c.operations[i].execute(ctx)
+		c.operations[i].execute(ctx, nil)
 	}
 }
