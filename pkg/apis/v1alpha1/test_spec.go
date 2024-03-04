@@ -49,6 +49,11 @@ type TestSpec struct {
 	// Steps defining the test.
 	Steps []TestSpecStep `json:"steps"`
 
+	// Catch defines what the steps will execute when an error happens.
+	// This will be combined with catch handlers defined at the step level.
+	// +optional
+	Catch []Catch `json:"catch,omitempty"`
+
 	// ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.
 	// +optional
 	ForceTerminationGracePeriod *metav1.Duration `json:"forceTerminationGracePeriod,omitempty"`
