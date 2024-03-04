@@ -157,7 +157,7 @@ func TestDescribe(t *testing.T) {
 			ResourceReference: v1alpha1.ResourceReference{
 				Resource: "pods",
 			},
-			ShowEvents: ptr.To[bool](true),
+			ShowEvents: ptr.To(true),
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
@@ -170,11 +170,23 @@ func TestDescribe(t *testing.T) {
 			ResourceReference: v1alpha1.ResourceReference{
 				Resource: "pods",
 			},
-			ShowEvents: ptr.To[bool](false),
+			ShowEvents: ptr.To(false),
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
 			Args:       []string{"describe", "pods", "-n", "$NAMESPACE", "--show-events=false"},
+		},
+		wantErr: false,
+	}, {
+		name: "with short resource name",
+		collector: &v1alpha1.Describe{
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "crds",
+			},
+		},
+		want: &v1alpha1.Command{
+			Entrypoint: "kubectl",
+			Args:       []string{"describe", "crds", "-n", "$NAMESPACE"},
 		},
 		wantErr: false,
 	}}

@@ -6,7 +6,6 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"k8s.io/apimachinery/pkg/api/meta"
 )
 
 func Wait(client client.Client, collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
@@ -16,7 +15,7 @@ func Wait(client client.Client, collector *v1alpha1.Wait) (*v1alpha1.Command, er
 	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
-	resource, scope, err := mapResource(client, collector.ResourceReference)
+	resource, clustered, err := mapResource(client, collector.ResourceReference)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +46,6 @@ func Wait(client client.Client, collector *v1alpha1.Wait) (*v1alpha1.Command, er
 	} else {
 		cmd.Args = append(cmd.Args, "--all")
 	}
-	clustered := scope.Name() == meta.RESTScopeNameRoot
 	if !clustered {
 		if collector.Namespace == "*" {
 			cmd.Args = append(cmd.Args, "--all-namespaces")
