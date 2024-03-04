@@ -174,7 +174,8 @@ func Test_operationDelete(t *testing.T) {
 				tt.expect...,
 			)
 			logger := &tlogging.FakeLogger{}
-			err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t), nil)
+			outputs, err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t), nil)
+			assert.Nil(t, outputs)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {

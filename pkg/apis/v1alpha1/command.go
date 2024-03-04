@@ -14,6 +14,10 @@ type Command struct {
 	// +optional
 	Bindings []Binding `json:"bindings,omitempty"`
 
+	// Outputs defines output bindings.
+	// +optional
+	Outputs []Binding `json:"outputs,omitempty"`
+
 	// Env defines additional environment variables.
 	// +optional
 	Env []Binding `json:"env,omitempty"`

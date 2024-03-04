@@ -42,7 +42,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (outputs operations.Outputs, err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
@@ -56,16 +56,16 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err er
 			Value: obj.UnstructuredContent(),
 		}
 		if merged, err := mutate.Merge(ctx, obj, bindings, template); err != nil {
-			return err
+			return nil, err
 		} else {
 			obj = merged
 		}
 	}
 	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
-		return err
+		return nil, err
 	}
 	internal.LogStart(logger, logging.Delete)
-	return o.execute(ctx, bindings, obj)
+	return nil, o.execute(ctx, bindings, obj)
 }
 
 func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {

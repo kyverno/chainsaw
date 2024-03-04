@@ -5,15 +5,25 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
 	mutation "github.com/kyverno/chainsaw/pkg/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/functions"
 	"github.com/kyverno/kyverno-json/pkg/engine/template"
+	"k8s.io/client-go/rest"
 )
 
-func registerBindings(ctx context.Context, bindings binding.Bindings, variables ...v1alpha1.Binding) (binding.Bindings, error) {
+func registerBindings(
+	ctx context.Context,
+	bindings binding.Bindings,
+	config *rest.Config,
+	client client.Client,
+	variables ...v1alpha1.Binding,
+) (binding.Bindings, error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
+	bindings = bindings.Register("$client", binding.NewBinding(client))
+	bindings = bindings.Register("$config", binding.NewBinding(config))
 	for _, variable := range variables {
 		if err := variable.CheckName(); err != nil {
 			return bindings, err

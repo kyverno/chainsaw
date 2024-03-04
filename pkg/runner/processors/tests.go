@@ -71,10 +71,13 @@ func (p *testsProcessor) Run(ctx context.Context) {
 		}
 	})
 	var nspacer namespacer.Namespacer
-	bindings := p.bindings
-	_, cluster := p.clusters.client()
+	config, cluster := p.clusters.client()
+	bindings, err := registerBindings(ctx, p.bindings, config, cluster)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		t.FailNow()
+	}
 	if cluster != nil {
-		bindings = bindings.Register("$client", binding.NewBinding(cluster))
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
 			object := client.ToUnstructured(&namespace)
@@ -104,9 +107,10 @@ func (p *testsProcessor) Run(ctx context.Context) {
 							timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
 							opdelete.New(cluster, object, nspacer, false),
 							nil,
-							bindings,
+							config,
+							cluster,
 						)
-						operation.execute(ctx)
+						operation.execute(ctx, bindings)
 					})
 				}
 				if err := cluster.Create(ctx, object.DeepCopy()); err != nil {
