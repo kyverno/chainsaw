@@ -12,6 +12,7 @@ func ValidateScript(path *field.Path, obj *v1alpha1.Script) field.ErrorList {
 			errs = append(errs, field.Invalid(path.Child("content"), obj, "content must be specified"))
 		}
 		errs = append(errs, ValidateCheck(path.Child("check"), obj.Check)...)
+		errs = append(errs, ValidateBindings(path.Child("bindings"), obj.Bindings...)...)
 	}
 	return errs
 }
