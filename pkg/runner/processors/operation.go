@@ -7,8 +7,10 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/report"
+	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/kyverno/ext/output/color"
 )
 
 type operation struct {
@@ -64,8 +66,11 @@ func (o operation) execute(ctx context.Context) {
 		ctx = toCtx
 		defer cancel()
 	}
-	handleError := func() {
+	handleError := func(err error) {
 		t := testing.FromContext(ctx)
+		if err != nil {
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		}
 		if o.continueOnError {
 			t.Fail()
 		} else {
@@ -74,17 +79,16 @@ func (o operation) execute(ctx context.Context) {
 	}
 	operation, err := o.operation()
 	if err != nil {
-		handleError()
-	}
-	if bindings, err := registerBindings(ctx, o.bindings, o.variables...); err != nil {
-		handleError()
+		handleError(err)
+	} else if bindings, err := registerBindings(ctx, o.bindings, o.variables...); err != nil {
+		handleError(err)
 	} else {
 		err := operation.Exec(ctx, bindings)
 		if o.operationReport != nil {
 			o.operationReport.MarkOperationEnd(err)
 		}
 		if err != nil {
-			handleError()
+			handleError(err)
 		}
 	}
 }
