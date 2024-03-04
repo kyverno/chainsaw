@@ -414,6 +414,34 @@
                       }
                     }
                   },
+                  "outputs": {
+                    "description": "Outputs defines output bindings.",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "description": "Binding represents a key/value set as a binding in an executing test.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name the name of the binding.",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "Value value of the binding.",
+                          "x-kubernetes-preserve-unknown-fields": true
+                        }
+                      }
+                    }
+                  },
                   "skipLogOutput": {
                     "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
                     "type": [
@@ -912,6 +940,34 @@
                       }
                     }
                   },
+                  "outputs": {
+                    "description": "Outputs defines output bindings.",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "description": "Binding represents a key/value set as a binding in an executing test.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "name",
+                        "value"
+                      ],
+                      "properties": {
+                        "name": {
+                          "description": "Name the name of the binding.",
+                          "type": "string"
+                        },
+                        "value": {
+                          "description": "Value value of the binding.",
+                          "x-kubernetes-preserve-unknown-fields": true
+                        }
+                      }
+                    }
+                  },
                   "skipLogOutput": {
                     "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
                     "type": [
@@ -1270,6 +1326,34 @@
                             }
                           }
                         },
+                        "outputs": {
+                          "description": "Outputs defines output bindings.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
                           "type": [
@@ -1742,6 +1826,34 @@
                         },
                         "env": {
                           "description": "Env defines additional environment variables.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
+                        "outputs": {
+                          "description": "Outputs defines output bindings.",
                           "type": [
                             "array",
                             "null"
@@ -2039,6 +2151,34 @@
                             }
                           }
                         },
+                        "outputs": {
+                          "description": "Outputs defines output bindings.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
                           "type": [
@@ -2511,6 +2651,34 @@
                         },
                         "env": {
                           "description": "Env defines additional environment variables.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
+                        "outputs": {
+                          "description": "Outputs defines output bindings.",
                           "type": [
                             "array",
                             "null"
@@ -3037,6 +3205,34 @@
                             }
                           }
                         },
+                        "outputs": {
+                          "description": "Outputs defines output bindings.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
                           "type": [
@@ -3532,6 +3728,34 @@
                         },
                         "env": {
                           "description": "Env defines additional environment variables.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Binding represents a key/value set as a binding in an executing test.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
+                        "outputs": {
+                          "description": "Outputs defines output bindings.",
                           "type": [
                             "array",
                             "null"

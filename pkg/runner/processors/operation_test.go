@@ -24,8 +24,8 @@ func TestOperation_Execute(t *testing.T) {
 	}{{
 		name: "operation fails but continues",
 		operation: mock.MockOperation{
-			ExecFn: func(_ context.Context, _ binding.Bindings) error {
-				return errors.New("operation failed")
+			ExecFn: func(_ context.Context, _ binding.Bindings) (operations.Outputs, error) {
+				return nil, errors.New("operation failed")
 			},
 		},
 		continueOnError: true,
@@ -35,8 +35,8 @@ func TestOperation_Execute(t *testing.T) {
 	}, {
 		name: "operation fails and don't continues",
 		operation: mock.MockOperation{
-			ExecFn: func(_ context.Context, _ binding.Bindings) error {
-				return errors.New("operation failed")
+			ExecFn: func(_ context.Context, _ binding.Bindings) (operations.Outputs, error) {
+				return nil, errors.New("operation failed")
 			},
 		},
 		continueOnError: false,
@@ -45,8 +45,8 @@ func TestOperation_Execute(t *testing.T) {
 	}, {
 		name: "operation succeeds",
 		operation: mock.MockOperation{
-			ExecFn: func(_ context.Context, _ binding.Bindings) error {
-				return nil
+			ExecFn: func(_ context.Context, _ binding.Bindings) (operations.Outputs, error) {
+				return nil, nil
 			},
 		},
 		expectedFail:    false,
@@ -62,10 +62,11 @@ func TestOperation_Execute(t *testing.T) {
 				localTC.operation,
 				localTC.operationReport,
 				nil,
+				nil,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
-			op.execute(ctx)
+			op.execute(ctx, nil)
 			if localTC.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {

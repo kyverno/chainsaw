@@ -41,7 +41,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (outputs operations.Outputs, err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
@@ -52,16 +52,16 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err er
 	}()
 	if o.template {
 		if err := template.ResourceRef(ctx, &obj, bindings); err != nil {
-			return err
+			return nil, err
 		}
 	}
 	if obj.GetKind() != "" {
 		if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
-			return err
+			return nil, err
 		}
 	}
 	internal.LogStart(logger, logging.Assert)
-	return o.execute(ctx, bindings, obj)
+	return nil, o.execute(ctx, bindings, obj)
 }
 
 func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {

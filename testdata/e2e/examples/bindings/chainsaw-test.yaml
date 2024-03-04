@@ -12,7 +12,7 @@ spec:
     - name: b
       value: 2
     try:
-    -  apply:
+    - apply:
         template: true
         bindings:
         - name: c

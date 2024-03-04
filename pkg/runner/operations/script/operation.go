@@ -8,11 +8,14 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	mutation "github.com/kyverno/chainsaw/pkg/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
+	"github.com/kyverno/chainsaw/pkg/runner/functions"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
+	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"github.com/kyverno/kyverno/ext/output/color"
 	"k8s.io/client-go/rest"
 )
@@ -38,7 +41,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (outputs operations.Outputs, err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
@@ -51,7 +54,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (err er
 		defer cancel()
 	}
 	if err != nil {
-		return err
+		return nil, err
 	}
 	internal.LogStart(logger, logging.Script, logging.Section("COMMAND", cmd.String()))
 	return o.execute(ctx, bindings, cmd)
@@ -90,7 +93,7 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 	return cmd, cancel, nil
 }
 
-func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd *exec.Cmd) error {
+func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd *exec.Cmd) (_outputs operations.Outputs, _err error) {
 	logger := internal.GetLogger(ctx, nil)
 	var output internal.CommandOutput
 	if !o.script.SkipLogOutput {
@@ -103,9 +106,6 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	err := cmd.Run()
-	if o.script.Check == nil || o.script.Check.Value == nil {
-		return err
-	}
 	bindings = bindings.Register("$stdout", binding.NewBinding(output.Out()))
 	bindings = bindings.Register("$stderr", binding.NewBinding(output.Err()))
 	if err == nil {
@@ -113,9 +113,34 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 	} else {
 		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
+	defer func() {
+		var outputs operations.Outputs
+		if _err == nil {
+			for _, output := range o.script.Outputs {
+				if err := output.CheckName(); err != nil {
+					_err = err
+					return
+				}
+				patched, err := mutation.Mutate(ctx, nil, mutation.Parse(ctx, output.Value.Value), nil, bindings, template.WithFunctionCaller(functions.Caller))
+				if err != nil {
+					_err = err
+					return
+				}
+				if outputs == nil {
+					outputs = operations.Outputs{}
+				}
+				outputs[output.Name] = binding.NewBinding(patched)
+				bindings = bindings.Register("$"+output.Name, outputs[output.Name])
+			}
+			_outputs = outputs
+		}
+	}()
+	if o.script.Check == nil || o.script.Check.Value == nil {
+		return nil, err
+	}
 	if errs, err := check.Check(ctx, nil, bindings, o.script.Check); err != nil {
-		return err
+		return nil, err
 	} else {
-		return errs.ToAggregate()
+		return nil, errs.ToAggregate()
 	}
 }
