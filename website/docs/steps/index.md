@@ -1,6 +1,6 @@
 # What is a test step
 
-A test step is made of three main components used to dermine the actions Chainsaw will perform when executing the step.
+A test step is made of three main components used to determine the actions Chainsaw will perform when executing the step.
 
 1. The [try](./try.md) statement *(required)*
 1. The [catch](./catch.md) statement *(optional)*

@@ -4,7 +4,23 @@ The `get` collector is used to list and print resources in the cluster.
 
 ## Configuration
 
-The full structure of the `Get` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Get).
+!!! tip "Reference documentation"
+    - The full structure of the `Get` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Get).
+
+!!! warning "Deprecated syntax"
+    You can specify the `resource` directly instead of using `apiVersion` and `kind`.
+    
+    **This is a deprecated syntax though and will be removed in a future version.**
+
+### Clustered resources
+
+When used with a clustered resource, the `namespace` is ignored and is not added to the corresponding `kubectl` command.
+
+### All namespaces
+
+When used with a namespaced resource, it is possible to consider all namespaces in the cluster by setting `namespace: '*'`.
+
+## Usage examples
 
 ### Single resource
 
@@ -23,7 +39,8 @@ If a `name` is specified, Chainsaw will retrieve the specified resource in the t
         # ...
         catch:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             name: my-pod
         # ...
         finally:
@@ -48,13 +65,15 @@ If a `namespace` is specified, Chainsaw will retrieve the specified resource in 
         # ...
         catch:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             name: my-pod
             namespace: foo
         # ...
         finally:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             name: my-pod
             namespace: foo
         # ...
@@ -77,11 +96,13 @@ If no `name` and `namespace` are specified, Chainsaw will retrieve all resources
         # ...
         catch:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
         # ...
         finally:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
         # ...
     ```
 
@@ -100,12 +121,14 @@ On the other hand, if a `namespace` is specified, Chainsaw will retrieve all res
         # ...
         catch:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             namespace: foo
         # ...
         finally:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             namespace: foo
         # ...
     ```
@@ -127,12 +150,14 @@ An optional [label selector](https://kubernetes.io/docs/concepts/overview/workin
         # ...
         catch:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=my-app
         # ...
         finally:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=my-app
         # ...
     ```
@@ -152,13 +177,15 @@ If a `namespace` is specified, Chainsaw will retrieve resources using the specif
         # ...
         catch:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=my-app
             namespace: foo
         # ...
         finally:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=my-app
             namespace: foo
         # ...
@@ -183,12 +210,14 @@ If `format` is not specified, results will be returned in text format.
         # ...
         catch:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: json
         # ...
         finally:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: json
         # ...
     ```
@@ -206,12 +235,14 @@ If `format` is not specified, results will be returned in text format.
         # ...
         catch:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: yaml
         # ...
         finally:
         - get:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: yaml
         # ...
     ```

@@ -13,7 +13,8 @@ See [Setup docs](./index.md#setup)
 ### `assertions.yaml`
 
 ```yaml
-(length(x_k8s_list($client, 'v1', 'Node'))): 1
+(x_k8s_list($client, 'v1', 'Node')):
+  (length(items): 1
 ```
 
 ## Test

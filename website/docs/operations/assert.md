@@ -13,11 +13,13 @@ For example, after applying resources, you might want to ensure that a particula
     Assertion trees are compatible with standard assertions that exist in tools like KUTTL but can do a lot more.
     Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/policies/asserts/) in kyverno-json for details.
 
+## Configuration
+
 !!! tip "Reference documentation"
     - The full structure of the `Assert` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Assert).
     - This operation supports [bindings](../bindings/index.md).
 
-## Usage in `Test`
+## Usage examples
 
 Below is an example of using `assert` in a `Test` resource.
 

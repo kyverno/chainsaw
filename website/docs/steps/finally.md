@@ -2,7 +2,7 @@
 
 A `finally` statement is similar to a [catch](./catch.md) statement but will always execute after the [try](./try.md) and eventual [catch](./catch.md) statements finished executing regardless of the success or failure of the test step.
 
-!!!tip
+!!! tip
     All operations and collectors of a `finally` statement will be executed regardless of the success or failure of each of them.
 
 ## Operations

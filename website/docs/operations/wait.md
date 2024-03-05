@@ -1,11 +1,30 @@
 # Wait
 
-The `wait` is a wrapper around `kubectl wait`. It allows to wait for deletion or conditions against resources.
+The `wait` operation is a wrapper around `kubectl wait`. It allows to wait for deletion or conditions against resources.
+
+## Configuration
 
 !!! tip "Reference documentation"
     The full structure of the `Wait` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Wait).
 
-## Usage in `Test`
+!!! warning "Deprecated syntax"
+    You can specify the `resource` directly instead of using `apiVersion` and `kind`.
+    
+    **This is a deprecated syntax though and will be removed in a future version.**
+
+### Clustered resources
+
+When used with a clustered resource, the `namespace` is ignored and is not added to the corresponding `kubectl` command.
+
+### All resources
+
+If you don't specify a `name` or a `selector`, the `wait` operation will consider `all` resources.
+
+### All namespaces
+
+When used with a namespaced resource, it is possible to consider all namespaces in the cluster by setting `namespace: '*'`.
+
+## Usage examples
 
 Below is an example of using `wait` in a `Test` resource.
 
@@ -21,7 +40,8 @@ Below is an example of using `wait` in a `Test` resource.
       - try:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             name: my-pod
             timeout: 1m
             for:
@@ -43,7 +63,8 @@ Below is an example of using `wait` in a `Test` resource.
       - try:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             name: my-pod
             namespace: my-ns
             timeout: 1m
@@ -66,7 +87,8 @@ Below is an example of using `wait` in a `Test` resource.
       - try:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=foo
             timeout: 1m
             for:
@@ -88,7 +110,8 @@ Below is an example of using `wait` in a `Test` resource.
       - try:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             name: my-pod
             timeout: 1m
             for:
@@ -108,7 +131,8 @@ Below is an example of using `wait` in a `Test` resource.
       - try:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             name: my-pod
             namespace: my-ns
             timeout: 1m
@@ -129,7 +153,8 @@ Below is an example of using `wait` in a `Test` resource.
       - try:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=foo
             timeout: 1m
             for:
@@ -155,19 +180,22 @@ If `format` is not specified, results will be returned in text format.
       - try:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: json
             # ...
         catch:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: json
             # ...
         finally:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: json
             # ...
     ```
@@ -184,19 +212,22 @@ If `format` is not specified, results will be returned in text format.
       - try:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: yaml
             # ...
         catch:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: yaml
             # ...
         finally:
         # ...
         - wait:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             format: yaml
             # ...
     ```

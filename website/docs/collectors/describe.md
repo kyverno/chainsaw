@@ -4,7 +4,23 @@ Describing resources present in the cluster can help understand what happened an
 
 ## Configuration
 
-The full structure of the `Describe` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Describe).
+!!! tip "Reference documentation"
+    - The full structure of the `Describe` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Describe).
+
+!!! warning "Deprecated syntax"
+    You can specify the `resource` directly instead of using `apiVersion` and `kind`.
+    
+    **This is a deprecated syntax though and will be removed in a future version.**
+
+### Clustered resources
+
+When used with a clustered resource, the `namespace` is ignored and is not added to the corresponding `kubectl` command.
+
+### All namespaces
+
+When used with a namespaced resource, it is possible to consider all namespaces in the cluster by setting `namespace: '*'`.
+
+## Usage examples
 
 ### Describe pods
 
@@ -23,12 +39,14 @@ If a `name` is specified, Chainsaw will describe resources that have a name star
         # ...
         catch:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             name: my-pod
         # ...
         finally:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             name: my-pod
         # ...
     ```
@@ -48,12 +66,14 @@ If a `namespace` is specified, Chainsaw will describe resources in the specified
         # ...
         catch:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             namespace: foo
         # ...
         finally:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             namespace: foo
         # ...
     ```
@@ -75,12 +95,14 @@ An optional [label selector](https://kubernetes.io/docs/concepts/overview/workin
         # ...
         catch:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=my-app
         # ...
         finally:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=my-app
         # ...
     ```
@@ -100,13 +122,15 @@ If a `namespace` is specified, Chainsaw will describe resources in the specified
         # ...
         catch:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=my-app
             namespace: foo
         # ...
         finally:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             selector: app=my-app
             namespace: foo
         # ...
@@ -132,13 +156,15 @@ The `showEvents` field can be used to enable or disable showing events when desc
         # ...
         catch:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             namespace: foo
             showEvents: false
         # ...
         finally:
         - describe:
-            resource: pods
+            apiVersion: v1
+            kind: Pod
             namespace: foo
             showEvents: false
         # ...

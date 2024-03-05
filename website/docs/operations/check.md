@@ -1,9 +1,9 @@
 # Operation checks
 
-Considering an operation success or failure is not always as simple as checking an error code.
+Considering an operation's success or failure is not always as simple as checking an error code.
 
 - Sometimes an operation can fail but the failure is what you expected, hence the operation should be reported as successful.
-- Sometimes an operation can succeed but the result is not what you expected, in this case the operation should be reported as a failure.
+- Sometimes an operation can succeed but the result is not what you expected, in this case, the operation should be reported as a failure.
 
 To support those kinds of use cases, some operations support an additional `check` field to evaluate the operation result against an assertion tree.
 
@@ -44,6 +44,7 @@ This way it is possible to control the scope of a `check`.
 | `$values` | Values provided when invoking chainsaw with `--values` flag | `object` |
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
@@ -56,6 +57,7 @@ This way it is possible to control the scope of a `check`.
 | `$values` | Values provided when invoking chainsaw with `--values` flag | `object` |
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `$stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
 | `$stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
@@ -70,6 +72,7 @@ This way it is possible to control the scope of a `check`.
 | `$values` | Values provided when invoking chainsaw with `--values` flag | `object` |
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
@@ -82,6 +85,7 @@ This way it is possible to control the scope of a `check`.
 | `$values` | Values provided when invoking chainsaw with `--values` flag | `object` |
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
@@ -94,6 +98,7 @@ This way it is possible to control the scope of a `check`.
 | `$values` | Values provided when invoking chainsaw with `--values` flag | `object` |
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
@@ -106,6 +111,7 @@ This way it is possible to control the scope of a `check`.
 | `$values` | Values provided when invoking chainsaw with `--values` flag | `object` |
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `$stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
 | `$stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |

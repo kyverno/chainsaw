@@ -4,11 +4,13 @@ The `apply` operation lets you define resources that should be applied to the Ku
 
 These can be configurations, deployments, services, or any other Kubernetes resource.
 
+## Configuration
+
 !!! tip "Reference documentation"
     - The full structure of the `Apply` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Apply).
     - This operation supports [bindings](../bindings/index.md).
 
-## Usage in `Test`
+## Usage examples
 
 Below is an example of using `apply` in a `Test` resource.
 
@@ -82,7 +84,7 @@ Below is an example of using `apply` in a `Test` resource.
         # ...
     ```
 
-## Operation check
+### Operation check
 
 Below is an example of using an [operation check](./check.md#apply).
 

@@ -135,9 +135,8 @@ In the example below, `$client` binding is a client to the configured `cluster-1
             # cluster specified below
             cluster: cluster-1
             resource:
-              resource:
-                (x_k8s_list($client, 'v1', 'Node')):
-                    (length(@)): 1
+              (x_k8s_list($client, 'v1', 'Node')):
+                (length(items)): 1
         # ...
     ```
 

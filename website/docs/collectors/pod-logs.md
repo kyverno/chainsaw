@@ -4,7 +4,14 @@ Collecting pod logs can help understand what happened inside one or more pods.
 
 ## Configuration
 
-The full structure of the `PodLogs` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-PodLogs).
+!!! tip "Reference documentation"
+    - The full structure of the `PodLogs` resource is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-PodLogs).
+
+### All namespaces
+
+When used with a namespaced resource, it is possible to consider all namespaces in the cluster by setting `namespace: '*'`.
+
+## Usage examples
 
 ### Single pod
 
