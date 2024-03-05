@@ -7,7 +7,9 @@ import (
 
 func ValidateConfiguration(obj *v1alpha1.Configuration) field.ErrorList {
 	var errs field.ErrorList
-	var path *field.Path
-	errs = append(errs, ValidateConfigurationSpec(path.Child("spec"), obj.Spec)...)
+	if obj != nil {
+		var path *field.Path
+		errs = append(errs, ValidateConfigurationSpec(path.Child("spec"), obj.Spec)...)
+	}
 	return errs
 }
