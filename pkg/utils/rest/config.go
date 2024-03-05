@@ -38,7 +38,6 @@ func Save(cfg *rest.Config, w io.Writer) error {
 			Config: cfg.AuthProvider.Config,
 		}
 	}
-
 	if cfg.ExecProvider != nil {
 		execConfig = &api.ExecConfig{
 			Command:    cfg.ExecProvider.Command,
@@ -46,7 +45,6 @@ func Save(cfg *rest.Config, w io.Writer) error {
 			APIVersion: cfg.ExecProvider.APIVersion,
 			Env:        []api.ExecEnvVar{},
 		}
-
 		for _, envVar := range cfg.ExecProvider.Env {
 			execConfig.Env = append(execConfig.Env, api.ExecEnvVar{
 				Name:  envVar.Name,
