@@ -13,9 +13,11 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 🔧 Fixes 🔧
-
 ## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
 -->
+
+## 🔧 Fixes 🔧
+
+- Added `config` in the list of forbidden binding names

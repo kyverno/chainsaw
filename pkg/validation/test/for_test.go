@@ -64,9 +64,7 @@ func TestValidateFor(t *testing.T) {
 				Detail: "a deletion or a condition must be specified (found both)",
 			},
 		},
-	},
-	// TODO: Add test cases.
-	}
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ValidateFor(tt.path, tt.obj)

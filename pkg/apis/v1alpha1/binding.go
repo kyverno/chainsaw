@@ -10,7 +10,7 @@ import (
 
 var (
 	identifier     = regexp.MustCompile(`^\w+$`)
-	forbiddenNames = []string{"namespace", "client", "error", "values", "stdout", "stderr"}
+	forbiddenNames = []string{"namespace", "client", "config", "error", "values", "stdout", "stderr"}
 	forbidden      = sets.New(forbiddenNames...)
 )
 
