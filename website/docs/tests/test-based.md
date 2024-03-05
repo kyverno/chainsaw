@@ -22,9 +22,9 @@ A `Test` is mostly made of test steps. Test steps are detailed in a [dedicated d
 
 ## Example
 
-### chainsaw-test.yaml
+### chainsaw-test
 
-The manifest below contains a `Test` in a file called `chainsaw-test.yaml`.
+The manifest below contains a `Test` in a file called `chainsaw-test.yaml` (or `chainsaw-test.yml`).
 
 Chainsaw will load the `Test` and steps defined in its `spec` section.
 
@@ -72,8 +72,11 @@ spec:
 If you have your test defined in a different file, you can specify it when running Chainsaw:
 
 ```bash
-chainsaw test . --test-file=<custom-test-file-name>.yaml
+chainsaw test . --test-file <custom-test-file-name>.yaml
 ```
+
+If you don't provide a file extension, chainsaw will search for a file with the `.yaml` extension first and the `.yml` extension if not found.
+If you provide a file extension, chainsaw will only search for a file with the extension you provided.
 
 ## Raw Resource Support
 

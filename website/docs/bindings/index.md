@@ -114,3 +114,9 @@ Finally, custom bindings can also be defined at the operation level.
               ($error): ~
               ($stdout): hello chainsaw
     ```
+
+## Outputs
+
+Under certain conditions, bindings can also be used to add computed results to the context.
+
+See [Outputs](./outputs.md) for details.

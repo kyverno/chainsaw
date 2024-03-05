@@ -3,16 +3,17 @@
 The `create` operation lets you define resources that should be created in the Kubernetes cluster during the test step.
 These can be configurations, deployments, services, or any other Kubernetes resource.
 
-!!! warning
-
-    If the resource to be created already exists in the cluster, the step will fail.
+## Configuration
 
 !!! tip "Reference documentation"
     - The full structure of the `Create` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
     - This operation supports [bindings](../bindings/index.md).
 
+!!! warning
 
-## Usage in `Test`
+    If the resource to be created already exists in the cluster, the step will fail.
+
+## Usage examples
 
 Below is an example of using `create` in a `Test` resource.
 

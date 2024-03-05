@@ -3,7 +3,7 @@
 Under certain circumstances, it makes sense to evaluate assertions that do not depend on resources.
 For example, when asserting the number of nodes in a cluster is equal to a known value.
 
-## Usage in `Test`
+## Usage examples
 
 Below is an example of using `assert` in a `Test` resource.
 
@@ -20,9 +20,9 @@ Below is an example of using `assert` in a `Test` resource.
         - assert:
             resource:
               (x_k8s_list($client, 'v1', 'Node')):
-                (length(@)): 1
+                (length(items)): 1
         - error:
             resource:
               (x_k8s_list($client, 'v1', 'Node')):
-                (length(@)): 2
+                (length(items)): 2
     ```

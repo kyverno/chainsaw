@@ -2,11 +2,14 @@
 
 The `script` operation provides a means to run a script during the test step.
 
+## Configuration
+
 !!! tip "Reference documentation"
     - The full structure of the `Script` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Script).
     - This operation supports [bindings](../bindings/index.md).
+    - This operation supports [outputs](../bindings/outputs.md).
 
-## Usage in `Test`
+## Usage examples
 
 Below is an example of using `script` in a `Test` resource.
 

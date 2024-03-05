@@ -55,7 +55,9 @@ nav:
     - collectors/events.md
     - collectors/get.md
     - collectors/describe.md
-  - bindings/index.md
+  - Bindings:
+    - bindings/index.md
+    - bindings/outputs.md
   - Other resources:
     - more/events.md
     - more/crds.md

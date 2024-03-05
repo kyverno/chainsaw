@@ -4,8 +4,19 @@ A `catch` statement is also a sequence of [operations](../operations/index.md) o
 
 Operations and collectors contained in a `catch` statement will be executed only if the step failed when executing the operations in the step's [try](./try.md) statement.
 
-!!!tip
+!!! tip
     All operations and collectors of a `catch` statement will be executed regardless of the success or failure of each of them.
+
+## More general catch blocks
+
+Under certain circumstances, it can be useful to configure catch blocks at a higher level than the step grain. At the test or configuration level.
+
+This allows for declaring common catch statements we want to execute when an error occurs.
+Those catch blocks are combined to produce the final catch block in the following order:
+
+1. catch statements from the configuration level are executed first (if any)
+1. catch statements from the test level are executed next (if any)
+1. catch statements from the step level are executed last (if any)
 
 ## Operations
 
@@ -26,9 +37,9 @@ A `catch` statement supports all [collectors](../collectors/index.md):
 - [Get](../collectors/get.md)
 - [Describe](../collectors/describe.md)
 
-## Example
+## Examples
 
-!!! example
+!!! example "step level catch block"
 
     ```yaml
     apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -57,5 +68,37 @@ A `catch` statement supports all [collectors](../collectors/index.md):
             # ...
         - wait:
             # ...
+        finally: []
+    ```
+
+!!! example "test level catch block"
+
+    ```yaml
+    apiVersion: chainsaw.kyverno.io/v1alpha1
+    kind: Test
+    metadata:
+      name: example
+    spec:
+      catch:
+      - command:
+          # ...
+      - script:
+          # ...
+      - delete:
+          # ...
+      - events:
+          # ...
+      - podLogs:
+          # ...
+      - describe:
+          # ...
+      - get:
+          # ...
+      - sleep:
+          # ...
+      - wait:
+          # ...
+      steps:
+      - try: []
         finally: []
     ```
