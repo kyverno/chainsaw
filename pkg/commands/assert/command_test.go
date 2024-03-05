@@ -7,13 +7,12 @@ import (
 	"os"
 	"path"
 	"path/filepath"
-	"testing"
 	"time"
 
-	fakeClient "github.com/kyverno/chainsaw/pkg/client/testing"
+	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/commands/root"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
-	mockReader "github.com/kyverno/chainsaw/pkg/utils/reader"
+	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/spf13/cobra"
 	testify "github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -131,7 +130,7 @@ func Test_runE(t *testing.T) {
 		name       string
 		setupFunc  func() *cobra.Command
 		opts       options
-		client     *fakeClient.FakeClient
+		client     *tclient.FakeClient
 		nspacer    *fakeNamespacer.FakeNamespacer
 		wantErrMsg string
 		wantErr    bool
@@ -150,7 +149,7 @@ func Test_runE(t *testing.T) {
 			namespace:  "default",
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
-		client: &fakeClient.FakeClient{
+		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
@@ -189,7 +188,7 @@ func Test_runE(t *testing.T) {
 			namespace:  "default",
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
-		client: &fakeClient.FakeClient{
+		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
@@ -243,7 +242,7 @@ func Test_runE(t *testing.T) {
 			namespace:  "default",
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
-		client: &fakeClient.FakeClient{
+		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
@@ -290,7 +289,7 @@ data:
 			namespace:  "default",
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
-		client: &fakeClient.FakeClient{
+		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
@@ -321,7 +320,7 @@ data:
 			cmd.Args = cobra.RangeArgs(0, 1)
 			cmd.SilenceUsage = true
 			cmd.SetOut(bytes.NewBufferString(""))
-			cmd.SetIn(&mockReader.ErrReader{})
+			cmd.SetIn(&testing.ErrReader{})
 			return cmd
 		},
 		opts: options{
@@ -330,7 +329,7 @@ data:
 			namespace:  "default",
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
-		client: &fakeClient.FakeClient{
+		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",

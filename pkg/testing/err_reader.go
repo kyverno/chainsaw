@@ -1,6 +1,8 @@
-package reader
+package testing
 
-import "errors"
+import (
+	"errors"
+)
 
 type ErrReader struct{}
 
