@@ -56,28 +56,23 @@ func TestValidateTest(t *testing.T) {
 			},
 		},
 	}
-
 	tests := []struct {
 		name      string
 		input     *v1alpha1.Test
 		expectErr bool
-	}{
-		{
-			name: "Valid TestSpec",
-			input: &v1alpha1.Test{
-				Spec: validTestSpec,
-			},
-			expectErr: false,
+	}{{
+		name: "Valid TestSpec",
+		input: &v1alpha1.Test{
+			Spec: validTestSpec,
 		},
-		{
-			name: "Invalid TestSpec",
-			input: &v1alpha1.Test{
-				Spec: invalidTestSpec,
-			},
-			expectErr: true,
+		expectErr: false,
+	}, {
+		name: "Invalid TestSpec",
+		input: &v1alpha1.Test{
+			Spec: invalidTestSpec,
 		},
-	}
-
+		expectErr: true,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			errs := ValidateTest(tt.input)
