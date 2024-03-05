@@ -72,6 +72,14 @@ func TestValidateOperation(t *testing.T) {
 	exampleSleep := &v1alpha1.Sleep{
 		Duration: metav1.Duration{Duration: 5 * time.Second},
 	}
+	exampleWait := &v1alpha1.Wait{
+		ResourceReference: v1alpha1.ResourceReference{
+			Resource: "foos",
+		},
+		For: v1alpha1.For{
+			Deletion: &v1alpha1.Deletion{},
+		},
+	}
 	tests := []struct {
 		name      string
 		input     v1alpha1.Operation
@@ -143,6 +151,12 @@ func TestValidateOperation(t *testing.T) {
 		name: "Only Sleep operation statement provided",
 		input: v1alpha1.Operation{
 			Sleep: exampleSleep,
+		},
+		expectErr: false,
+	}, {
+		name: "Only Wait operation statement provided",
+		input: v1alpha1.Operation{
+			Wait: exampleWait,
 		},
 		expectErr: false,
 	}}
