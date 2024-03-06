@@ -55,13 +55,15 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (output
 	defer func() {
 		internal.LogEnd(logger, logging.Create, err)
 	}()
-	selfModifier := v1alpha1.Any{
-		Value: obj.UnstructuredContent(),
-	}
-	if merged, err := mutate.Merge(ctx, obj, bindings, selfModifier); err != nil {
-		return nil, err
-	} else {
-		obj = merged
+	if o.template {
+		template := v1alpha1.Any{
+			Value: obj.UnstructuredContent(),
+		}
+		if merged, err := mutate.Merge(ctx, obj, bindings, template); err != nil {
+			return nil, err
+		} else {
+			obj = merged
+		}
 	}
 	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
 		return nil, err
