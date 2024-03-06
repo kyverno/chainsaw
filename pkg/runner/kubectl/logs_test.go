@@ -136,7 +136,7 @@ func TestLogs(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Logs(tt.collector)
+			got, err := Logs(nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

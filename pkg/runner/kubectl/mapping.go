@@ -1,29 +1,15 @@
 package kubectl
 
 import (
-	"context"
 	"errors"
 	"strings"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/mutate"
-	"github.com/kyverno/chainsaw/pkg/runner/functions"
-	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
-
-func convertString(in string, bindings binding.Bindings) (string, error) {
-	ctx := context.TODO()
-	if merged, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, in), in, bindings, template.WithFunctionCaller(functions.Caller)); err != nil {
-		return "", err
-	} else {
-		// TODO: error handling
-		return merged.(string), nil
-	}
-}
 
 func mapResource(client client.Client, bindings binding.Bindings, resource v1alpha1.ResourceReference) (string, bool, error) {
 	if resource.Resource != "" {

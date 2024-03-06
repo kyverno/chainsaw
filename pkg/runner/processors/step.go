@@ -218,11 +218,7 @@ func (p *stepProcessor) catchOperations() ([]operation, error) {
 	handlers = append(handlers, p.step.Catch...)
 	for _, handler := range handlers {
 		if handler.PodLogs != nil {
-			cmd, err := kubectl.Logs(handler.PodLogs)
-			if err != nil {
-				return nil, err
-			}
-			register(p.commandOperation(*cmd))
+			register(p.logsOperation(*handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -264,11 +260,7 @@ func (p *stepProcessor) finallyOperations() ([]operation, error) {
 	}
 	for _, handler := range p.step.Finally {
 		if handler.PodLogs != nil {
-			cmd, err := kubectl.Logs(handler.PodLogs)
-			if err != nil {
-				return nil, err
-			}
-			register(p.commandOperation(*cmd))
+			register(p.logsOperation(*handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -506,6 +498,33 @@ func (p *stepProcessor) getOperation(op v1alpha1.Get) operation {
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
 		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
 			cmd, err := kubectl.Get(cluster, bindings, &op)
+			if err != nil {
+				return nil, err
+			}
+			return opcommand.New(*cmd, p.test.BasePath, ns, config), nil
+		},
+		operationReport,
+		config,
+		cluster,
+	)
+}
+
+func (p *stepProcessor) logsOperation(op v1alpha1.PodLogs) operation {
+	var operationReport *report.OperationReport
+	if p.stepReport != nil {
+		operationReport = report.NewOperation("Logs ", report.OperationTypeCommand)
+		p.stepReport.AddOperation(operationReport)
+	}
+	ns := ""
+	if p.namespacer != nil {
+		ns = p.namespacer.GetNamespace()
+	}
+	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	return newLazyOperation(
+		false,
+		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
+			cmd, err := kubectl.Logs(bindings, &op)
 			if err != nil {
 				return nil, err
 			}

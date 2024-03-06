@@ -13,7 +13,23 @@ func Describe(client client.Client, bindings binding.Bindings, collector *v1alph
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
-	if collector.Name != "" && collector.Selector != "" {
+	name, err := convertString(collector.Name, bindings)
+	if err != nil {
+		return nil, err
+	}
+	namespace, err := convertString(collector.Namespace, bindings)
+	if err != nil {
+		return nil, err
+	}
+	selector, err := convertString(collector.Selector, bindings)
+	if err != nil {
+		return nil, err
+	}
+	cluster, err := convertString(collector.Cluster, bindings)
+	if err != nil {
+		return nil, err
+	}
+	if name != "" && selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
 	resource, clustered, err := mapResource(client, bindings, collector.ResourceReference)
@@ -21,21 +37,20 @@ func Describe(client client.Client, bindings binding.Bindings, collector *v1alph
 		return nil, err
 	}
 	cmd := v1alpha1.Command{
-		Cluster:    collector.Cluster,
+		Cluster:    cluster,
 		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
 		Args:       []string{"describe", resource},
 	}
-	if collector.Name != "" {
-		cmd.Args = append(cmd.Args, collector.Name)
-	} else if collector.Selector != "" {
-		cmd.Args = append(cmd.Args, "-l", collector.Selector)
+	if name != "" {
+		cmd.Args = append(cmd.Args, name)
+	} else if selector != "" {
+		cmd.Args = append(cmd.Args, "-l", selector)
 	}
 	if !clustered {
-		if collector.Namespace == "*" {
+		if namespace == "*" {
 			cmd.Args = append(cmd.Args, "--all-namespaces")
 		} else {
-			namespace := collector.Namespace
 			if namespace == "" {
 				namespace = "$NAMESPACE"
 			}

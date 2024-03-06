@@ -17,6 +17,7 @@ Release notes for `TODO`.
 ## 💫 New features 💫
 
 - Added templating support in resource reference in all collectors
+- Added templating support for all string fields in all collectors
 
 ## 🔧 Fixes 🔧
 
