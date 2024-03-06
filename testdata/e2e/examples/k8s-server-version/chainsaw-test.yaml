@@ -1,0 +1,18 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: k8s-server-version
+spec:
+  bindings:
+  - name: version
+    value: (x_k8s_server_version($config))
+  steps:
+  - try:
+    - script:
+        env:
+        - name: K8S_VERSION
+          value: (to_string($version))
+        content: |
+          set -e
+          echo $K8S_VERSION
