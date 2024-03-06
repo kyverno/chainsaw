@@ -192,7 +192,7 @@ func TestDescribe(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Describe(client, tt.collector)
+			got, err := Describe(client, nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

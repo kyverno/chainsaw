@@ -4,18 +4,19 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 )
 
-func Describe(client client.Client, collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
+func Describe(client client.Client, bindings binding.Bindings, collector *v1alpha1.Describe) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
 	if collector.Name != "" && collector.Selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
-	resource, clustered, err := mapResource(client, collector.ResourceReference)
+	resource, clustered, err := mapResource(client, bindings, collector.ResourceReference)
 	if err != nil {
 		return nil, err
 	}

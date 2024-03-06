@@ -153,7 +153,7 @@ func TestGet(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Get(client, tt.collector)
+			got, err := Get(client, nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

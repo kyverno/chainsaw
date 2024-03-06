@@ -5,8 +5,6 @@ Release notes for `TODO`.
 <!--
 ## ‼️ Breaking changes ‼️
 
-## 💫 New features 💫
-
 ## ✨ UI changes ✨
 
 ## ⛵ Tutorials ⛵
@@ -15,6 +13,10 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
+
+## 💫 New features 💫
+
+- Added templating support in resource reference in all collectors
 
 ## 🔧 Fixes 🔧
 

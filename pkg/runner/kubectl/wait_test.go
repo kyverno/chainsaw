@@ -206,7 +206,7 @@ func TestWait(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Wait(client, tt.waiter)
+			got, err := Wait(client, nil, tt.waiter)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
