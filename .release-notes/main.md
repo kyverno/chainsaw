@@ -21,3 +21,4 @@ Release notes for `TODO`.
 ## 🔧 Fixes 🔧
 
 - Added `config` in the list of forbidden binding names
+- Fixed resource templating always enabled in `patch` operation, regardless of the configured `template` field
