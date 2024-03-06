@@ -450,7 +450,7 @@ func (p *stepProcessor) describeOperation(op v1alpha1.Describe) operation {
 	return newLazyOperation(
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		func() (operations.Operation, error) {
+		func(context.Context, binding.Bindings) (operations.Operation, error) {
 			cmd, err := kubectl.Describe(cluster, &op)
 			if err != nil {
 				return nil, err
@@ -504,7 +504,7 @@ func (p *stepProcessor) getOperation(op v1alpha1.Get) operation {
 	return newLazyOperation(
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		func() (operations.Operation, error) {
+		func(context.Context, binding.Bindings) (operations.Operation, error) {
 			cmd, err := kubectl.Get(cluster, &op)
 			if err != nil {
 				return nil, err
@@ -600,7 +600,7 @@ func (p *stepProcessor) waitOperation(op v1alpha1.Wait) operation {
 	return newLazyOperation(
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		func() (operations.Operation, error) {
+		func(context.Context, binding.Bindings) (operations.Operation, error) {
 			cmd, err := kubectl.Wait(cluster, &op)
 			if err != nil {
 				return nil, err

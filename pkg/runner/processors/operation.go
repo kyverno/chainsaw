@@ -18,7 +18,7 @@ import (
 type operation struct {
 	continueOnError bool
 	timeout         *time.Duration
-	operation       func() (operations.Operation, error)
+	operation       func(context.Context, binding.Bindings) (operations.Operation, error)
 	operationReport *report.OperationReport
 	config          *rest.Config
 	client          client.Client
@@ -37,7 +37,7 @@ func newOperation(
 	return newLazyOperation(
 		continueOnError,
 		timeout,
-		func() (operations.Operation, error) {
+		func(context.Context, binding.Bindings) (operations.Operation, error) {
 			return op, nil
 		},
 		operationReport,
@@ -50,7 +50,7 @@ func newOperation(
 func newLazyOperation(
 	continueOnError bool,
 	timeout *time.Duration,
-	op func() (operations.Operation, error),
+	op func(context.Context, binding.Bindings) (operations.Operation, error),
 	operationReport *report.OperationReport,
 	config *rest.Config,
 	client client.Client,
@@ -84,7 +84,7 @@ func (o operation) execute(ctx context.Context, bindings binding.Bindings) opera
 			t.FailNow()
 		}
 	}
-	operation, err := o.operation()
+	operation, err := o.operation(ctx, bindings)
 	if err != nil {
 		handleError(err)
 	} else if bindings, err := registerBindings(ctx, bindings, o.config, o.client, o.variables...); err != nil {
