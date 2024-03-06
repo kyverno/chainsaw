@@ -171,6 +171,24 @@ func Test_parse(t *testing.T) {
 			return nil, errors.New("converter error")
 		},
 		wantErr: true,
+	}, {
+		name: "splitter and converter error",
+		splitter: func([]byte) ([][]byte, error) {
+			return nil, errors.New("splitter error")
+		},
+		converter: func([]byte) ([]byte, error) {
+			return nil, errors.New("converter error")
+		},
+		wantErr: true,
+	}, {
+		name: "valid input",
+		splitter: func(content []byte) ([][]byte, error) {
+			return [][]byte{content}, nil
+		},
+		converter: func(content []byte) ([]byte, error) {
+			return content, nil
+		},
+		wantErr: false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
