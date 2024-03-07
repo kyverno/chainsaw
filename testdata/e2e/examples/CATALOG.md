@@ -1,6 +1,7 @@
 # Tests catalog
 
 - [apply-outputs](apply-outputs/README.md)
+- [apply-outputs](apply-outputs/README.md)
 - [array-assertions](array-assertion/README.md)
 - [assertion-tree](assertion-tree/README.md)
 - [basic](basic/README.md)

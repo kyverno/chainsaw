@@ -29,3 +29,58 @@ spec:
             kind: ConfigMap
             metadata:
               name: first
+---
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: apply-outputs
+spec:
+  template: true
+  steps:
+  - bindings:
+    - name: foos
+      value: []
+    try:
+    - apply:
+        file: resources.yaml
+        outputs:
+        - name: (join('', ['foo', to_string($operation.resourceId)]))
+          value: (@)
+        - name: foos
+          value: ([$foos, @][])
+    - script:
+        env:
+        - name: FOO
+          value: (to_string($foo1))
+        content: |
+          set -e
+          echo $FOO
+    - script:
+        env:
+        - name: FOO
+          value: (to_string($foo2))
+        content: |
+          set -e
+          echo $FOO
+    - script:
+        env:
+        - name: FOO
+          value: (to_string($foos))
+        content: |
+          set -e
+          echo $FOO
+    - assert:
+        resource:
+          ($foo1):
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: first
+    - assert:
+        resource:
+          ($foo2):
+            apiVersion: v1
+            kind: ConfigMap
+            metadata:
+              name: second

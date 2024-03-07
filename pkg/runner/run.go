@@ -77,10 +77,10 @@ func run(
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			processor := processors.NewTestsProcessor(config, clusters, clock, &summary, testsReport, bindings, tests...)
+			processor := processors.NewTestsProcessor(config, clusters, clock, &summary, testsReport, tests...)
 			ctx := testing.IntoContext(context.Background(), t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
-			processor.Run(ctx)
+			processor.Run(ctx, bindings)
 		},
 	}}
 	deps := &internal.TestDeps{}

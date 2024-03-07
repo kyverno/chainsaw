@@ -16,6 +16,7 @@ import (
 )
 
 type operation struct {
+	info            OperationInfo
 	continueOnError bool
 	timeout         *time.Duration
 	operation       func(context.Context, binding.Bindings) (operations.Operation, error)
@@ -26,6 +27,7 @@ type operation struct {
 }
 
 func newOperation(
+	info OperationInfo,
 	continueOnError bool,
 	timeout *time.Duration,
 	op operations.Operation,
@@ -35,6 +37,7 @@ func newOperation(
 	variables ...v1alpha1.Binding,
 ) operation {
 	return newLazyOperation(
+		info,
 		continueOnError,
 		timeout,
 		func(context.Context, binding.Bindings) (operations.Operation, error) {
@@ -48,6 +51,7 @@ func newOperation(
 }
 
 func newLazyOperation(
+	info OperationInfo,
 	continueOnError bool,
 	timeout *time.Duration,
 	op func(context.Context, binding.Bindings) (operations.Operation, error),
@@ -57,6 +61,7 @@ func newLazyOperation(
 	variables ...v1alpha1.Binding,
 ) operation {
 	return operation{
+		info:            info,
 		continueOnError: continueOnError,
 		timeout:         timeout,
 		operation:       op,
@@ -90,7 +95,10 @@ func (o operation) execute(ctx context.Context, bindings binding.Bindings) opera
 	} else if bindings, err := registerBindings(ctx, bindings, o.config, o.client, o.variables...); err != nil {
 		handleError(err)
 	} else {
-		outputs, err := operation.Exec(ctx, bindings)
+		outputs, err := operation.Exec(
+			ctx,
+			bindings.Register("$operation", binding.NewBinding(o.info)),
+		)
 		if o.operationReport != nil {
 			o.operationReport.MarkOperationEnd(err)
 		}

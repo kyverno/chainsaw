@@ -62,6 +62,7 @@ func Test_Cleaner_Run(t *testing.T) {
 		},
 		operations: []operation{
 			newOperation(
+				OperationInfo{},
 				true,
 				nil,
 				mock.MockOperation{

@@ -12,23 +12,23 @@ func Get(client client.Client, bindings binding.Bindings, collector *v1alpha1.Ge
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
-	name, err := convertString(collector.Name, bindings)
+	name, err := ConvertString(collector.Name, bindings)
 	if err != nil {
 		return nil, err
 	}
-	namespace, err := convertString(collector.Namespace, bindings)
+	namespace, err := ConvertString(collector.Namespace, bindings)
 	if err != nil {
 		return nil, err
 	}
-	selector, err := convertString(collector.Selector, bindings)
+	selector, err := ConvertString(collector.Selector, bindings)
 	if err != nil {
 		return nil, err
 	}
-	format, err := convertString(string(collector.Format), bindings)
+	format, err := ConvertString(string(collector.Format), bindings)
 	if err != nil {
 		return nil, err
 	}
-	cluster, err := convertString(collector.Cluster, bindings)
+	cluster, err := ConvertString(collector.Cluster, bindings)
 	if err != nil {
 		return nil, err
 	}

@@ -1044,14 +1044,12 @@ func TestStepProcessor_Run(t *testing.T) {
 				tc.stepSpec,
 				tc.stepReport,
 				tc.cleaner,
-				nil,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
-			stepProcessor.Run(ctx)
-			nt.Cleanup(func() {
-			})
+			stepProcessor.Run(ctx, nil)
+			nt.Cleanup(func() {})
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {
