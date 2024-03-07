@@ -25,6 +25,7 @@ type operation struct {
 	namespacer namespacer.Namespacer
 	template   bool
 	expect     []v1alpha1.Expectation
+	outputs    []v1alpha1.Output
 }
 
 func New(
@@ -33,6 +34,7 @@ func New(
 	namespacer namespacer.Namespacer,
 	template bool,
 	expect []v1alpha1.Expectation,
+	outputs []v1alpha1.Output,
 ) operations.Operation {
 	return &operation{
 		client:     client,
@@ -40,6 +42,7 @@ func New(
 		namespacer: namespacer,
 		template:   template,
 		expect:     expect,
+		outputs:    outputs,
 	}
 }
 

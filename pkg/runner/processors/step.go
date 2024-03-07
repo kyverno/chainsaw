@@ -557,7 +557,7 @@ func (p *stepProcessor) patchOperation(op v1alpha1.Patch) ([]operation, error) {
 		ops = append(ops, newOperation(
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			oppatch.New(cluster, resource, p.namespacer, template, op.Expect),
+			oppatch.New(cluster, resource, p.namespacer, template, op.Expect, op.Outputs),
 			operationReport,
 			config,
 			cluster,

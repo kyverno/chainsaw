@@ -929,6 +929,13 @@ func (in *Patch) DeepCopyInto(out *Patch) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.Outputs != nil {
+		in, out := &in.Outputs, &out.Outputs
+		*out = make([]Output, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
