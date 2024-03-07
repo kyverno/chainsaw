@@ -6,12 +6,15 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	mutation "github.com/kyverno/chainsaw/pkg/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
+	"github.com/kyverno/chainsaw/pkg/runner/functions"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
+	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
@@ -46,14 +49,14 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (outputs operations.Outputs, err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
 	obj := o.base
 	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
-		internal.LogEnd(logger, logging.Patch, err)
+		internal.LogEnd(logger, logging.Patch, _err)
 	}()
 	if o.template {
 		template := v1alpha1.Any{
@@ -69,55 +72,86 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (output
 		return nil, err
 	}
 	internal.LogStart(logger, logging.Patch)
-	return nil, o.execute(ctx, bindings, obj)
+	return o.execute(ctx, bindings, obj)
 }
 
-func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
+func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
 	var lastErr error
+	var outputs operations.Outputs
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
-		lastErr = o.tryPatchResource(ctx, bindings, obj)
+		outputs, lastErr = o.tryPatchResource(ctx, bindings, obj)
 		// TODO: determine if the error can be retried
 		return lastErr == nil, nil
 	})
 	if err == nil {
-		return nil
+		return outputs, nil
 	}
 	if lastErr != nil {
-		return lastErr
+		return outputs, lastErr
 	}
-	return err
+	return outputs, err
 }
 
-func (o *operation) tryPatchResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
+func (o *operation) tryPatchResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 	err := o.client.Get(ctx, client.ObjectKey(&obj), &actual)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return o.updateResource(ctx, bindings, &actual, obj)
 }
 
-func (o *operation) updateResource(ctx context.Context, bindings binding.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) error {
+func (o *operation) updateResource(ctx context.Context, bindings binding.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (operations.Outputs, error) {
 	patched, err := client.PatchObject(actual, &obj)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	bytes, err := json.Marshal(patched)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes)))
 }
 
-func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured, err error) error {
+func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured, err error) (_outputs operations.Outputs, _err error) {
+	defer func() {
+		var outputs operations.Outputs
+		if _err == nil {
+			for _, output := range o.outputs {
+				if err := output.CheckName(); err != nil {
+					_err = err
+					return
+				}
+				if output.Match != nil && output.Match.Value != nil {
+					if errs, err := check.Check(ctx, obj.UnstructuredContent(), nil, output.Match); err != nil {
+						_err = err
+						return
+					} else if len(errs) != 0 {
+						continue
+					}
+				}
+				patched, err := mutation.Mutate(ctx, nil, mutation.Parse(ctx, output.Value.Value), obj.UnstructuredContent(), bindings, template.WithFunctionCaller(functions.Caller))
+				if err != nil {
+					_err = err
+					return
+				}
+				if outputs == nil {
+					outputs = operations.Outputs{}
+				}
+				outputs[output.Name] = binding.NewBinding(patched)
+				bindings = bindings.Register("$"+output.Name, outputs[output.Name])
+			}
+			_outputs = outputs
+		}
+	}()
 	if err == nil {
 		bindings = bindings.Register("$error", binding.NewBinding(nil))
 	} else {
 		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
 	}
 	if matched, err := check.Expectations(ctx, obj, bindings, o.expect...); matched {
-		return err
+		return nil, err
 	}
-	return err
+	return nil, err
 }

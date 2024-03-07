@@ -54,14 +54,14 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
 	obj := o.base
 	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
-		internal.LogEnd(logger, logging.Apply, err)
+		internal.LogEnd(logger, logging.Apply, _err)
 	}()
 	if o.template {
 		template := v1alpha1.Any{
