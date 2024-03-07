@@ -1049,6 +1049,28 @@ spec:
                             multiple files, such as "manifest/*.yaml" for all YAML
                             files within the "manifest" directory.
                           type: string
+                        outputs:
+                          description: Outputs defines output bindings.
+                          items:
+                            description: Output represents an output binding with
+                              a match to determine if the binding must be considered
+                              or not.
+                            properties:
+                              match:
+                                description: Match defines the matching statement.
+                                type: object
+                                x-kubernetes-preserve-unknown-fields: true
+                              name:
+                                description: Name the name of the binding.
+                                type: string
+                              value:
+                                description: Value value of the binding.
+                                x-kubernetes-preserve-unknown-fields: true
+                            required:
+                            - name
+                            - value
+                            type: object
+                          type: array
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object

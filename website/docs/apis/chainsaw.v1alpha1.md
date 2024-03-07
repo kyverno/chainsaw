@@ -64,6 +64,7 @@ should be applied during testing.</p>
 |---|---|---|---|---|
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
+| `outputs` | [`[]Output`](#chainsaw-kyverno-io-v1alpha1-Output) |  |  | <p>Outputs defines output bindings.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the resources to be applied.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
@@ -98,6 +99,7 @@ during the testing process.</p>
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
 - [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
 - [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+- [Output](#chainsaw-kyverno-io-v1alpha1-Output)
 - [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
 - [Script](#chainsaw-kyverno-io-v1alpha1-Script)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
@@ -537,6 +539,20 @@ For multiple objects use labels.</p>
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 | `wait` | [`Wait`](#chainsaw-kyverno-io-v1alpha1-Wait) |  |  | <p>Wait determines the resource wait collector to execute.</p> |
+
+## `Output`     {#chainsaw-kyverno-io-v1alpha1-Output}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+
+<p>Output represents an output binding with a match to determine if the binding must be considered or not.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `Binding` | [`Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) | :white_check_mark: | :white_check_mark: | <p>Binding determines the binding to create when the match succeeds.</p> |
+| `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
 
 ## `Patch`     {#chainsaw-kyverno-io-v1alpha1-Patch}
 

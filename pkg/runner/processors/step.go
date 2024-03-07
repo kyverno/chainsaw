@@ -313,7 +313,7 @@ func (p *stepProcessor) applyOperation(op v1alpha1.Apply) ([]operation, error) {
 		ops = append(ops, newOperation(
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			opapply.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect),
+			opapply.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs),
 			operationReport,
 			config,
 			cluster,
