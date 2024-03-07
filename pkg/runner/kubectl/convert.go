@@ -15,10 +15,10 @@ func convertString(in string, bindings binding.Bindings) (string, error) {
 		return "", nil
 	}
 	ctx := context.TODO()
-	if covnerted, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, in), nil, bindings, template.WithFunctionCaller(functions.Caller)); err != nil {
+	if converted, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, in), nil, bindings, template.WithFunctionCaller(functions.Caller)); err != nil {
 		return "", err
 	} else {
-		if covnerted, ok := covnerted.(string); !ok {
+		if covnerted, ok := converted.(string); !ok {
 			return "", fmt.Errorf("expression didn't evaluate to a string (%s)", in)
 		} else {
 			return covnerted, nil
