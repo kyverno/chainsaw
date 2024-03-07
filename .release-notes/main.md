@@ -25,6 +25,8 @@ Release notes for `TODO`.
 - Added `config` in the list of forbidden binding names
 - Fixed resource templating always enabled in `create` operation, regardless of the configured `template` field
 - Fixed resource templating always enabled in `patch` operation, regardless of the configured `template` field
+- Added missing operations to the `build docs` command template
+- Added test-level catch statements to the `build docs` command template
 
 ## ⭐ Examples ⭐
 
