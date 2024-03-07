@@ -659,10 +659,7 @@
                       "string",
                       "null"
                     ],
-                    "enum": [
-                      "json",
-                      "yaml"
-                    ]
+                    "pattern": "^json|yaml|\\(.+\\)$"
                   },
                   "name": {
                     "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -721,10 +718,7 @@
                       "string",
                       "null"
                     ],
-                    "enum": [
-                      "json",
-                      "yaml"
-                    ]
+                    "pattern": "^json|yaml|\\(.+\\)$"
                   },
                   "kind": {
                     "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
@@ -1035,10 +1029,7 @@
                       "string",
                       "null"
                     ],
-                    "enum": [
-                      "json",
-                      "yaml"
-                    ]
+                    "pattern": "^json|yaml|\\(.+\\)$"
                   },
                   "kind": {
                     "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
