@@ -5,6 +5,23 @@
 #############
 
 GIT_SHA                            := $(shell git rev-parse HEAD)
+ORG                                ?= kyverno
+PACKAGE                            ?= github.com/$(ORG)/chainsaw
+GOPATH_SHIM                        := ${PWD}/.gopath
+PACKAGE_SHIM                       := $(GOPATH_SHIM)/src/$(PACKAGE)
+INPUT_DIRS                         := $(PACKAGE)/pkg/apis/v1alpha1
+CRDS_PATH                          := ${PWD}/.crds
+CLI_BIN                            := chainsaw
+CGO_ENABLED                        ?= 0
+GOOS                               ?= $(shell go env GOOS)
+ifdef VERSION
+LD_FLAGS                           := "-s -w -X $(PACKAGE)/pkg/version.BuildVersion=$(VERSION)"
+else
+LD_FLAGS                           := "-s -w"
+endif
+KO_REGISTRY                        := ko.local
+KO_TAGS                            := $(GIT_SHA)
+KIND_IMAGE                         ?= kindest/node:v1.29.2
 
 #########
 # TOOLS #
@@ -67,13 +84,6 @@ clean-tools: ## Remove installed tools
 ###########
 # CODEGEN #
 ###########
-
-ORG                         ?= kyverno
-PACKAGE                     ?= github.com/$(ORG)/chainsaw
-GOPATH_SHIM                 := ${PWD}/.gopath
-PACKAGE_SHIM                := $(GOPATH_SHIM)/src/$(PACKAGE)
-INPUT_DIRS                  := $(PACKAGE)/pkg/apis/v1alpha1
-CRDS_PATH                   := ${PWD}/.crds
 
 $(GOPATH_SHIM):
 	@echo Create gopath shim... >&2
@@ -221,15 +231,6 @@ mkdocs-serve: ## Generate and serve mkdocs website
 # BUILD #
 #########
 
-CLI_BIN        := chainsaw
-CGO_ENABLED    ?= 0
-GOOS           ?= $(shell go env GOOS)
-ifdef VERSION
-LD_FLAGS       := "-s -w -X $(PACKAGE)/pkg/version.BuildVersion=$(VERSION)"
-else
-LD_FLAGS       := "-s -w"
-endif
-
 .PHONY: fmt
 fmt: ## Run go fmt
 fmt: codegen-register
@@ -254,9 +255,6 @@ build: $(CLI_BIN) ## Build
 ##############
 # BUILD (KO) #
 ##############
-
-KO_REGISTRY         := ko.local
-KO_TAGS             := $(GIT_SHA)
 
 .PHONY: build-ko
 build-ko: ## Build Docker image with ko
@@ -302,8 +300,6 @@ e2e-tests-ko: build-ko
 ########	
 # KIND #
 ########
-
-KIND_IMAGE     ?= kindest/node:v1.29.2
 
 .PHONY: kind-cluster
 kind-cluster: ## Create kind cluster
