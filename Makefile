@@ -56,7 +56,8 @@ $(KO):
 	@GOBIN=$(TOOLS_DIR) go install github.com/google/ko@$(KO_VERSION)
 
 .PHONY: install-tools
-install-tools: $(TOOLS) ## Install tools
+install-tools: ## Install tools
+install-tools: $(TOOLS)
 
 .PHONY: clean-tools
 clean-tools: ## Remove installed tools
@@ -84,14 +85,18 @@ $(PACKAGE_SHIM): $(GOPATH_SHIM)
 	@mkdir -p $(GOPATH_SHIM)/src/github.com/$(ORG) && ln -s -f ${PWD} $(PACKAGE_SHIM)
 
 .PHONY: codegen-register
-codegen-register: $(PACKAGE_SHIM) $(REGISTER_GEN) ## Generate types registrations
+codegen-register: ## Generate types registrations
+codegen-register: $(PACKAGE_SHIM)
+codegen-register: $(REGISTER_GEN)
 	@echo Generate registration... >&2
 	@GOPATH=$(GOPATH_SHIM) $(REGISTER_GEN) \
 		--go-header-file=./.hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS)
 
 .PHONY: codegen-deepcopy
-codegen-deepcopy: $(PACKAGE_SHIM) $(DEEPCOPY_GEN) ## Generate deep copy functions
+codegen-deepcopy: ## Generate deep copy functions
+codegen-deepcopy: $(PACKAGE_SHIM)
+codegen-deepcopy: $(DEEPCOPY_GEN)
 	@echo Generate deep copy functions... >&2
 	@GOPATH=$(GOPATH_SHIM) $(DEEPCOPY_GEN) \
 		--go-header-file=./.hack/boilerplate.go.txt \
@@ -99,7 +104,8 @@ codegen-deepcopy: $(PACKAGE_SHIM) $(DEEPCOPY_GEN) ## Generate deep copy function
 		--output-file-base=zz_generated.deepcopy
 
 .PHONY: codegen-crds
-codegen-crds: $(CONTROLLER_GEN) ## Generate CRDs
+codegen-crds: ## Generate CRDs
+codegen-crds: $(CONTROLLER_GEN)
 	@echo Generate crds... >&2
 	@rm -rf $(CRDS_PATH)
 	@$(CONTROLLER_GEN) crd paths=./pkg/apis/... crd:crdVersions=v1 output:dir=$(CRDS_PATH)
@@ -108,14 +114,16 @@ codegen-crds: $(CONTROLLER_GEN) ## Generate CRDs
 	@cp $(CRDS_PATH)/* pkg/data/crds
 
 .PHONY: codegen-cli-docs
-codegen-cli-docs: build ## Generate CLI docs
+codegen-cli-docs: ## Generate CLI docs
+codegen-cli-docs: build
 	@echo Generate cli docs... >&2
 	@rm -rf website/docs/commands && mkdir -p website/docs/commands
 	@rm -rf docs/user/commands && mkdir -p docs/user/commands
 	@./$(CLI_BIN) docs -o website/docs/commands --autogenTag=false
 
 .PHONY: codegen-api-docs
-codegen-api-docs: $(REFERENCE_DOCS) ## Generate markdown API docs
+codegen-api-docs: ## Generate markdown API docs
+codegen-api-docs: $(REFERENCE_DOCS)
 codegen-api-docs: codegen-deepcopy
 codegen-api-docs: codegen-register
 	@echo Generate api docs... >&2
@@ -129,7 +137,10 @@ codegen-jp-docs: ## Generate JP docs
 	@go run ./website/jp/main.go > ./website/docs/jp/functions.md
 
 .PHONY: codegen-mkdocs
-codegen-mkdocs: codegen-cli-docs codegen-api-docs codegen-jp-docs ## Generate mkdocs website
+codegen-mkdocs: ## Generate mkdocs website
+codegen-mkdocs: codegen-cli-docs
+codegen-mkdocs: codegen-api-docs
+codegen-mkdocs: codegen-jp-docs
 	@echo Generate mkdocs website... >&2
 	@$(PIP) install mkdocs
 	@$(PIP) install --upgrade pip
@@ -137,8 +148,10 @@ codegen-mkdocs: codegen-cli-docs codegen-api-docs codegen-jp-docs ## Generate mk
 	@mkdocs build -f ./website/mkdocs.yaml
 
 .PHONY: codegen-schemas-openapi
+codegen-schemas-openapi: ## Generate openapi schemas (v2 and v3)
 codegen-schemas-openapi: CURRENT_CONTEXT = $(shell kubectl config current-context)
-codegen-schemas-openapi: codegen-crds $(KIND) ## Generate openapi schemas (v2 and v3)
+codegen-schemas-openapi: codegen-crds
+codegen-schemas-openapi: $(KIND)
 	@echo Generate openapi schema... >&2
 	@rm -rf ./.temp/.schemas
 	@mkdir -p ./.temp/.schemas/openapi/v2
@@ -152,7 +165,8 @@ codegen-schemas-openapi: codegen-crds $(KIND) ## Generate openapi schemas (v2 an
 	@kubectl config use-context $(CURRENT_CONTEXT) || true
 
 .PHONY: codegen-schemas-json
-codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas
+codegen-schemas-json: ## Generate json schemas
+codegen-schemas-json: codegen-schemas-openapi
 	@echo Generate json schema... >&2
 	@$(PIP) install openapi2jsonschema --no-build-isolation
 	@rm -rf ./.temp/.schemas/json
@@ -166,7 +180,8 @@ codegen-schemas-json: codegen-schemas-openapi ## Generate json schemas
 	@cp ./.schemas/json/* pkg/data/schemas/json
 
 .PHONY: codegen-tests-catalog
-codegen-tests-catalog: $(CLI_BIN) ## Generate tests catalog files
+codegen-tests-catalog: ## Generate tests catalog files
+codegen-tests-catalog: $(CLI_BIN)
 	@echo Generate tests catalog... >&2
 	@./$(CLI_BIN) build docs --test-dir ./testdata/e2e --catalog ./testdata/e2e/examples/CATALOG.md
 
@@ -182,7 +197,8 @@ codegen: codegen-schemas-json
 codegen: codegen-tests-catalog
 
 .PHONY: verify-codegen
-verify-codegen: codegen ## Verify all generated code and docs are up to date
+verify-codegen: ## Verify all generated code and docs are up to date
+verify-codegen: codegen
 	@echo Checking codegen is up to date... >&2
 	@git --no-pager diff -- .
 	@echo 'If this test fails, it is because the git diff is non-empty after running "make codegen".' >&2
@@ -216,6 +232,8 @@ endif
 
 .PHONY: fmt
 fmt: ## Run go fmt
+fmt: codegen-register
+fmt: codegen-deepcopy
 	@echo Go fmt... >&2
 	@go fmt ./...
 
@@ -225,7 +243,9 @@ vet: ## Run go vet
 	@go vet ./...
 
 .PHONY: $(CLI_BIN)
-$(CLI_BIN): fmt vet
+$(CLI_BIN): fmt
+$(CLI_BIN): vet
+$(CLI_BIN): codegen-crds
 	@echo Build cli binary... >&2
 	@CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) go build -o ./$(CLI_BIN) -ldflags=$(LD_FLAGS) .
 
@@ -239,7 +259,10 @@ KO_REGISTRY         := ko.local
 KO_TAGS             := $(GIT_SHA)
 
 .PHONY: build-ko
-build-ko: fmt vet $(KO) ## Build Docker image with ko
+build-ko: ## Build Docker image with ko
+build-ko: fmt
+build-ko: vet
+build-ko: $(KO)
 	@echo "Build Docker image with ko..." >&2
 	@LD_FLAGS=$(LD_FLAGS) KO_DOCKER_REPO=$(KO_REGISTRY) \
 		$(KO) build . --preserve-import-paths --tags=$(KO_TAGS)
@@ -249,18 +272,21 @@ build-ko: fmt vet $(KO) ## Build Docker image with ko
 ########
 
 .PHONY: tests
-tests: $(CLI_BIN) ## Run tests
+tests: ## Run tests
+tests: $(CLI_BIN)
 	@echo Running tests... >&2
 	@go test ./... -race -coverprofile=coverage.out -covermode=atomic
 	@go tool cover -html=coverage.out
 
 .PHONY: e2e-tests
-e2e-tests: $(CLI_BIN) ## Run e2e tests
+e2e-tests: ## Run e2e tests
+e2e-tests: $(CLI_BIN)
 	@echo Running e2e tests... >&2
 	@./$(CLI_BIN) test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml
 
 .PHONY: e2e-tests-ko 
-e2e-tests-ko: build-ko ## Run e2e tests from a docker container
+e2e-tests-ko: ## Run e2e tests from a docker container
+e2e-tests-ko: build-ko
 	@echo Running e2e tests in docker... >&2
 	@docker run \
 		-v ./testdata/e2e/:/chainsaw/ \
@@ -280,7 +306,8 @@ e2e-tests-ko: build-ko ## Run e2e tests from a docker container
 KIND_IMAGE     ?= kindest/node:v1.29.2
 
 .PHONY: kind-cluster
-kind-cluster: $(KIND) ## Create kind cluster
+kind-cluster: ## Create kind cluster
+kind-cluster: $(KIND)
 	@echo Create kind cluster... >&2
 	@$(KIND) create cluster --image $(KIND_IMAGE) --wait 1m
 
