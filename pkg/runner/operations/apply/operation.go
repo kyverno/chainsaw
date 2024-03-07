@@ -54,7 +54,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (outputs operations.Outputs, err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}

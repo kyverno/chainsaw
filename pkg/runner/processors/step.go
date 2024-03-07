@@ -393,7 +393,7 @@ func (p *stepProcessor) createOperation(op v1alpha1.Create) ([]operation, error)
 		ops = append(ops, newOperation(
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			opcreate.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect),
+			opcreate.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs),
 			operationReport,
 			config,
 			cluster,
