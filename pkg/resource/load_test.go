@@ -22,6 +22,10 @@ func TestLoad(t *testing.T) {
 		expectError: false,
 		expectedLen: 2,
 	}, {
+		fileName:    filepath.Join(baseDir, "list.yaml"),
+		expectError: false,
+		expectedLen: 2,
+	}, {
 		fileName:    filepath.Join(baseDir, "empty.yaml"),
 		expectError: true,
 		expectedLen: 0,
@@ -167,6 +171,15 @@ func Test_parse(t *testing.T) {
 	}, {
 		name:     "converter error",
 		splitter: nil,
+		converter: func([]byte) ([]byte, error) {
+			return nil, errors.New("converter error")
+		},
+		wantErr: true,
+	}, {
+		name: "splitter and converter error",
+		splitter: func([]byte) ([][]byte, error) {
+			return nil, errors.New("splitter error")
+		},
 		converter: func([]byte) ([]byte, error) {
 			return nil, errors.New("converter error")
 		},
