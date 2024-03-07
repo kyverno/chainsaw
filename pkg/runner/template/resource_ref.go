@@ -10,9 +10,15 @@ import (
 )
 
 func ResourceRef(ctx context.Context, obj *unstructured.Unstructured, bindings binding.Bindings) error {
+	apiVersion := obj.GetAPIVersion()
+	kind := obj.GetKind()
+	// this is not a valid resource (non resource assertion maybe ?)
+	if apiVersion == "" || kind == "" {
+		return nil
+	}
 	var temp unstructured.Unstructured
-	temp.SetAPIVersion(obj.GetAPIVersion())
-	temp.SetKind(obj.GetKind())
+	temp.SetAPIVersion(apiVersion)
+	temp.SetKind(kind)
 	temp.SetName(obj.GetName())
 	temp.SetNamespace(obj.GetNamespace())
 	temp.SetLabels(obj.GetLabels())
