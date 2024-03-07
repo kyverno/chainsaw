@@ -3689,6 +3689,38 @@
                             "null"
                           ]
                         },
+                        "outputs": {
+                          "description": "Outputs defines output bindings.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Output represents an output binding with a match to determine if the binding must be considered or not.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "match": {
+                                "description": "Match defines the matching statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
                         "resource": {
                           "description": "Resource provides a resource to be applied.",
                           "x-kubernetes-embedded-resource": true,

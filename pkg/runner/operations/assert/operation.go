@@ -41,14 +41,14 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (outputs operations.Outputs, err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
 	obj := o.base
 	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
-		internal.LogEnd(logger, logging.Assert, err)
+		internal.LogEnd(logger, logging.Assert, _err)
 	}()
 	if o.template {
 		if err := template.ResourceRef(ctx, &obj, bindings); err != nil {

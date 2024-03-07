@@ -21,10 +21,10 @@ func New(duration v1alpha1.Sleep) operations.Operation {
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, _ binding.Bindings) (outputs operations.Outputs, err error) {
+func (o *operation) Exec(ctx context.Context, _ binding.Bindings) (_ operations.Outputs, _err error) {
 	logger := internal.GetLogger(ctx, nil)
 	defer func() {
-		internal.LogEnd(logger, logging.Sleep, err)
+		internal.LogEnd(logger, logging.Sleep, _err)
 	}()
 	internal.LogStart(logger, logging.Sleep)
 	return nil, o.execute()

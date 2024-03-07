@@ -41,20 +41,20 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (outputs operations.Outputs, err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
 	logger := internal.GetLogger(ctx, nil)
 	defer func() {
-		internal.LogEnd(logger, logging.Script, err)
+		internal.LogEnd(logger, logging.Script, _err)
 	}()
-	cmd, cancel, err := o.createCommand(ctx, bindings)
+	cmd, cancel, _err := o.createCommand(ctx, bindings)
 	if cancel != nil {
 		defer cancel()
 	}
-	if err != nil {
-		return nil, err
+	if _err != nil {
+		return nil, _err
 	}
 	internal.LogStart(logger, logging.Script, logging.Section("COMMAND", cmd.String()))
 	return o.execute(ctx, bindings, cmd)
