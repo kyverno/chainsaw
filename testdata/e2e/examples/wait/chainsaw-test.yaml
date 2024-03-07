@@ -4,6 +4,10 @@ kind: Test
 metadata:
   name: wait
 spec:
+  catch:
+  - events: {}
+  - describe:
+      resource: crds
   steps:
   - try:
     - create:
