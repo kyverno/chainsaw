@@ -22,9 +22,10 @@ Release notes for `TODO`.
 
 ## 🔧 Fixes 🔧
 
-- Added `config` in the list of forbidden binding names
+- Fixed a resource templating issue in non resource assertions
 - Fixed resource templating always enabled in `create` operation, regardless of the configured `template` field
 - Fixed resource templating always enabled in `patch` operation, regardless of the configured `template` field
+- Added `config` in the list of forbidden binding names
 - Added missing operations to the `build docs` command template
 - Added test-level catch statements to the `build docs` command template
 
