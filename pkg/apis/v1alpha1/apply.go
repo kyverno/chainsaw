@@ -15,6 +15,10 @@ type Apply struct {
 	// +optional
 	Bindings []Binding `json:"bindings,omitempty"`
 
+	// Outputs defines output bindings.
+	// +optional
+	Outputs []Output `json:"outputs,omitempty"`
+
 	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
