@@ -252,9 +252,7 @@ spec:
                         format:
                           description: Format determines the output format (json or
                             yaml).
-                          enum:
-                          - json
-                          - yaml
+                          pattern: ^json|yaml|\(.+\)$
                           type: string
                         name:
                           description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -283,9 +281,7 @@ spec:
                         format:
                           description: Format determines the output format (json or
                             yaml).
-                          enum:
-                          - json
-                          - yaml
+                          pattern: ^json|yaml|\(.+\)$
                           type: string
                         kind:
                           description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -461,9 +457,7 @@ spec:
                         format:
                           description: Format determines the output format (json or
                             yaml).
-                          enum:
-                          - json
-                          - yaml
+                          pattern: ^json|yaml|\(.+\)$
                           type: string
                         kind:
                           description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
