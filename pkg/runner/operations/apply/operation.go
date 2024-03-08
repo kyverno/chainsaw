@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/functions"
+	"github.com/kyverno/chainsaw/pkg/runner/kubectl"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -135,7 +136,12 @@ func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, 
 		var outputs operations.Outputs
 		if _err == nil {
 			for _, output := range o.outputs {
-				if err := output.CheckName(); err != nil {
+				name, err := kubectl.ConvertString(output.Name, bindings)
+				if err != nil {
+					_err = err
+					return
+				}
+				if err := v1alpha1.CheckBindingName(name); err != nil {
 					_err = err
 					return
 				}
@@ -155,8 +161,8 @@ func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, 
 				if outputs == nil {
 					outputs = operations.Outputs{}
 				}
-				outputs[output.Name] = binding.NewBinding(patched)
-				bindings = bindings.Register("$"+output.Name, outputs[output.Name])
+				outputs[name] = binding.NewBinding(patched)
+				bindings = bindings.Register("$"+name, outputs[name])
 			}
 			_outputs = outputs
 		}

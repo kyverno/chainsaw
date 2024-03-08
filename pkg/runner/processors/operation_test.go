@@ -57,6 +57,7 @@ func TestOperation_Execute(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			localTC := tc
 			op := newOperation(
+				OperationInfo{},
 				localTC.continueOnError,
 				&localTC.timeout,
 				localTC.operation,

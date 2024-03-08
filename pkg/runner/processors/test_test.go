@@ -402,17 +402,11 @@ func TestTestProcessor_Run(t *testing.T) {
 				tc.testsReport,
 				tc.test,
 				shouldFailVar,
-				tc.binding,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
-			if tc.namespacer != nil {
-				processor.Run(ctx, tc.namespacer)
-			} else {
-				processor.Run(ctx, nil)
-			}
-			nt.Cleanup(func() {
-			})
+			processor.Run(ctx, tc.binding, tc.namespacer)
+			nt.Cleanup(func() {})
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {

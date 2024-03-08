@@ -24,8 +24,8 @@ import (
 )
 
 type TestsProcessor interface {
-	Run(context.Context)
-	CreateTestProcessor(discovery.Test, binding.Bindings) TestProcessor
+	Run(context.Context, binding.Bindings)
+	CreateTestProcessor(discovery.Test) TestProcessor
 }
 
 func NewTestsProcessor(
@@ -34,19 +34,14 @@ func NewTestsProcessor(
 	clock clock.PassiveClock,
 	summary *summary.Summary,
 	testsReport *report.TestsReport,
-	bindings binding.Bindings,
 	tests ...discovery.Test,
 ) TestsProcessor {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
 	return &testsProcessor{
 		config:      config,
 		clusters:    clusters,
 		clock:       clock,
 		summary:     summary,
 		testsReport: testsReport,
-		bindings:    bindings,
 		tests:       tests,
 	}
 }
@@ -57,13 +52,15 @@ type testsProcessor struct {
 	clock       clock.PassiveClock
 	summary     *summary.Summary
 	testsReport *report.TestsReport
-	bindings    binding.Bindings
 	tests       []discovery.Test
 	// state
 	shouldFailFast atomic.Bool
 }
 
-func (p *testsProcessor) Run(ctx context.Context) {
+func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	t := testing.FromContext(ctx)
 	t.Cleanup(func() {
 		if p.testsReport != nil {
@@ -72,7 +69,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 	})
 	var nspacer namespacer.Namespacer
 	config, cluster := p.clusters.client()
-	bindings, err := registerBindings(ctx, p.bindings, config, cluster)
+	bindings, err := registerBindings(ctx, bindings, config, cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
@@ -103,6 +100,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 				if !cleanup.Skip(p.config.SkipDelete, nil, nil) {
 					t.Cleanup(func() {
 						operation := newOperation(
+							OperationInfo{},
 							false,
 							timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
 							opdelete.New(cluster, object, nspacer, false),
@@ -119,7 +117,7 @@ func (p *testsProcessor) Run(ctx context.Context) {
 			}
 		}
 	}
-	for _, test := range p.tests {
+	for i, test := range p.tests {
 		name, err := names.Test(p.config, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -132,16 +130,25 @@ func (p *testsProcessor) Run(ctx context.Context) {
 					p.shouldFailFast.Store(true)
 				}
 			})
-			processor := p.CreateTestProcessor(test, bindings)
-			processor.Run(testing.IntoContext(ctx, t), nspacer)
+			processor := p.CreateTestProcessor(test)
+			processor.Run(
+				testing.IntoContext(ctx, t),
+				bindings.Register(
+					"$test",
+					binding.NewBinding(
+						TestInfo{Id: i + 1},
+					),
+				),
+				nspacer,
+			)
 		})
 	}
 }
 
-func (p *testsProcessor) CreateTestProcessor(test discovery.Test, bindings binding.Bindings) TestProcessor {
+func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor {
 	testReport := report.NewTest(test.Name)
 	if p.testsReport != nil {
 		p.testsReport.AddTest(testReport)
 	}
-	return NewTestProcessor(p.config, p.clusters, p.clock, p.summary, testReport, test, &p.shouldFailFast, bindings)
+	return NewTestProcessor(p.config, p.clusters, p.clock, p.summary, testReport, test, &p.shouldFailFast)
 }

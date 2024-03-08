@@ -39,7 +39,7 @@ import (
 // - create if not exists
 
 type StepProcessor interface {
-	Run(ctx context.Context)
+	Run(context.Context, binding.Bindings)
 }
 
 func NewStepProcessor(
@@ -51,11 +51,7 @@ func NewStepProcessor(
 	step v1alpha1.TestSpecStep,
 	stepReport *report.TestSpecStepReport,
 	cleaner *cleaner,
-	bindings binding.Bindings,
 ) StepProcessor {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
 	return &stepProcessor{
 		config:     config,
 		clusters:   clusters,
@@ -65,7 +61,6 @@ func NewStepProcessor(
 		step:       step,
 		stepReport: stepReport,
 		cleaner:    cleaner,
-		bindings:   bindings,
 		timeouts:   config.Timeouts.Combine(test.Spec.Timeouts).Combine(step.Timeouts),
 	}
 }
@@ -79,15 +74,17 @@ type stepProcessor struct {
 	step       v1alpha1.TestSpecStep
 	stepReport *report.TestSpecStepReport
 	cleaner    *cleaner
-	bindings   binding.Bindings
 	timeouts   v1alpha1.Timeouts
 }
 
-func (p *stepProcessor) Run(ctx context.Context) {
+func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	t := testing.FromContext(ctx)
 	logger := logging.FromContext(ctx)
 	config, cluster := p.clusters.client(p.step.Cluster, p.test.Spec.Cluster)
-	bindings, err := registerBindings(ctx, p.bindings, config, cluster, p.step.Bindings...)
+	bindings, err := registerBindings(ctx, bindings, config, cluster, p.step.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
@@ -148,7 +145,7 @@ func (p *stepProcessor) Run(ctx context.Context) {
 
 func (p *stepProcessor) tryOperations() ([]operation, error) {
 	var ops []operation
-	for _, handler := range p.step.Try {
+	for i, handler := range p.step.Try {
 		register := func(o ...operation) {
 			continueOnError := handler.ContinueOnError != nil && *handler.ContinueOnError
 			for _, o := range o {
@@ -157,46 +154,46 @@ func (p *stepProcessor) tryOperations() ([]operation, error) {
 			}
 		}
 		if handler.Apply != nil {
-			loaded, err := p.applyOperation(*handler.Apply)
+			loaded, err := p.applyOperation(i+1, *handler.Apply)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Assert != nil {
-			loaded, err := p.assertOperation(*handler.Assert)
+			loaded, err := p.assertOperation(i+1, *handler.Assert)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Command != nil {
-			register(p.commandOperation(*handler.Command))
+			register(p.commandOperation(i+1, *handler.Command))
 		} else if handler.Create != nil {
-			loaded, err := p.createOperation(*handler.Create)
+			loaded, err := p.createOperation(i+1, *handler.Create)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(*handler.Delete)
+			loaded := p.deleteOperation(i+1, *handler.Delete)
 			register(loaded)
 		} else if handler.Error != nil {
-			loaded, err := p.errorOperation(*handler.Error)
+			loaded, err := p.errorOperation(i+1, *handler.Error)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Patch != nil {
-			loaded, err := p.patchOperation(*handler.Patch)
+			loaded, err := p.patchOperation(i+1, *handler.Patch)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Script != nil {
-			register(p.scriptOperation(*handler.Script))
+			register(p.scriptOperation(i+1, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(*handler.Sleep))
+			register(p.sleepOperation(i+1, *handler.Sleep))
 		} else if handler.Wait != nil {
-			register(p.waitOperation(*handler.Wait))
+			register(p.waitOperation(i+1, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -216,9 +213,9 @@ func (p *stepProcessor) catchOperations() ([]operation, error) {
 	handlers = append(handlers, p.config.Catch...)
 	handlers = append(handlers, p.test.Spec.Catch...)
 	handlers = append(handlers, p.step.Catch...)
-	for _, handler := range handlers {
+	for i, handler := range handlers {
 		if handler.PodLogs != nil {
-			register(p.logsOperation(*handler.PodLogs))
+			register(p.logsOperation(i+1, *handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -227,22 +224,22 @@ func (p *stepProcessor) catchOperations() ([]operation, error) {
 				Format:               handler.Events.Format,
 				ResourceReference:    v1alpha1.ResourceReference{Resource: "events"},
 			}
-			register(p.getOperation(get))
+			register(p.getOperation(i+1, get))
 		} else if handler.Describe != nil {
-			register(p.describeOperation(*handler.Describe))
+			register(p.describeOperation(i+1, *handler.Describe))
 		} else if handler.Get != nil {
-			register(p.getOperation(*handler.Get))
+			register(p.getOperation(i+1, *handler.Get))
 		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(*handler.Delete)
+			loaded := p.deleteOperation(i+1, *handler.Delete)
 			register(loaded)
 		} else if handler.Command != nil {
-			register(p.commandOperation(*handler.Command))
+			register(p.commandOperation(i+1, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(*handler.Script))
+			register(p.scriptOperation(i+1, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(*handler.Sleep))
+			register(p.sleepOperation(i+1, *handler.Sleep))
 		} else if handler.Wait != nil {
-			register(p.waitOperation(*handler.Wait))
+			register(p.waitOperation(i+1, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -258,9 +255,9 @@ func (p *stepProcessor) finallyOperations() ([]operation, error) {
 			ops = append(ops, o)
 		}
 	}
-	for _, handler := range p.step.Finally {
+	for i, handler := range p.step.Finally {
 		if handler.PodLogs != nil {
-			register(p.logsOperation(*handler.PodLogs))
+			register(p.logsOperation(i+1, *handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -269,22 +266,22 @@ func (p *stepProcessor) finallyOperations() ([]operation, error) {
 				Format:               handler.Events.Format,
 				ResourceReference:    v1alpha1.ResourceReference{Resource: "events"},
 			}
-			register(p.getOperation(get))
+			register(p.getOperation(i+1, get))
 		} else if handler.Describe != nil {
-			register(p.describeOperation(*handler.Describe))
+			register(p.describeOperation(i+1, *handler.Describe))
 		} else if handler.Get != nil {
-			register(p.getOperation(*handler.Get))
+			register(p.getOperation(i+1, *handler.Get))
 		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(*handler.Delete)
+			loaded := p.deleteOperation(i+1, *handler.Delete)
 			register(loaded)
 		} else if handler.Command != nil {
-			register(p.commandOperation(*handler.Command))
+			register(p.commandOperation(i+1, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(*handler.Script))
+			register(p.scriptOperation(i+1, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(*handler.Sleep))
+			register(p.sleepOperation(i+1, *handler.Sleep))
 		} else if handler.Wait != nil {
-			register(p.waitOperation(*handler.Wait))
+			register(p.waitOperation(i+1, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -292,7 +289,7 @@ func (p *stepProcessor) finallyOperations() ([]operation, error) {
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -306,11 +303,15 @@ func (p *stepProcessor) applyOperation(op v1alpha1.Apply) ([]operation, error) {
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	config, cluster := p.getClient(op.Cluster, dryRun)
-	for _, resource := range resources {
+	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
 		ops = append(ops, newOperation(
+			OperationInfo{
+				Id:         id,
+				ResourceId: i + 1,
+			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
 			opapply.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs),
@@ -323,7 +324,7 @@ func (p *stepProcessor) applyOperation(op v1alpha1.Apply) ([]operation, error) {
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(op v1alpha1.Assert) ([]operation, error) {
+func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
 	if err != nil {
 		return nil, err
@@ -336,8 +337,12 @@ func (p *stepProcessor) assertOperation(op v1alpha1.Assert) ([]operation, error)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
-	for _, resource := range resources {
+	for i, resource := range resources {
 		ops = append(ops, newOperation(
+			OperationInfo{
+				Id:         id,
+				ResourceId: i + 1,
+			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
 			opassert.New(cluster, resource, p.namespacer, template),
@@ -350,7 +355,7 @@ func (p *stepProcessor) assertOperation(op v1alpha1.Assert) ([]operation, error)
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(op v1alpha1.Command) operation {
+func (p *stepProcessor) commandOperation(id int, op v1alpha1.Command) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
@@ -362,6 +367,9 @@ func (p *stepProcessor) commandOperation(op v1alpha1.Command) operation {
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	return newOperation(
+		OperationInfo{
+			Id: id,
+		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
 		opcommand.New(op, p.test.BasePath, ns, config),
@@ -372,7 +380,7 @@ func (p *stepProcessor) commandOperation(op v1alpha1.Command) operation {
 	)
 }
 
-func (p *stepProcessor) createOperation(op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(id int, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -386,11 +394,15 @@ func (p *stepProcessor) createOperation(op v1alpha1.Create) ([]operation, error)
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	config, cluster := p.getClient(op.Cluster, dryRun)
-	for _, resource := range resources {
+	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
 		ops = append(ops, newOperation(
+			OperationInfo{
+				Id:         id,
+				ResourceId: i + 1,
+			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
 			opcreate.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs),
@@ -403,7 +415,7 @@ func (p *stepProcessor) createOperation(op v1alpha1.Create) ([]operation, error)
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(op v1alpha1.Delete) operation {
+func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) operation {
 	var resource unstructured.Unstructured
 	resource.SetAPIVersion(op.APIVersion)
 	resource.SetKind(op.Kind)
@@ -418,6 +430,9 @@ func (p *stepProcessor) deleteOperation(op v1alpha1.Delete) operation {
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	return newOperation(
+		OperationInfo{
+			Id: id,
+		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
 		opdelete.New(cluster, resource, p.namespacer, template, op.Expect...),
@@ -428,7 +443,7 @@ func (p *stepProcessor) deleteOperation(op v1alpha1.Delete) operation {
 	)
 }
 
-func (p *stepProcessor) describeOperation(op v1alpha1.Describe) operation {
+func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Describe ", report.OperationTypeCommand)
@@ -440,6 +455,9 @@ func (p *stepProcessor) describeOperation(op v1alpha1.Describe) operation {
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	return newLazyOperation(
+		OperationInfo{
+			Id: id,
+		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
 		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
@@ -455,7 +473,7 @@ func (p *stepProcessor) describeOperation(op v1alpha1.Describe) operation {
 	)
 }
 
-func (p *stepProcessor) errorOperation(op v1alpha1.Error) ([]operation, error) {
+func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
 	if err != nil {
 		return nil, err
@@ -468,8 +486,12 @@ func (p *stepProcessor) errorOperation(op v1alpha1.Error) ([]operation, error) {
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
-	for _, resource := range resources {
+	for i, resource := range resources {
 		ops = append(ops, newOperation(
+			OperationInfo{
+				Id:         id,
+				ResourceId: i + 1,
+			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
 			operror.New(cluster, resource, p.namespacer, template),
@@ -482,7 +504,7 @@ func (p *stepProcessor) errorOperation(op v1alpha1.Error) ([]operation, error) {
 	return ops, nil
 }
 
-func (p *stepProcessor) getOperation(op v1alpha1.Get) operation {
+func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Get ", report.OperationTypeCommand)
@@ -494,6 +516,9 @@ func (p *stepProcessor) getOperation(op v1alpha1.Get) operation {
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	return newLazyOperation(
+		OperationInfo{
+			Id: id,
+		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
 		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
@@ -509,7 +534,7 @@ func (p *stepProcessor) getOperation(op v1alpha1.Get) operation {
 	)
 }
 
-func (p *stepProcessor) logsOperation(op v1alpha1.PodLogs) operation {
+func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Logs ", report.OperationTypeCommand)
@@ -521,6 +546,9 @@ func (p *stepProcessor) logsOperation(op v1alpha1.PodLogs) operation {
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	return newLazyOperation(
+		OperationInfo{
+			Id: id,
+		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
 		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
@@ -536,7 +564,7 @@ func (p *stepProcessor) logsOperation(op v1alpha1.PodLogs) operation {
 	)
 }
 
-func (p *stepProcessor) patchOperation(op v1alpha1.Patch) ([]operation, error) {
+func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -550,11 +578,15 @@ func (p *stepProcessor) patchOperation(op v1alpha1.Patch) ([]operation, error) {
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	config, cluster := p.getClient(op.Cluster, dryRun)
-	for _, resource := range resources {
+	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
 		ops = append(ops, newOperation(
+			OperationInfo{
+				Id:         id,
+				ResourceId: i + 1,
+			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
 			oppatch.New(cluster, resource, p.namespacer, template, op.Expect, op.Outputs),
@@ -567,7 +599,7 @@ func (p *stepProcessor) patchOperation(op v1alpha1.Patch) ([]operation, error) {
 	return ops, nil
 }
 
-func (p *stepProcessor) scriptOperation(op v1alpha1.Script) operation {
+func (p *stepProcessor) scriptOperation(id int, op v1alpha1.Script) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Script ", report.OperationTypeScript)
@@ -579,6 +611,9 @@ func (p *stepProcessor) scriptOperation(op v1alpha1.Script) operation {
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	return newOperation(
+		OperationInfo{
+			Id: id,
+		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
 		opscript.New(op, p.test.BasePath, ns, config),
@@ -589,13 +624,16 @@ func (p *stepProcessor) scriptOperation(op v1alpha1.Script) operation {
 	)
 }
 
-func (p *stepProcessor) sleepOperation(op v1alpha1.Sleep) operation {
+func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Sleep ", report.OperationTypeSleep)
 		p.stepReport.AddOperation(operationReport)
 	}
 	return newOperation(
+		OperationInfo{
+			Id: id,
+		},
 		false,
 		nil,
 		opsleep.New(op),
@@ -605,7 +643,7 @@ func (p *stepProcessor) sleepOperation(op v1alpha1.Sleep) operation {
 	)
 }
 
-func (p *stepProcessor) waitOperation(op v1alpha1.Wait) operation {
+func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
 	var operationReport *report.OperationReport
 	if p.stepReport != nil {
 		operationReport = report.NewOperation("Wait ", report.OperationTypeCommand)
@@ -617,6 +655,9 @@ func (p *stepProcessor) waitOperation(op v1alpha1.Wait) operation {
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
 	return newLazyOperation(
+		OperationInfo{
+			Id: id,
+		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
 		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {

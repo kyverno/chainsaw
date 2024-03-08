@@ -10,7 +10,7 @@ import (
 	"github.com/kyverno/kyverno-json/pkg/engine/template"
 )
 
-func convertString(in string, bindings binding.Bindings) (string, error) {
+func ConvertString(in string, bindings binding.Bindings) (string, error) {
 	if in == "" {
 		return "", nil
 	}

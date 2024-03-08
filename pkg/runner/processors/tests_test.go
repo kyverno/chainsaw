@@ -174,12 +174,11 @@ func TestTestsProcessor_Run(t *testing.T) {
 				tc.clock,
 				tc.summary,
 				tc.testsReport,
-				tc.bindings,
 				tc.tests...,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
-			processor.Run(ctx)
+			processor.Run(ctx, tc.bindings)
 			nt.Cleanup(func() {
 			})
 			if tc.expectedFail {
@@ -240,7 +239,7 @@ func TestCreateTestProcessor(t *testing.T) {
 			}
 			processor.shouldFailFast.Store(false)
 
-			result := processor.CreateTestProcessor(localTC.test[0], nil)
+			result := processor.CreateTestProcessor(localTC.test[0])
 
 			assert.NotNil(t, result, "TestProcessor should not be nil")
 			if localTC.testsReport != nil {

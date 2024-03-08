@@ -26,6 +26,7 @@ func newCleaner(namespacer namespacer.Namespacer, delay *metav1.Duration) *clean
 
 func (c *cleaner) register(obj unstructured.Unstructured, client client.Client, timeout *time.Duration) {
 	c.operations = append(c.operations, newOperation(
+		OperationInfo{},
 		true,
 		timeout,
 		opdelete.New(client, obj, c.namespacer, false),

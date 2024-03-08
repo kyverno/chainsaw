@@ -25,8 +25,8 @@ import (
 )
 
 type TestProcessor interface {
-	Run(context.Context, namespacer.Namespacer)
-	CreateStepProcessor(namespacer.Namespacer, binding.Bindings, *cleaner, v1alpha1.TestSpecStep) StepProcessor
+	Run(context.Context, binding.Bindings, namespacer.Namespacer)
+	CreateStepProcessor(namespacer.Namespacer, *cleaner, v1alpha1.TestSpecStep) StepProcessor
 }
 
 func NewTestProcessor(
@@ -37,11 +37,7 @@ func NewTestProcessor(
 	testReport *report.TestReport,
 	test discovery.Test,
 	shouldFailFast *atomic.Bool,
-	bindings binding.Bindings,
 ) TestProcessor {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
 	return &testProcessor{
 		config:         config,
 		clusters:       clusters,
@@ -50,7 +46,6 @@ func NewTestProcessor(
 		testReport:     testReport,
 		test:           test,
 		shouldFailFast: shouldFailFast,
-		bindings:       bindings,
 		timeouts:       config.Timeouts.Combine(test.Spec.Timeouts),
 	}
 }
@@ -63,11 +58,13 @@ type testProcessor struct {
 	testReport     *report.TestReport
 	test           discovery.Test
 	shouldFailFast *atomic.Bool
-	bindings       binding.Bindings
 	timeouts       v1alpha1.Timeouts
 }
 
-func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) {
+func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspacer namespacer.Namespacer) {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	t := testing.FromContext(ctx)
 	if p.testReport != nil {
 		t.Cleanup(func() {
@@ -112,7 +109,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		}
 	}
 	config, cluster := p.clusters.client(p.test.Spec.Cluster)
-	bindings, err := registerBindings(ctx, p.bindings, config, cluster, p.test.Spec.Bindings...)
+	bindings, err := registerBindings(ctx, bindings, config, cluster, p.test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
@@ -156,6 +153,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 				if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, nil) {
 					t.Cleanup(func() {
 						operation := newOperation(
+							OperationInfo{},
 							false,
 							timeout.Get(nil, p.timeouts.CleanupDuration()),
 							opdelete.New(cluster, object, nspacer, false),
@@ -181,20 +179,28 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer) 
 		cleaner.run(logging.IntoContext(ctx, cleanupLogger))
 	})
 	for i, step := range p.test.Spec.Steps {
-		processor := p.CreateStepProcessor(nspacer, bindings, cleaner, step)
+		processor := p.CreateStepProcessor(nspacer, cleaner, step)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		processor.Run(logging.IntoContext(ctx, logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, name))))
+		processor.Run(
+			logging.IntoContext(ctx, logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, name))),
+			bindings.Register(
+				"$step",
+				binding.NewBinding(
+					StepInfo{Id: i + 1},
+				),
+			),
+		)
 	}
 }
 
-func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, bindings binding.Bindings, cleaner *cleaner, step v1alpha1.TestSpecStep) StepProcessor {
+func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, cleaner *cleaner, step v1alpha1.TestSpecStep) StepProcessor {
 	var stepReport *report.TestSpecStepReport
 	if p.testReport != nil {
 		stepReport = report.NewTestSpecStep(step.Name)
 		p.testReport.AddTestStep(stepReport)
 	}
-	return NewStepProcessor(p.config, p.clusters, nspacer, p.clock, p.test, step, stepReport, cleaner, bindings)
+	return NewStepProcessor(p.config, p.clusters, nspacer, p.clock, p.test, step, stepReport, cleaner)
 }
