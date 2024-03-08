@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
+	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
@@ -109,7 +110,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		}
 	}
 	config, cluster := p.clusters.client(p.test.Spec.Cluster)
-	bindings, err := registerBindings(ctx, bindings, config, cluster, p.test.Spec.Bindings...)
+	bindings, err := apibindings.RegisterBindings(ctx, bindings, config, cluster, p.test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()

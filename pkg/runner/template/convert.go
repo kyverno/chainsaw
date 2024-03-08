@@ -1,4 +1,4 @@
-package kubectl
+package template
 
 import (
 	"context"

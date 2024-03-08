@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/resource"
+	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/kubectl"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -84,7 +85,7 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	t := testing.FromContext(ctx)
 	logger := logging.FromContext(ctx)
 	config, cluster := p.clusters.client(p.step.Cluster, p.test.Spec.Cluster)
-	bindings, err := registerBindings(ctx, bindings, config, cluster, p.step.Bindings...)
+	bindings, err := apibindings.RegisterBindings(ctx, bindings, config, cluster, p.step.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
