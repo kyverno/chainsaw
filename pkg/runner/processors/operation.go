@@ -96,10 +96,7 @@ func (o operation) execute(ctx context.Context, bindings binding.Bindings) opera
 	} else if bindings, err := apibindings.RegisterBindings(ctx, bindings, o.config, o.client, o.variables...); err != nil {
 		handleError(err)
 	} else {
-		outputs, err := operation.Exec(
-			ctx,
-			bindings.Register("$operation", binding.NewBinding(o.info)),
-		)
+		outputs, err := operation.Exec(ctx, apibindings.RegisterNamedBinding(ctx, bindings, "operation", o.info))
 		if o.operationReport != nil {
 			o.operationReport.MarkOperationEnd(err)
 		}

@@ -130,7 +130,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		}
 		if namespace != nil {
 			object := client.ToUnstructured(namespace)
-			bindings = bindings.Register("$namespace", binding.NewBinding(object.GetName()))
+			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			if p.test.Spec.NamespaceTemplate != nil && p.test.Spec.NamespaceTemplate.Value != nil {
 				template := v1alpha1.Any{
 					Value: p.test.Spec.NamespaceTemplate.Value,
@@ -140,7 +140,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 				} else {
 					object = merged
 				}
-				bindings = bindings.Register("$namespace", binding.NewBinding(object.GetName()))
+				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			}
 			nspacer = namespacer.New(cluster, object.GetName())
 			setupCtx := logging.IntoContext(ctx, setupLogger)
@@ -187,12 +187,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		}
 		processor.Run(
 			logging.IntoContext(ctx, logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, name))),
-			bindings.Register(
-				"$step",
-				binding.NewBinding(
-					StepInfo{Id: i + 1},
-				),
-			),
+			apibindings.RegisterNamedBinding(ctx, bindings, "step", StepInfo{Id: i + 1}),
 		)
 	}
 }

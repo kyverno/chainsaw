@@ -13,43 +13,47 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func RegisterBinding(
-	ctx context.Context,
-	bindings binding.Bindings,
-	variable v1alpha1.Binding,
-) (binding.Bindings, error) {
+func RegisterNamedBinding(ctx context.Context, bindings binding.Bindings, name string, value any) binding.Bindings {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
-	name, err := apitemplate.ConvertString(variable.Name, bindings)
-	if err != nil {
-		return bindings, err
-	}
-	if err := v1alpha1.CheckBindingName(name); err != nil {
-		return bindings, err
-	}
-	patched, err := mutation.Mutate(ctx, nil, mutation.Parse(ctx, variable.Value.Value), nil, bindings, template.WithFunctionCaller(functions.Caller))
-	if err != nil {
-		return bindings, err
-	}
-	bindings = bindings.Register("$"+variable.Name, binding.NewBinding(patched))
-	return bindings, nil
+	return bindings.Register("$"+name, binding.NewBinding(value))
 }
 
-func RegisterBindings(
-	ctx context.Context,
-	bindings binding.Bindings,
-	config *rest.Config,
-	client client.Client,
-	variables ...v1alpha1.Binding,
-) (binding.Bindings, error) {
+func ResolveBinding(ctx context.Context, bindings binding.Bindings, input any, variable v1alpha1.Binding) (string, any, error) {
+	name, err := apitemplate.ConvertString(variable.Name, bindings)
+	if err != nil {
+		return "", nil, err
+	}
+	if err := v1alpha1.CheckBindingName(name); err != nil {
+		return "", nil, err
+	}
+	value, err := mutation.Mutate(ctx, nil, mutation.Parse(ctx, variable.Value.Value), input, bindings, template.WithFunctionCaller(functions.Caller))
+	if err != nil {
+		return "", nil, err
+	}
+	return name, value, err
+}
+
+func RegisterBinding(ctx context.Context, bindings binding.Bindings, input any, variable v1alpha1.Binding) (binding.Bindings, error) {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
+	name, value, err := ResolveBinding(ctx, bindings, input, variable)
+	if err != nil {
+		return bindings, err
+	}
+	return RegisterNamedBinding(ctx, bindings, name, value), nil
+}
+
+func RegisterBindings(ctx context.Context, bindings binding.Bindings, config *rest.Config, client client.Client, variables ...v1alpha1.Binding) (binding.Bindings, error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
 	bindings = bindings.Register("$client", binding.NewBinding(client))
 	bindings = bindings.Register("$config", binding.NewBinding(config))
 	for _, variable := range variables {
-		next, err := RegisterBinding(ctx, bindings, variable)
+		next, err := RegisterBinding(ctx, bindings, nil, variable)
 		if err != nil {
 			return bindings, err
 		}

@@ -16,6 +16,7 @@ Release notes for `TODO`.
 
 ## 💫 New features 💫
 
+- Added templating support in bindings and outputs names
 - Added templating support in resource reference in all collectors
 - Added templating support for all string fields in all collectors
 - Relaxed `format` field in collectors to support templating
@@ -28,6 +29,7 @@ Release notes for `TODO`.
 - Added `config` in the list of forbidden binding names
 - Added missing operations to the `build docs` command template
 - Added test-level catch statements to the `build docs` command template
+- Added binding name validation markers
 
 ## ⭐ Examples ⭐
 

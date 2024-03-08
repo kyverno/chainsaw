@@ -17,6 +17,7 @@ var (
 // Binding represents a key/value set as a binding in an executing test.
 type Binding struct {
 	// Name the name of the binding.
+	// +kubebuilder:validation:Pattern=`^\w+|\(.+\)$`
 	Name string `json:"name"`
 
 	// Value value of the binding.

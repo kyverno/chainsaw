@@ -139,7 +139,7 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	}()
 	for _, operation := range try {
 		for k, v := range operation.execute(ctx, bindings) {
-			bindings = bindings.Register("$"+k, v)
+			bindings = apibindings.RegisterNamedBinding(ctx, bindings, k, v)
 		}
 	}
 }

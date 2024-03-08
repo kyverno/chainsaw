@@ -79,7 +79,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
 			object := client.ToUnstructured(&namespace)
-			bindings = bindings.Register("$namespace", binding.NewBinding(object.GetName()))
+			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			if p.config.NamespaceTemplate != nil && p.config.NamespaceTemplate.Value != nil {
 				template := v1alpha1.Any{
 					Value: p.config.NamespaceTemplate.Value,
@@ -89,7 +89,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				} else {
 					object = merged
 				}
-				bindings = bindings.Register("$namespace", binding.NewBinding(object.GetName()))
+				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			}
 			nspacer = namespacer.New(cluster, object.GetName())
 			if err := cluster.Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
@@ -134,12 +134,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 			processor := p.CreateTestProcessor(test)
 			processor.Run(
 				testing.IntoContext(ctx, t),
-				bindings.Register(
-					"$test",
-					binding.NewBinding(
-						TestInfo{Id: i + 1},
-					),
-				),
+				apibindings.RegisterNamedBinding(ctx, bindings, "test", TestInfo{Id: i + 1}),
 				nspacer,
 			)
 		})
