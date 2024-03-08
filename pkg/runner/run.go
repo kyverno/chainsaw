@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
+	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
@@ -53,7 +54,7 @@ func run(
 		return nil, err
 	}
 	bindings := binding.NewBindings()
-	bindings = bindings.Register("$values", binding.NewBinding(values))
+	bindings = apibindings.RegisterNamedBinding(context.TODO(), bindings, "values", values)
 	clusters := processors.NewClusters()
 	if cfg != nil {
 		err := clusters.Register(processors.DefaultClient, cfg)

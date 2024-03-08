@@ -6,29 +6,30 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	apitemplate "github.com/kyverno/chainsaw/pkg/runner/template"
 )
 
 func Get(client client.Client, bindings binding.Bindings, collector *v1alpha1.Get) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
-	name, err := ConvertString(collector.Name, bindings)
+	name, err := apitemplate.ConvertString(collector.Name, bindings)
 	if err != nil {
 		return nil, err
 	}
-	namespace, err := ConvertString(collector.Namespace, bindings)
+	namespace, err := apitemplate.ConvertString(collector.Namespace, bindings)
 	if err != nil {
 		return nil, err
 	}
-	selector, err := ConvertString(collector.Selector, bindings)
+	selector, err := apitemplate.ConvertString(collector.Selector, bindings)
 	if err != nil {
 		return nil, err
 	}
-	format, err := ConvertString(string(collector.Format), bindings)
+	format, err := apitemplate.ConvertString(string(collector.Format), bindings)
 	if err != nil {
 		return nil, err
 	}
-	cluster, err := ConvertString(collector.Cluster, bindings)
+	cluster, err := apitemplate.ConvertString(collector.Cluster, bindings)
 	if err != nil {
 		return nil, err
 	}

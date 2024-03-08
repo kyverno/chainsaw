@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
+	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
@@ -69,7 +70,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	})
 	var nspacer namespacer.Namespacer
 	config, cluster := p.clusters.client()
-	bindings, err := registerBindings(ctx, bindings, config, cluster)
+	bindings, err := apibindings.RegisterBindings(ctx, bindings, config, cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
@@ -78,7 +79,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
 			object := client.ToUnstructured(&namespace)
-			bindings = bindings.Register("$namespace", binding.NewBinding(object.GetName()))
+			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			if p.config.NamespaceTemplate != nil && p.config.NamespaceTemplate.Value != nil {
 				template := v1alpha1.Any{
 					Value: p.config.NamespaceTemplate.Value,
@@ -88,7 +89,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				} else {
 					object = merged
 				}
-				bindings = bindings.Register("$namespace", binding.NewBinding(object.GetName()))
+				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			}
 			nspacer = namespacer.New(cluster, object.GetName())
 			if err := cluster.Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
@@ -133,12 +134,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 			processor := p.CreateTestProcessor(test)
 			processor.Run(
 				testing.IntoContext(ctx, t),
-				bindings.Register(
-					"$test",
-					binding.NewBinding(
-						TestInfo{Id: i + 1},
-					),
-				),
+				apibindings.RegisterNamedBinding(ctx, bindings, "test", TestInfo{Id: i + 1}),
 				nspacer,
 			)
 		})

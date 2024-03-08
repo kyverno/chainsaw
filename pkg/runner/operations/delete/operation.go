@@ -6,6 +6,7 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
@@ -137,9 +138,9 @@ func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.U
 
 func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, resource unstructured.Unstructured, err error) error {
 	if err == nil {
-		bindings = bindings.Register("$error", binding.NewBinding(nil))
+		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", nil)
 	} else {
-		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
+		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
 	}
 	if matched, err := check.Expectations(ctx, resource, bindings, o.expect...); matched {
 		return err

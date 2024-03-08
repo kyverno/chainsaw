@@ -7,16 +7,14 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	mutation "github.com/kyverno/chainsaw/pkg/mutate"
+	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
-	"github.com/kyverno/chainsaw/pkg/runner/functions"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -122,10 +120,6 @@ func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, 
 		var outputs operations.Outputs
 		if _err == nil {
 			for _, output := range o.outputs {
-				if err := output.CheckName(); err != nil {
-					_err = err
-					return
-				}
 				if output.Match != nil && output.Match.Value != nil {
 					if errs, err := check.Check(ctx, obj.UnstructuredContent(), nil, output.Match); err != nil {
 						_err = err
@@ -134,24 +128,24 @@ func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, 
 						continue
 					}
 				}
-				patched, err := mutation.Mutate(ctx, nil, mutation.Parse(ctx, output.Value.Value), obj.UnstructuredContent(), bindings, template.WithFunctionCaller(functions.Caller))
+				name, value, err := apibindings.ResolveBinding(ctx, bindings, obj.UnstructuredContent(), output.Binding)
 				if err != nil {
 					_err = err
 					return
 				}
+				bindings = apibindings.RegisterNamedBinding(ctx, bindings, name, value)
 				if outputs == nil {
 					outputs = operations.Outputs{}
 				}
-				outputs[output.Name] = binding.NewBinding(patched)
-				bindings = bindings.Register("$"+output.Name, outputs[output.Name])
+				outputs[name] = value
 			}
 			_outputs = outputs
 		}
 	}()
 	if err == nil {
-		bindings = bindings.Register("$error", binding.NewBinding(nil))
+		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", nil)
 	} else {
-		bindings = bindings.Register("$error", binding.NewBinding(err.Error()))
+		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
 	}
 	if matched, err := check.Expectations(ctx, obj, bindings, o.expect...); matched {
 		return nil, err
