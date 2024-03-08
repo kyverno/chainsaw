@@ -331,7 +331,8 @@
                       "properties": {
                         "name": {
                           "description": "Name the name of the binding.",
-                          "type": "string"
+                          "type": "string",
+                          "pattern": "^\\w+|\\(.+\\)$"
                         },
                         "value": {
                           "description": "Value value of the binding.",
@@ -374,7 +375,8 @@
                       "properties": {
                         "name": {
                           "description": "Name the name of the binding.",
-                          "type": "string"
+                          "type": "string",
+                          "pattern": "^\\w+|\\(.+\\)$"
                         },
                         "value": {
                           "description": "Value value of the binding.",
@@ -402,7 +404,8 @@
                       "properties": {
                         "name": {
                           "description": "Name the name of the binding.",
-                          "type": "string"
+                          "type": "string",
+                          "pattern": "^\\w+|\\(.+\\)$"
                         },
                         "value": {
                           "description": "Value value of the binding.",
@@ -456,7 +459,8 @@
                       "properties": {
                         "name": {
                           "description": "Name the name of the binding.",
-                          "type": "string"
+                          "type": "string",
+                          "pattern": "^\\w+|\\(.+\\)$"
                         },
                         "value": {
                           "description": "Value value of the binding.",
@@ -848,7 +852,8 @@
                       "properties": {
                         "name": {
                           "description": "Name the name of the binding.",
-                          "type": "string"
+                          "type": "string",
+                          "pattern": "^\\w+|\\(.+\\)$"
                         },
                         "value": {
                           "description": "Value value of the binding.",
@@ -894,7 +899,8 @@
                       "properties": {
                         "name": {
                           "description": "Name the name of the binding.",
-                          "type": "string"
+                          "type": "string",
+                          "pattern": "^\\w+|\\(.+\\)$"
                         },
                         "value": {
                           "description": "Value value of the binding.",
@@ -922,7 +928,8 @@
                       "properties": {
                         "name": {
                           "description": "Name the name of the binding.",
-                          "type": "string"
+                          "type": "string",
+                          "pattern": "^\\w+|\\(.+\\)$"
                         },
                         "value": {
                           "description": "Value value of the binding.",

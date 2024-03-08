@@ -42,6 +42,7 @@ spec:
                   properties:
                     name:
                       description: Name the name of the binding.
+                      pattern: ^\w+|\(.+\)$
                       type: string
                     value:
                       description: Value value of the binding.
@@ -74,6 +75,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
+                                pattern: ^\w+|\(.+\)$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -103,6 +105,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
+                                pattern: ^\w+|\(.+\)$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -120,6 +123,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
+                                pattern: ^\w+|\(.+\)$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -151,6 +155,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
+                                pattern: ^\w+|\(.+\)$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -361,6 +366,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
+                                pattern: ^\w+|\(.+\)$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -391,6 +397,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
+                                pattern: ^\w+|\(.+\)$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -408,6 +415,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
+                                pattern: ^\w+|\(.+\)$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -548,6 +556,7 @@ spec:
                         properties:
                           name:
                             description: Name the name of the binding.
+                            pattern: ^\w+|\(.+\)$
                             type: string
                           value:
                             description: Value value of the binding.
@@ -579,6 +588,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -609,6 +619,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -626,6 +637,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -658,6 +670,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -883,6 +896,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -913,6 +927,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -930,6 +945,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1055,6 +1071,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1085,6 +1102,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1102,6 +1120,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1134,6 +1153,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1359,6 +1379,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1389,6 +1410,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1406,6 +1428,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1556,6 +1579,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1614,6 +1638,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1650,6 +1675,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1698,6 +1724,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1728,6 +1755,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1745,6 +1773,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1783,6 +1812,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1841,6 +1871,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1875,6 +1906,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1968,6 +2000,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2011,6 +2044,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2069,6 +2103,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2103,6 +2138,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2133,6 +2169,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2150,6 +2187,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
+                                      pattern: ^\w+|\(.+\)$
                                       type: string
                                     value:
                                       description: Value value of the binding.
