@@ -28,6 +28,7 @@ Release notes for `TODO`.
 - Added `config` in the list of forbidden binding names
 - Added missing operations to the `build docs` command template
 - Added test-level catch statements to the `build docs` command template
+- Added binding name validation markers
 
 ## ⭐ Examples ⭐
 
