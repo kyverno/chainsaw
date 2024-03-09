@@ -2256,6 +2256,100 @@ spec:
                             required:
                             - duration
                             type: object
+                          update:
+                            description: Update represents an update operation.
+                            properties:
+                              bindings:
+                                description: Bindings defines additional binding key/values.
+                                items:
+                                  description: Binding represents a key/value set
+                                    as a binding in an executing test.
+                                  properties:
+                                    name:
+                                      description: Name the name of the binding.
+                                      pattern: ^(?:\w+|\(.+\))$
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
+                              dryRun:
+                                description: DryRun determines whether the file should
+                                  be applied in dry run mode.
+                                type: boolean
+                              expect:
+                                description: Expect defines a list of matched checks
+                                  to validate the operation outcome.
+                                items:
+                                  description: Expectation represents a check to be
+                                    applied on the result of an operation with a match
+                                    filter to determine if the verification should
+                                    be considered.
+                                  properties:
+                                    check:
+                                      description: Check defines the verification
+                                        statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    match:
+                                      description: Match defines the matching statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - check
+                                  type: object
+                                type: array
+                              file:
+                                description: File is the path to the referenced file.
+                                  This can be a direct path to a file or an expression
+                                  that matches multiple files, such as "manifest/*.yaml"
+                                  for all YAML files within the "manifest" directory.
+                                type: string
+                              outputs:
+                                description: Outputs defines output bindings.
+                                items:
+                                  description: Output represents an output binding
+                                    with a match to determine if the binding must
+                                    be considered or not.
+                                  properties:
+                                    match:
+                                      description: Match defines the matching statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    name:
+                                      description: Name the name of the binding.
+                                      pattern: ^(?:\w+|\(.+\))$
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
+                              resource:
+                                description: Resource provides a resource to be applied.
+                                type: object
+                                x-kubernetes-embedded-resource: true
+                                x-kubernetes-preserve-unknown-fields: true
+                              template:
+                                description: Template determines whether resources
+                                  should be considered for templating.
+                                type: boolean
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            type: object
                           wait:
                             description: Wait determines the resource wait collector
                               to execute.
