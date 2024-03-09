@@ -17,6 +17,8 @@ patch
 script
 {{- else if .Sleep -}}
 sleep
+{{- else if .Update -}}
+update
 {{- else if .Wait -}}
 wait
 {{- else -}}

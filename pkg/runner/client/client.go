@@ -39,6 +39,19 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 	return nil
 }
 
+func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) (_err error) {
+	gvk := obj.GetObjectKind().GroupVersionKind()
+	defer func() {
+		obj.GetObjectKind().SetGroupVersionKind(gvk)
+		if _err == nil {
+			c.ok(ctx, logging.Patch, obj)
+		} else {
+			c.error(ctx, logging.Update, obj, _err)
+		}
+	}()
+	return c.inner.Update(ctx, obj, opts...)
+}
+
 func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) (_err error) {
 	gvk := obj.GetObjectKind().GroupVersionKind()
 	defer func() {

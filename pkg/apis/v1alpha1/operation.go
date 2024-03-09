@@ -49,6 +49,10 @@ type Operation struct {
 	// +optional
 	Sleep *Sleep `json:"sleep,omitempty"`
 
+	// Update represents an update operation.
+	// +optional
+	Update *Update `json:"update,omitempty"`
+
 	// Wait determines the resource wait collector to execute.
 	// +optional
 	Wait *Wait `json:"wait,omitempty"`

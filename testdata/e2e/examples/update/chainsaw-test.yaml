@@ -1,0 +1,40 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: update
+spec:
+  steps:
+  - try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            foo: bar
+    - update:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            lorem: ipsum
+    - assert:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            lorem: ipsum
+    - error:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            foo: bar

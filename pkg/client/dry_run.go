@@ -17,6 +17,10 @@ func (c *dryRunClient) Create(ctx context.Context, obj client.Object, opts ...cl
 	return c.inner.Create(ctx, obj, append(opts, client.DryRunAll)...)
 }
 
+func (c *dryRunClient) Update(ctx context.Context, obj client.Object, opts ...client.UpdateOption) error {
+	return c.inner.Update(ctx, obj, append(opts, client.DryRunAll)...)
+}
+
 func (c *dryRunClient) Delete(ctx context.Context, obj client.Object, opts ...client.DeleteOption) error {
 	return c.inner.Delete(ctx, obj, append(opts, client.DryRunAll)...)
 }

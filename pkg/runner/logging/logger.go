@@ -27,6 +27,7 @@ const (
 	Stderr   Operation = "STDERR"
 	Stdout   Operation = "STDOUT"
 	Try      Operation = "TRY"
+	Update   Operation = "UPDATE"
 )
 
 const (
