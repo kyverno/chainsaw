@@ -37,6 +37,11 @@ metadata:
   name: apply-outputs
 spec:
   template: true
+  bindings:
+  - name: prefix
+    value: ('prefix')
+  - name: ($prefix)
+    value: foo
   steps:
   - bindings:
     - name: foos
@@ -45,27 +50,27 @@ spec:
     - apply:
         file: resources.yaml
         outputs:
-        - name: (join('', ['foo', to_string($operation.resourceId)]))
+        - name: (join('', [$prefix, to_string($operation.resourceId)]))
           value: (@)
         - name: foos
           value: ([$foos, @][])
     - script:
         env:
-        - name: FOO
+        - name: (to_upper($prefix))
           value: (to_string($foo1))
         content: |
           set -e
           echo $FOO
     - script:
         env:
-        - name: FOO
+        - name: (to_upper($prefix))
           value: (to_string($foo2))
         content: |
           set -e
           echo $FOO
     - script:
         env:
-        - name: FOO
+        - name: (to_upper($prefix))
           value: (to_string($foos))
         content: |
           set -e
