@@ -2,33 +2,33 @@
 
 *No description*
 
-### Steps
+## Steps
 
-| # | Name | Try | Catch | Finally |
-|:-:|---|:-:|:-:|:-:|
-| 1 | [step-1](#step-step-1) | 1 | 1 | 1 |
+| # | Name | Bindings | Try | Catch | Finally |
+|:-:|---|:-:|:-:|:-:|:-:|
+| 1 | [step-1](#step-step-1) | 0 | 1 | 1 | 1 |
 
-## Step: `step-1`
+### Step: `step-1`
 
 *No description*
 
-### Try
+#### Try
 
-| # | Operation | Description |
-|:-:|---|---|
-| 1 | `sleep` | *No description* |
+| # | Operation | Bindings | Outputs | Description |
+|:-:|---|:-:|:-:|---|
+| 1 | `sleep` | 0 | 0 | *No description* |
 
-### Catch
+#### Catch
 
-| # | Operation | Description |
-|:-:|---|---|
-| 1 | `sleep` | *No description* |
+| # | Operation | Bindings | Outputs | Description |
+|:-:|---|:-:|:-:|---|
+| 1 | `sleep` | 0 | 0 | *No description* |
 
-### Finally
+#### Finally
 
-| # | Operation | Description |
-|:-:|---|---|
-| 1 | `sleep` | *No description* |
+| # | Operation | Bindings | Outputs | Description |
+|:-:|---|:-:|:-:|---|
+| 1 | `sleep` | 0 | 0 | *No description* |
 
 ---
 

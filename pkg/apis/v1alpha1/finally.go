@@ -42,3 +42,51 @@ type Finally struct {
 	// +optional
 	Sleep *Sleep `json:"sleep,omitempty"`
 }
+
+func (f *Finally) Bindings() []Binding {
+	switch {
+	case f.Command != nil:
+		return f.Command.Bindings
+	case f.Delete != nil:
+		return f.Delete.Bindings
+	case f.Describe != nil:
+		return nil
+	case f.Events != nil:
+		return nil
+	case f.Get != nil:
+		return nil
+	case f.PodLogs != nil:
+		return nil
+	case f.Script != nil:
+		return f.Script.Bindings
+	case f.Sleep != nil:
+		return nil
+	case f.Wait != nil:
+		return nil
+	}
+	panic("missing binding operation type handler")
+}
+
+func (f *Finally) Outputs() []Output {
+	switch {
+	case f.Command != nil:
+		return f.Command.Outputs
+	case f.Delete != nil:
+		return nil
+	case f.Describe != nil:
+		return nil
+	case f.Events != nil:
+		return nil
+	case f.Get != nil:
+		return nil
+	case f.PodLogs != nil:
+		return nil
+	case f.Script != nil:
+		return f.Script.Outputs
+	case f.Sleep != nil:
+		return nil
+	case f.Wait != nil:
+		return nil
+	}
+	panic("missing output operation type handler")
+}

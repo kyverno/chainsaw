@@ -42,3 +42,51 @@ type Catch struct {
 	// +optional
 	Sleep *Sleep `json:"sleep,omitempty"`
 }
+
+func (c *Catch) Bindings() []Binding {
+	switch {
+	case c.Command != nil:
+		return c.Command.Bindings
+	case c.Delete != nil:
+		return c.Delete.Bindings
+	case c.Describe != nil:
+		return nil
+	case c.Events != nil:
+		return nil
+	case c.Get != nil:
+		return nil
+	case c.PodLogs != nil:
+		return nil
+	case c.Script != nil:
+		return c.Script.Bindings
+	case c.Sleep != nil:
+		return nil
+	case c.Wait != nil:
+		return nil
+	}
+	panic("missing binding operation type handler")
+}
+
+func (c *Catch) Outputs() []Output {
+	switch {
+	case c.Command != nil:
+		return c.Command.Outputs
+	case c.Delete != nil:
+		return nil
+	case c.Describe != nil:
+		return nil
+	case c.Events != nil:
+		return nil
+	case c.Get != nil:
+		return nil
+	case c.PodLogs != nil:
+		return nil
+	case c.Script != nil:
+		return c.Script.Outputs
+	case c.Sleep != nil:
+		return nil
+	case c.Wait != nil:
+		return nil
+	}
+	panic("missing output operation type handler")
+}

@@ -2,21 +2,21 @@
 
 *No description*
 
-### Steps
+## Steps
 
-| # | Name | Try | Catch | Finally |
-|:-:|---|:-:|:-:|:-:|
-| 1 | [Check bad kubectl command](#step-Check bad kubectl command) | 1 | 0 | 0 |
+| # | Name | Bindings | Try | Catch | Finally |
+|:-:|---|:-:|:-:|:-:|:-:|
+| 1 | [Check bad kubectl command](#step-Check bad kubectl command) | 0 | 1 | 0 | 0 |
 
-## Step: `Check bad kubectl command`
+### Step: `Check bad kubectl command`
 
 *No description*
 
-### Try
+#### Try
 
-| # | Operation | Description |
-|:-:|---|---|
-| 1 | `script` | *No description* |
+| # | Operation | Bindings | Outputs | Description |
+|:-:|---|:-:|:-:|---|
+| 1 | `script` | 0 | 0 | *No description* |
 
 ---
 

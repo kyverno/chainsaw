@@ -2,21 +2,27 @@
 
 *No description*
 
-### Steps
+## Bindings
 
-| # | Name | Try | Catch | Finally |
-|:-:|---|:-:|:-:|:-:|
-| 1 | [step-1](#step-step-1) | 1 | 0 | 0 |
+| # | Name | Value |
+|:-:|---|---|
+| 1 | `version` | "(x_k8s_server_version($config))" |
 
-## Step: `step-1`
+## Steps
+
+| # | Name | Bindings | Try | Catch | Finally |
+|:-:|---|:-:|:-:|:-:|:-:|
+| 1 | [step-1](#step-step-1) | 0 | 1 | 0 | 0 |
+
+### Step: `step-1`
 
 *No description*
 
-### Try
+#### Try
 
-| # | Operation | Description |
-|:-:|---|---|
-| 1 | `script` | *No description* |
+| # | Operation | Bindings | Outputs | Description |
+|:-:|---|:-:|:-:|---|
+| 1 | `script` | 0 | 0 | *No description* |
 
 ---
 

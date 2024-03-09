@@ -57,3 +57,59 @@ type Operation struct {
 	// +optional
 	Wait *Wait `json:"wait,omitempty"`
 }
+
+func (o *Operation) Bindings() []Binding {
+	switch {
+	case o.Apply != nil:
+		return o.Apply.Bindings
+	case o.Assert != nil:
+		return o.Assert.Bindings
+	case o.Command != nil:
+		return o.Command.Bindings
+	case o.Create != nil:
+		return o.Create.Bindings
+	case o.Delete != nil:
+		return o.Delete.Bindings
+	case o.Error != nil:
+		return o.Error.Bindings
+	case o.Patch != nil:
+		return o.Patch.Bindings
+	case o.Script != nil:
+		return o.Script.Bindings
+	case o.Sleep != nil:
+		return nil
+	case o.Update != nil:
+		return o.Update.Bindings
+	case o.Wait != nil:
+		return nil
+	}
+	panic("missing binding operation type handler")
+}
+
+func (o *Operation) Outputs() []Output {
+	switch {
+	case o.Apply != nil:
+		return o.Apply.Outputs
+	case o.Assert != nil:
+		return nil
+	case o.Command != nil:
+		return o.Command.Outputs
+	case o.Create != nil:
+		return o.Create.Outputs
+	case o.Delete != nil:
+		return nil
+	case o.Error != nil:
+		return nil
+	case o.Patch != nil:
+		return o.Patch.Outputs
+	case o.Script != nil:
+		return o.Script.Outputs
+	case o.Sleep != nil:
+		return nil
+	case o.Update != nil:
+		return o.Update.Outputs
+	case o.Wait != nil:
+		return nil
+	}
+	panic("missing output operation type handler")
+}
