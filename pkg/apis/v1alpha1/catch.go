@@ -6,33 +6,33 @@ type Catch struct {
 	// +optional
 	Description string `json:"description,omitempty"`
 
-	// PodLogs determines the pod logs collector to execute.
+	// Command defines a command to run.
 	// +optional
-	PodLogs *PodLogs `json:"podLogs,omitempty"`
-
-	// Events determines the events collector to execute.
-	// +optional
-	Events *Events `json:"events,omitempty"`
-
-	// Describe determines the resource describe collector to execute.
-	// +optional
-	Describe *Describe `json:"describe,omitempty"`
-
-	// Wait determines the resource wait collector to execute.
-	// +optional
-	Wait *Wait `json:"wait,omitempty"`
-
-	// Get determines the resource get collector to execute.
-	// +optional
-	Get *Get `json:"get,omitempty"`
+	Command *Command `json:"command,omitempty"`
 
 	// Delete represents a deletion operation.
 	// +optional
 	Delete *Delete `json:"delete,omitempty"`
 
-	// Command defines a command to run.
+	// Describe determines the resource describe collector to execute.
 	// +optional
-	Command *Command `json:"command,omitempty"`
+	Describe *Describe `json:"describe,omitempty"`
+
+	// Events determines the events collector to execute.
+	// +optional
+	Events *Events `json:"events,omitempty"`
+
+	// Get determines the resource get collector to execute.
+	// +optional
+	Get *Get `json:"get,omitempty"`
+
+	// Lookup determines the resource lookup to execute.
+	// +optional
+	Lookup *Lookup `json:"lookup,omitempty"`
+
+	// PodLogs determines the pod logs collector to execute.
+	// +optional
+	PodLogs *PodLogs `json:"podLogs,omitempty"`
 
 	// Script defines a script to run.
 	// +optional
@@ -41,4 +41,8 @@ type Catch struct {
 	// Sleep defines zzzz.
 	// +optional
 	Sleep *Sleep `json:"sleep,omitempty"`
+
+	// Wait determines the resource wait collector to execute.
+	// +optional
+	Wait *Wait `json:"wait,omitempty"`
 }

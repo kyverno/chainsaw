@@ -37,6 +37,10 @@ type Operation struct {
 	// +optional
 	Error *Error `json:"error,omitempty"`
 
+	// Lookup determines the resource lookup to execute.
+	// +optional
+	Lookup *Lookup `json:"lookup,omitempty"`
+
 	// Patch represents a patch operation.
 	// +optional
 	Patch *Patch `json:"patch,omitempty"`

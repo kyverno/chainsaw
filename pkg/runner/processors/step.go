@@ -184,6 +184,13 @@ func (p *stepProcessor) tryOperations() ([]operation, error) {
 				return nil, err
 			}
 			register(loaded...)
+		} else if handler.Lookup != nil {
+			// TODO
+			// loaded, err := p.errorOperation(i+1, *handler.Error)
+			// if err != nil {
+			// 	return nil, err
+			// }
+			// register(loaded...)
 		} else if handler.Patch != nil {
 			loaded, err := p.patchOperation(i+1, *handler.Patch)
 			if err != nil {
@@ -222,8 +229,12 @@ func (p *stepProcessor) catchOperations() ([]operation, error) {
 	handlers = append(handlers, p.test.Spec.Catch...)
 	handlers = append(handlers, p.step.Catch...)
 	for i, handler := range handlers {
-		if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, *handler.PodLogs))
+		if handler.Command != nil {
+			register(p.commandOperation(i+1, *handler.Command))
+		} else if handler.Delete != nil {
+			register(p.deleteOperation(i+1, *handler.Delete))
+		} else if handler.Describe != nil {
+			register(p.describeOperation(i+1, *handler.Describe))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -233,15 +244,17 @@ func (p *stepProcessor) catchOperations() ([]operation, error) {
 				ResourceReference:    v1alpha1.ResourceReference{Resource: "events"},
 			}
 			register(p.getOperation(i+1, get))
-		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, *handler.Describe))
 		} else if handler.Get != nil {
 			register(p.getOperation(i+1, *handler.Get))
-		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(i+1, *handler.Delete)
-			register(loaded)
-		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, *handler.Command))
+		} else if handler.Lookup != nil {
+			// TODO
+			// loaded, err := p.errorOperation(i+1, *handler.Error)
+			// if err != nil {
+			// 	return nil, err
+			// }
+			// register(loaded...)
+		} else if handler.PodLogs != nil {
+			register(p.logsOperation(i+1, *handler.PodLogs))
 		} else if handler.Script != nil {
 			register(p.scriptOperation(i+1, *handler.Script))
 		} else if handler.Sleep != nil {
@@ -264,8 +277,12 @@ func (p *stepProcessor) finallyOperations() ([]operation, error) {
 		}
 	}
 	for i, handler := range p.step.Finally {
-		if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, *handler.PodLogs))
+		if handler.Command != nil {
+			register(p.commandOperation(i+1, *handler.Command))
+		} else if handler.Delete != nil {
+			register(p.deleteOperation(i+1, *handler.Delete))
+		} else if handler.Describe != nil {
+			register(p.describeOperation(i+1, *handler.Describe))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				Cluster:              handler.Events.Cluster,
@@ -275,15 +292,17 @@ func (p *stepProcessor) finallyOperations() ([]operation, error) {
 				ResourceReference:    v1alpha1.ResourceReference{Resource: "events"},
 			}
 			register(p.getOperation(i+1, get))
-		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, *handler.Describe))
 		} else if handler.Get != nil {
 			register(p.getOperation(i+1, *handler.Get))
-		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(i+1, *handler.Delete)
-			register(loaded)
-		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, *handler.Command))
+		} else if handler.Lookup != nil {
+			// TODO
+			// loaded, err := p.errorOperation(i+1, *handler.Error)
+			// if err != nil {
+			// 	return nil, err
+			// }
+			// register(loaded...)
+		} else if handler.PodLogs != nil {
+			register(p.logsOperation(i+1, *handler.PodLogs))
 		} else if handler.Script != nil {
 			register(p.scriptOperation(i+1, *handler.Script))
 		} else if handler.Sleep != nil {

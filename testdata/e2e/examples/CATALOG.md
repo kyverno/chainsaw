@@ -14,6 +14,7 @@
 - [inline](inline/README.md)
 - [k8s-server-version](k8s-server-version/README.md)
 - [list](list/README.md)
+- [lookup](lookup/README.md)
 - [namespace-template](namespace-template/README.md)
 - [non-resource-assertion](non-resource-assertion/README.md)
 - [outputs](outputs/README.md)
