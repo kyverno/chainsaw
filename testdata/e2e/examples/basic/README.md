@@ -19,3 +19,6 @@ This steps applies the configmap in the cluster and checks the configmap content
 | 1 | `apply` | Create the configmap. |
 | 2 | `assert` | Check the configmap content. |
 | 3 | `script` | *No description* |
+
+---
+

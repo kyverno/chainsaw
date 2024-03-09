@@ -44,8 +44,12 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			testsSet := map[string][]discovery.Test{}
+			for _, test := range tests {
+				testsSet[test.BasePath] = append(testsSet[test.BasePath], test)
+			}
 			out := cmd.OutOrStdout()
-			if err := generateDocs(out, options.readmeFile, tests...); err != nil {
+			if err := generateDocs(out, options.readmeFile, testsSet); err != nil {
 				return err
 			}
 			if options.catalog != "" {
@@ -63,20 +67,30 @@ func Command() *cobra.Command {
 	return cmd
 }
 
-func generateDocs(out io.Writer, fileName string, tests ...discovery.Test) error {
-	for _, test := range tests {
-		if test.Err == nil {
-			file, err := os.Create(filepath.Join(test.BasePath, fileName))
+func generateDocs(out io.Writer, fileName string, tests map[string][]discovery.Test) error {
+	for path, tests := range tests {
+		err := func() error {
+			var validTests []discovery.Test
+			for _, test := range tests {
+				if test.Err != nil {
+					fmt.Fprintf(out, "ERROR: failed to load test %s (%s)", test.BasePath, test.Err)
+				} else {
+					validTests = append(validTests, test)
+				}
+			}
+			file, err := os.Create(filepath.Join(path, fileName))
 			if err != nil {
 				return err
 			}
 			defer file.Close()
 			output := file
-			if err := docsTmpl.Execute(output, test); err != nil {
+			if err := docsTmpl.Execute(output, validTests); err != nil {
 				return err
 			}
-		} else {
-			fmt.Fprintf(out, "ERROR: failed to load test %s (%s)", test.BasePath, test.Err)
+			return nil
+		}()
+		if err != nil {
+			return err
 		}
 	}
 	return nil

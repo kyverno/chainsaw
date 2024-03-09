@@ -33,7 +33,8 @@ Release notes for `TODO`.
 - Fixed resource templating always enabled in `patch` operation, regardless of the configured `template` field
 - Added missing operations to the `build docs` command template
 - Added test-level catch statements to the `build docs` command template
-- Added binding name validation markers
+- Added binding `name` validation markers
+- Fixed `build docs` command for files with multiple tests
 
 ## ⭐ Examples ⭐
 

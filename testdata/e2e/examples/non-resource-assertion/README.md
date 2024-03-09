@@ -30,3 +30,6 @@
 |:-:|---|---|
 | 1 | `assert` | *No description* |
 | 2 | `error` | *No description* |
+
+---
+

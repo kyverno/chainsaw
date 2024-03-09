@@ -19,3 +19,6 @@
 | 1 | `apply` | *No description* |
 | 2 | `patch` | *No description* |
 | 3 | `assert` | *No description* |
+
+---
+
