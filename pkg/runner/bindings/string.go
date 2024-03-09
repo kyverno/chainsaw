@@ -18,10 +18,10 @@ func String(in string, bindings binding.Bindings) (string, error) {
 	if converted, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, in), nil, bindings, template.WithFunctionCaller(functions.Caller)); err != nil {
 		return "", err
 	} else {
-		if covnerted, ok := converted.(string); !ok {
+		if converted, ok := converted.(string); !ok {
 			return "", fmt.Errorf("expression didn't evaluate to a string (%s)", in)
 		} else {
-			return covnerted, nil
+			return converted, nil
 		}
 	}
 }
