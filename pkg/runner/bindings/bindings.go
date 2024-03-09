@@ -2,6 +2,8 @@ package bindings
 
 import (
 	"context"
+	"fmt"
+	"regexp"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -12,6 +14,15 @@ import (
 	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"k8s.io/client-go/rest"
 )
+
+var identifier = regexp.MustCompile(`^\w+$`)
+
+func checkBindingName(name string) error {
+	if !identifier.MatchString(name) {
+		return fmt.Errorf("invalid binding name %s", name)
+	}
+	return nil
+}
 
 func RegisterNamedBinding(ctx context.Context, bindings binding.Bindings, name string, value any) binding.Bindings {
 	if bindings == nil {
@@ -25,7 +36,7 @@ func ResolveBinding(ctx context.Context, bindings binding.Bindings, input any, v
 	if err != nil {
 		return "", nil, err
 	}
-	if err := v1alpha1.CheckBindingName(name); err != nil {
+	if err := checkBindingName(name); err != nil {
 		return "", nil, err
 	}
 	value, err := mutation.Mutate(ctx, nil, mutation.Parse(ctx, variable.Value.Value), input, bindings, template.WithFunctionCaller(functions.Caller))

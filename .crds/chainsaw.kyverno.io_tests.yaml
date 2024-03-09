@@ -42,7 +42,7 @@ spec:
                   properties:
                     name:
                       description: Name the name of the binding.
-                      pattern: ^\w+|\(.+\)$
+                      pattern: ^(?:\w+|\(.+\))$
                       type: string
                     value:
                       description: Value value of the binding.
@@ -75,7 +75,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
-                                pattern: ^\w+|\(.+\)$
+                                pattern: ^(?:\w+|\(.+\))$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -105,7 +105,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
-                                pattern: ^\w+|\(.+\)$
+                                pattern: ^(?:\w+|\(.+\))$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -128,7 +128,7 @@ spec:
                                 x-kubernetes-preserve-unknown-fields: true
                               name:
                                 description: Name the name of the binding.
-                                pattern: ^\w+|\(.+\)$
+                                pattern: ^(?:\w+|\(.+\))$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -160,7 +160,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
-                                pattern: ^\w+|\(.+\)$
+                                pattern: ^(?:\w+|\(.+\))$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -278,7 +278,7 @@ spec:
                         format:
                           description: Format determines the output format (json or
                             yaml).
-                          pattern: ^json|yaml|\(.+\)$
+                          pattern: ^(?:json|yaml|\(.+\))$
                           type: string
                         name:
                           description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -307,7 +307,7 @@ spec:
                         format:
                           description: Format determines the output format (json or
                             yaml).
-                          pattern: ^json|yaml|\(.+\)$
+                          pattern: ^(?:json|yaml|\(.+\))$
                           type: string
                         kind:
                           description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -371,7 +371,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
-                                pattern: ^\w+|\(.+\)$
+                                pattern: ^(?:\w+|\(.+\))$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -402,7 +402,7 @@ spec:
                             properties:
                               name:
                                 description: Name the name of the binding.
-                                pattern: ^\w+|\(.+\)$
+                                pattern: ^(?:\w+|\(.+\))$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -425,7 +425,7 @@ spec:
                                 x-kubernetes-preserve-unknown-fields: true
                               name:
                                 description: Name the name of the binding.
-                                pattern: ^\w+|\(.+\)$
+                                pattern: ^(?:\w+|\(.+\))$
                                 type: string
                               value:
                                 description: Value value of the binding.
@@ -491,7 +491,7 @@ spec:
                         format:
                           description: Format determines the output format (json or
                             yaml).
-                          pattern: ^json|yaml|\(.+\)$
+                          pattern: ^(?:json|yaml|\(.+\))$
                           type: string
                         kind:
                           description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -566,7 +566,7 @@ spec:
                         properties:
                           name:
                             description: Name the name of the binding.
-                            pattern: ^\w+|\(.+\)$
+                            pattern: ^(?:\w+|\(.+\))$
                             type: string
                           value:
                             description: Value value of the binding.
@@ -598,7 +598,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -629,7 +629,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -652,7 +652,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -685,7 +685,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -812,7 +812,7 @@ spec:
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
-                                pattern: ^json|yaml|\(.+\)$
+                                pattern: ^(?:json|yaml|\(.+\))$
                                 type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -843,7 +843,7 @@ spec:
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
-                                pattern: ^json|yaml|\(.+\)$
+                                pattern: ^(?:json|yaml|\(.+\))$
                                 type: string
                               kind:
                                 description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -911,7 +911,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -942,7 +942,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -965,7 +965,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1032,7 +1032,7 @@ spec:
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
-                                pattern: ^json|yaml|\(.+\)$
+                                pattern: ^(?:json|yaml|\(.+\))$
                                 type: string
                               kind:
                                 description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -1091,7 +1091,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1122,7 +1122,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1145,7 +1145,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1178,7 +1178,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1305,7 +1305,7 @@ spec:
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
-                                pattern: ^json|yaml|\(.+\)$
+                                pattern: ^(?:json|yaml|\(.+\))$
                                 type: string
                               name:
                                 description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
@@ -1336,7 +1336,7 @@ spec:
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
-                                pattern: ^json|yaml|\(.+\)$
+                                pattern: ^(?:json|yaml|\(.+\))$
                                 type: string
                               kind:
                                 description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -1404,7 +1404,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1435,7 +1435,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1458,7 +1458,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1525,7 +1525,7 @@ spec:
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
-                                pattern: ^json|yaml|\(.+\)$
+                                pattern: ^(?:json|yaml|\(.+\))$
                                 type: string
                               kind:
                                 description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
@@ -1609,7 +1609,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1668,7 +1668,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1705,7 +1705,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1754,7 +1754,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1785,7 +1785,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1808,7 +1808,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1847,7 +1847,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1906,7 +1906,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -1941,7 +1941,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2035,7 +2035,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2079,7 +2079,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2138,7 +2138,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2173,7 +2173,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2204,7 +2204,7 @@ spec:
                                   properties:
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2227,7 +2227,7 @@ spec:
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
-                                      pattern: ^\w+|\(.+\)$
+                                      pattern: ^(?:\w+|\(.+\))$
                                       type: string
                                     value:
                                       description: Value value of the binding.
@@ -2294,7 +2294,7 @@ spec:
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
-                                pattern: ^json|yaml|\(.+\)$
+                                pattern: ^(?:json|yaml|\(.+\))$
                                 type: string
                               kind:
                                 description: 'Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
