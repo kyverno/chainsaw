@@ -6,30 +6,30 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	apitemplate "github.com/kyverno/chainsaw/pkg/runner/template"
+	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 )
 
 func Logs(bindings binding.Bindings, collector *v1alpha1.PodLogs) (*v1alpha1.Command, error) {
 	if collector == nil {
 		return nil, errors.New("collector is null")
 	}
-	name, err := apitemplate.ConvertString(collector.Name, bindings)
+	name, err := apibindings.String(collector.Name, bindings)
 	if err != nil {
 		return nil, err
 	}
-	namespace, err := apitemplate.ConvertString(collector.Namespace, bindings)
+	namespace, err := apibindings.String(collector.Namespace, bindings)
 	if err != nil {
 		return nil, err
 	}
-	selector, err := apitemplate.ConvertString(collector.Selector, bindings)
+	selector, err := apibindings.String(collector.Selector, bindings)
 	if err != nil {
 		return nil, err
 	}
-	container, err := apitemplate.ConvertString(collector.Container, bindings)
+	container, err := apibindings.String(collector.Container, bindings)
 	if err != nil {
 		return nil, err
 	}
-	cluster, err := apitemplate.ConvertString(collector.Cluster, bindings)
+	cluster, err := apibindings.String(collector.Cluster, bindings)
 	if err != nil {
 		return nil, err
 	}

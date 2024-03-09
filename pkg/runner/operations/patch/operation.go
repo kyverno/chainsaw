@@ -119,27 +119,11 @@ func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, 
 		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
 	}
 	defer func(bindings binding.Bindings) {
-		var outputs operations.Outputs
 		if _err == nil {
-			for _, output := range o.outputs {
-				if output.Match != nil && output.Match.Value != nil {
-					if errs, err := check.Check(ctx, obj.UnstructuredContent(), nil, output.Match); err != nil {
-						_err = err
-						return
-					} else if len(errs) != 0 {
-						continue
-					}
-				}
-				name, value, err := apibindings.ResolveBinding(ctx, bindings, obj.UnstructuredContent(), output.Binding)
-				if err != nil {
-					_err = err
-					return
-				}
-				bindings = apibindings.RegisterNamedBinding(ctx, bindings, name, value)
-				if outputs == nil {
-					outputs = operations.Outputs{}
-				}
-				outputs[name] = value
+			outputs, err := apibindings.ProcessOutputs(ctx, bindings, obj.UnstructuredContent(), o.outputs...)
+			if err != nil {
+				_err = err
+				return
 			}
 			_outputs = outputs
 		}
