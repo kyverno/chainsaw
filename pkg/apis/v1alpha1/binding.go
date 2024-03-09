@@ -3,21 +3,14 @@ package v1alpha1
 import (
 	"fmt"
 	"regexp"
-	"strings"
-
-	"k8s.io/apimachinery/pkg/util/sets"
 )
 
-var (
-	identifier     = regexp.MustCompile(`^\w+$`)
-	forbiddenNames = []string{"namespace", "client", "config", "error", "values", "stdout", "stderr"}
-	forbidden      = sets.New(forbiddenNames...)
-)
+var identifier = regexp.MustCompile(`^(?:\w+|\(.+\))$`)
 
 // Binding represents a key/value set as a binding in an executing test.
 type Binding struct {
 	// Name the name of the binding.
-	// +kubebuilder:validation:Pattern=`^\w+|\(.+\)$`
+	// +kubebuilder:validation:Pattern=`^(?:\w+|\(.+\))$`
 	Name string `json:"name"`
 
 	// Value value of the binding.
@@ -27,26 +20,8 @@ type Binding struct {
 }
 
 func (b Binding) CheckName() error {
-	return CheckBindingName(b.Name)
-}
-
-func (b Binding) CheckEnvName() error {
-	return CheckBindingEnvName(b.Name)
-}
-
-func CheckBindingName(name string) error {
-	if forbidden.Has(name) {
-		return fmt.Errorf("name is forbidden (%s), it must not be (%s)", name, strings.Join(forbiddenNames, ", "))
-	}
-	if !identifier.MatchString(name) {
-		return fmt.Errorf("invalid name %s", name)
-	}
-	return nil
-}
-
-func CheckBindingEnvName(name string) error {
-	if !identifier.MatchString(name) {
-		return fmt.Errorf("invalid name %s", name)
+	if !identifier.MatchString(b.Name) {
+		return fmt.Errorf("invalid name %s", b.Name)
 	}
 	return nil
 }
