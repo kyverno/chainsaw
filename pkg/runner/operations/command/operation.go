@@ -114,27 +114,11 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
 	}
 	defer func(bindings binding.Bindings) {
-		var outputs operations.Outputs
 		if _err == nil {
-			for _, output := range o.command.Outputs {
-				if output.Match != nil && output.Match.Value != nil {
-					if errs, err := check.Check(ctx, nil, nil, output.Match); err != nil {
-						_err = err
-						return
-					} else if len(errs) != 0 {
-						continue
-					}
-				}
-				name, value, err := apibindings.ResolveBinding(ctx, bindings, nil, output.Binding)
-				if err != nil {
-					_err = err
-					return
-				}
-				bindings = apibindings.RegisterNamedBinding(ctx, bindings, name, value)
-				if outputs == nil {
-					outputs = operations.Outputs{}
-				}
-				outputs[name] = value
+			outputs, err := apibindings.ProcessOutputs(ctx, bindings, nil, o.command.Outputs...)
+			if err != nil {
+				_err = err
+				return
 			}
 			_outputs = outputs
 		}

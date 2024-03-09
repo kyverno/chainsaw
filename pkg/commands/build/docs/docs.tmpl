@@ -20,7 +20,7 @@ sleep
 {{- else if .Wait -}}
 wait
 {{- else -}}
-{{ fail (print "unknown operation " (toJson .)) }}
+{{- fail (print "unknown operation " (toJson .)) -}}
 {{- end -}}
 {{- end -}}
 
@@ -44,7 +44,7 @@ sleep
 {{- else if .Wait -}}
 wait
 {{- else -}}
-{{ fail (print "unknown catch " (toJson .)) }}
+{{- fail (print "unknown catch " (toJson .)) -}}
 {{- end -}}
 {{- end -}}
 
@@ -68,9 +68,12 @@ sleep
 {{- else if .Wait -}}
 wait
 {{- else -}}
-{{ fail (print "unknown finally " (toJson .)) }}
+{{- fail (print "unknown finally " (toJson .)) -}}
 {{- end -}}
 {{- end -}}
+
+{{- range . }}
+{{- $test := . -}}
 
 # Test: `{{ .Name }}`
 
@@ -84,7 +87,7 @@ wait
 |:-:|---|:-:|:-:|:-:|
 {{- range $i, $step := . }}
 {{- $name := default (print "step-" (add $i 1)) $step.Name }}
-| {{ add $i 1 }} | [{{ $name }}](#step-{{ $name }}) | {{ len $step.Try }} | {{ add (len $step.Catch) (len $.Spec.Catch) }} | {{ len $step.Finally }} |
+| {{ add $i 1 }} | [{{ $name }}](#step-{{ $name }}) | {{ len $step.Try }} | {{ add (len $step.Catch) (len $test.Spec.Catch) }} | {{ len $step.Finally }} |
 {{- end }}
 {{- end }}
 
@@ -112,11 +115,11 @@ wait
 
 | # | Operation | Description |
 |:-:|---|---|
-{{- range $i, $op := $.Spec.Catch }}
+{{- range $i, $op := $test.Spec.Catch }}
 | {{ add $i 1 }} | `{{ template "CatchType" $op }}` | {{ default "*No description*" $op.Description }} |
 {{- end }}
 {{- range $i, $op := . }}
-| {{ add (len $.Spec.Catch) $i 1 }} | `{{ template "CatchType" $op }}` | {{ default "*No description*" $op.Description }} |
+| {{ add (len $test.Spec.Catch) $i 1 }} | `{{ template "CatchType" $op }}` | {{ default "*No description*" $op.Description }} |
 {{- end }}
 {{- end }}
 
@@ -132,3 +135,7 @@ wait
 {{- end }}
 
 {{- end }}
+
+---
+
+{{ end -}}
