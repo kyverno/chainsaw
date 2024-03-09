@@ -12,6 +12,7 @@ import (
 type FakeClient struct {
 	GetFn                func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error
 	CreateFn             func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error
+	UpdateFn             func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error
 	DeleteFn             func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error
 	ListFn               func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error
 	PatchFn              func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error
@@ -33,6 +34,11 @@ func (c *FakeClient) List(ctx context.Context, list ctrlclient.ObjectList, opts 
 func (c *FakeClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
 	defer func() { c.numCalls++ }()
 	return c.CreateFn(ctx, c.numCalls, obj, opts...)
+}
+
+func (c *FakeClient) Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
+	defer func() { c.numCalls++ }()
+	return c.UpdateFn(ctx, c.numCalls, obj, opts...)
 }
 
 func (c *FakeClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {

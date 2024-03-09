@@ -104,6 +104,7 @@ during the testing process.</p>
 - [Script](#chainsaw-kyverno-io-v1alpha1-Script)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
 
 <p>Binding represents a key/value set as a binding in an executing test.</p>
 
@@ -327,6 +328,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
 - [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
 - [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
 
 <p>Expectation represents a check to be applied on the result of an operation
 with a match filter to determine if the verification should be considered.</p>
@@ -381,6 +383,7 @@ with a match filter to determine if the verification should be considered.</p>
 - [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
 - [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
 
 <p>FileRefOrResource represents a file reference or resource.</p>
 
@@ -547,6 +550,7 @@ For multiple objects use labels.</p>
 | `patch` | [`Patch`](#chainsaw-kyverno-io-v1alpha1-Patch) |  |  | <p>Patch represents a patch operation.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
+| `update` | [`Update`](#chainsaw-kyverno-io-v1alpha1-Update) |  |  | <p>Update represents an update operation.</p> |
 | `wait` | [`Wait`](#chainsaw-kyverno-io-v1alpha1-Wait) |  |  | <p>Wait determines the resource wait collector to execute.</p> |
 
 ## `Output`     {#chainsaw-kyverno-io-v1alpha1-Output}
@@ -558,6 +562,7 @@ For multiple objects use labels.</p>
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
 - [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
 - [Script](#chainsaw-kyverno-io-v1alpha1-Script)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
 
 <p>Output represents an output binding with a match to determine if the binding must be considered or not.</p>
 
@@ -750,6 +755,27 @@ Optionally an apiVersion can be specified.</p>
 | `delete` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Delete defines the timeout for the delete operation</p> |
 | `error` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Error defines the timeout for the error operation</p> |
 | `exec` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Exec defines the timeout for exec operations</p> |
+
+## `Update`     {#chainsaw-kyverno-io-v1alpha1-Update}
+
+**Appears in:**
+    
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
+
+<p>Update represents a set of resources that should be updated.
+If a resource does not exist in the cluster it will fail.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
+| `outputs` | [`[]Output`](#chainsaw-kyverno-io-v1alpha1-Output) |  |  | <p>Outputs defines output bindings.</p> |
+| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
+| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be created.</p> |
+| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
+| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
 ## `Wait`     {#chainsaw-kyverno-io-v1alpha1-Wait}
 

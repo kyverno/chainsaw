@@ -22,5 +22,6 @@
 - [sleep](sleep/README.md)
 - [template](template/README.md)
 - [timeout](timeout/README.md)
+- [update](update/README.md)
 - [values](values/README.md)
 - [wait](wait/README.md)

@@ -27,6 +27,7 @@ import (
 	oppatch "github.com/kyverno/chainsaw/pkg/runner/operations/patch"
 	opscript "github.com/kyverno/chainsaw/pkg/runner/operations/script"
 	opsleep "github.com/kyverno/chainsaw/pkg/runner/operations/sleep"
+	opupdate "github.com/kyverno/chainsaw/pkg/runner/operations/update"
 	runnertemplate "github.com/kyverno/chainsaw/pkg/runner/template"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -193,6 +194,12 @@ func (p *stepProcessor) tryOperations() ([]operation, error) {
 			register(p.scriptOperation(i+1, *handler.Script))
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(i+1, *handler.Sleep))
+		} else if handler.Update != nil {
+			loaded, err := p.updateOperation(i+1, *handler.Update)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
 		} else if handler.Wait != nil {
 			register(p.waitOperation(i+1, *handler.Wait))
 		} else {
@@ -642,6 +649,41 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 		nil,
 		nil,
 	)
+}
+
+func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation, error) {
+	resources, err := p.fileRefOrResource(op.FileRefOrResource)
+	if err != nil {
+		return nil, err
+	}
+	var ops []operation
+	var operationReport *report.OperationReport
+	if p.stepReport != nil {
+		operationReport = report.NewOperation("Update ", report.OperationTypeCreate)
+		p.stepReport.AddOperation(operationReport)
+	}
+	dryRun := op.DryRun != nil && *op.DryRun
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
+	config, cluster := p.getClient(op.Cluster, dryRun)
+	for i, resource := range resources {
+		if err := p.prepareResource(resource); err != nil {
+			return nil, err
+		}
+		ops = append(ops, newOperation(
+			OperationInfo{
+				Id:         id,
+				ResourceId: i + 1,
+			},
+			false,
+			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
+			opupdate.New(cluster, resource, p.namespacer, template, op.Expect, op.Outputs),
+			operationReport,
+			config,
+			cluster,
+			op.Bindings...,
+		))
+	}
+	return ops, nil
 }
 
 func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
