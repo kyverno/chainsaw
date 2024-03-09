@@ -16,7 +16,7 @@ type Script struct {
 
 	// Outputs defines output bindings.
 	// +optional
-	Outputs []Binding `json:"outputs,omitempty"`
+	Outputs []Output `json:"outputs,omitempty"`
 
 	// Env defines additional environment variables.
 	// +optional

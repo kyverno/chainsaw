@@ -224,7 +224,7 @@ func (in *Command) DeepCopyInto(out *Command) {
 	}
 	if in.Outputs != nil {
 		in, out := &in.Outputs, &out.Outputs
-		*out = make([]Binding, len(*in))
+		*out = make([]Output, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
@@ -1027,7 +1027,7 @@ func (in *Script) DeepCopyInto(out *Script) {
 	}
 	if in.Outputs != nil {
 		in, out := &in.Outputs, &out.Outputs
-		*out = make([]Binding, len(*in))
+		*out = make([]Output, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}

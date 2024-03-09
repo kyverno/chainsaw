@@ -113,7 +113,12 @@ func (o *operation) updateResource(ctx context.Context, bindings binding.Binding
 }
 
 func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured, err error) (_outputs operations.Outputs, _err error) {
-	defer func() {
+	if err == nil {
+		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", nil)
+	} else {
+		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
+	}
+	defer func(bindings binding.Bindings) {
 		var outputs operations.Outputs
 		if _err == nil {
 			for _, output := range o.outputs {
@@ -138,12 +143,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, 
 			}
 			_outputs = outputs
 		}
-	}()
-	if err == nil {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", nil)
-	} else {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
-	}
+	}(bindings)
 	if matched, err := check.Expectations(ctx, obj, bindings, o.expect...); matched {
 		return nil, err
 	}
