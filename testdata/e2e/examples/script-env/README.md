@@ -2,22 +2,34 @@
 
 *No description*
 
-### Steps
+## Bindings
 
-| # | Name | Try | Catch | Finally |
-|:-:|---|:-:|:-:|:-:|
-| 1 | [step-1](#step-step-1) | 2 | 0 | 0 |
+| # | Name | Value |
+|:-:|---|---|
+| 1 | `chainsaw` | "chainsaw" |
 
-## Step: `step-1`
+## Steps
+
+| # | Name | Bindings | Try | Catch | Finally |
+|:-:|---|:-:|:-:|:-:|:-:|
+| 1 | [step-1](#step-step-1) | 1 | 2 | 0 | 0 |
+
+### Step: `step-1`
 
 *No description*
 
-### Try
+#### Bindings
 
-| # | Operation | Description |
+| # | Name | Value |
 |:-:|---|---|
-| 1 | `script` | *No description* |
-| 2 | `command` | *No description* |
+| 1 | `hello` | "hello" |
+
+#### Try
+
+| # | Operation | Bindings | Outputs | Description |
+|:-:|---|:-:|:-:|---|
+| 1 | `script` | 0 | 0 | *No description* |
+| 2 | `command` | 0 | 0 | *No description* |
 
 ---
 

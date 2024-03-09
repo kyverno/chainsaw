@@ -2,40 +2,40 @@
 
 *No description*
 
-### Steps
+## Steps
 
-| # | Name | Try | Catch | Finally |
-|:-:|---|:-:|:-:|:-:|
-| 1 | [step-1](#step-step-1) | 4 | 4 | 2 |
+| # | Name | Bindings | Try | Catch | Finally |
+|:-:|---|:-:|:-:|:-:|:-:|
+| 1 | [step-1](#step-step-1) | 0 | 4 | 4 | 2 |
 
-## Step: `step-1`
+### Step: `step-1`
 
 *No description*
 
-### Try
+#### Try
 
-| # | Operation | Description |
-|:-:|---|---|
-| 1 | `create` | *No description* |
-| 2 | `wait` | *No description* |
-| 3 | `delete` | *No description* |
-| 4 | `wait` | *No description* |
+| # | Operation | Bindings | Outputs | Description |
+|:-:|---|:-:|:-:|---|
+| 1 | `create` | 0 | 0 | *No description* |
+| 2 | `wait` | 0 | 0 | *No description* |
+| 3 | `delete` | 0 | 0 | *No description* |
+| 4 | `wait` | 0 | 0 | *No description* |
 
-### Catch
+#### Catch
 
-| # | Operation | Description |
-|:-:|---|---|
-| 1 | `events` | *No description* |
-| 2 | `describe` | *No description* |
-| 3 | `delete` | *No description* |
-| 4 | `wait` | *No description* |
+| # | Operation | Bindings | Outputs | Description |
+|:-:|---|:-:|:-:|---|
+| 1 | `events` | 0 | 0 | *No description* |
+| 2 | `describe` | 0 | 0 | *No description* |
+| 3 | `delete` | 0 | 0 | *No description* |
+| 4 | `wait` | 0 | 0 | *No description* |
 
-### Finally
+#### Finally
 
-| # | Operation | Description |
-|:-:|---|---|
-| 1 | `delete` | *No description* |
-| 2 | `wait` | *No description* |
+| # | Operation | Bindings | Outputs | Description |
+|:-:|---|:-:|:-:|---|
+| 1 | `delete` | 0 | 0 | *No description* |
+| 2 | `wait` | 0 | 0 | *No description* |
 
 ---
 
