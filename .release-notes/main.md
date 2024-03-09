@@ -16,14 +16,15 @@ Release notes for `TODO`.
 
 ## 💫 New features 💫
 
-- Added templating support in bindings and outputs names
+- Added templating support in `bindings` and `outputs` names
 - Added templating support in resource reference in all collectors
 - Added templating support for all string fields in all collectors
 - Relaxed `format` field in collectors to support templating
+- Added `match` support in `command` and `script` operations outputs
 
 ## 🔧 Fixes 🔧
 
-- Fixed a resource templating issue in non resource assertions
+- Fixed a resource templating issue in non-resource assertions
 - Fixed resource templating always enabled in `create` operation, regardless of the configured `template` field
 - Fixed resource templating always enabled in `patch` operation, regardless of the configured `template` field
 - Added `config` in the list of forbidden binding names
