@@ -1,4 +1,4 @@
-package template
+package bindings
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/kyverno/kyverno-json/pkg/engine/template"
 )
 
-func ConvertString(in string, bindings binding.Bindings) (string, error) {
+func String(in string, bindings binding.Bindings) (string, error) {
 	if in == "" {
 		return "", nil
 	}

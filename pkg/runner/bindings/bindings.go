@@ -8,7 +8,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	mutation "github.com/kyverno/chainsaw/pkg/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/functions"
-	apitemplate "github.com/kyverno/chainsaw/pkg/runner/template"
 	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"k8s.io/client-go/rest"
 )
@@ -21,7 +20,7 @@ func RegisterNamedBinding(ctx context.Context, bindings binding.Bindings, name s
 }
 
 func ResolveBinding(ctx context.Context, bindings binding.Bindings, input any, variable v1alpha1.Binding) (string, any, error) {
-	name, err := apitemplate.ConvertString(variable.Name, bindings)
+	name, err := String(variable.Name, bindings)
 	if err != nil {
 		return "", nil, err
 	}
