@@ -110,7 +110,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `name` | `string` | :white_check_mark: |  | <p>Name the name of the binding.</p> |
+| `name` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Name the name of the binding.</p> |
 | `value` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Value value of the binding.</p> |
 
 ## `Catch`     {#chainsaw-kyverno-io-v1alpha1-Catch}
@@ -336,6 +336,14 @@ with a match filter to determine if the verification should be considered.</p>
 |---|---|---|---|---|
 | `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
 | `check` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
+
+## `Expression`     {#chainsaw-kyverno-io-v1alpha1-Expression}
+
+(Alias of `string`)
+
+**Appears in:**
+    
+- [Binding](#chainsaw-kyverno-io-v1alpha1-Binding)
 
 ## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 

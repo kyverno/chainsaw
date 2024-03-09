@@ -9,7 +9,7 @@ import (
 func TestBinding_CheckName(t *testing.T) {
 	tests := []struct {
 		name         string
-		bindingName  string
+		bindingName  Expression
 		bindingValue Any
 		wantErr      bool
 	}{{

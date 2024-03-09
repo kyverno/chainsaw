@@ -32,7 +32,7 @@ func RegisterNamedBinding(ctx context.Context, bindings binding.Bindings, name s
 }
 
 func ResolveBinding(ctx context.Context, bindings binding.Bindings, input any, variable v1alpha1.Binding) (string, any, error) {
-	name, err := apitemplate.ConvertString(variable.Name, bindings)
+	name, err := apitemplate.ConvertString(string(variable.Name), bindings)
 	if err != nil {
 		return "", nil, err
 	}
