@@ -76,25 +76,10 @@ func Test_update(t *testing.T) {
             GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
                 return nil
             },
-            UpdateFn: func(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-                return nil
-            },
-        },
-        expectedErr: nil,
-        dryRun:      true,
-    },
-    {
-        name:   "Dry Run Resource exists, simulate update",
-        object: pod,
-        client: &tclient.FakeClient{
-            GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-                return nil
-            },
         },
         expectedErr: nil,
         dryRun:      true, 
-    },
-    {
+    }, {
         name:   "Resource does not exist, update it",
         object: pod,
         client: &tclient.FakeClient{
