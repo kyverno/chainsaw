@@ -29,6 +29,7 @@ Release notes for `TODO`.
 ## 🔧 Fixes 🔧
 
 - Fixed a resource templating issue in non-resource assertions
+- Fixed diff not templated in case of `assert` failure
 - Fixed resource templating always enabled in `create` operation, regardless of the configured `template` field
 - Fixed resource templating always enabled in `patch` operation, regardless of the configured `template` field
 - Added missing operations to the `build docs` command template
