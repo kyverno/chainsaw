@@ -19,6 +19,8 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+const schema = "# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/configuration-chainsaw-v1alpha1.json"
+
 func Command() *cobra.Command {
 	save := false
 	cleanup := false
@@ -66,13 +68,14 @@ func execute(stdout io.Writer, stderr io.Writer, save, cleanup bool, path string
 			return fmt.Errorf("failed to open file: %w", err)
 		}
 		defer f.Close()
-		if _, err := f.WriteString("# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/configuration-chainsaw-v1alpha1.json\n"); err != nil {
+		if _, err := f.WriteString(schema + "\n"); err != nil {
 			return fmt.Errorf("failed to write in file: %w", err)
 		}
 		if _, err := f.Write(data); err != nil {
 			return fmt.Errorf("failed to write in file: %w", err)
 		}
 	} else {
+		fmt.Fprintln(stdout, schema)
 		fmt.Fprintln(stdout, string(data))
 	}
 	if save && cleanup {
