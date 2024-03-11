@@ -104,7 +104,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 						return false, err
 					}
 					if len(_errs) != 0 {
-						errs = append(errs, operrors.ResourceError(obj, candidate, _errs))
+						errs = append(errs, operrors.ResourceError(obj, candidate, o.template, bindings, _errs))
 					} else {
 						// at least one match found
 						return true, nil
