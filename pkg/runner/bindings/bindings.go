@@ -56,12 +56,19 @@ func RegisterBinding(ctx context.Context, bindings binding.Bindings, input any, 
 	return RegisterNamedBinding(ctx, bindings, name, value), nil
 }
 
-func RegisterBindings(ctx context.Context, bindings binding.Bindings, config *rest.Config, client client.Client, variables ...v1alpha1.Binding) (binding.Bindings, error) {
+func RegisterClusterBindings(ctx context.Context, bindings binding.Bindings, config *rest.Config, client client.Client) binding.Bindings {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
 	bindings = bindings.Register("$client", binding.NewBinding(client))
 	bindings = bindings.Register("$config", binding.NewBinding(config))
+	return bindings
+}
+
+func RegisterBindings(ctx context.Context, bindings binding.Bindings, variables ...v1alpha1.Binding) (binding.Bindings, error) {
+	if bindings == nil {
+		bindings = binding.NewBindings()
+	}
 	for _, variable := range variables {
 		next, err := RegisterBinding(ctx, bindings, nil, variable)
 		if err != nil {

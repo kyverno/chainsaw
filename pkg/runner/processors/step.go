@@ -86,7 +86,8 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	t := testing.FromContext(ctx)
 	logger := logging.FromContext(ctx)
 	config, cluster := p.clusters.client(p.step.Cluster, p.test.Spec.Cluster)
-	bindings, err := apibindings.RegisterBindings(ctx, bindings, config, cluster, p.step.Bindings...)
+	bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, cluster)
+	bindings, err := apibindings.RegisterBindings(ctx, bindings, p.step.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		t.FailNow()
