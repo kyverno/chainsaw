@@ -19,6 +19,8 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+const schema = "# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/configuration-chainsaw-v1alpha1.json"
+
 func Command() *cobra.Command {
 	save := false
 	cleanup := false
@@ -28,7 +30,13 @@ func Command() *cobra.Command {
 		SilenceUsage: true,
 		Args:         cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return execute(cmd.OutOrStdout(), save, cleanup, args[0])
+			return execute(
+				cmd.OutOrStdout(),
+				cmd.ErrOrStderr(),
+				save,
+				cleanup,
+				args[0],
+			)
 		},
 	}
 	cmd.Flags().BoolVar(&save, "save", false, "If set, converted files will be saved")
@@ -36,7 +44,7 @@ func Command() *cobra.Command {
 	return cmd
 }
 
-func execute(out io.Writer, save, cleanup bool, path string) error {
+func execute(stdout io.Writer, stderr io.Writer, save, cleanup bool, path string) error {
 	resources, err := resource.Load(path, true)
 	if err != nil {
 		return err
@@ -44,7 +52,7 @@ func execute(out io.Writer, save, cleanup bool, path string) error {
 	if len(resources) != 1 {
 		return fmt.Errorf("invalid number of resources found (%d) in %s", len(resources), path)
 	}
-	cfg, err := migrate(out, path, resources[0])
+	cfg, err := migrate(stderr, path, resources[0])
 	if err != nil {
 		return err
 	}
@@ -54,23 +62,24 @@ func execute(out io.Writer, save, cleanup bool, path string) error {
 	}
 	if save {
 		path := filepath.Join(filepath.Dir(path), config.DefaultFileName)
-		fmt.Fprintf(out, "Saving file %s ...\n", path)
+		fmt.Fprintf(stderr, "Saving file %s ...\n", path)
 		f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 		if err != nil {
 			return fmt.Errorf("failed to open file: %w", err)
 		}
 		defer f.Close()
-		if _, err := f.WriteString("# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/configuration-chainsaw-v1alpha1.json\n"); err != nil {
+		if _, err := f.WriteString(schema + "\n"); err != nil {
 			return fmt.Errorf("failed to write in file: %w", err)
 		}
 		if _, err := f.Write(data); err != nil {
 			return fmt.Errorf("failed to write in file: %w", err)
 		}
 	} else {
-		fmt.Fprintln(out, string(data))
+		fmt.Fprintln(stdout, schema)
+		fmt.Fprintln(stdout, string(data))
 	}
 	if save && cleanup {
-		fmt.Fprintf(out, "Deleting file %s ...\n", path)
+		fmt.Fprintf(stderr, "Deleting file %s ...\n", path)
 		if err := os.Remove(path); err != nil {
 			return err
 		}
@@ -82,14 +91,14 @@ func isKuttl(resource unstructured.Unstructured) bool {
 	return strings.HasPrefix(resource.GetAPIVersion(), "kuttl.dev/")
 }
 
-func migrate(out io.Writer, path string, resource unstructured.Unstructured) (*v1alpha1.Configuration, error) {
-	fmt.Fprintf(out, "Converting config %s ...\n", path)
+func migrate(stderr io.Writer, path string, resource unstructured.Unstructured) (*v1alpha1.Configuration, error) {
+	fmt.Fprintf(stderr, "Converting config %s ...\n", path)
 	if isKuttl(resource) {
 		switch resource.GetKind() {
 		case "TestSuite":
 			configuration, err := testSuite(resource)
 			if err != nil {
-				fmt.Fprintf(out, "ERROR: failed to convert %s (%s): %s\n", "TestSuite", path, err)
+				fmt.Fprintf(stderr, "ERROR: failed to convert %s (%s): %s\n", "TestSuite", path, err)
 				return nil, err
 			}
 			if configuration.GetName() == "" {
@@ -97,7 +106,7 @@ func migrate(out io.Writer, path string, resource unstructured.Unstructured) (*v
 			}
 			return configuration, nil
 		default:
-			fmt.Fprintf(out, "ERROR: unknown kuttl resource (%s): %s\n", path, resource.GetKind())
+			fmt.Fprintf(stderr, "ERROR: unknown kuttl resource (%s): %s\n", path, resource.GetKind())
 			return nil, fmt.Errorf("unknown kuttl resource %s", resource.GetKind())
 		}
 	}
