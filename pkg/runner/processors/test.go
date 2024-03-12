@@ -110,11 +110,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		}
 	}
 	config, cluster := p.clusters.client(p.test.Spec.Cluster)
-	bindings, err := apibindings.RegisterBindings(ctx, bindings, config, cluster, p.test.Spec.Bindings...)
-	if err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		t.FailNow()
-	}
+	bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, cluster)
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
@@ -170,6 +166,11 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 				}
 			}
 		}
+	}
+	bindings, err := apibindings.RegisterBindings(ctx, bindings, p.test.Spec.Bindings...)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		t.FailNow()
 	}
 	delay := p.config.DelayBeforeCleanup
 	if p.test.Spec.DelayBeforeCleanup != nil {
