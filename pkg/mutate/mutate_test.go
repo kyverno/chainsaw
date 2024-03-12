@@ -55,7 +55,7 @@ func TestMutate(t *testing.T) {
 		},
 		wantErr: false,
 	}, {
-		name: "add",
+		name: "add (array)",
 		mutation: Parse(context.TODO(), map[string]any{
 			"c": []any{"(a+b)"},
 		}),
@@ -72,9 +72,58 @@ func TestMutate(t *testing.T) {
 			"c": []any{36.0},
 		},
 		wantErr: false,
-	},
-	// TODO: Add test cases.
-	}
+	}, {
+		name: "array error",
+		mutation: Parse(context.TODO(), map[string]any{
+			"c": []any{"(a+b)"},
+		}),
+		value: map[string]any{
+			"c": map[string]any{
+				"a": 12,
+				"b": 24,
+			},
+		},
+		bindings: nil,
+		wantErr:  true,
+	}, {
+		name: "array error",
+		mutation: Parse(context.TODO(), map[string]any{
+			"c": []any{"(flop())"},
+		}),
+		value:    map[string]any{},
+		bindings: nil,
+		wantErr:  true,
+	}, {
+		name: "escape",
+		mutation: Parse(context.TODO(), map[string]any{
+			"c": []any{`\(flop())\`},
+		}),
+		value:    map[string]any{},
+		bindings: nil,
+		want: map[any]any{
+			"c": []any{`\(flop())\`},
+		},
+		wantErr: false,
+	}, {
+		name: "escape",
+		mutation: Parse(context.TODO(), map[string]any{
+			"c": []any{"($foo)"},
+		}),
+		value:    map[string]any{},
+		bindings: nil,
+		wantErr:  true,
+	}, {
+		name: "escape",
+		mutation: Parse(context.TODO(), map[string]any{
+			"c": []any{"($foo)"},
+		}),
+		value:    map[string]any{},
+		bindings: binding.NewBindings().Register("$foo", binding.NewBinding("bar")),
+		want: map[any]any{
+			"c": []any{"bar"},
+		},
+		wantErr: false,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Mutate(context.TODO(), nil, tt.mutation, tt.value, tt.bindings)
