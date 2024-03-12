@@ -28,6 +28,9 @@ func ValidateOperation(path *field.Path, obj v1alpha1.Operation) field.ErrorList
 	if obj.Error != nil {
 		count++
 	}
+	if obj.Lookup != nil {
+		count++
+	}
 	if obj.Patch != nil {
 		count++
 	}
@@ -54,6 +57,7 @@ func ValidateOperation(path *field.Path, obj v1alpha1.Operation) field.ErrorList
 		errs = append(errs, ValidateCreate(path.Child("create"), obj.Create)...)
 		errs = append(errs, ValidateDelete(path.Child("delete"), obj.Delete)...)
 		errs = append(errs, ValidateError(path.Child("error"), obj.Error)...)
+		errs = append(errs, ValidateLookup(path.Child("lookup"), obj.Lookup)...)
 		errs = append(errs, ValidatePatch(path.Child("error"), obj.Patch)...)
 		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
 		errs = append(errs, ValidateUpdate(path.Child("update"), obj.Update)...)

@@ -10,22 +10,25 @@ import (
 func ValidateFinally(path *field.Path, obj v1alpha1.Finally) field.ErrorList {
 	var errs field.ErrorList
 	count := 0
-	if obj.PodLogs != nil {
-		count++
-	}
-	if obj.Events != nil {
-		count++
-	}
-	if obj.Describe != nil {
-		count++
-	}
-	if obj.Get != nil {
+	if obj.Command != nil {
 		count++
 	}
 	if obj.Delete != nil {
 		count++
 	}
-	if obj.Command != nil {
+	if obj.Describe != nil {
+		count++
+	}
+	if obj.Events != nil {
+		count++
+	}
+	if obj.Get != nil {
+		count++
+	}
+	if obj.Lookup != nil {
+		count++
+	}
+	if obj.PodLogs != nil {
 		count++
 	}
 	if obj.Script != nil {
@@ -42,13 +45,14 @@ func ValidateFinally(path *field.Path, obj v1alpha1.Finally) field.ErrorList {
 	} else if count > 1 {
 		errs = append(errs, field.Invalid(path, obj, fmt.Sprintf("only one statement is allowed per operation (found %d)", count)))
 	} else {
-		errs = append(errs, ValidatePodLogs(path.Child("podLogs"), obj.PodLogs)...)
-		errs = append(errs, ValidateEvents(path.Child("events"), obj.Events)...)
 		errs = append(errs, ValidateCommand(path.Child("command"), obj.Command)...)
-		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
-		errs = append(errs, ValidateDescribe(path.Child("describe"), obj.Describe)...)
-		errs = append(errs, ValidateGet(path.Child("get"), obj.Get)...)
 		errs = append(errs, ValidateDelete(path.Child("delete"), obj.Delete)...)
+		errs = append(errs, ValidateDescribe(path.Child("describe"), obj.Describe)...)
+		errs = append(errs, ValidateEvents(path.Child("events"), obj.Events)...)
+		errs = append(errs, ValidateGet(path.Child("get"), obj.Get)...)
+		errs = append(errs, ValidateLookup(path.Child("lookup"), obj.Lookup)...)
+		errs = append(errs, ValidatePodLogs(path.Child("podLogs"), obj.PodLogs)...)
+		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
 		errs = append(errs, ValidateWait(path.Child("wait"), obj.Wait)...)
 	}
 	return errs

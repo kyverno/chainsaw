@@ -11,6 +11,8 @@ create
 delete
 {{- else if .Error -}}
 error
+{{- else if .Lookup -}}
+lookup
 {{- else if .Patch -}}
 patch
 {{- else if .Script -}}
@@ -37,6 +39,8 @@ describe
 events
 {{- else if .Get -}}
 get
+{{- else if .Lookup -}}
+lookup
 {{- else if .PodLogs -}}
 pod logs
 {{- else if .Script -}}
@@ -61,6 +65,8 @@ describe
 events
 {{- else if .Get -}}
 get
+{{- else if .Lookup -}}
+lookup
 {{- else if .PodLogs -}}
 pod logs
 {{- else if .Script -}}
