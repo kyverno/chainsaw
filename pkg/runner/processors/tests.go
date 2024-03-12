@@ -70,11 +70,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	})
 	var nspacer namespacer.Namespacer
 	config, cluster := p.clusters.client()
-	bindings, err := apibindings.RegisterBindings(ctx, bindings, config, cluster)
-	if err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		t.FailNow()
-	}
+	bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, cluster)
 	if cluster != nil {
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
@@ -117,6 +113,11 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				}
 			}
 		}
+	}
+	bindings, err := apibindings.RegisterBindings(ctx, bindings)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		t.FailNow()
 	}
 	for i, test := range p.tests {
 		name, err := names.Test(p.config, test)

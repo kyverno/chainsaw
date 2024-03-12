@@ -91,9 +91,10 @@ func (o operation) execute(ctx context.Context, bindings binding.Bindings) opera
 		}
 	}
 	operation, err := o.operation(ctx, bindings)
+	bindings = apibindings.RegisterClusterBindings(ctx, bindings, o.config, o.client)
 	if err != nil {
 		handleError(err)
-	} else if bindings, err := apibindings.RegisterBindings(ctx, bindings, o.config, o.client, o.variables...); err != nil {
+	} else if bindings, err := apibindings.RegisterBindings(ctx, bindings, o.variables...); err != nil {
 		handleError(err)
 	} else {
 		outputs, err := operation.Exec(ctx, apibindings.RegisterNamedBinding(ctx, bindings, "operation", o.info))
