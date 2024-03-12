@@ -23,7 +23,7 @@ type expression struct {
 	engine      string
 }
 
-func parseExpressionRegex(ctx context.Context, in string) *expression {
+func parseExpressionRegex(_ context.Context, in string) *expression {
 	expression := &expression{}
 	// 1. match foreach
 	if match := foreachRegex.FindStringSubmatch(in); match != nil {
