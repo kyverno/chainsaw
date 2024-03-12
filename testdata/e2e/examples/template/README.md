@@ -2,6 +2,12 @@
 
 *No description*
 
+## Bindings
+
+| # | Name | Value |
+|:-:|---|---|
+| 1 | `foo` | "(join('-', [$namespace, 'foo']))" |
+
 ## Steps
 
 | # | Name | Bindings | Try | Catch | Finally |

@@ -37,6 +37,7 @@ Release notes for `TODO`.
 - Added test-level catch statements to the `build docs` command template
 - Added binding `name` validation markers
 - Fixed `build docs` command for files with multiple tests
+- Relaxed step file discovery regular expression to allow names with one or more digit prefixes
 
 ## ⭐ Examples ⭐
 
