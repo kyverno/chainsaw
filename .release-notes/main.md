@@ -16,15 +16,19 @@ Release notes for `TODO`.
 
 ## 💫 New features 💫
 
+- Added new `update` operation
+- Added outputs support in `create`, `apply`, `patch` and `update` operations
+- Added `match` support in `command` and `script` operations outputs
 - Added templating support in `bindings` and `outputs` names
 - Added templating support in `env` names
 - Added templating support in resource reference in all collectors
 - Added templating support for all string fields in all collectors
+- Added bindings running test info bindings
 - Removed bindings forbidden names (be careful if you override a built-in binding name)
-- Added `match` support in `command` and `script` operations outputs
 - Relaxed `format` field validation in collectors to support templating
 - Relaxed bindings `name` field validation to support templating
 - Relaxed env `name` field validation to support templating
+- Added bindings and outputs in `build docs` command
 
 ## 🔧 Fixes 🔧
 
