@@ -7,6 +7,7 @@ import (
 
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
 	"sigs.k8s.io/controller-runtime/pkg/client"
@@ -524,4 +525,18 @@ func Test_dryRunClient_IsObjectNamespaced(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_dryRunClient_RESTMapper(t *testing.T) {
+	inner := &tclient.FakeClient{
+		RESTMapperFn: func(call int) meta.RESTMapper {
+			return nil
+		},
+	}
+	c := &dryRunClient{
+		inner: inner,
+	}
+	got := c.RESTMapper()
+	assert.Equal(t, 1, inner.NumCalls())
+	assert.Nil(t, got)
 }
