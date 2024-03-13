@@ -46,6 +46,7 @@ nav:
     - operations/patch.md
     - operations/script.md
     - operations/sleep.md
+    - operations/update.md
     - operations/wait.md
     - operations/templating.md
     - operations/non-resource-assert.md

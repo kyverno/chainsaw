@@ -17,12 +17,13 @@ Alternatively, templating can be enabled using the `--template` flag when invoki
 
 Resource templating is supported in the following operations:
 
-- [Assert](./assert.md)
-- [Error](./error.md)
 - [Apply](./apply.md)
+- [Assert](./assert.md)
 - [Create](./create.md)
 - [Delete](./delete.md)
+- [Error](./error.md)
 - [Patch](./patch.md)
+- [Update](./update.md)
 
 ### Assert and Error
 

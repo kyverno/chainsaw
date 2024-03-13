@@ -14,6 +14,12 @@ It's important to note that bindings are **immutable**, it's not possible to ove
 When a binding value is resolved, chainsaw will walk the binding chain upwards until it finds a binding with the expected name.
 Effectively, the last one registered in the chain will be used.
 
+## Templating
+
+A binding `name` supports templating.
+
+The name of a binding can therefore be dynamic and depend on [values](../configuration/values.md) or other bindings.
+
 ## Usage
 
 The example below defines custom bindings at the test level.

@@ -35,6 +35,7 @@ Determines whether a test step should continue or not in case the operation is n
 - [Patch](./patch.md)
 - [Script](./script.md)
 - [Sleep](./sleep.md)
+- [Update](./update.md)
 - [Wait](./wait.md)
 
 ## Non-resource assertions
