@@ -2,6 +2,7 @@ package functions
 
 import (
 	"context"
+	"errors"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -134,6 +135,9 @@ func jpKubernetesServerVersion(arguments []any) (any, error) {
 	var config *rest.Config
 	if err := getArg(arguments, 0, &config); err != nil {
 		return nil, err
+	}
+	if config == nil {
+		return nil, errors.New("rest config is nil")
 	}
 	client, err := discovery.NewDiscoveryClientForConfig(config)
 	if err != nil {
