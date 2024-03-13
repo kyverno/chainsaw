@@ -9,34 +9,18 @@ import (
 )
 
 var (
-	foreachRegex = regexp.MustCompile(`^~(\w+)?\.(.*)`)
-	bindingRegex = regexp.MustCompile(`(.*)\s*->\s*(\w+)$`)
-	escapeRegex  = regexp.MustCompile(`^\\(.+)\\$`)
-	engineRegex  = regexp.MustCompile(`^\((?:(\w+):)?(.+)\)$`)
+	escapeRegex = regexp.MustCompile(`^\\(.+)\\$`)
+	engineRegex = regexp.MustCompile(`^\((?:(\w+):)?(.+)\)$`)
 )
 
 type expression struct {
-	foreach     bool
-	foreachName string
-	statement   string
-	binding     string
-	engine      string
+	statement string
+	engine    string
 }
 
 func parseExpressionRegex(_ context.Context, in string) *expression {
 	expression := &expression{}
-	// 1. match foreach
-	if match := foreachRegex.FindStringSubmatch(in); match != nil {
-		expression.foreach = true
-		expression.foreachName = match[1]
-		in = match[2]
-	}
-	// 2. match binding
-	if match := bindingRegex.FindStringSubmatch(in); match != nil {
-		expression.binding = match[2]
-		in = match[1]
-	}
-	// 3. match escape, if there's no escaping then match engine
+	// 1. match escape, if there's no escaping then match engine
 	if match := escapeRegex.FindStringSubmatch(in); match != nil {
 		in = match[1]
 	} else {
