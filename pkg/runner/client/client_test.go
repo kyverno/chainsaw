@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
@@ -230,6 +231,82 @@ func Test_runnerClient_Create(t *testing.T) {
 			}
 			ctx := logging.IntoContext(context.TODO(), mockLogger)
 			err := c.Create(ctx, tt.args.obj, tt.args.opts...)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.innerCalls, mockClient.NumCalls())
+			assert.Equal(t, tt.loggerCalls, mockLogger.NumCalls())
+		})
+	}
+}
+
+func Test_runnerClient_Update(t *testing.T) {
+	type args struct {
+		obj  ctrlclient.Object
+		opts []ctrlclient.UpdateOption
+	}
+	tests := []struct {
+		name        string
+		logger      func(t *testing.T) *tlogging.FakeLogger
+		inner       func(t *testing.T) *tclient.FakeClient
+		args        args
+		wantErr     bool
+		innerCalls  int
+		loggerCalls int
+	}{{
+		name: "with error",
+		logger: func(t *testing.T) *tlogging.FakeLogger {
+			t.Helper()
+			return &tlogging.FakeLogger{}
+		},
+		inner: func(t *testing.T) *tclient.FakeClient {
+			t.Helper()
+			return &tclient.FakeClient{
+				UpdateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.UpdateOption) error {
+					return errors.New("test")
+				},
+			}
+		},
+		args: args{
+			obj:  &unstructured.Unstructured{},
+			opts: nil,
+		},
+		wantErr:     true,
+		loggerCalls: 2,
+		innerCalls:  1,
+	}, {
+		name: "no error",
+		logger: func(t *testing.T) *tlogging.FakeLogger {
+			t.Helper()
+			return &tlogging.FakeLogger{}
+		},
+		inner: func(t *testing.T) *tclient.FakeClient {
+			t.Helper()
+			return &tclient.FakeClient{
+				UpdateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.UpdateOption) error {
+					return nil
+				},
+			}
+		},
+		args: args{
+			obj:  &unstructured.Unstructured{},
+			opts: nil,
+		},
+		wantErr:     false,
+		loggerCalls: 2,
+		innerCalls:  1,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockLogger := tt.logger(t)
+			mockClient := tt.inner(t)
+			c := &runnerClient{
+				inner: mockClient,
+			}
+			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			err := c.Update(ctx, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -558,4 +635,18 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 			assert.Equal(t, tt.innerCalls, mockClient.NumCalls())
 		})
 	}
+}
+
+func Test_runnerClient_RESTMapper(t *testing.T) {
+	inner := &tclient.FakeClient{
+		RESTMapperFn: func(_ int) meta.RESTMapper {
+			return nil
+		},
+	}
+	c := &runnerClient{
+		inner: inner,
+	}
+	got := c.RESTMapper()
+	assert.Equal(t, 1, inner.NumCalls())
+	assert.Nil(t, got)
 }

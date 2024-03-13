@@ -1,6 +1,7 @@
 package functions
 
 import (
+	"errors"
 	"fmt"
 )
 
@@ -17,7 +18,7 @@ func getArg[T any](arguments []any, index int, out *T) error {
 		return fmt.Errorf("index out of range (%d / %d)", index, len(arguments))
 	}
 	if value, ok := arguments[index].(T); !ok {
-		return fmt.Errorf("invalid type")
+		return errors.New("invalid type")
 	} else {
 		*out = value
 		return nil

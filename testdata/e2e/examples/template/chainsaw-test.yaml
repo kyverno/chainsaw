@@ -5,6 +5,9 @@ metadata:
   name: template
 spec:
   template: true
+  bindings:
+  - name: foo
+    value: (join('-', [$namespace, 'foo']))
   steps:
   - try:
     - apply:
@@ -12,15 +15,15 @@ spec:
           apiVersion: v1
           kind: ConfigMap
           metadata:
-            name: ($namespace)
+            name: ($foo)
     - assert:
         resource:
           apiVersion: v1
           kind: ConfigMap
           metadata:
-            name: ($namespace)
+            name: ($foo)
     - delete:
         ref:
           apiVersion: v1
           kind: ConfigMap
-          name: ($namespace)
+          name: ($foo)

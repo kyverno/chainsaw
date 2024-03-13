@@ -25,6 +25,8 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+const schema = "# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json"
+
 func Command() *cobra.Command {
 	save := false
 	cleanup := false
@@ -34,7 +36,13 @@ func Command() *cobra.Command {
 		SilenceUsage: true,
 		Args:         cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			return execute(cmd.OutOrStdout(), save, cleanup, args...)
+			return execute(
+				cmd.OutOrStdout(),
+				cmd.ErrOrStderr(),
+				save,
+				cleanup,
+				args...,
+			)
 		},
 	}
 	cmd.Flags().BoolVar(&save, "save", false, "If set, converted files will be saved")
@@ -42,31 +50,31 @@ func Command() *cobra.Command {
 	return cmd
 }
 
-func execute(out io.Writer, save, cleanup bool, paths ...string) error {
+func execute(stdout io.Writer, stderr io.Writer, save, cleanup bool, paths ...string) error {
 	folders, err := fsutils.DiscoverFolders(paths...)
 	if err != nil {
-		fmt.Fprintf(out, "ERROR: failed to discover folders: %s\n", err)
+		fmt.Fprintf(stderr, "ERROR: failed to discover folders: %s\n", err)
 		return err
 	}
 	for _, folder := range folders {
-		if err := processFolder(out, folder, save, cleanup); err != nil {
-			fmt.Fprintf(out, "ERROR: failed to process folder %s: %v\n", folder, err)
+		if err := processFolder(stdout, stderr, folder, save, cleanup); err != nil {
+			fmt.Fprintf(stderr, "ERROR: failed to process folder %s: %v\n", folder, err)
 		}
 	}
 	return nil
 }
 
-func processFolder(out io.Writer, folder string, save, cleanup bool) error {
+func processFolder(stdout io.Writer, stderr io.Writer, folder string, save, cleanup bool) error {
 	if _, err := os.Stat(filepath.Join(folder, "chainsaw-test.yaml")); err == nil {
 		return nil
 	}
 	steps, err := discovery.TryFindStepFiles(folder)
 	if err != nil {
-		fmt.Fprintf(out, "ERROR: failed to collect test files: %v\n", err)
+		fmt.Fprintf(stderr, "ERROR: failed to collect test files: %v\n", err)
 		return err
 	}
 	if len(steps) != 0 {
-		fmt.Fprintf(out, "Converting test %s ...\n", folder)
+		fmt.Fprintf(stderr, "Converting test %s ...\n", folder)
 		keys := maps.Keys(steps)
 		slices.Sort(keys)
 		test := v1alpha1.Test{
@@ -80,7 +88,7 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 			step := v1alpha1.TestSpecStep{
 				Name: fmt.Sprintf("step-%s", key),
 			}
-			if err := processStep(out, &step, steps[key], folder, save); err != nil {
+			if err := processStep(stderr, &step, steps[key], folder, save); err != nil {
 				return err
 			}
 			test.Spec.Steps = append(test.Spec.Steps, step)
@@ -91,20 +99,21 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 		}
 		if save {
 			path := filepath.Join(folder, "chainsaw-test.yaml")
-			fmt.Fprintf(out, "Saving file %s ...\n", path)
+			fmt.Fprintf(stderr, "Saving file %s ...\n", path)
 			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 			if err != nil {
 				return fmt.Errorf("failed to open file: %w", err)
 			}
 			defer f.Close()
-			if _, err := f.WriteString("# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json\n"); err != nil {
+			if _, err := f.WriteString(schema + "\n"); err != nil {
 				return fmt.Errorf("failed to write in file: %w", err)
 			}
 			if _, err := f.Write(data); err != nil {
 				return fmt.Errorf("failed to write in file: %w", err)
 			}
 		} else {
-			fmt.Fprintln(out, string(data))
+			fmt.Fprintln(stdout, schema)
+			fmt.Fprintln(stdout, string(data))
 		}
 		if save && cleanup {
 			var files []string
@@ -116,7 +125,7 @@ func processFolder(out io.Writer, folder string, save, cleanup bool) error {
 			for _, file := range files {
 				if file != "" {
 					path := filepath.Join(folder, file)
-					fmt.Fprintf(out, "Deleting file %s ...\n", path)
+					fmt.Fprintf(stderr, "Deleting file %s ...\n", path)
 					if err := os.Remove(path); err != nil {
 						return err
 					}
@@ -131,7 +140,7 @@ func isKuttl(resource unstructured.Unstructured) bool {
 	return strings.HasPrefix(resource.GetAPIVersion(), "kuttl.dev/")
 }
 
-func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, folder string, save bool) error {
+func processStep(stderr io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, folder string, save bool) error {
 	for f, file := range s.OtherFiles {
 		resources, err := resource.Load(filepath.Join(folder, file), true)
 		if err != nil {
@@ -164,13 +173,13 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 				case "TestStep":
 					err := testStep(&step.TestStepSpec, resource)
 					if err != nil {
-						fmt.Fprintf(out, "ERROR: failed to convert %s (%s): %s\n", "TestStep", filepath.Join(folder, file), err)
+						fmt.Fprintf(stderr, "ERROR: failed to convert %s (%s): %s\n", "TestStep", filepath.Join(folder, file), err)
 						return err
 					}
 				case "TestAssert":
 					err := testAssert(&step.TestStepSpec, resource)
 					if err != nil {
-						fmt.Fprintf(out, "ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
+						fmt.Fprintf(stderr, "ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
 						return err
 					}
 				default:
@@ -182,7 +191,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		}
 		if len(filteredResources) != 0 {
 			if save {
-				if err := saveResources(out, folder, file, filteredResources...); err != nil {
+				if err := saveResources(stderr, folder, file, filteredResources...); err != nil {
 					return err
 				}
 			}
@@ -231,7 +240,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 				case "TestAssert":
 					err := testAssert(&step.TestStepSpec, resource)
 					if err != nil {
-						fmt.Fprintf(out, "ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
+						fmt.Fprintf(stderr, "ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
 						return err
 					}
 				default:
@@ -243,7 +252,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		}
 		if len(filteredResources) != 0 {
 			if save {
-				if err := saveResources(out, folder, file, filteredResources...); err != nil {
+				if err := saveResources(stderr, folder, file, filteredResources...); err != nil {
 					return err
 				}
 			}
@@ -292,7 +301,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 				case "TestAssert":
 					err := testAssert(&step.TestStepSpec, resource)
 					if err != nil {
-						fmt.Fprintf(out, "ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
+						fmt.Fprintf(stderr, "ERROR: failed to convert %s (%s): %s\n", "TestAssert", filepath.Join(folder, file), err)
 						return err
 					}
 				default:
@@ -304,7 +313,7 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 		}
 		if len(filteredResources) != 0 {
 			if save {
-				if err := saveResources(out, folder, file, filteredResources...); err != nil {
+				if err := saveResources(stderr, folder, file, filteredResources...); err != nil {
 					return err
 				}
 			}
@@ -324,9 +333,9 @@ func processStep(out io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, f
 	return nil
 }
 
-func saveResources(out io.Writer, folder, file string, resources ...unstructured.Unstructured) error {
+func saveResources(stderr io.Writer, folder, file string, resources ...unstructured.Unstructured) error {
 	path := filepath.Join(folder, file)
-	fmt.Fprintf(out, "Saving file %s ...\n", path)
+	fmt.Fprintf(stderr, "Saving file %s ...\n", path)
 	f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		return fmt.Errorf("failed to open file: %w", err)

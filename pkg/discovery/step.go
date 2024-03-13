@@ -6,7 +6,7 @@ import (
 	"slices"
 )
 
-var StepFileName = regexp.MustCompile(`^(\d\d)-(.*)\.(?:yaml|yml)$`)
+var StepFileName = regexp.MustCompile(`^(\d+)-(.*)\.(?:yaml|yml)$`)
 
 type Step struct {
 	AssertFiles []string
