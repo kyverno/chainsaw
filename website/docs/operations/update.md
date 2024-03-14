@@ -1,19 +1,22 @@
-# Apply
+# Update
 
-The `apply` operation lets you define resources that should be applied to the Kubernetes cluster during the test step.
-
+The `update` operation lets you define resources that should be updated in the Kubernetes cluster during the test step.
 These can be configurations, deployments, services, or any other Kubernetes resource.
 
 ## Configuration
 
 !!! tip "Reference documentation"
-    - The full structure of the `Apply` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Apply).
+    - The full structure of the `Update` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Update).
     - This operation supports [bindings](../bindings/index.md).
     - This operation supports [outputs](../bindings/outputs.md).
 
+!!! warning
+
+    If the resource to be updated doesn't exist in the cluster, the step will fail.
+
 ## Usage examples
 
-Below is an example of using `apply` in a `Test` resource.
+Below is an example of using `update` in a `Test` resource.
 
 !!! example "Using a specific file"
 
@@ -26,7 +29,7 @@ Below is an example of using `apply` in a `Test` resource.
       steps:
       - try:
         # ...
-        - apply:
+        - update:
             file: my-configmap.yaml
         # ...
     ```
@@ -42,7 +45,7 @@ Below is an example of using `apply` in a `Test` resource.
       steps:
       - try:
         # ...
-        - apply:
+        - update:
             file: "configs/*.yaml"
         # ...
     ```
@@ -58,8 +61,8 @@ Below is an example of using `apply` in a `Test` resource.
       steps:
       - try:
         # ...
-        - apply:
-            file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/step/configmap.yaml
+        - update:
+            file: https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/resource/valid.yaml
         # ...
     ```
 
@@ -74,7 +77,7 @@ Below is an example of using `apply` in a `Test` resource.
       steps:
       - try:
         # ...
-        - apply:
+        - update:
             resource:
               apiVersion: v1
               kind: ConfigMap
@@ -85,15 +88,15 @@ Below is an example of using `apply` in a `Test` resource.
         # ...
     ```
 
-### Operation check
+## Operation check
 
-Below is an example of using an [operation check](./check.md#apply).
+Below is an example of using an [operation check](./check.md#update).
 
 !!! example "With check"
 
     ```yaml
     # ...
-    - apply:
+    - update:
         file: my-configmap.yaml
         expect:
         - match:
@@ -113,7 +116,7 @@ Below is an example of using an [operation check](./check.md#apply).
 
     ```yaml
     # ...
-    - apply:
+    - update:
         resource:
           apiVersion: v1
           kind: ConfigMap

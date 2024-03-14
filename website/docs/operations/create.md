@@ -8,6 +8,7 @@ These can be configurations, deployments, services, or any other Kubernetes reso
 !!! tip "Reference documentation"
     - The full structure of the `Create` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
     - This operation supports [bindings](../bindings/index.md).
+    - This operation supports [outputs](../bindings/outputs.md).
 
 !!! warning
 

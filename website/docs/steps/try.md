@@ -26,6 +26,7 @@ A `try` statement supports all [operations](../operations/index.md):
 - [Patch](../operations/patch.md)
 - [Script](../operations/script.md)
 - [Sleep](../operations/sleep.md)
+- [Update](../operations/update.md)
 - [Wait](../operations/wait.md)
 
 ## Example

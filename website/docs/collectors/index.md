@@ -14,3 +14,7 @@ A test step can have an arbitrary number of collectors.
 - [Events](./events.md)
 - [Get](./get.md)
 - [Describe](./describe.md)
+
+## Templating
+
+All `string` fields in collectors support templating.

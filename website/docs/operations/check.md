@@ -45,6 +45,10 @@ This way it is possible to control the scope of a `check`.
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$test.id` | Current test id | `int` |
+| `$step.id` | Current step id | `int` |
+| `$operation.id` | Current operation id | `int` |
+| `$operation.resourceId` | Current resource id | `int` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
@@ -58,6 +62,10 @@ This way it is possible to control the scope of a `check`.
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$test.id` | Current test id | `int` |
+| `$step.id` | Current step id | `int` |
+| `$operation.id` | Current operation id | `int` |
+| `$operation.resourceId` | Current resource id | `int` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `$stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
 | `$stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
@@ -73,6 +81,10 @@ This way it is possible to control the scope of a `check`.
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$test.id` | Current test id | `int` |
+| `$step.id` | Current step id | `int` |
+| `$operation.id` | Current operation id | `int` |
+| `$operation.resourceId` | Current resource id | `int` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
@@ -86,6 +98,10 @@ This way it is possible to control the scope of a `check`.
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$test.id` | Current test id | `int` |
+| `$step.id` | Current step id | `int` |
+| `$operation.id` | Current operation id | `int` |
+| `$operation.resourceId` | Current resource id | `int` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
@@ -99,6 +115,10 @@ This way it is possible to control the scope of a `check`.
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$test.id` | Current test id | `int` |
+| `$step.id` | Current step id | `int` |
+| `$operation.id` | Current operation id | `int` |
+| `$operation.resourceId` | Current resource id | `int` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `@` | The state of the resource (if any) at the end of the operation | `object` |
 
@@ -112,7 +132,28 @@ This way it is possible to control the scope of a `check`.
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$test.id` | Current test id | `int` |
+| `$step.id` | Current step id | `int` |
+| `$operation.id` | Current operation id | `int` |
+| `$operation.resourceId` | Current resource id | `int` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
 | `$stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
 | `$stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
 | `@` | Always `null` | |
+
+## Update
+
+`update` supports `expect` and has the following elements to be checked:
+
+| Name | Purpose | Type |
+|---|---|---|
+| `$values` | Values provided when invoking chainsaw with `--values` flag | `object` |
+| `$namespace` | Name of the current test namespace | `string` |
+| `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
+| `$test.id` | Current test id | `int` |
+| `$step.id` | Current step id | `int` |
+| `$operation.id` | Current operation id | `int` |
+| `$operation.resourceId` | Current resource id | `int` |
+| `$error` | The error message (if any) at the end of the operation | `string` |
+| `@` | The state of the resource (if any) at the end of the operation | `object` |
