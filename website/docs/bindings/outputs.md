@@ -12,6 +12,12 @@ Once an output has been added in the form of a binding, this binding will be ava
 
 Currently, outputs do not cross the step boundaries.
 
+## Matching
+
+An output supports an optional `match` field. The `match` is used to conditionally create a binding.
+
+In the case of applying a file, for example, the file may contain multiple resources. The `match` can be used to select the resource to use for creating the binding.
+
 ## Examples
 
 The example below defines invokes a `kubectl` command to get a configmap from the cluster in json format.
@@ -32,7 +38,10 @@ The json output is then parsed and added to the `$cm` binding and the next opera
         - script:
             content: kubectl get cm quick-start -n $NAMESPACE -o json
             outputs:
-            - name: cm
+            - match:
+                apiVersion: v1
+                kind: ConfigMap
+              name: cm
               value: (json_parse($stdout))
         - assert:
             resource:
@@ -64,7 +73,10 @@ The json output is then parsed and added to the `$cm` binding and the next opera
             - -o
             - json
             outputs:
-            - name: cm
+            - match:
+                apiVersion: v1
+                kind: ConfigMap
+              name: cm
               value: (json_parse($stdout))
         - assert:
             resource:
