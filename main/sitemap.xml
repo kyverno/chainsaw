@@ -416,6 +416,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/operations/update/</loc>
+         <lastmod>2024-03-14</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/operations/wait/</loc>
          <lastmod>2024-03-14</lastmod>
          <changefreq>daily</changefreq>
