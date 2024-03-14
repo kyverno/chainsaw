@@ -72,6 +72,13 @@ func TestValidateOperation(t *testing.T) {
 	exampleSleep := &v1alpha1.Sleep{
 		Duration: metav1.Duration{Duration: 5 * time.Second},
 	}
+	exampleUpdate := &v1alpha1.Update{
+		FileRefOrResource: v1alpha1.FileRefOrResource{
+			FileRef: v1alpha1.FileRef{
+				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
+			},
+		},
+	}
 	exampleWait := &v1alpha1.Wait{
 		ResourceReference: v1alpha1.ResourceReference{
 			Resource: "foos",
@@ -151,6 +158,12 @@ func TestValidateOperation(t *testing.T) {
 		name: "Only Sleep operation statement provided",
 		input: v1alpha1.Operation{
 			Sleep: exampleSleep,
+		},
+		expectErr: false,
+	}, {
+		name: "Only Update operation statement provided",
+		input: v1alpha1.Operation{
+			Update: exampleUpdate,
 		},
 		expectErr: false,
 	}, {
