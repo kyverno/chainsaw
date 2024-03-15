@@ -10,8 +10,9 @@
 <span class=w>        </span><span class=nt>content</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">kubectl get cm quick-start -n $NAMESPACE -o json</span>
 <span class=w>        </span><span class=nt>outputs</span><span class=p>:</span>
 <span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>match</span><span class=p>:</span>
-<span class=w>            </span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class=w>            </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class=w>            </span><span class=nt>(json_parse($stdout))</span><span class=p>:</span>
+<span class=w>              </span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class=w>              </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
 <span class=w>          </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">cm</span>
 <span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">(json_parse($stdout))</span>
 <span class=w>    </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>assert</span><span class=p>:</span>
@@ -40,8 +41,9 @@
 <span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">json</span>
 <span class=w>        </span><span class=nt>outputs</span><span class=p>:</span>
 <span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>match</span><span class=p>:</span>
-<span class=w>            </span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
-<span class=w>            </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
+<span class=w>            </span><span class=nt>(json_parse($stdout))</span><span class=p>:</span>
+<span class=w>              </span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class=w>              </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">ConfigMap</span>
 <span class=w>          </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">cm</span>
 <span class=w>          </span><span class=nt>value</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">(json_parse($stdout))</span>
 <span class=w>    </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>assert</span><span class=p>:</span>
