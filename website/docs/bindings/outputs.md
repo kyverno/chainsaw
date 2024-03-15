@@ -39,8 +39,9 @@ The json output is then parsed and added to the `$cm` binding and the next opera
             content: kubectl get cm quick-start -n $NAMESPACE -o json
             outputs:
             - match:
-                apiVersion: v1
-                kind: ConfigMap
+                (json_parse($stdout)):
+                  apiVersion: v1
+                  kind: ConfigMap
               name: cm
               value: (json_parse($stdout))
         - assert:
@@ -74,8 +75,9 @@ The json output is then parsed and added to the `$cm` binding and the next opera
             - json
             outputs:
             - match:
-                apiVersion: v1
-                kind: ConfigMap
+                (json_parse($stdout)):
+                  apiVersion: v1
+                  kind: ConfigMap
               name: cm
               value: (json_parse($stdout))
         - assert:
