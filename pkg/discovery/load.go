@@ -84,7 +84,7 @@ func LoadTest(fileName string, path string) ([]Test, error) {
 		},
 	}
 	for _, key := range keys {
-		step := v1alpha1.TestSpecStep{
+		step := v1alpha1.TestStep{
 			Name: fmt.Sprintf("step-%s", key),
 		}
 		for _, file := range steps[key].OtherFiles {

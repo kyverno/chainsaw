@@ -42,8 +42,6 @@ This syntax also comes with no limitations to provide additional configuration a
     It's usually easier to start with the manifests based syntax.
     However, as test suites grow and tests become more complex, it is often necessary to configure options on a per test, step or operation basis and the `Test` based syntax becomes necessary.
 
-    Fortunately Chainsaw has a command to [automatically migrate](../commands/chainsaw_migrate_tests.md) from manifest based to `Test` based syntax.
-
 ## Namespaced resources
 
 Kubernetes organizes resources into two primary scopes: namespaced and cluster-scoped.

@@ -85,7 +85,7 @@ func processFolder(stdout io.Writer, stderr io.Writer, folder string, save, clea
 		}
 		test.SetName(strings.ToLower(strings.ReplaceAll(filepath.Base(folder), "_", "-")))
 		for _, key := range keys {
-			step := v1alpha1.TestSpecStep{
+			step := v1alpha1.TestStep{
 				Name: fmt.Sprintf("step-%s", key),
 			}
 			if err := processStep(stderr, &step, steps[key], folder, save); err != nil {
@@ -140,7 +140,7 @@ func isKuttl(resource unstructured.Unstructured) bool {
 	return strings.HasPrefix(resource.GetAPIVersion(), "kuttl.dev/")
 }
 
-func processStep(stderr io.Writer, step *v1alpha1.TestSpecStep, s discovery.Step, folder string, save bool) error {
+func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, folder string, save bool) error {
 	for f, file := range s.OtherFiles {
 		resources, err := resource.Load(filepath.Join(folder, file), true)
 		if err != nil {

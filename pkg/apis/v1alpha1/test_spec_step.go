@@ -1,7 +1,7 @@
 package v1alpha1
 
-// TestSpecStep contains the test step definition used in a test spec.
-type TestSpecStep struct {
+// TestStep contains the test step definition used in a test spec.
+type TestStep struct {
 	// Name of the step.
 	// +optional
 	Name string `json:"name,omitempty"`

@@ -12,7 +12,6 @@ auto_generated: true
 
 - [Configuration](#chainsaw-kyverno-io-v1alpha1-Configuration)
 - [Test](#chainsaw-kyverno-io-v1alpha1-Test)
-- [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
   
 ## `Configuration`     {#chainsaw-kyverno-io-v1alpha1-Configuration}
 
@@ -37,18 +36,6 @@ auto_generated: true
 | `kind` | `string` | :white_check_mark: | | `Test` |
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`TestSpec`](#chainsaw-kyverno-io-v1alpha1-TestSpec) | :white_check_mark: |  | <p>Test spec.</p> |
-
-## `TestStep`     {#chainsaw-kyverno-io-v1alpha1-TestStep}
-
-<p>TestStep is the resource that contains the testStep used to run tests.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `apiVersion` | `string` | :white_check_mark: | | `chainsaw.kyverno.io/v1alpha1` |
-| `kind` | `string` | :white_check_mark: | | `TestStep` |
-| `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
-| `spec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: |  | <p>TestStep spec.</p> |
 
 ## `Apply`     {#chainsaw-kyverno-io-v1alpha1-Apply}
 
@@ -687,18 +674,18 @@ Optionally an apiVersion can be specified.</p>
 | `namespace` | `string` |  |  | <p>Namespace determines whether the test should run in a random ephemeral namespace or not.</p> |
 | `namespaceTemplate` | `policy/v1alpha1.Any` |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `steps` | [`[]TestSpecStep`](#chainsaw-kyverno-io-v1alpha1-TestSpecStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
+| `steps` | [`[]TestStep`](#chainsaw-kyverno-io-v1alpha1-TestStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
 | `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the steps will execute when an error happens. This will be combined with catch handlers defined at the step level.</p> |
 | `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 | `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
 
-## `TestSpecStep`     {#chainsaw-kyverno-io-v1alpha1-TestSpecStep}
+## `TestStep`     {#chainsaw-kyverno-io-v1alpha1-TestStep}
 
 **Appears in:**
     
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 
-<p>TestSpecStep contains the test step definition used in a test spec.</p>
+<p>TestStep contains the test step definition used in a test spec.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -711,7 +698,6 @@ Optionally an apiVersion can be specified.</p>
 **Appears in:**
     
 - [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
-- [TestSpecStep](#chainsaw-kyverno-io-v1alpha1-TestSpecStep)
 
 <p>TestStepSpec defines the desired state and behavior for each test step.</p>
 
