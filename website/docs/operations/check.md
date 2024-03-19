@@ -14,7 +14,7 @@ To support those kinds of use cases, some operations support an additional `chec
     Assertion trees are a solution to declaratively represent complex conditions like partial array comparisons or complex operations against an incoming data structure.
 
     Assertion trees are compatible with standard assertions that exist in tools like KUTTL but can do a lot more.
-    Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/policies/asserts/) in kyverno-json for details.
+    Please see the [assertion trees documentation](https://kyverno.github.io/kyverno-json/latest/policies/asserts/) in kyverno-json for details.
 
 !!! tip "Checked model"
     Different operations have a different model passed through the assertion tree.
