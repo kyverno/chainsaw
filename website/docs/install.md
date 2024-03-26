@@ -84,3 +84,36 @@ make build
 
 A GitHub action is available to install Chainsaw in your workflows.
 See the [GitHub action](./gh-action.md) dedicated documentation.
+
+## Installation of kyverno-chainsaw using Nix Package Manager
+
+To install kyverno-chainsaw, refer to the [documentation](https://search.nixos.org/packages?channel=unstable&show=kyverno-chainsaw&from=0&size=50&sort=relevance&type=packages&query=chainsaw).
+
+### On NixOS
+```bash
+nix-env -iA nixos.kyverno-chainsaw
+```
+
+### On Non-NixOS
+```bash
+nix-env -iA nixpkgs.kyverno-chainsaw
+```
+**Warning:** Using nix-env permanently modifies a local profile of installed packages. This must be updated and maintained by the user in the same way as with a traditional package manager, foregoing many of the benefits that make Nix uniquely powerful. Using nix-shell or a NixOS configuration is recommended instead. 
+
+### Using NixOS Configuration
+
+Add the following Nix code to your NixOS Configuration, usually located in `/etc/nixos/configuration.nix` :
+
+```nix
+environment.systemPackages = [
+  pkgs.kyverno-chainsaw
+];
+```
+
+### Using nix-shell
+
+A nix-shell will temporarily modify your `$PATH` environment variable. This can be used to try a piece of software before deciding to permanently install it. Use the following command to install `kyverno-chainsaw` :
+
+```bash
+nix-shell -p kyverno-chainsaw
+```
