@@ -555,8 +555,8 @@ spec:
               steps:
                 description: Steps defining the test.
                 items:
-                  description: TestSpecStep contains the test step definition used
-                    in a test spec.
+                  description: TestStep contains the test step definition used in
+                    a test spec.
                   properties:
                     bindings:
                       description: Bindings defines additional binding key/values.

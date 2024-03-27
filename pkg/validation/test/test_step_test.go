@@ -6,6 +6,7 @@ import (
 
 	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
 func TestValidateTestStep(t *testing.T) {
@@ -22,46 +23,21 @@ func TestValidateTestStep(t *testing.T) {
 			},
 		},
 	}
-	invalidTestStepSpec := v1alpha1.TestStepSpec{
-		Try: []v1alpha1.Operation{
-			{
-				Apply: &v1alpha1.Apply{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
-						FileRef: v1alpha1.FileRef{
-							File: "file",
-						},
-					},
-				},
-				Assert: &v1alpha1.Assert{
-					FileRefOrCheck: v1alpha1.FileRefOrCheck{
-						FileRef: v1alpha1.FileRef{
-							File: "file",
-						},
-					},
-				},
-			},
-		},
-	}
 	tests := []struct {
 		name      string
-		input     *v1alpha1.TestStep
+		input     v1alpha1.TestStep
 		expectErr bool
 	}{{
-		name: "Valid TestStepSpec",
-		input: &v1alpha1.TestStep{
-			Spec: validTestStepSpec,
+		name: "no name",
+		input: v1alpha1.TestStep{
+			Name:         "",
+			TestStepSpec: validTestStepSpec,
 		},
 		expectErr: false,
-	}, {
-		name: "Invalid TestStepSpec",
-		input: &v1alpha1.TestStep{
-			Spec: invalidTestStepSpec,
-		},
-		expectErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			errs := ValidateTestStep(tt.input)
+			errs := ValidateTestStep(field.NewPath("testPath"), tt.input)
 			if tt.expectErr {
 				assert.NotEmpty(t, errs)
 			} else {

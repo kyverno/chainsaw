@@ -10,7 +10,7 @@ import (
 
 func TestValidateTest(t *testing.T) {
 	validTestSpec := v1alpha1.TestSpec{
-		Steps: []v1alpha1.TestSpecStep{
+		Steps: []v1alpha1.TestStep{
 			{
 				Name: "step1",
 				TestStepSpec: v1alpha1.TestStepSpec{
@@ -30,7 +30,7 @@ func TestValidateTest(t *testing.T) {
 		},
 	}
 	invalidTestSpec := v1alpha1.TestSpec{
-		Steps: []v1alpha1.TestSpecStep{
+		Steps: []v1alpha1.TestStep{
 			{
 				Name: "step1",
 				TestStepSpec: v1alpha1.TestStepSpec{

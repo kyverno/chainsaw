@@ -8,7 +8,7 @@ import (
 func ValidateTestSpec(path *field.Path, obj v1alpha1.TestSpec) field.ErrorList {
 	var errs field.ErrorList
 	for i, step := range obj.Steps {
-		errs = append(errs, ValidateTestSpecStep(path.Child("steps").Index(i), step)...)
+		errs = append(errs, ValidateTestStep(path.Child("steps").Index(i), step)...)
 	}
 	for i, catch := range obj.Catch {
 		errs = append(errs, ValidateCatch(path.Child("catch").Index(i), catch)...)

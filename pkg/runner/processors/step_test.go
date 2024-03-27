@@ -33,7 +33,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		namespacer   *fakeNamespacer.FakeNamespacer
 		clock        clock.PassiveClock
 		test         discovery.Test
-		stepSpec     v1alpha1.TestSpecStep
+		stepSpec     v1alpha1.TestStep
 		stepReport   *report.TestSpecStepReport
 		cleaner      *cleaner
 		expectedFail bool
@@ -58,7 +58,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				},
 			},
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try:      []v1alpha1.Operation{},
@@ -96,7 +96,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -144,7 +144,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -216,7 +216,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -288,7 +288,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -332,7 +332,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -373,7 +373,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -406,7 +406,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -447,7 +447,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -500,7 +500,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -549,7 +549,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				SkipDelete: ptr.To[bool](true),
 				Timeouts:   &v1alpha1.Timeouts{},
@@ -598,7 +598,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				SkipDelete: ptr.To[bool](true),
 				Timeouts:   &v1alpha1.Timeouts{},
@@ -653,7 +653,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				SkipDelete: ptr.To[bool](true),
 				Timeouts:   &v1alpha1.Timeouts{},
@@ -726,7 +726,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -807,7 +807,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -884,7 +884,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
@@ -997,7 +997,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 			BasePath: testData,
 		},
-		stepSpec: v1alpha1.TestSpecStep{
+		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{

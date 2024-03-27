@@ -3,8 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## ‼️ Breaking changes ‼️
-
 ## 💫 New features 💫
 
 ## ✨ UI changes ✨
@@ -19,3 +17,7 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
+
+## ‼️ Breaking changes ‼️
+
+- Deprecated `TestStep` resource support was removed as well as related `chainsaw migrate tests` command
