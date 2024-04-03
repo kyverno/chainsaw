@@ -84,7 +84,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
 						Timeouts: &v1alpha1.Timeouts{},
-						Steps: []v1alpha1.TestSpecStep{
+						Steps: []v1alpha1.TestStep{
 							{
 								TestStepSpec: v1alpha1.TestStepSpec{},
 							},
@@ -116,7 +116,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
 						Timeouts: &v1alpha1.Timeouts{},
-						Steps: []v1alpha1.TestSpecStep{
+						Steps: []v1alpha1.TestStep{
 							{
 								TestStepSpec: v1alpha1.TestStepSpec{},
 							},
@@ -148,7 +148,7 @@ func TestTestProcessor_Run(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Timeouts: &v1alpha1.Timeouts{},
 						Skip:     ptr.To[bool](true),
-						Steps: []v1alpha1.TestSpecStep{
+						Steps: []v1alpha1.TestStep{
 							{
 								TestStepSpec: v1alpha1.TestStepSpec{},
 							},
@@ -185,7 +185,7 @@ func TestTestProcessor_Run(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Namespace: "chainsaw",
 						Timeouts:  &v1alpha1.Timeouts{},
-						Steps: []v1alpha1.TestSpecStep{
+						Steps: []v1alpha1.TestStep{
 							{
 								TestStepSpec: v1alpha1.TestStepSpec{},
 							},
@@ -220,7 +220,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				Test: &v1alpha1.Test{
 					Spec: v1alpha1.TestSpec{
 						Timeouts: &v1alpha1.Timeouts{},
-						Steps: []v1alpha1.TestSpecStep{
+						Steps: []v1alpha1.TestStep{
 							{
 								TestStepSpec: v1alpha1.TestStepSpec{},
 							},
@@ -252,7 +252,7 @@ func TestTestProcessor_Run(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						DelayBeforeCleanup: ptr.To[v1.Duration](v1.Duration{Duration: 1 * time.Second}),
 						Timeouts:           &v1alpha1.Timeouts{},
-						Steps: []v1alpha1.TestSpecStep{
+						Steps: []v1alpha1.TestStep{
 							{
 								TestStepSpec: v1alpha1.TestStepSpec{},
 							},
@@ -287,7 +287,7 @@ func TestTestProcessor_Run(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Namespace: "chainsaw",
 						Timeouts:  &v1alpha1.Timeouts{},
-						Steps: []v1alpha1.TestSpecStep{
+						Steps: []v1alpha1.TestStep{
 							{
 								TestStepSpec: v1alpha1.TestStepSpec{},
 							},
@@ -326,7 +326,7 @@ func TestTestProcessor_Run(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Namespace: "chainsaw",
 						Timeouts:  &v1alpha1.Timeouts{},
-						Steps: []v1alpha1.TestSpecStep{
+						Steps: []v1alpha1.TestStep{
 							{
 								TestStepSpec: v1alpha1.TestStepSpec{},
 							},
@@ -365,7 +365,7 @@ func TestTestProcessor_Run(t *testing.T) {
 					Spec: v1alpha1.TestSpec{
 						Namespace: "chainsaw",
 						Timeouts:  &v1alpha1.Timeouts{},
-						Steps: []v1alpha1.TestSpecStep{
+						Steps: []v1alpha1.TestStep{
 							{
 								TestStepSpec: v1alpha1.TestStepSpec{},
 							},

@@ -45,7 +45,7 @@ func TestLoadTest(t *testing.T) {
 					Name: "test",
 				},
 				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestSpecStep{{
+					Steps: []v1alpha1.TestStep{{
 						Name: "create configmap",
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{
@@ -93,7 +93,7 @@ func TestLoadTest(t *testing.T) {
 					Name: "test",
 				},
 				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestSpecStep{{
+					Steps: []v1alpha1.TestStep{{
 						Name: "create configmap",
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{
@@ -141,7 +141,7 @@ func TestLoadTest(t *testing.T) {
 					Name: "test",
 				},
 				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestSpecStep{{
+					Steps: []v1alpha1.TestStep{{
 						Name: "create configmap",
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{
@@ -189,7 +189,7 @@ func TestLoadTest(t *testing.T) {
 					Name: "manifests",
 				},
 				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestSpecStep{{
+					Steps: []v1alpha1.TestStep{{
 						Name: "step-01",
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
@@ -244,7 +244,7 @@ func TestLoadTest(t *testing.T) {
 					Name: "test-1",
 				},
 				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestSpecStep{{
+					Steps: []v1alpha1.TestStep{{
 						Name: "create configmap",
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{
@@ -286,7 +286,7 @@ func TestLoadTest(t *testing.T) {
 					Name: "test-2",
 				},
 				Spec: v1alpha1.TestSpec{
-					Steps: []v1alpha1.TestSpecStep{{
+					Steps: []v1alpha1.TestStep{{
 						Name: "create configmap",
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{

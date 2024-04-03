@@ -47,7 +47,7 @@ type TestSpec struct {
 	Bindings []Binding `json:"bindings,omitempty"`
 
 	// Steps defining the test.
-	Steps []TestSpecStep `json:"steps"`
+	Steps []TestStep `json:"steps"`
 
 	// Catch defines what the steps will execute when an error happens.
 	// This will be combined with catch handlers defined at the step level.

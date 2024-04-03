@@ -50,7 +50,7 @@ func NewStepProcessor(
 	namespacer namespacer.Namespacer,
 	clock clock.PassiveClock,
 	test discovery.Test,
-	step v1alpha1.TestSpecStep,
+	step v1alpha1.TestStep,
 	stepReport *report.TestSpecStepReport,
 	cleaner *cleaner,
 ) StepProcessor {
@@ -73,7 +73,7 @@ type stepProcessor struct {
 	namespacer namespacer.Namespacer
 	clock      clock.PassiveClock
 	test       discovery.Test
-	step       v1alpha1.TestSpecStep
+	step       v1alpha1.TestStep
 	stepReport *report.TestSpecStepReport
 	cleaner    *cleaner
 	timeouts   v1alpha1.Timeouts

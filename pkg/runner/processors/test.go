@@ -27,7 +27,7 @@ import (
 
 type TestProcessor interface {
 	Run(context.Context, binding.Bindings, namespacer.Namespacer)
-	CreateStepProcessor(namespacer.Namespacer, *cleaner, v1alpha1.TestSpecStep) StepProcessor
+	CreateStepProcessor(namespacer.Namespacer, *cleaner, v1alpha1.TestStep) StepProcessor
 }
 
 func NewTestProcessor(
@@ -193,7 +193,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 	}
 }
 
-func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, cleaner *cleaner, step v1alpha1.TestSpecStep) StepProcessor {
+func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, cleaner *cleaner, step v1alpha1.TestStep) StepProcessor {
 	var stepReport *report.TestSpecStepReport
 	if p.testReport != nil {
 		stepReport = report.NewTestSpecStep(step.Name)

@@ -66,7 +66,7 @@ func TestLoad(t *testing.T) {
 				Name: "test-1",
 			},
 			Spec: v1alpha1.TestSpec{
-				Steps: []v1alpha1.TestSpecStep{{
+				Steps: []v1alpha1.TestStep{{
 					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Apply: &v1alpha1.Apply{
@@ -151,7 +151,7 @@ func TestLoad(t *testing.T) {
 				Name: "test-1",
 			},
 			Spec: v1alpha1.TestSpec{
-				Steps: []v1alpha1.TestSpecStep{},
+				Steps: []v1alpha1.TestStep{},
 			},
 		}, {
 			TypeMeta: metav1.TypeMeta{
@@ -162,7 +162,7 @@ func TestLoad(t *testing.T) {
 				Name: "test-2",
 			},
 			Spec: v1alpha1.TestSpec{
-				Steps: []v1alpha1.TestSpecStep{},
+				Steps: []v1alpha1.TestStep{},
 			},
 		}},
 	}, {
@@ -177,7 +177,7 @@ func TestLoad(t *testing.T) {
 				Name: "test-1",
 			},
 			Spec: v1alpha1.TestSpec{
-				Steps: []v1alpha1.TestSpecStep{{
+				Steps: []v1alpha1.TestStep{{
 					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Apply: &v1alpha1.Apply{

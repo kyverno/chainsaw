@@ -64,8 +64,8 @@ func Command() *cobra.Command {
 	return cmd
 }
 
-func sampleSteps(description bool) []v1alpha1.TestSpecStep {
-	return []v1alpha1.TestSpecStep{{
+func sampleSteps(description bool) []v1alpha1.TestStep {
+	return []v1alpha1.TestStep{{
 		Name: "step 1",
 		TestStepSpec: v1alpha1.TestStepSpec{
 			Description: getDescription(description, "sample step 1"),
