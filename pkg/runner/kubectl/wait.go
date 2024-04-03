@@ -3,6 +3,7 @@ package kubectl
 import (
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -89,7 +90,12 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 	if format != "" {
 		cmd.Args = append(cmd.Args, "-o", format)
 	}
-	// disable default timeout in the command
-	cmd.Args = append(cmd.Args, "--timeout=-1s")
+	if collector.Timeout != nil {
+		cmd.Args = append(cmd.Args, "--timeout", collector.Timeout.Duration.String())
+		// Shift operation timeout so that it happens after the command timeout
+		cmd.Timeout.Duration += 30 * time.Second
+	} else {
+		cmd.Args = append(cmd.Args, "--timeout=-1s")
+	}
 	return &cmd, nil
 }
