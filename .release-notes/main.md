@@ -20,4 +20,4 @@ Release notes for `TODO`.
 
 ## ‼️ Breaking changes ‼️
 
-- Deprecated `TestStep` resource support was removed as well as related `chainsaw migrate tests` command
+- Deprecated `TestStep` resource support was removed as well as the related command `chainsaw migrate tests`
