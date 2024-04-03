@@ -22,4 +22,5 @@ Release notes for `TODO`.
 
 ## 🔧 Fixes 🔧
 
-- Fixed `wait` operation timeout by passing the timeout value to the underlying `kubectl` command
+- Fixed `wait` operation timeout passing the timeout value to the underlying `kubectl` command
+- Fixed `wait` operation condition incorrectly formatted with quotes

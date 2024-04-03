@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/url"
 	"path/filepath"
+	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -32,6 +33,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno/ext/output/color"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
@@ -698,12 +700,16 @@ func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
 		ns = p.namespacer.GetNamespace()
 	}
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
+	// make sure timeout is set to populate the command flag
+	op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.ExecDuration())}
+	// shift operation timeout
+	timeout := op.Timeout.Duration + 30*time.Second
 	return newLazyOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		&timeout,
 		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
 			cmd, err := kubectl.Wait(cluster, bindings, &op)
 			if err != nil {

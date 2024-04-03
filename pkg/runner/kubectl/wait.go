@@ -3,7 +3,6 @@ package kubectl
 import (
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -63,7 +62,7 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 			if err != nil {
 				return nil, err
 			}
-			cmd.Args = append(cmd.Args, fmt.Sprintf(`--for=condition=%s="%s"`, name, value))
+			cmd.Args = append(cmd.Args, fmt.Sprintf(`--for=condition=%s=%s`, name, value))
 		} else {
 			cmd.Args = append(cmd.Args, fmt.Sprintf("--for=condition=%s", name))
 		}
@@ -92,8 +91,6 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 	}
 	if collector.Timeout != nil {
 		cmd.Args = append(cmd.Args, "--timeout", collector.Timeout.Duration.String())
-		// Shift operation timeout so that it happens after the command timeout
-		cmd.Timeout.Duration += 30 * time.Second
 	} else {
 		cmd.Args = append(cmd.Args, "--timeout=-1s")
 	}
