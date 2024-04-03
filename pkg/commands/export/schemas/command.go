@@ -4,6 +4,7 @@ import (
 	"errors"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/data"
@@ -17,26 +18,26 @@ func Command() *cobra.Command {
 		Args:         cobra.ExactArgs(1),
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, args []string) error {
-			path := args[0]
-			if _, err := os.Stat(path); err != nil {
+			outPath := args[0]
+			if _, err := os.Stat(outPath); err != nil {
 				if !errors.Is(err, os.ErrNotExist) {
 					return err
 				}
-				if err := os.MkdirAll(path, os.ModeDir|os.ModePerm); err != nil {
+				if err := os.MkdirAll(outPath, os.ModeDir|os.ModePerm); err != nil {
 					return err
 				}
 			}
 			schemasFs := data.Schemas()
-			entries, err := fs.ReadDir(schemasFs, "schemas/json")
+			entries, err := fs.ReadDir(schemasFs, path.Join("schemas", "json"))
 			if err != nil {
 				return err
 			}
 			for _, entry := range entries {
-				input, err := fs.ReadFile(schemasFs, filepath.Join("schemas/json", entry.Name()))
+				input, err := fs.ReadFile(schemasFs, path.Join("schemas", "json", entry.Name()))
 				if err != nil {
 					return err
 				}
-				if err := os.WriteFile(filepath.Join(path, entry.Name()), input, os.ModePerm); err != nil {
+				if err := os.WriteFile(filepath.Join(outPath, entry.Name()), input, os.ModePerm); err != nil {
 					return err
 				}
 			}

@@ -3,7 +3,7 @@ package lint
 import (
 	"fmt"
 	"io/fs"
-	"path/filepath"
+	"path"
 
 	"github.com/kyverno/chainsaw/pkg/data"
 )
@@ -20,9 +20,9 @@ func getScheme(schema string) ([]byte, error) {
 }
 
 func getTestSchema() ([]byte, error) {
-	return fs.ReadFile(data.Schemas(), filepath.Join("schemas/json", "test-chainsaw-v1alpha1.json"))
+	return fs.ReadFile(data.Schemas(), path.Join("schemas", "json", "test-chainsaw-v1alpha1.json"))
 }
 
 func getConfigurationSchema() ([]byte, error) {
-	return fs.ReadFile(data.Schemas(), filepath.Join("schemas/json", "configuration-chainsaw-v1alpha1.json"))
+	return fs.ReadFile(data.Schemas(), path.Join("schemas", "json", "configuration-chainsaw-v1alpha1.json"))
 }
