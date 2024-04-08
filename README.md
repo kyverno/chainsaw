@@ -35,6 +35,7 @@ Built under the Kyverno umbrella, you can use the Kyverno Chainsaw **Slack chann
 - [Nirmata Office Hours for Kyverno- Episode 9- Demonstrate Kyverno Chainsaw](https://www.youtube.com/watch?v=IrIteTTjlbU)
 - [Kubebuilder Community Meeting - February 1, 2024](https://www.youtube.com/watch?v=Ejof-wtAdQM)
 - [Kyverno Chainsaw 0.1.4 - Awesome new features!](https://kyverno.io/blog/2024/02/15/kyverno-chainsaw-0.1.4-awesome-new-features/)
+- [Mastering Kubernetes Testing with Kyverno Chainsaw!](https://youtu.be/hQJWGzogIiI)
 
 ## Getting Started
 
