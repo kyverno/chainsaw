@@ -93,6 +93,7 @@ nav:
       - Functions: jp/functions.md
     - APIs:
       - v1alpha1: apis/chainsaw.v1alpha1.md
+      - v1alpha2: apis/chainsaw.v1alpha2.md
   - json-schemas.md
 - Examples:
   - examples/index.md

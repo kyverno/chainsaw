@@ -1114,6 +1114,29 @@
             }
           }
         },
+        "cleanup": {
+          "description": "Cleanup contains cleanup configuration.",
+          "type": [
+            "object",
+            "null"
+          ],
+          "properties": {
+            "delayBeforeCleanup": {
+              "description": "DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "skipDelete": {
+              "description": "If set, do not delete the resources after running a test.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          }
+        },
         "clusters": {
           "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
           "type": [
@@ -1121,6 +1144,7 @@
             "null"
           ],
           "additionalProperties": {
+            "description": "Cluster defines cluster config and context.",
             "type": [
               "object",
               "null"
@@ -1143,47 +1167,83 @@
             }
           }
         },
-        "delayBeforeCleanup": {
-          "description": "DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.",
+        "discovery": {
+          "description": "Discovery contains tests discovery configuration.",
           "type": [
-            "string",
+            "object",
             "null"
-          ]
+          ],
+          "properties": {
+            "excludeTestRegex": {
+              "description": "ExcludeTestRegex is used to exclude tests based on a regular expression.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "fullName": {
+              "description": "FullName makes use of the full test case folder path instead of the folder name.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "includeTestRegex": {
+              "description": "IncludeTestRegex is used to include tests based on a regular expression.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "testFile": {
+              "description": "TestFile is the name of the file containing the test to run. If no extension is provided, chainsaw will try with .yaml first and .yml if needed.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
         },
-        "excludeTestRegex": {
-          "description": "ExcludeTestRegex is used to exclude tests based on a regular expression.",
+        "execution": {
+          "description": "Execution contains tests execution configuration.",
           "type": [
-            "string",
+            "object",
             "null"
-          ]
-        },
-        "failFast": {
-          "description": "FailFast determines whether the test should stop upon encountering the first failure.",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "forceTerminationGracePeriod": {
-          "description": "ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.",
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "fullName": {
-          "description": "FullName makes use of the full test case folder path instead of the folder name.",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "includeTestRegex": {
-          "description": "IncludeTestRegex is used to include tests based on a regular expression.",
-          "type": [
-            "string",
-            "null"
-          ]
+          ],
+          "properties": {
+            "failFast": {
+              "description": "FailFast determines whether the test should stop upon encountering the first failure.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
+            "forceTerminationGracePeriod": {
+              "description": "ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "parallel": {
+              "description": "The maximum number of tests to run at once.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int",
+              "minimum": 1
+            },
+            "repeatCount": {
+              "description": "RepeatCount indicates how many times the tests should be executed.",
+              "type": [
+                "integer",
+                "null"
+              ],
+              "format": "int",
+              "minimum": 1
+            }
+          }
         },
         "namespace": {
           "description": "Namespace contains properties for the namespace to use for tests.",
@@ -1205,69 +1265,55 @@
             }
           }
         },
-        "parallel": {
-          "description": "The maximum number of tests to run at once.",
+        "report": {
+          "description": "Report contains properties for the report.",
           "type": [
-            "integer",
+            "object",
             "null"
           ],
-          "format": "int",
-          "minimum": 1
+          "properties": {
+            "format": {
+              "description": "ReportFormat determines test report format (JSON|XML).",
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "JSON",
+                "XML"
+              ]
+            },
+            "name": {
+              "description": "ReportName defines the name of report to create. It defaults to \"chainsaw-report\".",
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "path": {
+              "description": "ReportPath defines the path.",
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
         },
-        "repeatCount": {
-          "description": "RepeatCount indicates how many times the tests should be executed.",
+        "templating": {
+          "description": "Templating contains the templating config.",
           "type": [
-            "integer",
+            "object",
             "null"
           ],
-          "format": "int",
-          "minimum": 1
-        },
-        "reportFormat": {
-          "description": "ReportFormat determines test report format (JSON|XML|nil) nil == no report. maps to report.Type, however we don't want generated.deepcopy to have reference to it.",
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "JSON",
-            "XML"
-          ]
-        },
-        "reportName": {
-          "description": "ReportName defines the name of report to create. It defaults to \"chainsaw-report\".",
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "reportPath": {
-          "description": "ReportPath defines the path.",
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "skipDelete": {
-          "description": "If set, do not delete the resources after running the tests (implies SkipClusterDelete).",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "template": {
-          "description": "Template determines whether resources should be considered for templating.",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "testFile": {
-          "description": "TestFile is the name of the file containing the test to run. If no extension is provided, chainsaw will try with .yaml first and .yml if needed.",
-          "type": [
-            "string",
-            "null"
-          ]
+          "properties": {
+            "enabled": {
+              "description": "Enabled determines whether resources should be considered for templating.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            }
+          }
         },
         "timeouts": {
           "description": "Global timeouts configuration. Applies to all tests/test steps if not overridden.",

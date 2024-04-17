@@ -518,6 +518,7 @@ spec:
                 type: array
               clusters:
                 additionalProperties:
+                  description: Cluster defines cluster config and context.
                   properties:
                     context:
                       description: Context is the name of the context to use.
@@ -1137,8 +1138,21 @@ spec:
                       type: object
                   type: object
                 type: array
+              cleanup:
+                description: Cleanup contains cleanup configuration.
+                properties:
+                  delayBeforeCleanup:
+                    description: DelayBeforeCleanup adds a delay between the time
+                      a test ends and the time cleanup starts.
+                    type: string
+                  skipDelete:
+                    description: If set, do not delete the resources after running
+                      a test.
+                    type: boolean
+                type: object
               clusters:
                 additionalProperties:
+                  description: Cluster defines cluster config and context.
                   properties:
                     context:
                       description: Context is the name of the context to use.
@@ -1152,30 +1166,51 @@ spec:
                 description: Clusters holds a registry to clusters to support multi-cluster
                   tests.
                 type: object
-              delayBeforeCleanup:
-                description: DelayBeforeCleanup adds a delay between the time a test
-                  ends and the time cleanup starts.
-                type: string
-              excludeTestRegex:
-                description: ExcludeTestRegex is used to exclude tests based on a
-                  regular expression.
-                type: string
-              failFast:
-                description: FailFast determines whether the test should stop upon
-                  encountering the first failure.
-                type: boolean
-              forceTerminationGracePeriod:
-                description: ForceTerminationGracePeriod forces the termination grace
-                  period on pods, statefulsets, daemonsets and deployments.
-                type: string
-              fullName:
-                description: FullName makes use of the full test case folder path
-                  instead of the folder name.
-                type: boolean
-              includeTestRegex:
-                description: IncludeTestRegex is used to include tests based on a
-                  regular expression.
-                type: string
+              discovery:
+                description: Discovery contains tests discovery configuration.
+                properties:
+                  excludeTestRegex:
+                    description: ExcludeTestRegex is used to exclude tests based on
+                      a regular expression.
+                    type: string
+                  fullName:
+                    description: FullName makes use of the full test case folder path
+                      instead of the folder name.
+                    type: boolean
+                  includeTestRegex:
+                    description: IncludeTestRegex is used to include tests based on
+                      a regular expression.
+                    type: string
+                  testFile:
+                    default: chainsaw-test
+                    description: TestFile is the name of the file containing the test
+                      to run. If no extension is provided, chainsaw will try with
+                      .yaml first and .yml if needed.
+                    type: string
+                type: object
+              execution:
+                description: Execution contains tests execution configuration.
+                properties:
+                  failFast:
+                    description: FailFast determines whether the test should stop
+                      upon encountering the first failure.
+                    type: boolean
+                  forceTerminationGracePeriod:
+                    description: ForceTerminationGracePeriod forces the termination
+                      grace period on pods, statefulsets, daemonsets and deployments.
+                    type: string
+                  parallel:
+                    description: The maximum number of tests to run at once.
+                    format: int
+                    minimum: 1
+                    type: integer
+                  repeatCount:
+                    description: RepeatCount indicates how many times the tests should
+                      be executed.
+                    format: int
+                    minimum: 1
+                    type: integer
+                type: object
               namespace:
                 description: Namespace contains properties for the namespace to use
                   for tests.
@@ -1190,47 +1225,32 @@ spec:
                     type: object
                     x-kubernetes-preserve-unknown-fields: true
                 type: object
-              parallel:
-                description: The maximum number of tests to run at once.
-                format: int
-                minimum: 1
-                type: integer
-              repeatCount:
-                description: RepeatCount indicates how many times the tests should
-                  be executed.
-                format: int
-                minimum: 1
-                type: integer
-              reportFormat:
-                description: ReportFormat determines test report format (JSON|XML|nil)
-                  nil == no report. maps to report.Type, however we don't want generated.deepcopy
-                  to have reference to it.
-                enum:
-                - JSON
-                - XML
-                type: string
-              reportName:
-                default: chainsaw-report
-                description: ReportName defines the name of report to create. It defaults
-                  to "chainsaw-report".
-                type: string
-              reportPath:
-                description: ReportPath defines the path.
-                type: string
-              skipDelete:
-                description: If set, do not delete the resources after running the
-                  tests (implies SkipClusterDelete).
-                type: boolean
-              template:
-                description: Template determines whether resources should be considered
-                  for templating.
-                type: boolean
-              testFile:
-                default: chainsaw-test
-                description: TestFile is the name of the file containing the test
-                  to run. If no extension is provided, chainsaw will try with .yaml
-                  first and .yml if needed.
-                type: string
+              report:
+                description: Report contains properties for the report.
+                properties:
+                  format:
+                    description: ReportFormat determines test report format (JSON|XML).
+                    enum:
+                    - JSON
+                    - XML
+                    type: string
+                  name:
+                    default: chainsaw-report
+                    description: ReportName defines the name of report to create.
+                      It defaults to "chainsaw-report".
+                    type: string
+                  path:
+                    description: ReportPath defines the path.
+                    type: string
+                type: object
+              templating:
+                description: Templating contains the templating config.
+                properties:
+                  enabled:
+                    description: Enabled determines whether resources should be considered
+                      for templating.
+                    type: boolean
+                type: object
               timeouts:
                 description: Global timeouts configuration. Applies to all tests/test
                   steps if not overridden.

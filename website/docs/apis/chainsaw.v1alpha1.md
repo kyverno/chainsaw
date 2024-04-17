@@ -131,6 +131,9 @@ during the testing process.</p>
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
 
+<p>Cluster defines cluster config and context.</p>
+
+
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `kubeconfig` | `string` | :white_check_mark: |  | <p>Kubeconfig is the path to the referenced file.</p> |
