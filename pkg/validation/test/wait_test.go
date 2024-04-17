@@ -27,7 +27,7 @@ func TestValidateWait(t *testing.T) {
 			},
 		},
 		expectErr: true,
-		errMsg:    "a condition must be specified",
+		errMsg:    "either a deletion, condition or a jsonpath must be specified",
 	}, {
 		name: "Neither Name nor Selector provided",
 		input: &v1alpha1.Wait{

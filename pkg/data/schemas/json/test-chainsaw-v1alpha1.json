@@ -1067,6 +1067,27 @@
                           "object",
                           "null"
                         ]
+                      },
+                      "jsonPath": {
+                        "description": "JsonPath specifies the json path condition to wait for.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "required": [
+                          "path",
+                          "value"
+                        ],
+                        "properties": {
+                          "path": {
+                            "description": "Path defines the json path to wait for, e.g. '{.status.phase}'.",
+                            "type": "string"
+                          },
+                          "value": {
+                            "description": "Value defines the expected value to wait for, e.g., \"Running\".",
+                            "type": "string"
+                          }
+                        }
                       }
                     }
                   },
@@ -1986,6 +2007,27 @@
                                 "object",
                                 "null"
                               ]
+                            },
+                            "jsonPath": {
+                              "description": "JsonPath specifies the json path condition to wait for.",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "required": [
+                                "path",
+                                "value"
+                              ],
+                              "properties": {
+                                "path": {
+                                  "description": "Path defines the json path to wait for, e.g. '{.status.phase}'.",
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "description": "Value defines the expected value to wait for, e.g., \"Running\".",
+                                  "type": "string"
+                                }
+                              }
                             }
                           }
                         },
@@ -2817,6 +2859,27 @@
                                 "object",
                                 "null"
                               ]
+                            },
+                            "jsonPath": {
+                              "description": "JsonPath specifies the json path condition to wait for.",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "required": [
+                                "path",
+                                "value"
+                              ],
+                              "properties": {
+                                "path": {
+                                  "description": "Path defines the json path to wait for, e.g. '{.status.phase}'.",
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "description": "Value defines the expected value to wait for, e.g., \"Running\".",
+                                  "type": "string"
+                                }
+                              }
                             }
                           }
                         },
@@ -4148,6 +4211,27 @@
                                 "object",
                                 "null"
                               ]
+                            },
+                            "jsonPath": {
+                              "description": "JsonPath specifies the json path condition to wait for.",
+                              "type": [
+                                "object",
+                                "null"
+                              ],
+                              "required": [
+                                "path",
+                                "value"
+                              ],
+                              "properties": {
+                                "path": {
+                                  "description": "Path defines the json path to wait for, e.g. '{.status.phase}'.",
+                                  "type": "string"
+                                },
+                                "value": {
+                                  "description": "Value defines the expected value to wait for, e.g., \"Running\".",
+                                  "type": "string"
+                                }
+                              }
                             }
                           }
                         },

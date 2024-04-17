@@ -9,4 +9,8 @@ type For struct {
 	// Condition specifies the condition to wait for.
 	// +optional
 	Condition *Condition `json:"condition,omitempty"`
+
+	// JsonPath specifies the json path condition to wait for.
+	// +optional
+	JsonPath *JsonPath `json:"jsonPath,omitempty"`
 }

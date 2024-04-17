@@ -407,6 +407,7 @@ with a match filter to determine if the verification should be considered.</p>
 |---|---|---|---|---|
 | `deletion` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
 | `condition` | [`Condition`](#chainsaw-kyverno-io-v1alpha1-Condition) |  |  | <p>Condition specifies the condition to wait for.</p> |
+| `jsonPath` | [`JsonPath`](#chainsaw-kyverno-io-v1alpha1-JsonPath) |  |  | <p>JsonPath specifies the json path condition to wait for.</p> |
 
 ## `Format`     {#chainsaw-kyverno-io-v1alpha1-Format}
 
@@ -438,6 +439,20 @@ with a match filter to determine if the verification should be considered.</p>
 | `ResourceReference` | [`ResourceReference`](#chainsaw-kyverno-io-v1alpha1-ResourceReference) | :white_check_mark: | :white_check_mark: | <p>ResourceReference referenced resource type.</p> |
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
+
+## `JsonPath`     {#chainsaw-kyverno-io-v1alpha1-JsonPath}
+
+**Appears in:**
+    
+- [For](#chainsaw-kyverno-io-v1alpha1-For)
+
+<p>JsonPath represents parameters for waiting on a json path of a resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `path` | `string` | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
+| `value` | `string` | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
 
 ## `ObjectLabelsSelector`     {#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector}
 

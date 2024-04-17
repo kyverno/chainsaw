@@ -117,6 +117,24 @@ func TestWait(t *testing.T) {
 		},
 		wantErr: false,
 	}, {
+		name: "valid resource and jsonpath",
+		waiter: &v1alpha1.Wait{
+			ResourceReference: v1alpha1.ResourceReference{
+				Resource: "pods",
+			},
+			For: v1alpha1.For{
+				JsonPath: &v1alpha1.JsonPath{
+					Path:  "{.status.phase}",
+					Value: "Running",
+				},
+			},
+		},
+		want: &v1alpha1.Command{
+			Entrypoint: "kubectl",
+			Args:       []string{"wait", "pods", "--for=jsonpath='{.status.phase}'=Running", "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
+		},
+		wantErr: false,
+	}, {
 		name: "with resource name",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
