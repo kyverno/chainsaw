@@ -518,6 +518,7 @@ spec:
                 type: array
               clusters:
                 additionalProperties:
+                  description: Cluster defines cluster config and context.
                   properties:
                     context:
                       description: Context is the name of the context to use.
