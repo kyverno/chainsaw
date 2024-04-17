@@ -3,8 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## 💫 New features 💫
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
@@ -19,6 +17,10 @@ Release notes for `TODO`.
 ## ‼️ Breaking changes ‼️
 
 - Deprecated `TestStep` resource support was removed as well as the related command `chainsaw migrate tests`
+
+## 💫 New features 💫
+
+- Added support to wait with `jsonpath` conditions
 
 ## 🔧 Fixes 🔧
 
