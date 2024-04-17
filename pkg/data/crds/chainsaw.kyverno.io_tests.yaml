@@ -487,6 +487,22 @@ spec:
                               description: Deletion specifies parameters for waiting
                                 on a resource's deletion.
                               type: object
+                            jsonPath:
+                              description: JsonPath specifies the json path condition
+                                to wait for.
+                              properties:
+                                path:
+                                  description: Path defines the json path to wait
+                                    for, e.g. '{.status.phase}'.
+                                  type: string
+                                value:
+                                  description: Value defines the expected value to
+                                    wait for, e.g., "Running".
+                                  type: string
+                              required:
+                              - path
+                              - value
+                              type: object
                           type: object
                         format:
                           description: Format determines the output format (json or
@@ -1028,6 +1044,22 @@ spec:
                                     description: Deletion specifies parameters for
                                       waiting on a resource's deletion.
                                     type: object
+                                  jsonPath:
+                                    description: JsonPath specifies the json path
+                                      condition to wait for.
+                                    properties:
+                                      path:
+                                        description: Path defines the json path to
+                                          wait for, e.g. '{.status.phase}'.
+                                        type: string
+                                      value:
+                                        description: Value defines the expected value
+                                          to wait for, e.g., "Running".
+                                        type: string
+                                    required:
+                                    - path
+                                    - value
+                                    type: object
                                 type: object
                               format:
                                 description: Format determines the output format (json
@@ -1520,6 +1552,22 @@ spec:
                                   deletion:
                                     description: Deletion specifies parameters for
                                       waiting on a resource's deletion.
+                                    type: object
+                                  jsonPath:
+                                    description: JsonPath specifies the json path
+                                      condition to wait for.
+                                    properties:
+                                      path:
+                                        description: Path defines the json path to
+                                          wait for, e.g. '{.status.phase}'.
+                                        type: string
+                                      value:
+                                        description: Value defines the expected value
+                                          to wait for, e.g., "Running".
+                                        type: string
+                                    required:
+                                    - path
+                                    - value
                                     type: object
                                 type: object
                               format:
@@ -2383,6 +2431,22 @@ spec:
                                   deletion:
                                     description: Deletion specifies parameters for
                                       waiting on a resource's deletion.
+                                    type: object
+                                  jsonPath:
+                                    description: JsonPath specifies the json path
+                                      condition to wait for.
+                                    properties:
+                                      path:
+                                        description: Path defines the json path to
+                                          wait for, e.g. '{.status.phase}'.
+                                        type: string
+                                      value:
+                                        description: Value defines the expected value
+                                          to wait for, e.g., "Running".
+                                        type: string
+                                    required:
+                                    - path
+                                    - value
                                     type: object
                                 type: object
                               format:

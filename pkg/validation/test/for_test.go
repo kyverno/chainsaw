@@ -25,7 +25,7 @@ func TestValidateFor(t *testing.T) {
 				Type:     field.ErrorTypeInvalid,
 				Field:    "for",
 				BadValue: &v1alpha1.For{},
-				Detail:   "either a deletion or a condition must be specified",
+				Detail:   "either a deletion, condition or a jsonpath must be specified",
 			},
 		},
 	}, {
@@ -61,7 +61,59 @@ func TestValidateFor(t *testing.T) {
 					},
 					Deletion: &v1alpha1.Deletion{},
 				},
-				Detail: "a deletion or a condition must be specified (found both)",
+				Detail: "a deletion, condition or jsonpath must be specified (only one)",
+			},
+		},
+	}, {
+		name: "both condition and jsonpath",
+		path: field.NewPath("for"),
+		obj: &v1alpha1.For{
+			Condition: &v1alpha1.Condition{
+				Name: "foo",
+			},
+			JsonPath: &v1alpha1.JsonPath{
+				Path:  "foo",
+				Value: "bar",
+			},
+		},
+		want: field.ErrorList{
+			&field.Error{
+				Type:  field.ErrorTypeInvalid,
+				Field: "for",
+				BadValue: &v1alpha1.For{
+					Condition: &v1alpha1.Condition{
+						Name: "foo",
+					},
+					JsonPath: &v1alpha1.JsonPath{
+						Path:  "foo",
+						Value: "bar",
+					},
+				},
+				Detail: "a deletion, condition or jsonpath must be specified (only one)",
+			},
+		},
+	}, {
+		name: "both deletion and jsonpath",
+		path: field.NewPath("for"),
+		obj: &v1alpha1.For{
+			JsonPath: &v1alpha1.JsonPath{
+				Path:  "foo",
+				Value: "bar",
+			},
+			Deletion: &v1alpha1.Deletion{},
+		},
+		want: field.ErrorList{
+			&field.Error{
+				Type:  field.ErrorTypeInvalid,
+				Field: "for",
+				BadValue: &v1alpha1.For{
+					JsonPath: &v1alpha1.JsonPath{
+						Path:  "foo",
+						Value: "bar",
+					},
+					Deletion: &v1alpha1.Deletion{},
+				},
+				Detail: "a deletion, condition or jsonpath must be specified (only one)",
 			},
 		},
 	}}
