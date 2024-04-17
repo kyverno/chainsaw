@@ -9,7 +9,7 @@ ORG                                ?= kyverno
 PACKAGE                            ?= github.com/$(ORG)/chainsaw
 GOPATH_SHIM                        := ${PWD}/.gopath
 PACKAGE_SHIM                       := $(GOPATH_SHIM)/src/$(PACKAGE)
-INPUT_DIRS                         := $(PACKAGE)/pkg/apis/v1alpha1
+INPUT_DIRS                         := $(PACKAGE)/pkg/apis/v1alpha1,$(PACKAGE)/pkg/apis/v1alpha2
 CRDS_PATH                          := ${PWD}/.crds
 CLI_BIN                            := chainsaw
 CGO_ENABLED                        ?= 0
@@ -171,6 +171,7 @@ codegen-schemas-openapi: $(KIND)
 	@sleep 15
 	@kubectl get --raw /openapi/v2 > ./.temp/.schemas/openapi/v2/schema.json
 	@kubectl get --raw /openapi/v3/apis/chainsaw.kyverno.io/v1alpha1 > ./.temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha1.json
+	@kubectl get --raw /openapi/v3/apis/chainsaw.kyverno.io/v1alpha2 > ./.temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha2.json
 	@$(KIND) delete cluster --name schema
 	@kubectl config use-context $(CURRENT_CONTEXT) || true
 
