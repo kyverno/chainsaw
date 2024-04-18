@@ -7,7 +7,7 @@ import (
 	"time"
 
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
-	"github.com/kyverno/kyverno/ext/output/color"
+	"github.com/kyverno/pkg/ext/output/color"
 	tclock "k8s.io/utils/clock/testing"
 )
 

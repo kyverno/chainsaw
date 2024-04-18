@@ -2,7 +2,7 @@ package loader
 
 import (
 	"github.com/kyverno/chainsaw/pkg/data"
-	"github.com/kyverno/kyverno/ext/resource/loader"
+	"github.com/kyverno/pkg/ext/resource/loader"
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
 )
 

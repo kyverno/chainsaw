@@ -481,6 +481,8 @@ github.com/kyverno/kyverno v1.5.0-rc1.0.20240202083228-5f0d53fe3482 h1:mGQbOhxoH
 github.com/kyverno/kyverno v1.5.0-rc1.0.20240202083228-5f0d53fe3482/go.mod h1:uEm7WtaqOsPP3Jx6EOkO2PjHu6vf0MFaMD6w1ol7hAQ=
 github.com/kyverno/kyverno-json v0.0.3-0.20240220200359-acadce6af3e8 h1:HaMU30j3uHe5Dgj8En+deGfhZNsfbvg4eg3e0LsXk9Q=
 github.com/kyverno/kyverno-json v0.0.3-0.20240220200359-acadce6af3e8/go.mod h1:oz27arF3YFnUuUTNngae/6OTaEWQ/8gxmCp7CavXYt8=
+github.com/kyverno/pkg/ext v0.0.0-20240418121121-df8add26c55c h1:lAolpR9H8BwM5lRRvgCQ8JowswyxZRH+fgtIQzHFVCk=
+github.com/kyverno/pkg/ext v0.0.0-20240418121121-df8add26c55c/go.mod h1:02vxM0GNXz9+B/i6+rMfWAIwibUuAH+qFsd73IFskgQ=
 github.com/mailru/easyjson v0.7.7 h1:UGYAvKxe3sBsEDzO8ZeWOSlIQfWFlxbzLZe7hwFURr0=
 github.com/mailru/easyjson v0.7.7/go.mod h1:xzfreul335JAWq5oZzymOObrkdz5UnU4kGfJJLY9Nlc=
 github.com/mattn/go-colorable v0.0.9/go.mod h1:9vuHe8Xs5qXnSaW/c/ABM9alt+Vo+STaOChaDxuIBZU=

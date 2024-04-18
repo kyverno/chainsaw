@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/go-getter"
-	extyaml "github.com/kyverno/kyverno/ext/yaml"
+	extyaml "github.com/kyverno/pkg/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
