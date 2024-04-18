@@ -102,6 +102,7 @@ func (o *operation) tryUpdateResource(ctx context.Context, bindings binding.Bind
 		}
 		return nil, err
 	}
+	obj.SetResourceVersion(actual.GetResourceVersion())
 	return o.updateResource(ctx, bindings, obj)
 }
 

@@ -23,5 +23,6 @@
 - [template](template/README.md)
 - [timeout](timeout/README.md)
 - [update](update/README.md)
+- [update-crd](update-crd/README.md)
 - [values](values/README.md)
 - [wait](wait/README.md)
