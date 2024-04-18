@@ -14,7 +14,7 @@ import (
 	nspacer "github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opassert "github.com/kyverno/chainsaw/pkg/runner/operations/assert"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
-	"github.com/kyverno/kyverno/ext/output/color"
+	"github.com/kyverno/pkg/ext/output/color"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

@@ -1,0 +1,60 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: update-crd
+spec:
+  steps:
+  - try:
+    - apply:
+        file: ./crd.yaml
+    - assert:
+        resource:
+          apiVersion: apiextensions.k8s.io/v1
+          kind: CustomResourceDefinition
+          metadata:
+            name: issues.example.example.com
+          status:
+            acceptedNames:
+              kind: Issue
+              listKind: IssueList
+              plural: issues
+              singular: issue
+            storedVersions:
+            - v1alpha1
+    - apply:
+        resource:
+          apiVersion: example.example.com/v1alpha1
+          kind: Issue
+          metadata:
+            name: quick-start
+          spec:
+            mapExperiment:
+              foo: bar
+    - update:
+        resource:
+          apiVersion: example.example.com/v1alpha1
+          kind: Issue
+          metadata:
+            name: quick-start
+          spec:
+            mapExperiment:
+              lorem: ipsum
+    - error:
+        resource:
+          apiVersion: example.example.com/v1alpha1
+          kind: Issue
+          metadata:
+            name: quick-start
+          spec:
+            mapExperiment:
+              foo: bar
+    - assert:
+        resource:
+          apiVersion: example.example.com/v1alpha1
+          kind: Issue
+          metadata:
+            name: quick-start
+          spec:
+            mapExperiment:
+              lorem: ipsum

@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	"github.com/kyverno/kyverno/ext/output/color"
+	"github.com/kyverno/pkg/ext/output/color"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 

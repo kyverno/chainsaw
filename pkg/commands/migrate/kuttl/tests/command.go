@@ -16,7 +16,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/resource"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
-	"github.com/kyverno/kyverno/ext/resource/convert"
+	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/spf13/cobra"
 	"golang.org/x/exp/maps"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

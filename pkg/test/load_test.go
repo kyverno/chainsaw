@@ -9,7 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	internalloader "github.com/kyverno/chainsaw/pkg/internal/loader"
 	tloader "github.com/kyverno/chainsaw/pkg/internal/loader/testing"
-	"github.com/kyverno/kyverno/ext/resource/loader"
+	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

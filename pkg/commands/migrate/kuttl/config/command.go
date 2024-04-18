@@ -12,7 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/config"
 	"github.com/kyverno/chainsaw/pkg/resource"
-	"github.com/kyverno/kyverno/ext/resource/convert"
+	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
