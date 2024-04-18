@@ -40,3 +40,7 @@ apis:
     title: chainsaw (v1alpha1)
     package: github.com/kyverno/chainsaw
     path: pkg/apis/v1alpha1
+  - name: chainsaw
+    title: chainsaw (v1alpha2)
+    package: github.com/kyverno/chainsaw
+    path: pkg/apis/v1alpha2

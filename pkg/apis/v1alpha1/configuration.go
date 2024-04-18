@@ -8,6 +8,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:scope=Cluster
+// +kubebuilder:storageversion
 
 // Configuration is the resource that contains the configuration used to run tests.
 type Configuration struct {
