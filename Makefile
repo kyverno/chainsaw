@@ -32,6 +32,7 @@ CONTROLLER_GEN                     := $(TOOLS_DIR)/controller-gen
 CONTROLLER_GEN_VERSION             := v0.12.0
 REGISTER_GEN                       := $(TOOLS_DIR)/register-gen
 DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
+CONVERSION_GEN                     := $(TOOLS_DIR)/conversion-gen
 CODE_GEN_VERSION                   := v0.28.0
 REFERENCE_DOCS                     := $(TOOLS_DIR)/genref
 REFERENCE_DOCS_VERSION             := latest
@@ -39,7 +40,7 @@ KIND                               := $(TOOLS_DIR)/kind
 KIND_VERSION                       := v0.22.0
 KO                                 ?= $(TOOLS_DIR)/ko
 KO_VERSION                         ?= v0.15.1
-TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(REFERENCE_DOCS) $(KIND) $(KO)
+TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(CONVERSION_GEN) $(REFERENCE_DOCS) $(KIND) $(KO)
 PIP                                ?= "pip"
 ifeq ($(GOOS), darwin)
 SED                                := gsed
@@ -59,6 +60,10 @@ $(REGISTER_GEN):
 $(DEEPCOPY_GEN):
 	@echo Install deepcopy-gen... >&2
 	@GOBIN=$(TOOLS_DIR) go install k8s.io/code-generator/cmd/deepcopy-gen@$(CODE_GEN_VERSION)
+
+$(CONVERSION_GEN):
+	@echo Install conversion-gen... >&2
+	@GOBIN=$(TOOLS_DIR) go install k8s.io/code-generator/cmd/conversion-gen@$(CODE_GEN_VERSION)
 
 $(REFERENCE_DOCS):
 	@echo Install genref... >&2
@@ -112,6 +117,16 @@ codegen-deepcopy: $(DEEPCOPY_GEN)
 		--go-header-file=./.hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS) \
 		--output-file-base=zz_generated.deepcopy
+
+.PHONY: codegen-conversion
+codegen-conversion: ## Generate conversion functions
+codegen-conversion: $(PACKAGE_SHIM)
+codegen-conversion: $(DEEPCOPY_GEN)
+	@echo Generate conversion functions... >&2
+	@GOPATH=$(GOPATH_SHIM) $(CONVERSION_GEN) \
+		--go-header-file=./.hack/boilerplate.go.txt \
+		--input-dirs=$(INPUT_DIRS) \
+		--output-file-base=zz_generated.conversion
 
 .PHONY: codegen-crds
 codegen-crds: ## Generate CRDs
@@ -206,6 +221,7 @@ codegen: codegen-mkdocs
 codegen: codegen-register
 codegen: codegen-schemas-json
 codegen: codegen-tests-catalog
+codegen: codegen-conversion
 
 .PHONY: verify-codegen
 verify-codegen: ## Verify all generated code and docs are up to date
