@@ -11,8 +11,8 @@ require (
 	github.com/hashicorp/go-getter v1.7.4
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240117150817-e430401a2172
 	github.com/kudobuilder/kuttl v0.15.0
-	github.com/kyverno/kyverno v1.5.0-rc1.0.20240202083228-5f0d53fe3482
 	github.com/kyverno/kyverno-json v0.0.3-0.20240220200359-acadce6af3e8
+	github.com/kyverno/pkg/ext v0.0.0-20240418121121-df8add26c55c
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
 	github.com/spf13/cobra v1.8.0
 	github.com/spf13/pflag v1.0.5
@@ -87,6 +87,7 @@ require (
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/jtolds/gls v4.20.0+incompatible // indirect
 	github.com/klauspost/compress v1.17.6 // indirect
+	github.com/kyverno/kyverno v1.5.0-rc1.0.20240202083228-5f0d53fe3482 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

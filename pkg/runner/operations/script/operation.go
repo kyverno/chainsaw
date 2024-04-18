@@ -14,7 +14,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
-	"github.com/kyverno/kyverno/ext/output/color"
+	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/client-go/rest"
 )
 

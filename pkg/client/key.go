@@ -3,7 +3,7 @@ package client
 import (
 	"fmt"
 
-	"github.com/kyverno/kyverno/ext/output/color"
+	"github.com/kyverno/pkg/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
