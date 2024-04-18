@@ -131,7 +131,7 @@ func TestWait(t *testing.T) {
 		},
 		want: &v1alpha1.Command{
 			Entrypoint: "kubectl",
-			Args:       []string{"wait", "pods", "--for=jsonpath='{.status.phase}'=Running", "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
+			Args:       []string{"wait", "pods", "--for=jsonpath={.status.phase}=Running", "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
 		},
 		wantErr: false,
 	}, {
