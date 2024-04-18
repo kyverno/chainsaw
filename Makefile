@@ -121,7 +121,7 @@ codegen-deepcopy: $(DEEPCOPY_GEN)
 .PHONY: codegen-conversion
 codegen-conversion: ## Generate conversion functions
 codegen-conversion: $(PACKAGE_SHIM)
-codegen-conversion: $(DEEPCOPY_GEN)
+codegen-conversion: $(CONVERSION_GEN)
 	@echo Generate conversion functions... >&2
 	@GOPATH=$(GOPATH_SHIM) $(CONVERSION_GEN) \
 		--go-header-file=./.hack/boilerplate.go.txt \

@@ -93,6 +93,7 @@ type Report struct {
 	// ReportFormat determines test report format (JSON|XML).
 	// +optional
 	// +kubebuilder:validation:Enum:=JSON;XML
+	// +kubebuilder:default:="JSON"
 	Format ReportFormatType `json:"format,omitempty"`
 
 	// ReportPath defines the path.
