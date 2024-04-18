@@ -22,6 +22,7 @@ Release notes for `TODO`.
 
 ## 🔧 Fixes 🔧
 
+- Fixed issue with `update` operation failing because resource version not set correctly
 - Fixed `wait` operation timeout passing the timeout value to the underlying `kubectl` command
 - Fixed `wait` operation condition incorrectly formatted with quotes
 - Fixed issue reading files from embedded file systems on windows
