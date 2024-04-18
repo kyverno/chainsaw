@@ -81,7 +81,7 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 		if value == "" {
 			return nil, errors.New("a value must be specified for jsonpath wait type")
 		}
-		cmd.Args = append(cmd.Args, fmt.Sprintf(`--for=jsonpath='%s'=%s`, path, value))
+		cmd.Args = append(cmd.Args, fmt.Sprintf(`--for=jsonpath=%s=%s`, path, value))
 	} else {
 		return nil, errors.New("either a deletion or a condition must be specified")
 	}
