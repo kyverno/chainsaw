@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  required:
+  scan-trivy:
     runs-on: ubuntu-latest
     permissions:
       security-events: write
