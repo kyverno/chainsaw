@@ -7,7 +7,7 @@ permissions: {}
 on:
   push:
     tags:
-      - 'docs-v*'
+      - docs-v*
 
 jobs:
   docs:

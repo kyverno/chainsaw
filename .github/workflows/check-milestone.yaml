@@ -7,7 +7,14 @@ permissions: {}
 on:
   pull_request:
     branches:
-      - 'main'
+      - main
+      - release-*
+    types:
+      - opened
+      - demilestoned
+      - milestoned
+      - edited
+      - synchronize
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
