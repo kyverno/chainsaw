@@ -19,15 +19,18 @@
 # |____________ Type
 
 name: Semantic PR Validation
+
 on:
   pull_request_target:
     types:
       - opened
       - edited
       - synchronize
+
 defaults:
   run:
     shell: bash
+
 jobs:
   validate:
     runs-on: ubuntu-latest
