@@ -1,4 +1,4 @@
-# Test: `apply-outputs`
+# Test: `apply-outputs-1`
 
 *No description*
 
@@ -22,7 +22,7 @@
 
 ---
 
-# Test: `apply-outputs`
+# Test: `apply-outputs-2`
 
 *No description*
 

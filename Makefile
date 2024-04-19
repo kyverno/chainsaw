@@ -29,7 +29,7 @@ KIND_IMAGE                         ?= kindest/node:v1.29.2
 
 TOOLS_DIR                          := $(PWD)/.tools
 CONTROLLER_GEN                     := $(TOOLS_DIR)/controller-gen
-CONTROLLER_GEN_VERSION             := v0.12.0
+CONTROLLER_GEN_VERSION             := v0.14.0
 REGISTER_GEN                       := $(TOOLS_DIR)/register-gen
 DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
 CONVERSION_GEN                     := $(TOOLS_DIR)/conversion-gen
@@ -131,9 +131,12 @@ codegen-conversion: $(CONVERSION_GEN)
 .PHONY: codegen-crds
 codegen-crds: ## Generate CRDs
 codegen-crds: $(CONTROLLER_GEN)
+codegen-crds: codegen-deepcopy
+codegen-crds: codegen-register
+codegen-crds: codegen-conversion
 	@echo Generate crds... >&2
 	@rm -rf $(CRDS_PATH)
-	@$(CONTROLLER_GEN) crd paths=./pkg/apis/... crd:crdVersions=v1 output:dir=$(CRDS_PATH)
+	@$(CONTROLLER_GEN) paths=./pkg/apis/... crd:crdVersions=v1 output:dir=$(CRDS_PATH)
 	@echo Copy generated CRDs to embed in the CLI... >&2
 	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
 	@cp $(CRDS_PATH)/* pkg/data/crds
@@ -151,6 +154,7 @@ codegen-api-docs: ## Generate markdown API docs
 codegen-api-docs: $(REFERENCE_DOCS)
 codegen-api-docs: codegen-deepcopy
 codegen-api-docs: codegen-register
+codegen-api-docs: codegen-conversion
 	@echo Generate api docs... >&2
 	@rm -rf ./website/docs/apis
 	@cd ./website/apis && $(REFERENCE_DOCS) -c config.yaml -f markdown -o ../docs/apis

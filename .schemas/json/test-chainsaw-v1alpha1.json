@@ -309,7 +309,7 @@
           }
         },
         "catch": {
-          "description": "Catch defines what the steps will execute when an error happens. This will be combined with catch handlers defined at the step level.",
+          "description": "Catch defines what the steps will execute when an error happens.\nThis will be combined with catch handlers defined at the step level.",
           "type": [
             "array",
             "null"
@@ -519,7 +519,7 @@
                       "null"
                     ],
                     "items": {
-                      "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                      "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
                       "type": [
                         "object",
                         "null"
@@ -552,7 +552,7 @@
                         "type": "string"
                       },
                       "kind": {
-                        "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                        "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                         "type": "string"
                       },
                       "labels": {
@@ -569,14 +569,14 @@
                         }
                       },
                       "name": {
-                        "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                        "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                         "type": [
                           "string",
                           "null"
                         ]
                       },
                       "namespace": {
-                        "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                        "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                         "type": [
                           "string",
                           "null"
@@ -622,21 +622,21 @@
                     ]
                   },
                   "kind": {
-                    "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                    "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -702,14 +702,14 @@
                     "pattern": "^(?:json|yaml|\\(.+\\))$"
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -761,21 +761,21 @@
                     "pattern": "^(?:json|yaml|\\(.+\\))$"
                   },
                   "kind": {
-                    "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                    "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -826,14 +826,14 @@
                     ]
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -847,7 +847,7 @@
                     ]
                   },
                   "tail": {
-                    "description": "Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.",
+                    "description": "Tail is the number of last lines to collect from pods. If omitted or zero,\nthen the default is 10 if you use a selector, or -1 (all) if you use a pod name.\nThis matches default behavior of `kubectl logs`.",
                     "type": [
                       "integer",
                       "null"
@@ -1100,21 +1100,21 @@
                     "pattern": "^(?:json|yaml|\\(.+\\))$"
                   },
                   "kind": {
-                    "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                    "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -1459,7 +1459,7 @@
                             "null"
                           ],
                           "items": {
-                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
                             "type": [
                               "object",
                               "null"
@@ -1492,7 +1492,7 @@
                               "type": "string"
                             },
                             "kind": {
-                              "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                              "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                               "type": "string"
                             },
                             "labels": {
@@ -1509,14 +1509,14 @@
                               }
                             },
                             "name": {
-                              "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                              "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                               "type": [
                                 "string",
                                 "null"
                               ]
                             },
                             "namespace": {
-                              "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                              "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                               "type": [
                                 "string",
                                 "null"
@@ -1562,21 +1562,21 @@
                           ]
                         },
                         "kind": {
-                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -1642,14 +1642,14 @@
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -1701,21 +1701,21 @@
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
                         "kind": {
-                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -1766,14 +1766,14 @@
                           ]
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -1787,7 +1787,7 @@
                           ]
                         },
                         "tail": {
-                          "description": "Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.",
+                          "description": "Tail is the number of last lines to collect from pods. If omitted or zero,\nthen the default is 10 if you use a selector, or -1 (all) if you use a pod name.\nThis matches default behavior of `kubectl logs`.",
                           "type": [
                             "integer",
                             "null"
@@ -2040,21 +2040,21 @@
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
                         "kind": {
-                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -2311,7 +2311,7 @@
                             "null"
                           ],
                           "items": {
-                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
                             "type": [
                               "object",
                               "null"
@@ -2344,7 +2344,7 @@
                               "type": "string"
                             },
                             "kind": {
-                              "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                              "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                               "type": "string"
                             },
                             "labels": {
@@ -2361,14 +2361,14 @@
                               }
                             },
                             "name": {
-                              "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                              "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                               "type": [
                                 "string",
                                 "null"
                               ]
                             },
                             "namespace": {
-                              "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                              "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                               "type": [
                                 "string",
                                 "null"
@@ -2414,21 +2414,21 @@
                           ]
                         },
                         "kind": {
-                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -2494,14 +2494,14 @@
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -2553,21 +2553,21 @@
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
                         "kind": {
-                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -2618,14 +2618,14 @@
                           ]
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -2639,7 +2639,7 @@
                           ]
                         },
                         "tail": {
-                          "description": "Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.",
+                          "description": "Tail is the number of last lines to collect from pods. If omitted or zero,\nthen the default is 10 if you use a selector, or -1 (all) if you use a pod name.\nThis matches default behavior of `kubectl logs`.",
                           "type": [
                             "integer",
                             "null"
@@ -2892,21 +2892,21 @@
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
                         "kind": {
-                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"
@@ -3022,7 +3022,7 @@
                   ],
                   "properties": {
                     "apply": {
-                      "description": "Apply represents resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.",
+                      "description": "Apply represents resources that should be applied for this test step. This can include things\nlike configuration settings or any other resources that need to be available during the test.",
                       "type": [
                         "object",
                         "null"
@@ -3078,7 +3078,7 @@
                             "null"
                           ],
                           "items": {
-                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
                             "type": [
                               "object",
                               "null"
@@ -3099,7 +3099,7 @@
                           }
                         },
                         "file": {
-                          "description": "File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML files within the \"manifest\" directory.",
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
                           "type": [
                             "string",
                             "null"
@@ -3203,7 +3203,7 @@
                           ]
                         },
                         "file": {
-                          "description": "File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML files within the \"manifest\" directory.",
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
                           "type": [
                             "string",
                             "null"
@@ -3375,7 +3375,7 @@
                       }
                     },
                     "continueOnError": {
-                      "description": "ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.",
+                      "description": "ContinueOnError determines whether a test should continue or not in case the operation was not successful.\nEven if the test continues executing, it will still be reported as failed.",
                       "type": [
                         "boolean",
                         "null"
@@ -3438,7 +3438,7 @@
                             "null"
                           ],
                           "items": {
-                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
                             "type": [
                               "object",
                               "null"
@@ -3459,7 +3459,7 @@
                           }
                         },
                         "file": {
-                          "description": "File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML files within the \"manifest\" directory.",
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
                           "type": [
                             "string",
                             "null"
@@ -3572,7 +3572,7 @@
                             "null"
                           ],
                           "items": {
-                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
                             "type": [
                               "object",
                               "null"
@@ -3605,7 +3605,7 @@
                               "type": "string"
                             },
                             "kind": {
-                              "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                              "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                               "type": "string"
                             },
                             "labels": {
@@ -3622,14 +3622,14 @@
                               }
                             },
                             "name": {
-                              "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                              "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                               "type": [
                                 "string",
                                 "null"
                               ]
                             },
                             "namespace": {
-                              "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                              "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                               "type": [
                                 "string",
                                 "null"
@@ -3661,7 +3661,7 @@
                       ]
                     },
                     "error": {
-                      "description": "Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.",
+                      "description": "Error represents the expected errors for this test step. If any of these errors occur, the test\nwill consider them as expected; otherwise, they will be treated as test failures.",
                       "type": [
                         "object",
                         "null"
@@ -3704,7 +3704,7 @@
                           ]
                         },
                         "file": {
-                          "description": "File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML files within the \"manifest\" directory.",
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
                           "type": [
                             "string",
                             "null"
@@ -3787,7 +3787,7 @@
                             "null"
                           ],
                           "items": {
-                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
                             "type": [
                               "object",
                               "null"
@@ -3808,7 +3808,7 @@
                           }
                         },
                         "file": {
-                          "description": "File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML files within the \"manifest\" directory.",
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
                           "type": [
                             "string",
                             "null"
@@ -4073,7 +4073,7 @@
                             "null"
                           ],
                           "items": {
-                            "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                            "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
                             "type": [
                               "object",
                               "null"
@@ -4094,7 +4094,7 @@
                           }
                         },
                         "file": {
-                          "description": "File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML files within the \"manifest\" directory.",
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
                           "type": [
                             "string",
                             "null"
@@ -4244,21 +4244,21 @@
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
                         "kind": {
-                          "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "name": {
-                          "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
                             "string",
                             "null"
                           ]
                         },
                         "namespace": {
-                          "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                           "type": [
                             "string",
                             "null"

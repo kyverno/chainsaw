@@ -2,8 +2,6 @@ package processors
 
 import (
 	"context"
-	"sync/atomic"
-	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -16,7 +14,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/clock"
-	tclock "k8s.io/utils/clock/testing"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -27,7 +24,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 		client       client.Client
 		clock        clock.PassiveClock
 		summary      *summary.Summary
-		testsReport  *report.TestsReport
+		testsReport  *report.Report
 		bindings     binding.Bindings
 		tests        []discovery.Test
 		expectedFail bool
@@ -44,7 +41,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 			clock:        nil,
 			summary:      &summary.Summary{},
-			testsReport:  &report.TestsReport{},
+			testsReport:  &report.Report{},
 			bindings:     binding.NewBindings(),
 			tests:        []discovery.Test{},
 			expectedFail: false,
@@ -67,7 +64,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 			clock:        nil,
 			summary:      &summary.Summary{},
-			testsReport:  &report.TestsReport{},
+			testsReport:  &report.Report{},
 			bindings:     binding.NewBindings(),
 			tests:        []discovery.Test{},
 			expectedFail: false,
@@ -87,7 +84,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 			clock:        nil,
 			summary:      &summary.Summary{},
-			testsReport:  &report.TestsReport{},
+			testsReport:  &report.Report{},
 			bindings:     binding.NewBindings(),
 			tests:        []discovery.Test{},
 			expectedFail: true,
@@ -107,7 +104,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 			clock:        nil,
 			summary:      &summary.Summary{},
-			testsReport:  &report.TestsReport{},
+			testsReport:  &report.Report{},
 			bindings:     binding.NewBindings(),
 			tests:        []discovery.Test{},
 			expectedFail: true,
@@ -124,7 +121,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 			clock:       nil,
 			summary:     &summary.Summary{},
-			testsReport: &report.TestsReport{},
+			testsReport: &report.Report{},
 			bindings:    binding.NewBindings(),
 			tests: []discovery.Test{
 				{
@@ -147,7 +144,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 			clock:       nil,
 			summary:     &summary.Summary{},
-			testsReport: &report.TestsReport{},
+			testsReport: &report.Report{},
 			bindings:    binding.NewBindings(),
 			tests: []discovery.Test{
 				{
@@ -185,65 +182,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {
 				assert.False(t, nt.FailedVar, "expected no error but got one")
-			}
-		})
-	}
-}
-
-func TestCreateTestProcessor(t *testing.T) {
-	testCases := []struct {
-		name        string
-		config      v1alpha1.ConfigurationSpec
-		client      client.Client
-		clock       clock.PassiveClock
-		summary     *summary.Summary
-		testsReport *report.TestsReport
-		test        []discovery.Test
-	}{
-		{
-			name: "TestProcessor is created",
-			config: v1alpha1.ConfigurationSpec{
-				Namespace: "default",
-			},
-			client:      &fake.FakeClient{},
-			clock:       tclock.NewFakePassiveClock(time.Now()),
-			summary:     &summary.Summary{},
-			testsReport: report.NewTests("FakeReport"),
-			test: []discovery.Test{
-				{
-					Err:      nil,
-					BasePath: "fakePath",
-					Test:     &v1alpha1.Test{},
-				},
-			},
-		},
-	}
-
-	for _, tc := range testCases {
-		t.Run(tc.name, func(t *testing.T) {
-			localTC := tc
-			clusters := NewClusters()
-			if localTC.client != nil {
-				clusters.clients[DefaultClient] = cluster{
-					client: localTC.client,
-				}
-			}
-			processor := testsProcessor{
-				config:         localTC.config,
-				clusters:       clusters,
-				clock:          localTC.clock,
-				summary:        localTC.summary,
-				testsReport:    localTC.testsReport,
-				tests:          localTC.test,
-				shouldFailFast: atomic.Bool{},
-			}
-			processor.shouldFailFast.Store(false)
-
-			result := processor.CreateTestProcessor(localTC.test[0])
-
-			assert.NotNil(t, result, "TestProcessor should not be nil")
-			if localTC.testsReport != nil {
-				assert.True(t, len(localTC.testsReport.Reports) > 0, "Test report should be added")
 			}
 		})
 	}
