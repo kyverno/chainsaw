@@ -43,9 +43,9 @@ func run(
 	tests ...discovery.Test,
 ) (*summary.Summary, error) {
 	var summary summary.Summary
-	var testsReport *report.TestsReport
+	var testsReport *report.Report
 	if config.ReportFormat != "" {
-		testsReport = report.NewTests(config.ReportName)
+		testsReport = report.New(config.ReportName)
 	}
 	if len(tests) == 0 {
 		return &summary, nil
@@ -98,8 +98,8 @@ func run(
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
 	if testsReport != nil && config.ReportFormat != "" {
-		if err := testsReport.SaveReportBasedOnType(config.ReportFormat, config.ReportPath, config.ReportName); err != nil {
-			return &summary, fmt.Errorf("failed to save test report: %v", err)
+		if err := testsReport.Save(config.ReportFormat, config.ReportPath, config.ReportName); err != nil {
+			return &summary, err
 		}
 	}
 	return &summary, nil
