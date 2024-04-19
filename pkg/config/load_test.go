@@ -158,7 +158,7 @@ func Test_parse(t *testing.T) {
 		name:          "converter error",
 		splitter:      nil,
 		loaderFactory: nil,
-		converter: func(unstructured.Unstructured) (*v1alpha1.Configuration, error) {
+		converter: func(schema.GroupVersionKind, unstructured.Unstructured) (*v1alpha1.Configuration, error) {
 			return nil, errors.New("converter")
 		},
 		wantErr: true,

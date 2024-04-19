@@ -297,7 +297,7 @@ tests: $(CLI_BIN)
 e2e-tests: ## Run e2e tests
 e2e-tests: $(CLI_BIN)
 	@echo Running e2e tests... >&2
-	@./$(CLI_BIN) test --test-dir ./testdata/e2e --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml
+	@./$(CLI_BIN) test --test-dir ./testdata/e2e --config ./testdata/e2e/config-v1alpha2.yaml --values ./testdata/e2e/values.yaml
 
 .PHONY: e2e-tests-ko 
 e2e-tests-ko: ## Run e2e tests from a docker container
@@ -311,8 +311,7 @@ e2e-tests-ko: build-ko
 		--user $(id -u):$(id -g) \
 		--name chainsaw \
 		--rm \
-		ko.local/github.com/kyverno/chainsaw:$(KO_TAGS) \
-		test /chainsaw --config /chainsaw/config.yaml --values /chainsaw/values.yaml
+		ko.local/github.com/kyverno/chainsaw:$(KO_TAGS) test /chainsaw --config /chainsaw/config-v1alpha2.yaml --values /chainsaw/values.yaml
 
 ########	
 # KIND #
