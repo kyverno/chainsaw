@@ -1,3 +1,5 @@
+# yaml-language-server: $schema=https://json.schemastore.org/github-workflow.json
+
 # feat: (new feature for the user, not a new feature for build script)
 # fix: (bug fix for the user, not a fix to a build script)
 # build: (changes that affect the build system or external dependencies)
@@ -18,77 +20,85 @@
 # |    |_______ Scope
 # |____________ Type
 
-name: Semantic PR Validation
+name: Semantic pull request
+
+permissions: {}
 
 on:
-  pull_request_target:
+  pull_request:
+    branches:
+    - main
+    - release-*
     types:
-      - opened
-      - edited
-      - synchronize
+    - opened
+    - reopened
+    - labeled
+    - unlabeled
+    - edited
+    - synchronize
 
-defaults:
-  run:
-    shell: bash
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  validate:
+  check-semantic-pr:
     runs-on: ubuntu-latest
     if: ${{ github.actor != 'gcp-cherry-pick-bot' }}
     steps:
-      - name: Validate Pull Request
-        uses: amannn/action-semantic-pull-request@e9fabac35e210fea40ca5b14c0da95a099eff26f
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          # Configure which types are allowed.
-          # Default: https://github.com/commitizen/conventional-commit-types
-          types: |
-            feat
-            fix
-            build
-            chore
-            ci
-            docs
-            perf
-            refactor
-            revert
-            style
-            test
-            revert
-            release
-          # Configure which scopes are allowed.
-          scopes: |
-            api
-            client
-            commands
-            config
-            data
-            deps
-            discovery
-            internal
-            report
-            resource
-            runner
-            operations
-            processors
-            test
-            utils
-            validation
-            version
-            docs
-            release
-            testdata
-          ignoreLabels: |
-            bot
-            ignore-semantic-pull-request
-          # Configure that a scope must always be provided.
-          requireScope: false
-          # When using "Squash and merge" on a PR with only one commit, GitHub
-          # will suggest using that commit message instead of the PR title for the
-          # merge commit, and it's easy to commit this by mistake. Enable this option
-          # to also validate the commit message for one commit PRs.
-          validateSingleCommit: true
-          # Related to `validateSingleCommit` you can opt-in to validate that the PR
-          # title matches a single commit to avoid confusion.
-          validateSingleCommitMatchesPrTitle: true
+    - name: Validate Pull Request
+      uses: amannn/action-semantic-pull-request@e9fabac35e210fea40ca5b14c0da95a099eff26f
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        # Configure which types are allowed.
+        # Default: https://github.com/commitizen/conventional-commit-types
+        types: |
+          feat
+          fix
+          build
+          chore
+          ci
+          docs
+          perf
+          refactor
+          revert
+          style
+          test
+          revert
+          release
+        # Configure which scopes are allowed.
+        scopes: |
+          api
+          client
+          commands
+          config
+          data
+          deps
+          discovery
+          internal
+          report
+          resource
+          runner
+          operations
+          processors
+          test
+          utils
+          validation
+          version
+          docs
+          release
+          testdata
+        ignoreLabels: |
+          bot
+          ignore-semantic-pull-request
+        # Configure that a scope must always be provided.
+        requireScope: false
+        # When using "Squash and merge" on a PR with only one commit, GitHub
+        # will suggest using that commit message instead of the PR title for the
+        # merge commit, and it's easy to commit this by mistake. Enable this option
+        # to also validate the commit message for one commit PRs.
+        validateSingleCommit: true
+        # Related to `validateSingleCommit` you can opt-in to validate that the PR
+        # title matches a single commit to avoid confusion.
+        validateSingleCommitMatchesPrTitle: true
