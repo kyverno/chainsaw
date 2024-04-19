@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync/atomic"
+	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -35,7 +36,7 @@ func NewTestProcessor(
 	clusters clusters,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
-	testReport *report.TestReport,
+	report *report.TestReport,
 	test discovery.Test,
 	shouldFailFast *atomic.Bool,
 ) TestProcessor {
@@ -44,7 +45,7 @@ func NewTestProcessor(
 		clusters:       clusters,
 		clock:          clock,
 		summary:        summary,
-		testReport:     testReport,
+		report:         report,
 		test:           test,
 		shouldFailFast: shouldFailFast,
 		timeouts:       config.Timeouts.Combine(test.Spec.Timeouts),
@@ -56,7 +57,7 @@ type testProcessor struct {
 	clusters       clusters
 	clock          clock.PassiveClock
 	summary        *summary.Summary
-	testReport     *report.TestReport
+	report         *report.TestReport
 	test           discovery.Test
 	shouldFailFast *atomic.Bool
 	timeouts       v1alpha1.Timeouts
@@ -67,12 +68,16 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		bindings = binding.NewBindings()
 	}
 	t := testing.FromContext(ctx)
-	if p.testReport != nil {
+	if p.report != nil {
+		p.report.SetStartTime(time.Now())
 		t.Cleanup(func() {
+			p.report.SetEndTime(time.Now())
 			if t.Failed() {
-				p.testReport.NewFailure("test failed")
+				p.report.Fail()
 			}
-			p.testReport.MarkTestEnd()
+			if t.Skipped() {
+				p.report.Skip()
+			}
 		})
 	}
 	size := len("@cleanup")
@@ -167,6 +172,9 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 			}
 		}
 	}
+	if p.report != nil && nspacer != nil {
+		p.report.SetNamespace(nspacer.GetNamespace())
+	}
 	bindings, err := apibindings.RegisterBindings(ctx, bindings, p.test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -194,10 +202,9 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 }
 
 func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, cleaner *cleaner, step v1alpha1.TestStep) StepProcessor {
-	var stepReport *report.TestSpecStepReport
-	if p.testReport != nil {
-		stepReport = report.NewTestSpecStep(step.Name)
-		p.testReport.AddTestStep(stepReport)
+	var report *report.StepReport
+	if p.report != nil {
+		report = p.report.ForStep(&step)
 	}
-	return NewStepProcessor(p.config, p.clusters, nspacer, p.clock, p.test, step, stepReport, cleaner)
+	return NewStepProcessor(p.config, p.clusters, nspacer, p.clock, p.test, step, report, cleaner)
 }

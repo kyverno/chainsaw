@@ -34,7 +34,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock        clock.PassiveClock
 		test         discovery.Test
 		stepSpec     v1alpha1.TestStep
-		stepReport   *report.TestSpecStepReport
+		stepReport   *report.StepReport
 		cleaner      *cleaner
 		expectedFail bool
 		skipped      bool
@@ -114,7 +114,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.Finally{},
 			},
 		},
-		stepReport: report.NewTestSpecStep("fake"),
+		stepReport: &report.StepReport{},
 		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with create handler",
@@ -162,7 +162,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.Finally{},
 			},
 		},
-		stepReport: report.NewTestSpecStep("fake"),
+		stepReport: &report.StepReport{},
 		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with assert handler",
@@ -234,7 +234,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.Finally{},
 			},
 		},
-		stepReport: report.NewTestSpecStep("fake"),
+		stepReport: &report.StepReport{},
 		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with error handler",
@@ -306,7 +306,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.Finally{},
 			},
 		},
-		stepReport: report.NewTestSpecStep("fake"),
+		stepReport: &report.StepReport{},
 		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with command handler",
@@ -347,7 +347,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.Finally{},
 			},
 		},
-		stepReport: report.NewTestSpecStep("fake"),
+		stepReport: &report.StepReport{},
 		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with script handler",
@@ -387,7 +387,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.Finally{},
 			},
 		},
-		stepReport: report.NewTestSpecStep("fake"),
+		stepReport: &report.StepReport{},
 		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with sleep handler",
@@ -420,7 +420,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.Finally{},
 			},
 		},
-		stepReport: report.NewTestSpecStep("fake"),
+		stepReport: &report.StepReport{},
 		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with delete handler",
@@ -470,7 +470,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.Finally{},
 			},
 		},
-		stepReport: report.NewTestSpecStep("fake"),
+		stepReport: &report.StepReport{},
 		cleaner:    &cleaner{},
 	}, {
 		name: "dry run with create handler",
@@ -966,7 +966,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				},
 			},
 		},
-		stepReport: report.NewTestSpecStep("fake"),
+		stepReport: &report.StepReport{},
 		cleaner:    &cleaner{},
 	}, {
 		name: "termination with create handler",

@@ -21,7 +21,7 @@ type operation struct {
 	continueOnError bool
 	timeout         *time.Duration
 	operation       func(context.Context, binding.Bindings) (operations.Operation, error)
-	operationReport *report.OperationReport
+	report          *report.OperationReport
 	config          *rest.Config
 	client          client.Client
 	variables       []v1alpha1.Binding
@@ -32,7 +32,7 @@ func newOperation(
 	continueOnError bool,
 	timeout *time.Duration,
 	op operations.Operation,
-	operationReport *report.OperationReport,
+	report *report.OperationReport,
 	config *rest.Config,
 	client client.Client,
 	variables ...v1alpha1.Binding,
@@ -44,7 +44,7 @@ func newOperation(
 		func(context.Context, binding.Bindings) (operations.Operation, error) {
 			return op, nil
 		},
-		operationReport,
+		report,
 		config,
 		client,
 		variables...,
@@ -56,7 +56,7 @@ func newLazyOperation(
 	continueOnError bool,
 	timeout *time.Duration,
 	op func(context.Context, binding.Bindings) (operations.Operation, error),
-	operationReport *report.OperationReport,
+	report *report.OperationReport,
 	config *rest.Config,
 	client client.Client,
 	variables ...v1alpha1.Binding,
@@ -66,7 +66,7 @@ func newLazyOperation(
 		continueOnError: continueOnError,
 		timeout:         timeout,
 		operation:       op,
-		operationReport: operationReport,
+		report:          report,
 		client:          client,
 		config:          config,
 		variables:       variables,
@@ -74,6 +74,12 @@ func newLazyOperation(
 }
 
 func (o operation) execute(ctx context.Context, bindings binding.Bindings) operations.Outputs {
+	if o.report != nil {
+		o.report.SetStartTime(time.Now())
+		defer func() {
+			o.report.SetEndTime(time.Now())
+		}()
+	}
 	if o.timeout != nil {
 		toCtx, cancel := context.WithTimeout(ctx, *o.timeout)
 		ctx = toCtx
@@ -98,9 +104,9 @@ func (o operation) execute(ctx context.Context, bindings binding.Bindings) opera
 		handleError(err)
 	} else {
 		outputs, err := operation.Exec(ctx, apibindings.RegisterNamedBinding(ctx, bindings, "operation", o.info))
-		if o.operationReport != nil {
-			o.operationReport.MarkOperationEnd(err)
-		}
+		// if o.operationReport != nil {
+		// 	o.operationReport.MarkOperationEnd(err)
+		// }
 		if err != nil {
 			handleError(nil)
 		}

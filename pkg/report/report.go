@@ -1,16 +1,14 @@
 package report
 
 import (
-	"encoding/json"
-	"encoding/xml"
-	"errors"
 	"fmt"
-	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 
-	v1alpha1 "github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/discovery"
 )
 
 type OperationType string
@@ -26,220 +24,129 @@ const (
 	OperationTypeCommand OperationType = "command"
 )
 
-type ReportSerializer interface {
-	Serialize(report *TestsReport) ([]byte, error)
+type Report struct {
+	name      string
+	startTime time.Time
+	endTime   time.Time
+	tests     []*TestReport
+	lock      sync.Mutex
 }
 
-// Failure represents details of a test failure.
-type Failure struct {
-	// Message provides a summary of the failure.
-	Message string `json:"message" xml:"message,attr"`
-}
-
-// TestsReport encapsulates the entire report for a test suite.
-type TestsReport struct {
-	// Name of the test suite.
-	Name string `json:"name" xml:"name,attr"`
-	// TimeStamp marks when the test suite began execution.
-	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
-	// Time indicates the total duration of the test suite.
-	Time string `json:"time" xml:"time,attr"`
-	// Test count the number of tests in the files/TestReports.
-	Test int `json:"tests" xml:"tests,attr"`
-	// Reports is an array of individual test reports within this suite.
-	Reports []*TestReport `json:"testsuite" xml:"testsuite"`
-	// Failures count the number of failed tests in the suite.
-	Failures int `json:"failures" xml:"failures,attr"`
-}
-
-// TestReport represents a report for a single test.
-type TestReport struct {
-	// Name of the test.
-	Name string `json:"name" xml:"name,attr"`
-	// TimeStamp marks when the test began execution.
-	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
-	// Time indicates the total duration of the test.
-	Time string `json:"time" xml:"time,attr"`
-	// Failure captures details if the test failed it should be nil otherwise.
-	Failure *Failure `json:"failure,omitempty" xml:"failure,omitempty"`
-	// Test count the number of tests in the suite/TestReport.
-	Test int `json:"tests" xml:"tests,attr"`
-	// Spec represents the specifications of the test.
-	Steps []*TestSpecStepReport `json:"testcase,omitempty" xml:"testcase,omitempty"`
-	// Concurrent indicates if the test runs concurrently with other tests.
-	Concurrent bool `json:"concurrent,omitempty" xml:"concurrent,attr,omitempty"`
-	// Namespace in which the test runs.
-	Namespace string `json:"namespace,omitempty" xml:"namespace,attr,omitempty"`
-	// Skip indicates if the test is skipped.
-	Skip bool `json:"skip,omitempty" xml:"skip,attr,omitempty"`
-	// SkipDelete indicates if resources are not deleted after test execution.
-	SkipDelete bool `json:"skipDelete,omitempty" xml:"skipDelete,attr,omitempty"`
-}
-
-// TestSpecStepReport represents a report of a single step in a test.
-type TestSpecStepReport struct {
-	// Name of the test step.
-	Name string `json:"name,omitempty" xml:"name,attr,omitempty"`
-	// Results are the outcomes of operations performed in this step.
-	Results []*OperationReport `json:"results,omitempty" xml:"results,omitempty"`
-}
-
-// OperationReport details the outcome of a single operation within a test step.
-type OperationReport struct {
-	// Name of the operation.
-	Name string `json:"name" xml:"name,attr"`
-	// TimeStamp marks when the operation began execution.
-	TimeStamp time.Time `json:"timestamp" xml:"timestamp,attr"`
-	// Time indicates the total duration of the operation.
-	Time string `json:"time" xml:"time,attr"`
-	// Result of the operation.
-	Result string `json:"result" xml:"result,attr"`
-	// Message provides additional information about the operation's outcome.
-	Message string `json:"message,omitempty" xml:"message,omitempty"`
-	// Type indicates the type of operation.
-	OperationType OperationType `json:"operationType,omitempty" xml:"operationType,attr"`
-}
-
-type JSONSerializer struct{}
-
-func (s JSONSerializer) Serialize(report *TestsReport) ([]byte, error) {
-	return json.MarshalIndent(report, "", "  ")
-}
-
-type XMLSerializer struct{}
-
-func (s XMLSerializer) Serialize(report *TestsReport) ([]byte, error) {
-	return xml.MarshalIndent(report, "", "  ")
-}
-
-func SaveReport(report *TestsReport, serializer ReportSerializer, filePath string) error {
-	data, err := serializer.Serialize(report)
-	if err != nil {
-		return err
+func New(name string) *Report {
+	return &Report{
+		name: name,
 	}
-	return os.WriteFile(filePath, data, 0o600)
 }
 
-func GetSerializer(format v1alpha1.ReportFormatType) (ReportSerializer, error) {
+func (r *Report) SetStartTime(t time.Time) {
+	r.startTime = t
+}
+
+func (r *Report) SetEndTime(t time.Time) {
+	r.endTime = t
+}
+
+func (r *Report) ForTest(test *discovery.Test) *TestReport {
+	out := &TestReport{test: test}
+	r.lock.Lock()
+	defer r.lock.Unlock()
+	r.tests = append(r.tests, out)
+	return out
+}
+
+func (r *Report) Save(format v1alpha1.ReportFormatType, path, name string) error {
+	if filepath.Ext(name) == "" {
+		name += "." + strings.ToLower(string(format))
+	}
+	filePath := name
+	if path != "" {
+		filePath = filepath.Join(path, name)
+	}
 	switch format {
-	case v1alpha1.JSONFormat:
-		return JSONSerializer{}, nil
 	case v1alpha1.XMLFormat:
-		return XMLSerializer{}, nil
+		return saveJUnit(r, filePath)
+	case v1alpha1.JSONFormat:
 	default:
-		return nil, errors.New("unsupported report format")
+		return fmt.Errorf("unknown report format: %s", format)
 	}
+	return nil
 }
 
-func (report *TestsReport) SaveReportBasedOnType(reportFormat v1alpha1.ReportFormatType, reportPath, reportName string) error {
-	serializer, err := GetSerializer(reportFormat)
-	if err != nil {
-		return err
-	}
-	if filepath.Ext(reportName) == "" {
-		reportName += "." + strings.ToLower(string(reportFormat))
-	}
-	filePath := reportName
-	if reportPath != "" {
-		filePath = filepath.Join(reportPath, reportName)
-	}
-	return SaveReport(report, serializer, filePath)
+type TestReport struct {
+	test      *discovery.Test
+	startTime time.Time
+	endTime   time.Time
+	namespace string
+	skipped   bool
+	failed    bool
+	steps     []*StepReport
+	lock      sync.Mutex
 }
 
-// NewTests initializes a new TestsReport with the given name.
-func NewTests(name string) *TestsReport {
-	return &TestsReport{
-		Name:      name,
-		TimeStamp: time.Now(),
-		Reports:   []*TestReport{},
-	}
+func (r *TestReport) SetStartTime(t time.Time) {
+	r.startTime = t
 }
 
-// NewTest creates a new TestReport with the given name.
-func NewTest(name string) *TestReport {
-	return &TestReport{
-		Name:      name,
-		TimeStamp: time.Now(),
-		Steps:     []*TestSpecStepReport{},
-	}
+func (r *TestReport) SetEndTime(t time.Time) {
+	r.endTime = t
 }
 
-// NewTestSpecStep initializes a new TestSpecStepReport with the given name.
-func NewTestSpecStep(name string) *TestSpecStepReport {
-	return &TestSpecStepReport{
-		Name:    name,
-		Results: []*OperationReport{},
-	}
+func (r *TestReport) Skip() {
+	r.skipped = true
 }
 
-// NewOperation creates a new OperationReport with the given details.
-func NewOperation(name string, operationType OperationType) *OperationReport {
-	return &OperationReport{
-		Name:          name,
-		TimeStamp:     time.Now(),
-		OperationType: operationType,
-	}
+func (r *TestReport) Fail() {
+	r.failed = true
 }
 
-// AddTest adds a test report to the TestsReport.
-func (tr *TestsReport) AddTest(test *TestReport) {
-	tr.Reports = append(tr.Reports, test)
+func (r *TestReport) SetNamespace(namespace string) {
+	r.namespace = namespace
 }
 
-// AddTestStep adds a test step report to the TestReport.
-func (t *TestReport) AddTestStep(step *TestSpecStepReport) {
-	t.Steps = append(t.Steps, step)
+func (r *TestReport) ForStep(step *v1alpha1.TestStep) *StepReport {
+	out := &StepReport{step: step}
+	r.lock.Lock()
+	defer r.lock.Unlock()
+	r.steps = append(r.steps, out)
+	return out
 }
 
-// AddOperation adds an operation report to the TestSpecStepReport.
-func (ts *TestSpecStepReport) AddOperation(op *OperationReport) {
-	ts.Results = append(ts.Results, op)
+type StepReport struct {
+	step      *v1alpha1.TestStep
+	startTime time.Time
+	endTime   time.Time
+	reports   []*OperationReport
+	lock      sync.Mutex
 }
 
-// NewFailure creates a new Failure instance with the given message and type and assigns it to the TestReport.
-func (t *TestReport) NewFailure(message string) {
-	if t.Failure == nil {
-		t.Failure = &Failure{
-			Message: message,
-		}
-	}
+func (r *StepReport) SetStartTime(t time.Time) {
+	r.startTime = t
 }
 
-// MarkTestEnd marks the end time of a TestReport and calculates its duration.
-func (t *TestReport) MarkTestEnd() {
-	t.Time = calculateDuration(t.TimeStamp, time.Now())
-
-	for _, step := range t.Steps {
-		t.Test += len(step.Results)
-	}
+func (r *StepReport) SetEndTime(t time.Time) {
+	r.endTime = t
 }
 
-// MarkOperationEnd marks the end time of an OperationReport and calculates its duration.
-func (op *OperationReport) MarkOperationEnd(err error) {
-	op.Time = calculateDuration(op.TimeStamp, time.Now())
-	if err == nil {
-		op.Result = "Success"
-		op.Message = "Operation completed successfully"
-	} else {
-		op.Result = "Failure"
-		op.Message = err.Error()
-	}
+func (r *StepReport) ForOperation(name string, operationType OperationType) *OperationReport {
+	step := &OperationReport{name: name, operationType: operationType}
+	r.lock.Lock()
+	defer r.lock.Unlock()
+	r.reports = append(r.reports, step)
+	return step
 }
 
-// calculateDuration calculates the duration between two time points.
-func calculateDuration(start, end time.Time) string {
-	return fmt.Sprintf("%.3f", end.Sub(start).Seconds())
+type OperationReport struct {
+	name          string
+	operationType OperationType
+	startTime     time.Time
+	endTime       time.Time
+	err           error
 }
 
-// Close finalizes the TestsReport, marking its end time and calculating the overall duration.
-func (tr *TestsReport) Close() {
-	tr.Time = calculateDuration(tr.TimeStamp, time.Now())
-	totalTests := 0
-	for _, testReport := range tr.Reports {
-		if testReport.Failure != nil {
-			tr.Failures++
-		}
-		totalTests += testReport.Test
-	}
-	tr.Test = totalTests
+func (r *OperationReport) SetStartTime(t time.Time) {
+	r.startTime = t
+}
+
+func (r *OperationReport) SetEndTime(t time.Time) {
+	r.endTime = t
 }

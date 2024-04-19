@@ -277,7 +277,7 @@
       ],
       "properties": {
         "catch": {
-          "description": "Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.",
+          "description": "Catch defines what the tests steps will execute when an error happens.\nThis will be combined with catch handlers defined at the test and step levels.",
           "type": [
             "array",
             "null"
@@ -487,7 +487,7 @@
                       "null"
                     ],
                     "items": {
-                      "description": "Expectation represents a check to be applied on the result of an operation with a match filter to determine if the verification should be considered.",
+                      "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
                       "type": [
                         "object",
                         "null"
@@ -520,7 +520,7 @@
                         "type": "string"
                       },
                       "kind": {
-                        "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                        "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                         "type": "string"
                       },
                       "labels": {
@@ -537,14 +537,14 @@
                         }
                       },
                       "name": {
-                        "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                        "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                         "type": [
                           "string",
                           "null"
                         ]
                       },
                       "namespace": {
-                        "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                        "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                         "type": [
                           "string",
                           "null"
@@ -590,21 +590,21 @@
                     ]
                   },
                   "kind": {
-                    "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                    "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -670,14 +670,14 @@
                     "pattern": "^(?:json|yaml|\\(.+\\))$"
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -729,21 +729,21 @@
                     "pattern": "^(?:json|yaml|\\(.+\\))$"
                   },
                   "kind": {
-                    "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                    "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -794,14 +794,14 @@
                     ]
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -815,7 +815,7 @@
                     ]
                   },
                   "tail": {
-                    "description": "Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.",
+                    "description": "Tail is the number of last lines to collect from pods. If omitted or zero,\nthen the default is 10 if you use a selector, or -1 (all) if you use a pod name.\nThis matches default behavior of `kubectl logs`.",
                     "type": [
                       "integer",
                       "null"
@@ -1068,21 +1068,21 @@
                     "pattern": "^(?:json|yaml|\\(.+\\))$"
                   },
                   "kind": {
-                    "description": "Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                    "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "name": {
-                    "description": "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                    "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
                       "string",
                       "null"
                     ]
                   },
                   "namespace": {
-                    "description": "Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                    "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
                     "type": [
                       "string",
                       "null"
@@ -1196,7 +1196,7 @@
               ]
             },
             "testFile": {
-              "description": "TestFile is the name of the file containing the test to run. If no extension is provided, chainsaw will try with .yaml first and .yml if needed.",
+              "description": "TestFile is the name of the file containing the test to run.\nIf no extension is provided, chainsaw will try with .yaml first and .yml if needed.",
               "type": [
                 "string",
                 "null"
@@ -1253,7 +1253,7 @@
           ],
           "properties": {
             "name": {
-              "description": "Name defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.",
+              "description": "Name defines the namespace to use for tests.\nIf not specified, every test will execute in a random ephemeral namespace\nunless the namespace is overridden in a the test spec.",
               "type": [
                 "string",
                 "null"

@@ -53,7 +53,7 @@ func NewStepProcessor(
 	clock clock.PassiveClock,
 	test discovery.Test,
 	step v1alpha1.TestStep,
-	stepReport *report.TestSpecStepReport,
+	report *report.StepReport,
 	cleaner *cleaner,
 ) StepProcessor {
 	return &stepProcessor{
@@ -63,7 +63,7 @@ func NewStepProcessor(
 		clock:      clock,
 		test:       test,
 		step:       step,
-		stepReport: stepReport,
+		report:     report,
 		cleaner:    cleaner,
 		timeouts:   config.Timeouts.Combine(test.Spec.Timeouts).Combine(step.Timeouts),
 	}
@@ -76,7 +76,7 @@ type stepProcessor struct {
 	clock      clock.PassiveClock
 	test       discovery.Test
 	step       v1alpha1.TestStep
-	stepReport *report.TestSpecStepReport
+	report     *report.StepReport
 	cleaner    *cleaner
 	timeouts   v1alpha1.Timeouts
 }
@@ -86,6 +86,12 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		bindings = binding.NewBindings()
 	}
 	t := testing.FromContext(ctx)
+	if p.report != nil {
+		p.report.SetStartTime(time.Now())
+		t.Cleanup(func() {
+			p.report.SetEndTime(time.Now())
+		})
+	}
 	logger := logging.FromContext(ctx)
 	config, cluster := p.clusters.client(p.step.Cluster, p.test.Spec.Cluster)
 	bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, cluster)
@@ -307,9 +313,8 @@ func (p *stepProcessor) applyOperation(id int, op v1alpha1.Apply) ([]operation, 
 	}
 	var ops []operation
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Apply "+op.File, report.OperationTypeApply)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Apply "+op.File, report.OperationTypeApply)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
@@ -342,9 +347,8 @@ func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation
 	}
 	var ops []operation
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Assert ", report.OperationTypeAssert)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Assert ", report.OperationTypeAssert)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
@@ -368,9 +372,8 @@ func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation
 
 func (p *stepProcessor) commandOperation(id int, op v1alpha1.Command) operation {
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Command ", report.OperationTypeCommand)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Command ", report.OperationTypeCommand)
 	}
 	ns := ""
 	if p.namespacer != nil {
@@ -398,9 +401,8 @@ func (p *stepProcessor) createOperation(id int, op v1alpha1.Create) ([]operation
 	}
 	var ops []operation
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Create ", report.OperationTypeCreate)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Create ", report.OperationTypeCreate)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
@@ -434,9 +436,8 @@ func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) operation {
 	resource.SetNamespace(op.Namespace)
 	resource.SetLabels(op.Labels)
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Delete ", report.OperationTypeDelete)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Delete ", report.OperationTypeDelete)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
@@ -456,9 +457,8 @@ func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) operation {
 
 func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operation {
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Describe ", report.OperationTypeCommand)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Describe ", report.OperationTypeCommand)
 	}
 	ns := ""
 	if p.namespacer != nil {
@@ -491,9 +491,8 @@ func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, 
 	}
 	var ops []operation
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Error ", report.OperationTypeCommand)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Error ", report.OperationTypeCommand)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	config, cluster := p.clusters.client(op.Cluster, p.step.Cluster, p.test.Spec.Cluster)
@@ -517,9 +516,8 @@ func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, 
 
 func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Get ", report.OperationTypeCommand)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Get ", report.OperationTypeCommand)
 	}
 	ns := ""
 	if p.namespacer != nil {
@@ -547,9 +545,8 @@ func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 
 func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Logs ", report.OperationTypeCommand)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Logs ", report.OperationTypeCommand)
 	}
 	ns := ""
 	if p.namespacer != nil {
@@ -582,9 +579,8 @@ func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, 
 	}
 	var ops []operation
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Patch ", report.OperationTypeCreate)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Patch ", report.OperationTypeCreate)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
@@ -612,9 +608,8 @@ func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, 
 
 func (p *stepProcessor) scriptOperation(id int, op v1alpha1.Script) operation {
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Script ", report.OperationTypeScript)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Script ", report.OperationTypeScript)
 	}
 	ns := ""
 	if p.namespacer != nil {
@@ -637,9 +632,8 @@ func (p *stepProcessor) scriptOperation(id int, op v1alpha1.Script) operation {
 
 func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Sleep ", report.OperationTypeSleep)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Sleep ", report.OperationTypeSleep)
 	}
 	return newOperation(
 		OperationInfo{
@@ -661,9 +655,8 @@ func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation
 	}
 	var ops []operation
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Update ", report.OperationTypeCreate)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Update ", report.OperationTypeCreate)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
@@ -691,9 +684,8 @@ func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation
 
 func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
 	var operationReport *report.OperationReport
-	if p.stepReport != nil {
-		operationReport = report.NewOperation("Wait ", report.OperationTypeCommand)
-		p.stepReport.AddOperation(operationReport)
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Wait ", report.OperationTypeCommand)
 	}
 	ns := ""
 	if p.namespacer != nil {
