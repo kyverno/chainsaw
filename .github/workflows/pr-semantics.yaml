@@ -34,6 +34,7 @@ defaults:
 jobs:
   validate:
     runs-on: ubuntu-latest
+    if: ${{ github.actor != 'gcp-cherry-pick-bot' }}
     steps:
       - name: Validate Pull Request
         uses: amannn/action-semantic-pull-request@e9fabac35e210fea40ca5b14c0da95a099eff26f
