@@ -7,12 +7,15 @@ import (
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/data"
 	configvalidation "github.com/kyverno/chainsaw/pkg/validation/config"
 	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/client-go/openapi"
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
@@ -25,11 +28,14 @@ const (
 type (
 	splitter      = func([]byte) ([][]byte, error)
 	loaderFactory = func(openapi.Client) (loader.Loader, error)
-	converter     = func(unstructured.Unstructured) (*v1alpha1.Configuration, error)
+	converter     = func(schema.GroupVersionKind, unstructured.Unstructured) (*v1alpha1.Configuration, error)
 	validator     = func(obj *v1alpha1.Configuration) field.ErrorList
 )
 
-var configuration_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Configuration")
+var (
+	configuration_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Configuration")
+	configuration_v1alpha2 = v1alpha2.SchemeGroupVersion.WithKind("Configuration")
+)
 
 func Load(path string) (*v1alpha1.Configuration, error) {
 	content, err := os.ReadFile(filepath.Clean(path))
@@ -69,7 +75,7 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 		loaderFactory = loader.New
 	}
 	if converter == nil {
-		converter = convert.To[v1alpha1.Configuration]
+		converter = defaultConverter
 	}
 	if validator == nil {
 		validator = configvalidation.ValidateConfiguration
@@ -89,19 +95,35 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 		if err != nil {
 			return nil, err
 		}
-		switch gvk {
-		case configuration_v1alpha1:
-			config, err := converter(untyped)
-			if err != nil {
-				return nil, err
-			}
-			if err := validator(config).ToAggregate(); err != nil {
-				return nil, err
-			}
-			configs = append(configs, config)
-		default:
-			return nil, fmt.Errorf("type not supported %s", gvk)
+		config, err := converter(gvk, untyped)
+		if err != nil {
+			return nil, err
 		}
+		if err := validator(config).ToAggregate(); err != nil {
+			return nil, err
+		}
+		configs = append(configs, config)
 	}
 	return configs, nil
+}
+
+func defaultConverter(gvk schema.GroupVersionKind, untyped unstructured.Unstructured) (*v1alpha1.Configuration, error) {
+	scheme := runtime.NewScheme()
+	if err := v1alpha2.Install(scheme); err != nil {
+		return nil, err
+	}
+	var out v1alpha1.Configuration
+	switch gvk {
+	case configuration_v1alpha1:
+		if err := convert.Into(untyped, &out); err != nil {
+			return nil, err
+		}
+	case configuration_v1alpha2:
+		if err := scheme.Convert(&untyped, &out, nil); err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("type not supported %s", gvk)
+	}
+	return &out, nil
 }
