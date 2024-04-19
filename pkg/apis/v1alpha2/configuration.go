@@ -22,6 +22,7 @@ type Configuration struct {
 }
 
 // ConfigurationSpec contains the configuration used to run tests.
+// +k8s:conversion-gen=false
 type ConfigurationSpec struct {
 	// Catch defines what the tests steps will execute when an error happens.
 	// This will be combined with catch handlers defined at the test and step levels.

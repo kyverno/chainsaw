@@ -1229,6 +1229,7 @@ spec:
                 description: Report contains properties for the report.
                 properties:
                   format:
+                    default: JSON
                     description: ReportFormat determines test report format (JSON|XML).
                     enum:
                     - JSON
