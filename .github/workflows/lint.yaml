@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  required:
+  golangci-lint:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

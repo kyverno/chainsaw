@@ -104,12 +104,3 @@ jobs:
       run: |
         set -e
         make e2e-tests-ko
-
-  required:
-    needs:
-    - unit-tests
-    - e2e-tests
-    - e2e-test-ko
-    runs-on: ubuntu-latest
-    steps:
-    - run: echo "Required jobs success!"

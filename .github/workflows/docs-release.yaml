@@ -10,7 +10,7 @@ on:
       - docs-v*
 
 jobs:
-  docs:
+  docs-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
