@@ -3,6 +3,7 @@ package processors
 import (
 	"context"
 	"sync/atomic"
+	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -34,26 +35,26 @@ func NewTestsProcessor(
 	clusters clusters,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
-	testsReport *report.TestsReport,
+	report *report.Report,
 	tests ...discovery.Test,
 ) TestsProcessor {
 	return &testsProcessor{
-		config:      config,
-		clusters:    clusters,
-		clock:       clock,
-		summary:     summary,
-		testsReport: testsReport,
-		tests:       tests,
+		config:   config,
+		clusters: clusters,
+		clock:    clock,
+		summary:  summary,
+		report:   report,
+		tests:    tests,
 	}
 }
 
 type testsProcessor struct {
-	config      v1alpha1.ConfigurationSpec
-	clusters    clusters
-	clock       clock.PassiveClock
-	summary     *summary.Summary
-	testsReport *report.TestsReport
-	tests       []discovery.Test
+	config   v1alpha1.ConfigurationSpec
+	clusters clusters
+	clock    clock.PassiveClock
+	summary  *summary.Summary
+	report   *report.Report
+	tests    []discovery.Test
 	// state
 	shouldFailFast atomic.Bool
 }
@@ -63,11 +64,12 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		bindings = binding.NewBindings()
 	}
 	t := testing.FromContext(ctx)
-	t.Cleanup(func() {
-		if p.testsReport != nil {
-			p.testsReport.Close()
-		}
-	})
+	if p.report != nil {
+		p.report.SetStartTime(time.Now())
+		t.Cleanup(func() {
+			p.report.SetEndTime(time.Now())
+		})
+	}
 	var nspacer namespacer.Namespacer
 	config, cluster := p.clusters.client()
 	bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, cluster)
@@ -143,9 +145,9 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 }
 
 func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor {
-	testReport := report.NewTest(test.Name)
-	if p.testsReport != nil {
-		p.testsReport.AddTest(testReport)
+	var report *report.TestReport
+	if p.report != nil {
+		report = p.report.ForTest(&test)
 	}
-	return NewTestProcessor(p.config, p.clusters, p.clock, p.summary, testReport, test, &p.shouldFailFast)
+	return NewTestProcessor(p.config, p.clusters, p.clock, p.summary, report, test, &p.shouldFailFast)
 }
