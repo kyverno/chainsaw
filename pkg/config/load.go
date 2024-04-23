@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -86,7 +87,11 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 	}
 	var configs []*v1alpha1.Configuration
 	// TODO: no need to allocate a validator every time
-	loader, err := loaderFactory(openapiclient.NewLocalCRDFiles(data.Crds(), data.CrdsFolder))
+	fs, err := fs.Sub(data.Crds(), data.CrdsFolder)
+	if err != nil {
+		return nil, err
+	}
+	loader, err := loaderFactory(openapiclient.NewLocalCRDFiles(fs))
 	if err != nil {
 		return nil, err
 	}
