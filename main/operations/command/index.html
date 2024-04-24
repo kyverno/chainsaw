@@ -11,7 +11,7 @@
 <span class=w>        </span><span class=nt>args</span><span class=p>:</span>
 <span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">hello chainsaw</span>
 <span class=w>    </span><span class=c1># ...</span>
-</code></pre></div> </div> <h2 id=operation-check>Operation check<a class=headerlink href=#operation-check title="Permanent link">&para;</a></h2> <p>Below is an example of using an <a href=../check/#command>operation check</a>.</p> <div class="admonition example"> <p class=admonition-title>With check</p> <div class=highlight><pre><span></span><code><span class=c1># ...</span>
+</code></pre></div> </div> <blockquote> <p>When defining shell command <code>args</code> in YAML format, it's crucial to consider potential differences in behavior, as Chainsaw may interpret them differently compared to regular shell or bash environments, due to quote removal.</p> </blockquote> <h2 id=operation-check>Operation check<a class=headerlink href=#operation-check title="Permanent link">&para;</a></h2> <p>Below is an example of using an <a href=../check/#command>operation check</a>.</p> <div class="admonition example"> <p class=admonition-title>With check</p> <div class=highlight><pre><span></span><code><span class=c1># ...</span>
 <span class="p p-Indicator">-</span><span class=w> </span><span class=nt>command</span><span class=p>:</span>
 <span class=w>    </span><span class=nt>entrypoint</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">echo</span>
 <span class=w>    </span><span class=nt>args</span><span class=p>:</span>
