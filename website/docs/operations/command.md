@@ -31,6 +31,8 @@ Below is an example of using `command` in a `Test` resource.
         # ...
     ```
 
+> When defining shell command `args` in YAML format, it's crucial to consider potential differences in behavior, as Chainsaw may interpret them differently compared to regular shell or bash environments, due to quote removal.
+
 ## Operation check
 
 Below is an example of using an [operation check](./check.md#command).
