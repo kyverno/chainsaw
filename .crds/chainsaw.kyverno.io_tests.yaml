@@ -99,6 +99,21 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusterConfig:
+                          description: ClusterConfig defines a reference to a cluster
+                            configuration (default cluster will be used if not specified
+                            and/or overridden).
+                          properties:
+                            context:
+                              description: Context is the name of the context to use.
+                              type: string
+                            kubeconfig:
+                              description: Kubeconfig is the path to the referenced
+                                file.
+                              type: string
+                          required:
+                          - kubeconfig
+                          type: object
                         entrypoint:
                           description: Entrypoint is the command entry point to run.
                           type: string
@@ -179,6 +194,21 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusterConfig:
+                          description: ClusterConfig defines a reference to a cluster
+                            configuration (default cluster will be used if not specified
+                            and/or overridden).
+                          properties:
+                            context:
+                              description: Context is the name of the context to use.
+                              type: string
+                            kubeconfig:
+                              description: Kubeconfig is the path to the referenced
+                                file.
+                              type: string
+                          required:
+                          - kubeconfig
+                          type: object
                         expect:
                           description: Expect defines a list of matched checks to
                             validate the operation outcome.
@@ -251,6 +281,21 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusterConfig:
+                          description: ClusterConfig defines a reference to a cluster
+                            configuration (default cluster will be used if not specified
+                            and/or overridden).
+                          properties:
+                            context:
+                              description: Context is the name of the context to use.
+                              type: string
+                            kubeconfig:
+                              description: Kubeconfig is the path to the referenced
+                                file.
+                              type: string
+                          required:
+                          - kubeconfig
+                          type: object
                         kind:
                           description: |-
                             Kind of the referent.
@@ -291,6 +336,21 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusterConfig:
+                          description: ClusterConfig defines a reference to a cluster
+                            configuration (default cluster will be used if not specified
+                            and/or overridden).
+                          properties:
+                            context:
+                              description: Context is the name of the context to use.
+                              type: string
+                            kubeconfig:
+                              description: Kubeconfig is the path to the referenced
+                                file.
+                              type: string
+                          required:
+                          - kubeconfig
+                          type: object
                         format:
                           description: Format determines the output format (json or
                             yaml).
@@ -324,6 +384,21 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusterConfig:
+                          description: ClusterConfig defines a reference to a cluster
+                            configuration (default cluster will be used if not specified
+                            and/or overridden).
+                          properties:
+                            context:
+                              description: Context is the name of the context to use.
+                              type: string
+                            kubeconfig:
+                              description: Kubeconfig is the path to the referenced
+                                file.
+                              type: string
+                          required:
+                          - kubeconfig
+                          type: object
                         format:
                           description: Format determines the output format (json or
                             yaml).
@@ -362,6 +437,21 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusterConfig:
+                          description: ClusterConfig defines a reference to a cluster
+                            configuration (default cluster will be used if not specified
+                            and/or overridden).
+                          properties:
+                            context:
+                              description: Context is the name of the context to use.
+                              type: string
+                            kubeconfig:
+                              description: Kubeconfig is the path to the referenced
+                                file.
+                              type: string
+                          required:
+                          - kubeconfig
+                          type: object
                         container:
                           description: Container in pod to get logs from else --all-containers
                             is used.
@@ -420,6 +510,21 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusterConfig:
+                          description: ClusterConfig defines a reference to a cluster
+                            configuration (default cluster will be used if not specified
+                            and/or overridden).
+                          properties:
+                            context:
+                              description: Context is the name of the context to use.
+                              type: string
+                            kubeconfig:
+                              description: Kubeconfig is the path to the referenced
+                                file.
+                              type: string
+                          required:
+                          - kubeconfig
+                          type: object
                         content:
                           description: Content defines a shell script (run with "sh
                             -c ...").
@@ -495,6 +600,21 @@ spec:
                             wait operation will be performed (default cluster will
                             be used if not specified).
                           type: string
+                        clusterConfig:
+                          description: ClusterConfig defines a reference to a cluster
+                            configuration (default cluster will be used if not specified
+                            and/or overridden).
+                          properties:
+                            context:
+                              description: Context is the name of the context to use.
+                              type: string
+                            kubeconfig:
+                              description: Kubeconfig is the path to the referenced
+                                file.
+                              type: string
+                          required:
+                          - kubeconfig
+                          type: object
                         for:
                           description: For specifies the condition to wait for.
                           properties:
@@ -573,6 +693,19 @@ spec:
                 description: Cluster defines the target cluster (default cluster will
                   be used if not specified and/or overridden).
                 type: string
+              clusterConfig:
+                description: ClusterConfig defines a reference to a cluster configuration
+                  (default cluster will be used if not specified and/or overridden).
+                properties:
+                  context:
+                    description: Context is the name of the context to use.
+                    type: string
+                  kubeconfig:
+                    description: Kubeconfig is the path to the referenced file.
+                    type: string
+                required:
+                - kubeconfig
+                type: object
               concurrent:
                 description: Concurrent determines whether the test should run concurrently
                   with other tests.
@@ -669,6 +802,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -751,6 +900,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               expect:
                                 description: Expect defines a list of matched checks
                                   to validate the operation outcome.
@@ -826,6 +991,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               kind:
                                 description: |-
                                   Kind of the referent.
@@ -868,6 +1049,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
@@ -902,6 +1099,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
@@ -941,6 +1154,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               container:
                                 description: Container in pod to get logs from else
                                   --all-containers is used.
@@ -999,6 +1228,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
@@ -1075,6 +1320,22 @@ spec:
                                   the wait operation will be performed (default cluster
                                   will be used if not specified).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               for:
                                 description: For specifies the condition to wait for.
                                 properties:
@@ -1154,6 +1415,20 @@ spec:
                       description: Cluster defines the target cluster (default cluster
                         will be used if not specified and/or overridden).
                       type: string
+                    clusterConfig:
+                      description: ClusterConfig defines a reference to a cluster
+                        configuration (default cluster will be used if not specified
+                        and/or overridden).
+                      properties:
+                        context:
+                          description: Context is the name of the context to use.
+                          type: string
+                        kubeconfig:
+                          description: Kubeconfig is the path to the referenced file.
+                          type: string
+                      required:
+                      - kubeconfig
+                      type: object
                     description:
                       description: Description contains a description of the test
                         step.
@@ -1200,6 +1475,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -1282,6 +1573,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               expect:
                                 description: Expect defines a list of matched checks
                                   to validate the operation outcome.
@@ -1357,6 +1664,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               kind:
                                 description: |-
                                   Kind of the referent.
@@ -1399,6 +1722,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
@@ -1433,6 +1772,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               format:
                                 description: Format determines the output format (json
                                   or yaml).
@@ -1472,6 +1827,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               container:
                                 description: Container in pod to get logs from else
                                   --all-containers is used.
@@ -1530,6 +1901,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
@@ -1606,6 +1993,22 @@ spec:
                                   the wait operation will be performed (default cluster
                                   will be used if not specified).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               for:
                                 description: For specifies the condition to wait for.
                                 properties:
@@ -1750,6 +2153,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               dryRun:
                                 description: DryRun determines whether the file should
                                   be applied in dry run mode.
@@ -1845,6 +2264,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               file:
                                 description: |-
                                   File is the path to the referenced file. This can be a direct path to a file
@@ -1899,6 +2334,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               entrypoint:
                                 description: Entrypoint is the command entry point
                                   to run.
@@ -1986,6 +2437,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               dryRun:
                                 description: DryRun determines whether the file should
                                   be applied in dry run mode.
@@ -2079,6 +2546,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               expect:
                                 description: Expect defines a list of matched checks
                                   to validate the operation outcome.
@@ -2174,6 +2657,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               file:
                                 description: |-
                                   File is the path to the referenced file. This can be a direct path to a file
@@ -2218,6 +2717,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               dryRun:
                                 description: DryRun determines whether the file should
                                   be applied in dry run mode.
@@ -2316,6 +2831,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               content:
                                 description: Content defines a shell script (run with
                                   "sh -c ...").
@@ -2405,6 +2936,22 @@ spec:
                                 description: Cluster defines the target cluster (default
                                   cluster will be used if not specified and/or overridden).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               dryRun:
                                 description: DryRun determines whether the file should
                                   be applied in dry run mode.
@@ -2485,6 +3032,22 @@ spec:
                                   the wait operation will be performed (default cluster
                                   will be used if not specified).
                                 type: string
+                              clusterConfig:
+                                description: ClusterConfig defines a reference to
+                                  a cluster configuration (default cluster will be
+                                  used if not specified and/or overridden).
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
                               for:
                                 description: For specifies the condition to wait for.
                                 properties:

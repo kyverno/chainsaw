@@ -19,6 +19,10 @@ type Error struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).
+	// +optional
+	ClusterConfig *Cluster `json:"clusterConfig,omitempty"`
+
 	// FileRefOrAssert provides a reference to the expected error.
 	FileRefOrCheck `json:",inline"`
 

@@ -26,6 +26,10 @@ type Script struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).
+	// +optional
+	ClusterConfig *Cluster `json:"clusterConfig,omitempty"`
+
 	// Content defines a shell script (run with "sh -c ...").
 	// +optional
 	Content string `json:"content,omitempty"`

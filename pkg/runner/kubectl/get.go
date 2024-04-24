@@ -41,10 +41,11 @@ func Get(client client.Client, bindings binding.Bindings, collector *v1alpha1.Ge
 		return nil, err
 	}
 	cmd := v1alpha1.Command{
-		Cluster:    cluster,
-		Timeout:    collector.Timeout,
-		Entrypoint: "kubectl",
-		Args:       []string{"get", resource},
+		Cluster:       cluster,
+		ClusterConfig: collector.ClusterConfig,
+		Timeout:       collector.Timeout,
+		Entrypoint:    "kubectl",
+		Args:          []string{"get", resource},
 	}
 	if name != "" {
 		cmd.Args = append(cmd.Args, name)

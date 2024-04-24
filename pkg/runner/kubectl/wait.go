@@ -42,10 +42,11 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 		return nil, err
 	}
 	cmd := v1alpha1.Command{
-		Cluster:    cluster,
-		Timeout:    collector.Timeout,
-		Entrypoint: "kubectl",
-		Args:       []string{"wait", resource},
+		Cluster:       cluster,
+		ClusterConfig: collector.ClusterConfig,
+		Timeout:       collector.Timeout,
+		Entrypoint:    "kubectl",
+		Args:          []string{"wait", resource},
 	}
 	if collector.For.Deletion != nil {
 		cmd.Args = append(cmd.Args, "--for=delete")

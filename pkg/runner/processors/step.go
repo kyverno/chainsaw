@@ -32,10 +32,12 @@ import (
 	runnertemplate "github.com/kyverno/chainsaw/pkg/runner/template"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/kyverno/pkg/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/utils/clock"
 )
 
@@ -318,7 +320,7 @@ func (p *stepProcessor) applyOperation(id int, op v1alpha1.Apply) ([]operation, 
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	config, cluster := p.getClient(op.Cluster, dryRun)
+	config, cluster := p.getClient(op.ClusterConfig, op.Cluster, dryRun)
 	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
@@ -406,7 +408,7 @@ func (p *stepProcessor) createOperation(id int, op v1alpha1.Create) ([]operation
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	config, cluster := p.getClient(op.Cluster, dryRun)
+	config, cluster := p.getClient(op.ClusterConfig, op.Cluster, dryRun)
 	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
@@ -584,7 +586,7 @@ func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, 
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	config, cluster := p.getClient(op.Cluster, dryRun)
+	config, cluster := p.getClient(op.ClusterConfig, op.Cluster, dryRun)
 	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
@@ -660,7 +662,7 @@ func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	config, cluster := p.getClient(op.Cluster, dryRun)
+	config, cluster := p.getClient(op.ClusterConfig, op.Cluster, dryRun)
 	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
@@ -776,8 +778,32 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 	return nil
 }
 
-func (p *stepProcessor) getClient(opCluster string, dryRun bool) (*rest.Config, client.Client) {
-	config, cluster := p.clusters.client(opCluster, p.step.Cluster, p.test.Spec.Cluster)
+func (p *stepProcessor) getClient(opClusterConfig *v1alpha1.Cluster, opCluster string, dryRun bool) (*rest.Config, client.Client) {
+	clusters := p.clusters
+	var clusterConfig *v1alpha1.Cluster
+	if opClusterConfig != nil {
+		clusterConfig = opClusterConfig
+	} else if p.step.ClusterConfig != nil {
+		clusterConfig = p.step.ClusterConfig
+	} else if p.test.Spec.ClusterConfig != nil {
+		clusterConfig = p.test.Spec.ClusterConfig
+	}
+	if clusterConfig != nil {
+		c := NewClusters()
+		cfg, err := restutils.Config(clusterConfig.Kubeconfig, clientcmd.ConfigOverrides{
+			CurrentContext: clusterConfig.Context,
+		})
+		if err != nil {
+			// TODO: error handling
+			panic(err)
+		}
+		if err := clusters.Register(DefaultClient, cfg); err != nil {
+			// TODO: error handling
+			panic(err)
+		}
+		clusters = c
+	}
+	config, cluster := clusters.client(opCluster, p.step.Cluster, p.test.Spec.Cluster)
 	if !dryRun {
 		return config, cluster
 	}

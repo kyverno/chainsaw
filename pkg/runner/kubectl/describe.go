@@ -38,10 +38,11 @@ func Describe(client client.Client, bindings binding.Bindings, collector *v1alph
 		return nil, err
 	}
 	cmd := v1alpha1.Command{
-		Cluster:    cluster,
-		Timeout:    collector.Timeout,
-		Entrypoint: "kubectl",
-		Args:       []string{"describe", resource},
+		Cluster:       cluster,
+		ClusterConfig: collector.ClusterConfig,
+		Timeout:       collector.Timeout,
+		Entrypoint:    "kubectl",
+		Args:          []string{"describe", resource},
 	}
 	if name != "" {
 		cmd.Args = append(cmd.Args, name)

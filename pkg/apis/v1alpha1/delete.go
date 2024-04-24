@@ -18,6 +18,10 @@ type Delete struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).
+	// +optional
+	ClusterConfig *Cluster `json:"clusterConfig,omitempty"`
+
 	// Template determines whether resources should be considered for templating.
 	// +optional
 	Template *bool `json:"template,omitempty"`

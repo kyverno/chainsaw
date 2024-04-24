@@ -26,6 +26,10 @@ type Command struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).
+	// +optional
+	ClusterConfig *Cluster `json:"clusterConfig,omitempty"`
+
 	// Entrypoint is the command entry point to run.
 	Entrypoint string `json:"entrypoint"`
 

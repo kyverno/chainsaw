@@ -14,6 +14,10 @@ type TestStepSpec struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).
+	// +optional
+	ClusterConfig *Cluster `json:"clusterConfig,omitempty"`
+
 	// SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`

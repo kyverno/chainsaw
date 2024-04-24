@@ -48,6 +48,11 @@ func (in *Apply) DeepCopyInto(out *Apply) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
+	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -93,6 +98,11 @@ func (in *Assert) DeepCopyInto(out *Assert) {
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
 	}
 	in.FileRefOrCheck.DeepCopyInto(&out.FileRefOrCheck)
 	if in.Template != nil {
@@ -235,6 +245,11 @@ func (in *Command) DeepCopyInto(out *Command) {
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
 	}
 	if in.Args != nil {
 		in, out := &in.Args, &out.Args
@@ -388,6 +403,11 @@ func (in *Create) DeepCopyInto(out *Create) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
+	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -433,6 +453,11 @@ func (in *Delete) DeepCopyInto(out *Delete) {
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
 	}
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -484,6 +509,11 @@ func (in *Describe) DeepCopyInto(out *Describe) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
+	}
 	out.ResourceReference = in.ResourceReference
 	out.ObjectLabelsSelector = in.ObjectLabelsSelector
 	if in.ShowEvents != nil {
@@ -519,6 +549,11 @@ func (in *Error) DeepCopyInto(out *Error) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
+	}
 	in.FileRefOrCheck.DeepCopyInto(&out.FileRefOrCheck)
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -544,6 +579,11 @@ func (in *Events) DeepCopyInto(out *Events) {
 	if in.Timeout != nil {
 		in, out := &in.Timeout, &out.Timeout
 		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
 		**out = **in
 	}
 	out.ObjectLabelsSelector = in.ObjectLabelsSelector
@@ -737,6 +777,11 @@ func (in *Get) DeepCopyInto(out *Get) {
 	if in.Timeout != nil {
 		in, out := &in.Timeout, &out.Timeout
 		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
 		**out = **in
 	}
 	out.ResourceReference = in.ResourceReference
@@ -962,6 +1007,11 @@ func (in *Patch) DeepCopyInto(out *Patch) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
+	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -999,6 +1049,11 @@ func (in *PodLogs) DeepCopyInto(out *PodLogs) {
 	if in.Timeout != nil {
 		in, out := &in.Timeout, &out.Timeout
 		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
 		**out = **in
 	}
 	out.ObjectLabelsSelector = in.ObjectLabelsSelector
@@ -1064,6 +1119,11 @@ func (in *Script) DeepCopyInto(out *Script) {
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
 	}
 	if in.Check != nil {
 		in, out := &in.Check, &out.Check
@@ -1133,6 +1193,11 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		in, out := &in.Timeouts, &out.Timeouts
 		*out = new(Timeouts)
 		(*in).DeepCopyInto(*out)
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
 	}
 	if in.Skip != nil {
 		in, out := &in.Skip, &out.Skip
@@ -1226,6 +1291,11 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 		in, out := &in.Timeouts, &out.Timeouts
 		*out = new(Timeouts)
 		(*in).DeepCopyInto(*out)
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
 	}
 	if in.SkipDelete != nil {
 		in, out := &in.SkipDelete, &out.SkipDelete
@@ -1346,6 +1416,11 @@ func (in *Update) DeepCopyInto(out *Update) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
+		**out = **in
+	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -1383,6 +1458,11 @@ func (in *Wait) DeepCopyInto(out *Wait) {
 	if in.Timeout != nil {
 		in, out := &in.Timeout, &out.Timeout
 		*out = new(v1.Duration)
+		**out = **in
+	}
+	if in.ClusterConfig != nil {
+		in, out := &in.ClusterConfig, &out.ClusterConfig
+		*out = new(Cluster)
 		**out = **in
 	}
 	out.ResourceReference = in.ResourceReference
