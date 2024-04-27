@@ -2,8 +2,6 @@ module github.com/kyverno/chainsaw
 
 go 1.21.4
 
-replace sigs.k8s.io/kubectl-validate => github.com/eddycharly/kubectl-validate v0.0.6-0.20240418101944-9a44bb1356f8
-
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/dustinkirkland/golang-petname v0.0.0-20240422154211-76c06c4bde6b
@@ -27,7 +25,7 @@ require (
 	k8s.io/client-go v0.29.4
 	k8s.io/utils v0.0.0-20240102154912-e7106e64919e
 	sigs.k8s.io/controller-runtime v0.17.3
-	sigs.k8s.io/kubectl-validate v0.0.3
+	sigs.k8s.io/kubectl-validate v0.0.4-0.20240426230744-57b5e376ebde
 	sigs.k8s.io/yaml v1.4.0
 )
 
