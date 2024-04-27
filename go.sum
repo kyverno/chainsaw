@@ -248,8 +248,6 @@ github.com/dustin/go-humanize v1.0.1 h1:GzkhY7T5VNhEkwH0PVJgjz+fX1rhBrR7pRT3mDkp
 github.com/dustin/go-humanize v1.0.1/go.mod h1:Mu1zIs6XwVuF/gI1OepvI0qD18qycQx+mFykh5fBlto=
 github.com/dustinkirkland/golang-petname v0.0.0-20240422154211-76c06c4bde6b h1:+0Xqob+onh+4l9TSWmFyZ4JHqGUiCy5P1muyH8Evfpw=
 github.com/dustinkirkland/golang-petname v0.0.0-20240422154211-76c06c4bde6b/go.mod h1:8AuBTZBRSFqEYBPYULd+NN474/zZBLP+6WeT5S9xlAc=
-github.com/eddycharly/kubectl-validate v0.0.6-0.20240418101944-9a44bb1356f8 h1:eg6FObl6X1wCfHk0BxHwblbPLGjcPwcOFbarSdIu8vk=
-github.com/eddycharly/kubectl-validate v0.0.6-0.20240418101944-9a44bb1356f8/go.mod h1:AXSR3o3Y0Zfm9/WRTHPKwkzpePWUPbXWAK3WQKRg2IQ=
 github.com/emicklei/go-restful/v3 v3.11.2 h1:1onLa9DcsMYO9P+CXaL0dStDqQ2EHHXLiz+BtnqkLAU=
 github.com/emicklei/go-restful/v3 v3.11.2/go.mod h1:6n3XBCmQQb25CM2LCACGz8ukIrRry+4bhvbpWn3mrbc=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
@@ -1207,6 +1205,8 @@ sigs.k8s.io/controller-runtime v0.17.3 h1:65QmN7r3FWgTxDMz9fvGnO1kbf2nu+acg9p2R9
 sigs.k8s.io/controller-runtime v0.17.3/go.mod h1:N0jpP5Lo7lMTF9aL56Z/B2oWBJjey6StQM0jRbKQXtY=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd h1:EDPBXCAspyGV4jQlpZSudPeMmr1bNJefnuqLsRAsHZo=
 sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd/go.mod h1:B8JuhiUyNFVKdsE8h686QcCxMaH6HrOAZj4vswFpcB0=
+sigs.k8s.io/kubectl-validate v0.0.4-0.20240426230744-57b5e376ebde h1:98Oi2yiEABszWGlP76tQUt8V7PsAOvh/jfpIg5Wp0Kc=
+sigs.k8s.io/kubectl-validate v0.0.4-0.20240426230744-57b5e376ebde/go.mod h1:AXSR3o3Y0Zfm9/WRTHPKwkzpePWUPbXWAK3WQKRg2IQ=
 sigs.k8s.io/structured-merge-diff/v4 v4.4.1 h1:150L+0vs/8DA78h1u02ooW1/fFq/Lwr+sGiqlzvrtq4=
 sigs.k8s.io/structured-merge-diff/v4 v4.4.1/go.mod h1:N8hJocpFajUSSeSJ9bOZ77VzejKZaXsTtZo4/u7Io08=
 sigs.k8s.io/yaml v1.4.0 h1:Mk1wCc2gy/F0THH0TAp1QYyJNzRm2KCLy3o5ASXVI5E=
