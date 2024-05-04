@@ -17,8 +17,9 @@ The list of organizations that have publicly shared the usage of Chainsaw:
 | [Grafana-operator](https://github.com/grafana/grafana-operator) | Chainsaw enabled easier e2e testing and CI debugging after replacing kuttl |
 | [Opentelemetry-operator](https://github.com/open-telemetry/opentelemetry-operator) | Chainsaw cut down on hacks, improved code-reuse and enhanced test debugging |
 | [Tempo-operator](https://github.com/grafana/tempo-operator) | Chainsaw cranked up the tempo, making our e2e tests dance to a rhythm of reliability and efficiency |
-| [Provider-ceph](https://github.com/linode/provider-ceph) | Chainsaw replaced Kuttl and made our e2e tests much more readable and easier to debug. |
+| [Provider-ceph](https://github.com/linode/provider-ceph) | Chainsaw replaced Kuttl and made our e2e tests much more readable and easier to debug |
 | [Linode CAPI provider](https://github.com/linode/cluster-api-provider-linode) | Chainsaw replaced Kuttl and made our e2e tests much more readable and easier to debug. 🙏 @eddycharly |
+| [Linode COSI driver](https://github.com/linode/linode-cosi-driver) | Running all end to end tests for object store driver |
 
 
 <!-- append the line below to the table
