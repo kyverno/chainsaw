@@ -9,9 +9,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/client-go/rest"
 )
@@ -86,14 +86,13 @@ func (o operation) execute(ctx context.Context, bindings binding.Bindings) opera
 		defer cancel()
 	}
 	handleError := func(err error) {
-		t := testing.FromContext(ctx)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		}
 		if o.continueOnError {
-			t.Fail()
+			failer.Fail(ctx)
 		} else {
-			t.FailNow()
+			failer.FailNow(ctx)
 		}
 	}
 	operation, err := o.operation(ctx, bindings)

@@ -47,6 +47,7 @@ chainsaw test [flags]... [test directories]...
       --no-cluster                                Runs without cluster
       --no-color                                  Removes output colors
       --parallel int                              The maximum number of tests to run at once
+      --pause-on-failure                          Pause test execution failure (implies no concurrency)
       --repeat-count int                          Number of times to repeat each test (default 1)
       --report-format string                      Test report format (JSON|XML|nil)
       --report-name string                        The name of the report to create (default "chainsaw-report")
