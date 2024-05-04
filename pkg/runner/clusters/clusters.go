@@ -17,7 +17,7 @@ type clusters struct {
 	clients map[string]cluster
 }
 
-func NewClusters() clusters {
+func New() clusters {
 	return clusters{
 		clients: map[string]cluster{},
 	}
