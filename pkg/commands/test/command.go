@@ -1,6 +1,7 @@
 package test
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io/fs"
@@ -13,6 +14,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/runner"
+	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/template"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
@@ -26,6 +28,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/utils/clock"
+	"k8s.io/utils/ptr"
 )
 
 type options struct {
@@ -56,6 +59,7 @@ type options struct {
 	delayBeforeCleanup          metav1.Duration
 	selector                    []string
 	noCluster                   bool
+	pauseOnFailure              bool
 	values                      []string
 	clusters                    []string
 }
@@ -195,6 +199,10 @@ func Command() *cobra.Command {
 			if len(options.testDirs) == 0 {
 				options.testDirs = append(options.testDirs, ".")
 			}
+			// if pause on failure is set, force non concurrency
+			if options.pauseOnFailure {
+				configuration.Spec.Parallel = ptr.To(1)
+			}
 			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.TestFile)
 			fmt.Fprintf(out, "- TestDirs %v\n", options.testDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
@@ -239,6 +247,7 @@ func Command() *cobra.Command {
 				fmt.Fprintf(out, "- Clusters %v\n", configuration.Spec.Clusters)
 			}
 			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
+			fmt.Fprintf(out, "- PauseOnFailure %v\n", options.pauseOnFailure)
 			// loading tests
 			fmt.Fprintln(out, "Loading tests...")
 			if err := fsutils.CheckFolders(options.testDirs...); err != nil {
@@ -281,7 +290,8 @@ func Command() *cobra.Command {
 				}
 				restConfig = cfg
 			}
-			summary, err := runner.Run(restConfig, clock, configuration.Spec, values, testToRun...)
+			ctx := failer.IntoContext(context.Background(), failer.New(options.pauseOnFailure))
+			summary, err := runner.Run(ctx, restConfig, clock, configuration.Spec, values, testToRun...)
 			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Passed  tests", summary.Passed())
@@ -327,6 +337,7 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.noCluster, "no-cluster", false, "Runs without cluster")
 	cmd.Flags().StringSliceVar(&options.values, "values", nil, "Values passed to the tests")
 	cmd.Flags().StringSliceVar(&options.clusters, "cluster", nil, "Register cluster (format <cluster name>=<kubeconfig path>:[context name])")
+	cmd.Flags().BoolVar(&options.pauseOnFailure, "pause-on-failure", false, "Pause test execution failure (implies no concurrency)")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
