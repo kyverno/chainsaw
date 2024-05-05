@@ -15,6 +15,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/resource"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
+	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/kubectl"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -98,22 +99,22 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	bindings, err := apibindings.RegisterBindings(ctx, bindings, p.step.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		t.FailNow()
+		failer.FailNow(ctx)
 	}
 	try, err := p.tryOperations()
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		t.FailNow()
+		failer.FailNow(ctx)
 	}
 	catch, err := p.catchOperations()
 	if err != nil {
 		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		t.FailNow()
+		failer.FailNow(ctx)
 	}
 	finally, err := p.finallyOperations()
 	if err != nil {
 		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		t.FailNow()
+		failer.FailNow(ctx)
 	}
 	if len(catch) != 0 {
 		defer func() {

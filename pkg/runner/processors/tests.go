@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
+	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
@@ -83,7 +84,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 					Value: p.config.NamespaceTemplate.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
-					t.FailNow()
+					failer.FailNow(ctx)
 				} else {
 					object = merged
 				}
@@ -94,7 +95,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					t.FailNow()
+					failer.FailNow(ctx)
 				}
 				if !cleanup.Skip(p.config.SkipDelete, nil, nil) {
 					t.Cleanup(func() {
@@ -111,7 +112,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 					})
 				}
 				if err := cluster.Create(ctx, object.DeepCopy()); err != nil {
-					t.FailNow()
+					failer.FailNow(ctx)
 				}
 			}
 		}
@@ -119,13 +120,13 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	bindings, err := apibindings.RegisterBindings(ctx, bindings)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		t.FailNow()
+		failer.FailNow(ctx)
 	}
 	for i, test := range p.tests {
 		name, err := names.Test(p.config, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			t.FailNow()
+			failer.FailNow(ctx)
 		}
 		t.Run(name, func(t *testing.T) {
 			t.Helper()

@@ -25,16 +25,18 @@ type mainstart interface {
 }
 
 func Run(
+	ctx context.Context,
 	cfg *rest.Config,
 	clock clock.PassiveClock,
 	config v1alpha1.ConfigurationSpec,
 	values map[string]any,
 	tests ...discovery.Test,
 ) (*summary.Summary, error) {
-	return run(cfg, clock, config, nil, values, tests...)
+	return run(ctx, cfg, clock, config, nil, values, tests...)
 }
 
 func run(
+	ctx context.Context,
 	cfg *rest.Config,
 	clock clock.PassiveClock,
 	config v1alpha1.ConfigurationSpec,
@@ -54,7 +56,7 @@ func run(
 		return nil, err
 	}
 	bindings := binding.NewBindings()
-	bindings = apibindings.RegisterNamedBinding(context.TODO(), bindings, "values", values)
+	bindings = apibindings.RegisterNamedBinding(ctx, bindings, "values", values)
 	clusters := processors.NewClusters()
 	if cfg != nil {
 		err := clusters.Register(processors.DefaultClient, cfg)
@@ -79,7 +81,7 @@ func run(
 			t.Helper()
 			t.Parallel()
 			processor := processors.NewTestsProcessor(config, clusters, clock, &summary, testsReport, tests...)
-			ctx := testing.IntoContext(context.Background(), t)
+			ctx := testing.IntoContext(ctx, t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx, bindings)
 		},
