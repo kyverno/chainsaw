@@ -13,6 +13,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
+	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -137,7 +138,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					Value: p.test.Spec.NamespaceTemplate.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
-					t.FailNow()
+					failer.FailNow(ctx)
 				} else {
 					object = merged
 				}
@@ -150,7 +151,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					t.FailNow()
+					failer.FailNow(ctx)
 				}
 				if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, nil) {
 					t.Cleanup(func() {
@@ -167,7 +168,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					})
 				}
 				if err := cluster.Create(logging.IntoContext(setupCtx, setupLogger), object.DeepCopy()); err != nil {
-					t.FailNow()
+					failer.FailNow(ctx)
 				}
 			}
 		}
@@ -178,7 +179,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 	bindings, err := apibindings.RegisterBindings(ctx, bindings, p.test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		t.FailNow()
+		failer.FailNow(ctx)
 	}
 	delay := p.config.DelayBeforeCleanup
 	if p.test.Spec.DelayBeforeCleanup != nil {

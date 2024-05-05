@@ -1,6 +1,7 @@
 package runner
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -30,120 +31,111 @@ func TestRun(t *testing.T) {
 		restConfig *rest.Config
 		mockReturn int
 		wantErr    bool
-	}{
-		{
-			name:       "Zero Tests",
-			tests:      []discovery.Test{},
-			config:     v1alpha1.ConfigurationSpec{},
-			restConfig: &rest.Config{},
-			wantErr:    false,
-		},
-		{
-			name: "Nil Rest Config with 1 Test",
-			tests: []discovery.Test{
-				{
-					Err: nil,
-					Test: &v1alpha1.Test{
-						ObjectMeta: metav1.ObjectMeta{
-							Name: "test1",
-						},
+	}{{
+		name:       "Zero Tests",
+		tests:      []discovery.Test{},
+		config:     v1alpha1.ConfigurationSpec{},
+		restConfig: &rest.Config{},
+		wantErr:    false,
+	}, {
+		name: "Nil Rest Config with 1 Test",
+		tests: []discovery.Test{
+			{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "test1",
 					},
 				},
 			},
-			config: v1alpha1.ConfigurationSpec{
-				ReportFormat: v1alpha1.JSONFormat,
-			},
-			restConfig: nil,
-			wantErr:    false,
 		},
-		{
-			name:  "Zero Tests with JSON Report",
-			tests: []discovery.Test{},
-			config: v1alpha1.ConfigurationSpec{
-				ReportFormat: v1alpha1.JSONFormat,
-			},
-			restConfig: &rest.Config{},
-			wantErr:    false,
+		config: v1alpha1.ConfigurationSpec{
+			ReportFormat: v1alpha1.JSONFormat,
 		},
-		{
-			name: "Success Case with 1 Test",
-			tests: []discovery.Test{
-				{
-					Err: nil,
-					Test: &v1alpha1.Test{
-						ObjectMeta: metav1.ObjectMeta{
-							Name: "test1",
-						},
+		restConfig: nil,
+		wantErr:    false,
+	}, {
+		name:  "Zero Tests with JSON Report",
+		tests: []discovery.Test{},
+		config: v1alpha1.ConfigurationSpec{
+			ReportFormat: v1alpha1.JSONFormat,
+		},
+		restConfig: &rest.Config{},
+		wantErr:    false,
+	}, {
+		name: "Success Case with 1 Test",
+		tests: []discovery.Test{
+			{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "test1",
 					},
 				},
 			},
-			restConfig: &rest.Config{},
-			mockReturn: 0,
-			wantErr:    false,
 		},
-		{
-			name: "Failure Case with 1 Test",
-			tests: []discovery.Test{
-				{
-					Err: nil,
-					Test: &v1alpha1.Test{
-						ObjectMeta: metav1.ObjectMeta{
-							Name: "test1",
-						},
+		restConfig: &rest.Config{},
+		mockReturn: 0,
+		wantErr:    false,
+	}, {
+		name: "Failure Case with 1 Test",
+		tests: []discovery.Test{
+			{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "test1",
 					},
 				},
 			},
-			restConfig: &rest.Config{},
-			mockReturn: 2,
-			wantErr:    true,
 		},
-		{
-			name: "Success Case with 1 Test with XML Report",
-			tests: []discovery.Test{
-				{
-					Err: nil,
-					Test: &v1alpha1.Test{
-						ObjectMeta: metav1.ObjectMeta{
-							Name: "test1",
-						},
+		restConfig: &rest.Config{},
+		mockReturn: 2,
+		wantErr:    true,
+	}, {
+		name: "Success Case with 1 Test with XML Report",
+		tests: []discovery.Test{
+			{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "test1",
 					},
 				},
 			},
-			config: v1alpha1.ConfigurationSpec{
-				ReportFormat: v1alpha1.XMLFormat,
-				ReportName:   "chainsaw",
-			},
-			restConfig: &rest.Config{},
-			mockReturn: 0,
-			wantErr:    false,
 		},
-		{
-			name: "Error in saving Report",
-			tests: []discovery.Test{
-				{
-					Err: nil,
-					Test: &v1alpha1.Test{
-						ObjectMeta: metav1.ObjectMeta{
-							Name: "test1",
-						},
+		config: v1alpha1.ConfigurationSpec{
+			ReportFormat: v1alpha1.XMLFormat,
+			ReportName:   "chainsaw",
+		},
+		restConfig: &rest.Config{},
+		mockReturn: 0,
+		wantErr:    false,
+	}, {
+		name: "Error in saving Report",
+		tests: []discovery.Test{
+			{
+				Err: nil,
+				Test: &v1alpha1.Test{
+					ObjectMeta: metav1.ObjectMeta{
+						Name: "test1",
 					},
 				},
 			},
-			config: v1alpha1.ConfigurationSpec{
-				ReportFormat: "abc",
-			},
-			restConfig: &rest.Config{},
-			mockReturn: 0,
-			wantErr:    true,
 		},
-	}
-
+		config: v1alpha1.ConfigurationSpec{
+			ReportFormat: "abc",
+		},
+		restConfig: &rest.Config{},
+		mockReturn: 0,
+		wantErr:    true,
+	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockMainStart := &MockMainStart{
 				code: tt.mockReturn,
 			}
-			_, err := run(tt.restConfig, fakeClock, tt.config, mockMainStart, nil, tt.tests...)
+			_, err := run(context.TODO(), tt.restConfig, fakeClock, tt.config, mockMainStart, nil, tt.tests...)
 			if tt.wantErr {
 				assert.Error(t, err, "Run() should return an error")
 			} else {

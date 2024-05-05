@@ -5,8 +5,6 @@ Release notes for `TODO`.
 <!--
 ## ‼️ Breaking changes ‼️
 
-## 💫 New features 💫
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
@@ -19,3 +17,7 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
+
+## 💫 New features 💫
+
+- Added `--pause-on-failure` flag to pause when a test failure happens (to ease troubleshooting)
