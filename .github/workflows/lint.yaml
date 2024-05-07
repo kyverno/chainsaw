@@ -30,6 +30,6 @@ jobs:
           go-version-file: go.mod
           cache-dependency-path: go.sum
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@38e1018663fa5173f3968ea0777460d3de38f256 # v3.7.1
+        uses: golangci/golangci-lint-action@23faadfdeb23a6f9e511beaba149bb123b5b145a # v3.7.1
         with:
           skip-cache: true
