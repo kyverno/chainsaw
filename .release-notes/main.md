@@ -3,8 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## ‼️ Breaking changes ‼️
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
@@ -17,6 +15,10 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
+
+## ‼️ Breaking changes ‼️
+
+- Resource templating is now enabled by default
 
 ## 💫 New features 💫
 
