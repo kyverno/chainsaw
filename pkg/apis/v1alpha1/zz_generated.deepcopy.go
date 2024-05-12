@@ -48,10 +48,12 @@ func (in *Apply) DeepCopyInto(out *Apply) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
@@ -99,10 +101,12 @@ func (in *Assert) DeepCopyInto(out *Assert) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	in.FileRefOrCheck.DeepCopyInto(&out.FileRefOrCheck)
 	if in.Template != nil {
@@ -246,10 +250,12 @@ func (in *Command) DeepCopyInto(out *Command) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	if in.Args != nil {
 		in, out := &in.Args, &out.Args
@@ -403,10 +409,12 @@ func (in *Create) DeepCopyInto(out *Create) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
@@ -454,10 +462,12 @@ func (in *Delete) DeepCopyInto(out *Delete) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	if in.Template != nil {
 		in, out := &in.Template, &out.Template
@@ -509,10 +519,12 @@ func (in *Describe) DeepCopyInto(out *Describe) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	out.ResourceReference = in.ResourceReference
 	out.ObjectLabelsSelector = in.ObjectLabelsSelector
@@ -549,10 +561,12 @@ func (in *Error) DeepCopyInto(out *Error) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	in.FileRefOrCheck.DeepCopyInto(&out.FileRefOrCheck)
 	if in.Template != nil {
@@ -581,10 +595,12 @@ func (in *Events) DeepCopyInto(out *Events) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	out.ObjectLabelsSelector = in.ObjectLabelsSelector
 	return
@@ -779,10 +795,12 @@ func (in *Get) DeepCopyInto(out *Get) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	out.ResourceReference = in.ResourceReference
 	out.ObjectLabelsSelector = in.ObjectLabelsSelector
@@ -1007,10 +1025,12 @@ func (in *Patch) DeepCopyInto(out *Patch) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
@@ -1051,10 +1071,12 @@ func (in *PodLogs) DeepCopyInto(out *PodLogs) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	out.ObjectLabelsSelector = in.ObjectLabelsSelector
 	if in.Tail != nil {
@@ -1120,10 +1142,12 @@ func (in *Script) DeepCopyInto(out *Script) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	if in.Check != nil {
 		in, out := &in.Check, &out.Check
@@ -1194,10 +1218,12 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		*out = new(Timeouts)
 		(*in).DeepCopyInto(*out)
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	if in.Skip != nil {
 		in, out := &in.Skip, &out.Skip
@@ -1292,10 +1318,12 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 		*out = new(Timeouts)
 		(*in).DeepCopyInto(*out)
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	if in.SkipDelete != nil {
 		in, out := &in.SkipDelete, &out.SkipDelete
@@ -1416,10 +1444,12 @@ func (in *Update) DeepCopyInto(out *Update) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	in.FileRefOrResource.DeepCopyInto(&out.FileRefOrResource)
 	if in.Template != nil {
@@ -1460,10 +1490,12 @@ func (in *Wait) DeepCopyInto(out *Wait) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
-	if in.ClusterConfig != nil {
-		in, out := &in.ClusterConfig, &out.ClusterConfig
-		*out = new(Cluster)
-		**out = **in
+	if in.Clusters != nil {
+		in, out := &in.Clusters, &out.Clusters
+		*out = make(map[string]Cluster, len(*in))
+		for key, val := range *in {
+			(*out)[key] = val
+		}
 	}
 	out.ResourceReference = in.ResourceReference
 	out.ObjectLabelsSelector = in.ObjectLabelsSelector

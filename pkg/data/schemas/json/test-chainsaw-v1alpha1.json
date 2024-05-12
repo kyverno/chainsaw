@@ -384,26 +384,33 @@
                       "null"
                     ]
                   },
-                  "clusterConfig": {
-                    "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                     "type": [
                       "object",
                       "null"
                     ],
-                    "required": [
-                      "kubeconfig"
-                    ],
-                    "properties": {
-                      "context": {
-                        "description": "Context is the name of the context to use.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "kubeconfig": {
-                        "description": "Kubeconfig is the path to the referenced file.",
-                        "type": "string"
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
                       }
                     }
                   },
@@ -535,26 +542,33 @@
                       "null"
                     ]
                   },
-                  "clusterConfig": {
-                    "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                     "type": [
                       "object",
                       "null"
                     ],
-                    "required": [
-                      "kubeconfig"
-                    ],
-                    "properties": {
-                      "context": {
-                        "description": "Context is the name of the context to use.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "kubeconfig": {
-                        "description": "Kubeconfig is the path to the referenced file.",
-                        "type": "string"
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
                       }
                     }
                   },
@@ -667,26 +681,33 @@
                       "null"
                     ]
                   },
-                  "clusterConfig": {
-                    "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                     "type": [
                       "object",
                       "null"
                     ],
-                    "required": [
-                      "kubeconfig"
-                    ],
-                    "properties": {
-                      "context": {
-                        "description": "Context is the name of the context to use.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "kubeconfig": {
-                        "description": "Kubeconfig is the path to the referenced file.",
-                        "type": "string"
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
                       }
                     }
                   },
@@ -762,26 +783,33 @@
                       "null"
                     ]
                   },
-                  "clusterConfig": {
-                    "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                     "type": [
                       "object",
                       "null"
                     ],
-                    "required": [
-                      "kubeconfig"
-                    ],
-                    "properties": {
-                      "context": {
-                        "description": "Context is the name of the context to use.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "kubeconfig": {
-                        "description": "Kubeconfig is the path to the referenced file.",
-                        "type": "string"
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
                       }
                     }
                   },
@@ -844,26 +872,33 @@
                       "null"
                     ]
                   },
-                  "clusterConfig": {
-                    "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                     "type": [
                       "object",
                       "null"
                     ],
-                    "required": [
-                      "kubeconfig"
-                    ],
-                    "properties": {
-                      "context": {
-                        "description": "Context is the name of the context to use.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "kubeconfig": {
-                        "description": "Kubeconfig is the path to the referenced file.",
-                        "type": "string"
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
                       }
                     }
                   },
@@ -933,26 +968,33 @@
                       "null"
                     ]
                   },
-                  "clusterConfig": {
-                    "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                     "type": [
                       "object",
                       "null"
                     ],
-                    "required": [
-                      "kubeconfig"
-                    ],
-                    "properties": {
-                      "context": {
-                        "description": "Context is the name of the context to use.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "kubeconfig": {
-                        "description": "Kubeconfig is the path to the referenced file.",
-                        "type": "string"
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
                       }
                     }
                   },
@@ -1047,26 +1089,33 @@
                       "null"
                     ]
                   },
-                  "clusterConfig": {
-                    "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                     "type": [
                       "object",
                       "null"
                     ],
-                    "required": [
-                      "kubeconfig"
-                    ],
-                    "properties": {
-                      "context": {
-                        "description": "Context is the name of the context to use.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "kubeconfig": {
-                        "description": "Kubeconfig is the path to the referenced file.",
-                        "type": "string"
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
                       }
                     }
                   },
@@ -1195,26 +1244,33 @@
                       "null"
                     ]
                   },
-                  "clusterConfig": {
-                    "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                     "type": [
                       "object",
                       "null"
                     ],
-                    "required": [
-                      "kubeconfig"
-                    ],
-                    "properties": {
-                      "context": {
-                        "description": "Context is the name of the context to use.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "kubeconfig": {
-                        "description": "Kubeconfig is the path to the referenced file.",
-                        "type": "string"
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
                       }
                     }
                   },
@@ -1337,26 +1393,33 @@
             "null"
           ]
         },
-        "clusterConfig": {
-          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+        "clusters": {
+          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
           "type": [
             "object",
             "null"
           ],
-          "required": [
-            "kubeconfig"
-          ],
-          "properties": {
-            "context": {
-              "description": "Context is the name of the context to use.",
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "kubeconfig": {
-              "description": "Kubeconfig is the path to the referenced file.",
-              "type": "string"
+          "additionalProperties": {
+            "description": "Cluster defines cluster config and context.",
+            "type": [
+              "object",
+              "null"
+            ],
+            "required": [
+              "kubeconfig"
+            ],
+            "properties": {
+              "context": {
+                "description": "Context is the name of the context to use.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "kubeconfig": {
+                "description": "Kubeconfig is the path to the referenced file.",
+                "type": "string"
+              }
             }
           }
         },
@@ -1531,26 +1594,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -1682,26 +1752,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -1814,26 +1891,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -1909,26 +1993,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -1991,26 +2082,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -2080,26 +2178,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -2194,26 +2299,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -2342,26 +2454,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -2484,26 +2603,33 @@
                   "null"
                 ]
               },
-              "clusterConfig": {
-                "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+              "clusters": {
+                "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                 "type": [
                   "object",
                   "null"
                 ],
-                "required": [
-                  "kubeconfig"
-                ],
-                "properties": {
-                  "context": {
-                    "description": "Context is the name of the context to use.",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "kubeconfig": {
-                    "description": "Kubeconfig is the path to the referenced file.",
-                    "type": "string"
+                "additionalProperties": {
+                  "description": "Cluster defines cluster config and context.",
+                  "type": [
+                    "object",
+                    "null"
+                  ],
+                  "required": [
+                    "kubeconfig"
+                  ],
+                  "properties": {
+                    "context": {
+                      "description": "Context is the name of the context to use.",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "kubeconfig": {
+                      "description": "Kubeconfig is the path to the referenced file.",
+                      "type": "string"
+                    }
                   }
                 }
               },
@@ -2590,26 +2716,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -2741,26 +2874,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -2873,26 +3013,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -2968,26 +3115,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -3050,26 +3204,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -3139,26 +3300,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -3253,26 +3421,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -3401,26 +3576,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -3662,26 +3844,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -3823,26 +4012,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -3936,26 +4132,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -4091,26 +4294,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -4255,26 +4465,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -4416,26 +4633,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -4509,26 +4733,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -4674,26 +4905,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -4841,26 +5079,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },
@@ -4983,26 +5228,33 @@
                             "null"
                           ]
                         },
-                        "clusterConfig": {
-                          "description": "ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).",
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
                           "type": [
                             "object",
                             "null"
                           ],
-                          "required": [
-                            "kubeconfig"
-                          ],
-                          "properties": {
-                            "context": {
-                              "description": "Context is the name of the context to use.",
-                              "type": [
-                                "string",
-                                "null"
-                              ]
-                            },
-                            "kubeconfig": {
-                              "description": "Kubeconfig is the path to the referenced file.",
-                              "type": "string"
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
                             }
                           }
                         },

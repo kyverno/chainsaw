@@ -56,14 +56,15 @@ func TestOperation_Execute(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			localTC := tc
-			op := newOperation(
+			op := newLazyOperation(
+				nil,
 				OperationInfo{},
 				localTC.continueOnError,
 				&localTC.timeout,
-				localTC.operation,
+				func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
+					return localTC.operation, nil
+				},
 				localTC.operationReport,
-				nil,
-				nil,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)

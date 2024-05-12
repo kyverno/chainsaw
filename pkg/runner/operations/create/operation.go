@@ -10,6 +10,7 @@ import (
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
+	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -21,7 +22,7 @@ import (
 )
 
 type operation struct {
-	client     client.Client
+	cluster    clusters.Cluster
 	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
 	cleaner    cleanup.Cleaner
@@ -31,7 +32,7 @@ type operation struct {
 }
 
 func New(
-	client client.Client,
+	cluster clusters.Cluster,
 	obj unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
 	cleaner cleanup.Cleaner,
@@ -40,7 +41,7 @@ func New(
 	outputs []v1alpha1.Output,
 ) operations.Operation {
 	return &operation{
-		client:     client,
+		cluster:    cluster,
 		base:       obj,
 		namespacer: namespacer,
 		cleaner:    cleaner,
@@ -97,7 +98,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 func (o *operation) tryCreateResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
-	err := o.client.Get(ctx, client.ObjectKey(&obj), &actual)
+	err := o.cluster.Client().Get(ctx, client.ObjectKey(&obj), &actual)
 	if err == nil {
 		return nil, errors.New("the resource already exists in the cluster")
 	}
@@ -108,9 +109,9 @@ func (o *operation) tryCreateResource(ctx context.Context, bindings binding.Bind
 }
 
 func (o *operation) createResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
-	err := o.client.Create(ctx, &obj)
+	err := o.cluster.Client().Create(ctx, &obj)
 	if err == nil && o.cleaner != nil {
-		o.cleaner(obj, o.client)
+		o.cleaner(obj, o.cluster)
 	}
 	return o.handleCheck(ctx, bindings, obj, err)
 }

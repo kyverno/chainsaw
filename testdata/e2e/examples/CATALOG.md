@@ -10,6 +10,7 @@
 - [command-output](command-output/README.md)
 - [delete](delete/README.md)
 - [deployment](deployment/README.md)
+- [dynamic-clusters](dynamic-clusters/README.md)
 - [finally](finally/README.md)
 - [inline](inline/README.md)
 - [k8s-server-version](k8s-server-version/README.md)

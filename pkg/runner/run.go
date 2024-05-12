@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
@@ -25,16 +26,18 @@ type mainstart interface {
 }
 
 func Run(
+	ctx context.Context,
 	cfg *rest.Config,
 	clock clock.PassiveClock,
 	config v1alpha1.ConfigurationSpec,
 	values map[string]any,
 	tests ...discovery.Test,
 ) (*summary.Summary, error) {
-	return run(cfg, clock, config, nil, values, tests...)
+	return run(ctx, cfg, clock, config, nil, values, tests...)
 }
 
 func run(
+	ctx context.Context,
 	cfg *rest.Config,
 	clock clock.PassiveClock,
 	config v1alpha1.ConfigurationSpec,
@@ -54,13 +57,14 @@ func run(
 		return nil, err
 	}
 	bindings := binding.NewBindings()
-	bindings = apibindings.RegisterNamedBinding(context.TODO(), bindings, "values", values)
-	clusters := processors.NewClusters()
+	bindings = apibindings.RegisterNamedBinding(ctx, bindings, "values", values)
+	registeredClusters := clusters.NewRegistry()
 	if cfg != nil {
-		err := clusters.Register(processors.DefaultClient, cfg)
+		cluster, err := clusters.NewClusterFromConfig(cfg)
 		if err != nil {
 			return nil, err
 		}
+		registeredClusters = registeredClusters.Register(clusters.DefaultClient, cluster)
 	}
 	for name, cluster := range config.Clusters {
 		cfg, err := restutils.Config(cluster.Kubeconfig, clientcmd.ConfigOverrides{
@@ -69,17 +73,19 @@ func run(
 		if err != nil {
 			return nil, err
 		}
-		if err := clusters.Register(name, cfg); err != nil {
+		cluster, err := clusters.NewClusterFromConfig(cfg)
+		if err != nil {
 			return nil, err
 		}
+		registeredClusters = registeredClusters.Register(name, cluster)
 	}
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			processor := processors.NewTestsProcessor(config, clusters, clock, &summary, testsReport, tests...)
-			ctx := testing.IntoContext(context.Background(), t)
+			processor := processors.NewTestsProcessor(config, registeredClusters, clock, &summary, testsReport, tests...)
+			ctx := testing.IntoContext(ctx, t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx, bindings)
 		},

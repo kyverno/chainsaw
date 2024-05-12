@@ -14,9 +14,9 @@ type Describe struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
-	// ClusterConfig defines a reference to a cluster configuration (default cluster will be used if not specified and/or overridden).
+	// Clusters holds a registry to clusters to support multi-cluster tests.
 	// +optional
-	ClusterConfig *Cluster `json:"clusterConfig,omitempty"`
+	Clusters map[string]Cluster `json:"clusters,omitempty"`
 
 	// ResourceReference referenced resource type.
 	ResourceReference `json:",inline"`

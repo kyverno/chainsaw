@@ -12,6 +12,7 @@ import (
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
+	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -388,12 +389,12 @@ func TestTestProcessor_Run(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			shouldFailVar := &atomic.Bool{}
 			shouldFailVar.Store(tc.shouldFailFast)
-			clusters := NewClusters()
-			if tc.client != nil {
-				clusters.clients[DefaultClient] = cluster{
-					client: tc.client,
-				}
-			}
+			clusters := clusters.NewRegistry()
+			// if tc.client != nil {
+			// 	clusters.clients[DefaultClient] = cluster{
+			// 		client: tc.client,
+			// 	}
+			// }
 			processor := NewTestProcessor(
 				tc.config,
 				clusters,

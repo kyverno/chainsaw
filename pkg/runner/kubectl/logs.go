@@ -40,11 +40,11 @@ func Logs(bindings binding.Bindings, collector *v1alpha1.PodLogs) (*v1alpha1.Com
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
 	cmd := v1alpha1.Command{
-		Cluster:       cluster,
-		ClusterConfig: collector.ClusterConfig,
-		Timeout:       collector.Timeout,
-		Entrypoint:    "kubectl",
-		Args:          []string{"logs", "--prefix"},
+		Cluster:    cluster,
+		Clusters:   collector.Clusters,
+		Timeout:    collector.Timeout,
+		Entrypoint: "kubectl",
+		Args:       []string{"logs", "--prefix"},
 	}
 	if name != "" {
 		cmd.Args = append(cmd.Args, name)

@@ -9,6 +9,7 @@ import (
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
+	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
@@ -159,12 +160,12 @@ func TestTestsProcessor_Run(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			clusters := NewClusters()
-			if tc.client != nil {
-				clusters.clients[DefaultClient] = cluster{
-					client: tc.client,
-				}
-			}
+			clusters := clusters.NewRegistry()
+			// if tc.client != nil {
+			// 	clusters.clients[DefaultClient] = cluster{
+			// 		client: tc.client,
+			// 	}
+			// }
 			processor := NewTestsProcessor(
 				tc.config,
 				clusters,
