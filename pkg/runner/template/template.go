@@ -1,6 +1,6 @@
 package template
 
-const DefaultTemplate = false
+const DefaultTemplate = true
 
 func Get(values ...*bool) bool {
 	for _, value := range values {
