@@ -3,6 +3,8 @@ apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: dynamic-clusters
+  labels:
+    no-ko-test: ''
 spec:
   steps:
   - try:
