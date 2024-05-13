@@ -60,10 +60,10 @@ func TestOperation_Execute(t *testing.T) {
 				OperationInfo{},
 				localTC.continueOnError,
 				&localTC.timeout,
-				localTC.operation,
+				func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+					return localTC.operation, bindings, nil
+				},
 				localTC.operationReport,
-				nil,
-				nil,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)

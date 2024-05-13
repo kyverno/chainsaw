@@ -1029,15 +1029,13 @@ func TestStepProcessor_Run(t *testing.T) {
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			clusters := NewClusters()
+			registry := registryMock{}
 			if tc.client != nil {
-				clusters.clients[DefaultClient] = cluster{
-					client: tc.client,
-				}
+				registry.client = tc.client
 			}
 			stepProcessor := NewStepProcessor(
 				tc.config,
-				clusters,
+				registry,
 				tc.namespacer,
 				tc.clock,
 				tc.test,

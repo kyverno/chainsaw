@@ -82,6 +82,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         entrypoint:
                           description: Entrypoint is the command entry point to run.
                           type: string
@@ -162,6 +180,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         expect:
                           description: Expect defines a list of matched checks to
                             validate the operation outcome.
@@ -234,6 +270,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         kind:
                           description: |-
                             Kind of the referent.
@@ -274,6 +328,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         format:
                           description: Format determines the output format (json or
                             yaml).
@@ -307,6 +379,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         format:
                           description: Format determines the output format (json or
                             yaml).
@@ -345,6 +435,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         container:
                           description: Container in pod to get logs from else --all-containers
                             is used.
@@ -403,6 +511,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         content:
                           description: Content defines a shell script (run with "sh
                             -c ...").
@@ -478,6 +604,24 @@ spec:
                             wait operation will be performed (default cluster will
                             be used if not specified).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         for:
                           description: For specifies the condition to wait for.
                           properties:
@@ -741,6 +885,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         entrypoint:
                           description: Entrypoint is the command entry point to run.
                           type: string
@@ -821,6 +983,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         expect:
                           description: Expect defines a list of matched checks to
                             validate the operation outcome.
@@ -893,6 +1073,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         kind:
                           description: |-
                             Kind of the referent.
@@ -933,6 +1131,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         format:
                           description: Format determines the output format (json or
                             yaml).
@@ -966,6 +1182,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         format:
                           description: Format determines the output format (json or
                             yaml).
@@ -1004,6 +1238,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         container:
                           description: Container in pod to get logs from else --all-containers
                             is used.
@@ -1062,6 +1314,24 @@ spec:
                           description: Cluster defines the target cluster (default
                             cluster will be used if not specified and/or overridden).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         content:
                           description: Content defines a shell script (run with "sh
                             -c ...").
@@ -1137,6 +1407,24 @@ spec:
                             wait operation will be performed (default cluster will
                             be used if not specified).
                           type: string
+                        clusters:
+                          additionalProperties:
+                            description: Cluster defines cluster config and context.
+                            properties:
+                              context:
+                                description: Context is the name of the context to
+                                  use.
+                                type: string
+                              kubeconfig:
+                                description: Kubeconfig is the path to the referenced
+                                  file.
+                                type: string
+                            required:
+                            - kubeconfig
+                            type: object
+                          description: Clusters holds a registry to clusters to support
+                            multi-cluster tests.
+                          type: object
                         for:
                           description: For specifies the condition to wait for.
                           properties:

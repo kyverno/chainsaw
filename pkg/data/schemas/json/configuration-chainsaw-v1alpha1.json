@@ -352,6 +352,36 @@
                       "null"
                     ]
                   },
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
                   "entrypoint": {
                     "description": "Entrypoint is the command entry point to run.",
                     "type": "string"
@@ -480,6 +510,36 @@
                       "null"
                     ]
                   },
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
                   "expect": {
                     "description": "Expect defines a list of matched checks to validate the operation outcome.",
                     "type": [
@@ -589,6 +649,36 @@
                       "null"
                     ]
                   },
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
                   "kind": {
                     "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": [
@@ -661,6 +751,36 @@
                       "null"
                     ]
                   },
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
+                      }
+                    }
+                  },
                   "format": {
                     "description": "Format determines the output format (json or yaml).",
                     "type": [
@@ -719,6 +839,36 @@
                       "string",
                       "null"
                     ]
+                  },
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
+                      }
+                    }
                   },
                   "format": {
                     "description": "Format determines the output format (json or yaml).",
@@ -785,6 +935,36 @@
                       "string",
                       "null"
                     ]
+                  },
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
+                      }
+                    }
                   },
                   "container": {
                     "description": "Container in pod to get logs from else --all-containers is used.",
@@ -876,6 +1056,36 @@
                       "string",
                       "null"
                     ]
+                  },
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
+                      }
+                    }
                   },
                   "content": {
                     "description": "Content defines a shell script (run with \"sh -c ...\").",
@@ -1001,6 +1211,36 @@
                       "string",
                       "null"
                     ]
+                  },
+                  "clusters": {
+                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                    "type": [
+                      "object",
+                      "null"
+                    ],
+                    "additionalProperties": {
+                      "description": "Cluster defines cluster config and context.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "kubeconfig"
+                      ],
+                      "properties": {
+                        "context": {
+                          "description": "Context is the name of the context to use.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "kubeconfig": {
+                          "description": "Kubeconfig is the path to the referenced file.",
+                          "type": "string"
+                        }
+                      }
+                    }
                   },
                   "for": {
                     "description": "For specifies the condition to wait for.",

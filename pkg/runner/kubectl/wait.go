@@ -43,6 +43,7 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 	}
 	cmd := v1alpha1.Command{
 		Cluster:    cluster,
+		Clusters:   collector.Clusters,
 		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
 		Args:       []string{"wait", resource},
