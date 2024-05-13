@@ -326,7 +326,8 @@ func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Regis
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	clusterResolver := p.getClusterResolver(clusters.Register(registeredClusters, p.test.BasePath, op.Clusters), op.Cluster)
-	for i, resource := range resources {
+	for i := range resources {
+		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
@@ -364,7 +365,8 @@ func (p *stepProcessor) assertOperation(id int, registeredClusters clusters.Regi
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	clusterResolver := p.getClusterResolver(clusters.Register(registeredClusters, p.test.BasePath, op.Clusters), op.Cluster)
-	for i, resource := range resources {
+	for i := range resources {
+		resource := resources[i]
 		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
@@ -431,7 +433,8 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
-	for i, resource := range resources {
+	for i := range resources {
+		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
@@ -536,7 +539,8 @@ func (p *stepProcessor) errorOperation(id int, registeredClusters clusters.Regis
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
-	for i, resource := range resources {
+	for i := range resources {
+		resource := resources[i]
 		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
@@ -639,7 +643,8 @@ func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Regis
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
-	for i, resource := range resources {
+	for i := range resources {
+		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
@@ -728,7 +733,8 @@ func (p *stepProcessor) updateOperation(id int, registeredClusters clusters.Regi
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
-	for i, resource := range resources {
+	for i := range resources {
+		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
