@@ -18,6 +18,10 @@ type Delete struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// Clusters holds a registry to clusters to support multi-cluster tests.
+	// +optional
+	Clusters map[string]Cluster `json:"clusters,omitempty"`
+
 	// Template determines whether resources should be considered for templating.
 	// +optional
 	Template *bool `json:"template,omitempty"`

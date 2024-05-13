@@ -36,7 +36,6 @@ kind: Test
 metadata:
   name: apply-outputs-2
 spec:
-  skip: true
   template: true
   bindings:
   - name: prefix

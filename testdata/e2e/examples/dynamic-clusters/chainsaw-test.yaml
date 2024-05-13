@@ -1,0 +1,75 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: dynamic-clusters
+  labels:
+    no-ko-test: ''
+spec:
+  steps:
+  - try:
+    - script:
+        timeout: 1m
+        content: |
+          kind create cluster --name dynamic --kubeconfig ./dynamic
+    finally:
+    - script:
+        content: |
+          kind delete cluster --name dynamic
+    - script:
+        content: |
+          rm -f ./dynamic
+  - clusters:
+      dynamic:
+        kubeconfig: ./dynamic
+    cluster: dynamic
+    try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+            namespace: default
+          data:
+            foo: bar
+    - assert:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+            namespace: default
+          data:
+            foo: bar
+    finally:
+    - script:
+        content: |
+          echo "in finally"
+  - clusters:
+      dynamic:
+        kubeconfig: ./dynamic
+    cluster: dynamic
+    try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start-2
+            namespace: default
+          data:
+            foo: bar
+    - assert:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start-2
+            namespace: default
+          data:
+            foo: bar
+    finally:
+    - script:
+        content: |
+          echo "in finally"

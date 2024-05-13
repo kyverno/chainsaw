@@ -19,6 +19,10 @@ type Assert struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// Clusters holds a registry to clusters to support multi-cluster tests.
+	// +optional
+	Clusters map[string]Cluster `json:"clusters,omitempty"`
+
 	// FileRefOrAssert provides a reference to the assertion.
 	FileRefOrCheck `json:",inline"`
 

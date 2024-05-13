@@ -41,6 +41,7 @@ func Logs(bindings binding.Bindings, collector *v1alpha1.PodLogs) (*v1alpha1.Com
 	}
 	cmd := v1alpha1.Command{
 		Cluster:    cluster,
+		Clusters:   collector.Clusters,
 		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
 		Args:       []string{"logs", "--prefix"},

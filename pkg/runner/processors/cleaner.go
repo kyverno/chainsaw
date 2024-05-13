@@ -4,8 +4,10 @@ import (
 	"context"
 	"time"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -29,10 +31,10 @@ func (c *cleaner) register(obj unstructured.Unstructured, client client.Client, 
 		OperationInfo{},
 		true,
 		timeout,
-		opdelete.New(client, obj, c.namespacer, false),
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			return opdelete.New(client, obj, c.namespacer, false), bindings, nil
+		},
 		nil,
-		nil,
-		client,
 	))
 }
 

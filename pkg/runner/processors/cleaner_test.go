@@ -65,13 +65,13 @@ func Test_Cleaner_Run(t *testing.T) {
 				OperationInfo{},
 				true,
 				nil,
-				mock.MockOperation{
-					ExecFn: func(_ context.Context, _ binding.Bindings) (operations.Outputs, error) {
-						return nil, nil
-					},
+				func(_ context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+					return mock.MockOperation{
+						ExecFn: func(_ context.Context, _ binding.Bindings) (operations.Outputs, error) {
+							return nil, nil
+						},
+					}, bindings, nil
 				},
-				nil,
-				nil,
 				nil,
 			),
 		},
