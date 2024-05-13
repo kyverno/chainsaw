@@ -60,7 +60,7 @@ func NewStepProcessor(
 ) StepProcessor {
 	return &stepProcessor{
 		config:     config,
-		clusterss:  clusters,
+		clusters:   clusters,
 		namespacer: namespacer,
 		clock:      clock,
 		test:       test,
@@ -73,7 +73,7 @@ func NewStepProcessor(
 
 type stepProcessor struct {
 	config     v1alpha1.ConfigurationSpec
-	clusterss  clusters.Registry
+	clusters   clusters.Registry
 	namespacer namespacer.Namespacer
 	clock      clock.PassiveClock
 	test       discovery.Test
@@ -95,7 +95,7 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		})
 	}
 	logger := logging.FromContext(ctx)
-	registeredClusters := clusters.Register(p.clusterss, p.test.BasePath, p.step.Clusters)
+	registeredClusters := clusters.Register(p.clusters, p.test.BasePath, p.step.Clusters)
 	clusterConfig, clusterClient, err := registeredClusters.Resolve(false, p.test.Spec.Cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
