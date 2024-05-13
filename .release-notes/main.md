@@ -9,8 +9,6 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 🔧 Fixes 🔧
-
 ## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
@@ -23,3 +21,7 @@ Release notes for `TODO`.
 ## 💫 New features 💫
 
 - Added `--pause-on-failure` flag to pause when a test failure happens (to ease troubleshooting)
+
+## 🔧 Fixes 🔧
+
+- Force background deletion propagation policy (useful when testing unmanaged `Job`)
