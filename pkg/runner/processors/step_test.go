@@ -10,7 +10,6 @@ import (
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	fakeLogger "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
@@ -1030,15 +1029,13 @@ func TestStepProcessor_Run(t *testing.T) {
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			clusters := clusters.NewRegistry()
-			// if tc.client != nil {
-			// 	clusters.clients[DefaultClient] = cluster{
-			// 		client: tc.client,
-			// 	}
-			// }
+			registry := registryMock{}
+			if tc.client != nil {
+				registry.client = tc.client
+			}
 			stepProcessor := NewStepProcessor(
 				tc.config,
-				clusters,
+				registry,
 				tc.namespacer,
 				tc.clock,
 				tc.test,
