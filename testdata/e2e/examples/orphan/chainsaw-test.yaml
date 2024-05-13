@@ -1,0 +1,45 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: &name delete-test
+spec:
+  namespace: &namespace default
+  steps:
+  - name: *name
+    try:
+    - apply:
+        resource:
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: *name
+            namespace: *namespace
+          spec:
+            completions: 2
+            parallelism: 2
+            completionMode: Indexed
+            template:
+              spec:
+                restartPolicy: OnFailure
+                containers:
+                - name: main
+                  image: nginx
+    - sleep:
+        duration: 5s
+    - delete:
+        ref:
+          apiVersion: batch/v1
+          kind: Job
+          name: *name
+          namespace: *namespace
+    - sleep:
+        duration: 5s
+    - error:
+        resource:
+          apiVersion: v1
+          kind: Pod
+          metadata:
+            namespace: *namespace
+            labels:
+              job-name: *name
+        timeout: 1s
