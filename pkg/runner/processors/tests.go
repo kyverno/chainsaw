@@ -74,7 +74,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		})
 	}
 	var nspacer namespacer.Namespacer
-	clusterConfig, clusterClient, err := clusters.Resolve(p.clusters)
+	clusterConfig, clusterClient, err := p.clusters.Resolve(false)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)

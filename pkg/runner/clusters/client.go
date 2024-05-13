@@ -6,7 +6,7 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-func Client(config *rest.Config, dryRun bool) (client.Client, error) {
+func makeClient(config *rest.Config, dryRun bool) (client.Client, error) {
 	c, err := client.New(config)
 	if err != nil {
 		return nil, err

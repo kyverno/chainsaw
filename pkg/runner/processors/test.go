@@ -118,7 +118,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		}
 	}
 	registeredClusters := clusters.Register(p.clusters, p.test.BasePath, p.test.Spec.Clusters)
-	clusterConfig, clusterClient, err := clusters.Resolve(registeredClusters, p.test.Spec.Cluster)
+	clusterConfig, clusterClient, err := registeredClusters.Resolve(false, p.test.Spec.Cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)

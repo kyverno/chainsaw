@@ -1,10 +1,15 @@
 package clusters
 
+import (
+	"github.com/kyverno/chainsaw/pkg/client"
+	"k8s.io/client-go/rest"
+)
+
 const DefaultClient = ""
 
 type Registry interface {
 	Register(string, Cluster) Registry
-	Resolve(...string) Cluster
+	Resolve(bool, ...string) (*rest.Config, client.Client, error)
 }
 
 type registry struct {
@@ -28,11 +33,19 @@ func (c registry) Register(name string, cluster Cluster) Registry {
 	}
 }
 
-func (c registry) Resolve(names ...string) Cluster {
+func (c registry) find(names ...string) Cluster {
 	for _, name := range names {
 		if name != "" {
 			return c.clusters[name]
 		}
 	}
 	return c.clusters[DefaultClient]
+}
+
+func (c registry) Resolve(dryRun bool, names ...string) (*rest.Config, client.Client, error) {
+	cluster := c.find(names...)
+	if cluster != nil {
+		return link(cluster, dryRun)
+	}
+	return nil, nil, nil
 }

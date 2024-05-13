@@ -14,9 +14,22 @@ import (
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
+
+type registryMock struct {
+	client client.Client
+}
+
+func (r registryMock) Register(string, clusters.Cluster) clusters.Registry {
+	return r
+}
+
+func (r registryMock) Resolve(bool, ...string) (*rest.Config, client.Client, error) {
+	return nil, r.client, nil
+}
 
 func TestTestsProcessor_Run(t *testing.T) {
 	testCases := []struct {
@@ -157,18 +170,15 @@ func TestTestsProcessor_Run(t *testing.T) {
 			expectedFail: true,
 		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			clusters := clusters.NewRegistry()
-			// if tc.client != nil {
-			// 	clusters.clients[DefaultClient] = cluster{
-			// 		client: tc.client,
-			// 	}
-			// }
+			registry := registryMock{}
+			if tc.client != nil {
+				registry.client = tc.client
+			}
 			processor := NewTestsProcessor(
 				tc.config,
-				clusters,
+				registry,
 				tc.clock,
 				tc.summary,
 				tc.testsReport,
