@@ -15,8 +15,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type operation struct {
@@ -111,7 +113,7 @@ func (o *operation) deleteResources(ctx context.Context, bindings binding.Bindin
 }
 
 func (o *operation) deleteResource(ctx context.Context, resource unstructured.Unstructured) error {
-	if err := o.client.Delete(ctx, &resource); err != nil {
+	if err := o.client.Delete(ctx, &resource, ctrlclient.PropagationPolicy(metav1.DeletePropagationBackground)); err != nil {
 		if kerrors.IsNotFound(err) {
 			return nil
 		}
