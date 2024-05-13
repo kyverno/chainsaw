@@ -56,13 +56,12 @@ func TestOperation_Execute(t *testing.T) {
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			localTC := tc
-			op := newLazyOperation(
-				nil,
+			op := newOperation(
 				OperationInfo{},
 				localTC.continueOnError,
 				&localTC.timeout,
-				func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-					return localTC.operation, nil
+				func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+					return localTC.operation, bindings, nil
 				},
 				localTC.operationReport,
 			)

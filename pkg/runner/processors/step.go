@@ -9,6 +9,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/resource"
@@ -94,9 +95,13 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	}
 	logger := logging.FromContext(ctx)
 	registeredClusters := clusters.Register(p.clusterss, p.test.BasePath, p.step.Clusters)
-	cluster := registeredClusters.Resolve(p.step.Cluster, p.test.Spec.Cluster)
-	bindings = apibindings.RegisterClusterBindings(ctx, bindings, cluster.Config(), cluster.Client())
-	bindings, err := apibindings.RegisterBindings(ctx, bindings, p.step.Bindings...)
+	clusterConfig, clusterClient, err := clusters.Resolve(registeredClusters, p.test.Spec.Cluster)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		failer.FailNow(ctx)
+	}
+	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
+	bindings, err = apibindings.RegisterBindings(ctx, bindings, p.step.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -319,22 +324,25 @@ func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Regis
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, dryRun)
+	cluster := p.getCluster(clusters.Register(registeredClusters, p.test.BasePath, op.Clusters), op.Cluster)
 	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
-		ops = append(ops, newLazyOperation(
-			cluster,
+		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-				return opapply.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs), nil
+			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+				config, client, err := clusters.Link(cluster, dryRun)
+				if err != nil {
+					return nil, nil, err
+				}
+				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+				return opapply.New(client, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -354,19 +362,22 @@ func (p *stepProcessor) assertOperation(id int, registeredClusters clusters.Regi
 		operationReport = p.report.ForOperation("Assert ", report.OperationTypeAssert)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
-	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, false)
+	cluster := p.getCluster(clusters.Register(registeredClusters, p.test.BasePath, op.Clusters), op.Cluster)
 	for i, resource := range resources {
-		ops = append(ops, newLazyOperation(
-			cluster,
+		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
-			func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-				return opassert.New(cluster.Client(), resource, p.namespacer, template), nil
+			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+				config, client, err := clusters.Link(cluster, false)
+				if err != nil {
+					return nil, nil, err
+				}
+				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+				return opassert.New(client, resource, p.namespacer, template), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -385,16 +396,20 @@ func (p *stepProcessor) commandOperation(id int, registeredClusters clusters.Reg
 		ns = p.namespacer.GetNamespace()
 	}
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, false)
-	return newLazyOperation(
-		cluster,
+	cluster := p.getCluster(registeredClusters, op.Cluster)
+	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-			return opcommand.New(op, p.test.BasePath, ns, cluster.Config()), nil
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			config, client, err := clusters.Link(cluster, false)
+			if err != nil {
+				return nil, nil, err
+			}
+			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+			return opcommand.New(op, p.test.BasePath, ns, config), bindings, nil
 		},
 		operationReport,
 		op.Bindings...,
@@ -414,21 +429,25 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, dryRun)
+	cluster := p.getCluster(registeredClusters, op.Cluster)
 	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
-		ops = append(ops, newLazyOperation(
-			cluster,
+		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-				return opcreate.New(cluster, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs), nil
+			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+				config, client, err := clusters.Link(cluster, dryRun)
+				if err != nil {
+					return nil, nil, err
+				}
+				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+				return opcreate.New(client, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -450,16 +469,20 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, false)
-	return newLazyOperation(
-		cluster,
+	cluster := p.getCluster(registeredClusters, op.Cluster)
+	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
-		func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-			return opdelete.New(cluster.Client(), resource, p.namespacer, template, op.Expect...), nil
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			config, client, err := clusters.Link(cluster, false)
+			if err != nil {
+				return nil, nil, err
+			}
+			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+			return opdelete.New(client, resource, p.namespacer, template, op.Expect...), bindings, nil
 		},
 		operationReport,
 		op.Bindings...,
@@ -476,20 +499,24 @@ func (p *stepProcessor) describeOperation(id int, registeredClusters clusters.Re
 		ns = p.namespacer.GetNamespace()
 	}
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, false)
-	return newLazyOperation(
-		cluster,
+	cluster := p.getCluster(registeredClusters, op.Cluster)
+	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
-			cmd, err := kubectl.Describe(cluster.Client(), bindings, &op)
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			config, client, err := clusters.Link(cluster, false)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
-			return opcommand.New(*cmd, p.test.BasePath, ns, cluster.Config()), nil
+			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+			cmd, err := kubectl.Describe(client, bindings, &op)
+			if err != nil {
+				return nil, nil, err
+			}
+			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
 		},
 		operationReport,
 	)
@@ -507,18 +534,22 @@ func (p *stepProcessor) errorOperation(id int, registeredClusters clusters.Regis
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, false)
+	cluster := p.getCluster(registeredClusters, op.Cluster)
 	for i, resource := range resources {
-		ops = append(ops, newLazyOperation(
-			cluster,
+		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
-			func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
-				return operror.New(cluster.Client(), resource, p.namespacer, template), nil
+			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+				config, client, err := clusters.Link(cluster, false)
+				if err != nil {
+					return nil, nil, err
+				}
+				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+				return operror.New(client, resource, p.namespacer, template), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -537,20 +568,24 @@ func (p *stepProcessor) getOperation(id int, registeredClusters clusters.Registr
 		ns = p.namespacer.GetNamespace()
 	}
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, false)
-	return newLazyOperation(
-		cluster,
+	cluster := p.getCluster(registeredClusters, op.Cluster)
+	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
-			cmd, err := kubectl.Get(cluster.Client(), bindings, &op)
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			config, client, err := clusters.Link(cluster, false)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
-			return opcommand.New(*cmd, p.test.BasePath, ns, cluster.Config()), nil
+			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+			cmd, err := kubectl.Get(client, bindings, &op)
+			if err != nil {
+				return nil, nil, err
+			}
+			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
 		},
 		operationReport,
 	)
@@ -566,20 +601,24 @@ func (p *stepProcessor) logsOperation(id int, registeredClusters clusters.Regist
 		ns = p.namespacer.GetNamespace()
 	}
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, false)
-	return newLazyOperation(
-		cluster,
+	cluster := p.getCluster(registeredClusters, op.Cluster)
+	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			config, client, err := clusters.Link(cluster, false)
+			if err != nil {
+				return nil, nil, err
+			}
+			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
 			cmd, err := kubectl.Logs(bindings, &op)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
-			return opcommand.New(*cmd, p.test.BasePath, ns, cluster.Config()), nil
+			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
 		},
 		operationReport,
 	)
@@ -598,21 +637,25 @@ func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Regis
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, dryRun)
+	cluster := p.getCluster(registeredClusters, op.Cluster)
 	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
-		ops = append(ops, newLazyOperation(
-			cluster,
+		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
-				return oppatch.New(cluster.Client(), resource, p.namespacer, template, op.Expect, op.Outputs), nil
+			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+				config, client, err := clusters.Link(cluster, dryRun)
+				if err != nil {
+					return nil, nil, err
+				}
+				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+				return oppatch.New(client, resource, p.namespacer, template, op.Expect, op.Outputs), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -631,16 +674,20 @@ func (p *stepProcessor) scriptOperation(id int, registeredClusters clusters.Regi
 		ns = p.namespacer.GetNamespace()
 	}
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, false)
-	return newLazyOperation(
-		cluster,
+	cluster := p.getCluster(registeredClusters, op.Cluster)
+	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
 		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
-		func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-			return opscript.New(op, p.test.BasePath, ns, cluster.Config()), nil
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			config, client, err := clusters.Link(cluster, false)
+			if err != nil {
+				return nil, nil, err
+			}
+			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+			return opscript.New(op, p.test.BasePath, ns, config), bindings, nil
 		},
 		operationReport,
 		op.Bindings...,
@@ -652,15 +699,15 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Sleep ", report.OperationTypeSleep)
 	}
-	return newLazyOperation(
-		nil,
+	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
 		nil,
-		func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-			return opsleep.New(op), nil
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			bindings = apibindings.RegisterClusterBindings(ctx, bindings, nil, nil)
+			return opsleep.New(op), bindings, nil
 		},
 		operationReport,
 	)
@@ -679,21 +726,25 @@ func (p *stepProcessor) updateOperation(id int, registeredClusters clusters.Regi
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, dryRun)
+	cluster := p.getCluster(registeredClusters, op.Cluster)
 	for i, resource := range resources {
 		if err := p.prepareResource(resource); err != nil {
 			return nil, err
 		}
-		ops = append(ops, newLazyOperation(
-			cluster,
+		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
 			false,
 			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
-			func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-				return opupdate.New(cluster.Client(), resource, p.namespacer, template, op.Expect, op.Outputs), nil
+			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+				config, client, err := clusters.Link(cluster, dryRun)
+				if err != nil {
+					return nil, nil, err
+				}
+				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+				return opupdate.New(client, resource, p.namespacer, template, op.Expect, op.Outputs), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -716,20 +767,24 @@ func (p *stepProcessor) waitOperation(id int, registeredClusters clusters.Regist
 	// shift operation timeout
 	timeout := op.Timeout.Duration + 30*time.Second
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
-	cluster := p.getCluster(registeredClusters, op.Cluster, false)
-	return newLazyOperation(
-		cluster,
+	cluster := p.getCluster(registeredClusters, op.Cluster)
+	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
 		&timeout,
-		func(_ context.Context, bindings binding.Bindings) (operations.Operation, error) {
-			cmd, err := kubectl.Wait(cluster.Client(), bindings, &op)
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			config, client, err := clusters.Link(cluster, false)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
-			return opcommand.New(*cmd, p.test.BasePath, ns, cluster.Config()), nil
+			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+			cmd, err := kubectl.Wait(client, bindings, &op)
+			if err != nil {
+				return nil, nil, err
+			}
+			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
 		},
 		operationReport,
 	)
@@ -796,12 +851,8 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 	return nil
 }
 
-func (p *stepProcessor) getCluster(registeredClusters clusters.Registry, opCluster string, dryRun bool) clusters.Cluster {
-	cluster := registeredClusters.Resolve(opCluster, p.step.Cluster, p.test.Spec.Cluster)
-	if !dryRun {
-		return cluster
-	}
-	return clusters.NewDryRun(cluster)
+func (p *stepProcessor) getCluster(registeredClusters clusters.Registry, opCluster string) clusters.Cluster {
+	return registeredClusters.Resolve(opCluster, p.step.Cluster, p.test.Spec.Cluster)
 }
 
 func (p *stepProcessor) getCleaner(dryRun bool) cleanup.Cleaner {
@@ -811,7 +862,7 @@ func (p *stepProcessor) getCleaner(dryRun bool) cleanup.Cleaner {
 	if cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, p.step.TestStepSpec.SkipDelete) {
 		return nil
 	}
-	return func(obj unstructured.Unstructured, c clusters.Cluster) {
+	return func(obj unstructured.Unstructured, c client.Client) {
 		p.cleaner.register(obj, c, timeout.Get(nil, p.timeouts.CleanupDuration()))
 	}
 }

@@ -118,12 +118,16 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		}
 	}
 	registeredClusters := clusters.Register(p.clusters, p.test.BasePath, p.test.Spec.Clusters)
-	cluster := registeredClusters.Resolve(p.test.Spec.Cluster)
-	bindings = apibindings.RegisterClusterBindings(ctx, bindings, cluster.Config(), cluster.Client())
+	clusterConfig, clusterClient, err := clusters.Resolve(registeredClusters, p.test.Spec.Cluster)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		failer.FailNow(ctx)
+	}
+	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
-	if cluster != nil {
+	if clusterClient != nil {
 		if nspacer == nil || p.test.Spec.Namespace != "" {
 			var ns corev1.Namespace
 			if p.test.Spec.Namespace != "" {
@@ -147,10 +151,10 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 				}
 				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			}
-			nspacer = namespacer.New(cluster.Client(), object.GetName())
+			nspacer = namespacer.New(clusterClient, object.GetName())
 			setupCtx := logging.IntoContext(ctx, setupLogger)
 			cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
-			if err := cluster.Client().Get(setupCtx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
+			if err := clusterClient.Get(setupCtx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -158,20 +162,20 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 				}
 				if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, nil) {
 					t.Cleanup(func() {
-						operation := newLazyOperation(
-							cluster,
+						operation := newOperation(
 							OperationInfo{},
 							false,
 							timeout.Get(nil, p.timeouts.CleanupDuration()),
-							func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-								return opdelete.New(cluster.Client(), object, nspacer, false), nil
+							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+								bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
+								return opdelete.New(clusterClient, object, nspacer, false), bindings, nil
 							},
 							nil,
 						)
 						operation.execute(cleanupCtx, bindings)
 					})
 				}
-				if err := cluster.Client().Create(logging.IntoContext(setupCtx, setupLogger), object.DeepCopy()); err != nil {
+				if err := clusterClient.Create(logging.IntoContext(setupCtx, setupLogger), object.DeepCopy()); err != nil {
 					failer.FailNow(ctx)
 				}
 			}
@@ -180,7 +184,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 	if p.report != nil && nspacer != nil {
 		p.report.SetNamespace(nspacer.GetNamespace())
 	}
-	bindings, err := apibindings.RegisterBindings(ctx, bindings, p.test.Spec.Bindings...)
+	bindings, err = apibindings.RegisterBindings(ctx, bindings, p.test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)

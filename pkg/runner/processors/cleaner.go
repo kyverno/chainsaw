@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
+	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
@@ -26,15 +26,13 @@ func newCleaner(namespacer namespacer.Namespacer, delay *metav1.Duration) *clean
 	}
 }
 
-func (c *cleaner) register(obj unstructured.Unstructured, cluster clusters.Cluster, timeout *time.Duration) {
-	client := cluster.Client()
-	c.operations = append(c.operations, newLazyOperation(
-		nil,
+func (c *cleaner) register(obj unstructured.Unstructured, client client.Client, timeout *time.Duration) {
+	c.operations = append(c.operations, newOperation(
 		OperationInfo{},
 		true,
 		timeout,
-		func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-			return opdelete.New(client, obj, c.namespacer, false), nil
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			return opdelete.New(client, obj, c.namespacer, false), bindings, nil
 		},
 		nil,
 	))

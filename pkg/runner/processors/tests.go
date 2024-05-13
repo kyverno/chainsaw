@@ -74,9 +74,13 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		})
 	}
 	var nspacer namespacer.Namespacer
-	cluster := p.clusters.Resolve()
-	bindings = apibindings.RegisterClusterBindings(ctx, bindings, cluster.Config(), cluster.Client())
-	if cluster != nil {
+	clusterConfig, clusterClient, err := clusters.Resolve(p.clusters)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		failer.FailNow(ctx)
+	}
+	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
+	if clusterClient != nil {
 		if p.config.Namespace != "" {
 			namespace := client.Namespace(p.config.Namespace)
 			object := client.ToUnstructured(&namespace)
@@ -92,8 +96,8 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				}
 				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			}
-			nspacer = namespacer.New(cluster.Client(), object.GetName())
-			if err := cluster.Client().Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
+			nspacer = namespacer.New(clusterClient, object.GetName())
+			if err := clusterClient.Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -101,26 +105,26 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				}
 				if !cleanup.Skip(p.config.SkipDelete, nil, nil) {
 					t.Cleanup(func() {
-						operation := newLazyOperation(
-							cluster,
+						operation := newOperation(
 							OperationInfo{},
 							false,
 							timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							func(_ context.Context, _ binding.Bindings) (operations.Operation, error) {
-								return opdelete.New(cluster.Client(), object, nspacer, false), nil
+							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+								bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
+								return opdelete.New(clusterClient, object, nspacer, false), bindings, nil
 							},
 							nil,
 						)
 						operation.execute(ctx, bindings)
 					})
 				}
-				if err := cluster.Client().Create(ctx, object.DeepCopy()); err != nil {
+				if err := clusterClient.Create(ctx, object.DeepCopy()); err != nil {
 					failer.FailNow(ctx)
 				}
 			}
 		}
 	}
-	bindings, err := apibindings.RegisterBindings(ctx, bindings)
+	bindings, err = apibindings.RegisterBindings(ctx, bindings)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
