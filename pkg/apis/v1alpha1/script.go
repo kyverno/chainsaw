@@ -26,6 +26,10 @@ type Script struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// Clusters holds a registry to clusters to support multi-cluster tests.
+	// +optional
+	Clusters map[string]Cluster `json:"clusters,omitempty"`
+
 	// Content defines a shell script (run with "sh -c ...").
 	// +optional
 	Content string `json:"content,omitempty"`

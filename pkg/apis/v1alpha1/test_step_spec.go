@@ -14,6 +14,10 @@ type TestStepSpec struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// Clusters holds a registry to clusters to support multi-cluster tests.
+	// +optional
+	Clusters map[string]Cluster `json:"clusters,omitempty"`
+
 	// SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`

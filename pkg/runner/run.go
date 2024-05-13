@@ -9,14 +9,13 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
-	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/utils/clock"
 )
 
@@ -57,30 +56,21 @@ func run(
 	}
 	bindings := binding.NewBindings()
 	bindings = apibindings.RegisterNamedBinding(ctx, bindings, "values", values)
-	clusters := processors.NewClusters()
+	registeredClusters := clusters.NewRegistry()
 	if cfg != nil {
-		err := clusters.Register(processors.DefaultClient, cfg)
+		cluster, err := clusters.NewClusterFromConfig(cfg)
 		if err != nil {
 			return nil, err
 		}
+		registeredClusters = registeredClusters.Register(clusters.DefaultClient, cluster)
 	}
-	for name, cluster := range config.Clusters {
-		cfg, err := restutils.Config(cluster.Kubeconfig, clientcmd.ConfigOverrides{
-			CurrentContext: cluster.Context,
-		})
-		if err != nil {
-			return nil, err
-		}
-		if err := clusters.Register(name, cfg); err != nil {
-			return nil, err
-		}
-	}
+	registeredClusters = clusters.Register(registeredClusters, "", config.Clusters)
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			processor := processors.NewTestsProcessor(config, clusters, clock, &summary, testsReport, tests...)
+			processor := processors.NewTestsProcessor(config, registeredClusters, clock, &summary, testsReport, tests...)
 			ctx := testing.IntoContext(ctx, t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor.Run(ctx, bindings)

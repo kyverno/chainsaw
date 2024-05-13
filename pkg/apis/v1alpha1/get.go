@@ -14,6 +14,10 @@ type Get struct {
 	// +optional
 	Cluster string `json:"cluster,omitempty"`
 
+	// Clusters holds a registry to clusters to support multi-cluster tests.
+	// +optional
+	Clusters map[string]Cluster `json:"clusters,omitempty"`
+
 	// ResourceReference referenced resource type.
 	ResourceReference `json:",inline"`
 

@@ -39,6 +39,7 @@ func Describe(client client.Client, bindings binding.Bindings, collector *v1alph
 	}
 	cmd := v1alpha1.Command{
 		Cluster:    cluster,
+		Clusters:   collector.Clusters,
 		Timeout:    collector.Timeout,
 		Entrypoint: "kubectl",
 		Args:       []string{"describe", resource},
