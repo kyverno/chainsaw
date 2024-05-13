@@ -17,6 +17,7 @@
 - [list](list/README.md)
 - [namespace-template](namespace-template/README.md)
 - [non-resource-assertion](non-resource-assertion/README.md)
+- [delete-test](orphan/README.md)
 - [outputs](outputs/README.md)
 - [patch](patch/README.md)
 - [script-env](script-env/README.md)

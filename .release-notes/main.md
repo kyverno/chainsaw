@@ -9,8 +9,6 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 🔧 Fixes 🔧
-
 ## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
@@ -27,3 +25,4 @@ Release notes for `TODO`.
 ## 🔧 Fixes 🔧
 
 - Fixed issue with cluster incorrectly registered
+- Force background deletion propagation policy (useful when testing unmanaged `Job`)
