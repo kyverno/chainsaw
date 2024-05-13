@@ -42,134 +42,127 @@ func TestTestsProcessor_Run(t *testing.T) {
 		bindings     binding.Bindings
 		tests        []discovery.Test
 		expectedFail bool
-	}{
-		{
-			name: "Namesapce exists",
-			config: v1alpha1.ConfigurationSpec{
-				Namespace: "default",
-			},
-			client: &fake.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return nil
-				},
-			},
-			clock:        nil,
-			summary:      &summary.Summary{},
-			testsReport:  &report.Report{},
-			bindings:     binding.NewBindings(),
-			tests:        []discovery.Test{},
-			expectedFail: false,
+	}{{
+		name: "Namesapce exists",
+		config: v1alpha1.ConfigurationSpec{
+			Namespace: "default",
 		},
-		{
-			name: "Namesapce doesn't exists",
-			config: v1alpha1.ConfigurationSpec{
-				Namespace: "chain-saw",
+		client: &fake.FakeClient{
+			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return nil
 			},
-			client: &fake.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return errors.NewNotFound(v1alpha1.Resource("Namespace"), "chain-saw")
-				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					return nil
-				},
-				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					return nil
-				},
-			},
-			clock:        nil,
-			summary:      &summary.Summary{},
-			testsReport:  &report.Report{},
-			bindings:     binding.NewBindings(),
-			tests:        []discovery.Test{},
-			expectedFail: false,
 		},
-		{
-			name: "Namesapce not found with error",
-			config: v1alpha1.ConfigurationSpec{
-				Namespace: "chain-saw",
-			},
-			client: &fake.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return errors.NewBadRequest("failed to get namespace")
-				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					return nil
-				},
-			},
-			clock:        nil,
-			summary:      &summary.Summary{},
-			testsReport:  &report.Report{},
-			bindings:     binding.NewBindings(),
-			tests:        []discovery.Test{},
-			expectedFail: true,
+		clock:        nil,
+		summary:      &summary.Summary{},
+		testsReport:  &report.Report{},
+		bindings:     binding.NewBindings(),
+		tests:        []discovery.Test{},
+		expectedFail: false,
+	}, {
+		name: "Namesapce doesn't exists",
+		config: v1alpha1.ConfigurationSpec{
+			Namespace: "chain-saw",
 		},
-		{
-			name: "Namesapce doesn't exists and can't be created",
-			config: v1alpha1.ConfigurationSpec{
-				Namespace: "chain-saw",
+		client: &fake.FakeClient{
+			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return errors.NewNotFound(v1alpha1.Resource("Namespace"), "chain-saw")
 			},
-			client: &fake.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return errors.NewNotFound(v1alpha1.Resource("Namespace"), "chain-saw")
-				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					return errors.NewBadRequest("failed to create namespace")
-				},
+			CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+				return nil
 			},
-			clock:        nil,
-			summary:      &summary.Summary{},
-			testsReport:  &report.Report{},
-			bindings:     binding.NewBindings(),
-			tests:        []discovery.Test{},
-			expectedFail: true,
+			DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+				return nil
+			},
 		},
-		{
-			name: "Success",
-			config: v1alpha1.ConfigurationSpec{
-				Namespace: "default",
-			},
-			client: &fake.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return nil
-				},
-			},
-			clock:       nil,
-			summary:     &summary.Summary{},
-			testsReport: &report.Report{},
-			bindings:    binding.NewBindings(),
-			tests: []discovery.Test{
-				{
-					Err:      nil,
-					BasePath: "fakePath",
-					Test:     &v1alpha1.Test{},
-				},
-			},
-			expectedFail: false,
+		clock:        nil,
+		summary:      &summary.Summary{},
+		testsReport:  &report.Report{},
+		bindings:     binding.NewBindings(),
+		tests:        []discovery.Test{},
+		expectedFail: false,
+	}, {
+		name: "Namesapce not found with error",
+		config: v1alpha1.ConfigurationSpec{
+			Namespace: "chain-saw",
 		},
-		{
-			name: "Fail",
-			config: v1alpha1.ConfigurationSpec{
-				Namespace: "default",
+		client: &fake.FakeClient{
+			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return errors.NewBadRequest("failed to get namespace")
 			},
-			client: &fake.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					return nil
-				},
+			CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+				return nil
 			},
-			clock:       nil,
-			summary:     &summary.Summary{},
-			testsReport: &report.Report{},
-			bindings:    binding.NewBindings(),
-			tests: []discovery.Test{
-				{
-					Err:      errors.NewBadRequest("failed to get test"),
-					BasePath: "fakePath",
-					Test:     nil,
-				},
-			},
-			expectedFail: true,
 		},
-	}
+		clock:        nil,
+		summary:      &summary.Summary{},
+		testsReport:  &report.Report{},
+		bindings:     binding.NewBindings(),
+		tests:        []discovery.Test{},
+		expectedFail: true,
+	}, {
+		name: "Namesapce doesn't exists and can't be created",
+		config: v1alpha1.ConfigurationSpec{
+			Namespace: "chain-saw",
+		},
+		client: &fake.FakeClient{
+			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return errors.NewNotFound(v1alpha1.Resource("Namespace"), "chain-saw")
+			},
+			CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+				return errors.NewBadRequest("failed to create namespace")
+			},
+		},
+		clock:        nil,
+		summary:      &summary.Summary{},
+		testsReport:  &report.Report{},
+		bindings:     binding.NewBindings(),
+		tests:        []discovery.Test{},
+		expectedFail: true,
+	}, {
+		name: "Success",
+		config: v1alpha1.ConfigurationSpec{
+			Namespace: "default",
+		},
+		client: &fake.FakeClient{
+			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return nil
+			},
+		},
+		clock:       nil,
+		summary:     &summary.Summary{},
+		testsReport: &report.Report{},
+		bindings:    binding.NewBindings(),
+		tests: []discovery.Test{
+			{
+				Err:      nil,
+				BasePath: "fakePath",
+				Test:     &v1alpha1.Test{},
+			},
+		},
+		expectedFail: false,
+	}, {
+		name: "Fail",
+		config: v1alpha1.ConfigurationSpec{
+			Namespace: "default",
+		},
+		client: &fake.FakeClient{
+			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				return nil
+			},
+		},
+		clock:       nil,
+		summary:     &summary.Summary{},
+		testsReport: &report.Report{},
+		bindings:    binding.NewBindings(),
+		tests: []discovery.Test{
+			{
+				Err:      errors.NewBadRequest("failed to get test"),
+				BasePath: "fakePath",
+				Test:     nil,
+			},
+		},
+		expectedFail: true,
+	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			registry := registryMock{}
