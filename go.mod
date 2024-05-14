@@ -5,7 +5,7 @@ go 1.21.4
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
 	github.com/dustinkirkland/golang-petname v0.0.0-20240422154211-76c06c4bde6b
-	github.com/fatih/color v1.16.0
+	github.com/fatih/color v1.17.0
 	github.com/go-logr/logr v1.4.1
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/hashicorp/go-getter v1.7.4
