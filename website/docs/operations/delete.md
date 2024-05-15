@@ -2,6 +2,9 @@
 
 The `delete` operation allows you to specify resources that should be deleted from the Kubernetes cluster before a particular test step is executed.
 
+!!! info
+    The propagation policy is forced to `Background` because some types default to `Orphan` (this is the case for unmanaged jobs for example) and we don't want to let dangling pods run in the cluster after cleanup.
+
 ## Configuration
 
 !!! tip "Reference documentation"
