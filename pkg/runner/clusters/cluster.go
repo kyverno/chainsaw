@@ -1,6 +1,8 @@
 package clusters
 
 import (
+	"sync"
+
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -25,19 +27,20 @@ func (c *fromConfig) Config() (*rest.Config, error) {
 }
 
 type fromKubeconfig struct {
-	kubeconfig string
-	context    string
+	resolver func() (*rest.Config, error)
 }
 
 func NewClusterFromKubeconfig(kubeconfig string, context string) Cluster {
+	resolver := sync.OnceValues(func() (*rest.Config, error) {
+		return restutils.Config(kubeconfig, clientcmd.ConfigOverrides{
+			CurrentContext: context,
+		})
+	})
 	return &fromKubeconfig{
-		kubeconfig: kubeconfig,
-		context:    context,
+		resolver: resolver,
 	}
 }
 
 func (c *fromKubeconfig) Config() (*rest.Config, error) {
-	return restutils.Config(c.kubeconfig, clientcmd.ConfigOverrides{
-		CurrentContext: c.context,
-	})
+	return c.resolver()
 }
