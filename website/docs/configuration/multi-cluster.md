@@ -4,6 +4,8 @@ Chainsaw supports testing against multiple clusters.
 
 To use a specific cluster in a test (or test step) you will need to register the cluster either using the config file or using command line flags.
 
+Since `v0.2.1` you can also register clusters dynamically at the `test`, `step` and operation levels. This is particularly useful when a cluster is created in a test step and used in subsequent steps.
+
 ## Configuration
 
 ```yaml
@@ -32,6 +34,56 @@ chainsaw test                                               \
     --cluster cluster-1=/path/to/kubeconfig-1               \
     --cluster cluster-2=/path/to/kubeconfig-2:context-name
 ```
+
+## Dynamic cluster registration
+
+The test below illustrates dynamic cluster registration:
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: dynamic-clusters
+spec:
+  steps:
+  - try:
+    - script:
+        timeout: 1m
+        content: |
+          kind create cluster --name dynamic --kubeconfig ./dynamic
+    finally:
+    - script:
+        content: |
+          kind delete cluster --name dynamic
+    - script:
+        content: |
+          rm -f ./dynamic
+  - clusters:
+      dynamic:
+        kubeconfig: ./dynamic
+    cluster: dynamic
+    try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+            namespace: default
+          data:
+            foo: bar
+    - assert:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+            namespace: default
+          data:
+            foo: bar
+```
+
+In the test above, a cluster is created in the first step of the test then registered and used in the second step.
 
 ## Usage
 
