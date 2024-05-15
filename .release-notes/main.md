@@ -22,6 +22,7 @@ Release notes for `TODO`.
 
 - Added `--pause-on-failure` flag to pause when a test failure happens (to ease troubleshooting)
 - Improved cleanup management logic, alternating `catch`, `finally` and `@cleanup` per step
+- Added support for registering clusters dynamically, useful when a cluster is created in a test step
 
 ## 🔧 Fixes 🔧
 
