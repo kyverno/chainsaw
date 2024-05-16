@@ -27,8 +27,8 @@ extra_javascript:
 
 # version
 extra:
-  # version:
-  #   provider: mike
+  version:
+    provider: mike
   social:
   - icon: fontawesome/brands/github
     link: https://github.com/kyverno/chainsaw
