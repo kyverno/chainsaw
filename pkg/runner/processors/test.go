@@ -150,6 +150,16 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					object = merged
 				}
 				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
+			} else if p.config.NamespaceTemplate != nil && p.config.NamespaceTemplate.Value != nil {
+				template := v1alpha1.Any{
+					Value: p.config.NamespaceTemplate.Value,
+				}
+				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
+					failer.FailNow(ctx)
+				} else {
+					object = merged
+				}
+				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			}
 			nspacer = namespacer.New(clusterClient, object.GetName())
 			setupCtx := logging.IntoContext(ctx, setupLogger)
