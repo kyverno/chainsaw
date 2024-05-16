@@ -22,12 +22,13 @@ extra_css:
 
 # javascript
 extra_javascript:
-- static/repo-card.js
+- path: static/repo-card.js
+  defer: true
 
 # version
 extra:
-  version:
-    provider: mike
+  # version:
+  #   provider: mike
   social:
   - icon: fontawesome/brands/github
     link: https://github.com/kyverno/chainsaw
@@ -52,9 +53,11 @@ theme:
   - content.code.copy
   - content.action.edit
   - navigation.footer
-  - navigation.instant
   - navigation.tracking
   - navigation.tabs
+  # - navigation.tabs.sticky
+  - navigation.indexes
+  - navigation.top
   palette:
      # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
