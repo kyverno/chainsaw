@@ -3,6 +3,9 @@
 !!! warning "Experimental status"
     This is an **experimental feature**, and implementation could change slightly in the next versions.
 
+!!! info
+    Templating was disabled by default in `v0.1.*` but is now enabled by default since `v0.2.1`.
+
 Chainsaw can apply transformations to the resources before they are processed by the operation.
 
 This is useful when a resource needs some runtime configuration.
