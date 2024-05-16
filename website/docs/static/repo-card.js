@@ -1,4 +1,6 @@
-window.addEventListener('DOMContentLoaded', async function () {
+['DOMContentLoaded'].forEach(function (e) {
+  window.addEventListener(e, async function () {
+    console.log(e)
     async function get(url) {
       const now = new Date().getTime();
       const prevResp = JSON.parse(localStorage.getItem(url));
@@ -10,19 +12,19 @@ window.addEventListener('DOMContentLoaded', async function () {
       localStorage.setItem(url, JSON.stringify({ time: now, data: json }));
       return json;
     }
-  
+
     function setCard(el, data, theme) {
       data.description = (data.description || '').replace(/:\w+:/g, function (match) {
         const name = match.substring(1, match.length - 1);
         const emoji = emojis[name];
-  
+
         if (emoji) {
           return `<span><img src="${emoji}" style="width: 1rem; height: 1rem; vertical-align: -0.2rem;" alt="${name}"></span>`;
         }
-  
+
         return match;
       });
-  
+
       el.innerHTML = `
         <div style="flex-direction: column; height: 100%; display: flex;
                       font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif,Apple Color Emoji,Segoe UI Emoji; background: ${theme.background}; font-size: 14px; line-height: 1.5; color: #24292e;">
@@ -51,7 +53,7 @@ window.addEventListener('DOMContentLoaded', async function () {
         </div>
         `;
     }
-  
+
     function promiseGet(url) {
       return new Promise((resolve, reject) => {
         const now = new Date().getTime();
@@ -67,13 +69,12 @@ window.addEventListener('DOMContentLoaded', async function () {
             reject(err);
           })
         }
-  
       });
     }
-  
+
     const emojis = await get('https://api.github.com/emojis');
     const colors = await get('https://raw.githubusercontent.com/ozh/github-colors/master/colors.json');
-  
+
     const themes = {
       'light-default': {
         background: 'white',
@@ -88,7 +89,7 @@ window.addEventListener('DOMContentLoaded', async function () {
         linkColor: 'rgb(88, 166, 255)',
       }
     };
-  
+
     for (const el of document.querySelectorAll('.repo-card')) {
       const name = el.getAttribute('data-repo');
       const theme = themes[el.getAttribute('data-theme') || 'light-default'];
@@ -101,5 +102,5 @@ window.addEventListener('DOMContentLoaded', async function () {
         setCard(el, data, theme);
       });
     }
-  
   });
+});
