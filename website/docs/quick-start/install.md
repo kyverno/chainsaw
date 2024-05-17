@@ -66,6 +66,7 @@ docker run --rm                             \
 ```bash
 git clone https://github.com/kyverno/chainsaw.git
 ```
+
 **build the binaries:**
 
 ```bash
@@ -85,14 +86,17 @@ make build
 To install `kyverno-chainsaw`, refer to the [documentation](https://search.nixos.org/packages?channel=unstable&show=kyverno-chainsaw&from=0&size=50&sort=relevance&type=packages&query=kyverno-chainsaw).
 
 ### On NixOS
+
 ```bash
 nix-env -iA nixos.kyverno-chainsaw
 ```
 
 ### On Non-NixOS
+
 ```bash
 nix-env -iA nixpkgs.kyverno-chainsaw
 ```
+
 !!! warning
     Using nix-env permanently modifies a local profile of installed packages. This must be updated and maintained by the user in the same way as with a traditional package manager, foregoing many of the benefits that make Nix uniquely powerful. Using nix-shell or a NixOS configuration is recommended instead. 
 

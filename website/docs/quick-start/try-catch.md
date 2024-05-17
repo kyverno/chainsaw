@@ -4,6 +4,4 @@ TODO
 
 ## Next step
 
-At this point, we covered the main Chainsaw features.
-
-Look at the [next steps](./next-steps.md) section to find out what to do next.
+Every operation in a test has to execute in a timely fashion. In the next section, we will see how you can [control your timeouts](./timeouts.md).

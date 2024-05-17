@@ -1,4 +1,4 @@
-# Chainsaw
+# Getting started
 
 Chainsaw is a tool primarily developed to **run end-to-end tests in [Kubernetes](https://kubernetes.io) clusters**.
 
