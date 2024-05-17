@@ -8,6 +8,8 @@ nav:
   - completion.md
   - first-test.md
   - run-test.md
+  - resource-templating.md
+  - operation-outputs.md
   - quick-start.md
   - gh-action.md
 - Writing tests:
