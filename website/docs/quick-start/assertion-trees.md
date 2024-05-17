@@ -1,4 +1,4 @@
-# Leverage assertions trees
+# Use assertions trees
 
 Whether verifying the scaling behavior of a database cluster or ensuring data consistency across instances, Chainsaw's assertion model provides the precision and flexibility needed for comprehensive validation.
 

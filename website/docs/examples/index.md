@@ -26,4 +26,4 @@ kind create cluster --image $KIND_IMAGE
 
 ## Install Chainsaw
 
-Refer to [install docs](../install.md) to install Chainsaw.
+Refer to [install docs](../quick-start/install.md) to install Chainsaw.

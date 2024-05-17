@@ -1,0 +1,3 @@
+# Non-resource assertions
+
+TODO
