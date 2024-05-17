@@ -117,4 +117,4 @@ nix-shell -p kyverno-chainsaw
 ## GitHub action
 
 A GitHub action is available to install Chainsaw in your workflows.
-See the [GitHub action](./gh-action.md) dedicated documentation.
+See the [GitHub action](../gh-action.md) dedicated documentation.
