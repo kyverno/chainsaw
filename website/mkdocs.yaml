@@ -5,9 +5,11 @@ nav:
 - Getting started:
   - intro.md
   - install.md
+  - completion.md
+  - first-test.md
+  - run-test.md
   - quick-start.md
   - gh-action.md
-  - resources.md
 - Writing tests:
   - writing-tests.md
   - Configuration:
@@ -103,4 +105,5 @@ nav:
     - examples/non-resource-assertion.md
     - examples/labels-selector.md
     - examples/test-output.md
+- Resources: resources.md
 - Community: community.md
