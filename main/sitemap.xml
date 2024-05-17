@@ -6,27 +6,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/community/</loc>
-         <lastmod>2024-05-17</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/gh-action/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/json-schemas/</loc>
-         <lastmod>2024-05-17</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://github.io/kyverno/chainsaw/main/resources/</loc>
-         <lastmod>2024-05-17</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://github.io/kyverno/chainsaw/main/writing-tests/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -177,6 +162,16 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/commands/chainsaw_version/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/community/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/community/resources/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -386,6 +381,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/quick-start/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/assertion-trees/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
@@ -407,11 +407,6 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/install/</loc>
-         <lastmod>2024-05-17</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://github.io/kyverno/chainsaw/main/quick-start/intro/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -446,6 +441,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/kube-version/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
@@ -457,6 +457,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/non-resource-assertions/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/reference/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
