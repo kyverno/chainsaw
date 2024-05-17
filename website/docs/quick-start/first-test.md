@@ -1,8 +1,8 @@
 # Create a Test
 
-To create a chainsaw test all you need to do is to create one (or more) YAML file.
+To create a chainsaw test all you need to do is to create one (or more) YAML file(s).
 
-The recommended approach is to create one folder per test, with a `chainsaw-test.yaml` file containing one (or more) test definitions.
+The recommended approach is to create one folder per test, with a `chainsaw-test.yaml` file containing one (or more) test definition(s).
 The test definition can reference other files in the same folder or anywhere else on the file system as needed.
 
 !!! tip
@@ -35,7 +35,7 @@ cd chainsaw-quick-start
 
 ### Create a `ConfigMap` manifest
 
-```
+```bash
 # create a ConfigMap
 cat > configmap.yaml << EOF
 apiVersion: v1
@@ -51,7 +51,7 @@ EOF
 
 By default, Chainsaw will look for a file named `chainsaw-test.yaml` in every folder.
 
-```
+```bash
 # create test file
 cat > chainsaw-test.yaml << EOF
 apiVersion: chainsaw.kyverno.io/v1alpha1
