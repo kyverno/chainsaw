@@ -11,11 +11,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/docs/</loc>
-         <lastmod>2024-05-17</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/gh-action/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
