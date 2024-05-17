@@ -15,6 +15,7 @@ import (
 	ttesting "github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -171,6 +172,7 @@ func Test_operationDelete(t *testing.T) {
 				tt.object,
 				nspacer,
 				false,
+				metav1.DeletePropagationForeground,
 				tt.expect...,
 			)
 			logger := &tlogging.FakeLogger{}

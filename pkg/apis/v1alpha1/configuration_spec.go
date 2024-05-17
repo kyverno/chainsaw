@@ -36,6 +36,12 @@ type ConfigurationSpec struct {
 	// +optional
 	Parallel *int `json:"parallel,omitempty"`
 
+	// DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
+	// the object, and how the garbage collector will handle the propagation.
+	// +optional
+	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
+	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
+
 	// ReportFormat determines test report format (JSON|XML|nil) nil == no report.
 	// maps to report.Type, however we don't want generated.deepcopy to have reference to it.
 	// +optional

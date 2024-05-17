@@ -65,4 +65,11 @@ type TestSpec struct {
 	// DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.
 	// +optional
 	DelayBeforeCleanup *metav1.Duration `json:"delayBeforeCleanup,omitempty"`
+
+	// DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
+	// the object, and how the garbage collector will handle the propagation.
+	// Overrides the deletion propagation policy set in the Configuration.
+	// +optional
+	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
+	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
 }
