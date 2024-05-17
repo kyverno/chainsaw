@@ -14,8 +14,8 @@ You can think of bindings as a side context where you can store and retrieve dat
 
 Chainsaw offers some built-in bindings you can use. You can also create your own bindings and use outputs to pass information from one operation to the next.
 
-!!! note
-    Under the hood, Chainsaw uses the [jmespath](https://jmespath.site/) language, bindings are implemented using [lexical scoping](https://github.com/jmespath-community/jmespath.spec/blob/main/jep-011a-lexical-scope.md).
+!!! info
+    Under the hood, Chainsaw uses the [jmespath](https://jmespath.site/) language, and bindings are implemented using [lexical scoping](https://github.com/jmespath-community/jmespath.spec/blob/main/jep-011a-lexical-scope.md).
 
 ## Built-in bindings
 
@@ -46,7 +46,7 @@ spec:
 
 Built-in bindings allow templates to know about the context they are running in. On top of that, you can also create your own bindings, combining other bindings together, calling jmespath functions and so on.
 
-In the template below we create bindings at different levels in a test and combine them by calling a jmespath function to configure an environment variable that will be available is script:
+In the template below we create bindings at different levels in a test and combine them by calling the `join` function to configure an environment variable that will be available in a script:
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
