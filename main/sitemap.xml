@@ -11,6 +11,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/completion/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/first-test/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/gh-action/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
@@ -37,6 +47,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/resources/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/run-test/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
