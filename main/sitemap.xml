@@ -6,6 +6,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/assertion-trees/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/community/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
@@ -41,6 +46,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/multi-cluster/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/next-steps/</loc>
+         <lastmod>2024-05-17</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/operation-outputs/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
@@ -61,7 +76,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/run-test/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/run-tests/</loc>
          <lastmod>2024-05-17</lastmod>
          <changefreq>daily</changefreq>
     </url>
