@@ -5,7 +5,7 @@ We covered the main features of Chainsaw in this **Getting started** sections.
 While this should help you understand Chainsaw better, there are a lot of other things Chainsaw can do for you.
 
 !!! tip
-    If there's anything you would like to be improved, please [reach out](./community.md), we will be happy to discuss and improve as much as we can.
+    If there's anything you would like to be improved, please [reach out](../community.md), we will be happy to discuss and improve as much as we can.
 
 To continue exploring the capabilities of Chainsaw:
 
