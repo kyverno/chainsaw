@@ -1,11 +1,15 @@
 # Control your timeouts
 
 Timeouts in Chainsaw are specified per type of operation.
-This is required because the timeout varies greatly depending on the nature of an operation.
+This is handy because the timeout varies greatly depending on the nature of an operation.
 
 For example, applying a manifest in a cluster is expected to be reasonably fast, while validating a resource can be a long operation.
 
-Timeouts can be configured globally and at the test, step or operation level. If timeouts are configured at multiple levels, the most specific one applies.
+## Inheritance
+
+Timeouts can be configured globally and at the test, step or individual operation level.
+
+All timeouts configured at a given level are automatically inherited in child levels. When looking up a timeout, the most specific one takes precedence over the others.
 
 !!! info
     To learn more about timeouts and how to configure global values, see the [timeouts configuration](../configuration/timeouts.md) page.

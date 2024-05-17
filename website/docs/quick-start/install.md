@@ -45,8 +45,7 @@ Chainsaw is also available as a Docker image which you can pull and run:
 docker pull ghcr.io/kyverno/chainsaw:<version>
 ```
 
-!!! info
-
+!!! warning
     Since Chainsaw relies on files for its operation (like test definitions), you will need to bind mount the necessary directories when running it via Docker.
 
 ```bash
