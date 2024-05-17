@@ -1,4 +1,6 @@
-# Setup
+# Examples
+
+## Setup
 
 To use Chainsaw you will need a [Kubernetes](https://kybernetes.io) cluster, Chainsaw won't create one for you.
 
