@@ -1,4 +1,4 @@
-# Run your tests
+# Run tests
 
 After [installing chainsaw](./install.md) and [writing tests](./first-test.md), the next natural step is to run chainsaw to execute the tests.
 
@@ -21,8 +21,8 @@ kind create cluster --image "kindest/node:v1.29.4"
 
 Now you can run the `chainsaw test` command.
 
-```bash
-chainsaw test
+```
+> chainsaw test
 
 Version: (devel)
 Loading default configuration...
@@ -80,4 +80,4 @@ Done.
 
 ## Next step
 
-The test above demonstrates the most basic usage of Chainsaw. In the next sections, we will look at the [main features that make Chainsaw a very unique tool](./resource-templating.md).
+The test above demonstrates the most basic usage of Chainsaw. In the next sections, we will look at the [main features that make Chainsaw a very unique tool](./assertion-trees.md).

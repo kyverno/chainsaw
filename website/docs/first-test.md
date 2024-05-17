@@ -35,7 +35,7 @@ cd chainsaw-quick-start
 
 ### Create a `ConfigMap` manifest
 
-```bash
+```
 # create a ConfigMap
 cat > configmap.yaml << EOF
 apiVersion: v1
@@ -51,7 +51,7 @@ EOF
 
 By default, Chainsaw will look for a file named `chainsaw-test.yaml` in every folder.
 
-```bash
+```
 # create test file
 cat > chainsaw-test.yaml << EOF
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -74,4 +74,4 @@ EOF
 
 ## Next step
 
-Now we have created our first test, you can continue to the next section to [execute it](./run-test.md).
+Now we have created our first test, you can continue to the next section to [execute it](./run-tests.md).
