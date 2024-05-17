@@ -56,7 +56,7 @@ spec:
   # ...
 ```
 
-## Flag
+## Flags
 
 ```bash
 chainsaw test                     \
