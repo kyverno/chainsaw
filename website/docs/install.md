@@ -1,4 +1,4 @@
-# Install
+# Installation
 
 You can install the pre-compiled binary (in several ways), compile from sources, or run with Docker.
 
@@ -29,7 +29,7 @@ brew install kyverno/chainsaw/chainsaw
 
 Download the pre-compiled binaries for your system from the [releases page](https://github.com/kyverno/chainsaw/releases) and copy them to the desired location.
 
-## Install using `go install`
+### Install using `go install`
 
 You can install with `go install` with:
 
@@ -37,7 +37,7 @@ You can install with `go install` with:
 go install github.com/kyverno/chainsaw@latest
 ```
 
-## Running with Docker
+## Run with Docker
 
 Chainsaw is also available as a Docker image which you can pull and run:
 
@@ -59,7 +59,7 @@ docker run --rm                             \
     test /chainsaw --config /chainsaw/config.yaml
 ```
 
-## Compiling from sources
+## Compile from sources
 
 **clone:**
 
@@ -80,14 +80,9 @@ make build
 ./chainsaw version
 ```
 
-## GitHub action
+## Install using Nix Package
 
-A GitHub action is available to install Chainsaw in your workflows.
-See the [GitHub action](./gh-action.md) dedicated documentation.
-
-## Installation of kyverno-chainsaw using Nix Package Manager
-
-To install kyverno-chainsaw, refer to the [documentation](https://search.nixos.org/packages?channel=unstable&show=kyverno-chainsaw&from=0&size=50&sort=relevance&type=packages&query=chainsaw).
+To install `kyverno-chainsaw`, refer to the [documentation](https://search.nixos.org/packages?channel=unstable&show=kyverno-chainsaw&from=0&size=50&sort=relevance&type=packages&query=kyverno-chainsaw).
 
 ### On NixOS
 ```bash
@@ -98,7 +93,8 @@ nix-env -iA nixos.kyverno-chainsaw
 ```bash
 nix-env -iA nixpkgs.kyverno-chainsaw
 ```
-**Warning:** Using nix-env permanently modifies a local profile of installed packages. This must be updated and maintained by the user in the same way as with a traditional package manager, foregoing many of the benefits that make Nix uniquely powerful. Using nix-shell or a NixOS configuration is recommended instead. 
+!!! warning
+    Using nix-env permanently modifies a local profile of installed packages. This must be updated and maintained by the user in the same way as with a traditional package manager, foregoing many of the benefits that make Nix uniquely powerful. Using nix-shell or a NixOS configuration is recommended instead. 
 
 ### Using NixOS Configuration
 
@@ -117,3 +113,8 @@ A nix-shell will temporarily modify your `$PATH` environment variable. This can 
 ```bash
 nix-shell -p kyverno-chainsaw
 ```
+
+## GitHub action
+
+A GitHub action is available to install Chainsaw in your workflows.
+See the [GitHub action](./gh-action.md) dedicated documentation.

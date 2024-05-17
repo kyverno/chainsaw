@@ -8,7 +8,6 @@ nav:
   - quick-start.md
   - gh-action.md
   - resources.md
-  - docs.md
 - Writing tests:
   - writing-tests.md
   - Configuration:
