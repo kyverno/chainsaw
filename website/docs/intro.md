@@ -20,24 +20,6 @@ While developing [Kyverno](https://kyverno.io) we need to run end to end tests t
     1. Check that Kyverno acted as expected
     1. Cleanup and move to the next test
 
-### From KUTTL to Chainsaw
-
-We started with another tool called [KUTTL](https://kuttl.dev).
-
-While KUTTL was a great tool to start with, we quickly identified some limitations and forked it to add the features we needed.
-
-In the end we needed more flexibility than what KUTTL could offer and we started designing a new assertion model and at this point it was simpler to start a new tool from scratch than continuing making changes in our KUTTL fork.
-
-The changes we were making was simply too large to have a chance to be incorporated upstream.
-
-Chainsaw was born :tada:
-
-### KUTTL compatibility
-
-Fortunately, Chainsaw assertion model is compatible with KUTTL and therefore migration to Chainsaw is relatively easy.
-
-We provide `chainsaw migrate kuttl config` and `chainsaw migrate kuttl tests` commands to assist with the migration, see [Migration from KUTTL](./more/kuttl-migration.md) for details.
-
 ## Use cases
 
 Chainsaw is built with CI tools in mind - you only really need to download and execute it in your build script.
