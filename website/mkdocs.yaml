@@ -7,10 +7,14 @@ nav:
   - install.md
   - completion.md
   - first-test.md
-  - run-test.md
+  - run-tests.md
+  - assertion-trees.md
   - resource-templating.md
   - operation-outputs.md
+  - next-steps.md
   - quick-start.md
+  - Advanced use cases:
+    - multi-cluster.md
   - gh-action.md
 - Writing tests:
   - writing-tests.md
