@@ -7,12 +7,12 @@ Chainsaw allows declaring complex assertions with a simple and no-code approach,
 !!! tip
     Under the hood, Chainsaw uses [kyverno-json assertion trees](https://kyverno.github.io/kyverno-json/latest/intro/). Refer to the assertion trees documentation for more details on the supported syntax.
 
-## Comparisons beyond simple equality
+## Beyond simple equality
 
-The assertion below will check that the number of replicas for a deployment is **greater than 3**.
+The assertion below will check that the number of replicas for a deployment is **greater than 3 AND less than 6**.
 
 Chainsaw doesn't need to know the exact expected number of replicas.
-The `(replicas > 3)` expression will be evaluated until the assertion passes or the operation timeout expires (making the assertion fail).
+The `(replicas > 3 && replicas < 6)` expression will be evaluated until the result is `true` or the operation timeout expires (making the assertion fail).
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -30,7 +30,7 @@ spec:
           metadata:
             name: foo
           spec:
-            (replicas > 3): true
+            (replicas > `3` && replicas < `6`): true
     # ...
 ```
 
@@ -79,7 +79,9 @@ spec:
 
 ## Comprehensive reporting
 
-Chainsaw offers detailed resource diffs upon assertion failures. In the example below, the assertion failure message `metadata.annotations.foo: Invalid value: "null": Expected value: "bar"` is augmented with a resource diff.
+Chainsaw offers detailed resource diffs upon assertion failures.
+
+In the example below, the assertion failure message (`metadata.annotations.foo: Invalid value: "null": Expected value: "bar"`) is augmented with a resource diff.
 
 It provides a clear view of discrepancies between expected and actual resources and gives more context around the specific failure (we can easily identify the owner of the offending pod for example).
 
@@ -117,4 +119,4 @@ It provides a clear view of discrepancies between expected and actual resources 
 
 ## Next step
 
-To continue our exploration of the main Chainsaw features, let's look at [bindings and resource templating](./resource-templating.md).
+To continue our exploration of the main Chainsaw features, let's look at [bindings](./bindings.md) and [resource templating](./resource-templating.md) next.
