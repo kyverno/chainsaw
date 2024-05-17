@@ -21,4 +21,4 @@ While developing [Kyverno](https://kyverno.io) we need to run end-to-end tests t
 
 Chainsaw is built with CI tools in mind - you only really need to download and execute it in your build script.
 
-However, installing it on your local machine is entirely possible.
+However, [installing it on your local machine](./install.md) is entirely possible.

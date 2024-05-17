@@ -80,4 +80,4 @@ Done.
 
 ## Next step
 
-The test above demonstrates the most basic usage of Chainsaw. In the next section we will look at the main features that make Chainsaw a very unique tool.
+The test above demonstrates the most basic usage of Chainsaw. In the next sections, we will look at the [main features that make Chainsaw a very unique tool](./resource-templating.md).
