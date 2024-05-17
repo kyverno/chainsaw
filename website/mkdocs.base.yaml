@@ -100,8 +100,6 @@ plugins:
     minify_html: true
 - include-markdown
 - tags
-- blog:
-    post_url_format: "{slug}"
 
 markdown_extensions:
 - attr_list
