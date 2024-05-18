@@ -4,18 +4,18 @@ Chainsaw simplifies dynamic resource configuration with native resource templati
 
 Sometimes things we need to create resources or assertions are only known at runtime.
 
-In the past, users have created all sorts of hacks, using tools like `envsubst` for dynamic substitution of env-variables. Those workarounds usually lack flexibility and introduce new problems like hiding the real resource to Chainsaw, preventing it to cleanup resources properly.
+In the past, users have created all sorts of hacks using tools like `envsubst` for dynamic substitution of env-variables. Those workarounds usually lack flexibility and introduce new problems like hiding the real resources from Chainsaw, preventing it from cleaning resources properly.
 
 ## Templating and Bindings
 
 The templating engine in Chainsaw is based on the concept of **bindings**.
 
-You can think of bindings as a side context where you can store and retrieve data based on keys. A resource template can read from the data from the side context to hydrate a concrete resource from the template.
+You can think of bindings as a side context where you can store and retrieve data based on keys. A resource template can read data from the side context to hydrate a concrete resource from the template.
 
 Chainsaw offers some built-in bindings you can use. You can also create your own bindings and use outputs to pass information from one operation to the next.
 
 !!! info
-    Under the hood, Chainsaw uses the [jmespath](https://jmespath.site/) language, and bindings are implemented using [lexical scoping](https://github.com/jmespath-community/jmespath.spec/blob/main/jep-011a-lexical-scope.md).
+    Under the hood, Chainsaw uses the [JMESPath](https://jmespath.site/) language, and bindings are implemented using [lexical scoping](https://github.com/jmespath-community/jmespath.spec/blob/main/jep-011a-lexical-scope.md).
 
 ## Built-in bindings
 
@@ -44,7 +44,7 @@ spec:
 
 ## Custom bindings
 
-Built-in bindings allow templates to know about the context they are running in. On top of that, you can also create your own bindings, combining other bindings together, calling jmespath functions and so on.
+Built-in bindings allow templates to know about the context they are running in. On top of that, you can also create your own bindings, combining other bindings together, calling JMESPath functions and so on.
 
 In the template below we create bindings at different levels in a test and combine them by calling the `join` function to configure an environment variable that will be available in a script:
 

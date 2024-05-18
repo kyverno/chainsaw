@@ -1,12 +1,12 @@
 # Run tests
 
-After [installing chainsaw](./install.md) and [writing tests](./first-test.md), the next natural step is to run chainsaw to execute the tests.
+After [installing chainsaw](./install.md) and [writing tests](./first-test.md), the next natural step is to run Chainsaw to execute the tests.
 
 ## Create a local cluster
 
 To use Chainsaw you will need a [Kubernetes](https://kybernetes.io) cluster, **Chainsaw won't create one for you**.
 
-!!! info "Not a cluster management tool"
+!!! warning "Not a cluster management tool"
     We consider this is not the responsibility of Chainsaw to manage clusters.
     There are plenty of solutions to create and manage local clusters that will do that better than Chainsaw.
 
