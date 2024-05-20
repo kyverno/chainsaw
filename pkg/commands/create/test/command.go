@@ -48,7 +48,7 @@ func Command() *cobra.Command {
 				if save {
 					path := filepath.Join(path, "chainsaw-test.yaml")
 					fmt.Fprintf(out, "Saving file %s ...\n", path)
-					if err := os.WriteFile(path, data, os.ModePerm); err != nil {
+					if err := os.WriteFile(path, data, 0o600); err != nil {
 						return err
 					}
 				} else {
