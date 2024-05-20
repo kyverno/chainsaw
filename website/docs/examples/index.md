@@ -1,4 +1,6 @@
-# Setup
+# Examples
+
+## Setup
 
 To use Chainsaw you will need a [Kubernetes](https://kybernetes.io) cluster, Chainsaw won't create one for you.
 
@@ -26,4 +28,4 @@ kind create cluster --image $KIND_IMAGE
 
 ## Install Chainsaw
 
-Refer to [install docs](../install.md) to install Chainsaw.
+Refer to [install docs](../quick-start/install.md) to install Chainsaw.

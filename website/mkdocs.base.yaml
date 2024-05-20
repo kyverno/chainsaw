@@ -20,10 +20,22 @@ strict: true
 extra_css:
 - static/extra.css
 
+# javascript
+extra_javascript:
+- path: static/repo-card.js
+  defer: true
+
 # version
 extra:
   version:
     provider: mike
+  social:
+  - icon: fontawesome/brands/github
+    link: https://github.com/kyverno/chainsaw
+  - icon: fontawesome/brands/slack
+    link: https://kubernetes.slack.com/archives/C067LUFL43U
+  - icon: fontawesome/brands/x-twitter
+    link: https://twitter.com/kyverno
 
 theme:
   name: material
@@ -41,22 +53,33 @@ theme:
   - content.code.copy
   - content.action.edit
   - navigation.footer
-  - navigation.instant
   - navigation.tracking
   - navigation.tabs
+  # - navigation.tabs.sticky
+  - navigation.indexes
+  - navigation.top
   palette:
-  - media: "(prefers-color-scheme: light)" # Light mode
-    scheme: default
-    toggle:
-      icon: material/lightbulb-outline
-      name: Switch to light mode
-  - media: "(prefers-color-scheme: dark)" # Dark mode
-    scheme: slate
-    primary: light blue
-    accent: indigo
-    toggle:
-      icon: material/lightbulb
-      name: Switch to dark mode
+     # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default 
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: light blue
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
 
 plugins:
 - search
@@ -77,8 +100,6 @@ plugins:
     minify_html: true
 - include-markdown
 - tags
-- blog:
-    post_url_format: "{slug}"
 
 markdown_extensions:
 - attr_list

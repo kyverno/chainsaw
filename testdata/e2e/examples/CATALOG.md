@@ -16,6 +16,7 @@
 - [k8s-server-version](k8s-server-version/README.md)
 - [list](list/README.md)
 - [namespace-template](namespace-template/README.md)
+- [namespace-template-config](namespace-template-config/README.md)
 - [non-resource-assertion](non-resource-assertion/README.md)
 - [delete-test](orphan/README.md)
 - [outputs](outputs/README.md)

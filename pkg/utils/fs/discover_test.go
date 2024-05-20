@@ -16,7 +16,7 @@ func TestDiscoverFolders(t *testing.T) {
 		assert.NoError(t, os.MkdirAll(filepath.Join(root, dir), os.ModePerm))
 	}
 	for _, file := range files {
-		assert.NoError(t, os.WriteFile(filepath.Join(root, file), []byte("test"), os.ModePerm))
+		assert.NoError(t, os.WriteFile(filepath.Join(root, file), []byte("test"), 0o600))
 	}
 	discovered, err := DiscoverFolders(root)
 	assert.NoError(t, err)

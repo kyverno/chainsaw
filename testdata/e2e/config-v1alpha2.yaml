@@ -11,3 +11,8 @@ spec:
     failFast: true
     forceTerminationGracePeriod: 5s
     parallel: 1
+  namespace:
+    template:
+      metadata:
+        annotations:
+          from-config-file: hello

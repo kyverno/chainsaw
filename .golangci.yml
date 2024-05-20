@@ -41,9 +41,9 @@ linters:
 
 run:
   timeout: 15m
-  # output:
-  #   format: colored-line-number
-  #   sort-results: true
+
+output:
+  sort-results: true
 
 issues:
   exclude-files:

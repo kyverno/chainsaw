@@ -2,16 +2,27 @@ INHERIT: ./mkdocs.base.yaml
 
 nav:
 - Home: index.md
-- Getting Started:
-  - intro.md
-  - install.md
-  - quick-start.md
+- Getting started:
+  - quick-start/index.md
+  - quick-start/install.md
+  - quick-start/completion.md
+  - quick-start/first-test.md
+  - quick-start/run-tests.md
+  - quick-start/assertion-trees.md
+  - quick-start/bindings.md
+  - quick-start/resource-templating.md
+  - quick-start/operation-outputs.md
+  - quick-start/try-catch.md
+  - quick-start/timeouts.md
+  - quick-start/next-steps.md
+  - Advanced use cases:
+    - quick-start/advanced/index.md
+    - quick-start/advanced/multi-cluster.md
+    - quick-start/advanced/kube-version.md
+    - quick-start/advanced/non-resource-assertions.md
   - gh-action.md
-  - resources.md
-  - docs.md
-  - community.md
 - Writing tests:
-  - writing-tests.md
+  - reference/index.md
   - Configuration:
     - configuration/index.md
     - configuration/file.md
@@ -97,13 +108,12 @@ nav:
   - json-schemas.md
 - Examples:
   - examples/index.md
-  - Examples:
-    - examples/basic.md
-    - examples/inline.md
-    - examples/assertion-tree.md
-    - examples/array-assertions.md
-    - examples/non-resource-assertion.md
-    - examples/labels-selector.md
-    - examples/test-output.md
-- Blog:
-  - blog/index.md
+  - examples/basic.md
+  - examples/inline.md
+  - examples/assertion-tree.md
+  - examples/array-assertions.md
+  - examples/non-resource-assertion.md
+  - examples/labels-selector.md
+  - examples/test-output.md
+- Resources: community/resources.md
+- Community: community/index.md
