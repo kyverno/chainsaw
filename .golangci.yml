@@ -41,8 +41,10 @@ linters:
 
 run:
   timeout: 15m
-  skip-files:
+
+output:
+  sort-results: true
+
+issues:
+  exclude-files:
     - ".+\\.generated.go"
-  output:
-    format: colored-line-number
-    sort-results: true

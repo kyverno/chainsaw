@@ -37,7 +37,7 @@ func Command() *cobra.Command {
 				if err != nil {
 					return err
 				}
-				if err := os.WriteFile(filepath.Join(outPath, entry.Name()), input, os.ModePerm); err != nil {
+				if err := os.WriteFile(filepath.Join(outPath, entry.Name()), input, 0o600); err != nil {
 					return err
 				}
 			}
