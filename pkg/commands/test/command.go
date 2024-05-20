@@ -148,6 +148,12 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "report-path") {
 				configuration.Spec.ReportPath = options.reportPath
 			}
+			if flagutils.IsSet(flags, "report-name") {
+				configuration.Spec.ReportName = options.reportName
+			}
+			if flagutils.IsSet(flags, "namespace") {
+				configuration.Spec.Namespace = options.namespace
+			}
 			if flagutils.IsSet(flags, "deletion-propagation-policy") {
 				deletionPropagationPolicy := metav1.DeletionPropagation(options.deletionPropagationPolicy)
 				configuration.Spec.DeletionPropagationPolicy = &deletionPropagationPolicy
