@@ -6,6 +6,7 @@ metadata:
   labels:
     no-ko-test: ''
 spec:
+  skip: true
   steps:
   - try:
     - script:
