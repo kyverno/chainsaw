@@ -21,6 +21,7 @@
 - [delete-test](orphan/README.md)
 - [outputs](outputs/README.md)
 - [patch](patch/README.md)
+- [quick-start](quick-start/README.md)
 - [script-env](script-env/README.md)
 - [sleep](sleep/README.md)
 - [template](template/README.md)

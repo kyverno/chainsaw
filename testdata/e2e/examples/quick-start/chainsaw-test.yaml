@@ -1,0 +1,15 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: quick-start
+spec:
+  steps:
+  - try:
+    # first operation: create the config map
+    - apply:
+        # file is relative to the test folder
+        file: configmap.yaml
+    # second operation: verify the config map exists and contains the expected data
+    - assert:
+        # file is relative to the test folder
+        file: configmap.yaml
