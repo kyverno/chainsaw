@@ -281,11 +281,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/more/crds/</loc>
-         <lastmod>2024-05-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/more/events/</loc>
          <lastmod>2024-05-21</lastmod>
          <changefreq>daily</changefreq>
