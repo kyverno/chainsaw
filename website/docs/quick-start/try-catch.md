@@ -34,7 +34,7 @@ In the example below, the test contains a `catch` block to collect events in the
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: catch
+  name: example
 spec:
   steps:
   - try:

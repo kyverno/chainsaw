@@ -58,7 +58,7 @@ In the test below we create **custom bindings** at different levels in the test,
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: script-env
+  name: example
 spec:
   # bindings can be declared at the test level
   bindings:
