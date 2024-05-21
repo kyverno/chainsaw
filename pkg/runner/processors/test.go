@@ -31,7 +31,7 @@ import (
 
 type TestProcessor interface {
 	Run(context.Context, binding.Bindings, namespacer.Namespacer)
-	CreateStepProcessor(namespacer.Namespacer, clusters.Registry, *cleaner, v1alpha1.TestStep) StepProcessor
+	CreateStepProcessor(namespacer.Namespacer, clusters.Registry, v1alpha1.TestStep) StepProcessor
 }
 
 func NewTestProcessor(
@@ -199,16 +199,8 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	delay := p.config.DelayBeforeCleanup
-	if p.test.Spec.DelayBeforeCleanup != nil {
-		delay = p.test.Spec.DelayBeforeCleanup
-	}
 	for i, step := range p.test.Spec.Steps {
-		cleaner := newCleaner(nspacer, delay)
-		t.Cleanup(func() {
-			cleaner.run(logging.IntoContext(ctx, cleanupLogger))
-		})
-		processor := p.CreateStepProcessor(nspacer, registeredClusters, cleaner, step)
+		processor := p.CreateStepProcessor(nspacer, registeredClusters, step)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
@@ -220,10 +212,10 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 	}
 }
 
-func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, clusters clusters.Registry, cleaner *cleaner, step v1alpha1.TestStep) StepProcessor {
+func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, clusters clusters.Registry, step v1alpha1.TestStep) StepProcessor {
 	var report *report.StepReport
 	if p.report != nil {
 		report = p.report.ForStep(&step)
 	}
-	return NewStepProcessor(p.config, clusters, nspacer, p.clock, p.test, step, report, cleaner)
+	return NewStepProcessor(p.config, clusters, nspacer, p.clock, p.test, step, report)
 }

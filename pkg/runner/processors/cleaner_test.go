@@ -38,7 +38,7 @@ func Test_Cleaner_Register(t *testing.T) {
 			c := newCleaner(fakeNamespacer, nil)
 			for i := 0; i < tc.expectedOp; i++ {
 				localTimeout := tc.timeout
-				c.register(mockObj, fakeClient, &localTimeout)
+				c.addObject(mockObj, fakeClient, &localTimeout)
 			}
 			assert.Len(t, c.operations, tc.expectedOp)
 			for _, op := range c.operations {

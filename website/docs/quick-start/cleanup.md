@@ -14,6 +14,22 @@ A global cleanup timeout can be defined at the configuration level or using comm
 
 It can also be overridden on a per-test or per-step basis but not at the operation level.
 
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  timeouts:
+    # cleanup timeout at the test level
+    cleanup: 30s
+  steps:
+  - timeouts:
+      # cleanup timeout at the step level
+      cleanup: 2m
+    try: ...
+```
+
 ## Automatic cleanup
 
 After a test, every resource created by Chainsaw will be automatically deleted. This applies to `create` and `apply` operations.
@@ -63,7 +79,8 @@ spec:
         timeout: 1m
         content: |
           kind create cluster --name dynamic --kubeconfig ./dynamic
-    # at cleanup time, we want to delete the local cluster and the associated kubeconfig
+    # at cleanup time, we want to delete the local cluster we created
+    # and remove the associated kubeconfig
     cleanup:
     - script:
         content: |
