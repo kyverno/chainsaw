@@ -20,6 +20,10 @@ nav:
     - quick-start/advanced/multi-cluster.md
     - quick-start/advanced/kube-version.md
     - quick-start/advanced/non-resource-assertions.md
+    - quick-start/advanced/crds.md
+    - quick-start/advanced/cluster-wide-resources.md
+    - quick-start/advanced/concurrency.md
+    - quick-start/advanced/negative-testing.md
   - gh-action.md
 - Writing tests:
   - reference/index.md
