@@ -4,81 +4,53 @@ Chainsaw simplifies dynamic resource configuration with native resource templati
 
 Sometimes things we need to create resources or assertions are only known at runtime.
 
-In the past, users have created all sorts of hacks using tools like `envsubst` for dynamic substitution of env-variables. Those workarounds usually lack flexibility and introduce new problems like hiding the real resources from Chainsaw, preventing it from cleaning resources properly.
+In the past, users have created all sorts of hacks using tools like `envsubst` for dynamic substitution of env-variables.
+Those workarounds usually lack flexibility and introduce new problems like hiding the real resources from Chainsaw, preventing it from cleaning resources properly.
 
-## Templating and Bindings
+!!! tip
+    Resource templating is heavily based on [bindings](./bindings.md) and uses [JMESPath](https://jmespath.site/) language.
 
-The templating engine in Chainsaw is based on the concept of **bindings**.
+## Leverage bindings
 
-You can think of bindings as a side context where you can store and retrieve data based on keys. A resource template can read data from the side context to hydrate a concrete resource from the template.
-
-Chainsaw offers some built-in bindings you can use. You can also create your own bindings and use outputs to pass information from one operation to the next.
-
-!!! info
-    Under the hood, Chainsaw uses the [JMESPath](https://jmespath.site/) language, and bindings are implemented using [lexical scoping](https://github.com/jmespath-community/jmespath.spec/blob/main/jep-011a-lexical-scope.md).
-
-## Built-in bindings
-
-The `$namespace` is a built-in binding provided by Chainsaw, containing the name of the ephemeral namespace used to execute a test (by default Chainsaw will create an ephemeral namespace for each test).
-
-In the template below, we are using the `$namespace` binding at two different places, effectively injecting the ephemeral namespace name in the resource name and the `data.foo` field:
+In the template below, we are using the `$namespace` binding at two different places, effectively injecting the ephemeral namespace name in the `name` and the `data.foo` fields:
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: template
+  name: example
 spec:
   steps:
   - assert:
       resource:
-        # apiVersion, kind, name, namespace and labels are considered for templating
         apiVersion: v1
         kind: ConfigMap
         metadata:
           name: ($namespace)
-        # other fields are not (they are part of the assertion tree)
         data:
           foo: ($namespace)
 ```
 
-## Custom bindings
+## Leverage JMESPath
 
-Built-in bindings allow templates to know about the context they are running in. On top of that, you can also create your own bindings, combining other bindings together, calling JMESPath functions and so on.
-
-In the template below we create bindings at different levels in a test and combine them by calling the `join` function to configure an environment variable that will be available in a script:
+In the template below, we are using the JMESPath [join](https://jmespath.org/proposals/functions.html#join) function to create a unique resource name:
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: script-env
+  name: example
 spec:
-  # bindings can be declared at the test level
-  bindings:
-  - name: chainsaw
-    value: chainsaw
   steps:
-    # bindings can also be declared at the step level
-  - bindings:
-    - name: hello
-      value: hello
-    try:
-    - script:
-        # bindings can also be declared at the operation level
-        bindings:
-        - name: awesome
-          value: awesome
-        env:
-        - name: GREETINGS
-          # multiple bindings can used to invoke a jmespath function
-          value: (join(' ', [$hello, $chainsaw, 'is', $awesome]))
-        content: echo $GREETINGS
+  - apply:
+      resource:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: (join('-', [$namespace, 'cm']))
+        data:
+          foo: bar
 ```
-
-!!! tip
-    Bindings are immutable. This means two bindings can have the same name without overwriting each other.
-    When a binding is registered it potentially hides other bindings with the same name. When this binding goes out of scope, previously registered bindings become visible again.
 
 ## Next step
 
