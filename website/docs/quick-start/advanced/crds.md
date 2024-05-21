@@ -1,4 +1,4 @@
-# Advanced use cases
+# Working with CRDs
 
 This section is under construction and should be ready soon. Please check again in a few days.
 
