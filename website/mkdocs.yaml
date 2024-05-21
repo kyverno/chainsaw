@@ -26,21 +26,21 @@ nav:
     - quick-start/advanced/concurrency.md
     - quick-start/advanced/negative-testing.md
   - gh-action.md
+- Configuration:
+  - configuration/index.md
+  - configuration/file.md
+  - configuration/flags.md
+  - configuration/timeouts.md
+  - configuration/grace.md
+  - configuration/cleanup-delay.md
+  - configuration/reports.md
+  - configuration/selector.md
+  - configuration/values.md
+  - configuration/multi-cluster.md
+  - configuration/templating.md
+  - configuration/no-cluster.md
 - Writing tests:
   - reference/index.md
-  - Configuration:
-    - configuration/index.md
-    - configuration/file.md
-    - configuration/flags.md
-    - configuration/timeouts.md
-    - configuration/grace.md
-    - configuration/cleanup-delay.md
-    - configuration/reports.md
-    - configuration/selector.md
-    - configuration/values.md
-    - configuration/multi-cluster.md
-    - configuration/templating.md
-    - configuration/no-cluster.md
   - Tests:
     - tests/index.md
     - tests/manifests-based.md
