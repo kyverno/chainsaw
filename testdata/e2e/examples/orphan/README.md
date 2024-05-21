@@ -4,9 +4,9 @@
 
 ## Steps
 
-| # | Name | Bindings | Try | Catch | Finally |
+| # | Name | Bindings | Try | Catch | Finally | Cleanup |
 |:-:|---|:-:|:-:|:-:|:-:|
-| 1 | [delete-test](#step-delete-test) | 0 | 5 | 0 | 0 |
+| 1 | [delete-test](#step-delete-test) | 0 | 5 | 0 | 0 | 0 |
 
 ### Step: `delete-test`
 
