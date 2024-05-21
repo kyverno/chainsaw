@@ -1,5 +1,21 @@
 # Concurrency control
 
-This section is under construction and should be ready soon. Please check again in a few days.
+By default, Chainsaw will run tests in parallel.
 
-If you are interested in contributing see the [tracking issue](https://github.com/kyverno/chainsaw/issues/1327).
+The number of concurrent tests can be configured globally using a configuration file or with the `--parallel` flag.
+
+Alternatively, the concurrent nature of a test can specified at the test level:
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  # concurrency can be specified per test (`true` or `false`)
+  # default value is `true`
+  concurrent: true
+  # ...
+```
+
+All non-concurrent tests are executed first, followed by the concurrent tests running in parallel.
