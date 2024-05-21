@@ -5,17 +5,21 @@ Release notes for `TODO`.
 <!--
 ## ‼️ Breaking changes ‼️
 
-## 💫 New features 💫
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
 
-## 🔧 Fixes 🔧
-
 ## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
 -->
+
+## 💫 New features 💫
+
+- Added `cleanup` validation logic
+
+## 🔧 Fixes 🔧
+
+- Added `cleanup` support to generated test catalog
