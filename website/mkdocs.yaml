@@ -18,13 +18,13 @@ nav:
   - quick-start/next-steps.md
   - Advanced use cases:
     - quick-start/advanced/index.md
+    - quick-start/advanced/negative-testing.md
     - quick-start/advanced/crds.md
-    - quick-start/advanced/multi-cluster.md
-    - quick-start/advanced/kube-version.md
-    - quick-start/advanced/non-resource-assertions.md
     - quick-start/advanced/cluster-wide-resources.md
     - quick-start/advanced/concurrency.md
-    - quick-start/advanced/negative-testing.md
+    - quick-start/advanced/kube-version.md
+    - quick-start/advanced/non-resource-assertions.md
+    - quick-start/advanced/multi-cluster.md
   - gh-action.md
 - Configuration:
   - configuration/index.md
