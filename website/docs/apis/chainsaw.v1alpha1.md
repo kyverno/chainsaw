@@ -761,6 +761,7 @@ Optionally an apiVersion can be specified.</p>
 | `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) | :white_check_mark: |  | <p>Try defines what the step will try to execute.</p> |
 | `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
 | `finally` | [`[]Finally`](#chainsaw-kyverno-io-v1alpha1-Finally) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
+| `cleanup` | [`[]Finally`](#chainsaw-kyverno-io-v1alpha1-Finally) |  |  | <p>Cleanup defines what will be executed after the test is terminated.</p> |
 
 ## `Timeouts`     {#chainsaw-kyverno-io-v1alpha1-Timeouts}
 

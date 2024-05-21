@@ -1363,6 +1363,13 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
 	}
+	if in.Cleanup != nil {
+		in, out := &in.Cleanup, &out.Cleanup
+		*out = make([]Finally, len(*in))
+		for i := range *in {
+			(*in)[i].DeepCopyInto(&(*out)[i])
+		}
+	}
 	return
 }
 

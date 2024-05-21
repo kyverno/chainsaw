@@ -27,15 +27,15 @@ import (
 func TestStepProcessor_Run(t *testing.T) {
 	testData := filepath.Join("..", "..", "..", "testdata", "runner", "processors")
 	testCases := []struct {
-		name         string
-		config       v1alpha1.ConfigurationSpec
-		client       client.Client
-		namespacer   *fakeNamespacer.FakeNamespacer
-		clock        clock.PassiveClock
-		test         discovery.Test
-		stepSpec     v1alpha1.TestStep
-		stepReport   *report.StepReport
-		cleaner      *cleaner
+		name       string
+		config     v1alpha1.ConfigurationSpec
+		client     client.Client
+		namespacer *fakeNamespacer.FakeNamespacer
+		clock      clock.PassiveClock
+		test       discovery.Test
+		stepSpec   v1alpha1.TestStep
+		stepReport *report.StepReport
+		// cleaner      *cleaner
 		expectedFail bool
 		skipped      bool
 	}{{
@@ -67,7 +67,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: nil,
-		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with apply handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -115,7 +114,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: &report.StepReport{},
-		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with create handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -163,7 +161,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: &report.StepReport{},
-		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with assert handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -235,7 +232,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: &report.StepReport{},
-		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with error handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -307,7 +303,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: &report.StepReport{},
-		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with command handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -348,7 +343,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: &report.StepReport{},
-		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with script handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -388,7 +382,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: &report.StepReport{},
-		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with sleep handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -421,7 +414,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: &report.StepReport{},
-		cleaner:    &cleaner{},
 	}, {
 		name: "try operation with delete handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -471,7 +463,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: &report.StepReport{},
-		cleaner:    &cleaner{},
 	}, {
 		name: "dry run with create handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -520,7 +511,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: nil,
-		cleaner:    &cleaner{},
 	}, {
 		name: "skip delete with create handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -569,7 +559,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: nil,
-		cleaner:    &cleaner{},
 	}, {
 		name: "try-raw resource with create handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -624,7 +613,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: nil,
-		cleaner:    &cleaner{},
 	}, {
 		name: "try-url resource with create handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -673,7 +661,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: nil,
-		cleaner:    &cleaner{},
 	}, {
 		name: "raw resource with assert handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -768,7 +755,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: nil,
-		cleaner:    &cleaner{},
 	}, {
 		name: "try url-resource with assert handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -826,7 +812,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: nil,
-		cleaner:    &cleaner{},
 	}, {
 		name: "try, catch and finally operation with apply handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -951,7 +936,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: &report.StepReport{},
-		cleaner:    &cleaner{},
 	}, {
 		name: "termination with create handler",
 		config: v1alpha1.ConfigurationSpec{
@@ -1009,7 +993,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 		stepReport: nil,
-		cleaner:    &cleaner{},
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1025,7 +1008,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				tc.test,
 				tc.stepSpec,
 				tc.stepReport,
-				tc.cleaner,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)

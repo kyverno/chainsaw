@@ -26,8 +26,12 @@ func newCleaner(namespacer namespacer.Namespacer, delay *metav1.Duration) *clean
 	}
 }
 
-func (c *cleaner) register(obj unstructured.Unstructured, client client.Client, timeout *time.Duration) {
-	c.operations = append(c.operations, newOperation(
+func (c *cleaner) register(ops ...operation) {
+	c.operations = append(c.operations, ops...)
+}
+
+func (c *cleaner) addObject(obj unstructured.Unstructured, client client.Client, timeout *time.Duration) {
+	c.register(newOperation(
 		OperationInfo{},
 		true,
 		timeout,
@@ -45,4 +49,8 @@ func (c *cleaner) run(ctx context.Context) {
 	for i := len(c.operations) - 1; i >= 0; i-- {
 		c.operations[i].execute(ctx, nil)
 	}
+}
+
+func (c *cleaner) isEmpty() bool {
+	return len(c.operations) == 0
 }
