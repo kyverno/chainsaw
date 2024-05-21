@@ -4,9 +4,9 @@
 
 ## Steps
 
-| # | Name | Bindings | Try | Catch | Finally |
+| # | Name | Bindings | Try | Catch | Finally | Cleanup |
 |:-:|---|:-:|:-:|:-:|:-:|
-| 1 | [step-1](#step-step-1) | 0 | 2 | 0 | 2 |
+| 1 | [step-1](#step-step-1) | 0 | 2 | 0 | 2 | 0 |
 
 ### Step: `step-1`
 
