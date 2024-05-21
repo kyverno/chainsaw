@@ -241,32 +241,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/examples/assertion-tree/</loc>
-         <lastmod>2024-05-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/examples/basic/</loc>
          <lastmod>2024-05-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/examples/inline/</loc>
-         <lastmod>2024-05-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/examples/labels-selector/</loc>
-         <lastmod>2024-05-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://github.io/kyverno/chainsaw/main/examples/non-resource-assertion/</loc>
-         <lastmod>2024-05-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://github.io/kyverno/chainsaw/main/examples/test-output/</loc>
          <lastmod>2024-05-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -456,6 +436,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/inline/</loc>
+         <lastmod>2024-05-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/kube-version/</loc>
          <lastmod>2024-05-21</lastmod>
          <changefreq>daily</changefreq>
@@ -472,6 +457,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/non-resource-assertions/</loc>
+         <lastmod>2024-05-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/test-output/</loc>
          <lastmod>2024-05-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
