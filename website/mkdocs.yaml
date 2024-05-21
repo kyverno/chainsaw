@@ -18,12 +18,14 @@ nav:
   - quick-start/next-steps.md
   - Advanced use cases:
     - quick-start/advanced/index.md
+    - quick-start/advanced/inline.md
     - quick-start/advanced/negative-testing.md
     - quick-start/advanced/crds.md
     - quick-start/advanced/cluster-wide-resources.md
     - quick-start/advanced/concurrency.md
     - quick-start/advanced/kube-version.md
     - quick-start/advanced/non-resource-assertions.md
+    - quick-start/advanced/test-output.md
     - quick-start/advanced/multi-cluster.md
   - gh-action.md
 - Configuration:
@@ -113,11 +115,6 @@ nav:
   - json-schemas.md
 - Examples:
   - examples/index.md
-  - examples/basic.md
-  - examples/inline.md
-  - examples/assertion-tree.md
   - examples/array-assertions.md
-  - examples/non-resource-assertion.md
   - examples/labels-selector.md
-  - examples/test-output.md
 - Community: community/index.md
