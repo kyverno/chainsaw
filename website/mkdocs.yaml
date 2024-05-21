@@ -42,7 +42,6 @@ nav:
   - configuration/templating.md
   - configuration/no-cluster.md
 - Writing tests:
-  - reference/index.md
   - Tests:
     - tests/index.md
     - tests/manifests-based.md
