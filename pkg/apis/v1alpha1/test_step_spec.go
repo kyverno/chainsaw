@@ -41,4 +41,8 @@ type TestStepSpec struct {
 	// Finally defines what the step will execute after the step is terminated.
 	// +optional
 	Finally []Finally `json:"finally,omitempty"`
+
+	// Cleanup defines what will be executed after the test is terminated.
+	// +optional
+	Cleanup []Finally `json:"cleanup,omitempty"`
 }
