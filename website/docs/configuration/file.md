@@ -47,7 +47,7 @@ To use a custom configuration file:
 chainsaw test --config path/to/your/config.yaml
 ```
 
-!!! note "Defaults"
+!!! tip "Defaults"
     If you don't specify any configuration, Chainsaw will look for the default configuration file `.chainsaw.yaml` in the current working directory.
 
     If that file is not found, it will fall back to its internal [default configuration](#default-configuration).
