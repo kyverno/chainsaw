@@ -1,24 +1,14 @@
 # Inline resources
 
-Test steps:
+When an operation needs to reference a resource, it can do so using a file path or directly specify the resource inline using the `resource` field.
 
-1.  Creates a ConfigMap
-1.  Asserts the ConfigMap contains the expected data
-
-## Setup
-
-See [Setup docs](./index.md#setup)
-
-## Test
-
-### `chainsaw-test.yaml`
+The test below is equivalent to our [first test](../first-test.md):
 
 ```yaml
-# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: inline-resources
+  name: example
 spec:
   steps:
   - try:
@@ -38,10 +28,4 @@ spec:
             name: quick-start
           data:
             foo: bar
-```
-
-## Execute
-
-```bash
-chainsaw test
 ```
