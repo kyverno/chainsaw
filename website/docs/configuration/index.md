@@ -9,7 +9,7 @@ Chainsaw can be configured in two different and complementary ways:
 - [Using a configuration file](./file.md)
 - [Overriding configuration with command-line flags](./flags.md)
 
-!!! note "Precedence"
+!!! tip "Precedence"
     If both are specified, **command-line flags will take precedence** over configuration coming from a configuration file.
 
 ## Specific configuration options
