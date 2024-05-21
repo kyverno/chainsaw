@@ -396,6 +396,11 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://github.io/kyverno/chainsaw/main/quick-start/cleanup/</loc>
+         <lastmod>2024-05-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/completion/</loc>
          <lastmod>2024-05-21</lastmod>
          <changefreq>daily</changefreq>
