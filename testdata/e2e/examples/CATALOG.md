@@ -17,6 +17,8 @@
 - [list](list/README.md)
 - [namespace-template](namespace-template/README.md)
 - [namespace-template-config](namespace-template-config/README.md)
+- [negative-resource](negative-testing/resource/README.md)
+- [negative-script](negative-testing/script/README.md)
 - [non-resource-assertion](non-resource-assertion/README.md)
 - [delete-test](orphan/README.md)
 - [outputs](outputs/README.md)
