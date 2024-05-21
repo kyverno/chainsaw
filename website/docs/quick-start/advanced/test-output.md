@@ -1,4 +1,4 @@
-# Testing command output
+# Test command output
 
 Chainsaw can be used to easily check terminal output from CLIs and other commands. This is useful in that convoluted bash scripts involving chaining together tools like `grep` can be avoided or at least minimized to only complex use cases. Output to both stdout and stderr can be checked for a given string or precise contents.
 
@@ -14,7 +14,7 @@ Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
 Server Version: v1.27.4+k3s1
 ```
 
-Below is an example that ensures the string '1.28' is found somewhere in that output. So long as the content is present anywhere, the test will succeed. To perform this check, the [`contains()`](../jp/functions.md) JMESPath filter is used.
+Below is an example that ensures the string '1.28' is found somewhere in that output. So long as the content is present anywhere, the test will succeed. To perform this check, the [`contains()`](../../jp/functions.md) JMESPath filter is used.
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
