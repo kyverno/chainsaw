@@ -241,16 +241,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/examples/basic/</loc>
-         <lastmod>2024-05-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://github.io/kyverno/chainsaw/main/examples/labels-selector/</loc>
-         <lastmod>2024-05-21</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/jp/functions/</loc>
          <lastmod>2024-05-21</lastmod>
          <changefreq>daily</changefreq>
@@ -442,6 +432,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/kube-version/</loc>
+         <lastmod>2024-05-21</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/label-selectors/</loc>
          <lastmod>2024-05-21</lastmod>
          <changefreq>daily</changefreq>
     </url>
