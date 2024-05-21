@@ -14,6 +14,7 @@ nav:
   - quick-start/operation-outputs.md
   - quick-start/try-catch.md
   - quick-start/timeouts.md
+  - quick-start/cleanup.md
   - quick-start/next-steps.md
   - Advanced use cases:
     - quick-start/advanced/index.md
