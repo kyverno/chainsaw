@@ -26,6 +26,7 @@ nav:
     - quick-start/advanced/kube-version.md
     - quick-start/advanced/non-resource-assertions.md
     - quick-start/advanced/test-output.md
+    - quick-start/advanced/label-selectors.md
     - quick-start/advanced/multi-cluster.md
   - gh-action.md
 - Configuration:
@@ -115,5 +116,4 @@ nav:
 - Examples:
   - examples/index.md
   - examples/array-assertions.md
-  - examples/labels-selector.md
 - Community: community/index.md
