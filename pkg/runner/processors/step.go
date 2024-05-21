@@ -56,7 +56,6 @@ func NewStepProcessor(
 	test discovery.Test,
 	step v1alpha1.TestStep,
 	report *report.StepReport,
-	cleaner *cleaner,
 ) StepProcessor {
 	return &stepProcessor{
 		config:     config,
@@ -66,7 +65,6 @@ func NewStepProcessor(
 		test:       test,
 		step:       step,
 		report:     report,
-		cleaner:    cleaner,
 		timeouts:   config.Timeouts.Combine(test.Spec.Timeouts).Combine(step.Timeouts),
 	}
 }
@@ -79,7 +77,6 @@ type stepProcessor struct {
 	test       discovery.Test
 	step       v1alpha1.TestStep
 	report     *report.StepReport
-	cleaner    *cleaner
 	timeouts   v1alpha1.Timeouts
 }
 
@@ -107,7 +104,12 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	try, err := p.tryOperations(registeredClusters)
+	delay := p.config.DelayBeforeCleanup
+	if p.test.Spec.DelayBeforeCleanup != nil {
+		delay = p.test.Spec.DelayBeforeCleanup
+	}
+	cleaner := newCleaner(p.namespacer, delay)
+	try, err := p.tryOperations(registeredClusters, cleaner)
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -117,11 +119,28 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	finally, err := p.finallyOperations(registeredClusters)
+	finally, err := p.finallyOperations(registeredClusters, p.step.Finally...)
 	if err != nil {
 		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
+	cleanup, err := p.finallyOperations(registeredClusters, p.step.Cleanup...)
+	if err != nil {
+		logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		failer.FailNow(ctx)
+	}
+	t.Cleanup(func() {
+		if !cleaner.isEmpty() || len(cleanup) != 0 {
+			logger.Log(logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
+			defer func() {
+				logger.Log(logging.Cleanup, logging.DoneStatus, color.BoldFgCyan)
+			}()
+			cleaner.run(ctx)
+			for _, operation := range cleanup {
+				operation.execute(ctx, bindings)
+			}
+		}
+	})
 	if len(finally) != 0 {
 		defer func() {
 			logger.Log(logging.Finally, logging.RunStatus, color.BoldFgCyan)
@@ -157,7 +176,7 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	}
 }
 
-func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry) ([]operation, error) {
+func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, cleaner *cleaner) ([]operation, error) {
 	var ops []operation
 	for i, handler := range p.step.Try {
 		register := func(o ...operation) {
@@ -168,7 +187,7 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry) ([]o
 			}
 		}
 		if handler.Apply != nil {
-			loaded, err := p.applyOperation(i+1, registeredClusters, *handler.Apply)
+			loaded, err := p.applyOperation(i+1, registeredClusters, cleaner, *handler.Apply)
 			if err != nil {
 				return nil, err
 			}
@@ -182,7 +201,7 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry) ([]o
 		} else if handler.Command != nil {
 			register(p.commandOperation(i+1, registeredClusters, *handler.Command))
 		} else if handler.Create != nil {
-			loaded, err := p.createOperation(i+1, registeredClusters, *handler.Create)
+			loaded, err := p.createOperation(i+1, registeredClusters, cleaner, *handler.Create)
 			if err != nil {
 				return nil, err
 			}
@@ -267,7 +286,7 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry) ([]operation, error) {
+func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, operations ...v1alpha1.Finally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -275,7 +294,7 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry) 
 			ops = append(ops, o)
 		}
 	}
-	for i, handler := range p.step.Finally {
+	for i, handler := range operations {
 		if handler.PodLogs != nil {
 			register(p.logsOperation(i+1, registeredClusters, *handler.PodLogs))
 		} else if handler.Events != nil {
@@ -309,7 +328,7 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry) 
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Registry, cleaner *cleaner, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -340,7 +359,7 @@ func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Regis
 					return nil, nil, err
 				}
 				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return opapply.New(client, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs), bindings, nil
+				return opapply.New(client, resource, p.namespacer, p.getCleaner(cleaner, dryRun), template, op.Expect, op.Outputs), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -415,7 +434,7 @@ func (p *stepProcessor) commandOperation(id int, registeredClusters clusters.Reg
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Registry, cleaner *cleaner, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.FileRefOrResource)
 	if err != nil {
 		return nil, err
@@ -447,7 +466,7 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 					return nil, nil, err
 				}
 				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return opcreate.New(client, resource, p.namespacer, p.getCleaner(dryRun), template, op.Expect, op.Outputs), bindings, nil
+				return opcreate.New(client, resource, p.namespacer, p.getCleaner(cleaner, dryRun), template, op.Expect, op.Outputs), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -860,7 +879,7 @@ func (p *stepProcessor) getClusterResolver(registeredClusters clusters.Registry,
 	}
 }
 
-func (p *stepProcessor) getCleaner(dryRun bool) cleanup.Cleaner {
+func (p *stepProcessor) getCleaner(cleaner *cleaner, dryRun bool) cleanup.Cleaner {
 	if dryRun {
 		return nil
 	}
@@ -868,6 +887,6 @@ func (p *stepProcessor) getCleaner(dryRun bool) cleanup.Cleaner {
 		return nil
 	}
 	return func(obj unstructured.Unstructured, c client.Client) {
-		p.cleaner.register(obj, c, timeout.Get(nil, p.timeouts.CleanupDuration()))
+		cleaner.addObject(obj, c, timeout.Get(nil, p.timeouts.CleanupDuration()))
 	}
 }

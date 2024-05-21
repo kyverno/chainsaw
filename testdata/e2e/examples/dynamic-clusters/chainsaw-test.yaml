@@ -6,14 +6,13 @@ metadata:
   labels:
     no-ko-test: ''
 spec:
-  skip: true
   steps:
   - try:
     - script:
         timeout: 1m
         content: |
           kind create cluster --name dynamic --kubeconfig ./dynamic
-    finally:
+    cleanup:
     - script:
         content: |
           kind delete cluster --name dynamic
@@ -43,10 +42,6 @@ spec:
             namespace: default
           data:
             foo: bar
-    finally:
-    - script:
-        content: |
-          echo "in finally"
   - clusters:
       dynamic:
         kubeconfig: ./dynamic
@@ -70,7 +65,3 @@ spec:
             namespace: default
           data:
             foo: bar
-    finally:
-    - script:
-        content: |
-          echo "in finally"

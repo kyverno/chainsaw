@@ -14,6 +14,7 @@ const (
 	Apply    Operation = "APPLY"
 	Assert   Operation = "ASSERT"
 	Catch    Operation = "CATCH"
+	Cleanup  Operation = "CLEANUP"
 	Command  Operation = "CMD"
 	Create   Operation = "CREATE"
 	Delete   Operation = "DELETE"
