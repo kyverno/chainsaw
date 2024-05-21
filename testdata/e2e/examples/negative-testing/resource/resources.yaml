@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: good
+data:
+  foo: bar
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bad
+data:
+  foo: true
