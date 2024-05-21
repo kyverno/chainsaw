@@ -6,13 +6,13 @@ Even after a [configuration file](./file.md) is loaded, you can override specifi
 
 ```bash
 chainsaw test                         \
-    path/to/test/dir                    \
-    --config path/to/your/config.yaml   \
-    --assert-timeout 45s                \
-    --skip-delete false                 \
-    --fail-fast true                    \
-    --parallel 4                        \
-    ...
+  path/to/test/dir                    \
+  --config path/to/your/config.yaml   \
+  --assert-timeout 45s                \
+  --skip-delete false                 \
+  --fail-fast true                    \
+  --parallel 4                        \
+  ...
 ```
 
 In this example, Chainsaw will load a configuration file but the timeout configuration and other settings will be overridden by the values set in the flags, regardless of the value in the loaded configuration file.
