@@ -905,7 +905,6 @@ func TestStepProcessor_Run(t *testing.T) {
 							Args:       []string{"hello"},
 						},
 					},
-
 					{
 						Script: &v1alpha1.Script{
 							Content: "echo hello",
@@ -918,13 +917,6 @@ func TestStepProcessor_Run(t *testing.T) {
 					},
 					{
 						PodLogs: &v1alpha1.PodLogs{
-							ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-								Selector: "name=myapp",
-							},
-						},
-					},
-					{
-						Events: &v1alpha1.Events{
 							ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 								Selector: "name=myapp",
 							},
@@ -938,7 +930,6 @@ func TestStepProcessor_Run(t *testing.T) {
 							Args:       []string{"hello"},
 						},
 					},
-
 					{
 						Script: &v1alpha1.Script{
 							Content: "echo hello",
@@ -951,13 +942,6 @@ func TestStepProcessor_Run(t *testing.T) {
 					},
 					{
 						PodLogs: &v1alpha1.PodLogs{
-							ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-								Selector: "name=myapp",
-							},
-						},
-					},
-					{
-						Events: &v1alpha1.Events{
 							ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 								Selector: "name=myapp",
 							},
