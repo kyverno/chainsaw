@@ -15,7 +15,7 @@
 </code></pre></div> <h2 id=custom-bindings>Custom bindings<a class=headerlink href=#custom-bindings title="Permanent link">&para;</a></h2> <p>On top of built-in bindings, you can also create your own ones, combine bindings together, call JMESPath functions using bindings as arguments, etc.</p> <p>In the test below we create <strong>custom bindings</strong> at different levels in the test, combine them by calling the <code>join</code> function, assign the result to an environment variable, and <code>echo</code> it in a script:</p> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">chainsaw.kyverno.io/v1alpha1</span>
 <span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Test</span>
 <span class=nt>metadata</span><span class=p>:</span>
-<span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">script-env</span>
+<span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">example</span>
 <span class=nt>spec</span><span class=p>:</span>
 <span class=w>  </span><span class=c1># bindings can be declared at the test level</span>
 <span class=w>  </span><span class=nt>bindings</span><span class=p>:</span>
