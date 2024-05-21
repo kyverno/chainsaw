@@ -1,0 +1,439 @@
+{% extends "main.html" %}
+{% block tabs %}
+{{ super() }}
+<style>
+	:root {
+		--kyverno-primary-color: #72533b;
+	}
+
+	html {
+		scroll-behavior: smooth;
+	}
+
+	.md-main .md-main__inner {
+		display: none
+	}
+
+	[data-md-color-scheme=slate] .tx-main-container {
+		background: linear-gradient(to bottom, var(--md-primary-fg-color), var(--kyverno-primary-color) 100%);
+	}
+
+	.tx-main-container {
+		background: linear-gradient(to bottom, var(--md-primary-fg-color), var(--kyverno-primary-color) 100%);
+	}
+
+	.tx-container {
+		color: var(--md-default-fg-color);
+		background-color: var(--md-default-bg-color);
+		/* padding-top: 1rem; */
+		min-height: calc(100vh - 4.8rem);
+	}
+
+	.tx-hero {
+		margin: 0 .8rem;
+		color: var(--md-primary-bg-color)
+	}
+
+	.tx-hero h1 {
+		margin-bottom: 1rem;
+		color: currentColor;
+		font-weight: 700
+	}
+
+	.tx-hero a {
+		color: currentColor;
+	}
+
+	.tx-hero .md-button {
+		margin-top: .5rem;
+		margin-right: .5rem;
+		color: var(--md-primary-bg-color)
+	}
+
+	.tx-hero .md-button--primary {
+		background-color: var(--md-primary-bg-color);
+		color: var(--kyverno-primary-color);
+		border-color: var(--md-primary-bg-color)
+	}
+
+	.tx-hero .md-button:focus,
+	.tx-hero .md-button:hover {
+		background-color: var(--md-accent-fg-color);
+		color: var(--md-default-bg-color);
+		border-color: var(--md-accent-fg-color)
+	}
+
+	@media screen and (max-width:70em) {
+		.tx-hero h1 {
+			font-size: 1.4rem
+		}
+
+		.tx-hero__image img {
+			max-width: 10rem;
+		}
+	}
+
+	@media screen and (min-width:70em) {
+		.tx-hero__image img {
+			max-width: 15rem;
+		}
+	}
+
+	@media screen and (min-width:76.25em) {
+		.tx-hero__image img {
+			max-width: 20rem;
+		}
+	}
+
+	.md-content__inner {
+		margin-bottom: 0;
+		padding: 5.2rem 0
+	}
+
+	.md-content__inner:before {
+		display: none
+	}
+
+	.md-content header {
+		display: block;
+		transition: opacity .75s
+	}
+
+	.md-typeset {
+		color: var(--md-typeset-color)
+	}
+
+	.md-typeset h2 {
+		font-weight: 700;
+		margin-top: .175em
+	}
+
+
+	.mdx-expect {
+		margin: 2.4rem 0
+	}
+
+	.mdx-expect__list {
+		display: flex;
+		flex-flow: row wrap;
+		gap: 1.6rem;
+		padding: 0
+	}
+
+	.mdx-expect__item {
+		display: flex;
+		flex: 1 0 48%;
+		gap: .6rem;
+		margin: 0;
+		transition: transform .75s cubic-bezier(.075, .85, .175, 1), opacity .75s
+	}
+
+	.mdx-expect__item:first-child {
+		transition-delay: .2s
+	}
+
+	.mdx-expect__item:nth-child(2) {
+		transition-delay: 275ms
+	}
+
+	.mdx-expect__item:nth-child(3) {
+		transition-delay: .35s
+	}
+
+	.mdx-expect__item:nth-child(4) {
+		transition-delay: 425ms
+	}
+
+	.mdx-expect__item:nth-child(5) {
+		transition-delay: .5s
+	}
+
+	.mdx-expect__item:nth-child(6) {
+		transition-delay: 575ms
+	}
+
+	.js .mdx-expect__item[hidden] {
+		opacity: 0;
+		transform: translate(-.8rem, .4rem)
+	}
+
+	.js .mdx-expect__item[hidden]:nth-child(2n) {
+		transform: translate(.8rem, .4rem)
+	}
+
+	.mdx-expect__icon {
+		fill: currentcolor;
+		background-color: var(--md-default-fg-color--lightest);
+		border-radius: 100%;
+		flex-shrink: 0;
+		height: 2.2rem;
+		padding: .6rem;
+		width: 2.2rem
+	}
+
+	.mdx-expect__description>:last-child {
+		margin-bottom: 0
+	}
+
+	@media screen and (max-width: 76.234375em) {
+		.mdx-expect__description>:last-child {
+			margin-left: -2.8rem
+		}
+	}
+
+	.card hr {
+		margin-left: auto;
+		margin-right: auto;
+		width: 5rem
+	}
+
+	.repo-card {
+		flex-grow: 1;
+		padding: 1rem;
+		min-height: 130px;
+		background-color: var(--md-primary-bg-color);
+	}
+</style>
+<div style="display: flex; flex-direction: column;">
+	<section class="tx-container tx-main-container">
+		<div class="md-grid md-typeset" style="min-height: inherit;">
+			<div class="tx-hero"
+				style="display: flex; flex-direction: column; justify-content: center; min-height: inherit;">
+				<div style="display: flex; justify-content: space-between; align-items: center;">
+					<div>
+						<h1>Kyverno Chainsaw</h1>
+						<h2><a href="https://kyverno.io">Kyverno</a> end to end testing tool !</h2>
+						<ul>
+							<li>Used internally to continuously test <a href="https://kyverno.io">Kyverno</a></li>
+							<li>Entirely low code and declarative</li>
+							<li>Provides an advanced and flexible assertion model</li>
+							<li>Run it locally or in your CI/CD pipelines</li>
+							<li>... and much more!</li>
+						</ul>
+						<a href="{{ page.next_page.url | url }}" title="{{ page.next_page.title | striptags }}"
+							class="md-button md-button--primary">
+							Get started
+						</a>
+						<a href="#everything-you-would-expect" class="md-button md-button--secondary">
+							Learn more
+						</a>
+					</div>
+					<div class="tx-hero__image">
+						<img src="static/kyverno-chainsaw-logo.png" alt="" draggable="false"
+							style="border-radius: 0.5rem; border: 1px solid #333; filter: drop-shadow(0 0 0.75rem #555);">
+					</div>
+				</div>
+				<div class="mdx-hero__more" style="text-align: center;">
+					<a href="#everything-you-would-expect">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+							style="height: 1.5rem; fill: currentColor;">
+							<path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"></path>
+						</svg>
+					</a>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="everything-you-would-expect" class="md-container tx-container" data-md-color-scheme="slate"
+		style="min-height: 100vh;">
+		<div class="md-content md-grid" data-md-component="content">
+			<div class="md-content__inner">
+				<header class="md-typeset">
+					<h1>
+						Everything you would expect
+						<a href="#everything-you-would-expect" class="headerlink" title="Permanent link"> ¶ </a>
+					</h1>
+				</header>
+				<div class="mdx-expect">
+					<ul class="mdx-expect__list">
+						<li class="mdx-expect__item md-typeset">
+							<div class="mdx-expect__icon">
+								{% include ".icons/fontawesome/solid/gear.svg" %}
+							</div>
+							<div class="mdx-expect__description">
+								<h2>Easy to install</h2>
+								<p>
+									Install locally using a package manager like brew or nix, or simply download the
+									binary from one of our
+									<a href="https://github.com/kyverno/chainsaw/releases">releases</a>.
+									If you want to run using a Docker image, we have that too.
+								</p>
+							</div>
+						</li>
+						<li class="mdx-expect__item md-typeset">
+							<div class="mdx-expect__icon">
+								{% include ".icons/fontawesome/solid/pen.svg" %}
+							</div>
+							<div class="mdx-expect__description">
+								<h2>Easy to use</h2>
+								<p>
+									Write tests in minutes, not hours. All it takes is a YAML file to define the steps
+									of a
+									test. Chainsaw will do the rest, no need to learn a programing language or write a
+									single line of code!
+								</p>
+							</div>
+						</li>
+						<li class="mdx-expect__item md-typeset">
+							<div class="mdx-expect__icon">
+								{% include ".icons/fontawesome/solid/flag-checkered.svg" %}
+							</div>
+							<div class="mdx-expect__description">
+								<h2>Comprehensive reporting</h2>
+								<p>
+									Understand and diagnose failures easily, thanks to a comprehensive output showing
+									precisely what failed and why.
+									Generate JUnit compatible reports to integrate with other test reporting tools.
+								</p>
+							</div>
+						</li>
+						<li class="mdx-expect__item md-typeset">
+							<div class="mdx-expect__icon">
+								{% include ".icons/fontawesome/solid/paint-roller.svg" %}
+							</div>
+							<div class="mdx-expect__description">
+								<h2>Resource templating</h2>
+								<p>
+									Kubernetes is all about resouces and tests need to work with resources.
+									Chainsaw has built-in support for bindings, operation outputs and resource
+									templating to
+									describe complex test scenarios.
+								</p>
+							</div>
+						</li>
+						<li class="mdx-expect__item md-typeset">
+							<div class="mdx-expect__icon">
+								{% include ".icons/fontawesome/solid/arrows-to-dot.svg" %}
+							</div>
+							<div class="mdx-expect__description">
+								<h2>Stay focused</h2>
+								<p>
+									Focus on the software you are building, write test scenarios using YAML and let
+									Chainsaw
+									tell you what passes or not. Integrate in your CI pipeline to prevent regressions
+									and
+									release with better confidence.
+								</p>
+							</div>
+						</li>
+						<li class="mdx-expect__item md-typeset">
+							<div class="mdx-expect__icon">
+								{% include ".icons/fontawesome/solid/boxes-stacked.svg" %}
+							</div>
+							<div class="mdx-expect__description">
+								<h2>Multi cluster</h2>
+								<p>
+									Native support for tests involving multiple clusters, either static or dynamically
+									created ones, make Chainsaw an excellent tool for testing highly complex
+									environments
+									and architectures.
+								</p>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="widely-adopted" class="tx-container" data-md-color-scheme="default" style="min-height: 100vh;">
+		<div class="md-content md-grid" data-md-component="content">
+			<div class="md-content__inner md-typeset">
+				<header class="md-typeset">
+					<h1>
+						Widely adopted
+						<a href="#widely-adopted" class="headerlink" title="Permanent link"> ¶ </a>
+					</h1>
+				</header>
+				<div class="grid">
+					<div class="card" style="display: flex; flex-direction: column;">
+						<p class="repo-card" data-repo="kyverno/kyverno"></p>
+						<hr>
+						<cite>
+							Running all end to end tests for both Kyverno and the policies catalog.
+						</cite>
+					</div>
+					<div class="card" style="display: flex; flex-direction: column;">
+						<p class="repo-card" data-repo="fairwindsops/rbac-manager"></p>
+						<hr>
+						<cite>
+							Chainsaw replaced and improved upon our bash test framework for testing the RbacDefinition CRD.
+						</cite>
+					</div>
+					<div class="card" style="display: flex; flex-direction: column;">
+						<p class="repo-card" data-repo="open-telemetry/opentelemetry-operator"></p>
+						<hr>
+						<cite>
+							Chainsaw cut down on hacks, improved code-reuse and enhanced test debugging.
+						</cite>
+					</div>
+					<div class="card" style="display: flex; flex-direction: column;">
+						<p class="repo-card" data-repo="grafana/grafana-operator"></p>
+						<hr>
+						<cite>
+							Chainsaw enabled easier e2e testing and CI debugging after replacing kuttl.
+						</cite>
+					</div>
+					<div class="card" style="display: flex; flex-direction: column;">
+						<p class="repo-card" data-repo="OT-CONTAINER-KIT/redis-operator"></p>
+						<hr>
+						<cite>
+							Chainsaw helped a lot for declarative assertion of Redis Cluster state against various e2e
+							test.
+						</cite>
+					</div>
+					<div class="card" style="display: flex; flex-direction: column;">
+						<p class="repo-card" data-repo="keptn/lifecycle-toolkit"></p>
+						<hr>
+						<cite>
+							Chainsaw replaced Kuttl, and helped us get rid of many unreadable bash scripts.
+						</cite>
+					</div>
+					<div class="card" style="display: flex; flex-direction: column;">
+						<p class="repo-card" data-repo="grafana/tempo-operator"></p>
+						<hr>
+						<cite>
+							Chainsaw cranked up the tempo, making our e2e tests dance to a rhythm of reliability and
+							efficiency.
+						</cite>
+					</div>
+					<div class="card" style="display: flex; flex-direction: column;">
+						<p class="repo-card" data-repo="linode/cluster-api-provider-linode"></p>
+						<hr>
+						<cite>
+							Chainsaw replaced Kuttl and made our e2e tests much more readable and easier to debug.
+						</cite>
+					</div>
+					<div class="card" style="display: flex; flex-direction: column;">
+						<p class="repo-card" data-repo="linode/provider-ceph"></p>
+						<hr>
+						<cite>
+							Chainsaw replaced Kuttl and made our e2e tests much more readable and easier to debug.
+						</cite>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<section id="video" class="tx-container" data-md-color-scheme="slate" style="min-height: 100vh;">
+		<div class="md-content md-grid" data-md-component="content">
+			<div class="md-content__inner md-typeset">
+				<header class="md-typeset">
+					<h1>
+						Discover Chainsaw in video
+						<a href="#video" class="headerlink" title="Permanent link"> ¶ </a>
+					</h1>
+					<h3>
+						Watch this excellent review video to discover the unique power of Chainsaw.
+					</h3>
+				</header>
+				<div style="display: flex; justify-content: center; margin-top: 2rem;">
+					<iframe width="960" height="540" src="https://www.youtube.com/embed/hQJWGzogIiI"
+						title="Mastering Kubernetes Testing with Kyverno Chainsaw!" frameborder="0"
+						allowfullscreen></iframe>
+				</div>
+			</div>
+	</section>
+</div>
+{% endblock %}
+{% block main %}{% endblock %}
+{% block content %}{% endblock %}
