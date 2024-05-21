@@ -2,26 +2,24 @@
 
 Release notes for `TODO`.
 
-<!--
 ## ‼️ Breaking changes ‼️
+
+- `finally` block now executes when the step terminates. It was supposed to work like this from the beginning but was not properly working. The `cleanup` block was introduced to execute operations when a test terminates instead.
 
 ## 💫 New features 💫
 
-## ✨ UI changes ✨
-
-## ⭐ Examples ⭐
-
-## ⛵ Tutorials ⛵
+- Added cleanup handlers support to register custom cleanup operations to run when a test terminates
 
 ## 🔧 Fixes 🔧
 
-## 🎸 Misc 🎸
--->
+- Use `namespaceTemplate` from configuration if provided
 
 ## 📚 Docs 📚
 
-- Improved home page a lot
+- Improved home page
 - Added scroll to top button
 - Improved navigation bar
-- Fixed dark/light and added system preference support
-- Added links to slack and twitter links in footer
+- Fixed dark/light color schemes and added system preference support
+- Added links to Slack and X/Twitter links in the footer
+- Removed the blog
+- Rewrote most of the Getting Started pages
