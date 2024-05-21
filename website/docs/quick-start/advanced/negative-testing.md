@@ -5,7 +5,7 @@ Negative testing is the process of testing cases that are supposed to fail. That
 Chainsaw supports negative testing by letting you decide what should be considered an error or not.
 
 !!! tip
-    By default, Chainsaw will consider an operation failed if there was an error executing it (non zero exit code in scripts and commands, error returned by the API server when calling into Kubernetes, etc...).
+    By default, Chainsaw will consider an operation failed if there was an error executing it (non-zero exit code in scripts and commands, error returned by the API server when calling into Kubernetes, etc...).
 
 ## Script case
 
@@ -29,7 +29,7 @@ spec:
 
 If for whatever reason, the `kubectl get foo` doesn't return an error, or the message received in standard error output is not `error: the server doesn't have a resource type "foo"`, Chainsaw will consider the operation failed.
 
-If it returns an error and the expected error message, Chainsaw will consider the operation was successful.
+If it returns an error and the expected error message, Chainsaw will consider the operation successful.
 
 ## Working with resources
 
@@ -53,11 +53,11 @@ spec:
 
 If applying the resource succeeded, Chainsaw will consider the operation failed.
 
-On the other hand, if applying the resource failed, Chainsaw will consider the operation to be successful.
+On the other hand, if applying the resource fails, Chainsaw will consider the operation to be successful.
 
 ## Resource matching
 
-In the previous example, if the `resources.yaml` contains multiple resources, only some of them may be expected to fail.
+In the previous example, if the `resources.yaml` contains multiple resources, but only some of them may be expected to fail.
 
 Chainsaw allows matching resources when evaluating checks:
 
