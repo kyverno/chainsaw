@@ -1,11 +1,68 @@
 # Use assertions
 
-Whether verifying the scaling behavior of a database cluster or ensuring data consistency across instances, Chainsaw's assertion model provides the precision and flexibility needed for comprehensive validation.
-
 Chainsaw allows declaring complex assertions with a simple and no-code approach, allowing assertions based on comparisons beyond simple equality, working with arrays, and other scenarios that could not be achieved before.
 
 !!! tip
     Under the hood, Chainsaw uses [kyverno-json assertion trees](https://kyverno.github.io/kyverno-json/latest/intro/). Refer to the assertion trees documentation for more details on the supported syntax.
+
+## Basic assertion
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
+    - assert:
+        resource:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: coredns
+            namespace: kube-system
+          spec:
+            replicas: 2
+```
+
+When asking Chainsaw to execute the assertion above, it will look for a deployment named `coredns` in the `kube-system` namespace and will compare the existing resource with the (partial) resource definition contained in the assertion.
+
+In this specific case, if the field `spec.replicas` is set to 2 in the existing resource, the assertion will be considered valid.
+If it is not equal to 2 the assertion will be considered failed.
+
+This is the most basic assertion Chainsaw can evaluate.
+
+## Slightly less basic assertion
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
+    - assert:
+        resource:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            labels:
+              k8s-app: kube-dns
+            namespace: kube-system
+          spec:
+            replicas: 2
+```
+
+This time we are not providing a resource name.
+
+Chainsaw will look up **all** deployments with the `k8s-app: kube-dns` label in the `kube-system` namespace.
+The assertion will be considered valid if **at least one** deployment matches the (partial) resource definition contained in the assertion.
+If none match, the assertion will be considered failed.
+
+Apart from the resource lookup process being a little bit more interesting, this kind of assertion is essentially the same as the previous one.
+Chainsaw is basically making a decision by comparing an actual and expected resource.
 
 ## Beyond simple equality
 
@@ -33,6 +90,13 @@ spec:
             (replicas > `3` && replicas < `6`): true
     # ...
 ```
+
+!!! tip
+    To indicate that a key or value in the YAML document is an expression, simply place the element between parentheses:
+
+    - `this is an expression` -> interpreted as a `string`
+    - `(this is an expression)` -> interpreted as a JMESPath expression
+
 
 ## Working with arrays
 
@@ -76,6 +140,38 @@ spec:
             (conditions[?type == 'Ready']):
             - status: 'True'
 ```
+
+### Iterating
+
+Being able to filter arrays allows selecting the elements to be processed.
+
+On top of that, Chainsaw allows iterating over array elements to validate each item separately.
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
+    - assert:
+        resource:
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            labels:
+              k8s-app: kube-dns
+            namespace: kube-system
+          spec:
+            template:
+              spec:
+                # the `~` modifier tells Chainsaw to iterate over the array elements
+                ~.(containers):
+                  securityContext: {}
+```
+
+This assertion uses the `~` modifier and Chainsaw will evaluate descendants once per element in the array.
 
 ## Comprehensive reporting
 
