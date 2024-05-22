@@ -52,7 +52,7 @@ auto_generated: true
 | `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
 | `cleanup` | [`Cleanup`](#chainsaw-kyverno-io-v1alpha2-Cleanup) |  |  | <p>Cleanup contains cleanup configuration.</p> |
 | `clusters` | [`map[string]Cluster`](#chainsaw-kyverno-io-v1alpha1-Cluster) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `discovery` | [`Discovery`](#chainsaw-kyverno-io-v1alpha2-Discovery) | :white_check_mark: |  | <p>Discovery contains tests discovery configuration.</p> |
+| `discovery` | [`Discovery`](#chainsaw-kyverno-io-v1alpha2-Discovery) |  |  | <p>Discovery contains tests discovery configuration.</p> |
 | `execution` | [`Execution`](#chainsaw-kyverno-io-v1alpha2-Execution) |  |  | <p>Execution contains tests execution configuration.</p> |
 | `namespace` | [`Namespace`](#chainsaw-kyverno-io-v1alpha2-Namespace) |  |  | <p>Namespace contains properties for the namespace to use for tests.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation.</p> |

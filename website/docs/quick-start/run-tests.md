@@ -32,7 +32,7 @@ Loading default configuration...
 - SkipDelete false
 - FailFast false
 - ReportFormat ''
-- ReportName 'chainsaw-report'
+- ReportName ''
 - Namespace ''
 - FullName false
 - IncludeTestRegex ''
