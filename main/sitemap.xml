@@ -236,11 +236,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/more/events/</loc>
-         <lastmod>2024-05-22</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/more/kuttl-migration/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
@@ -407,6 +402,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/crds/</loc>
+         <lastmod>2024-05-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/events/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
