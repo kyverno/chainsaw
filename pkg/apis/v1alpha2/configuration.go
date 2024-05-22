@@ -39,7 +39,8 @@ type ConfigurationSpec struct {
 
 	// Discovery contains tests discovery configuration.
 	// +optional
-	Discovery *Discovery `json:"discovery,omitempty"`
+	// +kubebuilder:default:={}
+	Discovery Discovery `json:"discovery"`
 
 	// Execution contains tests execution configuration.
 	// +optional

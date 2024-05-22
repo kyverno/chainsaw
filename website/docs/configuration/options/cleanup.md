@@ -1,4 +1,6 @@
-# Delay before cleanup
+# Cleanup options
+
+## Delay before cleanup
 
 At the end of each test, Chainsaw will delete the resources it created during the test.
 
@@ -24,3 +26,5 @@ spec:
 ```bash
 chainsaw test --delay-before-cleanup 5s ...
 ```
+
+TODO: skipDelete

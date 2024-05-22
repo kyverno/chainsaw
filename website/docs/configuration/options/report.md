@@ -1,4 +1,4 @@
-# Reports
+# Reporting options
 
 Chainsaw can generate JUnit reports in `XML` or `JSON` format.
 

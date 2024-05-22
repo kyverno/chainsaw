@@ -97,11 +97,7 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 			(*out)[key] = val
 		}
 	}
-	if in.Discovery != nil {
-		in, out := &in.Discovery, &out.Discovery
-		*out = new(Discovery)
-		**out = **in
-	}
+	out.Discovery = in.Discovery
 	if in.Execution != nil {
 		in, out := &in.Execution, &out.Execution
 		*out = new(Execution)

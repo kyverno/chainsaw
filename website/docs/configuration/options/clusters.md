@@ -1,4 +1,4 @@
-# Multi cluster
+# Multi cluster options
 
 Chainsaw supports testing against multiple clusters.
 

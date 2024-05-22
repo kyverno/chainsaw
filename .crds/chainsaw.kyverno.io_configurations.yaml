@@ -1566,6 +1566,7 @@ spec:
                 - Foreground
                 type: string
               discovery:
+                default: {}
                 description: Discovery contains tests discovery configuration.
                 properties:
                   excludeTestRegex:
