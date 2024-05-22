@@ -36,8 +36,8 @@ type Discovery struct {
 
 	// TestFile is the name of the file containing the test to run.
 	// If no extension is provided, chainsaw will try with .yaml first and .yml if needed.
-	// +kubebuilder:default:="chainsaw-test"
 	// +optional
+	// +kubebuilder:default:="chainsaw-test"
 	TestFile string `json:"testFile,omitempty"`
 
 	// FullName makes use of the full test case folder path instead of the folder name.

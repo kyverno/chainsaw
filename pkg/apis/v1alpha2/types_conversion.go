@@ -13,12 +13,10 @@ func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *Config
 		out.SkipDelete = in.SkipDelete
 		out.DelayBeforeCleanup = in.DelayBeforeCleanup
 	}
-	if in := in.Discovery; in != nil {
-		out.ExcludeTestRegex = in.ExcludeTestRegex
-		out.IncludeTestRegex = in.IncludeTestRegex
-		out.TestFile = in.TestFile
-		out.FullName = in.FullName
-	}
+	out.ExcludeTestRegex = in.Discovery.ExcludeTestRegex
+	out.IncludeTestRegex = in.Discovery.IncludeTestRegex
+	out.TestFile = in.Discovery.TestFile
+	out.FullName = in.Discovery.FullName
 	if in := in.Execution; in != nil {
 		out.FailFast = in.FailFast
 		out.Parallel = in.Parallel
@@ -48,7 +46,7 @@ func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alph
 		SkipDelete:         in.SkipDelete,
 		DelayBeforeCleanup: in.DelayBeforeCleanup,
 	}
-	out.Discovery = &Discovery{
+	out.Discovery = Discovery{
 		ExcludeTestRegex: in.ExcludeTestRegex,
 		IncludeTestRegex: in.IncludeTestRegex,
 		TestFile:         in.TestFile,
