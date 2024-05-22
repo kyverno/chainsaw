@@ -49,6 +49,12 @@ type ConfigurationSpec struct {
 	// +optional
 	Namespace *Namespace `json:"namespace,omitempty"`
 
+	// DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
+	// the object, and how the garbage collector will handle the propagation.
+	// +optional
+	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
+	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
+
 	// Report contains properties for the report.
 	// +optional
 	Report *Report `json:"report,omitempty"`

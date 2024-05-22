@@ -1,5 +1,7 @@
 package v1alpha1
 
+import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 // TestStepSpec defines the desired state and behavior for each test step.
 type TestStepSpec struct {
 	// Description contains a description of the test step.
@@ -9,6 +11,13 @@ type TestStepSpec struct {
 	// Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.
 	// +optional
 	Timeouts *Timeouts `json:"timeouts,omitempty"`
+
+	// DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
+	// the object, and how the garbage collector will handle the propagation.
+	// Overrides the deletion propagation policy set in both the Configuration and the Test.
+	// +optional
+	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
+	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
 
 	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
 	// +optional

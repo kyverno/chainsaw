@@ -55,6 +55,7 @@ auto_generated: true
 | `discovery` | [`Discovery`](#chainsaw-kyverno-io-v1alpha2-Discovery) |  |  | <p>Discovery contains tests discovery configuration.</p> |
 | `execution` | [`Execution`](#chainsaw-kyverno-io-v1alpha2-Execution) |  |  | <p>Execution contains tests execution configuration.</p> |
 | `namespace` | [`Namespace`](#chainsaw-kyverno-io-v1alpha2-Namespace) |  |  | <p>Namespace contains properties for the namespace to use for tests.</p> |
+| `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation.</p> |
 | `report` | [`Report`](#chainsaw-kyverno-io-v1alpha2-Report) |  |  | <p>Report contains properties for the report.</p> |
 | `templating` | [`Templating`](#chainsaw-kyverno-io-v1alpha2-Templating) |  |  | <p>Templating contains the templating config.</p> |
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |

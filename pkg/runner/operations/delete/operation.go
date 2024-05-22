@@ -22,11 +22,12 @@ import (
 )
 
 type operation struct {
-	client     client.Client
-	base       unstructured.Unstructured
-	namespacer namespacer.Namespacer
-	template   bool
-	expect     []v1alpha1.Expectation
+	client            client.Client
+	base              unstructured.Unstructured
+	namespacer        namespacer.Namespacer
+	template          bool
+	expect            []v1alpha1.Expectation
+	propagationPolicy metav1.DeletionPropagation
 }
 
 func New(
@@ -34,14 +35,16 @@ func New(
 	obj unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
 	template bool,
+	propagationPolicy metav1.DeletionPropagation,
 	expect ...v1alpha1.Expectation,
 ) operations.Operation {
 	return &operation{
-		client:     client,
-		base:       obj,
-		namespacer: namespacer,
-		template:   template,
-		expect:     expect,
+		client:            client,
+		base:              obj,
+		namespacer:        namespacer,
+		template:          template,
+		expect:            expect,
+		propagationPolicy: propagationPolicy,
 	}
 }
 
@@ -113,7 +116,7 @@ func (o *operation) deleteResources(ctx context.Context, bindings binding.Bindin
 }
 
 func (o *operation) deleteResource(ctx context.Context, resource unstructured.Unstructured) error {
-	if err := o.client.Delete(ctx, &resource, ctrlclient.PropagationPolicy(metav1.DeletePropagationBackground)); err != nil {
+	if err := o.client.Delete(ctx, &resource, ctrlclient.PropagationPolicy(o.propagationPolicy)); err != nil {
 		if kerrors.IsNotFound(err) {
 			return nil
 		}

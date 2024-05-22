@@ -540,6 +540,18 @@
                       }
                     }
                   },
+                  "deletionPropagationPolicy": {
+                    "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in the Configuration, the Test and the TestStep.",
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "Orphan",
+                      "Background",
+                      "Foreground"
+                    ]
+                  },
                   "expect": {
                     "description": "Expect defines a list of matched checks to validate the operation outcome.",
                     "type": [
@@ -1389,6 +1401,18 @@
           "type": [
             "string",
             "null"
+          ]
+        },
+        "deletionPropagationPolicy": {
+          "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Orphan",
+            "Background",
+            "Foreground"
           ]
         },
         "excludeTestRegex": {
