@@ -13,7 +13,7 @@ The test below expects the `$value.foo` to be provided when chainsaw is invoked.
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: values
+  name: example
 spec:
   steps:
   - try:
