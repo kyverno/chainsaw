@@ -81,7 +81,6 @@ nav:
     - more/lint.md
     - more/test-docs.md
     - more/kuttl-migration.md
-    - Examples: examples/index.md
 - Reference:
   - reference/index.md
   - Command Line:
@@ -112,7 +111,4 @@ nav:
     - v1alpha1: apis/chainsaw.v1alpha1.md
     - v1alpha2: apis/chainsaw.v1alpha2.md
   - json-schemas.md
-- Examples:
-  - examples/index.md
-  - examples/array-assertions.md
 - Community: community/index.md
