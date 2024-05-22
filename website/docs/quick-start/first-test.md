@@ -1,4 +1,4 @@
-# Create a Test
+# Create a test
 
 To create a chainsaw test all you need to do is to create one (or more) YAML file(s).
 
