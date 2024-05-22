@@ -1,4 +1,4 @@
-# What is a test
+# What is a test?
 
 To put it simply, a test can be represented as **an ordered sequence of [test steps](../steps/index.md)**.
 
