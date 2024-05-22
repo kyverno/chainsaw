@@ -186,7 +186,27 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/cleanup-delay/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/cleanup/</loc>
+         <lastmod>2024-05-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/clusters/</loc>
+         <lastmod>2024-05-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/discovery/</loc>
+         <lastmod>2024-05-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/error/</loc>
+         <lastmod>2024-05-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/execution/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -196,7 +216,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/multi-cluster/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/namespace/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -206,12 +226,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/reports/</loc>
-         <lastmod>2024-05-22</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/selector/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/report/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
