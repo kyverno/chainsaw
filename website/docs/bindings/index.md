@@ -18,7 +18,7 @@ Effectively, the last one registered in the chain will be used.
 
 A binding `name` supports templating.
 
-The name of a binding can therefore be dynamic and depend on [values](../configuration/options/values.md) or other bindings.
+The name of a binding can therefore be dynamic and depend on [values](../quick-start/advanced/values.md) or other bindings.
 
 ## Usage
 

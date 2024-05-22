@@ -1,5 +1,28 @@
 # Cleanup options
 
+Cleanup contains the cleanup configuration.
+
+## Supported elements
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running a test.</p> |
+| `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
+
+## Configuration
+
+### With file
+
+```yaml
+```
+
+### With flags
+
+```bash
+```
+
+
+
 ## Delay before cleanup
 
 At the end of each test, Chainsaw will delete the resources it created during the test.

@@ -1,11 +1,11 @@
-# Passing data to tests
+# Pass data to tests
 
 Chainsaw can pass arbitrary values when running tests using the `--values` flag.
 Values will be available to tests under the `$values` binding.
 
 This is useful when a test needs to be configured externally.
 
-## Example
+## Reference external data
 
 The test below expects the `$value.foo` to be provided when chainsaw is invoked.
 
@@ -22,17 +22,23 @@ spec:
           ($values.foo): bar
 ```
 
-Now you can invoke chainsaw like this:
+## Invoking Chainsaw
+
+### Read values from a file
 
 ```bash
-# pass object { "foo": "bar" } as values to the executed tests
-# `--values -` means values are read from standard input
-echo "foo: bar" | chainsaw test --values -
-
-# read values from a file
 chainsaw test --values ./values.yaml
+```
 
-# pass values using heredoc
+### Read from stdin
+
+```bash
+echo "foo: bar" | chainsaw test --values -
+```
+
+### Use heredoc
+
+```bash
 chainsaw test --values - <<EOF
 foo: bar
 EOF

@@ -27,5 +27,4 @@ Please pay attention to the configuration options below, they may or may not be 
 TODO
 
 - [Termination graceful period](./options/grace.md)
-- [Passing arbitrary values to tests](./options/values.md)
 - [Running without a cluster](./options/no-cluster.md)

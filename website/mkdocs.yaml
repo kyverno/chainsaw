@@ -27,6 +27,7 @@ nav:
     - quick-start/advanced/non-resource-assertions.md
     - quick-start/advanced/test-output.md
     - quick-start/advanced/label-selectors.md
+    - quick-start/advanced/values.md
     - quick-start/advanced/multi-cluster.md
   - gh-action.md
 - Configuration:
@@ -45,7 +46,6 @@ nav:
     - configuration/options/clusters.md
     # TODO
     - configuration/options/grace.md
-    - configuration/options/values.md
     - configuration/options/no-cluster.md
 - Test:
   - tests/index.md

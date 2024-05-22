@@ -1,5 +1,35 @@
 # Templating options
 
+Templating contains the templating configuration.
+
+## Supported elements
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `enabled` | `bool` |  |  | <p>Enabled determines whether resources should be considered for templating.</p> |
+
+## Configuration
+
+### With file
+
+```yaml
+```
+
+### With flags
+
+```bash
+```
+
+
+
+
+
+
+
+
+
+
+
 !!! warning "Experimental status"
     This is an **experimental feature**, and implementation could change slightly in the next versions.
 

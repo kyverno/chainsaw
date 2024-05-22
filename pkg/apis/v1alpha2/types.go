@@ -24,7 +24,7 @@ type Cleanup struct {
 	DelayBeforeCleanup *metav1.Duration `json:"delayBeforeCleanup,omitempty"`
 }
 
-// Discovery contains the tests discovery configuration.
+// Discovery options contain the discovery configuration used when discovering tests in folders.
 type Discovery struct {
 	// ExcludeTestRegex is used to exclude tests based on a regular expression.
 	// +optional
@@ -45,7 +45,7 @@ type Discovery struct {
 	FullName bool `json:"fullName,omitempty"`
 }
 
-// Execution contains the runner configuration.
+// Execution options determine how tests are run.
 type Execution struct {
 	// FailFast determines whether the test should stop upon encountering the first failure.
 	// +optional

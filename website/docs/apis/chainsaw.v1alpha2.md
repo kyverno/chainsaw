@@ -66,7 +66,7 @@ auto_generated: true
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Discovery contains the tests discovery configuration.</p>
+<p>Discovery options contain the discovery configuration used when discovering tests in folders.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -82,7 +82,7 @@ auto_generated: true
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Execution contains the runner configuration.</p>
+<p>Execution options determine how tests are run.</p>
 
 
 | Field | Type | Required | Inline | Description |
