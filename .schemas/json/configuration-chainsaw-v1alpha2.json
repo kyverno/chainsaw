@@ -275,6 +275,9 @@
         "object",
         "null"
       ],
+      "required": [
+        "discovery"
+      ],
       "properties": {
         "catch": {
           "description": "Catch defines what the tests steps will execute when an error happens.\nThis will be combined with catch handlers defined at the test and step levels.",
@@ -1433,10 +1436,7 @@
         },
         "discovery": {
           "description": "Discovery contains tests discovery configuration.",
-          "type": [
-            "object",
-            "null"
-          ],
+          "type": "object",
           "properties": {
             "excludeTestRegex": {
               "description": "ExcludeTestRegex is used to exclude tests based on a regular expression.",
