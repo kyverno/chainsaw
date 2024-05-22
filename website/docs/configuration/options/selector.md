@@ -12,7 +12,7 @@ Given the test below:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: basic
+  name: example
   labels:
     foo: bar
 spec:
