@@ -21,7 +21,6 @@ nav:
     - quick-start/advanced/inline.md
     - quick-start/advanced/negative-testing.md
     - quick-start/advanced/crds.md
-    - quick-start/advanced/cluster-wide-resources.md
     - quick-start/advanced/concurrency.md
     - quick-start/advanced/kube-version.md
     - quick-start/advanced/non-resource-assertions.md

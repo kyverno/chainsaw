@@ -52,6 +52,7 @@ theme:
   - search.share
   - content.code.copy
   - content.action.edit
+  - content.action.view
   - navigation.footer
   - navigation.tracking
   - navigation.tabs
