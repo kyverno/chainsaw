@@ -21,6 +21,7 @@ nav:
     - quick-start/advanced/inline.md
     - quick-start/advanced/negative-testing.md
     - quick-start/advanced/crds.md
+    - quick-start/advanced/events.md
     - quick-start/advanced/concurrency.md
     - quick-start/advanced/kube-version.md
     - quick-start/advanced/non-resource-assertions.md
@@ -42,11 +43,11 @@ nav:
     - configuration/options/multi-cluster.md
     - configuration/options/templating.md
     - configuration/options/no-cluster.md
+- Test:
+  - tests/index.md
+  - tests/manifests-based.md
+  - tests/test-based.md
 - Writing tests:
-  - Tests:
-    - tests/index.md
-    - tests/manifests-based.md
-    - tests/test-based.md
   - Test steps:
     - steps/index.md
     - steps/try.md
@@ -78,7 +79,6 @@ nav:
     - bindings/index.md
     - bindings/outputs.md
   - Other resources:
-    - more/events.md
     - more/lint.md
     - more/test-docs.md
     - more/kuttl-migration.md

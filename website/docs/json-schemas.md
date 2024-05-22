@@ -2,8 +2,9 @@
 
 JSON schemas for Chainsaw resources are available to enable validation and autocompletion in your IDE:
 
-- [Configuration](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/configuration-chainsaw-v1alpha1.json)
-- [Test](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/test-chainsaw-v1alpha1.json)
+- [Configuration (v1alpha1)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/configuration-chainsaw-v1alpha1.json)
+- [Configuration (v1alpha2)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/configuration-chainsaw-v1alpha2.json)
+- [Test (v1alpha1)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/test-chainsaw-v1alpha1.json)
 
 ## VS code
 
@@ -40,22 +41,9 @@ spec:
   forceTerminationGracePeriod: 5s
 ```
 
-## Applying CRDs
-
-An alternative is to apply the Chainsaw CRDs in a kubernetes cluster and let the Kubernetes extension do the rest.
-
-CRD definitions are provided in our [GitHub repository](https://github.com/kyverno/chainsaw/tree/main/config/crds).
-
-The command below will apply the Chainsaw CRDs to the configured cluster:
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/kyverno/chainsaw/main/config/crds/chainsaw.kyverno.io_configurations.yaml
-kubectl apply -f https://raw.githubusercontent.com/kyverno/chainsaw/main/config/crds/chainsaw.kyverno.io_tests.yaml
-```
-
 ## Exporting schemas
 
-Chainsaw can export JSON schemas locally.
+Chainsaw can also export JSON schemas locally if you don't want to reference them from GitHub:
 
 ```bash
 chainsaw export schemas <local path>
