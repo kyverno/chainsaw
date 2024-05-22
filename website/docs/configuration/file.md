@@ -21,7 +21,7 @@ Chainsaw prioritizes its configuration in the following order:
 ## Example
 
 ```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
+apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
   name: example
@@ -57,7 +57,7 @@ chainsaw test --config path/to/your/config.yaml
 The default configuration below is used by Chainsaw when no configuration file was provided and the default file `.chainsaw.yaml` does not exist.
 
 ```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
+apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
   name: default

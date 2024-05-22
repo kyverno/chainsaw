@@ -7,7 +7,7 @@ To produce a test report, configure the report format, report path and report na
 ## Configuration
 
 ```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
+apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
   name: example

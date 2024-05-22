@@ -13,7 +13,7 @@ Since `v0.2.1` you can also register clusters dynamically at the test, step and 
 Chainsaw configuration file has a `clusters` field you can use to register existing clusters. Clusters are registered by name, and point to a kubeconfig file and an optional context name.
 
 ```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
+apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
   name: example
