@@ -50,6 +50,7 @@ type options struct {
 	reportPath                  string
 	reportName                  string
 	namespace                   string
+	deletionPropagationPolicy   string
 	fullName                    bool
 	excludeTestRegex            string
 	includeTestRegex            string
@@ -152,6 +153,10 @@ func Command() *cobra.Command {
 			}
 			if flagutils.IsSet(flags, "namespace") {
 				configuration.Spec.Namespace = options.namespace
+			}
+			if flagutils.IsSet(flags, "deletion-propagation-policy") {
+				deletionPropagationPolicy := metav1.DeletionPropagation(options.deletionPropagationPolicy)
+				configuration.Spec.DeletionPropagationPolicy = &deletionPropagationPolicy
 			}
 			if flagutils.IsSet(flags, "full-name") {
 				configuration.Spec.FullName = options.fullName
@@ -327,6 +332,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create")
 	cmd.Flags().StringVar(&options.reportPath, "report-path", "", "The path of the report to create")
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests")
+	cmd.Flags().StringVar(&options.deletionPropagationPolicy, "deletion-propagation-policy", "Foreground", "The deletion propagation policy (Foreground|Background|Orphan)")
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name")
 	cmd.Flags().StringVar(&options.includeTestRegex, "include-test-regex", "", "Regular expression to include tests")
 	cmd.Flags().StringVar(&options.excludeTestRegex, "exclude-test-regex", "", "Regular expression to exclude tests")

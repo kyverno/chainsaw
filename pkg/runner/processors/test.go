@@ -26,6 +26,7 @@ import (
 	"github.com/kyverno/pkg/ext/output/color"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/clock"
 )
 
@@ -178,7 +179,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 							timeout.Get(nil, p.timeouts.CleanupDuration()),
 							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 								bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
-								return opdelete.New(clusterClient, object, nspacer, false), bindings, nil
+								return opdelete.New(clusterClient, object, nspacer, false, metav1.DeletePropagationBackground), bindings, nil
 							},
 							nil,
 						)

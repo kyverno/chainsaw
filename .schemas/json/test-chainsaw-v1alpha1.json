@@ -572,6 +572,18 @@
                       }
                     }
                   },
+                  "deletionPropagationPolicy": {
+                    "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in the Configuration, the Test and the TestStep.",
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "enum": [
+                      "Orphan",
+                      "Background",
+                      "Foreground"
+                    ]
+                  },
                   "expect": {
                     "description": "Expect defines a list of matched checks to validate the operation outcome.",
                     "type": [
@@ -1437,6 +1449,18 @@
             "null"
           ]
         },
+        "deletionPropagationPolicy": {
+          "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in the Configuration.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Orphan",
+            "Background",
+            "Foreground"
+          ]
+        },
         "description": {
           "description": "Description contains a description of the test.",
           "type": [
@@ -1781,6 +1805,18 @@
                               }
                             }
                           }
+                        },
+                        "deletionPropagationPolicy": {
+                          "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in the Configuration, the Test and the TestStep.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "Orphan",
+                            "Background",
+                            "Foreground"
+                          ]
                         },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
@@ -2860,6 +2896,18 @@
                             }
                           }
                         },
+                        "deletionPropagationPolicy": {
+                          "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in the Configuration, the Test and the TestStep.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "Orphan",
+                            "Background",
+                            "Foreground"
+                          ]
+                        },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
                           "type": [
@@ -3711,6 +3759,18 @@
                   }
                 }
               },
+              "deletionPropagationPolicy": {
+                "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in both the Configuration and the Test.",
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "Orphan",
+                  "Background",
+                  "Foreground"
+                ]
+              },
               "description": {
                 "description": "Description contains a description of the test step.",
                 "type": [
@@ -3981,6 +4041,18 @@
                               }
                             }
                           }
+                        },
+                        "deletionPropagationPolicy": {
+                          "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in the Configuration, the Test and the TestStep.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "Orphan",
+                            "Background",
+                            "Foreground"
+                          ]
                         },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
@@ -5572,6 +5644,18 @@
                               }
                             }
                           }
+                        },
+                        "deletionPropagationPolicy": {
+                          "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in the Configuration, the Test and the TestStep.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "Orphan",
+                            "Background",
+                            "Foreground"
+                          ]
                         },
                         "expect": {
                           "description": "Expect defines a list of matched checks to validate the operation outcome.",
