@@ -486,6 +486,16 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Delete ", report.OperationTypeDelete)
 	}
+	deletionPropagationPolicy := metav1.DeletePropagationForeground
+	if op.DeletionPropagationPolicy != nil {
+		deletionPropagationPolicy = *op.DeletionPropagationPolicy
+	} else if p.step.DeletionPropagationPolicy != nil {
+		deletionPropagationPolicy = *p.step.DeletionPropagationPolicy
+	} else if p.test.Spec.DeletionPropagationPolicy != nil {
+		deletionPropagationPolicy = *p.test.Spec.DeletionPropagationPolicy
+	} else if p.config.DeletionPropagationPolicy != nil {
+		deletionPropagationPolicy = *p.config.DeletionPropagationPolicy
+	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
@@ -501,7 +511,7 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 				return nil, nil, err
 			}
 			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-			return opdelete.New(client, resource, p.namespacer, template, op.Expect...), bindings, nil
+			return opdelete.New(client, resource, p.namespacer, template, deletionPropagationPolicy, op.Expect...), bindings, nil
 		},
 		operationReport,
 		op.Bindings...,

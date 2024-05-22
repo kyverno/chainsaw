@@ -341,6 +341,11 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		*out = new(int)
 		**out = **in
 	}
+	if in.DeletionPropagationPolicy != nil {
+		in, out := &in.DeletionPropagationPolicy, &out.DeletionPropagationPolicy
+		*out = new(v1.DeletionPropagation)
+		**out = **in
+	}
 	if in.NamespaceTemplate != nil {
 		in, out := &in.NamespaceTemplate, &out.NamespaceTemplate
 		*out = (*in).DeepCopy()
@@ -481,6 +486,11 @@ func (in *Delete) DeepCopyInto(out *Delete) {
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
+	}
+	if in.DeletionPropagationPolicy != nil {
+		in, out := &in.DeletionPropagationPolicy, &out.DeletionPropagationPolicy
+		*out = new(v1.DeletionPropagation)
+		**out = **in
 	}
 	return
 }
@@ -1280,6 +1290,11 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		*out = new(v1.Duration)
 		**out = **in
 	}
+	if in.DeletionPropagationPolicy != nil {
+		in, out := &in.DeletionPropagationPolicy, &out.DeletionPropagationPolicy
+		*out = new(v1.DeletionPropagation)
+		**out = **in
+	}
 	return
 }
 
@@ -1317,6 +1332,11 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 		in, out := &in.Timeouts, &out.Timeouts
 		*out = new(Timeouts)
 		(*in).DeepCopyInto(*out)
+	}
+	if in.DeletionPropagationPolicy != nil {
+		in, out := &in.DeletionPropagationPolicy, &out.DeletionPropagationPolicy
+		*out = new(v1.DeletionPropagation)
+		**out = **in
 	}
 	if in.Clusters != nil {
 		in, out := &in.Clusters, &out.Clusters

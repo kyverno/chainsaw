@@ -16,6 +16,7 @@ chainsaw test [flags]... [test directories]...
       --cluster strings                           Register cluster (format <cluster name>=<kubeconfig path>:[context name])
       --config string                             Chainsaw configuration file
       --delete-timeout duration                   The delete timeout to use as default for configuration (default 15s)
+      --deletion-propagation-policy string        The deletion propagation policy (Foreground|Background|Orphan) (default "Foreground")
       --error-timeout duration                    The error timeout to use as default for configuration (default 30s)
       --exclude-test-regex string                 Regular expression to exclude tests
       --exec-timeout duration                     The exec timeout to use as default for configuration (default 5s)
