@@ -1,5 +1,4 @@
 # Advanced use cases
 
-This section is under construction and should be ready soon. Please check again in a few days.
-
-If you are interested in contributing see the [tracking issue](https://github.com/kyverno/chainsaw/issues/1327).
+!!! info
+    Select an item in the navigation menu to browse a specific page.
