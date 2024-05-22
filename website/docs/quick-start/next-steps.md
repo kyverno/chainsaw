@@ -12,7 +12,6 @@ To continue exploring the capabilities of Chainsaw:
 - [Browse advanced use case guides](./advanced/index.md)
 - [Look at the Chainsaw configuration options](../configuration/index.md)
 - [Consult the reference documentation](../reference/index.md)
-- [Familiarize yourself with our examples](../examples/index.md)
 - [Engage with our community and start contributing](../community/index.md)
 
 ---
