@@ -84,6 +84,7 @@ nav:
     - more/kuttl-migration.md
 - Reference:
   - reference/index.md
+  - reference/bindings.md
   - Command Line:
     - commands/chainsaw.md
     - commands/chainsaw_assert.md
