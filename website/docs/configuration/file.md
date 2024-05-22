@@ -33,9 +33,11 @@ spec:
     delete: 25s
     error: 10s
     exec: 45s
-  skipDelete: false
-  failFast: true
-  parallel: 4
+  cleanup:
+    skipDelete: false
+  execution:
+    failFast: true
+    parallel: 4
   # ...
 ```
 
@@ -66,4 +68,4 @@ spec: {}
 
 ## Reference documentation
 
-See [Configuration API reference](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Configuration) for more details.
+See [Configuration API reference](../apis/chainsaw.v1alpha2.md#chainsaw-kyverno-io-v1alpha2-Configuration) for more details.
