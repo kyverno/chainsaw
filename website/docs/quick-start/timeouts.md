@@ -12,7 +12,7 @@ Timeouts can be configured globally and at the test, step or individual operatio
 All timeouts configured at a given level are automatically inherited in child levels. When looking up a timeout, the most specific one takes precedence over the others.
 
 !!! info
-    To learn more about timeouts and how to configure global values, see the [timeouts configuration](../configuration/timeouts.md) page.
+    To learn more about timeouts and how to configure global values, see the [timeouts configuration](../configuration/options/timeouts.md) page.
 
 ## At the test level
 
