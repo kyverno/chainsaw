@@ -1,6 +1,10 @@
 # Command line flags
 
-Even after a [configuration file](./file.md) is loaded, you can override specific settings using command-line flags.
+After a [configuration file](./file.md) is loaded, you can override specific settings using command-line flags.
+
+## Reference documentation
+
+See [Chainsaw test command reference](../commands/chainsaw_test.md#options) for the list of all available flags.
 
 ## Example
 
@@ -17,14 +21,30 @@ chainsaw test                         \
 
 In this example, Chainsaw will load a configuration file but the timeout configuration and other settings will be overridden by the values set in the flags, regardless of the value in the loaded configuration file.
 
-## Usage
+## Configuration in logs
 
-The command below will run tests using the configuration from `my-config.yaml`, taking tests from `/path/to/tests`, and running a maximum of `10` tests simultaneously.
+Chainsaw will print its configuration at startup:
 
-```bash
-chainsaw test /path/to/tests --config my-config.yaml --parallel 10
 ```
-
-## Reference documentation
-
-See [Chainsaw test command reference](../commands/chainsaw_test.md#options) for more details.
+Version: (devel)
+Loading default configuration...
+- Using test file: chainsaw-test
+- TestDirs [./testdata/e2e/examples/dynamic-clusters]
+- SkipDelete false
+- FailFast false
+- ReportFormat ''
+- ReportName 'chainsaw-report'
+- Namespace ''
+- FullName false
+- IncludeTestRegex ''
+- ExcludeTestRegex ''
+- ApplyTimeout 5s
+- AssertTimeout 30s
+- CleanupTimeout 30s
+- DeleteTimeout 15s
+- ErrorTimeout 30s
+- ExecTimeout 5s
+- NoCluster false
+- PauseOnFailure false
+...
+```

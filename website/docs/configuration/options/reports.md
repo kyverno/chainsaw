@@ -10,7 +10,7 @@ To produce a test report, configure the report format, report path and report na
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Configuration
 metadata:
-  name: custom-config
+  name: example
 spec:
   # ...
   reportFormat: JSON
