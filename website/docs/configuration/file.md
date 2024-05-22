@@ -16,7 +16,7 @@ Chainsaw prioritizes its configuration in the following order:
 
 1. **Internal default configuration**
 
-    In the absence of both the above, Chainsaw will use a [default configuration](#default-configuration) file embedded in the Chainsaw binary
+    In the absence of both of the above, Chainsaw will use a [default configuration](#default-configuration) file embedded in the Chainsaw binary
 
 ## Example
 
@@ -24,7 +24,7 @@ Chainsaw prioritizes its configuration in the following order:
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Configuration
 metadata:
-  name: custom-config
+  name: example
 spec:
   timeouts:
     apply: 45s
