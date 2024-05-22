@@ -1,4 +1,4 @@
-# Resource templating
+# Templating options
 
 !!! warning "Experimental status"
     This is an **experimental feature**, and implementation could change slightly in the next versions.

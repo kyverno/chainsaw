@@ -38,6 +38,8 @@ type ConfigurationSpec struct {
 	Clusters map[string]Cluster `json:"clusters,omitempty"`
 
 	// Discovery contains tests discovery configuration.
+	// +optional
+	// +kubebuilder:default:={}
 	Discovery Discovery `json:"discovery"`
 
 	// Execution contains tests execution configuration.

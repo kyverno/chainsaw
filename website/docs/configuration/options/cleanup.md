@@ -1,4 +1,6 @@
-# Delay before cleanup
+# Cleanup options
+
+## Delay before cleanup
 
 At the end of each test, Chainsaw will delete the resources it created during the test.
 
@@ -9,7 +11,7 @@ For this reason, Chainsaw provides the `delayBeforeCleanup` configuration option
 ## Configuration
 
 ```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
+apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
   name: example
@@ -24,3 +26,5 @@ spec:
 ```bash
 chainsaw test --delay-before-cleanup 5s ...
 ```
+
+TODO: skipDelete

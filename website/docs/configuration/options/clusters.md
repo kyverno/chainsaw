@@ -1,4 +1,4 @@
-# Multi cluster
+# Multi cluster options
 
 Chainsaw supports testing against multiple clusters.
 
@@ -9,7 +9,7 @@ Since `v0.2.1` you can also register clusters dynamically at the `test`, `step` 
 ## Configuration
 
 ```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
+apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
   name: custom-config
