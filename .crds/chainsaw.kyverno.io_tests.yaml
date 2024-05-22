@@ -1654,6 +1654,16 @@ spec:
                                 description: Clusters holds a registry to clusters
                                   to support multi-cluster tests.
                                 type: object
+                              deletionPropagationPolicy:
+                                description: |-
+                                  DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
+                                  the object, and how the garbage collector will handle the propagation.
+                                  Overrides the deletion propagation policy set in the Configuration, the Test and the TestStep.
+                                enum:
+                                - Orphan
+                                - Background
+                                - Foreground
+                                type: string
                               expect:
                                 description: Expect defines a list of matched checks
                                   to validate the operation outcome.
