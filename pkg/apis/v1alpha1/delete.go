@@ -32,4 +32,11 @@ type Delete struct {
 	// Expect defines a list of matched checks to validate the operation outcome.
 	// +optional
 	Expect []Expectation `json:"expect,omitempty"`
+
+	// DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
+	// the object, and how the garbage collector will handle the propagation.
+	// Overrides the deletion propagation policy set in the Configuration, the Test and the TestStep.
+	// +optional
+	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
+	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
 }

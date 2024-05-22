@@ -112,6 +112,11 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		*out = new(Namespace)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.DeletionPropagationPolicy != nil {
+		in, out := &in.DeletionPropagationPolicy, &out.DeletionPropagationPolicy
+		*out = new(v1.DeletionPropagation)
+		**out = **in
+	}
 	if in.Report != nil {
 		in, out := &in.Report, &out.Report
 		*out = new(Report)
