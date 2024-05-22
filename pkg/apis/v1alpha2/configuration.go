@@ -38,8 +38,7 @@ type ConfigurationSpec struct {
 	Clusters map[string]Cluster `json:"clusters,omitempty"`
 
 	// Discovery contains tests discovery configuration.
-	// +optional
-	Discovery *Discovery `json:"discovery,omitempty"`
+	Discovery Discovery `json:"discovery"`
 
 	// Execution contains tests execution configuration.
 	// +optional

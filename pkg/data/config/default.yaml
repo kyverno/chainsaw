@@ -1,5 +1,6 @@
-apiVersion: chainsaw.kyverno.io/v1alpha1
+apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
   name: default
-spec: {}
+spec:
+  discovery: {}
