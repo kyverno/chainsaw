@@ -176,11 +176,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/cleanup-delay/</loc>
-         <lastmod>2024-05-22</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/configuration/file/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
@@ -191,42 +186,47 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/grace/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/cleanup-delay/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/multi-cluster/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/grace/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/no-cluster/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/multi-cluster/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/reports/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/no-cluster/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/selector/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/reports/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/templating/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/selector/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/timeouts/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/templating/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/values/</loc>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/timeouts/</loc>
+         <lastmod>2024-05-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/values/</loc>
          <lastmod>2024-05-22</lastmod>
          <changefreq>daily</changefreq>
     </url>
