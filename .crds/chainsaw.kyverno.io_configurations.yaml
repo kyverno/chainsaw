@@ -1675,6 +1675,8 @@ spec:
                     description: Exec defines the timeout for exec operations
                     type: string
                 type: object
+            required:
+            - discovery
             type: object
         required:
         - spec
