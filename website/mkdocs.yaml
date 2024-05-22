@@ -35,13 +35,17 @@ nav:
   - configuration/flags.md
   - Options:
     - configuration/options/timeouts.md
-    - configuration/options/grace.md
-    - configuration/options/cleanup-delay.md
-    - configuration/options/reports.md
-    - configuration/options/selector.md
-    - configuration/options/values.md
-    - configuration/options/multi-cluster.md
+    - configuration/options/discovery.md
+    - configuration/options/execution.md
+    - configuration/options/namespace.md
     - configuration/options/templating.md
+    - configuration/options/cleanup.md
+    - configuration/options/error.md
+    - configuration/options/report.md
+    - configuration/options/clusters.md
+    # TODO
+    - configuration/options/grace.md
+    - configuration/options/values.md
     - configuration/options/no-cluster.md
 - Test:
   - tests/index.md

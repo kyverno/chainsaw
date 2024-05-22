@@ -22,7 +22,7 @@ Chainsaw supports separately configuring the timeouts below:
 ## Configuration
 
 ```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
+apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
   name: example
