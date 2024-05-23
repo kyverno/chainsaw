@@ -66,7 +66,7 @@ auto_generated: true
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>DeletionOptions contains the global deletion configuration.</p>
+<p>DeletionOptions contains the configuration used for deleting resources.</p>
 
 
 | Field | Type | Required | Inline | Description |
