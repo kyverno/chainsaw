@@ -1,10 +1,12 @@
 # JSON schemas
 
-JSON schemas for Chainsaw resources are available to enable validation and autocompletion in your IDE:
+JSON schemas for Chainsaw are available:
 
 - [Configuration (v1alpha1)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/configuration-chainsaw-v1alpha1.json)
 - [Configuration (v1alpha2)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/configuration-chainsaw-v1alpha2.json)
 - [Test (v1alpha1)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/test-chainsaw-v1alpha1.json)
+
+They can be used to enable validation and autocompletion in your IDE.
 
 ## VS code
 

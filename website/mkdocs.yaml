@@ -87,8 +87,13 @@ nav:
     - more/test-docs.md
     - more/kuttl-migration.md
 - Reference:
-  - reference/index.md
   - reference/bindings.md
+  - json-schemas.md
+  - APIs:
+    - v1alpha1: apis/chainsaw.v1alpha1.md
+    - v1alpha2: apis/chainsaw.v1alpha2.md
+  - JMESPath:
+    - Functions: jp/functions.md
   - Command Line:
     - commands/chainsaw.md
     - commands/chainsaw_assert.md
@@ -111,10 +116,4 @@ nav:
     - commands/chainsaw_migrate_kuttl_tests.md
     - commands/chainsaw_test.md
     - commands/chainsaw_version.md
-  - JMESPath:
-    - Functions: jp/functions.md
-  - APIs:
-    - v1alpha1: apis/chainsaw.v1alpha1.md
-    - v1alpha2: apis/chainsaw.v1alpha2.md
-  - json-schemas.md
 - Community: community/index.md
