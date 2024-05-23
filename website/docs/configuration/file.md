@@ -59,4 +59,4 @@ spec: {}
 
 ## Reference documentation
 
-See [Configuration API reference](../apis/chainsaw.v1alpha2.md#chainsaw-kyverno-io-v1alpha2-Configuration) for more details.
+See [Configuration API reference](../reference/apis/chainsaw.v1alpha2.md#chainsaw-kyverno-io-v1alpha2-Configuration) for more details.

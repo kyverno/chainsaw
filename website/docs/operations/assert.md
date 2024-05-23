@@ -16,7 +16,7 @@ For example, after applying resources, you might want to ensure that a particula
 ## Configuration
 
 !!! tip "Reference documentation"
-    - The full structure of the `Assert` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Assert).
+    - The full structure of the `Assert` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Assert).
     - This operation supports [bindings](../tests/common/bindings.md).
 
 ## Usage examples

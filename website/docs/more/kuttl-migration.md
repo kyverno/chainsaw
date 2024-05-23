@@ -14,7 +14,7 @@ The `chainsaw migrate kuttl tests` and `chainsaw migrate kuttl config` commands 
 
 !!! tip "Reference documentation"
 
-    You can view the full command documentation [here](../commands/chainsaw_migrate_kuttl.md).
+    You can view the full command documentation [here](../reference/commands/chainsaw_migrate_kuttl.md).
 
 ## Examples
 

@@ -22,4 +22,4 @@ In this example, Chainsaw will load a configuration file but the timeout configu
 
 ## Reference documentation
 
-See [Chainsaw test command reference](../commands/chainsaw_test.md#options) for the list of all available flags.
+See [Chainsaw test command reference](../reference/commands/chainsaw_test.md#options) for the list of all available flags.

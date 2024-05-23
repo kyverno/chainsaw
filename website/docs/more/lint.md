@@ -6,7 +6,7 @@ Chainsaw comes with a `lint` command to detect ill-formated tests.
 
 !!! tip "Reference documentation"
 
-    You can view the full command documentation [here](../commands/chainsaw_lint.md).
+    You can view the full command documentation [here](../reference/commands/chainsaw_lint.md).
 
 ## Usage
 
