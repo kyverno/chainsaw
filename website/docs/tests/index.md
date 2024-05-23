@@ -8,18 +8,31 @@ To put it simply, a test can be represented as an ordered sequence of test steps
 
 In turn, a test step can be represented as an ordered sequence of operations.
 
-To create a Chainsaw test all you need to do is to create one (or more) YAML file(s).
-
-## Definition approach
+### Definition approach
 
 Chainsaw supports two different test definition approaches:
 
 !!! tip
-    While Chainsaw supports two test definition approaches, we strongly recommend the [explicit one](./definition/explicit.md).
+    While Chainsaw supports two test definition approaches, we strongly recommend the [explicit one](./explicit.md).
 
-- [The explicit approach (strongly recommended)](./definition/explicit.md)
-- [The conventional approach](./definition/conventional.md)
+- [The explicit approach (strongly recommended)](./explicit.md)
+- [The conventional approach](./conventional.md)
 
-Each approach has pros and cons and choosing one over the other is not a trivial choice.
+## General concepts
 
-If you have no strong preference we encourage you to try the [explicit approach](./definition/explicit.md) first. The conventional one will only cover simple scenarios and will probably show its limitations as your tests become more complex.
+The concepts below are at the heart of Chainsaw:
+
+- [Inheritance](../general/inheritance.md)
+- [Test namespace](../general/namespace.md)
+- [Bindings](../general/bindings.md)
+- [Templating](../general/templating.md)
+- [Outputs](../general/outputs.md)
+- [Test lifecycle](../diagrams/test-lifecycle.md)
+- [Step lifecycle](../diagrams/step-lifecycle.md)
+
+## Test and Step specs
+
+Browse the test and step specs to learn all the details and options:
+
+- [Test spec](./spec/index.md)
+- [Step spec](../steps/index.md)
