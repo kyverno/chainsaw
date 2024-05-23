@@ -173,7 +173,7 @@ codegen-mkdocs: codegen-jp-docs
 	@echo Generate mkdocs website... >&2
 	@$(PIP) install mkdocs
 	@$(PIP) install --upgrade pip
-	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin mike
+	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin mike Pillow cairosvg
 	@mkdocs build -f ./website/mkdocs.yaml
 
 .PHONY: codegen-schemas-openapi
@@ -245,7 +245,7 @@ mkdocs-serve: ## Generate and serve mkdocs website
 	@echo Generate and servemkdocs website... >&2
 	@$(PIP) install mkdocs
 	@$(PIP) install --upgrade pip
-	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin mike
+	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin mike Pillow cairosvg
 	@mkdocs serve -f ./website/mkdocs.yaml
 
 #########
