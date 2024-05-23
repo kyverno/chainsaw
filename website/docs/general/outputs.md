@@ -2,12 +2,12 @@
 
 Operation outputs can be useful for communicating and reusing computation results across operations.
 
-Chainsaw evaluates outputs after an operation has finished executing. The results of output evaluations are registered in the bindings and are available to the following operations.
+Chainsaw evaluates outputs after an operation has finished executing. The results of output evaluations are registered in the bindings and are made available for the following operations.
 
 ## Syntax
 
 !!! tip
-    Browse the [reference documentation](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Output) to see the syntax details and where outputs can be declared.
+    Browse the [reference documentation](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Output) to see the syntax details and where outputs can be declared.
 
 ### Basic
 
@@ -48,7 +48,7 @@ spec:
         content: echo $INPUT
 ```
 
-### With matching
+### Matching
 
 An output supports an optional `match` field. The `match` is used to conditionally create the output binding.
 
@@ -88,6 +88,6 @@ spec:
         content: echo $INPUT
 ```
 
-## Templating
+### Templating
 
 Both `name` and `value` of an output can use [templating](./templating.md).

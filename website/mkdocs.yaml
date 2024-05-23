@@ -16,20 +16,8 @@ nav:
   - quick-start/timeouts.md
   - quick-start/cleanup.md
   - quick-start/next-steps.md
-  - Advanced use cases:
-    - quick-start/advanced/index.md
-    - quick-start/advanced/inline.md
-    - quick-start/advanced/negative-testing.md
-    - quick-start/advanced/crds.md
-    - quick-start/advanced/events.md
-    - quick-start/advanced/concurrency.md
-    - quick-start/advanced/kube-version.md
-    - quick-start/advanced/non-resource-assertions.md
-    - quick-start/advanced/test-output.md
-    - quick-start/advanced/label-selectors.md
-    - quick-start/advanced/values.md
-    - quick-start/advanced/multi-cluster.md
-  - gh-action.md
+  - CI/CD:
+    - cicd/gh-action.md
 - Configuration:
   - configuration/index.md
   - configuration/file.md
@@ -49,24 +37,18 @@ nav:
     - configuration/options/no-cluster.md
 - Test:
   - tests/index.md
-  - Test definition:
-    - tests/definition/index.md
-    - tests/definition/explicit.md
-    - tests/definition/conventional.md
+  - tests/explicit.md
+  - tests/conventional.md
   - General concepts:
-    - tests/general/inheritance.md
-    - tests/general/namespace.md
-    - Bindings:
-      - tests/general/bindings/index.md
-      - tests/general/bindings/builtins.md
-    - tests/general/templating.md
-    - tests/general/outputs.md
-    - tests/general/references.md
-    - Lifecycles:
-      - tests/general/lifecycles/index.md
-      - tests/general/lifecycles/test.md
-      - tests/general/lifecycles/step.md
-      - tests/general/lifecycles/operation.md
+    - general/inheritance.md
+    - general/namespace.md
+    - general/bindings.md
+    - general/templating.md
+    - general/outputs.md
+    - general/references.md
+    - diagrams/test-lifecycle.md
+    - diagrams/step-lifecycle.md
+    - general/builtins.md
   - Test spec:
     - tests/spec/index.md
   - Steps spec:
@@ -96,10 +78,23 @@ nav:
       - collectors/events.md
       - collectors/get.md
       - collectors/describe.md
-- Writing tests:
-  - Other resources:
-    - more/lint.md
-    - more/test-docs.md
+- Examples:
+  - examples/index.md
+  - examples/inline.md
+  - examples/negative-testing.md
+  - examples/crds.md
+  - examples/events.md
+  - examples/concurrency.md
+  - examples/kube-version.md
+  - examples/non-resource-assertions.md
+  - examples/test-output.md
+  - examples/label-selectors.md
+  - examples/values.md
+  - examples/multi-cluster.md
+  - Guides:
+    - guides/lint.md
+    - guides/kuttl-migration.md
+    - guides/test-docs.md
 - Reference:
   - reference/json-schemas.md
   - APIs:

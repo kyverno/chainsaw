@@ -9,9 +9,9 @@ While this should help you understand Chainsaw better, there are a lot of other 
 
 To continue exploring the capabilities of Chainsaw:
 
-- [Browse advanced use case guides](./advanced/index.md)
+- [Browse advanced use case guides](../examples/index.md)
 - [Look at the Chainsaw configuration options](../configuration/index.md)
-- [Consult the reference documentation](../tests/general/bindings/index.md)
+- [Consult the reference documentation](../general/bindings.md)
 - [Engage with our community and start contributing](../community/index.md)
 
 ---

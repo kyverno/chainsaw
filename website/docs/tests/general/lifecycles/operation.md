@@ -1,3 +1,0 @@
-# Operation lifecycle
-
-TODO
