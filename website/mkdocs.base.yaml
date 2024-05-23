@@ -102,6 +102,7 @@ plugins:
     minify_html: true
 - include-markdown
 - tags
+- social
 
 markdown_extensions:
 - attr_list
