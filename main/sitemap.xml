@@ -466,11 +466,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/reference/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/reference/bindings/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
