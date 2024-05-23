@@ -24,6 +24,15 @@ type Cleanup struct {
 	DelayBeforeCleanup *metav1.Duration `json:"delayBeforeCleanup,omitempty"`
 }
 
+// DeletionOptions contains the global deletion configuration.
+type DeletionOptions struct {
+	// Propagation decides if a deletion will propagate to the dependents of
+	// the object, and how the garbage collector will handle the propagation.
+	// +optional
+	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
+	Propagation *metav1.DeletionPropagation `json:"propagation,omitempty"`
+}
+
 // Discovery contains the tests discovery configuration.
 type Discovery struct {
 	// ExcludeTestRegex is used to exclude tests based on a regular expression.
@@ -43,6 +52,14 @@ type Discovery struct {
 	// FullName makes use of the full test case folder path instead of the folder name.
 	// +optional
 	FullName bool `json:"fullName,omitempty"`
+}
+
+// ErrorOptions contains the global error configuration.
+type ErrorOptions struct {
+	// Catch defines what the tests steps will execute when an error happens.
+	// This will be combined with catch handlers defined at the test and step levels.
+	// +optional
+	Catch []Catch `json:"catch,omitempty"`
 }
 
 // Execution contains the runner configuration.
