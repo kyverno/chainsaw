@@ -30,7 +30,7 @@ spec:
 ### With flags
 
 !!! note
-    The `template` element can not be configured with flags.
+    The `template` element can't be configured with flags.
 
 ```bash
 chainsaw test --namespace foo

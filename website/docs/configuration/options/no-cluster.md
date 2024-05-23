@@ -9,7 +9,7 @@ In this case, Chainsaw will not try to create an ephemeral namespace and all ope
 ### With file
 
 !!! note
-    No cluster options can not be configured with a configuration file.
+    No cluster options can't be configured with a configuration file.
 
 ### With flags
 

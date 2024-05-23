@@ -11,7 +11,7 @@ Execution options determine how tests are run.
 | `repeatCount` | `1` | RepeatCount indicates how many times the tests should be executed. |
 | `forceTerminationGracePeriod` | | ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments. |
 
-## Termination grace period
+### Termination grace period
 
 Some Kubernetes resources can take time before being stopped. For example, deleting a pod can take time if the underlying container doesn't quit quickly enough.
 
