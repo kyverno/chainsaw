@@ -41,6 +41,7 @@ nav:
     - configuration/options/namespace.md
     - configuration/options/templating.md
     - configuration/options/cleanup.md
+    - configuration/options/deletion.md
     - configuration/options/error.md
     - configuration/options/report.md
     - configuration/options/clusters.md

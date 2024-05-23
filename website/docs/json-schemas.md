@@ -34,11 +34,20 @@ spec:
 apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
 metadata:
-  name: congiguration
+  name: example
 spec:
-  fullName: true
-  failFast: true
-  forceTerminationGracePeriod: 5s
+  timeouts:
+    apply: 45s
+    assert: 20s
+    cleanup: 45s
+    delete: 25s
+    error: 10s
+    exec: 45s
+  cleanup:
+    skipDelete: false
+  execution:
+    failFast: true
+    parallel: 4
 ```
 
 ## Exporting schemas

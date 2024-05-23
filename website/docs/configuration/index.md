@@ -17,6 +17,7 @@ Please pay attention to the configuration options below, they may or may not be 
 - [Namespace options](./options/namespace.md)
 - [Templating options](./options/templating.md)
 - [Cleanup options](./options/cleanup.md)
+- [Deletion options](./options/deletion.md)
 - [Error options](./options/error.md)
 - [Reporting options](./options/report.md)
 - [Multi-cluster options](./options/clusters.md)

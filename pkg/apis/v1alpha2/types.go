@@ -24,7 +24,7 @@ type Cleanup struct {
 	DelayBeforeCleanup *metav1.Duration `json:"delayBeforeCleanup,omitempty"`
 }
 
-// DeletionOptions contains the global deletion configuration.
+// DeletionOptions contains the configuration used for deleting resources.
 type DeletionOptions struct {
 	// Propagation decides if a deletion will propagate to the dependents of
 	// the object, and how the garbage collector will handle the propagation.
