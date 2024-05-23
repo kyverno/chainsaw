@@ -26,16 +26,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/bindings/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/bindings/outputs/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://kyverno.github.io/chainsaw/main/collectors/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
@@ -496,12 +486,27 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/manifests-based/</loc>
+         <loc>https://kyverno.github.io/chainsaw/main/tests/conventional/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/test-based/</loc>
+         <loc>https://kyverno.github.io/chainsaw/main/tests/explicit/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/tests/common/bindings/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/tests/common/outputs/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/tests/spec/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
