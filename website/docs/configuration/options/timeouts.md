@@ -5,21 +5,20 @@ This is required because the timeout varies greatly depending on the nature of a
 
 For example, applying a manifest in a cluster is expected to be reasonably fast, while validating a resource can be a long operation.
 
-Chainsaw supports separately configuring the timeouts below:
+## Supported timeouts
 
-- **Apply**: When Chainsaw applies manifests in a cluster
-- **Assert**: When Chainsaw validates resources in a cluster
-- **Cleanup**: When Chainsaw removes resources from a cluster created for a test
-- **Delete**: When Chainsaw deletes resources from a cluster
-- **Error**: When Chainsaw validates resources in a cluster
-- **Exec**: When Chainsaw executes arbitrary commands or scripts
-
-!!! tip "Overriding timeouts"
-    Each timeout can be overridden at the test level, test step level, or individual operation level.
-
-    Timeouts defined in the `Configuration` are used in operations when not overridden.
+| Element | Default | Description |
+|---|---|---|
+| apply | `5s` | Used when Chainsaw applies manifests in a cluster |
+| assert | `30s` | Used when Chainsaw validates resources in a cluster |
+| cleanup | `30s` | Used when Chainsaw removes resources created for a test |
+| delete | `15s` | Used when Chainsaw deletes resources from a cluster |
+| error | `30s` | Used when Chainsaw validates resources in a cluster |
+| exec | `5s` | Used when Chainsaw executes arbitrary commands or scripts |
 
 ## Configuration
+
+### With file
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha2
@@ -27,7 +26,6 @@ kind: Configuration
 metadata:
   name: example
 spec:
-  # ...
   timeouts:
     apply: 45s
     assert: 20s
@@ -35,18 +33,16 @@ spec:
     delete: 25s
     error: 10s
     exec: 45s
-  # ...
 ```
 
-## Flags
+### With flags
 
 ```bash
-chainsaw test                     \
-  --apply-timeout 45s             \
-  --assert-timeout 45s            \
-  --cleanup-timeout 45s           \
-  --delete-timeout 45s            \
-  --error-timeout 45s             \
-  --exec-timeout 45s              \
-  ...
+chainsaw test               \
+  --apply-timeout 45s       \
+  --assert-timeout 45s      \
+  --cleanup-timeout 45s     \
+  --delete-timeout 45s      \
+  --error-timeout 45s       \
+  --exec-timeout 45s
 ```

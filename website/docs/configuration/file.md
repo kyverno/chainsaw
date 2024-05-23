@@ -1,9 +1,5 @@
 # Configuration file
 
-Chainsaw is described as a **_Stronger tool for e2e testing_**.
-
-With its versatile configuration options, you can customize the testing process to fit your needs.
-
 Chainsaw prioritizes its configuration in the following order:
 
 1. **User-specified configuration**
@@ -48,11 +44,6 @@ To use a custom configuration file:
 ```bash
 chainsaw test --config path/to/your/config.yaml
 ```
-
-!!! tip "Defaults"
-    If you don't specify any configuration, Chainsaw will look for the default configuration file `.chainsaw.yaml` in the current working directory.
-
-    If that file is not found, it will fall back to its internal [default configuration](#default-configuration).
 
 ## Default configuration
 

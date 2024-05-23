@@ -1,8 +1,8 @@
-# Working with CRDs
+# Work with CRDs
 
-New Custom Resource Definitions are not immediately available for use in the Kubernetes API until the Kubernetes API has acknowledged them.
+New CRDs are not immediately available for use in the Kubernetes API until the Kubernetes API has acknowledged them.
 
-If a Custom Resource Definition is being defined inside of a test step, be sure to wait for the CustomResourceDefinition object to appear.
+If a CRD is being defined inside of a test step, be sure to wait for it to appear.
 
 The test below applies a CRD and waits for it to become available:
 
