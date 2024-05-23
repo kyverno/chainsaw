@@ -1,89 +1,93 @@
 # Outputs
 
-Binding outputs can be useful to communicate and reuse computation results between operations.
+Operation outputs can be useful for communicating and reusing computation results across operations.
 
-## Supported operations
+Chainsaw evaluates outputs after an operation has finished executing. The results of output evaluations are registered in the bindings and are available to the following operations.
 
-Currently, only `script` and `command` operations support outputs.
+## Syntax
 
-## Lifetime of outputs
+!!! tip
+    Browse the [reference documentation](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Output) to see the syntax details and where outputs can be declared.
 
-Once an output has been added in the form of a binding, this binding will be available to all following operations **in the same step**.
+### Basic
 
-Currently, outputs do not cross the step boundaries.
+The test below illustrates output usage:
 
-## Matching
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  bindings:
+  - name: chainsaw
+    value: chainsaw
+  steps:
+  - bindings:
+    - name: hello
+      value: hello
+    try:
+    - script:
+        bindings:
+        - name: awesome
+          value: awesome
+        env:
+        - name: GREETINGS
+          value: (join(' ', [$hello, $chainsaw, 'is', $awesome]))
+        # output is used to register a new `$OUTPUT` binding
+        outputs:
+        - name: OUTPUT
+          value: ($stdout)
+        content: echo $GREETINGS
+    - script:
+        # output from the previous operation is used
+        # to configure an evironment variable
+        env:
+        - name: INPUT
+          value: ($OUTPUT)
+        content: echo $INPUT
+```
 
-An output supports an optional `match` field. The `match` is used to conditionally create a binding.
+### With matching
 
-In the case of applying a file, for example, the file may contain multiple resources. The `match` can be used to select the resource to use for creating the binding.
+An output supports an optional `match` field. The `match` is used to conditionally create the output binding.
 
-## Examples
+The test below illustrates output with matching:
 
-The example below defines invokes a `kubectl` command to get a configmap from the cluster in json format.
+TODO
 
-The json output is then parsed and added to the `$cm` binding and the next operation performs an assertion on it by reading the binding instead of querying the cluster.
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  bindings:
+  - name: chainsaw
+    value: chainsaw
+  steps:
+  - bindings:
+    - name: hello
+      value: hello
+    try:
+    - script:
+        bindings:
+        - name: awesome
+          value: awesome
+        env:
+        - name: GREETINGS
+          value: (join(' ', [$hello, $chainsaw, 'is', $awesome]))
+        outputs:
+        - name: OUTPUT
+          value: ($stdout)
+        content: echo $GREETINGS
+    - script:
+        env:
+        - name: INPUT
+          value: ($OUTPUT)
+        content: echo $INPUT
+```
 
-!!! example "Output in script"
+## Templating
 
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: Test
-    metadata:
-      name: example
-    spec:
-      steps:
-      # ...
-      - try:
-        - script:
-            content: kubectl get cm quick-start -n $NAMESPACE -o json
-            outputs:
-            - match:
-                (json_parse($stdout)):
-                  apiVersion: v1
-                  kind: ConfigMap
-              name: cm
-              value: (json_parse($stdout))
-        - assert:
-            resource:
-              ($cm):
-                metadata:
-                  (uid != null): true
-      # ...
-    ```
-
-!!! example "Output in command"
-
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: Test
-    metadata:
-      name: example
-    spec:
-      steps:
-      # ...
-      - try:
-        - command:
-            entrypoint: kubectl
-            args:
-            - get
-            - cm
-            - quick-start
-            - -n
-            - $NAMESPACE
-            - -o
-            - json
-            outputs:
-            - match:
-                (json_parse($stdout)):
-                  apiVersion: v1
-                  kind: ConfigMap
-              name: cm
-              value: (json_parse($stdout))
-        - assert:
-            resource:
-              ($cm):
-                metadata:
-                  (uid != null): true
-      # ...
-    ```
+Both `name` and `value` of an output can use [templating](./templating.md).

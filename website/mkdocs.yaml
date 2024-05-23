@@ -55,12 +55,20 @@ nav:
     - tests/definition/conventional.md
   - General concepts:
     - tests/general/inheritance.md
-    - tests/general/bindings.md
-    - tests/general/templating.md
     - tests/general/namespace.md
+    - Bindings:
+      - tests/general/bindings/index.md
+      - tests/general/bindings/builtins.md
+    - tests/general/templating.md
+    - tests/general/outputs.md
+    - tests/general/references.md
+    - Lifecycles:
+      - tests/general/lifecycles/index.md
+      - tests/general/lifecycles/test.md
+      - tests/general/lifecycles/step.md
+      - tests/general/lifecycles/operation.md
   - Test spec:
     - tests/spec/index.md
-    - tests/general/outputs.md
   - Steps spec:
     - steps/index.md
     - steps/try.md
@@ -93,7 +101,6 @@ nav:
     - more/lint.md
     - more/test-docs.md
 - Reference:
-  - reference/bindings.md
   - reference/json-schemas.md
   - APIs:
     - v1alpha1: reference/apis/chainsaw.v1alpha1.md

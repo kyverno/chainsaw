@@ -7,7 +7,7 @@ These can be configurations, deployments, services, or any other Kubernetes reso
 
 !!! tip "Reference documentation"
     - The full structure of the `Update` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Update).
-    - This operation supports [bindings](../tests/general/bindings.md).
+    - This operation supports [bindings](../tests/general/bindings/index.md).
     - This operation supports [outputs](../tests/general/outputs.md).
 
 !!! warning
