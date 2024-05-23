@@ -1,6 +1,6 @@
 # Create a test
 
-To create a chainsaw test all you need to do is to create one (or more) YAML file(s).
+To create a Chainsaw test all you need to do is to create one (or more) YAML file(s).
 
 The recommended approach is to create one folder per test, with a `chainsaw-test.yaml` file containing one (or more) test definition(s).
 The test definition can reference other files in the same folder or anywhere else on the file system as needed.
