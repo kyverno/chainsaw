@@ -56,6 +56,7 @@ nav:
   - General concepts:
     - tests/general/inheritance.md
     - tests/general/bindings.md
+    - tests/general/templating.md
     - tests/general/namespace.md
   - Test spec:
     - tests/spec/index.md
