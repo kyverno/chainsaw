@@ -4,7 +4,7 @@ Once installed, use `chainsaw completion` command to generate and register the a
 
 Supported shells are:
 
-- [bash](../commands/chainsaw_completion_bash.md)
-- [fish](../commands/chainsaw_completion_fish.md)
-- [powershell](../commands/chainsaw_completion_powershell.md)
-- [zsh](../commands/chainsaw_completion_zsh.md)
+- [bash](../reference/commands/chainsaw_completion_bash.md)
+- [fish](../reference/commands/chainsaw_completion_fish.md)
+- [powershell](../reference/commands/chainsaw_completion_powershell.md)
+- [zsh](../reference/commands/chainsaw_completion_zsh.md)

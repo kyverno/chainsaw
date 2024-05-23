@@ -5,7 +5,7 @@ The `sleep` operation provides a means to sleep for a configured duration.
 ## Configuration
 
 !!! tip "Reference documentation"
-    The full structure of the `Sleep` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Sleep).
+    The full structure of the `Sleep` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Sleep).
 
 ## Usage examples
 
