@@ -49,39 +49,40 @@ nav:
     - configuration/options/no-cluster.md
 - Test:
   - tests/index.md
-  - tests/manifests-based.md
-  - tests/test-based.md
-- Writing tests:
-  - Test steps:
+  - tests/explicit.md
+  - tests/conventional.md
+  - Test spec:
+    - tests/spec/index.md
+    - tests/common/bindings.md
+    - tests/common/outputs.md
+  - Steps spec:
     - steps/index.md
     - steps/try.md
     - steps/catch.md
     - steps/finally.md
-  - Operations:
-    - operations/index.md
-    - operations/check.md
-    - operations/apply.md
-    - operations/assert.md
-    - operations/create.md
-    - operations/command.md
-    - operations/delete.md
-    - operations/error.md
-    - operations/patch.md
-    - operations/script.md
-    - operations/sleep.md
-    - operations/update.md
-    - operations/wait.md
-    - operations/templating.md
-    - operations/non-resource-assert.md
-  - Collectors:
-    - collectors/index.md
-    - collectors/pod-logs.md
-    - collectors/events.md
-    - collectors/get.md
-    - collectors/describe.md
-  - Bindings:
-    - bindings/index.md
-    - bindings/outputs.md
+    - Operations:
+      - operations/index.md
+      - operations/check.md
+      - operations/apply.md
+      - operations/assert.md
+      - operations/create.md
+      - operations/command.md
+      - operations/delete.md
+      - operations/error.md
+      - operations/patch.md
+      - operations/script.md
+      - operations/sleep.md
+      - operations/update.md
+      - operations/wait.md
+      - operations/templating.md
+      - operations/non-resource-assert.md
+    - Collectors:
+      - collectors/index.md
+      - collectors/pod-logs.md
+      - collectors/events.md
+      - collectors/get.md
+      - collectors/describe.md
+- Writing tests:
   - Other resources:
     - more/lint.md
     - more/test-docs.md
@@ -95,25 +96,25 @@ nav:
   - JMESPath:
     - Functions: jp/functions.md
   - Command Line:
-    - commands/chainsaw.md
-    - commands/chainsaw_assert.md
-    - commands/chainsaw_build.md
-    - commands/chainsaw_build_docs.md
-    - commands/chainsaw_completion.md
-    - commands/chainsaw_completion_bash.md
-    - commands/chainsaw_completion_fish.md
-    - commands/chainsaw_completion_powershell.md
-    - commands/chainsaw_completion_zsh.md
-    - commands/chainsaw_create.md
-    - commands/chainsaw_create_test.md
-    - commands/chainsaw_docs.md
-    - commands/chainsaw_export.md
-    - commands/chainsaw_export_schemas.md
-    - commands/chainsaw_lint.md
-    - commands/chainsaw_migrate.md
-    - commands/chainsaw_migrate_kuttl.md
-    - commands/chainsaw_migrate_kuttl_config.md
-    - commands/chainsaw_migrate_kuttl_tests.md
-    - commands/chainsaw_test.md
-    - commands/chainsaw_version.md
+    - chainsaw: commands/chainsaw.md
+    - chainsaw assert: commands/chainsaw_assert.md
+    - chainsaw build: commands/chainsaw_build.md
+    - chainsaw build docs: commands/chainsaw_build_docs.md
+    - chainsaw completion: commands/chainsaw_completion.md
+    - chainsaw completion bash: commands/chainsaw_completion_bash.md
+    - chainsaw completion fish: commands/chainsaw_completion_fish.md
+    - chainsaw completion powershell: commands/chainsaw_completion_powershell.md
+    - chainsaw completion zsh: commands/chainsaw_completion_zsh.md
+    - chainsaw create: commands/chainsaw_create.md
+    - chainsaw create test: commands/chainsaw_create_test.md
+    - chainsaw docs: commands/chainsaw_docs.md
+    - chainsaw export: commands/chainsaw_export.md
+    - chainsaw export schemas: commands/chainsaw_export_schemas.md
+    - chainsaw lint: commands/chainsaw_lint.md
+    - chainsaw migrate: commands/chainsaw_migrate.md
+    - chainsaw migrate kuttl: commands/chainsaw_migrate_kuttl.md
+    - chainsaw migrate kuttl config: commands/chainsaw_migrate_kuttl_config.md
+    - chainsaw migrate kuttl tests: commands/chainsaw_migrate_kuttl_tests.md
+    - chainsaw test: commands/chainsaw_test.md
+    - chainsaw version: commands/chainsaw_version.md
 - Community: community/index.md
