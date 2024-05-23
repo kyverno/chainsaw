@@ -1,4 +1,4 @@
-# Namespace management
+# Namespace
 
 
 Kubernetes organizes resources into two primary scopes: namespaced and cluster-scoped.

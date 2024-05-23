@@ -9,7 +9,7 @@ The `delete` operation allows you to specify resources that should be deleted fr
 
 !!! tip "Reference documentation"
     - The full structure of the `Delete` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
-    - This operation supports [bindings](../tests/general/bindings.md).
+    - This operation supports [bindings](../tests/general/bindings/index.md).
 
 ## Usage examples
 
