@@ -7,7 +7,7 @@ A test step is made of three main components used to determine the actions Chain
 1. The [finally](./finally.md) statement *(optional)*
 
 !!! tip "Reference documentation"
-    The full structure of the `TestStep` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-TestStep).
+    The full structure of the `TestStep` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-TestStep).
 
 ## Test step lifecycle
 
