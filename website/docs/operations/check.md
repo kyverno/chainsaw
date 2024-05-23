@@ -25,7 +25,7 @@ To support those kinds of use cases, some operations support an additional `chec
 
 While a simple check is enough to determine the result of a single operation, we needed a more advanced construct to cover `apply` and `create` operations. Those operations can operate on files containing multiple manifests and every manifest can have a different result.
 
-To support more granular checks we use the `expect` field that contains an array of [Expectations](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Expectation).
+To support more granular checks we use the `expect` field that contains an array of [Expectations](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Expectation).
 Every expectation is made of an optional `match` and a `check` statement.
 
 This way it is possible to control the scope of a `check`.

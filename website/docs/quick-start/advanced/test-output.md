@@ -14,7 +14,7 @@ Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
 Server Version: v1.27.4+k3s1
 ```
 
-Below is an example that ensures the string '1.28' is found somewhere in that output. So long as the content is present anywhere, the test will succeed. To perform this check, the [`contains()`](../../jp/functions.md) JMESPath filter is used.
+Below is an example that ensures the string '1.28' is found somewhere in that output. So long as the content is present anywhere, the test will succeed. To perform this check, the [`contains()`](../../reference/jp/functions.md) JMESPath filter is used.
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1

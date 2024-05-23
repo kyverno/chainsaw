@@ -145,9 +145,9 @@ codegen-crds: codegen-conversion
 codegen-cli-docs: ## Generate CLI docs
 codegen-cli-docs: build
 	@echo Generate cli docs... >&2
-	@rm -rf website/docs/commands && mkdir -p website/docs/commands
+	@rm -rf website/docs/reference/commands && mkdir -p website/reference/docs/commands
 	@rm -rf docs/user/commands && mkdir -p docs/user/commands
-	@./$(CLI_BIN) docs -o website/docs/commands --autogenTag=false
+	@./$(CLI_BIN) docs -o website/docs/reference/commands --autogenTag=false
 
 .PHONY: codegen-api-docs
 codegen-api-docs: ## Generate markdown API docs
@@ -156,14 +156,14 @@ codegen-api-docs: codegen-deepcopy
 codegen-api-docs: codegen-register
 codegen-api-docs: codegen-conversion
 	@echo Generate api docs... >&2
-	@rm -rf ./website/docs/apis
-	@cd ./website/apis && $(REFERENCE_DOCS) -c config.yaml -f markdown -o ../docs/apis
+	@rm -rf ./website/docs/reference/apis
+	@cd ./website/apis && $(REFERENCE_DOCS) -c config.yaml -f markdown -o ../docs/reference/apis
 
 .PHONY: codegen-jp-docs
 codegen-jp-docs: ## Generate JP docs
 	@echo Generate jp docs... >&2
-	@rm -rf ./website/docs/jp && mkdir -p ./website/docs/jp
-	@go run ./website/jp/main.go > ./website/docs/jp/functions.md
+	@rm -rf ./website/docs/reference/jp && mkdir -p ./website/docs/reference/jp
+	@go run ./website/jp/main.go > ./website/docs/reference/jp/functions.md
 
 .PHONY: codegen-mkdocs
 codegen-mkdocs: ## Generate mkdocs website
