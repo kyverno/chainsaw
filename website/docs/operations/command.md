@@ -6,8 +6,8 @@ The `command` operation provides a means to execute a specific command during th
 
 !!! tip "Reference documentation"
     - The full structure of the `Command` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
-    - This operation supports [bindings](../tests/general/bindings/index.md).
-    - This operation supports [outputs](../tests/general/outputs.md).
+    - This operation supports [bindings](../general/bindings.md).
+    - This operation supports [outputs](../general/outputs.md).
 
 ## Usage examples
 

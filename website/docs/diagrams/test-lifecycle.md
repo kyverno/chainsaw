@@ -1,18 +1,17 @@
 # Test lifecycle
 
 At a high level, a test can be represented as an ordered sequence of test steps.
+Each step executes sequentially, one after the other.
 
-Each step executes sequentially, one after the other. At the end of the test, Chainsaw cleans up resources it created during the test in the reverse order of creation.
+At the end of the test, Chainsaw cleans up resources it created during the test, in the opposite order of creation.
+
+## Cleanup
 
 By default, when a step fails, Chainsaw stops the execution and the remaining steps are not executed. The cleanup process starts at the moment the test stops executing.
 
-## On cleanup failure
+Note that when a failure happens during cleanup, the test is marked as failed and Chainsaw continues executing cleanup for the remaining steps.
 
-When a failure happens during cleanup for a step, the test is marked as failed.
-
-The cleanup process doesn't stop and continues executing the remaining steps cleanup.
-
-## Schema
+## Sequence
 
 ### Without failure
 

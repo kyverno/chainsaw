@@ -2,13 +2,7 @@
 
 Chainsaw has a concept of levels and most of the configuration elements and dynamic elements are inherited from one layer to the next in one way or another.
 
-## Immutability
-
-Even if elements are inherited, they are immutable.
-
-Some elements can be overridden but **never overwritten**.
-
-## Schema
+## Levels
 
 <div style="text-align: center;">
 
@@ -23,7 +17,7 @@ flowchart TD
 
 ### Configuration
 
-The first layer comes from the [Chainsaw configuration](../../configuration/index.md). You can think about this layer as the global scope and a way to configure how Chainsaw will behave globally.
+The first layer comes from the [Chainsaw configuration](../configuration/index.md). You can think about this layer as the global scope and a way to configure how Chainsaw will behave globally.
 
 Under certain circumstances, lower layers will be allowed to consume and/or override elements from upper layers.
 
@@ -40,6 +34,12 @@ Again, at the step level, you can override or create new elements and they will 
 ### Operation
 
 At the operation level, you can override or create new elements and use them in the operation itself.
+
+## Immutability
+
+Even if elements are inherited, they are immutable.
+
+Some elements can be overridden but **never overwritten**.
 
 ## Outputs
 
