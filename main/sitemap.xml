@@ -211,17 +211,17 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/grace/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://github.io/kyverno/chainsaw/main/configuration/options/namespace/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/configuration/options/no-cluster/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/pause/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -237,11 +237,6 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/configuration/options/timeouts/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://github.io/kyverno/chainsaw/main/configuration/options/values/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -457,6 +452,11 @@
     </url>
     <url>
          <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/test-output/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://github.io/kyverno/chainsaw/main/quick-start/advanced/values/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
