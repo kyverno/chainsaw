@@ -49,12 +49,18 @@ nav:
     - configuration/options/no-cluster.md
 - Test:
   - tests/index.md
-  - tests/explicit.md
-  - tests/conventional.md
+  - Test definition:
+    - tests/definition/index.md
+    - tests/definition/explicit.md
+    - tests/definition/conventional.md
+  - General concepts:
+    - tests/general/inheritance.md
+    - tests/general/bindings.md
+    - tests/general/templating.md
+    - tests/general/namespace.md
   - Test spec:
     - tests/spec/index.md
-    - tests/common/bindings.md
-    - tests/common/outputs.md
+    - tests/general/outputs.md
   - Steps spec:
     - steps/index.md
     - steps/try.md
@@ -86,7 +92,6 @@ nav:
   - Other resources:
     - more/lint.md
     - more/test-docs.md
-    - more/kuttl-migration.md
 - Reference:
   - reference/bindings.md
   - reference/json-schemas.md

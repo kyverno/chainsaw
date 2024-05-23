@@ -15,7 +15,7 @@
 | `catch` | | Catch defines what the steps will execute when an error happens. This will be combined with catch handlers defined at the step level. |
 | `template` | | Template determines whether resources should be considered for templating. |
 | `concurrent` | | Concurrent determines whether the test should run concurrently with other tests. |
-| `skip` | | Skip determines whether the test should skipped. |
+| `skip` | `false` | Skip determines whether the test should skipped. |
 | `skipDelete` | | SkipDelete determines whether the resources created by the test should be deleted after the test is executed. |
 | `forceTerminationGracePeriod` | | ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments. |
 | `delayBeforeCleanup` | | DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts. |
@@ -24,7 +24,15 @@
 
 ### Namespace
 
+The namespace the test should run into.
+
+If no namespace is specified in the test or the configuration, Chainsaw will create an ephemeral namespace that will exist only during the lifetime of the test.
+
 ### Namespace template
+
+If provided, Chainsaw will use this template to create the ephemeral namespace used to run the test.
+
+This is useful if you want to make something specific with the namespace Chainsaw creates (add labels, add annotations, etc...).
 
 ### Timeouts
 
