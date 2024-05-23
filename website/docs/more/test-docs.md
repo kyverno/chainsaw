@@ -10,7 +10,7 @@ Going through the implementation of a test to understand its purpose is not an e
 
 !!! tip "Reference documentation"
 
-    You can view the full command documentation [here](../commands/chainsaw_build_docs.md).
+    You can view the full command documentation [here](../reference/commands/chainsaw_build_docs.md).
 
 ## Usage
 

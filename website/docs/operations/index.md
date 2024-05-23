@@ -15,7 +15,7 @@ Every operation in a test step runs sequentially.
 All operations share some configuration fields.
 
 !!! tip "Reference documentation"
-    The full structure of the `Operation` is documented [here](../apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Operation).
+    The full structure of the `Operation` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Operation).
 
 #### ContinueOnError
 
