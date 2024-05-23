@@ -2,7 +2,7 @@
 
 When an operation needs to reference a resource, it can do so using a file path or directly specify the resource inline using the `resource` field.
 
-The test below is equivalent to our [first test](../first-test.md):
+The test below is equivalent to our [first test](../quick-start/first-test.md):
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
