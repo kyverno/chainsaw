@@ -15,7 +15,7 @@ The `error` operation lets you define a set of expected errors for a test step. 
 
 !!! tip "Reference documentation"
     - The full structure of the `Error` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Error).
-    - This operation supports [bindings](../tests/general/bindings.md).
+    - This operation supports [bindings](../tests/general/bindings/index.md).
 
 ## Usage examples
 
