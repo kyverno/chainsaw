@@ -6,17 +6,21 @@ import (
 )
 
 func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *ConfigurationSpec, out *v1alpha1.ConfigurationSpec, _ conversion.Scope) error {
-	out.Catch = in.Catch
-	out.Clusters = in.Clusters
-	out.Timeouts = in.Timeouts
 	if in := in.Cleanup; in != nil {
 		out.SkipDelete = in.SkipDelete
 		out.DelayBeforeCleanup = in.DelayBeforeCleanup
+	}
+	out.Clusters = in.Clusters
+	if in := in.Deletion; in != nil {
+		out.DeletionPropagationPolicy = in.Propagation
 	}
 	out.ExcludeTestRegex = in.Discovery.ExcludeTestRegex
 	out.IncludeTestRegex = in.Discovery.IncludeTestRegex
 	out.TestFile = in.Discovery.TestFile
 	out.FullName = in.Discovery.FullName
+	if in := in.Error; in != nil {
+		out.Catch = in.Catch
+	}
 	if in := in.Execution; in != nil {
 		out.FailFast = in.FailFast
 		out.Parallel = in.Parallel
@@ -35,22 +39,27 @@ func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *Config
 	if in := in.Templating; in != nil {
 		out.Template = in.Enabled
 	}
+	out.Timeouts = in.Timeouts
 	return nil
 }
 
 func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alpha1.ConfigurationSpec, out *ConfigurationSpec, _ conversion.Scope) error {
-	out.Catch = in.Catch
-	out.Clusters = in.Clusters
-	out.Timeouts = in.Timeouts
 	out.Cleanup = &Cleanup{
 		SkipDelete:         in.SkipDelete,
 		DelayBeforeCleanup: in.DelayBeforeCleanup,
+	}
+	out.Clusters = in.Clusters
+	out.Deletion = &DeletionOptions{
+		Propagation: in.DeletionPropagationPolicy,
 	}
 	out.Discovery = Discovery{
 		ExcludeTestRegex: in.ExcludeTestRegex,
 		IncludeTestRegex: in.IncludeTestRegex,
 		TestFile:         in.TestFile,
 		FullName:         in.FullName,
+	}
+	out.Error = &ErrorOptions{
+		Catch: in.Catch,
 	}
 	out.Execution = &Execution{
 		FailFast:                    in.FailFast,
@@ -70,5 +79,6 @@ func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alph
 	out.Templating = &Templating{
 		Enabled: in.Template,
 	}
+	out.Timeouts = in.Timeouts
 	return nil
 }
