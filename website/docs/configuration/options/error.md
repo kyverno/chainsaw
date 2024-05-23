@@ -1,6 +1,6 @@
 # Error options
 
-Error options contains the global error configuration.
+Error options contain the global error configuration.
 
 ## Supported elements
 
@@ -28,4 +28,4 @@ spec:
 ### With flags
 
 !!! note
-    Error options can not be configured with flags.
+    Error options can't be configured with flags.

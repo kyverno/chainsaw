@@ -8,7 +8,7 @@ Deletion options contain the configuration used for deleting resources.
 |---|---|---|
 | `propagation` | `Background` | Propagation decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation. |
 
-## Propagation
+### Propagation
 
 This element will affect [Kubernetes cascading deletion](https://kubernetes.io/docs/concepts/architecture/garbage-collection/#cascading-deletion).
 Supported values are `Orphan`, `Background` and `Foreground`.
@@ -35,4 +35,4 @@ spec:
 ### With flags
 
 !!! note
-    Error options can not be configured with flags.
+    Deletion options can't be configured with flags.
