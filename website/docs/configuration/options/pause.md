@@ -6,7 +6,7 @@ This is useful when Chainsaw is run locally to allow debugging and troubleshooti
 ### With file
 
 !!! note
-    Pause options can not be configured with a configuration file.
+    Pause options can't be configured with a configuration file.
 
 ### With flags
 
