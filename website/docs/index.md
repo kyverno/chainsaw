@@ -1,4 +1,4 @@
 ---
 template: home.html
-title: Chainsaw - End-to-end testing tool
+title: Chainsaw - Stronger end-to-end testing tool
 ---
