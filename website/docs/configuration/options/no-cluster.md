@@ -1,13 +1,18 @@
-# Running without a cluster
+# No cluster options
 
-Chainsaw can be run without connection to a Kubernetes cluster.
+Chainsaw can be run without any connection to a Kubernetes cluster.
+
 In this case, Chainsaw will not try to create an ephemeral namespace and all operations requiring a Kubernetes cluster will fail.
 
-To run Chainsaw in this mode pass the `--no-cluster` flag.
+## Configuration
 
-## Example
+### With file
+
+!!! note
+    No cluster options can not be configured with a configuration file.
+
+### With flags
 
 ```bash
-# run chainsaw without connection to a Kubernetes cluster
 chainsaw test --no-cluster
 ```

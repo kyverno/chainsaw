@@ -30,7 +30,7 @@ auto_generated: true
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Cleanup contains the cleanup configuration.</p>
+<p>Cleanup options contain the configuration used for cleaning up resources.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -124,7 +124,7 @@ auto_generated: true
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Namespace contains info about the namespace used for testing.</p>
+<p>Namespace options contain the configuration used to allocate a namespace for each test.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -138,7 +138,7 @@ auto_generated: true
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Report contains info about the report.</p>
+<p>Report options contain the configuration used for reporting.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -161,7 +161,7 @@ auto_generated: true
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Templating contains the templating configuration.</p>
+<p>Templating options contain the templating configuration.</p>
 
 
 | Field | Type | Required | Inline | Description |

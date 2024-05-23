@@ -1,27 +1,13 @@
 # Cleanup options
 
-Cleanup contains the cleanup configuration.
+Cleanup options contain the configuration used for cleaning up resources.
 
 ## Supported elements
 
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running a test.</p> |
-| `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
-
-## Configuration
-
-### With file
-
-```yaml
-```
-
-### With flags
-
-```bash
-```
-
-
+| Element | Default | Description |
+|---|---|---|
+| `skipDelete` | `false` | If set, do not delete the resources after running a test. |
+| `delayBeforeCleanup` | | DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts. |
 
 ## Delay before cleanup
 
@@ -29,9 +15,9 @@ At the end of each test, Chainsaw will delete the resources it created during th
 
 When testing operators, it can be useful to wait a little bit before starting the cleanup process to make sure the operator/controller has the necessary time to update its internal state.
 
-For this reason, Chainsaw provides the `delayBeforeCleanup` configuration option and the corresponding `--delay-before-cleanup` flag.
-
 ## Configuration
+
+### With file
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha2
@@ -39,15 +25,15 @@ kind: Configuration
 metadata:
   name: example
 spec:
-  # ...
-  delayBeforeCleanup: 5s
-  # ...
+  cleanup:
+    skipDelete: true
+    delayBeforeCleanup: 5s
 ```
 
-## Flag
+### With flags
 
 ```bash
-chainsaw test --delay-before-cleanup 5s ...
+chainsaw test                   \
+  --skip-delete                 \
+  --delay-before-cleanup 5s
 ```
-
-TODO: skipDelete

@@ -13,7 +13,7 @@ type (
 	Timeouts = v1alpha1.Timeouts
 )
 
-// Cleanup contains the cleanup configuration.
+// Cleanup options contain the configuration used for cleaning up resources.
 type Cleanup struct {
 	// If set, do not delete the resources after running a test.
 	// +optional
@@ -85,7 +85,7 @@ type Execution struct {
 	ForceTerminationGracePeriod *metav1.Duration `json:"forceTerminationGracePeriod,omitempty"`
 }
 
-// Namespace contains info about the namespace used for testing.
+// Namespace options contain the configuration used to allocate a namespace for each test.
 type Namespace struct {
 	// Name defines the namespace to use for tests.
 	// If not specified, every test will execute in a random ephemeral namespace
@@ -105,7 +105,7 @@ const (
 	XMLFormat  ReportFormatType = "XML"
 )
 
-// Report contains info about the report.
+// Report options contain the configuration used for reporting.
 type Report struct {
 	// ReportFormat determines test report format (JSON|XML).
 	// +optional
@@ -123,7 +123,7 @@ type Report struct {
 	Name string `json:"name,omitempty"`
 }
 
-// Templating contains the templating configuration.
+// Templating options contain the templating configuration.
 type Templating struct {
 	// Enabled determines whether resources should be considered for templating.
 	// +optional

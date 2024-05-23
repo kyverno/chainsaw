@@ -44,8 +44,7 @@ nav:
     - configuration/options/error.md
     - configuration/options/report.md
     - configuration/options/clusters.md
-    # TODO
-    - configuration/options/grace.md
+    - configuration/options/pause.md
     - configuration/options/no-cluster.md
 - Test:
   - tests/index.md
