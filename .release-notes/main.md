@@ -3,8 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## ‼️ Breaking changes ‼️
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
@@ -15,6 +13,10 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
+
+## ‼️ Breaking changes ‼️
+
+- `catch` block in v1alpha2 configuration was moved in `error.catch`
 
 ## 💫 New features 💫
 
