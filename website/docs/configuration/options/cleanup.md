@@ -9,7 +9,7 @@ Cleanup options contain the configuration used for cleaning up resources.
 | `skipDelete` | `false` | If set, do not delete the resources after running a test. |
 | `delayBeforeCleanup` | | DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts. |
 
-## Delay before cleanup
+### Delay before cleanup
 
 At the end of each test, Chainsaw will delete the resources it created during the test.
 
