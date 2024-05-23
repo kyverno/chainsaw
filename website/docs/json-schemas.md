@@ -60,4 +60,4 @@ Chainsaw can also export JSON schemas locally if you don't want to reference the
 chainsaw export schemas <local path>
 ```
 
-See [Chainsaw export schemas reference](./commands/chainsaw_export_schemas.md) for more details.
+See [chainsaw export schemas](./commands/chainsaw_export_schemas.md) command documentation for more details.
