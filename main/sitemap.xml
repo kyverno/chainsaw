@@ -6,7 +6,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/gh-action/</loc>
+         <loc>https://kyverno.github.io/chainsaw/main/cicd/gh-action/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -116,17 +116,122 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/more/kuttl-migration/</loc>
+         <loc>https://kyverno.github.io/chainsaw/main/diagrams/step-lifecycle/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/more/lint/</loc>
+         <loc>https://kyverno.github.io/chainsaw/main/diagrams/test-lifecycle/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/more/test-docs/</loc>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/concurrency/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/crds/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/events/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/inline/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/kube-version/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/label-selectors/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/multi-cluster/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/negative-testing/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/non-resource-assertions/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/test-output/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/examples/values/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/general/bindings/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/general/builtins/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/general/inheritance/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/general/namespace/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/general/outputs/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/general/references/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/general/templating/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/guides/kuttl-migration/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/guides/lint/</loc>
+         <lastmod>2024-05-23</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/guides/test-docs/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -267,66 +372,6 @@
     </url>
     <url>
          <loc>https://kyverno.github.io/chainsaw/main/quick-start/try-catch/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/concurrency/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/crds/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/events/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/inline/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/kube-version/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/label-selectors/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/multi-cluster/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/negative-testing/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/non-resource-assertions/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/test-output/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/quick-start/advanced/values/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -481,72 +526,12 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/definition/</loc>
+         <loc>https://kyverno.github.io/chainsaw/main/tests/conventional/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/definition/conventional/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/definition/explicit/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/inheritance/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/namespace/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/outputs/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/references/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/templating/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/bindings/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/bindings/builtins/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/lifecycles/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/lifecycles/operation/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/lifecycles/step/</loc>
-         <lastmod>2024-05-23</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/tests/general/lifecycles/test/</loc>
+         <loc>https://kyverno.github.io/chainsaw/main/tests/explicit/</loc>
          <lastmod>2024-05-23</lastmod>
          <changefreq>daily</changefreq>
     </url>
