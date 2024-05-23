@@ -1,10 +1,18 @@
 # Reporting options
 
-Chainsaw can generate JUnit reports in `XML` or `JSON` format.
+Reporting options contain the configuration used for reporting.
 
-To produce a test report, configure the report format, report path and report name in the configuration or using CLI flags.
+## Supported elements
+
+| Element | Default | Description |
+|---|---|---|
+| `format` | `JSON` | ReportFormat determines test report format (JSON|XML). |
+| `path` | | ReportPath defines the path. |
+| `name` | `chainsaw-report` | ReportName defines the name of report to create. It defaults to "chainsaw-report". |
 
 ## Configuration
+
+### With file
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha2
@@ -12,17 +20,20 @@ kind: Configuration
 metadata:
   name: example
 spec:
-  # ...
-  reportFormat: JSON
-  reportName: chainsaw-report
-  reportPath: /home/chainsaw
-  # ...
+  report:
+    format: JSON
+    name: chainsaw-report
+    path: /home/chainsaw
 ```
 
-## Flag
+### With flags
+
+!!! note
+    The report path can be specified as either a relative or an absolute path.
 
 ```bash
-chainsaw test --report-format JSON --report-name chainsaw-report --report-path /path/to/save/report ...
+chainsaw test                             \
+  --report-format JSON                    \
+  --report-name chainsaw-report           \
+  --report-path /path/to/save/report
 ```
-
-> Note: The reportPath can be specified as either a relative or an absolute path.
