@@ -1,3 +1,4 @@
+.cache/
 .gopath/
 .temp/
 .tools/
