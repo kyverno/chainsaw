@@ -24,11 +24,6 @@ type Configuration struct {
 // ConfigurationSpec contains the configuration used to run tests.
 // +k8s:conversion-gen=false
 type ConfigurationSpec struct {
-	// Catch defines what the tests steps will execute when an error happens.
-	// This will be combined with catch handlers defined at the test and step levels.
-	// +optional
-	Catch []Catch `json:"catch,omitempty"`
-
 	// Cleanup contains cleanup configuration.
 	// +optional
 	Cleanup *Cleanup `json:"cleanup,omitempty"`
@@ -37,10 +32,18 @@ type ConfigurationSpec struct {
 	// +optional
 	Clusters map[string]Cluster `json:"clusters,omitempty"`
 
+	// Deletion contains the global deletion configuration.
+	// +optional
+	Deletion *DeletionOptions `json:"deletion,omitempty"`
+
 	// Discovery contains tests discovery configuration.
 	// +optional
 	// +kubebuilder:default:={}
 	Discovery Discovery `json:"discovery"`
+
+	// Error contains the global error configuration.
+	// +optional
+	Error *ErrorOptions `json:"error,omitempty"`
 
 	// Execution contains tests execution configuration.
 	// +optional
@@ -49,12 +52,6 @@ type ConfigurationSpec struct {
 	// Namespace contains properties for the namespace to use for tests.
 	// +optional
 	Namespace *Namespace `json:"namespace,omitempty"`
-
-	// DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
-	// the object, and how the garbage collector will handle the propagation.
-	// +optional
-	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
-	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
 
 	// Report contains properties for the report.
 	// +optional
