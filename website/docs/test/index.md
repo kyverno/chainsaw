@@ -35,4 +35,4 @@ The concepts below are at the heart of Chainsaw:
 Browse the test and step specs to learn all the details and options:
 
 - [Test spec](./spec/index.md)
-- [Step spec](../steps/index.md)
+- [Step spec](../step/index.md)

@@ -2,9 +2,9 @@
 
 A test step is made of 3 main blocks used to determine the actions Chainsaw will perform when executing the step, depending on the test outcome.
 
-- The [try](../steps/try.md) block *(required)*
-- The [catch](../steps/catch.md) block *(optional)*
-- The [finally](../steps/finally.md) block *(optional)*
+- The [try](../step/try.md) block *(required)*
+- The [catch](../step/catch.md) block *(optional)*
+- The [finally](../step/finally.md) block *(optional)*
 
 Operations defined in the `try` block are executed first, then:
 

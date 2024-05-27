@@ -5,7 +5,7 @@ Describing resources present in the cluster can help understand what happened an
 ## Configuration
 
 !!! tip "Reference documentation"
-    - The full structure of the `Describe` resource is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Describe).
+    - The full structure of the `Describe` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Describe).
 
 !!! warning "Deprecated syntax"
     You can specify the `resource` directly instead of using `apiVersion` and `kind`.

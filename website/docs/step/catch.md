@@ -1,6 +1,6 @@
 # Catch
 
-A `catch` statement is also a sequence of [operations](../operations/index.md) or [collectors](../collectors/index.md).
+A `catch` statement is also a sequence of [operations](../operations/index.md) or [collectors](../operations/helpers/index.md).
 
 Operations and collectors contained in a `catch` statement will be executed only if the step failed when executing the operations in the step's [try](./try.md) statement.
 
@@ -30,12 +30,12 @@ A `catch` statement supports only the following [operations](../operations/index
 
 ## Collectors
 
-A `catch` statement supports all [collectors](../collectors/index.md):
+A `catch` statement supports all [collectors](../operations/helpers/index.md):
 
-- [Pod logs](../collectors/pod-logs.md)
-- [Events](../collectors/events.md)
-- [Get](../collectors/get.md)
-- [Describe](../collectors/describe.md)
+- [Pod logs](../operations/helpers/pod-logs.md)
+- [Events](../operations/helpers/events.md)
+- [Get](../operations/helpers/get.md)
+- [Describe](../operations/helpers/describe.md)
 
 ## Examples
 
