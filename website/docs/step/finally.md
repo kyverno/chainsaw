@@ -17,12 +17,12 @@ A `finally` statement supports only the following [operations](../operations/ind
 
 ## Collectors
 
-A `finally` statement supports all [collectors](../collectors/index.md):
+A `finally` statement supports all [collectors](../operations/helpers/index.md):
 
-- [Pod logs](../collectors/pod-logs.md)
-- [Events](../collectors/events.md)
-- [Get](../collectors/get.md)
-- [Describe](../collectors/describe.md)
+- [Pod logs](../operations/helpers/pod-logs.md)
+- [Events](../operations/helpers/events.md)
+- [Get](../operations/helpers/get.md)
+- [Describe](../operations/helpers/describe.md)
 
 ## Example
 

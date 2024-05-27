@@ -6,7 +6,7 @@ The recommended approach is to create one folder per test, with a `chainsaw-test
 The test definition can reference other files in the same folder or anywhere else on the file system as needed.
 
 !!! tip
-    While chainsaw supports [other syntaxes](../tests/index.md), we strongly recommend the explicit approach.
+    While chainsaw supports [other syntaxes](../test/index.md), we strongly recommend the explicit approach.
 
 ## What is a test?
 

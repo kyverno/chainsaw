@@ -36,9 +36,9 @@ nav:
     - configuration/options/pause.md
     - configuration/options/no-cluster.md
 - Test:
-  - tests/index.md
-  - tests/explicit.md
-  - tests/conventional.md
+  - test/index.md
+  - test/explicit.md
+  - test/conventional.md
   - General concepts:
     - general/inheritance.md
     - general/namespace.md
@@ -50,51 +50,34 @@ nav:
     - diagrams/step-lifecycle.md
     - general/builtins.md
   - Test spec:
-    - tests/spec/index.md
+    - test/spec/index.md
   - Steps spec:
-    - steps/index.md
-    - steps/try.md
-    - steps/catch.md
-    - steps/finally.md
-    - Operations:
-      - operations/index.md
-      - operations/check.md
-      - operations/apply.md
-      - operations/assert.md
-      - operations/create.md
-      - operations/command.md
-      - operations/delete.md
-      - operations/error.md
-      - operations/patch.md
-      - operations/script.md
-      - operations/sleep.md
-      - operations/update.md
-      - operations/wait.md
-      - operations/templating.md
-      - operations/non-resource-assert.md
-    - Collectors:
-      - collectors/index.md
-      - collectors/pod-logs.md
-      - collectors/events.md
-      - collectors/get.md
-      - collectors/describe.md
-- Examples:
-  - examples/index.md
-  - examples/inline.md
-  - examples/negative-testing.md
-  - examples/crds.md
-  - examples/events.md
-  - examples/concurrency.md
-  - examples/kube-version.md
-  - examples/non-resource-assertions.md
-  - examples/test-output.md
-  - examples/label-selectors.md
-  - examples/values.md
-  - examples/multi-cluster.md
-  - Guides:
-    - guides/lint.md
-    - guides/kuttl-migration.md
-    - guides/test-docs.md
+    - step/index.md
+    - step/try.md
+    - step/catch.md
+    - step/finally.md
+- Operations:
+  - operations/index.md
+  - operations/check.md
+  - operations/apply.md
+  - operations/assert.md
+  - operations/create.md
+  - operations/command.md
+  - operations/delete.md
+  - operations/error.md
+  - operations/patch.md
+  - operations/script.md
+  - operations/sleep.md
+  - operations/update.md
+  - operations/wait.md
+  - operations/templating.md
+  - operations/non-resource-assert.md
+  - Collectors:
+    - operations/helpers/index.md
+    - operations/helpers/pod-logs.md
+    - operations/helpers/events.md
+    - operations/helpers/get.md
+    - operations/helpers/describe.md
 - Reference:
   - reference/json-schemas.md
   - APIs:
@@ -124,4 +107,21 @@ nav:
     - chainsaw migrate kuttl tests: reference/commands/chainsaw_migrate_kuttl_tests.md
     - chainsaw test: reference/commands/chainsaw_test.md
     - chainsaw version: reference/commands/chainsaw_version.md
+- Examples:
+  - examples/index.md
+  - examples/inline.md
+  - examples/negative-testing.md
+  - examples/crds.md
+  - examples/events.md
+  - examples/concurrency.md
+  - examples/kube-version.md
+  - examples/non-resource-assertions.md
+  - examples/test-output.md
+  - examples/label-selectors.md
+  - examples/values.md
+  - examples/multi-cluster.md
+  - Guides:
+    - guides/lint.md
+    - guides/kuttl-migration.md
+    - guides/test-docs.md
 - Community: community/index.md

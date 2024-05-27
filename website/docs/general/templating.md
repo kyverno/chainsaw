@@ -7,6 +7,7 @@ Sometimes things we need to create resources or assertions are only known at run
 ## Workarounds
 
 In the past, users have created all sorts of hacks using tools like `envsubst` for dynamic substitution of env-variables.
+
 Those workarounds usually lack flexibility and introduce new problems like hiding the real resources from Chainsaw, preventing it from cleaning resources properly.
 
 ## Syntax
