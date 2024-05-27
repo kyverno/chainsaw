@@ -226,11 +226,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/operations/check/</loc>
-         <lastmod>2024-05-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://kyverno.github.io/chainsaw/main/operations/command/</loc>
          <lastmod>2024-05-27</lastmod>
          <changefreq>daily</changefreq>
@@ -251,11 +246,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/operations/non-resource-assert/</loc>
-         <lastmod>2024-05-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://kyverno.github.io/chainsaw/main/operations/patch/</loc>
          <lastmod>2024-05-27</lastmod>
          <changefreq>daily</changefreq>
@@ -271,17 +261,7 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/operations/templating/</loc>
-         <lastmod>2024-05-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://kyverno.github.io/chainsaw/main/operations/update/</loc>
-         <lastmod>2024-05-27</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://kyverno.github.io/chainsaw/main/operations/wait/</loc>
          <lastmod>2024-05-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
@@ -306,7 +286,17 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://kyverno.github.io/chainsaw/main/operations/helpers/pod-logs/</loc>
+         <loc>https://kyverno.github.io/chainsaw/main/operations/helpers/logs/</loc>
+         <lastmod>2024-05-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/operations/helpers/wait/</loc>
+         <lastmod>2024-05-27</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/operations/todo/check/</loc>
          <lastmod>2024-05-27</lastmod>
          <changefreq>daily</changefreq>
     </url>
