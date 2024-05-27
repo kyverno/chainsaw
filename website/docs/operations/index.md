@@ -36,9 +36,8 @@ Determines whether a test step should continue or not in case the operation is n
 - [Script](./script.md)
 - [Sleep](./sleep.md)
 - [Update](./update.md)
-- [Wait](./wait.md)
 
-## Non-resource assertions
+<!-- ## Non-resource assertions
 
 It is possible to evaluate assertions that do not depend on resources.
 
@@ -54,4 +53,4 @@ See [Operation checks](./check.md) for use case details and supported operations
 
 Chainsaw can apply transformations to the resources before they are processed by the operation.
 
-See [Resource templating](./templating.md) for use case details and supported operations.
+See [Resource templating](./templating.md) for use case details and supported operations. -->

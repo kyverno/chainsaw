@@ -5,7 +5,7 @@ The `wait` operation is a wrapper around `kubectl wait`. It allows to wait for d
 ## Configuration
 
 !!! tip "Reference documentation"
-    The full structure of the `Wait` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Wait).
+    The full structure of the `Wait` is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Wait).
 
 !!! warning "Deprecated syntax"
     You can specify the `resource` directly instead of using `apiVersion` and `kind`.

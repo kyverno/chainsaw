@@ -35,7 +35,7 @@ Below is an example of using `command` in a `Test` resource.
 
 ## Operation check
 
-Below is an example of using an [operation check](./check.md#command).
+Below is an example of using an [operation check](./todo/check.md#command).
 
 !!! example "With check"
 

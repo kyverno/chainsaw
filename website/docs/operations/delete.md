@@ -37,7 +37,7 @@ Below is an example of using `delete` in a `Test` resource.
 
 ## Operation check
 
-Below is an example of using an [operation check](./check.md#delete).
+Below is an example of using an [operation check](./todo/check.md#delete).
 
 !!! example "With check"
 

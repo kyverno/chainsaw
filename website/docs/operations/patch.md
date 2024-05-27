@@ -90,7 +90,7 @@ Below is an example of using `patch` in a `Test` resource.
 
 ## Operation check
 
-Below is an example of using an [operation check](./check.md#patch).
+Below is an example of using an [operation check](./todo/check.md#patch).
 
 !!! example "With check"
 

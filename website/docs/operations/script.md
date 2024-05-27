@@ -32,7 +32,7 @@ Below is an example of using `script` in a `Test` resource.
 
 ## Operation check
 
-Below is an example of using an [operation check](./check.md#script).
+Below is an example of using an [operation check](./todo/check.md#script).
 
 !!! example "With check"
 

@@ -87,7 +87,7 @@ Below is an example of using `apply` in a `Test` resource.
 
 ### Operation check
 
-Below is an example of using an [operation check](./check.md#apply).
+Below is an example of using an [operation check](./todo/check.md#apply).
 
 !!! example "With check"
 

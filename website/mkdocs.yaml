@@ -58,7 +58,7 @@ nav:
     - step/finally.md
 - Operations:
   - operations/index.md
-  - operations/check.md
+  # - operations/check.md
   - operations/apply.md
   - operations/assert.md
   - operations/create.md
@@ -69,15 +69,15 @@ nav:
   - operations/script.md
   - operations/sleep.md
   - operations/update.md
-  - operations/wait.md
-  - operations/templating.md
-  - operations/non-resource-assert.md
+  # - operations/templating.md
+  # - operations/non-resource-assert.md
   - Collectors:
     - operations/helpers/index.md
     - operations/helpers/pod-logs.md
     - operations/helpers/events.md
     - operations/helpers/get.md
     - operations/helpers/describe.md
+    - operations/helpers/wait.md
 - Reference:
   - reference/json-schemas.md
   - APIs:
