@@ -13,13 +13,12 @@ A `finally` statement supports only the following [operations](../operations/ind
 - [Script](../operations/script.md)
 - [Sleep](../operations/sleep.md)
 - [Delete](../operations/delete.md)
-- [Wait](../operations/wait.md)
 
 ## Collectors
 
 A `finally` statement supports all [collectors](../operations/helpers/index.md):
 
-- [Pod logs](../operations/helpers/pod-logs.md)
+- [Pod logs](../operations/helpers/logs.md)
 - [Events](../operations/helpers/events.md)
 - [Get](../operations/helpers/get.md)
 - [Describe](../operations/helpers/describe.md)

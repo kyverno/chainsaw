@@ -90,7 +90,7 @@ Below is an example of using `update` in a `Test` resource.
 
 ## Operation check
 
-Below is an example of using an [operation check](./check.md#update).
+Below is an example of using an [operation check](./todo/check.md#update).
 
 !!! example "With check"
 
