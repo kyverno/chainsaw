@@ -39,7 +39,7 @@ func (f failer) FailNow(ctx context.Context) {
 func (f failer) wait() {
 	if f.pause {
 		fmt.Println("Failure detected, press ENTER to continue...")
-		fmt.Scanln()
+		fmt.Scanln() //nolint:errcheck
 	}
 }
 
