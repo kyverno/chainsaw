@@ -70,7 +70,9 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 		TestStepSpec: v1alpha1.TestStepSpec{
 			Description: getDescription(description, "sample step 1"),
 			Try: []v1alpha1.Operation{{
-				Description: getDescription(description, "sample apply operation"),
+				OperationBase: v1alpha1.OperationBase{
+					Description: getDescription(description, "sample apply operation"),
+				},
 				Apply: &v1alpha1.Apply{
 					FileRefOrResource: v1alpha1.FileRefOrResource{
 						FileRef: v1alpha1.FileRef{
@@ -79,7 +81,9 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					},
 				},
 			}, {
-				Description: getDescription(description, "sample assert operation"),
+				OperationBase: v1alpha1.OperationBase{
+					Description: getDescription(description, "sample assert operation"),
+				},
 				Assert: &v1alpha1.Assert{
 					FileRefOrCheck: v1alpha1.FileRefOrCheck{
 						FileRef: v1alpha1.FileRef{
@@ -88,7 +92,9 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					},
 				},
 			}, {
-				Description: getDescription(description, "sample error operation"),
+				OperationBase: v1alpha1.OperationBase{
+					Description: getDescription(description, "sample error operation"),
+				},
 				Error: &v1alpha1.Error{
 					FileRefOrCheck: v1alpha1.FileRefOrCheck{
 						FileRef: v1alpha1.FileRef{
@@ -97,7 +103,9 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					},
 				},
 			}, {
-				Description: getDescription(description, "sample delete operation"),
+				OperationBase: v1alpha1.OperationBase{
+					Description: getDescription(description, "sample delete operation"),
+				},
 				Delete: &v1alpha1.Delete{
 					ObjectReference: v1alpha1.ObjectReference{
 						ObjectSelector: v1alpha1.ObjectSelector{
@@ -110,7 +118,9 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					},
 				},
 			}, {
-				Description: getDescription(description, "sample script operation"),
+				OperationBase: v1alpha1.OperationBase{
+					Description: getDescription(description, "sample script operation"),
+				},
 				Script: &v1alpha1.Script{
 					Content: `echo "test namespace = $NAMESPACE"`,
 				},
