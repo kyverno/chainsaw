@@ -10,7 +10,7 @@ The full structure of the `PodLogs` resource is documented [here](../../referenc
 
 Chainsaw will default the scope to the ephemeral test namespace.
 
-### All namespaces
+## All namespaces
 
 It is possible to consider all namespaces in the cluster by setting `namespace: '*'`.
 

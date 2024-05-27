@@ -11,11 +11,11 @@ The full structure of the `Wait` resource is documented [here](../../reference/a
     
     **This is a deprecated syntax though and will be removed in a future version.**
 
-### Clustered resources
+## Clustered resources
 
 When used with a clustered resource, the `namespace` is ignored and is not added to the corresponding `kubectl` command.
 
-### All resources
+## All resources
 
 If you don't specify a `name` or a `selector`, the `wait` operation will consider `all` resources.
 
@@ -23,7 +23,7 @@ If you don't specify a `name` or a `selector`, the `wait` operation will conside
 
 When used with a namespaced resource, Chainsaw will default the scope to the ephemeral test namespace.
 
-### All namespaces
+## All namespaces
 
 When used with a namespaced resource, it is possible to consider all namespaces in the cluster by setting `namespace: '*'`.
 

@@ -1,30 +1,6 @@
 # Operations
 
-While tests are made of test steps, test steps can be considered made of operations.
-
-Every operation in a test step runs sequentially.
-
-!!! warning "Only one action per operation"
-
-    Every operation consists of a single action. While it is syntactically possible to create an operation with multiple actions, Chainsaw will verify and reject tests if operations containing multiple actions are found.
-
-    The reasoning behind this intentional choice is that it becomes harder to understand in which order actions will be executed in case an operation consists of multiple actions. For this reason, operations consisting of multiple actions are disallowed.
-
-### Common fields
-
-All operations share some configuration fields.
-
-!!! tip "Reference documentation"
-    The full structure of the `Operation` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Operation).
-
-#### ContinueOnError
-
-Determines whether a test step should continue or not in case the operation is not successful.
-
-!!! note ""
-    Even if the test continues executing, it will still be reported as failed.
-
-## Available operations
+Chainsaw supports the following operations:
 
 - [Apply](./apply.md)
 - [Assert](./assert.md)
@@ -37,20 +13,20 @@ Determines whether a test step should continue or not in case the operation is n
 - [Sleep](./sleep.md)
 - [Update](./update.md)
 
-<!-- ## Non-resource assertions
+Additionally, Chainsaw also comes with [kubectl helpers](./helpers/index.md).
 
-It is possible to evaluate assertions that do not depend on resources.
+## Unique action
 
-See [Non-resource assertions](./non-resource-assert.md) for details.
+Every operation consists of a single action. While it is syntactically possible to create an operation with multiple actions, Chainsaw will verify and reject tests if operations containing multiple actions are found.
 
-## Operation checks
+The reasoning behind this intentional choice is that it becomes harder to understand in which order actions will be executed in case an operation consists of multiple actions. For this reason, operations consisting of multiple actions are disallowed.
 
-Some operations support checking the operation execution result against specific expectations.
+## Common fields
 
-See [Operation checks](./check.md) for use case details and supported operations.
+### ContinueOnError
 
-## Resource templating
+Determines whether a test step should continue or not in case the operation is not successful.
 
-Chainsaw can apply transformations to the resources before they are processed by the operation.
+!!! note
+    Even if the test continues executing, it will still be reported as failed.
 
-See [Resource templating](./templating.md) for use case details and supported operations. -->

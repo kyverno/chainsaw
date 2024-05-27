@@ -1,46 +1,44 @@
 # Command
 
-The `command` operation provides a means to execute a specific command during the test step.
+The `command` operation provides a mean to execute a specific command during the test step.
 
 ## Configuration
 
-!!! tip "Reference documentation"
-    - The full structure of the `Command` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
+The full structure of the `Command` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
+
+!!! tip
     - This operation supports [bindings](../general/bindings.md).
     - This operation supports [outputs](../general/outputs.md).
 
-## Usage examples
+## Examples
 
-Below is an example of using `command` in a `Test` resource.
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
+    - command:
+        entrypoint: echo
+        args:
+        - hello chainsaw
+```
 
-!!! example
+!!! warning
+    Command arguments are not going through shell expansion. It's crucial to consider potential differences in behavior, as Chainsaw may interpret them differently compared to regular shell or bash environments, especially when processing quotes.
 
-    ```yaml
-    apiVersion: chainsaw.kyverno.io/v1alpha1
-    kind: Test
-    metadata:
-      name: example
-    spec:
-      steps:
-      - try:
-        # ...
-        - command:
-            entrypoint: echo
-            args:
-            - hello chainsaw
-        # ...
-    ```
+### Operation check
 
-> When defining shell command `args` in YAML format, it's crucial to consider potential differences in behavior, as Chainsaw may interpret them differently compared to regular shell or bash environments, due to quote removal.
-
-## Operation check
-
-Below is an example of using an [operation check](./todo/check.md#command).
-
-!!! example "With check"
-
-    ```yaml
-    # ...
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
     - command:
         entrypoint: echo
         args:
@@ -50,5 +48,4 @@ Below is an example of using an [operation check](./todo/check.md#command).
           # - succeed if the operation failed
           # - fail if the operation succeeded
           ($error != null): true
-    # ...
-    ```
+```
