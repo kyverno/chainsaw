@@ -563,8 +563,7 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
-| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
+| `OperationBase` | [`OperationBase`](#chainsaw-kyverno-io-v1alpha1-OperationBase) |  | :white_check_mark: | <p>OperationBase defines common elements to all operations.</p> |
 | `apply` | [`Apply`](#chainsaw-kyverno-io-v1alpha1-Apply) |  |  | <p>Apply represents resources that should be applied for this test step. This can include things like configuration settings or any other resources that need to be available during the test.</p> |
 | `assert` | [`Assert`](#chainsaw-kyverno-io-v1alpha1-Assert) |  |  | <p>Assert represents an assertion to be made. It checks whether the conditions specified in the assertion hold true.</p> |
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
@@ -576,6 +575,20 @@ For multiple objects use labels.</p>
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 | `update` | [`Update`](#chainsaw-kyverno-io-v1alpha1-Update) |  |  | <p>Update represents an update operation.</p> |
 | `wait` | [`Wait`](#chainsaw-kyverno-io-v1alpha1-Wait) |  |  | <p>Wait determines the resource wait collector to execute.</p> |
+
+## `OperationBase`     {#chainsaw-kyverno-io-v1alpha1-OperationBase}
+
+**Appears in:**
+    
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
+
+<p>OperationBase defines common elements to all operations.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
+| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## `Output`     {#chainsaw-kyverno-io-v1alpha1-Output}
 
