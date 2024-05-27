@@ -71,12 +71,12 @@ nav:
   - operations/update.md
   # - operations/templating.md
   # - operations/non-resource-assert.md
-  - Collectors:
+  - Kubectl helpers:
     - operations/helpers/index.md
-    - operations/helpers/pod-logs.md
+    - operations/helpers/describe.md
     - operations/helpers/events.md
     - operations/helpers/get.md
-    - operations/helpers/describe.md
+    - operations/helpers/logs.md
     - operations/helpers/wait.md
 - Reference:
   - reference/json-schemas.md

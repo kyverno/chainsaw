@@ -31,7 +31,7 @@ A `catch` statement supports only the following [operations](../operations/index
 
 A `catch` statement supports all [collectors](../operations/helpers/index.md):
 
-- [Pod logs](../operations/helpers/pod-logs.md)
+- [Pod logs](../operations/helpers/logs.md)
 - [Events](../operations/helpers/events.md)
 - [Get](../operations/helpers/get.md)
 - [Describe](../operations/helpers/describe.md)
