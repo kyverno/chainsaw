@@ -90,7 +90,7 @@ Below is an example of using `create` in a `Test` resource.
 
 ## Operation check
 
-Below is an example of using an [operation check](./check.md#create).
+Below is an example of using an [operation check](./todo/check.md#create).
 
 !!! example "With check"
 
