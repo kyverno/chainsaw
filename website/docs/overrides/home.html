@@ -303,7 +303,7 @@
 						</li>
 						<li class="mdx-expect__item md-typeset">
 							<div class="mdx-expect__icon">
-								{% include ".icons/fontawesome/solid/plus.svg" %}
+								{% include ".icons/fontawesome/solid/circle-plus.svg" %}
 							</div>
 							<div class="mdx-expect__description">
 								<h2>Positive testing</h2>
@@ -315,7 +315,7 @@
 						</li>
 						<li class="mdx-expect__item md-typeset">
 							<div class="mdx-expect__icon">
-								{% include ".icons/fontawesome/solid/minus.svg" %}
+								{% include ".icons/fontawesome/solid/circle-minus.svg" %}
 							</div>
 							<div class="mdx-expect__description">
 								<h2>Negative testing</h2>
@@ -356,14 +356,14 @@
 						</li>
 					</ul>
 				</div>
-			</div>
-			<div class="mdx-hero__more" style="text-align: center;">
-				<a href="#widely-adopted">
-					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-						style="height: 1.5rem; fill: currentColor;">
-						<path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"></path>
-					</svg>
-				</a>
+				<div class="mdx-hero__more" style="text-align: center;">
+					<a href="#widely-adopted">
+						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+							style="height: 1.5rem; fill: currentColor;">
+							<path d="M11 4h2v12l5.5-5.5 1.42 1.42L12 19.84l-7.92-7.92L5.5 10.5 11 16V4Z"></path>
+						</svg>
+					</a>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -464,7 +464,10 @@
 						<a href="#video" class="headerlink" title="Permanent link"> ¶ </a>
 					</h1>
 					<h3>
-						Watch this excellent review video to discover the unique power of Chainsaw.
+						<span class="twemoji">
+							{% include ".icons/fontawesome/regular/lightbulb.svg" %}
+						</span>
+						Watch this excellent review to discover the unique power of Chainsaw
 					</h3>
 				</header>
 				<div style="display: flex; justify-content: center; margin-top: 2rem;">

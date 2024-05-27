@@ -6,9 +6,6 @@ Chainsaw evaluates outputs after an operation has finished executing. The result
 
 ## Syntax
 
-!!! tip
-    Browse the [reference documentation](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Output) to see the syntax details and where outputs can be declared.
-
 ### Basic
 
 The test below illustrates output usage:
@@ -50,11 +47,9 @@ spec:
 
 ### Matching
 
-An output supports an optional `match` field. The `match` is used to conditionally create the output binding.
+An output supports an optional `match` field. The `match` statement is used to conditionally assign the output binding.
 
 The test below illustrates output with matching:
-
-TODO
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -77,16 +72,32 @@ spec:
         env:
         - name: GREETINGS
           value: (join(' ', [$hello, $chainsaw, 'is', $awesome]))
+        # output is used to register a new `$OUTPUT` binding
         outputs:
+          # by default, the `$OUTPUT` binding is assigned
+          # the content of the standard output
         - name: OUTPUT
           value: ($stdout)
+          # if the match statement evaluates to true,
+          # the `$OUTPUT` binding will be set to
+          # 'YES! chainsaw is awesome'
+        - match:
+            ($OUTPUT): hello chainsaw is awesome
+          name: OUTPUT
+          value: YES! chainsaw is awesome
         content: echo $GREETINGS
     - script:
+        # output from the previous operation is used
+        # to configure an evironment variable
         env:
         - name: INPUT
           value: ($OUTPUT)
         content: echo $INPUT
 ```
+
+### Reference
+
+Browse the [reference documentation](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Output) to see the syntax details and where outputs can be declared.
 
 ### Templating
 

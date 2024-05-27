@@ -1,15 +1,20 @@
 # Apply
 
-The `apply` operation lets you define resources that should be applied to the Kubernetes cluster during the test step.
-These can be configurations, deployments, services, or any other Kubernetes resource.
+The `apply` operation defines resources that should be applied to a Kubernetes cluster.
+If the resource does not exist yet it will be created, otherwise, it will be configured to match the provided configuration.
 
 ## Configuration
 
 The full structure of the `Apply` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Apply).
 
-!!! tip
-    - This operation supports [bindings](../general/bindings.md).
-    - This operation supports [outputs](../general/outputs.md).
+### Features
+
+| Supported features                                 |                    |
+|----------------------------------------------------|:------------------:|
+| [Bindings](../general/bindings.md) support         | :white_check_mark: |
+| [Outputs](../general/outputs.md) support           | :white_check_mark: |
+| [Templating](../general/templating.md) support     | :white_check_mark: |
+| [Operation checks](../general/checks.md) support   | :white_check_mark: |
 
 ## Examples
 

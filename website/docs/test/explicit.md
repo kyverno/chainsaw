@@ -1,6 +1,6 @@
 # Explicit approach
 
-The explicit is a bit more verbose than the conventional one but offers a lot more flexibility and features:
+The explicit is a bit more verbose than the conventional one but offers far more flexibility and features:
 
 - It does not rely on file naming conventions for operations ordering
 - It encourages file reuse across tests, reducing duplication and maintenance

@@ -55,7 +55,7 @@ If applying the resource succeeded, Chainsaw will consider the operation failed.
 
 On the other hand, if applying the resource fails, Chainsaw will consider the operation to be successful.
 
-## Resource matching
+### Resource matching
 
 In the previous example, if the `resources.yaml` contains multiple resources, but only some of them may be expected to fail.
 

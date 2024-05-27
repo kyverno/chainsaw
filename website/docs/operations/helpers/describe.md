@@ -2,24 +2,33 @@
 
 Show details of a specific resource or group of resources.
 
-## Configuration
-
-The full structure of the `Describe` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Describe).
-
 !!! warning "Deprecated syntax"
     You can specify the `resource` directly instead of using `apiVersion` and `kind`.
     
     **This is a deprecated syntax though and will be removed in a future version.**
 
-## Clustered resources
+## Configuration
+
+The full structure of the `Describe` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Describe).
+
+### Features
+
+| Supported features                                    |                    |
+|-------------------------------------------------------|:------------------:|
+| [Bindings](../../general/bindings.md) support         | :x:                |
+| [Outputs](../../general/outputs.md) support           | :x:                |
+| [Templating](../../general/templating.md) support     | :x:                |
+| [Operation checks](../../general/checks.md) support   | :x:                |
+
+### Clustered resources
 
 When used with a clustered resource, the `namespace` is ignored and is not added to the corresponding `kubectl` command.
 
-## Test namespace
+### Test namespace
 
 When used with a namespaced resource, Chainsaw will default the scope to the ephemeral test namespace.
 
-## All namespaces
+### All namespaces
 
 When used with a namespaced resource, it is possible to consider all namespaces in the cluster by setting `namespace: '*'`.
 

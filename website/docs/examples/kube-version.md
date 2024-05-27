@@ -1,6 +1,6 @@
 # Check Kubernetes version
 
-The test below fetches the Kubernetes cluster version using `x_k8s_server_version`.
+The test below fetches the Kubernetes cluster version using the [x_k8s_server_version](../reference/jp/functions.md#chainsaw-functions) function.
 It then uses the minor version retrieved to adapt an assertion based on the value in the `$minorversion` binding.
 
 !!!tip
@@ -38,9 +38,11 @@ spec:
           kind: Pod
           metadata:
             annotations:
-              # If the minor version of the Kubernetes cluster against which this
-              # is tested is less than 29, the annotation is expected to have the group 'system:masters' in it.
-              # Otherwise, due to a change in kubeadm, the group should be 'kubeadm:cluster-admins'.
+              # If the minor version of the Kubernetes cluster against
+              # which this is tested is less than 29, the annotation is
+              # expected to have the group 'system:masters' in it.
+              # Otherwise, due to a change in kubeadm, the group should
+              # be 'kubeadm:cluster-admins'.
               kyverno.io/created-by: (($minorversion < `29` && '{"groups":["system:masters","system:authenticated"],"username":"kubernetes-admin"}') || '{"groups":["kubeadm:cluster-admins","system:authenticated"],"username":"kubernetes-admin"}')
             name: pod01
 ```

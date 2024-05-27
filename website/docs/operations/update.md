@@ -1,7 +1,6 @@
 # Update
 
-The `update` operation lets you define resources that should be updated in the Kubernetes cluster during the test step.
-These can be configurations, deployments, services, or any other Kubernetes resource.
+The `update` operation defines resources that should be updated in a Kubernetes cluster.
 
 If the resource to be updated doesn't exist in the cluster, the step will fail.
 
@@ -9,9 +8,14 @@ If the resource to be updated doesn't exist in the cluster, the step will fail.
 
 The full structure of the `Update` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Update).
 
-!!! tip
-    - This operation supports [bindings](../general/bindings.md).
-    - This operation supports [outputs](../general/outputs.md).
+### Features
+
+| Supported features                                 |                    |
+|----------------------------------------------------|:------------------:|
+| [Bindings](../general/bindings.md) support         | :white_check_mark: |
+| [Outputs](../general/outputs.md) support           | :white_check_mark: |
+| [Templating](../general/templating.md) support     | :white_check_mark: |
+| [Operation checks](../general/checks.md) support   | :white_check_mark: |
 
 ## Examples
 

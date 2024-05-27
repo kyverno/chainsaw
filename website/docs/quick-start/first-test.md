@@ -14,6 +14,10 @@ To put it simply, a test can be represented as an ordered sequence of test steps
 
 In turn, a test step can be represented as an ordered sequence of operations.
 
+When one of the operations fails the test is considered failed.
+
+If all operations succeed the test is considered successful.
+
 ## Let's write our first test
 
 For this quick start, we will create a (very simple) `Test` with one step and two operations:

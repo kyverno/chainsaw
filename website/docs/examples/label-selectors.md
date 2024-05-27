@@ -1,4 +1,4 @@
-# Use label selectors
+# Work with label selectors
 
 Chainsaw can filter the tests to run using [label selectors](https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors).
 
