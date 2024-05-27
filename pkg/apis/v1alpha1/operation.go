@@ -1,7 +1,7 @@
 package v1alpha1
 
-// Operation defines a single operation, only one action is permitted for a given operation.
-type Operation struct {
+// OperationBase defines common elements to all operations.
+type OperationBase struct {
 	// Description contains a description of the operation.
 	// +optional
 	Description string `json:"description,omitempty"`
@@ -10,6 +10,13 @@ type Operation struct {
 	// Even if the test continues executing, it will still be reported as failed.
 	// +optional
 	ContinueOnError *bool `json:"continueOnError,omitempty"`
+}
+
+// Operation defines a single operation, only one action is permitted for a given operation.
+type Operation struct {
+	// OperationBase defines common elements to all operations.
+	// +optional
+	OperationBase `json:",inline"`
 
 	// Apply represents resources that should be applied for this test step. This can include things
 	// like configuration settings or any other resources that need to be available during the test.
