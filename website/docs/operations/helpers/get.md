@@ -5,7 +5,7 @@ The `get` collector is used to list and print resources in the cluster.
 ## Configuration
 
 !!! tip "Reference documentation"
-    - The full structure of the `Get` resource is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Get).
+    - The full structure of the `Get` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Get).
 
 !!! warning "Deprecated syntax"
     You can specify the `resource` directly instead of using `apiVersion` and `kind`.
