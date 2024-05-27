@@ -15,6 +15,8 @@ Note that when a failure happens during cleanup, the test is marked as failed an
 
 ### Without failure
 
+<div style="text-align: center;">
+
 ```mermaid
 sequenceDiagram
     autonumber
@@ -32,7 +34,9 @@ sequenceDiagram
     S1 -->> T: cleanup
 ```
 
-!!! info "Legend"
+</div>
+
+!!! info ""
     1. Test starts by executing Step 1
     1. Step 1 terminates -> Step 2 starts executing
     1. Step 2 terminates -> Step 3 starts executing
@@ -41,6 +45,8 @@ sequenceDiagram
     1. Cleanup for Step 2 terminates -> Cleanup for Step 1 is executed
 
 ### With failure
+
+<div style="text-align: center;">
 
 ```mermaid
 sequenceDiagram
@@ -57,7 +63,9 @@ sequenceDiagram
     S1 -->> T: cleanup
 ```
 
-!!! info "Legend"
+</div>
+
+!!! info ""
     1. Test starts by executing Step 1
     1. Step 1 terminates -> Step 2 starts executing
     1. Step 2 fails -> Cleanup for Step 2 starts

@@ -5,7 +5,7 @@ Collecting namespace events can help understand what happened inside the cluster
 ## Configuration
 
 !!! tip "Reference documentation"
-    - The full structure of the `Events` resource is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Events).
+    - The full structure of the `Events` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Events).
 
 ### All namespaces
 

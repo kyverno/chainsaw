@@ -2,7 +2,7 @@
 
 By default, Chainsaw will create an ephemeral namespace with a random name for each test, unless a specific namespace name is provided at the global or test level.
 
-## Namespace selection
+## Selection
 
 ### Global
 
