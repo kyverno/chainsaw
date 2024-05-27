@@ -61,8 +61,8 @@ nav:
   # - operations/check.md
   - operations/apply.md
   - operations/assert.md
-  - operations/create.md
   - operations/command.md
+  - operations/create.md
   - operations/delete.md
   - operations/error.md
   - operations/patch.md
