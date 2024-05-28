@@ -11,9 +11,7 @@ func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *Config
 		out.DelayBeforeCleanup = in.DelayBeforeCleanup
 	}
 	out.Clusters = in.Clusters
-	if in := in.Deletion; in != nil {
-		out.DeletionPropagationPolicy = in.Propagation
-	}
+	out.DeletionPropagationPolicy = in.Deletion.Propagation
 	out.ExcludeTestRegex = in.Discovery.ExcludeTestRegex
 	out.IncludeTestRegex = in.Discovery.IncludeTestRegex
 	out.TestFile = in.Discovery.TestFile
@@ -49,7 +47,7 @@ func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alph
 		DelayBeforeCleanup: in.DelayBeforeCleanup,
 	}
 	out.Clusters = in.Clusters
-	out.Deletion = &DeletionOptions{
+	out.Deletion = DeletionOptions{
 		Propagation: in.DeletionPropagationPolicy,
 	}
 	out.Discovery = Discovery{
