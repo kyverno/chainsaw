@@ -1,6 +1,6 @@
 # Execution options
 
-Execution options determine how tests are run.
+Execution options determine how tests are run by Chainsaw.
 
 ## Supported elements
 
@@ -13,7 +13,7 @@ Execution options determine how tests are run.
 
 ### Termination grace period
 
-Some Kubernetes resources can take time before being stopped. For example, deleting a pod can take time if the underlying container doesn't quit quickly enough.
+Some Kubernetes resources can take time before being terminated. For example, deleting a pod can take time if the underlying container doesn't quit quickly enough.
 
 Chainsaw can override the grace period for the following resource kinds:
 

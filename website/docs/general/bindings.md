@@ -7,9 +7,6 @@ For example, to pass data from one operation to another, to implement resource t
 
 ## Syntax
 
-!!! tip
-    Browse the [reference documentation](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Binding) to see the syntax details and where bindings can be declared.
-
 The test below illustrates bindings declaration at different levels:
 
 ```yaml
@@ -41,6 +38,10 @@ spec:
         content: echo $GREETINGS
 ```
 
+### Reference
+
+Browse the [reference documentation](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Binding) to see the syntax details and where bindings can be declared.
+
 ### Inheritance
 
 Bindings can be configured at the test, step or operation level.
@@ -63,4 +64,4 @@ Both `name` and `value` of a binding can use [templating](./templating.md).
 
 Chainsaw offers some built-in bindings you can directly use in your tests, steps and operations.
 
-Browse the [built-in bindings list](./builtins.md) to find available bindings.
+Browse the [built-in bindings list](../reference/builtins.md) to find available bindings.

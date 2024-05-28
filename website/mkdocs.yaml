@@ -16,6 +16,7 @@ nav:
   - quick-start/timeouts.md
   - quick-start/cleanup.md
   - quick-start/next-steps.md
+  - quick-start/resources.md
   - CI/CD:
     - cicd/gh-action.md
 - Configuration:
@@ -35,6 +36,8 @@ nav:
     - configuration/options/clusters.md
     - configuration/options/pause.md
     - configuration/options/no-cluster.md
+    - configuration/options/label-selectors.md
+    - configuration/options/values.md
 - Test:
   - test/index.md
   - test/explicit.md
@@ -46,19 +49,17 @@ nav:
     - general/templating.md
     - general/outputs.md
     - general/references.md
-    - diagrams/test-lifecycle.md
-    - diagrams/step-lifecycle.md
-    - general/builtins.md
+    - general/checks.md
   - Test spec:
     - test/spec/index.md
-  - Steps spec:
+  - Test step spec:
     - step/index.md
     - step/try.md
     - step/catch.md
     - step/finally.md
+    - step/cleanup.md
 - Operations:
   - operations/index.md
-  # - operations/check.md
   - operations/apply.md
   - operations/assert.md
   - operations/command.md
@@ -69,8 +70,6 @@ nav:
   - operations/script.md
   - operations/sleep.md
   - operations/update.md
-  # - operations/templating.md
-  # - operations/non-resource-assert.md
   - Kubectl helpers:
     - operations/helpers/index.md
     - operations/helpers/describe.md
@@ -79,6 +78,8 @@ nav:
     - operations/helpers/logs.md
     - operations/helpers/wait.md
 - Reference:
+  - reference/index.md
+  - reference/builtins.md
   - reference/json-schemas.md
   - APIs:
     - v1alpha1: reference/apis/chainsaw.v1alpha1.md
@@ -109,17 +110,17 @@ nav:
     - chainsaw version: reference/commands/chainsaw_version.md
 - Examples:
   - examples/index.md
-  - examples/inline.md
-  - examples/negative-testing.md
   - examples/crds.md
   - examples/events.md
+  - examples/label-selectors.md
+  - examples/inline.md
   - examples/concurrency.md
   - examples/kube-version.md
   - examples/non-resource-assertions.md
-  - examples/test-output.md
-  - examples/label-selectors.md
   - examples/values.md
   - examples/multi-cluster.md
+  - examples/negative-testing.md
+  - examples/test-output.md
   - Guides:
     - guides/lint.md
     - guides/kuttl-migration.md

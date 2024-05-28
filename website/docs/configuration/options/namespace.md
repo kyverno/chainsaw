@@ -1,6 +1,6 @@
 # Namespace options
 
-Namespace options contain the configuration used to allocate a namespace for each test.
+Namespace options contain the configuration used by Chainsaw to allocate a namespace for each test.
 
 ## Supported elements
 
