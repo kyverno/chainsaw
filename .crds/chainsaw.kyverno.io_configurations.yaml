@@ -727,6 +727,7 @@ spec:
                   ends and the time cleanup starts.
                 type: string
               deletionPropagationPolicy:
+                default: Background
                 description: |-
                   DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
                   the object, and how the garbage collector will handle the propagation.
@@ -891,9 +892,11 @@ spec:
                   tests.
                 type: object
               deletion:
+                default: {}
                 description: Deletion contains the global deletion configuration.
                 properties:
                   propagation:
+                    default: Background
                     description: |-
                       Propagation decides if a deletion will propagate to the dependents of
                       the object, and how the garbage collector will handle the propagation.
