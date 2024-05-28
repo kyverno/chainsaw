@@ -30,7 +30,8 @@ type DeletionOptions struct {
 	// the object, and how the garbage collector will handle the propagation.
 	// +optional
 	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
-	Propagation *metav1.DeletionPropagation `json:"propagation,omitempty"`
+	// +kubebuilder:default:=Background
+	Propagation metav1.DeletionPropagation `json:"propagation,omitempty"`
 }
 
 // Discovery options contain the discovery configuration used when discovering tests in folders.

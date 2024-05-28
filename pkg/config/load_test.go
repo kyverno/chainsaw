@@ -3,7 +3,6 @@ package config
 import (
 	"errors"
 	"os"
-	"reflect"
 	"testing"
 	"time"
 
@@ -49,14 +48,15 @@ func TestLoad(t *testing.T) {
 				Name: "default",
 			},
 			Spec: v1alpha1.ConfigurationSpec{
-				TestFile:         "chainsaw-test",
-				SkipDelete:       false,
-				FailFast:         false,
-				ReportFormat:     "",
-				ReportName:       "chainsaw-report",
-				FullName:         false,
-				IncludeTestRegex: "",
-				ExcludeTestRegex: "",
+				TestFile:                  "chainsaw-test",
+				SkipDelete:                false,
+				FailFast:                  false,
+				ReportFormat:              "",
+				ReportName:                "chainsaw-report",
+				FullName:                  false,
+				IncludeTestRegex:          "",
+				ExcludeTestRegex:          "",
+				DeletionPropagationPolicy: metav1.DeletePropagationBackground,
 			},
 		},
 	}, {
@@ -89,6 +89,7 @@ func TestLoad(t *testing.T) {
 				IncludeTestRegex:            "include-*",
 				ExcludeTestRegex:            "exclude-*",
 				ForceTerminationGracePeriod: &metav1.Duration{Duration: 10 * time.Second},
+				DeletionPropagationPolicy:   metav1.DeletePropagationBackground,
 			},
 		},
 	}, {
@@ -99,13 +100,12 @@ func TestLoad(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := Load(tt.path)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("Load() error = %v, wantErr %v", err, tt.wantErr)
-				return
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("Load() = %v, want %v", got, tt.want)
-			}
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

@@ -34,5 +34,6 @@ spec:
 
 ### With flags
 
-!!! note
-    Deletion options can't be configured with flags.
+```bash
+chainsaw test --deletion-propagation-policy Foreground
+```
