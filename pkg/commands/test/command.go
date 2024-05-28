@@ -155,8 +155,7 @@ func Command() *cobra.Command {
 				configuration.Spec.Namespace = options.namespace
 			}
 			if flagutils.IsSet(flags, "deletion-propagation-policy") {
-				deletionPropagationPolicy := metav1.DeletionPropagation(options.deletionPropagationPolicy)
-				configuration.Spec.DeletionPropagationPolicy = &deletionPropagationPolicy
+				configuration.Spec.DeletionPropagationPolicy = metav1.DeletionPropagation(options.deletionPropagationPolicy)
 			}
 			if flagutils.IsSet(flags, "full-name") {
 				configuration.Spec.FullName = options.fullName
@@ -227,6 +226,7 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.DeleteDuration())
 			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.ErrorDuration())
 			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.ExecDuration())
+			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.DeletionPropagationPolicy)
 			if configuration.Spec.Parallel != nil && *configuration.Spec.Parallel > 0 {
 				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Parallel)
 			}
@@ -314,37 +314,53 @@ func Command() *cobra.Command {
 			return err
 		},
 	}
-	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test", "Name of the test file")
+	// config
+	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file")
+	cmd.Flags().StringSliceVar(&options.testDirs, "test-dir", nil, "Directories containing test cases to run")
+	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
+	// timeouts options
 	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", v1alpha1.DefaultApplyTimeout, "The apply timeout to use as default for configuration")
 	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", v1alpha1.DefaultAssertTimeout, "The assert timeout to use as default for configuration")
 	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", v1alpha1.DefaultErrorTimeout, "The error timeout to use as default for configuration")
 	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", v1alpha1.DefaultDeleteTimeout, "The delete timeout to use as default for configuration")
 	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", v1alpha1.DefaultCleanupTimeout, "The cleanup timeout to use as default for configuration")
 	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", v1alpha1.DefaultExecTimeout, "The exec timeout to use as default for configuration")
-	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file")
-	cmd.Flags().StringSliceVar(&options.testDirs, "test-dir", nil, "Directories containing test cases to run")
-	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests")
-	cmd.Flags().BoolVar(&options.template, "template", template.DefaultTemplate, "If set, resources will be considered for templating")
-	cmd.Flags().BoolVar(&options.failFast, "fail-fast", false, "Stop the test upon encountering the first failure")
-	cmd.Flags().IntVar(&options.parallel, "parallel", 0, "The maximum number of tests to run at once")
-	cmd.Flags().IntVar(&options.repeatCount, "repeat-count", 1, "Number of times to repeat each test")
-	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil)")
-	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create")
-	cmd.Flags().StringVar(&options.reportPath, "report-path", "", "The path of the report to create")
-	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests")
-	cmd.Flags().StringVar(&options.deletionPropagationPolicy, "deletion-propagation-policy", "Foreground", "The deletion propagation policy (Foreground|Background|Orphan)")
+	// discovery options
+	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test", "Name of the test file")
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name")
 	cmd.Flags().StringVar(&options.includeTestRegex, "include-test-regex", "", "Regular expression to include tests")
 	cmd.Flags().StringVar(&options.excludeTestRegex, "exclude-test-regex", "", "Regular expression to exclude tests")
-	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
+	// execution options
+	cmd.Flags().BoolVar(&options.failFast, "fail-fast", false, "Stop the test upon encountering the first failure")
+	cmd.Flags().IntVar(&options.parallel, "parallel", 0, "The maximum number of tests to run at once")
+	cmd.Flags().IntVar(&options.repeatCount, "repeat-count", 1, "Number of times to repeat each test")
 	cmd.Flags().DurationVar(&options.forceTerminationGracePeriod.Duration, "force-termination-grace-period", 0, "If specified, overrides termination grace periods in applicable resources")
+	// namespace options
+	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests")
+	// templating options
+	cmd.Flags().BoolVar(&options.template, "template", template.DefaultTemplate, "If set, resources will be considered for templating")
+	// cleanup options
+	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests")
 	cmd.Flags().DurationVar(&options.delayBeforeCleanup.Duration, "cleanup-delay", 0, "Adds a delay between the time a test ends and the time cleanup starts")
-	cmd.Flags().StringSliceVar(&options.selector, "selector", nil, "Selector (label query) to filter on")
-	cmd.Flags().BoolVar(&options.noCluster, "no-cluster", false, "Runs without cluster")
-	cmd.Flags().StringSliceVar(&options.values, "values", nil, "Values passed to the tests")
+	// deletion options
+	cmd.Flags().StringVar(&options.deletionPropagationPolicy, "deletion-propagation-policy", "Background", "The deletion propagation policy (Foreground|Background|Orphan)")
+	// error options
+	// reporting options
+	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil)")
+	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create")
+	cmd.Flags().StringVar(&options.reportPath, "report-path", "", "The path of the report to create")
+	// multi-cluster options
 	cmd.Flags().StringSliceVar(&options.clusters, "cluster", nil, "Register cluster (format <cluster name>=<kubeconfig path>:[context name])")
+	// pause options
 	cmd.Flags().BoolVar(&options.pauseOnFailure, "pause-on-failure", false, "Pause test execution failure (implies no concurrency)")
-	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
+	// no cluster options
+	cmd.Flags().BoolVar(&options.noCluster, "no-cluster", false, "Runs without cluster")
+	// label selectors
+	cmd.Flags().StringSliceVar(&options.selector, "selector", nil, "Selector (label query) to filter on")
+	// external values
+	cmd.Flags().StringSliceVar(&options.values, "values", nil, "Values passed to the tests")
+	// others
+	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
 	}
