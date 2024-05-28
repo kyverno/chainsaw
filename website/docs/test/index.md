@@ -8,7 +8,10 @@ To put it simply, a test can be represented as an ordered sequence of test steps
 
 In turn, a test step can be represented as an ordered sequence of operations.
 
-### Definition approach
+- When an operation fails the test is considered failed
+- If all operations succeed the test is considered successful
+
+## Definition approach
 
 Chainsaw supports two different test definition approaches:
 
@@ -27,12 +30,12 @@ The concepts below are at the heart of Chainsaw:
 - [Bindings](../general/bindings.md)
 - [Templating](../general/templating.md)
 - [Outputs](../general/outputs.md)
-- [Test lifecycle](../diagrams/test-lifecycle.md)
-- [Step lifecycle](../diagrams/step-lifecycle.md)
+- [References](../general/references.md)
+- [Operation checks](../general/checks.md)
 
 ## Test and Step specs
 
 Browse the test and step specs to learn all the details and options:
 
 - [Test spec](./spec/index.md)
-- [Step spec](../step/index.md)
+- [Test step spec](../step/index.md)

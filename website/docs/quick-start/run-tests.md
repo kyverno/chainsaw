@@ -6,7 +6,7 @@ After [installing chainsaw](./install.md) and [writing tests](./first-test.md), 
 
 To use Chainsaw you will need a [Kubernetes](https://kybernetes.io) cluster, **Chainsaw won't create one for you**.
 
-!!! warning "Not a cluster management tool"
+!!! info "Not a cluster management tool"
     We consider this is not the responsibility of Chainsaw to manage clusters.
     There are plenty of solutions to create and manage local clusters that will do that better than Chainsaw.
 

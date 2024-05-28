@@ -1,6 +1,6 @@
 # Error options
 
-Error options contain the global error configuration.
+Error options contain the global error configuration used by Chainsaw.
 
 ## Supported elements
 

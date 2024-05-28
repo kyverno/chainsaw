@@ -1,6 +1,6 @@
 # Deletion options
 
-Deletion options contain the configuration used for deleting resources.
+Deletion options determine the configuration used by Chainsaw for deleting resources.
 
 ## Supported elements
 

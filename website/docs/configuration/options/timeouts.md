@@ -3,7 +3,7 @@
 Timeouts in Chainsaw are specified per type of operation.
 This is required because the timeout varies greatly depending on the nature of an operation.
 
-For example, applying a manifest in a cluster is expected to be reasonably fast, while validating a resource can be a long operation.
+For example, applying a manifest in a cluster is expected to execute reasonably fast, while validating a resource can be a much longer operation.
 
 ## Supported timeouts
 

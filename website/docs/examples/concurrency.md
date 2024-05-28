@@ -2,7 +2,7 @@
 
 By default, Chainsaw will run tests in parallel.
 
-The number of concurrent tests can be configured globally using a configuration file or with the `--parallel` flag.
+The number of concurrent tests can be configured globally using a [configuration file](http://127.0.0.1:8000/chainsaw/configuration/options/execution/) or with the `--parallel` flag.
 
 Alternatively, the concurrent nature of a test can specified at the test level:
 
@@ -14,7 +14,7 @@ metadata:
 spec:
   # concurrency can be specified per test (`true` or `false`)
   # default value is `true`
-  concurrent: true
+  concurrent: false
   # ...
 ```
 

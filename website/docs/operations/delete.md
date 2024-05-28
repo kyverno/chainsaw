@@ -1,6 +1,6 @@
 # Delete
 
-The `delete` operation allows you to specify resources that should be deleted from the Kubernetes cluster before a particular test step is executed.
+The `delete` operation defines resources that should be deleted from a Kubernetes cluster.
 
 !!! warning
     The propagation policy is forced to `Background` because some types default to `Orphan` (this is the case for unmanaged jobs for example) and we don't want to let dangling pods run in the cluster after cleanup.
@@ -9,10 +9,16 @@ The `delete` operation allows you to specify resources that should be deleted fr
 
 The full structure of the `Delete` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
 
-!!! tip
-    - This operation supports [bindings](../general/bindings.md).
+### Features
 
-## Usage examples
+| Supported features                                 |                    |
+|----------------------------------------------------|:------------------:|
+| [Bindings](../general/bindings.md) support         | :white_check_mark: |
+| [Outputs](../general/outputs.md) support           | :x:                |
+| [Templating](../general/templating.md) support     | :white_check_mark: |
+| [Operation checks](../general/checks.md) support   | :white_check_mark: |
+
+## Examples
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
