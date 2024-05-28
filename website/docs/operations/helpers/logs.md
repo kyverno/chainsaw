@@ -6,11 +6,20 @@ Print the logs for a container in a pod or specified resource.
 
 The full structure of the `PodLogs` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-PodLogs).
 
-## Test namespace
+### Features
+
+| Supported features                                    |                    |
+|-------------------------------------------------------|:------------------:|
+| [Bindings](../../general/bindings.md) support         | :x:                |
+| [Outputs](../../general/outputs.md) support           | :x:                |
+| [Templating](../../general/templating.md) support     | :x:                |
+| [Operation checks](../../general/checks.md) support   | :x:                |
+
+### Test namespace
 
 Chainsaw will default the scope to the ephemeral test namespace.
 
-## All namespaces
+### All namespaces
 
 It is possible to consider all namespaces in the cluster by setting `namespace: '*'`.
 

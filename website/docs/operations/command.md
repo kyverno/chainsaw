@@ -2,13 +2,28 @@
 
 The `command` operation provides a mean to execute a specific command during the test step.
 
+!!! warning
+    Command arguments are not going through shell expansion.
+    
+    It's crucial to consider potential differences in behavior, as Chainsaw may interpret them differently compared to regular shell environments.
+
 ## Configuration
 
 The full structure of the `Command` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
 
-!!! tip
-    - This operation supports [bindings](../general/bindings.md).
-    - This operation supports [outputs](../general/outputs.md).
+### Features
+
+| Supported features                                 |                    |
+|----------------------------------------------------|:------------------:|
+| [Bindings](../general/bindings.md) support         | :white_check_mark: |
+| [Outputs](../general/outputs.md) support           | :white_check_mark: |
+| [Templating](../general/templating.md) support     | :x:                |
+| [Operation checks](../general/checks.md) support   | :white_check_mark: |
+
+### KUBECONFIG
+
+- Unless `--no-cluster` is specified, Chainsaw always executes commands in the context of a temporary `KUBECONFIG`, built from the configured target cluster.
+- This specific `KUBECONFIG` has a single cluster, auth info and context configured (all named `chainsaw`).
 
 ## Examples
 
@@ -25,9 +40,6 @@ spec:
         args:
         - hello chainsaw
 ```
-
-!!! warning
-    Command arguments are not going through shell expansion. It's crucial to consider potential differences in behavior, as Chainsaw may interpret them differently compared to regular shell or bash environments, especially when processing quotes.
 
 ### Operation check
 

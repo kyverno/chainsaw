@@ -66,10 +66,10 @@ Chainsaw is basically making a decision by comparing an actual and expected reso
 
 ## Beyond simple equality
 
-The assertion below will check that the number of replicas for a deployment is **greater than 3 AND less than 6**.
+The assertion below will check that the number of replicas for a deployment is **greater than 1 AND less than 4**.
 
 Chainsaw doesn't need to know the exact expected number of replicas.
-The `(replicas > 3 && replicas < 6)` expression will be evaluated until the result is `true` or the operation timeout expires (making the assertion fail).
+The `(replicas > 1 && replicas < 4)` expression will be evaluated until the result is `true` or the operation timeout expires (making the assertion fail).
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1
@@ -79,16 +79,15 @@ metadata:
 spec:
   steps:
   - try:
-    # ...
     - assert:
         resource:
-          apiVersion: v1
+          apiVersion: apps/v1
           kind: Deployment
           metadata:
-            name: foo
+            name: coredns
+            namespace: kube-system
           spec:
-            (replicas > `3` && replicas < `6`): true
-    # ...
+            (replicas > `1` && replicas < `4`): true
 ```
 
 !!! tip
@@ -126,7 +125,7 @@ spec:
               secret:
                 name: minio
                 type: s3
-            # ...
+            ...
     - assert:
         resource:
           apiVersion: tempo.grafana.com/v1alpha1

@@ -8,8 +8,20 @@ For example, after applying resources, you might want to ensure that a particula
 
 The full structure of the `Assert` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Assert).
 
-!!! tip
-    - This operation supports [bindings](../general/bindings.md).
+### Features
+
+| Supported features                                 |                           |
+|----------------------------------------------------|:-------------------------:|
+| [Bindings](../general/bindings.md) support         | :white_check_mark:        |
+| [Outputs](../general/outputs.md) support           | :x:                       |
+| [Templating](../general/templating.md) support     | :x: \| :white_check_mark: |
+| [Operation checks](../general/checks.md) support   | :x:                       |
+
+### Templating
+
+When working with `assert` and `error` operations, the content is already an assertion tree and therefore mostly represents a logical operation. An exception to this rule is for fields participating in the resource selection process.
+
+For this reason, only elements used for looking up the resources from the cluster will be considered for templating. That is, `apiVersion`, `kind`, `name`, `namespace` and `labels`.
 
 ## Examples
 

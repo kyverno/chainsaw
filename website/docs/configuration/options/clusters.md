@@ -13,6 +13,8 @@ Every cluster is registered by name and supports the following elements:
 
 ## Configuration
 
+### With file
+
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha2
 kind: Configuration
@@ -31,7 +33,7 @@ spec:
       context: context-2
 ```
 
-## Flag
+### With flags
 
 !!! note
     The `--cluster` flag can appear multiple times and is expected to come in the following format:

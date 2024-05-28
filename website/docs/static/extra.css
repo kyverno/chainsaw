@@ -3,6 +3,6 @@ body>header>nav>a>img {
     border: 1px solid #555;
 }
 
-.md-main .md-main__inner {
-    min-height: 90vh;
+td:nth-child(1) {
+    text-wrap: nowrap;
 }

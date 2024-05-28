@@ -1,6 +1,6 @@
 # Discovery options
 
-Discovery options contain the discovery configuration used when discovering tests in folders.
+Discovery options contain the discovery configuration used by Chainsaw when discovering tests in specified folders.
 
 ## Supported elements
 

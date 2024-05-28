@@ -1,6 +1,6 @@
 # Reporting options
 
-Reporting options contain the configuration used for reporting.
+Reporting options contain the configuration used by Chainsaw for reporting.
 
 ## Supported elements
 

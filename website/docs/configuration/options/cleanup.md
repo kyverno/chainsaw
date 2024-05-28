@@ -1,6 +1,6 @@
 # Cleanup options
 
-Cleanup options contain the configuration used for cleaning up resources.
+Cleanup options contain the configuration used by Chainsaw for cleaning up resources.
 
 ## Supported elements
 
