@@ -34,7 +34,8 @@ type ConfigurationSpec struct {
 
 	// Deletion contains the global deletion configuration.
 	// +optional
-	Deletion *DeletionOptions `json:"deletion,omitempty"`
+	// +kubebuilder:default:={}
+	Deletion DeletionOptions `json:"deletion,omitempty"`
 
 	// Discovery contains tests discovery configuration.
 	// +optional

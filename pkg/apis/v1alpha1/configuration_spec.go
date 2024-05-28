@@ -40,7 +40,8 @@ type ConfigurationSpec struct {
 	// the object, and how the garbage collector will handle the propagation.
 	// +optional
 	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
-	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
+	// +kubebuilder:default:=Background
+	DeletionPropagationPolicy metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
 
 	// ReportFormat determines test report format (JSON|XML|nil) nil == no report.
 	// maps to report.Type, however we don't want generated.deepcopy to have reference to it.
