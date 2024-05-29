@@ -3,10 +3,6 @@
 Release notes for `TODO`.
 
 <!--
-## 💫 New features 💫
-
-## 🔧 Fixes 🔧
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
@@ -20,6 +16,10 @@ Release notes for `TODO`.
 
 - Directly specifying resource name has been dropped, only `apiVersion` / `kind` is supported now
 
+## 💫 New features 💫
+
+- Added test metadata built-in binding
+
 ## 📚 Docs 📚
 
-- Removed code markers on titles in api reference documentation
+- Removed code markers on titles in API reference documentation
