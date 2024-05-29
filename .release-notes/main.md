@@ -5,8 +5,6 @@ Release notes for `TODO`.
 <!--
 ## ‼️ Breaking changes ‼️
 
-## 💫 New features 💫
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
@@ -18,6 +16,10 @@ Release notes for `TODO`.
 ## 🎸 Misc 🎸
 -->
 
+## 💫 New features 💫
+
+- Added test metadata built-in binding
+
 ## 📚 Docs 📚
 
-- Removed code markers on titles in api reference documentation
+- Removed code markers on titles in API reference documentation
