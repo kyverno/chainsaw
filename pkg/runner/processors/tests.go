@@ -130,7 +130,8 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	for i, test := range p.tests {
+	for i := range p.tests {
+		test := p.tests[i]
 		name, err := names.Test(p.config, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -144,9 +145,13 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				}
 			})
 			processor := p.CreateTestProcessor(test)
+			info := TestInfo{
+				Id:       i + 1,
+				Metadata: test.ObjectMeta,
+			}
 			processor.Run(
 				testing.IntoContext(ctx, t),
-				apibindings.RegisterNamedBinding(ctx, bindings, "test", TestInfo{Id: i + 1}),
+				apibindings.RegisterNamedBinding(ctx, bindings, "test", info),
 				nspacer,
 			)
 		})
