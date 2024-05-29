@@ -11,6 +11,7 @@ import (
 	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
+	yamlv3 "gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/client-go/openapi"
@@ -44,6 +45,15 @@ func Parse(content []byte) ([]*v1alpha1.Test, error) {
 	return parse(content, nil, nil, nil, nil)
 }
 
+func remarshal(document []byte) ([]byte, error) {
+	var pre map[string]any
+	err := yamlv3.Unmarshal(document, &pre)
+	if err != nil {
+		return nil, err
+	}
+	return yamlv3.Marshal(pre)
+}
+
 func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter, validator validator) ([]*v1alpha1.Test, error) {
 	if splitter == nil {
 		splitter = yaml.SplitDocuments
@@ -74,6 +84,10 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 	}
 	var tests []*v1alpha1.Test
 	for _, document := range documents {
+		document, err := remarshal(document)
+		if err != nil {
+			return nil, err
+		}
 		gvk, untyped, err := loader.Load(document)
 		if err != nil {
 			return nil, err
