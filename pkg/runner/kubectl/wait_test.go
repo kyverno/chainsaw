@@ -53,7 +53,8 @@ func TestWait(t *testing.T) {
 		name: "valid clustered resource and condition",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "clusterroles.v1.rbac.authorization.k8s.io",
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRole",
 			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{

@@ -14,7 +14,7 @@ Release notes for `TODO`.
 
 ## ‼️ Breaking changes ‼️
 
-- Directly specifying resource name has been dropped, only `apiVersion` / `kind` is supported now
+- Directly specifying resource name was dropped, only `apiVersion` / `kind` is supported now
 
 ## 💫 New features 💫
 
