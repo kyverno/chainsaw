@@ -20,9 +20,15 @@ func TestValidateResourceReference(t *testing.T) {
 		want: field.ErrorList{
 			&field.Error{
 				Type:     field.ErrorTypeInvalid,
-				Field:    "foo",
+				Field:    "foo.kind",
 				BadValue: v1alpha1.ResourceReference{},
-				Detail:   "kind or resource must be specified",
+				Detail:   "kind must be specified",
+			},
+			&field.Error{
+				Type:     field.ErrorTypeInvalid,
+				Field:    "foo.apiVersion",
+				BadValue: v1alpha1.ResourceReference{},
+				Detail:   "apiVersion must be specified",
 			},
 		},
 	}, {
@@ -38,7 +44,7 @@ func TestValidateResourceReference(t *testing.T) {
 				BadValue: v1alpha1.ResourceReference{
 					Kind: "foo",
 				},
-				Detail: "apiVersion must be specified when kind is set",
+				Detail: "apiVersion must be specified",
 			},
 		},
 	}}

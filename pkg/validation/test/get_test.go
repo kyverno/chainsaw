@@ -18,7 +18,12 @@ func TestValidateGet(t *testing.T) {
 		name:      "No resource provided",
 		input:     &v1alpha1.Get{},
 		expectErr: true,
-		errMsg:    "kind or resource must be specified",
+		errMsg:    "apiVersion must be specified",
+	}, {
+		name:      "No resource provided",
+		input:     &v1alpha1.Get{},
+		expectErr: true,
+		errMsg:    "kind must be specified",
 	}, {
 		name: "Neither Name nor Selector provided",
 		input: &v1alpha1.Get{

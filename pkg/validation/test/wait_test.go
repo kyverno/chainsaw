@@ -18,7 +18,12 @@ func TestValidateWait(t *testing.T) {
 		name:      "No resource provided",
 		input:     &v1alpha1.Wait{},
 		expectErr: true,
-		errMsg:    "kind or resource must be specified",
+		errMsg:    "kind must be specified",
+	}, {
+		name:      "No resource provided",
+		input:     &v1alpha1.Wait{},
+		expectErr: true,
+		errMsg:    "apiVersion must be specified",
 	}, {
 		name: "No condition provided",
 		input: &v1alpha1.Wait{
