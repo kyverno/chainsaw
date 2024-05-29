@@ -27,15 +27,14 @@ import (
 func TestStepProcessor_Run(t *testing.T) {
 	testData := filepath.Join("..", "..", "..", "testdata", "runner", "processors")
 	testCases := []struct {
-		name       string
-		config     v1alpha1.ConfigurationSpec
-		client     client.Client
-		namespacer *fakeNamespacer.FakeNamespacer
-		clock      clock.PassiveClock
-		test       discovery.Test
-		stepSpec   v1alpha1.TestStep
-		stepReport *report.StepReport
-		// cleaner      *cleaner
+		name         string
+		config       v1alpha1.ConfigurationSpec
+		client       client.Client
+		namespacer   *fakeNamespacer.FakeNamespacer
+		clock        clock.PassiveClock
+		test         discovery.Test
+		stepSpec     v1alpha1.TestStep
+		stepReport   *report.StepReport
 		expectedFail bool
 		skipped      bool
 	}{{
