@@ -19,27 +19,13 @@ func mapResource(client client.Client, bindings binding.Bindings, resource v1alp
 		} else if kind, err := apibindings.String(resource.Kind, bindings); err != nil {
 			return "", false, err
 		} else {
-			return mapResourceFromKind(client, apiVersion, kind)
+			return mapResourceFromApiVersionAndKind(client, apiVersion, kind)
 		}
 	}
 	return "", false, errors.New("failed to map resource, either kind or resource must be specified")
 }
 
-func mapResourceFromResource(client client.Client, resource string) (string, bool, error) {
-	gvr, gv := schema.ParseResourceArg(resource)
-	if gvr == nil {
-		gvr = &schema.GroupVersionResource{Group: gv.Group, Resource: gv.Resource}
-	}
-	mapper := client.RESTMapper()
-	gvk, err := mapper.KindFor(*gvr)
-	// if we have an error, it may be because the resource name is a short one
-	if err != nil {
-		return resource, false, nil
-	}
-	return mapResourceFromGVK(mapper, gvk)
-}
-
-func mapResourceFromKind(client client.Client, apiVersion string, kind string) (string, bool, error) {
+func mapResourceFromApiVersionAndKind(client client.Client, apiVersion string, kind string) (string, bool, error) {
 	gv, err := schema.ParseGroupVersion(apiVersion)
 	if err != nil {
 		return "", false, err
