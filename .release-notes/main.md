@@ -15,7 +15,9 @@ Release notes for `TODO`.
 
 ## 🔧 Fixes 🔧
 
-## 📚 Docs 📚
-
 ## 🎸 Misc 🎸
 -->
+
+## 📚 Docs 📚
+
+- Removed code markers on titles in api reference documentation

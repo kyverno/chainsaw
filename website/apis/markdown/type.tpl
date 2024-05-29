@@ -1,5 +1,5 @@
 {{- define "type" }}
-## `{{ .Name.Name }}`     {#{{ .Anchor }}}
+## {{ .Name.Name }}     {#{{ .Anchor }}}
 {{- if eq .Kind "Alias" }}
 
 (Alias of `{{ .Underlying }}`)
