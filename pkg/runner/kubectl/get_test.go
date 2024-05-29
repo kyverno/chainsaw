@@ -41,7 +41,8 @@ func TestGet(t *testing.T) {
 		name: "with resource",
 		collector: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 		},
 		want: &v1alpha1.Command{
@@ -53,7 +54,8 @@ func TestGet(t *testing.T) {
 		name: "with clustered resource",
 		collector: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "clusterroles.v1.rbac.authorization.k8s.io",
+				APIVersion: "rbac.authorization.k8s.io/v1",
+				Kind:       "ClusterRole",
 			},
 		},
 		want: &v1alpha1.Command{
@@ -65,7 +67,8 @@ func TestGet(t *testing.T) {
 		name: "with name",
 		collector: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "foo",
@@ -80,7 +83,8 @@ func TestGet(t *testing.T) {
 		name: "with namespace",
 		collector: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Namespace: "bar",
@@ -95,7 +99,8 @@ func TestGet(t *testing.T) {
 		name: "with name and namespace",
 		collector: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name:      "foo",
@@ -111,7 +116,8 @@ func TestGet(t *testing.T) {
 		name: "with selector",
 		collector: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Selector: "foo=bar",
@@ -126,7 +132,8 @@ func TestGet(t *testing.T) {
 		name: "with name and selector",
 		collector: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name:     "foo",
@@ -138,7 +145,8 @@ func TestGet(t *testing.T) {
 		name: "with namespace and selector",
 		collector: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Namespace: "bar",

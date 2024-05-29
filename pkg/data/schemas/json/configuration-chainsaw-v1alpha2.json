@@ -764,13 +764,14 @@
                       "object",
                       "null"
                     ],
+                    "required": [
+                      "apiVersion",
+                      "kind"
+                    ],
                     "properties": {
                       "apiVersion": {
                         "description": "API version of the referent.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "cluster": {
                         "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -811,10 +812,7 @@
                       },
                       "kind": {
                         "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "name": {
                         "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -825,13 +823,6 @@
                       },
                       "namespace": {
                         "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "resource": {
-                        "description": "Resource name of the referent.",
                         "type": [
                           "string",
                           "null"
@@ -955,13 +946,14 @@
                       "object",
                       "null"
                     ],
+                    "required": [
+                      "apiVersion",
+                      "kind"
+                    ],
                     "properties": {
                       "apiVersion": {
                         "description": "API version of the referent.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "cluster": {
                         "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -1010,10 +1002,7 @@
                       },
                       "kind": {
                         "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "name": {
                         "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -1024,13 +1013,6 @@
                       },
                       "namespace": {
                         "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "resource": {
-                        "description": "Resource name of the referent.",
                         "type": [
                           "string",
                           "null"
@@ -1325,15 +1307,14 @@
                       "null"
                     ],
                     "required": [
-                      "for"
+                      "apiVersion",
+                      "for",
+                      "kind"
                     ],
                     "properties": {
                       "apiVersion": {
                         "description": "API version of the referent.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "cluster": {
                         "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
@@ -1439,10 +1420,7 @@
                       },
                       "kind": {
                         "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
+                        "type": "string"
                       },
                       "name": {
                         "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -1453,13 +1431,6 @@
                       },
                       "namespace": {
                         "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "resource": {
-                        "description": "Resource name of the referent.",
                         "type": [
                           "string",
                           "null"

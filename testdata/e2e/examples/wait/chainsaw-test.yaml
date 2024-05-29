@@ -7,7 +7,8 @@ spec:
   catch:
   - events: {}
   - describe:
-      resource: crds
+      apiVersion: apiextensions.k8s.io/v1
+      kind: CustomResourceDefinition
   steps:
   - try:
     - create:
@@ -22,7 +23,8 @@ spec:
               image: nginx
     - wait:
         timeout: 1m
-        resource: pods
+        apiVersion: v1
+        kind: Pod
         name: example
         format: yaml
         for:
@@ -46,7 +48,8 @@ spec:
           kind: Pod
           name: example
     - wait:
-        resource: pods
+        apiVersion: v1
+        kind: Pod
         name: example
         for:
           deletion: {}
@@ -57,7 +60,8 @@ spec:
           kind: Pod
           name: example
     - wait:
-        resource: pods
+        apiVersion: v1
+        kind: Pod
         name: example
         for:
           deletion: {}

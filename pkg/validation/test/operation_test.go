@@ -81,7 +81,8 @@ func TestValidateOperation(t *testing.T) {
 	}
 	exampleWait := &v1alpha1.Wait{
 		ResourceReference: v1alpha1.ResourceReference{
-			Resource: "foos",
+			APIVersion: "v1",
+			Kind:       "Pod",
 		},
 		For: v1alpha1.For{
 			Deletion: &v1alpha1.Deletion{},

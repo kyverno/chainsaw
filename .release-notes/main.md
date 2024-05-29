@@ -3,18 +3,18 @@
 Release notes for `TODO`.
 
 <!--
-## ‼️ Breaking changes ‼️
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
 
-## 🔧 Fixes 🔧
-
 ## 🎸 Misc 🎸
 -->
+
+## ‼️ Breaking changes ‼️
+
+- Directly specifying resource name was dropped, only `apiVersion` / `kind` is supported now
 
 ## 💫 New features 💫
 

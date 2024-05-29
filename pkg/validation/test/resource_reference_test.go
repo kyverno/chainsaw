@@ -20,45 +20,15 @@ func TestValidateResourceReference(t *testing.T) {
 		want: field.ErrorList{
 			&field.Error{
 				Type:     field.ErrorTypeInvalid,
-				Field:    "foo",
+				Field:    "foo.kind",
 				BadValue: v1alpha1.ResourceReference{},
-				Detail:   "kind or resource must be specified",
+				Detail:   "kind must be specified",
 			},
-		},
-	}, {
-		name: "both kind and resource",
-		path: field.NewPath("foo"),
-		obj: v1alpha1.ResourceReference{
-			Resource: "foo",
-			Kind:     "bar",
-		},
-		want: field.ErrorList{
 			&field.Error{
-				Type:  field.ErrorTypeInvalid,
-				Field: "foo",
-				BadValue: v1alpha1.ResourceReference{
-					Resource: "foo",
-					Kind:     "bar",
-				},
-				Detail: "kind or resource must be specified (found both)",
-			},
-		},
-	}, {
-		name: "resource and apiVersion",
-		path: field.NewPath("foo"),
-		obj: v1alpha1.ResourceReference{
-			APIVersion: "v1",
-			Resource:   "foo",
-		},
-		want: field.ErrorList{
-			&field.Error{
-				Type:  field.ErrorTypeInvalid,
-				Field: "foo.apiVersion",
-				BadValue: v1alpha1.ResourceReference{
-					APIVersion: "v1",
-					Resource:   "foo",
-				},
-				Detail: "apiVersion must not be specified when resource is set",
+				Type:     field.ErrorTypeInvalid,
+				Field:    "foo.apiVersion",
+				BadValue: v1alpha1.ResourceReference{},
+				Detail:   "apiVersion must be specified",
 			},
 		},
 	}, {
@@ -74,7 +44,7 @@ func TestValidateResourceReference(t *testing.T) {
 				BadValue: v1alpha1.ResourceReference{
 					Kind: "foo",
 				},
-				Detail: "apiVersion must be specified when kind is set",
+				Detail: "apiVersion must be specified",
 			},
 		},
 	}}
