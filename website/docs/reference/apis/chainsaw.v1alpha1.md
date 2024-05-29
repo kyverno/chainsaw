@@ -293,7 +293,7 @@ If a resource already exists in the cluster it will fail.</p>
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `ResourceReference` | [`ResourceReference`](#chainsaw-kyverno-io-v1alpha1-ResourceReference) | :white_check_mark: | :white_check_mark: | <p>ResourceReference referenced resource type.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `showEvents` | `bool` |  |  | <p>Show Events indicates whether to include related events.</p> |
 
 ## Error     {#chainsaw-kyverno-io-v1alpha1-Error}
@@ -330,7 +330,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
 
 ## Expectation     {#chainsaw-kyverno-io-v1alpha1-Expectation}
@@ -464,7 +464,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `ResourceReference` | [`ResourceReference`](#chainsaw-kyverno-io-v1alpha1-ResourceReference) | :white_check_mark: | :white_check_mark: | <p>ResourceReference referenced resource type.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
 
 ## JsonPath     {#chainsaw-kyverno-io-v1alpha1-JsonPath}
@@ -643,7 +643,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `container` | `string` |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
 | `tail` | `int` |  |  | <p>Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.</p> |
 
@@ -663,15 +663,13 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 - [Get](#chainsaw-kyverno-io-v1alpha1-Get)
 - [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
 
-<p>ResourceReference represents a resource (API), it can be represented with a resource or a kind.
-Optionally an apiVersion can be specified.</p>
+<p>ResourceReference represents a resource (API).</p>
 
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `apiVersion` | `string` |  |  | <p>API version of the referent.</p> |
-| `kind` | `string` |  |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
-| `resource` | `string` |  |  | <p>Resource name of the referent.</p> |
+| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
+| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
 
 ## Script     {#chainsaw-kyverno-io-v1alpha1-Script}
 
@@ -836,7 +834,7 @@ If a resource does not exist in the cluster it will fail.</p>
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `ResourceReference` | [`ResourceReference`](#chainsaw-kyverno-io-v1alpha1-ResourceReference) | :white_check_mark: | :white_check_mark: | <p>ResourceReference referenced resource type.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `for` | [`For`](#chainsaw-kyverno-io-v1alpha1-For) | :white_check_mark: |  | <p>For specifies the condition to wait for.</p> |
 | `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
 

@@ -22,6 +22,7 @@ type Wait struct {
 	ResourceReference `json:",inline"`
 
 	// ObjectLabelsSelector determines the selection process of referenced objects.
+	// +optional
 	ObjectLabelsSelector `json:",inline"`
 
 	// For specifies the condition to wait for.

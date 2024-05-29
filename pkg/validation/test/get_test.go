@@ -18,12 +18,18 @@ func TestValidateGet(t *testing.T) {
 		name:      "No resource provided",
 		input:     &v1alpha1.Get{},
 		expectErr: true,
-		errMsg:    "kind or resource must be specified",
+		errMsg:    "apiVersion must be specified",
+	}, {
+		name:      "No resource provided",
+		input:     &v1alpha1.Get{},
+		expectErr: true,
+		errMsg:    "kind must be specified",
 	}, {
 		name: "Neither Name nor Selector provided",
 		input: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 		},
 		expectErr: false,
@@ -31,7 +37,8 @@ func TestValidateGet(t *testing.T) {
 		name: "Both Name and Selector provided",
 		input: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name:     "example-name",
@@ -44,7 +51,8 @@ func TestValidateGet(t *testing.T) {
 		name: "Only Name provided",
 		input: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "example-name",
@@ -55,7 +63,8 @@ func TestValidateGet(t *testing.T) {
 		name: "Only Selector provided",
 		input: &v1alpha1.Get{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Selector: "example-selector",

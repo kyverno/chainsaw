@@ -330,9 +330,6 @@ spec:
                             Namespace of the referent.
                             More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                           type: string
-                        resource:
-                          description: Resource name of the referent.
-                          type: string
                         selector:
                           description: Selector defines labels selector.
                           type: string
@@ -344,6 +341,9 @@ spec:
                           description: Timeout for the operation. Overrides the global
                             timeout set in the Configuration.
                           type: string
+                      required:
+                      - apiVersion
+                      - kind
                       type: object
                     description:
                       description: Description contains a description of the operation.
@@ -444,9 +444,6 @@ spec:
                             Namespace of the referent.
                             More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                           type: string
-                        resource:
-                          description: Resource name of the referent.
-                          type: string
                         selector:
                           description: Selector defines labels selector.
                           type: string
@@ -454,6 +451,9 @@ spec:
                           description: Timeout for the operation. Overrides the global
                             timeout set in the Configuration.
                           type: string
+                      required:
+                      - apiVersion
+                      - kind
                       type: object
                     podLogs:
                       description: PodLogs determines the pod logs collector to execute.
@@ -708,9 +708,6 @@ spec:
                             Namespace of the referent.
                             More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                           type: string
-                        resource:
-                          description: Resource name of the referent.
-                          type: string
                         selector:
                           description: Selector defines labels selector.
                           type: string
@@ -719,7 +716,9 @@ spec:
                             to wait for the condition to be met before timing out.
                           type: string
                       required:
+                      - apiVersion
                       - for
+                      - kind
                       type: object
                   type: object
                 type: array
@@ -1088,9 +1087,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -1102,6 +1098,9 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
+                            required:
+                            - apiVersion
+                            - kind
                             type: object
                           description:
                             description: Description contains a description of the
@@ -1207,9 +1206,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -1217,6 +1213,9 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
+                            required:
+                            - apiVersion
+                            - kind
                             type: object
                           podLogs:
                             description: PodLogs determines the pod logs collector
@@ -1476,9 +1475,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -1488,7 +1484,9 @@ spec:
                                   timing out.
                                 type: string
                             required:
+                            - apiVersion
                             - for
+                            - kind
                             type: object
                         type: object
                       type: array
@@ -1773,9 +1771,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -1787,6 +1782,9 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
+                            required:
+                            - apiVersion
+                            - kind
                             type: object
                           description:
                             description: Description contains a description of the
@@ -1892,9 +1890,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -1902,6 +1897,9 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
+                            required:
+                            - apiVersion
+                            - kind
                             type: object
                           podLogs:
                             description: PodLogs determines the pod logs collector
@@ -2161,9 +2159,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -2173,7 +2168,9 @@ spec:
                                   timing out.
                                 type: string
                             required:
+                            - apiVersion
                             - for
+                            - kind
                             type: object
                         type: object
                       type: array
@@ -2493,9 +2490,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -2507,6 +2501,9 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
+                            required:
+                            - apiVersion
+                            - kind
                             type: object
                           description:
                             description: Description contains a description of the
@@ -2612,9 +2609,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -2622,6 +2616,9 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
+                            required:
+                            - apiVersion
+                            - kind
                             type: object
                           podLogs:
                             description: PodLogs determines the pod logs collector
@@ -2881,9 +2878,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -2893,7 +2887,9 @@ spec:
                                   timing out.
                                 type: string
                             required:
+                            - apiVersion
                             - for
+                            - kind
                             type: object
                         type: object
                       type: array
@@ -3960,9 +3956,6 @@ spec:
                                   Namespace of the referent.
                                   More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
                                 type: string
-                              resource:
-                                description: Resource name of the referent.
-                                type: string
                               selector:
                                 description: Selector defines labels selector.
                                 type: string
@@ -3972,7 +3965,9 @@ spec:
                                   timing out.
                                 type: string
                             required:
+                            - apiVersion
                             - for
+                            - kind
                             type: object
                         type: object
                       minItems: 1
