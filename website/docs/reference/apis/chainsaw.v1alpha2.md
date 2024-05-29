@@ -50,7 +50,7 @@ auto_generated: true
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `cleanup` | [`Cleanup`](#chainsaw-kyverno-io-v1alpha2-Cleanup) |  |  | <p>Cleanup contains cleanup configuration.</p> |
-| `clusters` | [`map[string]Cluster`](#chainsaw-kyverno-io-v1alpha1-Cluster) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
+| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `deletion` | [`DeletionOptions`](#chainsaw-kyverno-io-v1alpha2-DeletionOptions) |  |  | <p>Deletion contains the global deletion configuration.</p> |
 | `discovery` | [`Discovery`](#chainsaw-kyverno-io-v1alpha2-Discovery) |  |  | <p>Discovery contains tests discovery configuration.</p> |
 | `error` | [`ErrorOptions`](#chainsaw-kyverno-io-v1alpha2-ErrorOptions) |  |  | <p>Error contains the global error configuration.</p> |
