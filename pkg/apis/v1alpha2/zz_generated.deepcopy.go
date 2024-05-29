@@ -85,7 +85,7 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 	}
 	if in.Clusters != nil {
 		in, out := &in.Clusters, &out.Clusters
-		*out = make(map[string]v1alpha1.Cluster, len(*in))
+		*out = make(v1alpha1.Clusters, len(*in))
 		for key, val := range *in {
 			(*out)[key] = val
 		}

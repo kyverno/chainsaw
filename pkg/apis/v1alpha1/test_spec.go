@@ -20,7 +20,7 @@ type TestSpec struct {
 
 	// Clusters holds a registry to clusters to support multi-cluster tests.
 	// +optional
-	Clusters map[string]Cluster `json:"clusters,omitempty"`
+	Clusters Clusters `json:"clusters,omitempty"`
 
 	// Skip determines whether the test should skipped.
 	// +optional

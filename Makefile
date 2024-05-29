@@ -29,7 +29,7 @@ KIND_IMAGE                         ?= kindest/node:v1.29.2
 
 TOOLS_DIR                          := $(PWD)/.tools
 CONTROLLER_GEN                     := $(TOOLS_DIR)/controller-gen
-CONTROLLER_GEN_VERSION             := v0.14.0
+CONTROLLER_GEN_VERSION             := v0.15.0
 REGISTER_GEN                       := $(TOOLS_DIR)/register-gen
 DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
 CONVERSION_GEN                     := $(TOOLS_DIR)/conversion-gen
