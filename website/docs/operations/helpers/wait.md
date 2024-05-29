@@ -2,11 +2,6 @@
 
 Wait for a specific condition on one or many resources.
 
-!!! warning "Deprecated syntax"
-    You can specify the `resource` directly instead of using `apiVersion` and `kind`.
-    
-    **This is a deprecated syntax though and will be removed in a future version.**
-
 ## Configuration
 
 The full structure of the `Wait` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Wait).

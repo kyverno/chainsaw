@@ -261,7 +261,10 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 				Timeout:              handler.Events.Timeout,
 				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
 				Format:               handler.Events.Format,
-				ResourceReference:    v1alpha1.ResourceReference{Resource: "events"},
+				ResourceReference: v1alpha1.ResourceReference{
+					APIVersion: "v1",
+					Kind:       "Event",
+				},
 			}
 			register(p.getOperation(i+1, registeredClusters, get))
 		} else if handler.Describe != nil {
@@ -303,7 +306,10 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, 
 				Timeout:              handler.Events.Timeout,
 				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
 				Format:               handler.Events.Format,
-				ResourceReference:    v1alpha1.ResourceReference{Resource: "events"},
+				ResourceReference: v1alpha1.ResourceReference{
+					APIVersion: "v1",
+					Kind:       "Event",
+				},
 			}
 			register(p.getOperation(i+1, registeredClusters, get))
 		} else if handler.Describe != nil {

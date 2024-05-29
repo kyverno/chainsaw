@@ -18,12 +18,18 @@ func TestValidateWait(t *testing.T) {
 		name:      "No resource provided",
 		input:     &v1alpha1.Wait{},
 		expectErr: true,
-		errMsg:    "kind or resource must be specified",
+		errMsg:    "kind must be specified",
+	}, {
+		name:      "No resource provided",
+		input:     &v1alpha1.Wait{},
+		expectErr: true,
+		errMsg:    "apiVersion must be specified",
 	}, {
 		name: "No condition provided",
 		input: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 		},
 		expectErr: true,
@@ -32,7 +38,8 @@ func TestValidateWait(t *testing.T) {
 		name: "Neither Name nor Selector provided",
 		input: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
@@ -45,7 +52,8 @@ func TestValidateWait(t *testing.T) {
 		name: "Both Name and Selector provided",
 		input: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
@@ -63,7 +71,8 @@ func TestValidateWait(t *testing.T) {
 		name: "Only Name provided",
 		input: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Deletion: &v1alpha1.Deletion{},
@@ -77,7 +86,8 @@ func TestValidateWait(t *testing.T) {
 		name: "Only Selector provided",
 		input: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Deletion: &v1alpha1.Deletion{},
