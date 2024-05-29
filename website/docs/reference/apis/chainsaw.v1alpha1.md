@@ -13,7 +13,7 @@ auto_generated: true
 - [Configuration](#chainsaw-kyverno-io-v1alpha1-Configuration)
 - [Test](#chainsaw-kyverno-io-v1alpha1-Test)
   
-## `Configuration`     {#chainsaw-kyverno-io-v1alpha1-Configuration}
+## Configuration     {#chainsaw-kyverno-io-v1alpha1-Configuration}
 
 <p>Configuration is the resource that contains the configuration used to run tests.</p>
 
@@ -25,7 +25,7 @@ auto_generated: true
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec) | :white_check_mark: |  | <p>Configuration spec.</p> |
 
-## `Test`     {#chainsaw-kyverno-io-v1alpha1-Test}
+## Test     {#chainsaw-kyverno-io-v1alpha1-Test}
 
 <p>Test is the resource that contains a test definition.</p>
 
@@ -37,7 +37,7 @@ auto_generated: true
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`TestSpec`](#chainsaw-kyverno-io-v1alpha1-TestSpec) | :white_check_mark: |  | <p>Test spec.</p> |
 
-## `Apply`     {#chainsaw-kyverno-io-v1alpha1-Apply}
+## Apply     {#chainsaw-kyverno-io-v1alpha1-Apply}
 
 **Appears in:**
     
@@ -59,7 +59,7 @@ should be applied during testing.</p>
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
-## `Assert`     {#chainsaw-kyverno-io-v1alpha1-Assert}
+## Assert     {#chainsaw-kyverno-io-v1alpha1-Assert}
 
 **Appears in:**
     
@@ -78,7 +78,7 @@ during the testing process.</p>
 | `FileRefOrCheck` | [`FileRefOrCheck`](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck) | :white_check_mark: | :white_check_mark: | <p>FileRefOrAssert provides a reference to the assertion.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 
-## `Binding`     {#chainsaw-kyverno-io-v1alpha1-Binding}
+## Binding     {#chainsaw-kyverno-io-v1alpha1-Binding}
 
 **Appears in:**
     
@@ -103,7 +103,7 @@ during the testing process.</p>
 | `name` | `string` | :white_check_mark: |  | <p>Name the name of the binding.</p> |
 | `value` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Value value of the binding.</p> |
 
-## `Catch`     {#chainsaw-kyverno-io-v1alpha1-Catch}
+## Catch     {#chainsaw-kyverno-io-v1alpha1-Catch}
 
 **Appears in:**
     
@@ -127,7 +127,7 @@ during the testing process.</p>
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 
-## `Cluster`     {#chainsaw-kyverno-io-v1alpha1-Cluster}
+## Cluster     {#chainsaw-kyverno-io-v1alpha1-Cluster}
 
 **Appears in:**
     
@@ -157,7 +157,7 @@ during the testing process.</p>
 | `kubeconfig` | `string` | :white_check_mark: |  | <p>Kubeconfig is the path to the referenced file.</p> |
 | `context` | `string` |  |  | <p>Context is the name of the context to use.</p> |
 
-## `Command`     {#chainsaw-kyverno-io-v1alpha1-Command}
+## Command     {#chainsaw-kyverno-io-v1alpha1-Command}
 
 **Appears in:**
     
@@ -181,7 +181,7 @@ during the testing process.</p>
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 | `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
-## `Condition`     {#chainsaw-kyverno-io-v1alpha1-Condition}
+## Condition     {#chainsaw-kyverno-io-v1alpha1-Condition}
 
 **Appears in:**
     
@@ -195,7 +195,7 @@ during the testing process.</p>
 | `name` | `string` | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
 | `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
 
-## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
+## ConfigurationSpec     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
 **Appears in:**
     
@@ -227,7 +227,7 @@ during the testing process.</p>
 | `clusters` | [`map[string]Cluster`](#chainsaw-kyverno-io-v1alpha1-Cluster) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
 
-## `Create`     {#chainsaw-kyverno-io-v1alpha1-Create}
+## Create     {#chainsaw-kyverno-io-v1alpha1-Create}
 
 **Appears in:**
     
@@ -249,7 +249,7 @@ If a resource already exists in the cluster it will fail.</p>
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
-## `Delete`     {#chainsaw-kyverno-io-v1alpha1-Delete}
+## Delete     {#chainsaw-kyverno-io-v1alpha1-Delete}
 
 **Appears in:**
     
@@ -271,7 +271,7 @@ If a resource already exists in the cluster it will fail.</p>
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation. Overrides the deletion propagation policy set in the Configuration, the Test and the TestStep.</p> |
 
-## `Deletion`     {#chainsaw-kyverno-io-v1alpha1-Deletion}
+## Deletion     {#chainsaw-kyverno-io-v1alpha1-Deletion}
 
 **Appears in:**
     
@@ -280,7 +280,7 @@ If a resource already exists in the cluster it will fail.</p>
 <p>Deletion represents parameters for waiting on a resource's deletion.</p>
 
 
-## `Describe`     {#chainsaw-kyverno-io-v1alpha1-Describe}
+## Describe     {#chainsaw-kyverno-io-v1alpha1-Describe}
 
 **Appears in:**
     
@@ -299,7 +299,7 @@ If a resource already exists in the cluster it will fail.</p>
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `showEvents` | `bool` |  |  | <p>Show Events indicates whether to include related events.</p> |
 
-## `Error`     {#chainsaw-kyverno-io-v1alpha1-Error}
+## Error     {#chainsaw-kyverno-io-v1alpha1-Error}
 
 **Appears in:**
     
@@ -318,7 +318,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `FileRefOrCheck` | [`FileRefOrCheck`](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck) | :white_check_mark: | :white_check_mark: | <p>FileRefOrAssert provides a reference to the expected error.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 
-## `Events`     {#chainsaw-kyverno-io-v1alpha1-Events}
+## Events     {#chainsaw-kyverno-io-v1alpha1-Events}
 
 **Appears in:**
     
@@ -336,7 +336,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
 
-## `Expectation`     {#chainsaw-kyverno-io-v1alpha1-Expectation}
+## Expectation     {#chainsaw-kyverno-io-v1alpha1-Expectation}
 
 **Appears in:**
     
@@ -355,7 +355,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
 | `check` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
 
-## `FileRef`     {#chainsaw-kyverno-io-v1alpha1-FileRef}
+## FileRef     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
 **Appears in:**
     
@@ -369,7 +369,7 @@ with a match filter to determine if the verification should be considered.</p>
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
 
-## `FileRefOrCheck`     {#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck}
+## FileRefOrCheck     {#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck}
 
 **Appears in:**
     
@@ -384,7 +384,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
 | `resource` | `policy/v1alpha1.Any` |  |  | <p>Check provides a check used in assertions.</p> |
 
-## `FileRefOrResource`     {#chainsaw-kyverno-io-v1alpha1-FileRefOrResource}
+## FileRefOrResource     {#chainsaw-kyverno-io-v1alpha1-FileRefOrResource}
 
 **Appears in:**
     
@@ -401,7 +401,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
 | `resource` | [`meta/v1/unstructured.Unstructured`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#unstructured-unstructured-v1) |  |  | <p>Resource provides a resource to be applied.</p> |
 
-## `Finally`     {#chainsaw-kyverno-io-v1alpha1-Finally}
+## Finally     {#chainsaw-kyverno-io-v1alpha1-Finally}
 
 **Appears in:**
     
@@ -423,7 +423,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 
-## `For`     {#chainsaw-kyverno-io-v1alpha1-For}
+## For     {#chainsaw-kyverno-io-v1alpha1-For}
 
 **Appears in:**
     
@@ -438,7 +438,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `condition` | [`Condition`](#chainsaw-kyverno-io-v1alpha1-Condition) |  |  | <p>Condition specifies the condition to wait for.</p> |
 | `jsonPath` | [`JsonPath`](#chainsaw-kyverno-io-v1alpha1-JsonPath) |  |  | <p>JsonPath specifies the json path condition to wait for.</p> |
 
-## `Format`     {#chainsaw-kyverno-io-v1alpha1-Format}
+## Format     {#chainsaw-kyverno-io-v1alpha1-Format}
 
 (Alias of `string`)
 
@@ -451,7 +451,7 @@ with a match filter to determine if the verification should be considered.</p>
 <p>Format determines the output format (json or yaml).</p>
 
 
-## `Get`     {#chainsaw-kyverno-io-v1alpha1-Get}
+## Get     {#chainsaw-kyverno-io-v1alpha1-Get}
 
 **Appears in:**
     
@@ -470,7 +470,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
 | `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
 
-## `JsonPath`     {#chainsaw-kyverno-io-v1alpha1-JsonPath}
+## JsonPath     {#chainsaw-kyverno-io-v1alpha1-JsonPath}
 
 **Appears in:**
     
@@ -484,7 +484,7 @@ with a match filter to determine if the verification should be considered.</p>
 | `path` | `string` | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
 | `value` | `string` | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
 
-## `ObjectLabelsSelector`     {#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector}
+## ObjectLabelsSelector     {#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector}
 
 **Appears in:**
     
@@ -505,7 +505,7 @@ For multiple objects use selector.</p>
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 | `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
 
-## `ObjectReference`     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
+## ObjectReference     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
 
 **Appears in:**
     
@@ -521,7 +521,7 @@ For multiple objects use labels.</p>
 | `ObjectType` | [`ObjectType`](#chainsaw-kyverno-io-v1alpha1-ObjectType) | :white_check_mark: | :white_check_mark: | <p>ObjectType determines the type of referenced objects.</p> |
 | `ObjectSelector` | [`ObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectSelector determines the selection process of referenced objects.</p> |
 
-## `ObjectSelector`     {#chainsaw-kyverno-io-v1alpha1-ObjectSelector}
+## ObjectSelector     {#chainsaw-kyverno-io-v1alpha1-ObjectSelector}
 
 **Appears in:**
     
@@ -538,7 +538,7 @@ For multiple objects use labels.</p>
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 | `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
 
-## `ObjectType`     {#chainsaw-kyverno-io-v1alpha1-ObjectType}
+## ObjectType     {#chainsaw-kyverno-io-v1alpha1-ObjectType}
 
 **Appears in:**
     
@@ -552,7 +552,7 @@ For multiple objects use labels.</p>
 | `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
 | `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
 
-## `Operation`     {#chainsaw-kyverno-io-v1alpha1-Operation}
+## Operation     {#chainsaw-kyverno-io-v1alpha1-Operation}
 
 **Appears in:**
     
@@ -576,7 +576,7 @@ For multiple objects use labels.</p>
 | `update` | [`Update`](#chainsaw-kyverno-io-v1alpha1-Update) |  |  | <p>Update represents an update operation.</p> |
 | `wait` | [`Wait`](#chainsaw-kyverno-io-v1alpha1-Wait) |  |  | <p>Wait determines the resource wait collector to execute.</p> |
 
-## `OperationBase`     {#chainsaw-kyverno-io-v1alpha1-OperationBase}
+## OperationBase     {#chainsaw-kyverno-io-v1alpha1-OperationBase}
 
 **Appears in:**
     
@@ -590,7 +590,7 @@ For multiple objects use labels.</p>
 | `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
-## `Output`     {#chainsaw-kyverno-io-v1alpha1-Output}
+## Output     {#chainsaw-kyverno-io-v1alpha1-Output}
 
 **Appears in:**
     
@@ -609,7 +609,7 @@ For multiple objects use labels.</p>
 | `Binding` | [`Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) | :white_check_mark: | :white_check_mark: | <p>Binding determines the binding to create when the match succeeds.</p> |
 | `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
 
-## `Patch`     {#chainsaw-kyverno-io-v1alpha1-Patch}
+## Patch     {#chainsaw-kyverno-io-v1alpha1-Patch}
 
 **Appears in:**
     
@@ -631,7 +631,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
-## `PodLogs`     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
+## PodLogs     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 
 **Appears in:**
     
@@ -650,7 +650,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `container` | `string` |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
 | `tail` | `int` |  |  | <p>Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.</p> |
 
-## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
+## ReportFormatType     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 
 (Alias of `string`)
 
@@ -658,7 +658,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
 
-## `ResourceReference`     {#chainsaw-kyverno-io-v1alpha1-ResourceReference}
+## ResourceReference     {#chainsaw-kyverno-io-v1alpha1-ResourceReference}
 
 **Appears in:**
     
@@ -676,7 +676,7 @@ Optionally an apiVersion can be specified.</p>
 | `kind` | `string` |  |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
 | `resource` | `string` |  |  | <p>Resource name of the referent.</p> |
 
-## `Script`     {#chainsaw-kyverno-io-v1alpha1-Script}
+## Script     {#chainsaw-kyverno-io-v1alpha1-Script}
 
 **Appears in:**
     
@@ -699,7 +699,7 @@ Optionally an apiVersion can be specified.</p>
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
 | `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
-## `Sleep`     {#chainsaw-kyverno-io-v1alpha1-Sleep}
+## Sleep     {#chainsaw-kyverno-io-v1alpha1-Sleep}
 
 **Appears in:**
     
@@ -714,7 +714,7 @@ Optionally an apiVersion can be specified.</p>
 |---|---|---|---|---|
 | `duration` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Duration is the delay used for sleeping.</p> |
 
-## `TestSpec`     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
+## TestSpec     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
 
 **Appears in:**
     
@@ -742,7 +742,7 @@ Optionally an apiVersion can be specified.</p>
 | `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation. Overrides the deletion propagation policy set in the Configuration.</p> |
 
-## `TestStep`     {#chainsaw-kyverno-io-v1alpha1-TestStep}
+## TestStep     {#chainsaw-kyverno-io-v1alpha1-TestStep}
 
 **Appears in:**
     
@@ -756,7 +756,7 @@ Optionally an apiVersion can be specified.</p>
 | `name` | `string` |  |  | <p>Name of the step.</p> |
 | `TestStepSpec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>TestStepSpec of the step.</p> |
 
-## `TestStepSpec`     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}
+## TestStepSpec     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}
 
 **Appears in:**
     
@@ -780,7 +780,7 @@ Optionally an apiVersion can be specified.</p>
 | `finally` | [`[]Finally`](#chainsaw-kyverno-io-v1alpha1-Finally) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
 | `cleanup` | [`[]Finally`](#chainsaw-kyverno-io-v1alpha1-Finally) |  |  | <p>Cleanup defines what will be executed after the test is terminated.</p> |
 
-## `Timeouts`     {#chainsaw-kyverno-io-v1alpha1-Timeouts}
+## Timeouts     {#chainsaw-kyverno-io-v1alpha1-Timeouts}
 
 **Appears in:**
     
@@ -800,7 +800,7 @@ Optionally an apiVersion can be specified.</p>
 | `error` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Error defines the timeout for the error operation</p> |
 | `exec` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Exec defines the timeout for exec operations</p> |
 
-## `Update`     {#chainsaw-kyverno-io-v1alpha1-Update}
+## Update     {#chainsaw-kyverno-io-v1alpha1-Update}
 
 **Appears in:**
     
@@ -822,7 +822,7 @@ If a resource does not exist in the cluster it will fail.</p>
 | `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
 | `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 
-## `Wait`     {#chainsaw-kyverno-io-v1alpha1-Wait}
+## Wait     {#chainsaw-kyverno-io-v1alpha1-Wait}
 
 **Appears in:**
     
