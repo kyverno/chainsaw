@@ -102,7 +102,7 @@ type ConfigurationSpec struct {
 
 	// Clusters holds a registry to clusters to support multi-cluster tests.
 	// +optional
-	Clusters map[string]Cluster `json:"clusters,omitempty"`
+	Clusters Clusters `json:"clusters,omitempty"`
 
 	// Catch defines what the tests steps will execute when an error happens.
 	// This will be combined with catch handlers defined at the test and step levels.
