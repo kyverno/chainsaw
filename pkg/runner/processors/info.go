@@ -1,7 +1,12 @@
 package processors
 
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
 type TestInfo struct {
-	Id int
+	Id       int
+	Metadata metav1.ObjectMeta
 }
 
 type StepInfo struct {
