@@ -12,7 +12,7 @@ auto_generated: true
 
 - [Configuration](#chainsaw-kyverno-io-v1alpha2-Configuration)
   
-## `Configuration`     {#chainsaw-kyverno-io-v1alpha2-Configuration}
+## Configuration     {#chainsaw-kyverno-io-v1alpha2-Configuration}
 
 <p>Configuration is the resource that contains the configuration used to run tests.</p>
 
@@ -24,7 +24,7 @@ auto_generated: true
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec) | :white_check_mark: |  | <p>Configuration spec.</p> |
 
-## `Cleanup`     {#chainsaw-kyverno-io-v1alpha2-Cleanup}
+## Cleanup     {#chainsaw-kyverno-io-v1alpha2-Cleanup}
 
 **Appears in:**
     
@@ -38,7 +38,7 @@ auto_generated: true
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running a test.</p> |
 | `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
 
-## `ConfigurationSpec`     {#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec}
+## ConfigurationSpec     {#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec}
 
 **Appears in:**
     
@@ -60,7 +60,7 @@ auto_generated: true
 | `templating` | [`Templating`](#chainsaw-kyverno-io-v1alpha2-Templating) |  |  | <p>Templating contains the templating config.</p> |
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |
 
-## `DeletionOptions`     {#chainsaw-kyverno-io-v1alpha2-DeletionOptions}
+## DeletionOptions     {#chainsaw-kyverno-io-v1alpha2-DeletionOptions}
 
 **Appears in:**
     
@@ -73,7 +73,7 @@ auto_generated: true
 |---|---|---|---|---|
 | `propagation` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>Propagation decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation.</p> |
 
-## `Discovery`     {#chainsaw-kyverno-io-v1alpha2-Discovery}
+## Discovery     {#chainsaw-kyverno-io-v1alpha2-Discovery}
 
 **Appears in:**
     
@@ -89,7 +89,7 @@ auto_generated: true
 | `testFile` | `string` |  |  | <p>TestFile is the name of the file containing the test to run. If no extension is provided, chainsaw will try with .yaml first and .yml if needed.</p> |
 | `fullName` | `bool` |  |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
 
-## `ErrorOptions`     {#chainsaw-kyverno-io-v1alpha2-ErrorOptions}
+## ErrorOptions     {#chainsaw-kyverno-io-v1alpha2-ErrorOptions}
 
 **Appears in:**
     
@@ -102,7 +102,7 @@ auto_generated: true
 |---|---|---|---|---|
 | `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
 
-## `Execution`     {#chainsaw-kyverno-io-v1alpha2-Execution}
+## Execution     {#chainsaw-kyverno-io-v1alpha2-Execution}
 
 **Appears in:**
     
@@ -118,7 +118,7 @@ auto_generated: true
 | `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
 | `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 
-## `Namespace`     {#chainsaw-kyverno-io-v1alpha2-Namespace}
+## Namespace     {#chainsaw-kyverno-io-v1alpha2-Namespace}
 
 **Appears in:**
     
@@ -132,7 +132,7 @@ auto_generated: true
 | `name` | `string` |  |  | <p>Name defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
 | `template` | `policy/v1alpha1.Any` |  |  | <p>Template defines a template to create the test namespace.</p> |
 
-## `Report`     {#chainsaw-kyverno-io-v1alpha2-Report}
+## Report     {#chainsaw-kyverno-io-v1alpha2-Report}
 
 **Appears in:**
     
@@ -147,7 +147,7 @@ auto_generated: true
 | `path` | `string` |  |  | <p>ReportPath defines the path.</p> |
 | `name` | `string` |  |  | <p>ReportName defines the name of report to create. It defaults to "chainsaw-report".</p> |
 
-## `ReportFormatType`     {#chainsaw-kyverno-io-v1alpha2-ReportFormatType}
+## ReportFormatType     {#chainsaw-kyverno-io-v1alpha2-ReportFormatType}
 
 (Alias of `string`)
 
@@ -155,7 +155,7 @@ auto_generated: true
     
 - [Report](#chainsaw-kyverno-io-v1alpha2-Report)
 
-## `Templating`     {#chainsaw-kyverno-io-v1alpha2-Templating}
+## Templating     {#chainsaw-kyverno-io-v1alpha2-Templating}
 
 **Appears in:**
     
