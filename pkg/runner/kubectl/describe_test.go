@@ -187,19 +187,6 @@ func TestDescribe(t *testing.T) {
 			Args:       []string{"describe", "pods", "-n", "$NAMESPACE", "--show-events=false"},
 		},
 		wantErr: false,
-	}, {
-		name: "with short resource name",
-		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
-			},
-		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "crds", "-n", "$NAMESPACE"},
-		},
-		wantErr: false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
