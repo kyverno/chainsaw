@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: test-info
+spec:
+  bindings:
+  - name: foo
+    value: (join('-', [$test.metadata.name, 'foo']))
+  steps:
+  - try:
+    - script:
+        env:
+        - name: FOO
+          value: ($foo)
+        outputs:
+        - name: OUTPUT
+          value: ($stdout)
+        content: echo $FOO
+    - assert:
+        resource:
+          ($OUTPUT): test-info-foo
