@@ -1,5 +1,8 @@
 package v1alpha1
 
+// Clusters defines a cluster map.
+type Clusters map[string]Cluster
+
 // Cluster defines cluster config and context.
 type Cluster struct {
 	// Kubeconfig is the path to the referenced file.
