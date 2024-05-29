@@ -30,12 +30,14 @@ func TestValidateFinally(t *testing.T) {
 	}
 	exampleDescribe := &v1alpha1.Describe{
 		ResourceReference: v1alpha1.ResourceReference{
-			Resource: "pods",
+			APIVersion: "v1",
+			Kind:       "Pod",
 		},
 	}
 	exampleWait := &v1alpha1.Wait{
 		ResourceReference: v1alpha1.ResourceReference{
-			Resource: "pods",
+			APIVersion: "v1",
+			Kind:       "Pod",
 		},
 		For: v1alpha1.For{
 			Condition: &v1alpha1.Condition{
@@ -45,7 +47,8 @@ func TestValidateFinally(t *testing.T) {
 	}
 	exampleGet := &v1alpha1.Get{
 		ResourceReference: v1alpha1.ResourceReference{
-			Resource: "pods",
+			APIVersion: "v1",
+			Kind:       "Pod",
 		},
 	}
 	exampleDelete := &v1alpha1.Delete{

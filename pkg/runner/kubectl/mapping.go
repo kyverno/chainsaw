@@ -13,13 +13,6 @@ import (
 )
 
 func mapResource(client client.Client, bindings binding.Bindings, resource v1alpha1.ResourceReference) (string, bool, error) {
-	if resource.Resource != "" {
-		if resource, err := apibindings.String(resource.Resource, bindings); err != nil {
-			return "", false, err
-		} else {
-			return mapResourceFromResource(client, resource)
-		}
-	}
 	if resource.APIVersion != "" && resource.Kind != "" {
 		if apiVersion, err := apibindings.String(resource.APIVersion, bindings); err != nil {
 			return "", false, err

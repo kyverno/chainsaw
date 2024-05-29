@@ -22,6 +22,7 @@ type Get struct {
 	ResourceReference `json:",inline"`
 
 	// ObjectLabelsSelector determines the selection process of referenced objects.
+	// +optional
 	ObjectLabelsSelector `json:",inline"`
 
 	// Format determines the output format (json or yaml).

@@ -19,6 +19,7 @@ type Events struct {
 	Clusters map[string]Cluster `json:"clusters,omitempty"`
 
 	// ObjectLabelsSelector determines the selection process of referenced objects.
+	// +optional
 	ObjectLabelsSelector `json:",inline"`
 
 	// Format determines the output format (json or yaml).

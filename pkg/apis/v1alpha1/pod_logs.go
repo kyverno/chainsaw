@@ -19,6 +19,7 @@ type PodLogs struct {
 	Clusters map[string]Cluster `json:"clusters,omitempty"`
 
 	// ObjectLabelsSelector determines the selection process of referenced objects.
+	// +optional
 	ObjectLabelsSelector `json:",inline"`
 
 	// Container in pod to get logs from else --all-containers is used.

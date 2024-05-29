@@ -42,7 +42,8 @@ func TestDescribe(t *testing.T) {
 		name: "with resource",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 		},
 		want: &v1alpha1.Command{
@@ -66,7 +67,8 @@ func TestDescribe(t *testing.T) {
 		name: "with name",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "foo",
@@ -81,7 +83,8 @@ func TestDescribe(t *testing.T) {
 		name: "with namespace",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Namespace: "bar",
@@ -96,7 +99,8 @@ func TestDescribe(t *testing.T) {
 		name: "with name and namespace",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name:      "foo",
@@ -112,7 +116,8 @@ func TestDescribe(t *testing.T) {
 		name: "with selector",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Selector: "foo=bar",
@@ -127,7 +132,8 @@ func TestDescribe(t *testing.T) {
 		name: "with name and selector",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name:     "foo",
@@ -139,7 +145,8 @@ func TestDescribe(t *testing.T) {
 		name: "with namespace and selector",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Namespace: "bar",
@@ -155,7 +162,8 @@ func TestDescribe(t *testing.T) {
 		name: "with show-events marked as true",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ShowEvents: ptr.To(true),
 		},
@@ -168,7 +176,8 @@ func TestDescribe(t *testing.T) {
 		name: "with show-events marked as false",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ShowEvents: ptr.To(false),
 		},
@@ -181,7 +190,8 @@ func TestDescribe(t *testing.T) {
 		name: "with short resource name",
 		collector: &v1alpha1.Describe{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "crds",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 		},
 		want: &v1alpha1.Command{

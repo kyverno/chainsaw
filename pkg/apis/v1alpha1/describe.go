@@ -22,6 +22,7 @@ type Describe struct {
 	ResourceReference `json:",inline"`
 
 	// ObjectLabelsSelector determines the selection process of referenced objects.
+	// +optional
 	ObjectLabelsSelector `json:",inline"`
 
 	// Show Events indicates whether to include related events.

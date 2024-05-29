@@ -35,7 +35,8 @@ func TestWait(t *testing.T) {
 		name: "valid resource and condition",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
@@ -69,7 +70,8 @@ func TestWait(t *testing.T) {
 		name: "valid resource and condition with value",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
@@ -87,7 +89,8 @@ func TestWait(t *testing.T) {
 		name: "valid resource and condition with empty value",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
@@ -105,7 +108,8 @@ func TestWait(t *testing.T) {
 		name: "valid resource and delete",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Deletion: &v1alpha1.Deletion{},
@@ -120,7 +124,8 @@ func TestWait(t *testing.T) {
 		name: "valid resource and jsonpath",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				JsonPath: &v1alpha1.JsonPath{
@@ -138,7 +143,8 @@ func TestWait(t *testing.T) {
 		name: "with resource name",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "my-pod",
@@ -158,7 +164,8 @@ func TestWait(t *testing.T) {
 		name: "with selector",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
@@ -178,7 +185,8 @@ func TestWait(t *testing.T) {
 		name: "with timeout",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			For: v1alpha1.For{
 				Condition: &v1alpha1.Condition{
@@ -197,7 +205,8 @@ func TestWait(t *testing.T) {
 		name: "name and selector error",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Selector: "app=my-app",
@@ -214,7 +223,8 @@ func TestWait(t *testing.T) {
 		name: "missing condition",
 		waiter: &v1alpha1.Wait{
 			ResourceReference: v1alpha1.ResourceReference{
-				Resource: "pods",
+				APIVersion: "v1",
+				Kind:       "Pod",
 			},
 			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 				Name: "my-pod",

@@ -26,42 +26,6 @@ func TestValidateResourceReference(t *testing.T) {
 			},
 		},
 	}, {
-		name: "both kind and resource",
-		path: field.NewPath("foo"),
-		obj: v1alpha1.ResourceReference{
-			Resource: "foo",
-			Kind:     "bar",
-		},
-		want: field.ErrorList{
-			&field.Error{
-				Type:  field.ErrorTypeInvalid,
-				Field: "foo",
-				BadValue: v1alpha1.ResourceReference{
-					Resource: "foo",
-					Kind:     "bar",
-				},
-				Detail: "kind or resource must be specified (found both)",
-			},
-		},
-	}, {
-		name: "resource and apiVersion",
-		path: field.NewPath("foo"),
-		obj: v1alpha1.ResourceReference{
-			APIVersion: "v1",
-			Resource:   "foo",
-		},
-		want: field.ErrorList{
-			&field.Error{
-				Type:  field.ErrorTypeInvalid,
-				Field: "foo.apiVersion",
-				BadValue: v1alpha1.ResourceReference{
-					APIVersion: "v1",
-					Resource:   "foo",
-				},
-				Detail: "apiVersion must not be specified when resource is set",
-			},
-		},
-	}, {
 		name: "kind and no apiVersion",
 		path: field.NewPath("foo"),
 		obj: v1alpha1.ResourceReference{
