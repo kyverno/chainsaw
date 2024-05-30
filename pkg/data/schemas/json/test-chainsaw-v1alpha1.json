@@ -612,7 +612,7 @@
                     }
                   },
                   "ref": {
-                    "description": "ObjectReference determines objects to be deleted.",
+                    "description": "Ref determines objects to be deleted.",
                     "type": "object",
                     "required": [
                       "apiVersion",
@@ -1817,7 +1817,7 @@
                           }
                         },
                         "ref": {
-                          "description": "ObjectReference determines objects to be deleted.",
+                          "description": "Ref determines objects to be deleted.",
                           "type": "object",
                           "required": [
                             "apiVersion",
@@ -2878,7 +2878,7 @@
                           }
                         },
                         "ref": {
-                          "description": "ObjectReference determines objects to be deleted.",
+                          "description": "Ref determines objects to be deleted.",
                           "type": "object",
                           "required": [
                             "apiVersion",
@@ -3995,7 +3995,7 @@
                           }
                         },
                         "ref": {
-                          "description": "ObjectReference determines objects to be deleted.",
+                          "description": "Ref determines objects to be deleted.",
                           "type": "object",
                           "required": [
                             "apiVersion",
@@ -5569,7 +5569,7 @@
                           }
                         },
                         "ref": {
-                          "description": "ObjectReference determines objects to be deleted.",
+                          "description": "Ref determines objects to be deleted.",
                           "type": "object",
                           "required": [
                             "apiVersion",
