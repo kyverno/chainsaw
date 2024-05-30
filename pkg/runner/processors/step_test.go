@@ -444,7 +444,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Delete: &v1alpha1.Delete{
-							Ref: v1alpha1.ObjectReference{
+							Ref: &v1alpha1.ObjectReference{
 								ObjectType: v1alpha1.ObjectType{
 									APIVersion: "apps/v1",
 									Kind:       "Deployment",

@@ -453,7 +453,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 	for _, operation := range from.Delete {
 		operations = append(operations, v1alpha1.Operation{
 			Delete: &v1alpha1.Delete{
-				Ref: v1alpha1.ObjectReference{
+				Ref: &v1alpha1.ObjectReference{
 					ObjectType: v1alpha1.ObjectType{
 						APIVersion: operation.APIVersion,
 						Kind:       operation.Kind,
