@@ -496,7 +496,7 @@ func (in *Delete) DeepCopyInto(out *Delete) {
 		*out = new(bool)
 		**out = **in
 	}
-	in.ObjectReference.DeepCopyInto(&out.ObjectReference)
+	in.Ref.DeepCopyInto(&out.Ref)
 	if in.Expect != nil {
 		in, out := &in.Expect, &out.Expect
 		*out = make([]Expectation, len(*in))
