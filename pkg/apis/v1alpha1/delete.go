@@ -26,8 +26,8 @@ type Delete struct {
 	// +optional
 	Template *bool `json:"template,omitempty"`
 
-	// ObjectReference determines objects to be deleted.
-	ObjectReference `json:"ref"`
+	// Ref determines objects to be deleted.
+	Ref ObjectReference `json:"ref"`
 
 	// Expect defines a list of matched checks to validate the operation outcome.
 	// +optional
