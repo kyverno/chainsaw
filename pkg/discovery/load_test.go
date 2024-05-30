@@ -322,7 +322,7 @@ func TestLoadTest(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := LoadTest(tt.fileName, tt.path)
+			got, err := LoadTest(tt.fileName, tt.path, false)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -345,6 +345,6 @@ func Test_tryLoadTest(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to change file permissions: %v", err)
 	}
-	_, err = tryLoadTestFile(filePath)
+	_, err = tryLoadTestFile(filePath, false)
 	assert.Error(t, err)
 }

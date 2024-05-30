@@ -203,7 +203,7 @@ func TestLoad(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Load(tt.path)
+			got, err := Load(tt.path, false)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -280,7 +280,7 @@ func Test_parse(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := parse(content, tt.splitter, tt.loaderFactory, tt.converter, tt.validator)
+			_, err := parse(content, false, tt.splitter, tt.loaderFactory, tt.converter, tt.validator)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -295,7 +295,7 @@ func Test_parse_globalErr(t *testing.T) {
 	assert.NoError(t, err)
 	internalloader.Err = errors.New("dummy error")
 	{
-		_, err := parse(content, nil, nil, nil, nil)
+		_, err := parse(content, false, nil, nil, nil, nil)
 		assert.Error(t, err)
 	}
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	internalloader "github.com/kyverno/chainsaw/pkg/internal/loader"
+	yamlutils "github.com/kyverno/chainsaw/pkg/utils/yaml"
 	testvalidation "github.com/kyverno/chainsaw/pkg/validation/test"
 	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/kyverno/pkg/ext/resource/loader"
@@ -25,12 +26,12 @@ type (
 
 var test_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Test")
 
-func Load(path string) ([]*v1alpha1.Test, error) {
+func Load(path string, remarshal bool) ([]*v1alpha1.Test, error) {
 	content, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		return nil, err
 	}
-	tests, err := Parse(content)
+	tests, err := Parse(content, remarshal)
 	if err != nil {
 		return nil, err
 	}
@@ -40,11 +41,11 @@ func Load(path string) ([]*v1alpha1.Test, error) {
 	return tests, nil
 }
 
-func Parse(content []byte) ([]*v1alpha1.Test, error) {
-	return parse(content, nil, nil, nil, nil)
+func Parse(content []byte, remarshal bool) ([]*v1alpha1.Test, error) {
+	return parse(content, remarshal, nil, nil, nil, nil)
 }
 
-func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter, validator validator) ([]*v1alpha1.Test, error) {
+func parse(content []byte, remarshal bool, splitter splitter, loaderFactory loaderFactory, converter converter, validator validator) ([]*v1alpha1.Test, error) {
 	if splitter == nil {
 		splitter = yaml.SplitDocuments
 	}
@@ -74,6 +75,13 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 	}
 	var tests []*v1alpha1.Test
 	for _, document := range documents {
+		if remarshal {
+			altered, err := yamlutils.Remarshal(document)
+			if err != nil {
+				return nil, err
+			}
+			document = altered
+		}
 		gvk, untyped, err := loader.Load(document)
 		if err != nil {
 			return nil, err
