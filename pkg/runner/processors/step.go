@@ -207,8 +207,11 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, clea
 			}
 			register(loaded...)
 		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(i+1, registeredClusters, *handler.Delete)
-			register(loaded)
+			loaded, err := p.deleteOperation(i+1, registeredClusters, *handler.Delete)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
 		} else if handler.Error != nil {
 			loaded, err := p.errorOperation(i+1, registeredClusters, *handler.Error)
 			if err != nil {
@@ -272,8 +275,11 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 		} else if handler.Get != nil {
 			register(p.getOperation(i+1, registeredClusters, *handler.Get))
 		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(i+1, registeredClusters, *handler.Delete)
-			register(loaded)
+			loaded, err := p.deleteOperation(i+1, registeredClusters, *handler.Delete)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
 		} else if handler.Command != nil {
 			register(p.commandOperation(i+1, registeredClusters, *handler.Command))
 		} else if handler.Script != nil {
@@ -317,8 +323,11 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, 
 		} else if handler.Get != nil {
 			register(p.getOperation(i+1, registeredClusters, *handler.Get))
 		} else if handler.Delete != nil {
-			loaded := p.deleteOperation(i+1, registeredClusters, *handler.Delete)
-			register(loaded)
+			loaded, err := p.deleteOperation(i+1, registeredClusters, *handler.Delete)
+			if err != nil {
+				return nil, err
+			}
+			register(loaded...)
 		} else if handler.Command != nil {
 			register(p.commandOperation(i+1, registeredClusters, *handler.Command))
 		} else if handler.Script != nil {
@@ -481,13 +490,27 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Delete) operation {
-	var resource unstructured.Unstructured
-	resource.SetAPIVersion(op.APIVersion)
-	resource.SetKind(op.Kind)
-	resource.SetName(op.Name)
-	resource.SetNamespace(op.Namespace)
-	resource.SetLabels(op.Labels)
+func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Delete) ([]operation, error) {
+	ref := v1alpha1.FileRefOrResource{
+		FileRef: v1alpha1.FileRef{
+			File: op.File,
+		},
+	}
+	if op.Ref != nil {
+		var resource unstructured.Unstructured
+		resource.SetAPIVersion(op.Ref.APIVersion)
+		resource.SetKind(op.Ref.Kind)
+		resource.SetName(op.Ref.Name)
+		resource.SetNamespace(op.Ref.Namespace)
+		resource.SetLabels(op.Ref.Labels)
+		ref.Resource = &resource
+	}
+	resources, err := p.fileRefOrResource(ref)
+	if err != nil {
+		return nil, err
+	}
+	var ops []operation
+
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Delete ", report.OperationTypeDelete)
@@ -503,23 +526,28 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Spec.Template, p.config.Template)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
-	return newOperation(
-		OperationInfo{
-			Id: id,
-		},
-		false,
-		timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
-		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, err := clusterResolver(false)
-			if err != nil {
-				return nil, nil, err
-			}
-			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-			return opdelete.New(client, resource, p.namespacer, template, deletionPropagationPolicy, op.Expect...), bindings, nil
-		},
-		operationReport,
-		op.Bindings...,
-	)
+	for i := range resources {
+		resource := resources[i]
+		ops = append(ops, newOperation(
+			OperationInfo{
+				Id:         id,
+				ResourceId: i + 1,
+			},
+			false,
+			timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
+			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+				config, client, err := clusterResolver(false)
+				if err != nil {
+					return nil, nil, err
+				}
+				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+				return opdelete.New(client, resource, p.namespacer, template, deletionPropagationPolicy, op.Expect...), bindings, nil
+			},
+			operationReport,
+			op.Bindings...,
+		))
+	}
+	return ops, nil
 }
 
 func (p *stepProcessor) describeOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Describe) operation {

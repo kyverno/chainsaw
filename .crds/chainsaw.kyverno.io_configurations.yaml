@@ -228,8 +228,14 @@ spec:
                             - check
                             type: object
                           type: array
+                        file:
+                          description: |-
+                            File is the path to the referenced file. This can be a direct path to a file
+                            or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
+                            files within the "manifest" directory.
+                          type: string
                         ref:
-                          description: ObjectReference determines objects to be deleted.
+                          description: Ref determines objects to be deleted.
                           properties:
                             apiVersion:
                               description: API version of the referent.
@@ -266,8 +272,6 @@ spec:
                           description: Timeout for the operation. Overrides the global
                             timeout set in the Configuration.
                           type: string
-                      required:
-                      - ref
                       type: object
                     describe:
                       description: Describe determines the resource describe collector
@@ -1120,9 +1124,14 @@ spec:
                                 - check
                                 type: object
                               type: array
+                            file:
+                              description: |-
+                                File is the path to the referenced file. This can be a direct path to a file
+                                or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
+                                files within the "manifest" directory.
+                              type: string
                             ref:
-                              description: ObjectReference determines objects to be
-                                deleted.
+                              description: Ref determines objects to be deleted.
                               properties:
                                 apiVersion:
                                   description: API version of the referent.
@@ -1160,8 +1169,6 @@ spec:
                               description: Timeout for the operation. Overrides the
                                 global timeout set in the Configuration.
                               type: string
-                          required:
-                          - ref
                           type: object
                         describe:
                           description: Describe determines the resource describe collector

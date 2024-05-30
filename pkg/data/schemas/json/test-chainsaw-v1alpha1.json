@@ -502,9 +502,6 @@
                   "object",
                   "null"
                 ],
-                "required": [
-                  "ref"
-                ],
                 "properties": {
                   "bindings": {
                     "description": "Bindings defines additional binding key/values.",
@@ -611,9 +608,19 @@
                       }
                     }
                   },
+                  "file": {
+                    "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
                   "ref": {
-                    "description": "ObjectReference determines objects to be deleted.",
-                    "type": "object",
+                    "description": "Ref determines objects to be deleted.",
+                    "type": [
+                      "object",
+                      "null"
+                    ],
                     "required": [
                       "apiVersion",
                       "kind"
@@ -1707,9 +1714,6 @@
                         "object",
                         "null"
                       ],
-                      "required": [
-                        "ref"
-                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -1816,9 +1820,19 @@
                             }
                           }
                         },
+                        "file": {
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "ref": {
-                          "description": "ObjectReference determines objects to be deleted.",
-                          "type": "object",
+                          "description": "Ref determines objects to be deleted.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
                           "required": [
                             "apiVersion",
                             "kind"
@@ -2768,9 +2782,6 @@
                         "object",
                         "null"
                       ],
-                      "required": [
-                        "ref"
-                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -2877,9 +2888,19 @@
                             }
                           }
                         },
+                        "file": {
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "ref": {
-                          "description": "ObjectReference determines objects to be deleted.",
-                          "type": "object",
+                          "description": "Ref determines objects to be deleted.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
                           "required": [
                             "apiVersion",
                             "kind"
@@ -3885,9 +3906,6 @@
                         "object",
                         "null"
                       ],
-                      "required": [
-                        "ref"
-                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -3994,9 +4012,19 @@
                             }
                           }
                         },
+                        "file": {
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "ref": {
-                          "description": "ObjectReference determines objects to be deleted.",
-                          "type": "object",
+                          "description": "Ref determines objects to be deleted.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
                           "required": [
                             "apiVersion",
                             "kind"
@@ -5459,9 +5487,6 @@
                         "object",
                         "null"
                       ],
-                      "required": [
-                        "ref"
-                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -5568,9 +5593,19 @@
                             }
                           }
                         },
+                        "file": {
+                          "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
                         "ref": {
-                          "description": "ObjectReference determines objects to be deleted.",
-                          "type": "object",
+                          "description": "Ref determines objects to be deleted.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
                           "required": [
                             "apiVersion",
                             "kind"
