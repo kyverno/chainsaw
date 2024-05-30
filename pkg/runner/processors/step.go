@@ -483,11 +483,11 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 
 func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Delete) operation {
 	var resource unstructured.Unstructured
-	resource.SetAPIVersion(op.APIVersion)
-	resource.SetKind(op.Kind)
-	resource.SetName(op.Name)
-	resource.SetNamespace(op.Namespace)
-	resource.SetLabels(op.Labels)
+	resource.SetAPIVersion(op.Ref.APIVersion)
+	resource.SetKind(op.Ref.Kind)
+	resource.SetName(op.Ref.Name)
+	resource.SetNamespace(op.Ref.Namespace)
+	resource.SetLabels(op.Ref.Labels)
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Delete ", report.OperationTypeDelete)

@@ -52,7 +52,7 @@ func TestValidateFinally(t *testing.T) {
 		},
 	}
 	exampleDelete := &v1alpha1.Delete{
-		ObjectReference: v1alpha1.ObjectReference{
+		Ref: v1alpha1.ObjectReference{
 			ObjectType: v1alpha1.ObjectType{
 				APIVersion: "v1",
 				Kind:       "Pod",
