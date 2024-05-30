@@ -107,7 +107,7 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					Description: getDescription(description, "sample delete operation"),
 				},
 				Delete: &v1alpha1.Delete{
-					Ref: v1alpha1.ObjectReference{
+					Ref: &v1alpha1.ObjectReference{
 						ObjectSelector: v1alpha1.ObjectSelector{
 							Name: "foo",
 						},

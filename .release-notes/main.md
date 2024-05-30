@@ -19,6 +19,7 @@ Release notes for `TODO`.
 ## 💫 New features 💫
 
 - Added test metadata built-in binding
+- Added file support to `delete` operation
 
 ## 📚 Docs 📚
 
