@@ -26,8 +26,15 @@ type Delete struct {
 	// +optional
 	Template *bool `json:"template,omitempty"`
 
+	// File is the path to the referenced file. This can be a direct path to a file
+	// or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
+	// files within the "manifest" directory.
+	// +optional
+	File string `json:"file,omitempty"`
+
 	// Ref determines objects to be deleted.
-	Ref ObjectReference `json:"ref"`
+	// +optional
+	Ref *ObjectReference `json:"ref,omitempty"`
 
 	// Expect defines a list of matched checks to validate the operation outcome.
 	// +optional
