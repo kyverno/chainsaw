@@ -63,6 +63,7 @@ type options struct {
 	pauseOnFailure              bool
 	values                      []string
 	clusters                    []string
+	remarshal                   bool
 }
 
 func Command() *cobra.Command {
@@ -251,6 +252,9 @@ func Command() *cobra.Command {
 			if len(configuration.Spec.Clusters) != 0 {
 				fmt.Fprintf(out, "- Clusters %v\n", configuration.Spec.Clusters)
 			}
+			if options.remarshal {
+				fmt.Fprintf(out, "- Remarshal %v\n", options.remarshal)
+			}
 			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
 			fmt.Fprintf(out, "- PauseOnFailure %v\n", options.pauseOnFailure)
 			// loading tests
@@ -266,7 +270,7 @@ func Command() *cobra.Command {
 				}
 				selector = parsed
 			}
-			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, selector, options.testDirs...)
+			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, selector, options.remarshal, options.testDirs...)
 			if err != nil {
 				return err
 			}
@@ -361,6 +365,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringSliceVar(&options.values, "values", nil, "Values passed to the tests")
 	// others
 	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
+	cmd.Flags().BoolVar(&options.remarshal, "remarshal", false, "Remarshals tests yaml to apply anchors before parsing")
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
 	}
