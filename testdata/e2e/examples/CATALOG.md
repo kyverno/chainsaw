@@ -9,6 +9,7 @@
 - [catch](catch/README.md)
 - [command-output](command-output/README.md)
 - [delete](delete/README.md)
+- [delete](delete/README.md)
 - [deployment](deployment/README.md)
 - [dynamic-clusters](dynamic-clusters/README.md)
 - [finally](finally/README.md)
