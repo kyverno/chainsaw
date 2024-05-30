@@ -14,42 +14,42 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-func tryLoadTestFile(file string) ([]*v1alpha1.Test, error) {
+func tryLoadTestFile(file string, remarshal bool) ([]*v1alpha1.Test, error) {
 	if _, err := os.Stat(file); err != nil {
 		if os.IsNotExist(err) {
 			return nil, nil
 		}
 		return nil, err
 	}
-	tests, err := test.Load(file)
+	tests, err := test.Load(file, remarshal)
 	if err != nil {
 		return nil, err
 	}
 	return tests, nil
 }
 
-func tryLoadTestFiles(fileName string, path string) ([]*v1alpha1.Test, error) {
+func tryLoadTestFiles(fileName string, path string, remarshal bool) ([]*v1alpha1.Test, error) {
 	if filepath.Ext(fileName) != "" {
-		return tryLoadTestFile(filepath.Join(path, fileName))
+		return tryLoadTestFile(filepath.Join(path, fileName), remarshal)
 	}
-	tests, err := tryLoadTestFile(filepath.Join(path, fileName+".yaml"))
+	tests, err := tryLoadTestFile(filepath.Join(path, fileName+".yaml"), remarshal)
 	if err != nil {
 		return nil, err
 	}
 	if tests != nil {
 		return tests, nil
 	}
-	return tryLoadTestFile(filepath.Join(path, fileName+".yml"))
+	return tryLoadTestFile(filepath.Join(path, fileName+".yml"), remarshal)
 }
 
-func LoadTest(fileName string, path string) ([]Test, error) {
+func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 	// first, try to load a test manifest
 	if path == "" {
 		return nil, errors.New("path must be specified")
 	}
 	var tests []Test
 	if fileName != "" {
-		apiTests, err := tryLoadTestFiles(fileName, path)
+		apiTests, err := tryLoadTestFiles(fileName, path, remarshal)
 		if err != nil {
 			return nil, err
 		}
