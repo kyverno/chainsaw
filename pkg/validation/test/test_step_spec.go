@@ -14,13 +14,13 @@ func ValidateTestStepSpec(path *field.Path, obj v1alpha1.TestStepSpec) field.Err
 		errs = append(errs, ValidateOperation(path.Child("try").Index(i), try)...)
 	}
 	for i, catch := range obj.Catch {
-		errs = append(errs, ValidateCatch(path.Child("catch").Index(i), catch)...)
+		errs = append(errs, ValidateCatchFinally(path.Child("catch").Index(i), catch)...)
 	}
 	for i, finally := range obj.Finally {
-		errs = append(errs, ValidateFinally(path.Child("finally").Index(i), finally)...)
+		errs = append(errs, ValidateCatchFinally(path.Child("finally").Index(i), finally)...)
 	}
 	for i, cleanup := range obj.Cleanup {
-		errs = append(errs, ValidateFinally(path.Child("Cleanup").Index(i), cleanup)...)
+		errs = append(errs, ValidateCatchFinally(path.Child("Cleanup").Index(i), cleanup)...)
 	}
 	errs = append(errs, ValidateBindings(path.Child("bindings"), obj.Bindings...)...)
 	return errs

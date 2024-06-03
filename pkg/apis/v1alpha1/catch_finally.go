@@ -1,7 +1,7 @@
 package v1alpha1
 
-// Finally defines actions to be executed at the end of a test.
-type Finally struct {
+// CatchFinally defines actions to be executed in catch, finally and cleanup blocks.
+type CatchFinally struct {
 	// Description contains a description of the operation.
 	// +optional
 	Description string `json:"description,omitempty"`
@@ -43,7 +43,7 @@ type Finally struct {
 	Sleep *Sleep `json:"sleep,omitempty"`
 }
 
-func (f *Finally) Bindings() []Binding {
+func (f *CatchFinally) Bindings() []Binding {
 	switch {
 	case f.Command != nil:
 		return f.Command.Bindings
@@ -67,7 +67,7 @@ func (f *Finally) Bindings() []Binding {
 	panic("missing binding operation type handler")
 }
 
-func (f *Finally) Outputs() []Output {
+func (f *CatchFinally) Outputs() []Output {
 	switch {
 	case f.Command != nil:
 		return f.Command.Outputs

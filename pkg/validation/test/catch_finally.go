@@ -7,7 +7,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func ValidateCatch(path *field.Path, obj v1alpha1.Catch) field.ErrorList {
+func ValidateCatchFinally(path *field.Path, obj v1alpha1.CatchFinally) field.ErrorList {
 	var errs field.ErrorList
 	count := 0
 	if obj.PodLogs != nil {

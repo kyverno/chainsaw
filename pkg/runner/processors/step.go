@@ -269,7 +269,7 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 			ops = append(ops, o)
 		}
 	}
-	var handlers []v1alpha1.Catch
+	var handlers []v1alpha1.CatchFinally
 	handlers = append(handlers, p.config.Catch...)
 	handlers = append(handlers, p.test.Spec.Catch...)
 	handlers = append(handlers, p.step.Catch...)
@@ -313,7 +313,7 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, operations ...v1alpha1.Finally) ([]operation, error) {
+func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, operations ...v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {

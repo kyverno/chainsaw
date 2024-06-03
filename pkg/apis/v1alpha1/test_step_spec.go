@@ -45,13 +45,13 @@ type TestStepSpec struct {
 
 	// Catch defines what the step will execute when an error happens.
 	// +optional
-	Catch []Catch `json:"catch,omitempty"`
+	Catch []CatchFinally `json:"catch,omitempty"`
 
 	// Finally defines what the step will execute after the step is terminated.
 	// +optional
-	Finally []Finally `json:"finally,omitempty"`
+	Finally []CatchFinally `json:"finally,omitempty"`
 
 	// Cleanup defines what will be executed after the test is terminated.
 	// +optional
-	Cleanup []Finally `json:"cleanup,omitempty"`
+	Cleanup []CatchFinally `json:"cleanup,omitempty"`
 }
