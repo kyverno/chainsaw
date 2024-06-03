@@ -247,7 +247,7 @@ func Command() *cobra.Command {
 				fmt.Fprintf(out, "- Values %v\n", options.values)
 			}
 			if configuration.Spec.Template != nil {
-				fmt.Fprintf(out, "- Template %v\n", configuration.Spec.Template)
+				fmt.Fprintf(out, "- Template %v\n", *configuration.Spec.Template)
 			}
 			if len(configuration.Spec.Clusters) != 0 {
 				fmt.Fprintf(out, "- Clusters %v\n", configuration.Spec.Clusters)

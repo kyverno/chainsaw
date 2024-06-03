@@ -1668,9 +1668,11 @@ spec:
                     type: string
                 type: object
               templating:
+                default: {}
                 description: Templating contains the templating config.
                 properties:
                   enabled:
+                    default: true
                     description: Enabled determines whether resources should be considered
                       for templating.
                     type: boolean

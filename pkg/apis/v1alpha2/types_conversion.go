@@ -34,15 +34,13 @@ func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *Config
 		out.ReportPath = in.Path
 		out.ReportName = in.Name
 	}
-	if in := in.Templating; in != nil {
-		out.Template = in.Enabled
-	}
+	out.Template = &in.Templating.Enabled
 	out.Timeouts = in.Timeouts
 	return nil
 }
 
 func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alpha1.ConfigurationSpec, out *ConfigurationSpec, _ conversion.Scope) error {
-	out.Cleanup = &Cleanup{
+	out.Cleanup = &CleanupOptions{
 		SkipDelete:         in.SkipDelete,
 		DelayBeforeCleanup: in.DelayBeforeCleanup,
 	}
@@ -50,7 +48,7 @@ func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alph
 	out.Deletion = DeletionOptions{
 		Propagation: in.DeletionPropagationPolicy,
 	}
-	out.Discovery = Discovery{
+	out.Discovery = DiscoveryOptions{
 		ExcludeTestRegex: in.ExcludeTestRegex,
 		IncludeTestRegex: in.IncludeTestRegex,
 		TestFile:         in.TestFile,
@@ -59,23 +57,29 @@ func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alph
 	out.Error = &ErrorOptions{
 		Catch: in.Catch,
 	}
-	out.Execution = &Execution{
+	out.Execution = &ExecutionOptions{
 		FailFast:                    in.FailFast,
 		Parallel:                    in.Parallel,
 		RepeatCount:                 in.RepeatCount,
 		ForceTerminationGracePeriod: in.ForceTerminationGracePeriod,
 	}
-	out.Namespace = &Namespace{
+	out.Namespace = &NamespaceOptions{
 		Name:     in.Namespace,
 		Template: in.NamespaceTemplate,
 	}
-	out.Report = &Report{
+	out.Report = &ReportOptions{
 		Format: ReportFormatType(in.ReportFormat),
 		Path:   in.ReportPath,
 		Name:   in.ReportName,
 	}
-	out.Templating = &Templating{
-		Enabled: in.Template,
+	if in.Template == nil {
+		out.Templating = TemplatingOptions{
+			Enabled: true,
+		}
+	} else {
+		out.Templating = TemplatingOptions{
+			Enabled: *in.Template,
+		}
 	}
 	out.Timeouts = in.Timeouts
 	return nil
