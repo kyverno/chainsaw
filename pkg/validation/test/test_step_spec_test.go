@@ -37,7 +37,7 @@ func TestValidateTestStepSpec(t *testing.T) {
 			},
 		},
 	}
-	validCatch := []v1alpha1.Catch{
+	validCatch := []v1alpha1.CatchFinally{
 		{
 			Command: &v1alpha1.Command{
 				Entrypoint: "echo",
@@ -45,7 +45,7 @@ func TestValidateTestStepSpec(t *testing.T) {
 			},
 		},
 	}
-	invalidCatch := []v1alpha1.Catch{
+	invalidCatch := []v1alpha1.CatchFinally{
 		{
 			Script: &v1alpha1.Script{
 				Content: "echo Hello, World!",
@@ -56,7 +56,7 @@ func TestValidateTestStepSpec(t *testing.T) {
 			},
 		},
 	}
-	validFinally := []v1alpha1.Finally{
+	validFinally := []v1alpha1.CatchFinally{
 		{
 			Command: &v1alpha1.Command{
 				Entrypoint: "echo",
@@ -64,7 +64,7 @@ func TestValidateTestStepSpec(t *testing.T) {
 			},
 		},
 	}
-	invalidFinally := []v1alpha1.Finally{
+	invalidFinally := []v1alpha1.CatchFinally{
 		{
 			Script: &v1alpha1.Script{
 				Content: "echo Hello, World!",

@@ -33,7 +33,7 @@ func TestValidateConfiguration(t *testing.T) {
 		name: "with catch",
 		obj: &v1alpha1.Configuration{
 			Spec: v1alpha1.ConfigurationSpec{
-				Catch: []v1alpha1.Catch{{
+				Catch: []v1alpha1.CatchFinally{{
 					Events: &v1alpha1.Events{},
 				}},
 			},

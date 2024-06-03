@@ -125,7 +125,7 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					Content: `echo "test namespace = $NAMESPACE"`,
 				},
 			}},
-			Catch: []v1alpha1.Catch{{
+			Catch: []v1alpha1.CatchFinally{{
 				Description: getDescription(description, "sample events collector"),
 				Events: &v1alpha1.Events{
 					ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
@@ -140,7 +140,7 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					},
 				},
 			}},
-			Finally: []v1alpha1.Finally{{
+			Finally: []v1alpha1.CatchFinally{{
 				Description: getDescription(description, "sample sleep operation"),
 				Sleep: &v1alpha1.Sleep{
 					Duration: metav1.Duration{Duration: 5 * time.Second},

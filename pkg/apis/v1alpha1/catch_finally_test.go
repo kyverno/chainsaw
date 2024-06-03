@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCatch_Bindings(t *testing.T) {
+func TestFinally_Bindings(t *testing.T) {
 	type fields struct {
 		PodLogs  *PodLogs
 		Events   *Events
@@ -70,7 +70,7 @@ func TestCatch_Bindings(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Catch{
+			c := &CatchFinally{
 				PodLogs:  tt.fields.PodLogs,
 				Events:   tt.fields.Events,
 				Describe: tt.fields.Describe,
@@ -85,10 +85,10 @@ func TestCatch_Bindings(t *testing.T) {
 			assert.Equal(t, tt.want, len(got))
 		})
 	}
-	assert.Panics(t, func() { (&Catch{}).Bindings() })
+	assert.Panics(t, func() { (&CatchFinally{}).Bindings() })
 }
 
-func TestCatch_Outputs(t *testing.T) {
+func TestFinally_Outputs(t *testing.T) {
 	type fields struct {
 		PodLogs  *PodLogs
 		Events   *Events
@@ -149,7 +149,7 @@ func TestCatch_Outputs(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Catch{
+			c := &CatchFinally{
 				PodLogs:  tt.fields.PodLogs,
 				Events:   tt.fields.Events,
 				Describe: tt.fields.Describe,
@@ -164,5 +164,5 @@ func TestCatch_Outputs(t *testing.T) {
 			assert.Equal(t, tt.want, len(got))
 		})
 	}
-	assert.Panics(t, func() { (&Catch{}).Outputs() })
+	assert.Panics(t, func() { (&CatchFinally{}).Outputs() })
 }

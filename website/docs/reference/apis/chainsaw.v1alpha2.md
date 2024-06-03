@@ -100,7 +100,7 @@ auto_generated: true
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
+| `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
 
 ## ExecutionOptions     {#chainsaw-kyverno-io-v1alpha2-ExecutionOptions}
 

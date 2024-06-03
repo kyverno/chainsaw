@@ -8,7 +8,7 @@ import (
 
 type (
 	Any      = v1alpha1.Any
-	Catch    = v1alpha1.Catch
+	Catch    = v1alpha1.CatchFinally
 	Cluster  = v1alpha1.Cluster
 	Clusters = v1alpha1.Clusters
 	Timeouts = v1alpha1.Timeouts
