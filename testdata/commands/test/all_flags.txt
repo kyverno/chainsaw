@@ -20,6 +20,7 @@ Loading default configuration...
 - Parallel 24
 - RepeatCount 12
 - ForceTerminationGracePeriod 5s
+- Template true
 - NoCluster false
 - PauseOnFailure false
 Loading tests...
