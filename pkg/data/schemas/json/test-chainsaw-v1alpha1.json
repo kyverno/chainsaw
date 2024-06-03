@@ -5664,6 +5664,99 @@
                         }
                       }
                     },
+                    "describe": {
+                      "description": "Describe determines the resource describe collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "apiVersion",
+                        "kind"
+                      ],
+                      "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": "string"
+                        },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "kind": {
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "type": "string"
+                        },
+                        "name": {
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "showEvents": {
+                          "description": "Show Events indicates whether to include related events.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
                     "description": {
                       "description": "Description contains a description of the operation.",
                       "type": [
@@ -5759,6 +5852,182 @@
                           "description": "Template determines whether resources should be considered for templating.",
                           "type": [
                             "boolean",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "events": {
+                      "description": "Events determines the events collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "format": {
+                          "description": "Format determines the output format (json or yaml).",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "pattern": "^(?:json|yaml|\\(.+\\))$"
+                        },
+                        "name": {
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "get": {
+                      "description": "Get determines the resource get collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "apiVersion",
+                        "kind"
+                      ],
+                      "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": "string"
+                        },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "format": {
+                          "description": "Format determines the output format (json or yaml).",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "pattern": "^(?:json|yaml|\\(.+\\))$"
+                        },
+                        "kind": {
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "type": "string"
+                        },
+                        "name": {
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
                             "null"
                           ]
                         },
@@ -5927,6 +6196,94 @@
                           "description": "Template determines whether resources should be considered for templating.",
                           "type": [
                             "boolean",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
+                    "podLogs": {
+                      "description": "PodLogs determines the pod logs collector to execute.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "properties": {
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "container": {
+                          "description": "Container in pod to get logs from else --all-containers is used.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "name": {
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "selector": {
+                          "description": "Selector defines labels selector.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "tail": {
+                          "description": "Tail is the number of last lines to collect from pods. If omitted or zero,\nthen the default is 10 if you use a selector, or -1 (all) if you use a pod name.\nThis matches default behavior of `kubectl logs`.",
+                          "type": [
+                            "integer",
                             "null"
                           ]
                         },

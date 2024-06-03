@@ -212,18 +212,36 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, clea
 				return nil, err
 			}
 			register(loaded...)
+		} else if handler.Describe != nil {
+			register(p.describeOperation(i+1, registeredClusters, *handler.Describe))
 		} else if handler.Error != nil {
 			loaded, err := p.errorOperation(i+1, registeredClusters, *handler.Error)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
+		} else if handler.Events != nil {
+			get := v1alpha1.Get{
+				Cluster:              handler.Events.Cluster,
+				Timeout:              handler.Events.Timeout,
+				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
+				Format:               handler.Events.Format,
+				ResourceReference: v1alpha1.ResourceReference{
+					APIVersion: "v1",
+					Kind:       "Event",
+				},
+			}
+			register(p.getOperation(i+1, registeredClusters, get))
+		} else if handler.Get != nil {
+			register(p.getOperation(i+1, registeredClusters, *handler.Get))
 		} else if handler.Patch != nil {
 			loaded, err := p.patchOperation(i+1, registeredClusters, *handler.Patch)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
+		} else if handler.PodLogs != nil {
+			register(p.logsOperation(i+1, registeredClusters, *handler.PodLogs))
 		} else if handler.Script != nil {
 			register(p.scriptOperation(i+1, registeredClusters, *handler.Script))
 		} else if handler.Sleep != nil {
