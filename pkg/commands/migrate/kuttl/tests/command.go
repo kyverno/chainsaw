@@ -514,18 +514,18 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			if collector.Tail != 0 {
 				op.Tail = ptr.To(collector.Tail)
 			}
-			to.Catch = append(to.Catch, v1alpha1.Catch{PodLogs: op})
+			to.Catch = append(to.Catch, v1alpha1.CatchFinally{PodLogs: op})
 		case "command":
 			if collector.Cmd == "" {
 				return fmt.Errorf("cmd must be set when tyme is command")
 			}
-			to.Catch = append(to.Catch, v1alpha1.Catch{
+			to.Catch = append(to.Catch, v1alpha1.CatchFinally{
 				Script: &v1alpha1.Script{
 					Content: collector.Cmd,
 				},
 			})
 		case "events":
-			to.Catch = append(to.Catch, v1alpha1.Catch{
+			to.Catch = append(to.Catch, v1alpha1.CatchFinally{
 				Events: &v1alpha1.Events{
 					ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 						Name:      collector.Pod,

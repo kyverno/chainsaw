@@ -62,7 +62,8 @@ spec:
                   Catch defines what the steps will execute when an error happens.
                   This will be combined with catch handlers defined at the step level.
                 items:
-                  description: Catch defines actions to be executed on failure.
+                  description: CatchFinally defines actions to be executed in catch,
+                    finally and cleanup blocks.
                   properties:
                     command:
                       description: Command defines a command to run.
@@ -815,7 +816,8 @@ spec:
                       description: Catch defines what the step will execute when an
                         error happens.
                       items:
-                        description: Catch defines actions to be executed on failure.
+                        description: CatchFinally defines actions to be executed in
+                          catch, finally and cleanup blocks.
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -1501,8 +1503,8 @@ spec:
                       description: Cleanup defines what will be executed after the
                         test is terminated.
                       items:
-                        description: Finally defines actions to be executed at the
-                          end of a test.
+                        description: CatchFinally defines actions to be executed in
+                          catch, finally and cleanup blocks.
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -2223,8 +2225,8 @@ spec:
                       description: Finally defines what the step will execute after
                         the step is terminated.
                       items:
-                        description: Finally defines actions to be executed at the
-                          end of a test.
+                        description: CatchFinally defines actions to be executed in
+                          catch, finally and cleanup blocks.
                         properties:
                           command:
                             description: Command defines a command to run.

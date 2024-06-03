@@ -77,7 +77,7 @@ func TestLoad(t *testing.T) {
 								},
 							},
 						}},
-						Catch: []v1alpha1.Catch{{
+						Catch: []v1alpha1.CatchFinally{{
 							PodLogs: &v1alpha1.PodLogs{
 								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 									Namespace: "foo",
@@ -112,7 +112,7 @@ func TestLoad(t *testing.T) {
 								},
 							},
 						}},
-						Finally: []v1alpha1.Finally{{
+						Finally: []v1alpha1.CatchFinally{{
 							PodLogs: &v1alpha1.PodLogs{
 								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 									Namespace: "foo",
