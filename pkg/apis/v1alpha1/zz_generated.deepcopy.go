@@ -966,14 +966,34 @@ func (in *Operation) DeepCopyInto(out *Operation) {
 		*out = new(Delete)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Describe != nil {
+		in, out := &in.Describe, &out.Describe
+		*out = new(Describe)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.Error != nil {
 		in, out := &in.Error, &out.Error
 		*out = new(Error)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Events != nil {
+		in, out := &in.Events, &out.Events
+		*out = new(Events)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.Get != nil {
+		in, out := &in.Get, &out.Get
+		*out = new(Get)
+		(*in).DeepCopyInto(*out)
+	}
 	if in.Patch != nil {
 		in, out := &in.Patch, &out.Patch
 		*out = new(Patch)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.PodLogs != nil {
+		in, out := &in.PodLogs, &out.PodLogs
+		*out = new(PodLogs)
 		(*in).DeepCopyInto(*out)
 	}
 	if in.Script != nil {
