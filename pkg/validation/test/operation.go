@@ -46,7 +46,7 @@ func ValidateOperation(path *field.Path, obj v1alpha1.Operation) field.ErrorList
 		errs = append(errs, ValidateError(path.Child("error"), obj.Error)...)
 		errs = append(errs, ValidateEvents(path.Child("events"), obj.Events)...)
 		errs = append(errs, ValidateGet(path.Child("get"), obj.Get)...)
-		errs = append(errs, ValidatePatch(path.Child("error"), obj.Patch)...)
+		errs = append(errs, ValidatePatch(path.Child("patch"), obj.Patch)...)
 		errs = append(errs, ValidatePodLogs(path.Child("podLogs"), obj.PodLogs)...)
 		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
 		errs = append(errs, ValidateUpdate(path.Child("update"), obj.Update)...)
