@@ -14,8 +14,8 @@ type (
 	Timeouts = v1alpha1.Timeouts
 )
 
-// Cleanup options contain the configuration used for cleaning up resources.
-type Cleanup struct {
+// CleanupOptions contains the configuration used for cleaning up resources.
+type CleanupOptions struct {
 	// If set, do not delete the resources after running a test.
 	// +optional
 	SkipDelete bool `json:"skipDelete,omitempty"`
@@ -35,8 +35,8 @@ type DeletionOptions struct {
 	Propagation metav1.DeletionPropagation `json:"propagation,omitempty"`
 }
 
-// Discovery options contain the discovery configuration used when discovering tests in folders.
-type Discovery struct {
+// DiscoveryOptions contains the discovery configuration used when discovering tests in folders.
+type DiscoveryOptions struct {
 	// ExcludeTestRegex is used to exclude tests based on a regular expression.
 	// +optional
 	ExcludeTestRegex string `json:"excludeTestRegex,omitempty"`
@@ -64,8 +64,8 @@ type ErrorOptions struct {
 	Catch []Catch `json:"catch,omitempty"`
 }
 
-// Execution options determine how tests are run.
-type Execution struct {
+// ExecutionOptions determines how tests are run.
+type ExecutionOptions struct {
 	// FailFast determines whether the test should stop upon encountering the first failure.
 	// +optional
 	FailFast bool `json:"failFast,omitempty"`
@@ -87,8 +87,8 @@ type Execution struct {
 	ForceTerminationGracePeriod *metav1.Duration `json:"forceTerminationGracePeriod,omitempty"`
 }
 
-// Namespace options contain the configuration used to allocate a namespace for each test.
-type Namespace struct {
+// NamespaceOptions contains the configuration used to allocate a namespace for each test.
+type NamespaceOptions struct {
 	// Name defines the namespace to use for tests.
 	// If not specified, every test will execute in a random ephemeral namespace
 	// unless the namespace is overridden in a the test spec.
@@ -107,8 +107,8 @@ const (
 	XMLFormat  ReportFormatType = "XML"
 )
 
-// Report options contain the configuration used for reporting.
-type Report struct {
+// ReportOptions contains the configuration used for reporting.
+type ReportOptions struct {
 	// ReportFormat determines test report format (JSON|XML).
 	// +optional
 	// +kubebuilder:validation:Enum:=JSON;XML
@@ -125,9 +125,10 @@ type Report struct {
 	Name string `json:"name,omitempty"`
 }
 
-// Templating options contain the templating configuration.
-type Templating struct {
+// TemplatingOptions contains the templating configuration.
+type TemplatingOptions struct {
 	// Enabled determines whether resources should be considered for templating.
 	// +optional
-	Enabled *bool `json:"enabled,omitempty"`
+	// +kubebuilder:default:=true
+	Enabled bool `json:"enabled,omitempty"`
 }
