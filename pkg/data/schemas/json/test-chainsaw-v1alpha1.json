@@ -315,7 +315,7 @@
             "null"
           ],
           "items": {
-            "description": "Catch defines actions to be executed on failure.",
+            "description": "CatchFinally defines actions to be executed in catch, finally and cleanup blocks.",
             "type": [
               "object",
               "null"
@@ -1527,7 +1527,7 @@
                   "null"
                 ],
                 "items": {
-                  "description": "Catch defines actions to be executed on failure.",
+                  "description": "CatchFinally defines actions to be executed in catch, finally and cleanup blocks.",
                   "type": [
                     "object",
                     "null"
@@ -2595,7 +2595,7 @@
                   "null"
                 ],
                 "items": {
-                  "description": "Finally defines actions to be executed at the end of a test.",
+                  "description": "CatchFinally defines actions to be executed in catch, finally and cleanup blocks.",
                   "type": [
                     "object",
                     "null"
@@ -3719,7 +3719,7 @@
                   "null"
                 ],
                 "items": {
-                  "description": "Finally defines actions to be executed at the end of a test.",
+                  "description": "CatchFinally defines actions to be executed in catch, finally and cleanup blocks.",
                   "type": [
                     "object",
                     "null"

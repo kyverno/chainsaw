@@ -164,7 +164,7 @@ func (in *ErrorOptions) DeepCopyInto(out *ErrorOptions) {
 	*out = *in
 	if in.Catch != nil {
 		in, out := &in.Catch, &out.Catch
-		*out = make([]v1alpha1.Catch, len(*in))
+		*out = make([]v1alpha1.CatchFinally, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}

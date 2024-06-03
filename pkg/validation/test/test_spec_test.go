@@ -19,10 +19,10 @@ func TestValidateTestSpec(t *testing.T) {
 	}, {
 		name: "invalid catch",
 		obj: v1alpha1.TestSpec{
-			Catch: []v1alpha1.Catch{{}},
+			Catch: []v1alpha1.CatchFinally{{}},
 		},
 		want: field.ErrorList{
-			field.Invalid(field.NewPath("catch").Index(0), v1alpha1.Catch{}, "no statement found in operation"),
+			field.Invalid(field.NewPath("catch").Index(0), v1alpha1.CatchFinally{}, "no statement found in operation"),
 		},
 	}}
 	for _, tt := range tests {
