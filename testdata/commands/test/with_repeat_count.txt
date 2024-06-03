@@ -18,6 +18,7 @@ Loading default configuration...
 - ExecTimeout 5s
 - DeletionPropagationPolicy Background
 - RepeatCount 3
+- Template true
 - NoCluster false
 - PauseOnFailure false
 Loading tests...

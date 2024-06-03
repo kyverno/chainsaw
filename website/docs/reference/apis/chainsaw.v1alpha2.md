@@ -24,13 +24,13 @@ auto_generated: true
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec) | :white_check_mark: |  | <p>Configuration spec.</p> |
 
-## Cleanup     {#chainsaw-kyverno-io-v1alpha2-Cleanup}
+## CleanupOptions     {#chainsaw-kyverno-io-v1alpha2-CleanupOptions}
 
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Cleanup options contain the configuration used for cleaning up resources.</p>
+<p>CleanupOptions contains the configuration used for cleaning up resources.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -49,15 +49,15 @@ auto_generated: true
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `cleanup` | [`Cleanup`](#chainsaw-kyverno-io-v1alpha2-Cleanup) |  |  | <p>Cleanup contains cleanup configuration.</p> |
+| `cleanup` | [`CleanupOptions`](#chainsaw-kyverno-io-v1alpha2-CleanupOptions) |  |  | <p>Cleanup contains cleanup configuration.</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `deletion` | [`DeletionOptions`](#chainsaw-kyverno-io-v1alpha2-DeletionOptions) |  |  | <p>Deletion contains the global deletion configuration.</p> |
-| `discovery` | [`Discovery`](#chainsaw-kyverno-io-v1alpha2-Discovery) |  |  | <p>Discovery contains tests discovery configuration.</p> |
+| `discovery` | [`DiscoveryOptions`](#chainsaw-kyverno-io-v1alpha2-DiscoveryOptions) |  |  | <p>Discovery contains tests discovery configuration.</p> |
 | `error` | [`ErrorOptions`](#chainsaw-kyverno-io-v1alpha2-ErrorOptions) |  |  | <p>Error contains the global error configuration.</p> |
-| `execution` | [`Execution`](#chainsaw-kyverno-io-v1alpha2-Execution) |  |  | <p>Execution contains tests execution configuration.</p> |
-| `namespace` | [`Namespace`](#chainsaw-kyverno-io-v1alpha2-Namespace) |  |  | <p>Namespace contains properties for the namespace to use for tests.</p> |
-| `report` | [`Report`](#chainsaw-kyverno-io-v1alpha2-Report) |  |  | <p>Report contains properties for the report.</p> |
-| `templating` | [`Templating`](#chainsaw-kyverno-io-v1alpha2-Templating) |  |  | <p>Templating contains the templating config.</p> |
+| `execution` | [`ExecutionOptions`](#chainsaw-kyverno-io-v1alpha2-ExecutionOptions) |  |  | <p>Execution contains tests execution configuration.</p> |
+| `namespace` | [`NamespaceOptions`](#chainsaw-kyverno-io-v1alpha2-NamespaceOptions) |  |  | <p>Namespace contains properties for the namespace to use for tests.</p> |
+| `report` | [`ReportOptions`](#chainsaw-kyverno-io-v1alpha2-ReportOptions) |  |  | <p>Report contains properties for the report.</p> |
+| `templating` | [`TemplatingOptions`](#chainsaw-kyverno-io-v1alpha2-TemplatingOptions) |  |  | <p>Templating contains the templating config.</p> |
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |
 
 ## DeletionOptions     {#chainsaw-kyverno-io-v1alpha2-DeletionOptions}
@@ -73,13 +73,13 @@ auto_generated: true
 |---|---|---|---|---|
 | `propagation` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>Propagation decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation.</p> |
 
-## Discovery     {#chainsaw-kyverno-io-v1alpha2-Discovery}
+## DiscoveryOptions     {#chainsaw-kyverno-io-v1alpha2-DiscoveryOptions}
 
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Discovery options contain the discovery configuration used when discovering tests in folders.</p>
+<p>DiscoveryOptions contains the discovery configuration used when discovering tests in folders.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -102,13 +102,13 @@ auto_generated: true
 |---|---|---|---|---|
 | `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
 
-## Execution     {#chainsaw-kyverno-io-v1alpha2-Execution}
+## ExecutionOptions     {#chainsaw-kyverno-io-v1alpha2-ExecutionOptions}
 
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Execution options determine how tests are run.</p>
+<p>ExecutionOptions determines how tests are run.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -118,13 +118,13 @@ auto_generated: true
 | `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
 | `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 
-## Namespace     {#chainsaw-kyverno-io-v1alpha2-Namespace}
+## NamespaceOptions     {#chainsaw-kyverno-io-v1alpha2-NamespaceOptions}
 
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Namespace options contain the configuration used to allocate a namespace for each test.</p>
+<p>NamespaceOptions contains the configuration used to allocate a namespace for each test.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -132,13 +132,21 @@ auto_generated: true
 | `name` | `string` |  |  | <p>Name defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
 | `template` | `policy/v1alpha1.Any` |  |  | <p>Template defines a template to create the test namespace.</p> |
 
-## Report     {#chainsaw-kyverno-io-v1alpha2-Report}
+## ReportFormatType     {#chainsaw-kyverno-io-v1alpha2-ReportFormatType}
+
+(Alias of `string`)
+
+**Appears in:**
+    
+- [ReportOptions](#chainsaw-kyverno-io-v1alpha2-ReportOptions)
+
+## ReportOptions     {#chainsaw-kyverno-io-v1alpha2-ReportOptions}
 
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Report options contain the configuration used for reporting.</p>
+<p>ReportOptions contains the configuration used for reporting.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -147,21 +155,13 @@ auto_generated: true
 | `path` | `string` |  |  | <p>ReportPath defines the path.</p> |
 | `name` | `string` |  |  | <p>ReportName defines the name of report to create. It defaults to "chainsaw-report".</p> |
 
-## ReportFormatType     {#chainsaw-kyverno-io-v1alpha2-ReportFormatType}
-
-(Alias of `string`)
-
-**Appears in:**
-    
-- [Report](#chainsaw-kyverno-io-v1alpha2-Report)
-
-## Templating     {#chainsaw-kyverno-io-v1alpha2-Templating}
+## TemplatingOptions     {#chainsaw-kyverno-io-v1alpha2-TemplatingOptions}
 
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
-<p>Templating options contain the templating configuration.</p>
+<p>TemplatingOptions contains the templating configuration.</p>
 
 
 | Field | Type | Required | Inline | Description |
