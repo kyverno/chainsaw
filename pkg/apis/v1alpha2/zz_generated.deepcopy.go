@@ -347,7 +347,7 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 	}
 	if in.Catch != nil {
 		in, out := &in.Catch, &out.Catch
-		*out = make([]v1alpha1.Catch, len(*in))
+		*out = make([]v1alpha1.CatchFinally, len(*in))
 		for i := range *in {
 			(*in)[i].DeepCopyInto(&(*out)[i])
 		}
