@@ -284,6 +284,7 @@ If a resource already exists in the cluster it will fail.</p>
     
 - [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Describe defines how to describe resources.</p>
 
@@ -322,6 +323,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
     
 - [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Events defines how to collect events.</p>
 
@@ -455,6 +457,7 @@ with a match filter to determine if the verification should be considered.</p>
     
 - [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Get defines how to get resources.</p>
 
@@ -567,8 +570,12 @@ For multiple objects use labels.</p>
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
 | `create` | [`Create`](#chainsaw-kyverno-io-v1alpha1-Create) |  |  | <p>Create represents a creation operation.</p> |
 | `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a deletion operation.</p> |
+| `describe` | [`Describe`](#chainsaw-kyverno-io-v1alpha1-Describe) |  |  | <p>Describe determines the resource describe collector to execute.</p> |
 | `error` | [`Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
+| `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
+| `get` | [`Get`](#chainsaw-kyverno-io-v1alpha1-Get) |  |  | <p>Get determines the resource get collector to execute.</p> |
 | `patch` | [`Patch`](#chainsaw-kyverno-io-v1alpha1-Patch) |  |  | <p>Patch represents a patch operation.</p> |
+| `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 | `update` | [`Update`](#chainsaw-kyverno-io-v1alpha1-Update) |  |  | <p>Update represents an update operation.</p> |
@@ -635,6 +642,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
     
 - [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
 - [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>PodLogs defines how to collect pod logs.</p>
 
