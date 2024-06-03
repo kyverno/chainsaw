@@ -45,7 +45,8 @@ spec:
                   Catch defines what the tests steps will execute when an error happens.
                   This will be combined with catch handlers defined at the test and step levels.
                 items:
-                  description: Catch defines actions to be executed on failure.
+                  description: CatchFinally defines actions to be executed in catch,
+                    finally and cleanup blocks.
                   properties:
                     command:
                       description: Command defines a command to run.
@@ -940,7 +941,8 @@ spec:
                       Catch defines what the tests steps will execute when an error happens.
                       This will be combined with catch handlers defined at the test and step levels.
                     items:
-                      description: Catch defines actions to be executed on failure.
+                      description: CatchFinally defines actions to be executed in
+                        catch, finally and cleanup blocks.
                       properties:
                         command:
                           description: Command defines a command to run.
@@ -1668,9 +1670,11 @@ spec:
                     type: string
                 type: object
               templating:
+                default: {}
                 description: Templating contains the templating config.
                 properties:
                   enabled:
+                    default: true
                     description: Enabled determines whether resources should be considered
                       for templating.
                     type: boolean

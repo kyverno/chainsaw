@@ -26,7 +26,7 @@ type Configuration struct {
 type ConfigurationSpec struct {
 	// Cleanup contains cleanup configuration.
 	// +optional
-	Cleanup *Cleanup `json:"cleanup,omitempty"`
+	Cleanup *CleanupOptions `json:"cleanup,omitempty"`
 
 	// Clusters holds a registry to clusters to support multi-cluster tests.
 	// +optional
@@ -40,7 +40,7 @@ type ConfigurationSpec struct {
 	// Discovery contains tests discovery configuration.
 	// +optional
 	// +kubebuilder:default:={}
-	Discovery Discovery `json:"discovery"`
+	Discovery DiscoveryOptions `json:"discovery"`
 
 	// Error contains the global error configuration.
 	// +optional
@@ -48,19 +48,20 @@ type ConfigurationSpec struct {
 
 	// Execution contains tests execution configuration.
 	// +optional
-	Execution *Execution `json:"execution,omitempty"`
+	Execution *ExecutionOptions `json:"execution,omitempty"`
 
 	// Namespace contains properties for the namespace to use for tests.
 	// +optional
-	Namespace *Namespace `json:"namespace,omitempty"`
+	Namespace *NamespaceOptions `json:"namespace,omitempty"`
 
 	// Report contains properties for the report.
 	// +optional
-	Report *Report `json:"report,omitempty"`
+	Report *ReportOptions `json:"report,omitempty"`
 
 	// Templating contains the templating config.
 	// +optional
-	Templating *Templating `json:"templating,omitempty"`
+	// +kubebuilder:default:={}
+	Templating TemplatingOptions `json:"templating,omitempty"`
 
 	// Global timeouts configuration. Applies to all tests/test steps if not overridden.
 	// +optional

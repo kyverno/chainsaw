@@ -62,7 +62,8 @@ spec:
                   Catch defines what the steps will execute when an error happens.
                   This will be combined with catch handlers defined at the step level.
                 items:
-                  description: Catch defines actions to be executed on failure.
+                  description: CatchFinally defines actions to be executed in catch,
+                    finally and cleanup blocks.
                   properties:
                     command:
                       description: Command defines a command to run.
@@ -815,7 +816,8 @@ spec:
                       description: Catch defines what the step will execute when an
                         error happens.
                       items:
-                        description: Catch defines actions to be executed on failure.
+                        description: CatchFinally defines actions to be executed in
+                          catch, finally and cleanup blocks.
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -1501,8 +1503,8 @@ spec:
                       description: Cleanup defines what will be executed after the
                         test is terminated.
                       items:
-                        description: Finally defines actions to be executed at the
-                          end of a test.
+                        description: CatchFinally defines actions to be executed in
+                          catch, finally and cleanup blocks.
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -2223,8 +2225,8 @@ spec:
                       description: Finally defines what the step will execute after
                         the step is terminated.
                       items:
-                        description: Finally defines actions to be executed at the
-                          end of a test.
+                        description: CatchFinally defines actions to be executed in
+                          catch, finally and cleanup blocks.
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -3476,6 +3478,66 @@ spec:
                                   the global timeout set in the Configuration.
                                 type: string
                             type: object
+                          describe:
+                            description: Describe determines the resource describe
+                              collector to execute.
+                            properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
+                              clusters:
+                                additionalProperties:
+                                  description: Cluster defines cluster config and
+                                    context.
+                                  properties:
+                                    context:
+                                      description: Context is the name of the context
+                                        to use.
+                                      type: string
+                                    kubeconfig:
+                                      description: Kubeconfig is the path to the referenced
+                                        file.
+                                      type: string
+                                  required:
+                                  - kubeconfig
+                                  type: object
+                                description: Clusters holds a registry to clusters
+                                  to support multi-cluster tests.
+                                type: object
+                              kind:
+                                description: |-
+                                  Kind of the referent.
+                                  More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                                type: string
+                              name:
+                                description: |-
+                                  Name of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                type: string
+                              namespace:
+                                description: |-
+                                  Namespace of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              showEvents:
+                                description: Show Events indicates whether to include
+                                  related events.
+                                type: boolean
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            required:
+                            - apiVersion
+                            - kind
+                            type: object
                           description:
                             description: Description contains a description of the
                               operation.
@@ -3544,6 +3606,117 @@ spec:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.
                                 type: string
+                            type: object
+                          events:
+                            description: Events determines the events collector to
+                              execute.
+                            properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
+                              clusters:
+                                additionalProperties:
+                                  description: Cluster defines cluster config and
+                                    context.
+                                  properties:
+                                    context:
+                                      description: Context is the name of the context
+                                        to use.
+                                      type: string
+                                    kubeconfig:
+                                      description: Kubeconfig is the path to the referenced
+                                        file.
+                                      type: string
+                                  required:
+                                  - kubeconfig
+                                  type: object
+                                description: Clusters holds a registry to clusters
+                                  to support multi-cluster tests.
+                                type: object
+                              format:
+                                description: Format determines the output format (json
+                                  or yaml).
+                                pattern: ^(?:json|yaml|\(.+\))$
+                                type: string
+                              name:
+                                description: |-
+                                  Name of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                type: string
+                              namespace:
+                                description: |-
+                                  Namespace of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            type: object
+                          get:
+                            description: Get determines the resource get collector
+                              to execute.
+                            properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
+                              clusters:
+                                additionalProperties:
+                                  description: Cluster defines cluster config and
+                                    context.
+                                  properties:
+                                    context:
+                                      description: Context is the name of the context
+                                        to use.
+                                      type: string
+                                    kubeconfig:
+                                      description: Kubeconfig is the path to the referenced
+                                        file.
+                                      type: string
+                                  required:
+                                  - kubeconfig
+                                  type: object
+                                description: Clusters holds a registry to clusters
+                                  to support multi-cluster tests.
+                                type: object
+                              format:
+                                description: Format determines the output format (json
+                                  or yaml).
+                                pattern: ^(?:json|yaml|\(.+\))$
+                                type: string
+                              kind:
+                                description: |-
+                                  Kind of the referent.
+                                  More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                                type: string
+                              name:
+                                description: |-
+                                  Name of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                type: string
+                              namespace:
+                                description: |-
+                                  Namespace of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            required:
+                            - apiVersion
+                            - kind
                             type: object
                           patch:
                             description: Patch represents a patch operation.
@@ -3652,6 +3825,61 @@ spec:
                                 description: Template determines whether resources
                                   should be considered for templating.
                                 type: boolean
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            type: object
+                          podLogs:
+                            description: PodLogs determines the pod logs collector
+                              to execute.
+                            properties:
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
+                              clusters:
+                                additionalProperties:
+                                  description: Cluster defines cluster config and
+                                    context.
+                                  properties:
+                                    context:
+                                      description: Context is the name of the context
+                                        to use.
+                                      type: string
+                                    kubeconfig:
+                                      description: Kubeconfig is the path to the referenced
+                                        file.
+                                      type: string
+                                  required:
+                                  - kubeconfig
+                                  type: object
+                                description: Clusters holds a registry to clusters
+                                  to support multi-cluster tests.
+                                type: object
+                              container:
+                                description: Container in pod to get logs from else
+                                  --all-containers is used.
+                                type: string
+                              name:
+                                description: |-
+                                  Name of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                type: string
+                              namespace:
+                                description: |-
+                                  Namespace of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+                                type: string
+                              selector:
+                                description: Selector defines labels selector.
+                                type: string
+                              tail:
+                                description: |-
+                                  Tail is the number of last lines to collect from pods. If omitted or zero,
+                                  then the default is 10 if you use a selector, or -1 (all) if you use a pod name.
+                                  This matches default behavior of `kubectl logs`.
+                                type: integer
                               timeout:
                                 description: Timeout for the operation. Overrides
                                   the global timeout set in the Configuration.

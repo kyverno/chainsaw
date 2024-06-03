@@ -103,7 +103,7 @@ during the testing process.</p>
 | `name` | `string` | :white_check_mark: |  | <p>Name the name of the binding.</p> |
 | `value` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Value value of the binding.</p> |
 
-## Catch     {#chainsaw-kyverno-io-v1alpha1-Catch}
+## CatchFinally     {#chainsaw-kyverno-io-v1alpha1-CatchFinally}
 
 **Appears in:**
     
@@ -111,7 +111,7 @@ during the testing process.</p>
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
-<p>Catch defines actions to be executed on failure.</p>
+<p>CatchFinally defines actions to be executed in catch, finally and cleanup blocks.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -158,8 +158,7 @@ during the testing process.</p>
 
 **Appears in:**
     
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
 - [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Command describes a command to run as a part of a test step.</p>
@@ -222,7 +221,7 @@ during the testing process.</p>
 | `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 | `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
+| `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
 
 ## Create     {#chainsaw-kyverno-io-v1alpha1-Create}
 
@@ -250,8 +249,7 @@ If a resource already exists in the cluster it will fail.</p>
 
 **Appears in:**
     
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
 - [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Delete is a reference to an object that should be deleted</p>
@@ -282,8 +280,8 @@ If a resource already exists in the cluster it will fail.</p>
 
 **Appears in:**
     
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Describe defines how to describe resources.</p>
 
@@ -320,8 +318,8 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 **Appears in:**
     
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Events defines how to collect events.</p>
 
@@ -399,28 +397,6 @@ with a match filter to determine if the verification should be considered.</p>
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
 | `resource` | [`meta/v1/unstructured.Unstructured`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#unstructured-unstructured-v1) |  |  | <p>Resource provides a resource to be applied.</p> |
 
-## Finally     {#chainsaw-kyverno-io-v1alpha1-Finally}
-
-**Appears in:**
-    
-- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
-
-<p>Finally defines actions to be executed at the end of a test.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
-| `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
-| `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
-| `describe` | [`Describe`](#chainsaw-kyverno-io-v1alpha1-Describe) |  |  | <p>Describe determines the resource describe collector to execute.</p> |
-| `wait` | [`Wait`](#chainsaw-kyverno-io-v1alpha1-Wait) |  |  | <p>Wait determines the resource wait collector to execute.</p> |
-| `get` | [`Get`](#chainsaw-kyverno-io-v1alpha1-Get) |  |  | <p>Get determines the resource get collector to execute.</p> |
-| `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a deletion operation.</p> |
-| `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
-| `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
-| `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
-
 ## For     {#chainsaw-kyverno-io-v1alpha1-For}
 
 **Appears in:**
@@ -453,8 +429,8 @@ with a match filter to determine if the verification should be considered.</p>
 
 **Appears in:**
     
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Get defines how to get resources.</p>
 
@@ -567,8 +543,12 @@ For multiple objects use labels.</p>
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
 | `create` | [`Create`](#chainsaw-kyverno-io-v1alpha1-Create) |  |  | <p>Create represents a creation operation.</p> |
 | `delete` | [`Delete`](#chainsaw-kyverno-io-v1alpha1-Delete) |  |  | <p>Delete represents a deletion operation.</p> |
+| `describe` | [`Describe`](#chainsaw-kyverno-io-v1alpha1-Describe) |  |  | <p>Describe determines the resource describe collector to execute.</p> |
 | `error` | [`Error`](#chainsaw-kyverno-io-v1alpha1-Error) |  |  | <p>Error represents the expected errors for this test step. If any of these errors occur, the test will consider them as expected; otherwise, they will be treated as test failures.</p> |
+| `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
+| `get` | [`Get`](#chainsaw-kyverno-io-v1alpha1-Get) |  |  | <p>Get determines the resource get collector to execute.</p> |
 | `patch` | [`Patch`](#chainsaw-kyverno-io-v1alpha1-Patch) |  |  | <p>Patch represents a patch operation.</p> |
+| `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 | `update` | [`Update`](#chainsaw-kyverno-io-v1alpha1-Update) |  |  | <p>Update represents an update operation.</p> |
@@ -633,8 +613,8 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 **Appears in:**
     
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>PodLogs defines how to collect pod logs.</p>
 
@@ -676,8 +656,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 **Appears in:**
     
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
 - [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Script describes a script to run as a part of a test step.</p>
@@ -699,8 +678,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 **Appears in:**
     
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
 - [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Sleep represents a duration while nothing happens.</p>
@@ -733,7 +711,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `namespaceTemplate` | `policy/v1alpha1.Any` |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `steps` | [`[]TestStep`](#chainsaw-kyverno-io-v1alpha1-TestStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
-| `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the steps will execute when an error happens. This will be combined with catch handlers defined at the step level.</p> |
+| `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the steps will execute when an error happens. This will be combined with catch handlers defined at the step level.</p> |
 | `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
 | `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation. Overrides the deletion propagation policy set in the Configuration.</p> |
@@ -772,9 +750,9 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) | :white_check_mark: |  | <p>Try defines what the step will try to execute.</p> |
-| `catch` | [`[]Catch`](#chainsaw-kyverno-io-v1alpha1-Catch) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
-| `finally` | [`[]Finally`](#chainsaw-kyverno-io-v1alpha1-Finally) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
-| `cleanup` | [`[]Finally`](#chainsaw-kyverno-io-v1alpha1-Finally) |  |  | <p>Cleanup defines what will be executed after the test is terminated.</p> |
+| `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
+| `finally` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
+| `cleanup` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Cleanup defines what will be executed after the test is terminated.</p> |
 
 ## Timeouts     {#chainsaw-kyverno-io-v1alpha1-Timeouts}
 
@@ -822,8 +800,7 @@ If a resource does not exist in the cluster it will fail.</p>
 
 **Appears in:**
     
-- [Catch](#chainsaw-kyverno-io-v1alpha1-Catch)
-- [Finally](#chainsaw-kyverno-io-v1alpha1-Finally)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
 - [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Wait specifies how to perform wait operations on resources.</p>

@@ -13,7 +13,7 @@ func ValidateConfigurationSpec(path *field.Path, obj v1alpha1.ConfigurationSpec)
 		errs = append(errs, ValidateCluster(path.Key(name), cluster)...)
 	}
 	for i, catch := range obj.Catch {
-		errs = append(errs, test.ValidateCatch(path.Child("catch").Index(i), catch)...)
+		errs = append(errs, test.ValidateCatchFinally(path.Child("catch").Index(i), catch)...)
 	}
 	return errs
 }

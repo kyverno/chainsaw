@@ -11,7 +11,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func TestValidateFinally(t *testing.T) {
+func TestValidateCatchFinally(t *testing.T) {
 	examplePodLogs := &v1alpha1.PodLogs{
 		ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
 			Selector: "app=example",
@@ -67,17 +67,17 @@ func TestValidateFinally(t *testing.T) {
 	}
 	tests := []struct {
 		name      string
-		input     v1alpha1.Finally
+		input     v1alpha1.CatchFinally
 		expectErr bool
 		errMsg    string
 	}{{
 		name:      "No Finally statements provided",
-		input:     v1alpha1.Finally{},
+		input:     v1alpha1.CatchFinally{},
 		expectErr: true,
 		errMsg:    "no statement found in operation",
 	}, {
 		name: "Multiple Finally statements provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			PodLogs: examplePodLogs,
 			Events:  exampleEvents,
 			Command: exampleCommand,
@@ -86,62 +86,62 @@ func TestValidateFinally(t *testing.T) {
 		errMsg:    fmt.Sprintf("only one statement is allowed per operation (found %d)", 3),
 	}, {
 		name: "Only PodLogs statement provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			PodLogs: examplePodLogs,
 		},
 		expectErr: false,
 	}, {
 		name: "Only Events statement provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			Events: exampleEvents,
 		},
 		expectErr: false,
 	}, {
 		name: "Only Command statement provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			Command: exampleCommand,
 		},
 		expectErr: false,
 	}, {
 		name: "Only Script statement provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			Script: exampleScript,
 		},
 		expectErr: false,
 	}, {
 		name: "Only Sleep statement provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			Sleep: exampleSleep,
 		},
 		expectErr: false,
 	}, {
 		name: "Only Describe statement provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			Describe: exampleDescribe,
 		},
 		expectErr: false,
 	}, {
 		name: "Only Wait statement provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			Wait: exampleWait,
 		},
 		expectErr: false,
 	}, {
 		name: "Only Get statement provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			Get: exampleGet,
 		},
 		expectErr: false,
 	}, {
 		name: "Only Delete statement provided",
-		input: v1alpha1.Finally{
+		input: v1alpha1.CatchFinally{
 			Delete: exampleDelete,
 		},
 		expectErr: false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			errs := ValidateFinally(field.NewPath("testPath"), tt.input)
+			errs := ValidateCatchFinally(field.NewPath("testPath"), tt.input)
 			if tt.expectErr {
 				assert.NotEmpty(t, errs)
 				assert.Contains(t, errs.ToAggregate().Error(), tt.errMsg)

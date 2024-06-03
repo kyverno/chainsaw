@@ -212,18 +212,36 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, clea
 				return nil, err
 			}
 			register(loaded...)
+		} else if handler.Describe != nil {
+			register(p.describeOperation(i+1, registeredClusters, *handler.Describe))
 		} else if handler.Error != nil {
 			loaded, err := p.errorOperation(i+1, registeredClusters, *handler.Error)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
+		} else if handler.Events != nil {
+			get := v1alpha1.Get{
+				Cluster:              handler.Events.Cluster,
+				Timeout:              handler.Events.Timeout,
+				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
+				Format:               handler.Events.Format,
+				ResourceReference: v1alpha1.ResourceReference{
+					APIVersion: "v1",
+					Kind:       "Event",
+				},
+			}
+			register(p.getOperation(i+1, registeredClusters, get))
+		} else if handler.Get != nil {
+			register(p.getOperation(i+1, registeredClusters, *handler.Get))
 		} else if handler.Patch != nil {
 			loaded, err := p.patchOperation(i+1, registeredClusters, *handler.Patch)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
+		} else if handler.PodLogs != nil {
+			register(p.logsOperation(i+1, registeredClusters, *handler.PodLogs))
 		} else if handler.Script != nil {
 			register(p.scriptOperation(i+1, registeredClusters, *handler.Script))
 		} else if handler.Sleep != nil {
@@ -251,7 +269,7 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 			ops = append(ops, o)
 		}
 	}
-	var handlers []v1alpha1.Catch
+	var handlers []v1alpha1.CatchFinally
 	handlers = append(handlers, p.config.Catch...)
 	handlers = append(handlers, p.test.Spec.Catch...)
 	handlers = append(handlers, p.step.Catch...)
@@ -295,7 +313,7 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, operations ...v1alpha1.Finally) ([]operation, error) {
+func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, operations ...v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {

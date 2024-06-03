@@ -283,7 +283,7 @@
             "null"
           ],
           "items": {
-            "description": "Catch defines actions to be executed on failure.",
+            "description": "CatchFinally defines actions to be executed in catch, finally and cleanup blocks.",
             "type": [
               "object",
               "null"
