@@ -11,6 +11,7 @@ auto_generated: true
 
 
 - [Configuration](#chainsaw-kyverno-io-v1alpha2-Configuration)
+- [Test](#chainsaw-kyverno-io-v1alpha2-Test)
   
 ## Configuration     {#chainsaw-kyverno-io-v1alpha2-Configuration}
 
@@ -24,11 +25,24 @@ auto_generated: true
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec) | :white_check_mark: |  | <p>Configuration spec.</p> |
 
+## Test     {#chainsaw-kyverno-io-v1alpha2-Test}
+
+<p>Test is the resource that contains a test definition.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `apiVersion` | `string` | :white_check_mark: | | `chainsaw.kyverno.io/v1alpha2` |
+| `kind` | `string` | :white_check_mark: | | `Test` |
+| `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
+| `spec` | [`TestSpec`](#chainsaw-kyverno-io-v1alpha2-TestSpec) | :white_check_mark: |  | <p>Test spec.</p> |
+
 ## CleanupOptions     {#chainsaw-kyverno-io-v1alpha2-CleanupOptions}
 
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
+- [TestSpec](#chainsaw-kyverno-io-v1alpha2-TestSpec)
 
 <p>CleanupOptions contains the configuration used for cleaning up resources.</p>
 
@@ -65,6 +79,7 @@ auto_generated: true
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
+- [TestSpec](#chainsaw-kyverno-io-v1alpha2-TestSpec)
 
 <p>DeletionOptions contains the configuration used for deleting resources.</p>
 
@@ -94,6 +109,7 @@ auto_generated: true
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
+- [TestSpec](#chainsaw-kyverno-io-v1alpha2-TestSpec)
 
 <p>ErrorOptions contains the global error configuration.</p>
 
@@ -123,6 +139,7 @@ auto_generated: true
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
+- [TestSpec](#chainsaw-kyverno-io-v1alpha2-TestSpec)
 
 <p>NamespaceOptions contains the configuration used to allocate a namespace for each test.</p>
 
@@ -160,6 +177,7 @@ auto_generated: true
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
+- [TestSpec](#chainsaw-kyverno-io-v1alpha2-TestSpec)
 
 <p>TemplatingOptions contains the templating configuration.</p>
 
@@ -167,5 +185,44 @@ auto_generated: true
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `enabled` | `bool` |  |  | <p>Enabled determines whether resources should be considered for templating.</p> |
+
+## TestExecutionOptions     {#chainsaw-kyverno-io-v1alpha2-TestExecutionOptions}
+
+**Appears in:**
+    
+- [TestSpec](#chainsaw-kyverno-io-v1alpha2-TestSpec)
+
+<p>TestExecutionOptions determines how tests are run.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `concurrent` | `bool` |  |  | <p>Concurrent determines whether the test should run concurrently with other tests.</p> |
+| `skip` | `bool` |  |  | <p>Skip determines whether the test should skipped.</p> |
+| `terminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>TerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
+
+## TestSpec     {#chainsaw-kyverno-io-v1alpha2-TestSpec}
+
+**Appears in:**
+    
+- [Test](#chainsaw-kyverno-io-v1alpha2-Test)
+
+<p>TestSpec contains the test spec.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `cleanup` | [`CleanupOptions`](#chainsaw-kyverno-io-v1alpha2-CleanupOptions) |  |  | <p>Cleanup contains cleanup configuration.</p> |
+| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
+| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
+| `execution` | [`TestExecutionOptions`](#chainsaw-kyverno-io-v1alpha2-TestExecutionOptions) |  |  | <p>Execution contains tests execution configuration.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
+| `deletion` | [`DeletionOptions`](#chainsaw-kyverno-io-v1alpha2-DeletionOptions) |  |  | <p>Deletion contains the global deletion configuration.</p> |
+| `description` | `string` |  |  | <p>Description contains a description of the test.</p> |
+| `error` | [`ErrorOptions`](#chainsaw-kyverno-io-v1alpha2-ErrorOptions) |  |  | <p>Error contains the global error configuration.</p> |
+| `namespace` | [`NamespaceOptions`](#chainsaw-kyverno-io-v1alpha2-NamespaceOptions) |  |  | <p>Namespace contains properties for the namespace to use for tests.</p> |
+| `steps` | [`[]TestStep`](#chainsaw-kyverno-io-v1alpha1-TestStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
+| `templating` | [`TemplatingOptions`](#chainsaw-kyverno-io-v1alpha2-TemplatingOptions) |  |  | <p>Templating contains the templating config.</p> |
+| `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.</p> |
 
   
