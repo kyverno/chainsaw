@@ -22,14 +22,12 @@ type Test struct {
 }
 
 // TestSpec contains the test spec.
+// +k8s:conversion-gen=false
 type TestSpec struct {
-	// Description contains a description of the test.
+	// Cleanup contains cleanup configuration.
 	// +optional
-	Description string `json:"description,omitempty"`
-
-	// Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.
-	// +optional
-	Timeouts *Timeouts `json:"timeouts,omitempty"`
+	// +kubebuilder:default:={}
+	Cleanup CleanupOptions `json:"cleanup"`
 
 	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
 	// +optional
@@ -39,54 +37,60 @@ type TestSpec struct {
 	// +optional
 	Clusters Clusters `json:"clusters,omitempty"`
 
-	// Skip determines whether the test should skipped.
+	// Execution contains tests execution configuration.
 	// +optional
-	Skip *bool `json:"skip,omitempty"`
-
-	// Concurrent determines whether the test should run concurrently with other tests.
-	// +optional
-	Concurrent *bool `json:"concurrent,omitempty"`
-
-	// SkipDelete determines whether the resources created by the test should be deleted after the test is executed.
-	// +optional
-	SkipDelete *bool `json:"skipDelete,omitempty"`
-
-	// Template determines whether resources should be considered for templating.
-	// +optional
-	Template *bool `json:"template,omitempty"`
-
-	// Namespace determines whether the test should run in a random ephemeral namespace or not.
-	// +optional
-	Namespace string `json:"namespace,omitempty"`
-
-	// NamespaceTemplate defines a template to create the test namespace.
-	// +optional
-	NamespaceTemplate *Any `json:"namespaceTemplate,omitempty"`
+	// +kubebuilder:default:={}
+	Execution TestExecutionOptions `json:"execution"`
 
 	// Bindings defines additional binding key/values.
 	// +optional
 	Bindings []Binding `json:"bindings,omitempty"`
 
+	// Deletion contains the global deletion configuration.
+	// +optional
+	// +kubebuilder:default:={}
+	Deletion DeletionOptions `json:"deletion"`
+
+	// Description contains a description of the test.
+	// +optional
+	Description string `json:"description,omitempty"`
+
+	// Error contains the global error configuration.
+	// +optional
+	// +kubebuilder:default:={}
+	Error ErrorOptions `json:"error"`
+
+	// Namespace contains properties for the namespace to use for tests.
+	// +optional
+	// +kubebuilder:default:={}
+	Namespace NamespaceOptions `json:"namespace"`
+
 	// Steps defining the test.
 	Steps []TestStep `json:"steps"`
 
-	// Catch defines what the steps will execute when an error happens.
-	// This will be combined with catch handlers defined at the step level.
+	// Templating contains the templating config.
 	// +optional
-	Catch []Catch `json:"catch,omitempty"`
+	// +kubebuilder:default:={}
+	Templating TemplatingOptions `json:"templating"`
 
-	// ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.
+	// Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.
 	// +optional
-	ForceTerminationGracePeriod *metav1.Duration `json:"forceTerminationGracePeriod,omitempty"`
+	// +kubebuilder:default:={}
+	Timeouts Timeouts `json:"timeouts"`
+}
 
-	// DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.
+// TestExecutionOptions determines how tests are run.
+type TestExecutionOptions struct {
+	// Concurrent determines whether the test should run concurrently with other tests.
 	// +optional
-	DelayBeforeCleanup *metav1.Duration `json:"delayBeforeCleanup,omitempty"`
+	// +kubebuilder:default:=true
+	Concurrent bool `json:"concurrent"`
 
-	// DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
-	// the object, and how the garbage collector will handle the propagation.
-	// Overrides the deletion propagation policy set in the Configuration.
+	// Skip determines whether the test should skipped.
 	// +optional
-	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
-	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
+	Skip bool `json:"skip,omitempty"`
+
+	// TerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.
+	// +optional
+	TerminationGracePeriod *metav1.Duration `json:"terminationGracePeriod,omitempty"`
 }
