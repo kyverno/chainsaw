@@ -61,7 +61,7 @@ type ConfigurationSpec struct {
 	// Templating contains the templating config.
 	// +optional
 	// +kubebuilder:default:={}
-	Templating TemplatingOptions `json:"templating,omitempty"`
+	Templating TemplatingOptions `json:"templating"`
 
 	// Global timeouts configuration. Applies to all tests/test steps if not overridden.
 	// +optional
