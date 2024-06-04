@@ -8,9 +8,11 @@ import (
 
 type (
 	Any      = v1alpha1.Any
+	Binding  = v1alpha1.Binding
 	Catch    = v1alpha1.CatchFinally
 	Cluster  = v1alpha1.Cluster
 	Clusters = v1alpha1.Clusters
+	TestStep = v1alpha1.TestStep
 	Timeouts = v1alpha1.Timeouts
 )
 
