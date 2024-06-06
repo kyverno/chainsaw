@@ -1680,6 +1680,7 @@ spec:
                     type: boolean
                 type: object
               timeouts:
+                default: {}
                 description: Global timeouts configuration. Applies to all tests/test
                   steps if not overridden.
                 properties:
