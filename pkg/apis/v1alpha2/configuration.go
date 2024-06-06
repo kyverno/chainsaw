@@ -35,7 +35,7 @@ type ConfigurationSpec struct {
 	// Deletion contains the global deletion configuration.
 	// +optional
 	// +kubebuilder:default:={}
-	Deletion DeletionOptions `json:"deletion,omitempty"`
+	Deletion DeletionOptions `json:"deletion"`
 
 	// Discovery contains tests discovery configuration.
 	// +optional
@@ -65,5 +65,6 @@ type ConfigurationSpec struct {
 
 	// Global timeouts configuration. Applies to all tests/test steps if not overridden.
 	// +optional
+	// +kubebuilder:default:={}
 	Timeouts Timeouts `json:"timeouts"`
 }

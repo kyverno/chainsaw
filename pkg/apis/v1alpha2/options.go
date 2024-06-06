@@ -132,5 +132,5 @@ type TemplatingOptions struct {
 	// Enabled determines whether resources should be considered for templating.
 	// +optional
 	// +kubebuilder:default:=true
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled bool `json:"enabled"`
 }
