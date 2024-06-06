@@ -3,35 +3,19 @@
 Release notes for `TODO`.
 
 <!--
+## ‼️ Breaking changes ‼️
+
+## 💫 New features 💫
+
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
 
-## 🎸 Misc 🎸
--->
-
-## ‼️ Breaking changes ‼️
-
-- Directly specifying resource name was dropped, only `apiVersion` / `kind` is supported now
-
-## 💫 New features 💫
-
-- Added test metadata built-in binding
-- Added file support to `delete` operation
-- Added `--remarshal` flag to improve anchors support in test resources
-- Added support for `describe`, `events`, `get` and `podLogs` operations in try blocks
-
 ## 🔧 Fixes 🔧
-
-- Fixed incorrect path reported when validation failed for a patch operation
-- Improved the way default values for configuration options are managed in configuration v1alpha2
 
 ## 📚 Docs 📚
 
-- Removed code markers on titles in API reference documentation
-
 ## 🎸 Misc 🎸
-
-- Bumped kyverno-json to v0.0.3
+-->
