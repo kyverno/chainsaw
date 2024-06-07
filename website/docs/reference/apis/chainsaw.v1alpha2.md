@@ -221,8 +221,22 @@ auto_generated: true
 | `description` | `string` |  |  | <p>Description contains a description of the test.</p> |
 | `error` | [`ErrorOptions`](#chainsaw-kyverno-io-v1alpha2-ErrorOptions) |  |  | <p>Error contains the global error configuration.</p> |
 | `namespace` | [`NamespaceOptions`](#chainsaw-kyverno-io-v1alpha2-NamespaceOptions) |  |  | <p>Namespace contains properties for the namespace to use for tests.</p> |
-| `steps` | [`[]TestStep`](#chainsaw-kyverno-io-v1alpha1-TestStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
+| `steps` | [`[]TestStep`](#chainsaw-kyverno-io-v1alpha2-TestStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
 | `templating` | [`TemplatingOptions`](#chainsaw-kyverno-io-v1alpha2-TemplatingOptions) |  |  | <p>Templating contains the templating config.</p> |
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.</p> |
+
+## TestStep     {#chainsaw-kyverno-io-v1alpha2-TestStep}
+
+**Appears in:**
+    
+- [TestSpec](#chainsaw-kyverno-io-v1alpha2-TestSpec)
+
+<p>TestStep contains the test step definition used in a test spec.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `name` | `string` |  |  | <p>Name of the step.</p> |
+| `TestStepSpec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>TestStepSpec of the step.</p> |
 
   
