@@ -66,10 +66,10 @@ func (r *Report) Save(format v1alpha1.ReportFormatType, path, name string) error
 	case v1alpha1.XMLFormat:
 		return saveJUnit(r, filePath)
 	case v1alpha1.JSONFormat:
+		return saveJson(r, filePath)
 	default:
 		return fmt.Errorf("unknown report format: %s", format)
 	}
-	return nil
 }
 
 type TestReport struct {
