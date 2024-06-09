@@ -150,3 +150,8 @@ func (r *OperationReport) SetStartTime(t time.Time) {
 func (r *OperationReport) SetEndTime(t time.Time) {
 	r.endTime = t
 }
+
+// Fail marks the operation as failed by assigning the `err` property
+func (r *OperationReport) Fail(err error) {
+	r.err = err
+}

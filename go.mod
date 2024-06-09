@@ -10,6 +10,7 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/hashicorp/go-getter v1.7.4
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240117150817-e430401a2172
+	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	github.com/kudobuilder/kuttl v0.16.0
 	github.com/kyverno/kyverno-json v0.0.3
 	github.com/kyverno/pkg/ext v0.0.0-20240418121121-df8add26c55c
