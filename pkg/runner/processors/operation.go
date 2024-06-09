@@ -75,6 +75,11 @@ func (o operation) execute(ctx context.Context, bindings binding.Bindings) opera
 		// 	o.operationReport.MarkOperationEnd(err)
 		// }
 		if err != nil {
+			// Capture the error of the execution for the report here. Not done in `handleError` because `nil` is
+			// explicitly passed to the handler to not trigger a duplicate log line.
+			if o.report != nil {
+				o.report.Fail(err)
+			}
 			handleError(nil)
 		}
 		return outputs
