@@ -1,0 +1,11 @@
+cairosvg
+lunr
+mike
+mkdocs
+mkdocs-include-markdown-plugin
+mkdocs-material
+mkdocs-minify-plugin
+mkdocs-redirects
+mkdocs-rss-plugin
+openapi2jsonschema
+Pillow

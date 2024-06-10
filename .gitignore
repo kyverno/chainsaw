@@ -2,6 +2,7 @@
 .gopath/
 .temp/
 .tools/
+.venv/
 chainsaw
 coverage.out
 website/site
