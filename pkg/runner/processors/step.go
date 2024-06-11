@@ -222,13 +222,15 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, clea
 			register(loaded...)
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
-				Cluster:              handler.Events.Cluster,
-				Timeout:              handler.Events.Timeout,
-				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
-				Format:               handler.Events.Format,
-				ResourceReference: v1alpha1.ResourceReference{
-					APIVersion: "v1",
-					Kind:       "Event",
+				ActionClusters: handler.Events.ActionClusters,
+				ActionFormat:   handler.Events.ActionFormat,
+				ActionTimeout:  handler.Events.ActionTimeout,
+				ActionObject: v1alpha1.ActionObject{
+					ObjectType: v1alpha1.ObjectType{
+						APIVersion: "v1",
+						Kind:       "Event",
+					},
+					ActionObjectSelector: handler.Events.ActionObjectSelector,
 				},
 			}
 			register(p.getOperation(i+1, registeredClusters, get))
@@ -278,13 +280,15 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 			register(p.logsOperation(i+1, registeredClusters, *handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
-				Cluster:              handler.Events.Cluster,
-				Timeout:              handler.Events.Timeout,
-				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
-				Format:               handler.Events.Format,
-				ResourceReference: v1alpha1.ResourceReference{
-					APIVersion: "v1",
-					Kind:       "Event",
+				ActionClusters: handler.Events.ActionClusters,
+				ActionFormat:   handler.Events.ActionFormat,
+				ActionTimeout:  handler.Events.ActionTimeout,
+				ActionObject: v1alpha1.ActionObject{
+					ObjectType: v1alpha1.ObjectType{
+						APIVersion: "v1",
+						Kind:       "Event",
+					},
+					ActionObjectSelector: handler.Events.ActionObjectSelector,
 				},
 			}
 			register(p.getOperation(i+1, registeredClusters, get))
@@ -326,13 +330,15 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, 
 			register(p.logsOperation(i+1, registeredClusters, *handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
-				Cluster:              handler.Events.Cluster,
-				Timeout:              handler.Events.Timeout,
-				ObjectLabelsSelector: handler.Events.ObjectLabelsSelector,
-				Format:               handler.Events.Format,
-				ResourceReference: v1alpha1.ResourceReference{
-					APIVersion: "v1",
-					Kind:       "Event",
+				ActionClusters: handler.Events.ActionClusters,
+				ActionFormat:   handler.Events.ActionFormat,
+				ActionTimeout:  handler.Events.ActionTimeout,
+				ActionObject: v1alpha1.ActionObject{
+					ObjectType: v1alpha1.ObjectType{
+						APIVersion: "v1",
+						Kind:       "Event",
+					},
+					ActionObjectSelector: handler.Events.ActionObjectSelector,
 				},
 			}
 			register(p.getOperation(i+1, registeredClusters, get))
@@ -362,7 +368,7 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, 
 }
 
 func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Registry, cleaner *cleaner, op v1alpha1.Apply) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.FileRefOrResource)
+	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
 	}
@@ -402,7 +408,7 @@ func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Regis
 }
 
 func (p *stepProcessor) assertOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Assert) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
+	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
 	}
@@ -468,7 +474,7 @@ func (p *stepProcessor) commandOperation(id int, registeredClusters clusters.Reg
 }
 
 func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Registry, cleaner *cleaner, op v1alpha1.Create) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.FileRefOrResource)
+	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
 	}
@@ -509,7 +515,7 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 }
 
 func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Delete) ([]operation, error) {
-	ref := v1alpha1.FileRefOrResource{
+	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
 		},
@@ -602,7 +608,7 @@ func (p *stepProcessor) describeOperation(id int, registeredClusters clusters.Re
 }
 
 func (p *stepProcessor) errorOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Error) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(op.FileRefOrCheck)
+	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
 	}
@@ -705,7 +711,7 @@ func (p *stepProcessor) logsOperation(id int, registeredClusters clusters.Regist
 }
 
 func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Patch) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.FileRefOrResource)
+	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
 	}
@@ -795,7 +801,7 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 }
 
 func (p *stepProcessor) updateOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Update) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.FileRefOrResource)
+	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
 	}
@@ -872,7 +878,7 @@ func (p *stepProcessor) waitOperation(id int, registeredClusters clusters.Regist
 	)
 }
 
-func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.FileRefOrCheck) ([]unstructured.Unstructured, error) {
+func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.ActionCheckRef) ([]unstructured.Unstructured, error) {
 	if ref.Check != nil && ref.Check.Value != nil {
 		if object, ok := ref.Check.Value.(map[string]any); !ok {
 			return nil, errors.New("resource must be an object")
@@ -891,7 +897,7 @@ func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.FileRefOrCheck) ([]unstructu
 	return nil, errors.New("file or resource must be set")
 }
 
-func (p *stepProcessor) fileRefOrResource(ref v1alpha1.FileRefOrResource) ([]unstructured.Unstructured, error) {
+func (p *stepProcessor) fileRefOrResource(ref v1alpha1.ActionResourceRef) ([]unstructured.Unstructured, error) {
 	if ref.Resource != nil {
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}

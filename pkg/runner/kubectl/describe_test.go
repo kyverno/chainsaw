@@ -33,17 +33,23 @@ func TestDescribe(t *testing.T) {
 	}, {
 		name: "without resource",
 		collector: &v1alpha1.Describe{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name: "foo",
+			ActionObject: v1alpha1.ActionObject{
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "foo",
+					},
+				},
 			},
 		},
 		wantErr: true,
 	}, {
 		name: "with resource",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -54,9 +60,11 @@ func TestDescribe(t *testing.T) {
 	}, {
 		name: "with clustered resource",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "rbac.authorization.k8s.io/v1",
-				Kind:       "ClusterRole",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "rbac.authorization.k8s.io/v1",
+					Kind:       "ClusterRole",
+				},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -67,12 +75,16 @@ func TestDescribe(t *testing.T) {
 	}, {
 		name: "with name",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
-			},
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name: "foo",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "foo",
+					},
+				},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -83,12 +95,16 @@ func TestDescribe(t *testing.T) {
 	}, {
 		name: "with namespace",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
-			},
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Namespace: "bar",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Namespace: "bar",
+					},
+				},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -99,13 +115,17 @@ func TestDescribe(t *testing.T) {
 	}, {
 		name: "with name and namespace",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
-			},
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name:      "foo",
-				Namespace: "bar",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name:      "foo",
+						Namespace: "bar",
+					},
+				},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -116,12 +136,14 @@ func TestDescribe(t *testing.T) {
 	}, {
 		name: "with selector",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
-			},
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Selector: "foo=bar",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					Selector: "foo=bar",
+				},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -132,26 +154,34 @@ func TestDescribe(t *testing.T) {
 	}, {
 		name: "with name and selector",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
-			},
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name:     "foo",
-				Selector: "foo=bar",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "foo",
+					},
+					Selector: "foo=bar",
+				},
 			},
 		},
 		wantErr: true,
 	}, {
 		name: "with namespace and selector",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
-			},
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Namespace: "bar",
-				Selector:  "foo=bar",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Namespace: "bar",
+					},
+					Selector: "foo=bar",
+				},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -162,9 +192,11 @@ func TestDescribe(t *testing.T) {
 	}, {
 		name: "with show-events marked as true",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
 			},
 			ShowEvents: ptr.To(true),
 		},
@@ -176,9 +208,11 @@ func TestDescribe(t *testing.T) {
 	}, {
 		name: "with show-events marked as false",
 		collector: &v1alpha1.Describe{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
 			},
 			ShowEvents: ptr.To(false),
 		},

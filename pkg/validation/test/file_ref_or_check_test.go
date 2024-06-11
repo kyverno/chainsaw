@@ -15,12 +15,12 @@ func TestValidateFileRefOrCheck(t *testing.T) {
 	}
 	tests := []struct {
 		name      string
-		input     v1alpha1.FileRefOrCheck
+		input     v1alpha1.ActionCheckRef
 		expectErr bool
 		errMsg    string
 	}{{
 		name: "Both File and Resource are empty",
-		input: v1alpha1.FileRefOrCheck{
+		input: v1alpha1.ActionCheckRef{
 			FileRef: v1alpha1.FileRef{
 				File: "",
 			},
@@ -30,7 +30,7 @@ func TestValidateFileRefOrCheck(t *testing.T) {
 		errMsg:    "a file reference or raw check must be specified",
 	}, {
 		name: "Both File and Resource are provided",
-		input: v1alpha1.FileRefOrCheck{
+		input: v1alpha1.ActionCheckRef{
 			FileRef: v1alpha1.FileRef{
 				File: "file",
 			},
@@ -40,7 +40,7 @@ func TestValidateFileRefOrCheck(t *testing.T) {
 		errMsg:    "a file reference or raw check must be specified (found both)",
 	}, {
 		name: "Only File is provided",
-		input: v1alpha1.FileRefOrCheck{
+		input: v1alpha1.ActionCheckRef{
 			FileRef: v1alpha1.FileRef{
 				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
@@ -49,7 +49,7 @@ func TestValidateFileRefOrCheck(t *testing.T) {
 		expectErr: false,
 	}, {
 		name: "Only Resource is provided",
-		input: v1alpha1.FileRefOrCheck{
+		input: v1alpha1.ActionCheckRef{
 			FileRef: v1alpha1.FileRef{
 				File: "",
 			},

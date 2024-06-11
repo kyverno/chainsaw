@@ -17,7 +17,7 @@ func TestValidateTest(t *testing.T) {
 					Try: []v1alpha1.Operation{
 						{
 							Apply: &v1alpha1.Apply{
-								FileRefOrResource: v1alpha1.FileRefOrResource{
+								ActionResourceRef: v1alpha1.ActionResourceRef{
 									FileRef: v1alpha1.FileRef{
 										File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 									},
@@ -37,14 +37,14 @@ func TestValidateTest(t *testing.T) {
 					Try: []v1alpha1.Operation{
 						{
 							Apply: &v1alpha1.Apply{
-								FileRefOrResource: v1alpha1.FileRefOrResource{
+								ActionResourceRef: v1alpha1.ActionResourceRef{
 									FileRef: v1alpha1.FileRef{
 										File: "file",
 									},
 								},
 							},
 							Assert: &v1alpha1.Assert{
-								FileRefOrCheck: v1alpha1.FileRefOrCheck{
+								ActionCheckRef: v1alpha1.ActionCheckRef{
 									FileRef: v1alpha1.FileRef{
 										File: "file",
 									},

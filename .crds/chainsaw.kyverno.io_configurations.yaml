@@ -615,9 +615,8 @@ spec:
                           description: API version of the referent.
                           type: string
                         cluster:
-                          description: Cluster defines the target cluster where the
-                            wait operation will be performed (default cluster will
-                            be used if not specified).
+                          description: Cluster defines the target cluster (default
+                            cluster will be used if not specified and/or overridden).
                           type: string
                         clusters:
                           additionalProperties:
@@ -700,8 +699,8 @@ spec:
                           description: Selector defines labels selector.
                           type: string
                         timeout:
-                          description: Timeout for the operation. Specifies how long
-                            to wait for the condition to be met before timing out.
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
                           type: string
                       required:
                       - apiVersion
@@ -1515,9 +1514,8 @@ spec:
                               description: API version of the referent.
                               type: string
                             cluster:
-                              description: Cluster defines the target cluster where
-                                the wait operation will be performed (default cluster
-                                will be used if not specified).
+                              description: Cluster defines the target cluster (default
+                                cluster will be used if not specified and/or overridden).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1600,9 +1598,8 @@ spec:
                               description: Selector defines labels selector.
                               type: string
                             timeout:
-                              description: Timeout for the operation. Specifies how
-                                long to wait for the condition to be met before timing
-                                out.
+                              description: Timeout for the operation. Overrides the
+                                global timeout set in the Configuration.
                               type: string
                           required:
                           - apiVersion

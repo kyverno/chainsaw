@@ -12,7 +12,7 @@ func TestValidateResourceReference(t *testing.T) {
 	tests := []struct {
 		name string
 		path *field.Path
-		obj  v1alpha1.ResourceReference
+		obj  v1alpha1.ObjectType
 		want field.ErrorList
 	}{{
 		name: "empty",
@@ -21,27 +21,27 @@ func TestValidateResourceReference(t *testing.T) {
 			&field.Error{
 				Type:     field.ErrorTypeInvalid,
 				Field:    "foo.kind",
-				BadValue: v1alpha1.ResourceReference{},
+				BadValue: v1alpha1.ObjectType{},
 				Detail:   "kind must be specified",
 			},
 			&field.Error{
 				Type:     field.ErrorTypeInvalid,
 				Field:    "foo.apiVersion",
-				BadValue: v1alpha1.ResourceReference{},
+				BadValue: v1alpha1.ObjectType{},
 				Detail:   "apiVersion must be specified",
 			},
 		},
 	}, {
 		name: "kind and no apiVersion",
 		path: field.NewPath("foo"),
-		obj: v1alpha1.ResourceReference{
+		obj: v1alpha1.ObjectType{
 			Kind: "foo",
 		},
 		want: field.ErrorList{
 			&field.Error{
 				Type:  field.ErrorTypeInvalid,
 				Field: "foo.apiVersion",
-				BadValue: v1alpha1.ResourceReference{
+				BadValue: v1alpha1.ObjectType{
 					Kind: "foo",
 				},
 				Detail: "apiVersion must be specified",
