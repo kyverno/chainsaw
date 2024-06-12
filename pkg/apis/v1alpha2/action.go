@@ -5,13 +5,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-// // ActionBindings contains bindings options for an action.
-// type ActionBindings struct {
-// 	// Bindings defines additional binding key/values.
-// 	// +optional
-// 	Bindings []Binding `json:"bindings,omitempty"`
-// }
-
 // ActionCheck contains check for an action.
 type ActionCheck struct {
 	// Check is an assertion tree to validate the operation outcome.
@@ -31,17 +24,6 @@ type ActionCheckRef struct {
 	// +optional
 	Template *bool `json:"template,omitempty"`
 }
-
-// // ActionClusters contains clusters options for an action.
-// type ActionClusters struct {
-// 	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
-// 	// +optional
-// 	Cluster string `json:"cluster,omitempty"`
-
-// 	// Clusters holds a registry to clusters to support multi-cluster tests.
-// 	// +optional
-// 	Clusters Clusters `json:"clusters,omitempty"`
-// }
 
 // ActionDryRun contains dry run options for an action.
 type ActionDryRun struct {
@@ -97,13 +79,6 @@ type ActionObjectSelector struct {
 	// +optional
 	Selector string `json:"selector,omitempty"`
 }
-
-// // ActionOutputs contains outputs options for an action.
-// type ActionOutputs struct {
-// 	// Outputs defines output bindings.
-// 	// +optional
-// 	Outputs []Output `json:"outputs,omitempty"`
-// }
 
 // FileRef represents a file reference.
 type FileRef struct {
