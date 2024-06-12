@@ -637,7 +637,7 @@ spec:
                             multi-cluster tests.
                           type: object
                         for:
-                          description: For specifies the condition to wait for.
+                          description: WaitFor specifies the condition to wait for.
                           properties:
                             condition:
                               description: Condition specifies the condition to wait
@@ -1536,7 +1536,8 @@ spec:
                                 support multi-cluster tests.
                               type: object
                             for:
-                              description: For specifies the condition to wait for.
+                              description: WaitFor specifies the condition to wait
+                                for.
                               properties:
                                 condition:
                                   description: Condition specifies the condition to

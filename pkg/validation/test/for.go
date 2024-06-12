@@ -5,7 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func ValidateFor(path *field.Path, obj *v1alpha1.For) field.ErrorList {
+func ValidateFor(path *field.Path, obj *v1alpha1.WaitFor) field.ErrorList {
 	var errs field.ErrorList
 	if obj != nil {
 		if obj.Deletion == nil && obj.Condition == nil && obj.JsonPath == nil {

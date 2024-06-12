@@ -1,6 +1,18 @@
 package v1alpha1
 
-import metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+import (
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+)
+
+// TestStep contains the test step definition used in a test spec.
+type TestStep struct {
+	// Name of the step.
+	// +optional
+	Name string `json:"name,omitempty"`
+
+	// TestStepSpec of the step.
+	TestStepSpec `json:",inline"`
+}
 
 // TestStepSpec defines the desired state and behavior for each test step.
 type TestStepSpec struct {
