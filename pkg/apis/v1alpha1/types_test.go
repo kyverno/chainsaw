@@ -8,6 +8,56 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+func TestBinding_CheckName(t *testing.T) {
+	tests := []struct {
+		name         string
+		bindingName  string
+		bindingValue Any
+		wantErr      bool
+	}{{
+		name:    "empty",
+		wantErr: true,
+	}, {
+		name:        "simple",
+		bindingName: "simple",
+		wantErr:     false,
+	}, {
+		name:        "with dollar",
+		bindingName: "$simple",
+		wantErr:     true,
+	}, {
+		name:        "with space",
+		bindingName: "simple one",
+		wantErr:     true,
+	}, {
+		name:        "with dot",
+		bindingName: "simple.one",
+		wantErr:     true,
+	}, {
+		name:        "good expression",
+		bindingName: "('test')",
+		wantErr:     false,
+	}, {
+		name:        "bad expression",
+		bindingName: "('test'",
+		wantErr:     true,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := Binding{
+				Name:  tt.bindingName,
+				Value: tt.bindingValue,
+			}
+			err := b.CheckName()
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
 func Test_durationOrDefault(t *testing.T) {
 	tests := []struct {
 		name string

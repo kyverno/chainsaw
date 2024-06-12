@@ -386,20 +386,6 @@ during the testing process.</p>
 | `entrypoint` | `string` | :white_check_mark: |  | <p>Entrypoint is the command entry point to run.</p> |
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
 
-## Condition     {#chainsaw-kyverno-io-v1alpha1-Condition}
-
-**Appears in:**
-    
-- [For](#chainsaw-kyverno-io-v1alpha1-For)
-
-<p>Condition represents parameters for waiting on a specific condition of a resource.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `name` | `string` | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
-| `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
-
 ## ConfigurationSpec     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
 **Appears in:**
@@ -472,15 +458,6 @@ If a resource already exists in the cluster it will fail.</p>
 | `file` | `string` |  |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
 | `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) |  |  | <p>Ref determines objects to be deleted.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation. Overrides the deletion propagation policy set in the Configuration, the Test and the TestStep.</p> |
-
-## Deletion     {#chainsaw-kyverno-io-v1alpha1-Deletion}
-
-**Appears in:**
-    
-- [For](#chainsaw-kyverno-io-v1alpha1-For)
-
-<p>Deletion represents parameters for waiting on a resource's deletion.</p>
-
 
 ## Describe     {#chainsaw-kyverno-io-v1alpha1-Describe}
 
@@ -562,21 +539,6 @@ with a match filter to determine if the verification should be considered.</p>
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
 
-## For     {#chainsaw-kyverno-io-v1alpha1-For}
-
-**Appears in:**
-    
-- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
-
-<p>For specifies the condition to wait for.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `deletion` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
-| `condition` | [`Condition`](#chainsaw-kyverno-io-v1alpha1-Condition) |  |  | <p>Condition specifies the condition to wait for.</p> |
-| `jsonPath` | [`JsonPath`](#chainsaw-kyverno-io-v1alpha1-JsonPath) |  |  | <p>JsonPath specifies the json path condition to wait for.</p> |
-
 ## Format     {#chainsaw-kyverno-io-v1alpha1-Format}
 
 (Alias of `string`)
@@ -604,20 +566,6 @@ with a match filter to determine if the verification should be considered.</p>
 | `ActionFormat` | [`ActionFormat`](#chainsaw-kyverno-io-v1alpha1-ActionFormat) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionObject` | [`ActionObject`](#chainsaw-kyverno-io-v1alpha1-ActionObject) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-
-## JsonPath     {#chainsaw-kyverno-io-v1alpha1-JsonPath}
-
-**Appears in:**
-    
-- [For](#chainsaw-kyverno-io-v1alpha1-For)
-
-<p>JsonPath represents parameters for waiting on a json path of a resource.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `path` | `string` | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
-| `value` | `string` | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
 
 ## ObjectName     {#chainsaw-kyverno-io-v1alpha1-ObjectName}
 
@@ -924,6 +872,58 @@ If a resource does not exist in the cluster it will fail.</p>
 | `ActionFormat` | [`ActionFormat`](#chainsaw-kyverno-io-v1alpha1-ActionFormat) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionObject` | [`ActionObject`](#chainsaw-kyverno-io-v1alpha1-ActionObject) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-| `for` | [`For`](#chainsaw-kyverno-io-v1alpha1-For) | :white_check_mark: |  | <p>For specifies the condition to wait for.</p> |
+| `for` | [`WaitFor`](#chainsaw-kyverno-io-v1alpha1-WaitFor) | :white_check_mark: |  | <p>WaitFor specifies the condition to wait for.</p> |
+
+## WaitFor     {#chainsaw-kyverno-io-v1alpha1-WaitFor}
+
+**Appears in:**
+    
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+<p>WaitFor specifies the condition to wait for.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `deletion` | [`WaitForDeletion`](#chainsaw-kyverno-io-v1alpha1-WaitForDeletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
+| `condition` | [`WaitForCondition`](#chainsaw-kyverno-io-v1alpha1-WaitForCondition) |  |  | <p>Condition specifies the condition to wait for.</p> |
+| `jsonPath` | [`WaitForJsonPath`](#chainsaw-kyverno-io-v1alpha1-WaitForJsonPath) |  |  | <p>JsonPath specifies the json path condition to wait for.</p> |
+
+## WaitForCondition     {#chainsaw-kyverno-io-v1alpha1-WaitForCondition}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha1-WaitFor)
+
+<p>WaitForCondition represents parameters for waiting on a specific condition of a resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `name` | `string` | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
+| `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
+
+## WaitForDeletion     {#chainsaw-kyverno-io-v1alpha1-WaitForDeletion}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha1-WaitFor)
+
+<p>WaitForDeletion represents parameters for waiting on a resource's deletion.</p>
+
+
+## WaitForJsonPath     {#chainsaw-kyverno-io-v1alpha1-WaitForJsonPath}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha1-WaitFor)
+
+<p>WaitForJsonPath represents parameters for waiting on a json path of a resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `path` | `string` | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
+| `value` | `string` | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
 
   

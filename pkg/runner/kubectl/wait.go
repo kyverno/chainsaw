@@ -52,18 +52,18 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 		Entrypoint: "kubectl",
 		Args:       []string{"wait", resource},
 	}
-	if collector.For.Deletion != nil {
+	if collector.WaitFor.Deletion != nil {
 		cmd.Args = append(cmd.Args, "--for=delete")
-	} else if collector.For.Condition != nil {
-		name, err := apibindings.String(collector.For.Condition.Name, bindings)
+	} else if collector.WaitFor.Condition != nil {
+		name, err := apibindings.String(collector.WaitFor.Condition.Name, bindings)
 		if err != nil {
 			return nil, err
 		}
 		if name == "" {
 			return nil, errors.New("a condition name must be specified for condition wait type")
 		}
-		if collector.For.Condition.Value != nil {
-			value, err := apibindings.String(*collector.For.Condition.Value, bindings)
+		if collector.WaitFor.Condition.Value != nil {
+			value, err := apibindings.String(*collector.WaitFor.Condition.Value, bindings)
 			if err != nil {
 				return nil, err
 			}
@@ -71,15 +71,15 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 		} else {
 			cmd.Args = append(cmd.Args, fmt.Sprintf("--for=condition=%s", name))
 		}
-	} else if collector.For.JsonPath != nil {
-		path, err := apibindings.String(collector.For.JsonPath.Path, bindings)
+	} else if collector.WaitFor.JsonPath != nil {
+		path, err := apibindings.String(collector.WaitFor.JsonPath.Path, bindings)
 		if err != nil {
 			return nil, err
 		}
 		if path == "" {
 			return nil, errors.New("a path must be specified for jsonpath wait type")
 		}
-		value, err := apibindings.String(collector.For.JsonPath.Value, bindings)
+		value, err := apibindings.String(collector.WaitFor.JsonPath.Value, bindings)
 		if err != nil {
 			return nil, err
 		}

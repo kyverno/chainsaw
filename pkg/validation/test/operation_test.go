@@ -86,8 +86,8 @@ func TestValidateOperation(t *testing.T) {
 				Kind:       "Pod",
 			},
 		},
-		For: v1alpha1.For{
-			Deletion: &v1alpha1.Deletion{},
+		WaitFor: v1alpha1.WaitFor{
+			Deletion: &v1alpha1.WaitForDeletion{},
 		},
 	}
 	tests := []struct {

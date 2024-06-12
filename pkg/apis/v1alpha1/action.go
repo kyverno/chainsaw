@@ -318,6 +318,43 @@ type Wait struct {
 	ActionClusters `json:",inline"`
 	ActionObject   `json:",inline"`
 
-	// For specifies the condition to wait for.
-	For `json:"for"`
+	// WaitFor specifies the condition to wait for.
+	WaitFor `json:"for"`
+}
+
+// WaitFor specifies the condition to wait for.
+type WaitFor struct {
+	// Deletion specifies parameters for waiting on a resource's deletion.
+	// +optional
+	Deletion *WaitForDeletion `json:"deletion,omitempty"`
+
+	// Condition specifies the condition to wait for.
+	// +optional
+	Condition *WaitForCondition `json:"condition,omitempty"`
+
+	// JsonPath specifies the json path condition to wait for.
+	// +optional
+	JsonPath *WaitForJsonPath `json:"jsonPath,omitempty"`
+}
+
+// WaitForCondition represents parameters for waiting on a specific condition of a resource.
+type WaitForCondition struct {
+	// Name defines the specific condition to wait for, e.g., "Available", "Ready".
+	Name string `json:"name"`
+
+	// Value defines the specific condition status to wait for, e.g., "True", "False".
+	// +optional
+	Value *string `json:"value,omitempty"`
+}
+
+// WaitForDeletion represents parameters for waiting on a resource's deletion.
+type WaitForDeletion struct{}
+
+// WaitForJsonPath represents parameters for waiting on a json path of a resource.
+type WaitForJsonPath struct {
+	// Path defines the json path to wait for, e.g. '{.status.phase}'.
+	Path string `json:"path"`
+
+	// Value defines the expected value to wait for, e.g., "Running".
+	Value string `json:"value"`
 }
