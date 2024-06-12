@@ -25,14 +25,14 @@ func TestFinally_Bindings(t *testing.T) {
 	}{{
 		fields: fields{
 			Command: &Command{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Delete: &Delete{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
@@ -55,7 +55,7 @@ func TestFinally_Bindings(t *testing.T) {
 	}, {
 		fields: fields{
 			Script: &Script{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
@@ -107,7 +107,7 @@ func TestFinally_Outputs(t *testing.T) {
 	}{{
 		fields: fields{
 			Command: &Command{
-				Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
@@ -134,7 +134,7 @@ func TestFinally_Outputs(t *testing.T) {
 	}, {
 		fields: fields{
 			Script: &Script{
-				Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,

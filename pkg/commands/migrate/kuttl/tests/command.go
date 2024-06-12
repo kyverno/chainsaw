@@ -155,7 +155,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 		if !containsKuttlResources {
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Apply: &v1alpha1.Apply{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
+					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
 							File: file,
 						},
@@ -197,7 +197,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 			}
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Apply: &v1alpha1.Apply{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
+					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
 							File: file,
 						},
@@ -222,7 +222,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 		if !containsKuttlResources {
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Assert: &v1alpha1.Assert{
-					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
 							File: file,
 						},
@@ -258,7 +258,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 			}
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Assert: &v1alpha1.Assert{
-					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
 							File: file,
 						},
@@ -283,7 +283,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 		if !containsKuttlResources {
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Error: &v1alpha1.Error{
-					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
 							File: file,
 						},
@@ -319,7 +319,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 			}
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Error: &v1alpha1.Error{
-					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
 							File: file,
 						},
@@ -392,9 +392,9 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		if operation.Script != "" {
 			operations = append(operations, v1alpha1.Operation{
 				Script: &v1alpha1.Script{
-					Timeout:       timeout,
+					ActionTimeout: v1alpha1.ActionTimeout{Timeout: timeout},
 					Content:       operation.Script,
-					SkipLogOutput: operation.SkipLogOutput,
+					ActionEnv:     v1alpha1.ActionEnv{SkipLogOutput: operation.SkipLogOutput},
 				},
 			})
 		} else if operation.Command != "" {
@@ -409,10 +409,10 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			}
 			operations = append(operations, v1alpha1.Operation{
 				Command: &v1alpha1.Command{
-					Timeout:       timeout,
+					ActionTimeout: v1alpha1.ActionTimeout{Timeout: timeout},
 					Entrypoint:    entrypoint,
 					Args:          args,
-					SkipLogOutput: operation.SkipLogOutput,
+					ActionEnv:     v1alpha1.ActionEnv{SkipLogOutput: operation.SkipLogOutput},
 				},
 			})
 		}
@@ -420,7 +420,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 	for _, operation := range from.Apply {
 		operations = append(operations, v1alpha1.Operation{
 			Apply: &v1alpha1.Apply{
-				FileRefOrResource: v1alpha1.FileRefOrResource{
+				ActionResourceRef: v1alpha1.ActionResourceRef{
 					FileRef: v1alpha1.FileRef{
 						File: operation,
 					},
@@ -431,7 +431,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 	for _, operation := range from.Assert {
 		operations = append(operations, v1alpha1.Operation{
 			Assert: &v1alpha1.Assert{
-				FileRefOrCheck: v1alpha1.FileRefOrCheck{
+				ActionCheckRef: v1alpha1.ActionCheckRef{
 					FileRef: v1alpha1.FileRef{
 						File: operation,
 					},
@@ -442,7 +442,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 	for _, operation := range from.Error {
 		operations = append(operations, v1alpha1.Operation{
 			Error: &v1alpha1.Error{
-				FileRefOrCheck: v1alpha1.FileRefOrCheck{
+				ActionCheckRef: v1alpha1.ActionCheckRef{
 					FileRef: v1alpha1.FileRef{
 						File: operation,
 					},
@@ -458,11 +458,11 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 						APIVersion: operation.APIVersion,
 						Kind:       operation.Kind,
 					},
-					ObjectSelector: v1alpha1.ObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
 						Namespace: operation.Namespace,
 						Name:      operation.Name,
-						Labels:    operation.Labels,
 					},
+					Labels: operation.Labels,
 				},
 			},
 		})
@@ -481,15 +481,15 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		if cmd.Script != "" {
 			to.Try = append(to.Try, v1alpha1.Operation{
 				Script: &v1alpha1.Script{
-					Content:       cmd.Script,
-					SkipLogOutput: cmd.SkipLogOutput,
+					Content:   cmd.Script,
+					ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: cmd.SkipLogOutput},
 				},
 			})
 		} else if cmd.Command != "" {
 			to.Try = append(to.Try, v1alpha1.Operation{
 				Script: &v1alpha1.Script{
-					Content:       cmd.Command,
-					SkipLogOutput: cmd.SkipLogOutput,
+					Content:   cmd.Command,
+					ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: cmd.SkipLogOutput},
 				},
 			})
 		}
@@ -504,10 +504,12 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		switch collector.Type {
 		case "pod":
 			op := &v1alpha1.PodLogs{
-				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-					Name:      collector.Pod,
-					Namespace: collector.Namespace,
-					Selector:  collector.Selector,
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name:      collector.Pod,
+						Namespace: collector.Namespace,
+					},
+					Selector: collector.Selector,
 				},
 				Container: collector.Container,
 			}
@@ -527,10 +529,12 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 		case "events":
 			to.Catch = append(to.Catch, v1alpha1.CatchFinally{
 				Events: &v1alpha1.Events{
-					ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-						Name:      collector.Pod,
-						Namespace: collector.Namespace,
-						Selector:  collector.Selector,
+					ActionObjectSelector: v1alpha1.ActionObjectSelector{
+						ObjectName: v1alpha1.ObjectName{
+							Name:      collector.Pod,
+							Namespace: collector.Namespace,
+						},
+						Selector: collector.Selector,
 					},
 				},
 			})

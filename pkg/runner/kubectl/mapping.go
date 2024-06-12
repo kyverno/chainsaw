@@ -12,7 +12,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func mapResource(client client.Client, bindings binding.Bindings, resource v1alpha1.ResourceReference) (string, bool, error) {
+func mapResource(client client.Client, bindings binding.Bindings, resource v1alpha1.ObjectType) (string, bool, error) {
 	if resource.APIVersion != "" && resource.Kind != "" {
 		if apiVersion, err := apibindings.String(resource.APIVersion, bindings); err != nil {
 			return "", false, err

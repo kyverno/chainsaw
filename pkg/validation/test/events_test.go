@@ -18,8 +18,10 @@ func TestValidateEvents(t *testing.T) {
 		{
 			name: "Both Name and Selector provided",
 			input: &v1alpha1.Events{
-				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-					Name:     "example-name",
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "example-name",
+					},
 					Selector: "example-selector",
 				},
 			},
@@ -29,8 +31,10 @@ func TestValidateEvents(t *testing.T) {
 		{
 			name: "Only Name provided",
 			input: &v1alpha1.Events{
-				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-					Name:     "example-name",
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "example-name",
+					},
 					Selector: "",
 				},
 			},
@@ -39,8 +43,10 @@ func TestValidateEvents(t *testing.T) {
 		{
 			name: "Only Selector provided",
 			input: &v1alpha1.Events{
-				ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-					Name:     "",
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "",
+					},
 					Selector: "example-selector",
 				},
 			},
