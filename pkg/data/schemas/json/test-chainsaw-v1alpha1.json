@@ -1275,7 +1275,7 @@
                     }
                   },
                   "for": {
-                    "description": "For specifies the condition to wait for.",
+                    "description": "WaitFor specifies the condition to wait for.",
                     "type": "object",
                     "properties": {
                       "condition": {
@@ -2487,7 +2487,7 @@
                           }
                         },
                         "for": {
-                          "description": "For specifies the condition to wait for.",
+                          "description": "WaitFor specifies the condition to wait for.",
                           "type": "object",
                           "properties": {
                             "condition": {
@@ -3555,7 +3555,7 @@
                           }
                         },
                         "for": {
-                          "description": "For specifies the condition to wait for.",
+                          "description": "WaitFor specifies the condition to wait for.",
                           "type": "object",
                           "properties": {
                             "condition": {
@@ -4679,7 +4679,7 @@
                           }
                         },
                         "for": {
-                          "description": "For specifies the condition to wait for.",
+                          "description": "WaitFor specifies the condition to wait for.",
                           "type": "object",
                           "properties": {
                             "condition": {
@@ -6696,7 +6696,7 @@
                           }
                         },
                         "for": {
-                          "description": "For specifies the condition to wait for.",
+                          "description": "WaitFor specifies the condition to wait for.",
                           "type": "object",
                           "properties": {
                             "condition": {

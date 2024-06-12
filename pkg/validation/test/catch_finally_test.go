@@ -43,8 +43,8 @@ func TestValidateCatchFinally(t *testing.T) {
 				Kind:       "Pod",
 			},
 		},
-		For: v1alpha1.For{
-			Condition: &v1alpha1.Condition{
+		WaitFor: v1alpha1.WaitFor{
+			Condition: &v1alpha1.WaitForCondition{
 				Name: "Ready",
 			},
 		},
