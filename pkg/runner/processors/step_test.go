@@ -100,7 +100,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Apply: &v1alpha1.Apply{
-							FileRefOrResource: v1alpha1.FileRefOrResource{
+							ActionResourceRef: v1alpha1.ActionResourceRef{
 								FileRef: v1alpha1.FileRef{
 									File: "pod.yaml",
 								},
@@ -147,7 +147,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Create: &v1alpha1.Create{
-							FileRefOrResource: v1alpha1.FileRefOrResource{
+							ActionResourceRef: v1alpha1.ActionResourceRef{
 								FileRef: v1alpha1.FileRef{
 									File: "pod.yaml",
 								},
@@ -218,7 +218,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Assert: &v1alpha1.Assert{
-							FileRefOrCheck: v1alpha1.FileRefOrCheck{
+							ActionCheckRef: v1alpha1.ActionCheckRef{
 								FileRef: v1alpha1.FileRef{
 									File: "pod.yaml",
 								},
@@ -289,7 +289,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Error: &v1alpha1.Error{
-							FileRefOrCheck: v1alpha1.FileRefOrCheck{
+							ActionCheckRef: v1alpha1.ActionCheckRef{
 								FileRef: v1alpha1.FileRef{
 									File: "pod.yaml",
 								},
@@ -449,7 +449,7 @@ func TestStepProcessor_Run(t *testing.T) {
 									APIVersion: "apps/v1",
 									Kind:       "Deployment",
 								},
-								ObjectSelector: v1alpha1.ObjectSelector{
+								ObjectName: v1alpha1.ObjectName{
 									Namespace: "chainsaw",
 									Name:      "myapp",
 								},
@@ -496,12 +496,14 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Create: &v1alpha1.Create{
-							FileRefOrResource: v1alpha1.FileRefOrResource{
+							ActionResourceRef: v1alpha1.ActionResourceRef{
 								FileRef: v1alpha1.FileRef{
 									File: "pod.yaml",
 								},
 							},
-							DryRun: ptr.To[bool](true),
+							ActionDryRun: v1alpha1.ActionDryRun{
+								DryRun: ptr.To[bool](true),
+							},
 						},
 					},
 				},
@@ -545,7 +547,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Create: &v1alpha1.Create{
-							FileRefOrResource: v1alpha1.FileRefOrResource{
+							ActionResourceRef: v1alpha1.ActionResourceRef{
 								FileRef: v1alpha1.FileRef{
 									File: "pod.yaml",
 								},
@@ -593,7 +595,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Create: &v1alpha1.Create{
-							FileRefOrResource: v1alpha1.FileRefOrResource{
+							ActionResourceRef: v1alpha1.ActionResourceRef{
 								Resource: &unstructured.Unstructured{
 									Object: map[string]any{
 										"apiVersion": "v1",
@@ -647,7 +649,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Create: &v1alpha1.Create{
-							FileRefOrResource: v1alpha1.FileRefOrResource{
+							ActionResourceRef: v1alpha1.ActionResourceRef{
 								FileRef: v1alpha1.FileRef{
 									File: "https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/test/configmap.yaml",
 								},
@@ -718,7 +720,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Assert: &v1alpha1.Assert{
-							FileRefOrCheck: v1alpha1.FileRefOrCheck{
+							ActionCheckRef: v1alpha1.ActionCheckRef{
 								Check: &v1alpha1.Check{
 									Value: map[string]any{
 										"apiVersion": "v1",
@@ -798,7 +800,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Assert: &v1alpha1.Assert{
-							FileRefOrCheck: v1alpha1.FileRefOrCheck{
+							ActionCheckRef: v1alpha1.ActionCheckRef{
 								FileRef: v1alpha1.FileRef{
 									File: "https://raw.githubusercontent.com/kyverno/chainsaw/main/testdata/test/configmap.yaml",
 								},
@@ -874,7 +876,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Apply: &v1alpha1.Apply{
-							FileRefOrResource: v1alpha1.FileRefOrResource{
+							ActionResourceRef: v1alpha1.ActionResourceRef{
 								FileRef: v1alpha1.FileRef{
 									File: "pod.yaml",
 								},
@@ -901,7 +903,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					},
 					{
 						PodLogs: &v1alpha1.PodLogs{
-							ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+							ActionObjectSelector: v1alpha1.ActionObjectSelector{
 								Selector: "name=myapp",
 							},
 						},
@@ -926,7 +928,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					},
 					{
 						PodLogs: &v1alpha1.PodLogs{
-							ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+							ActionObjectSelector: v1alpha1.ActionObjectSelector{
 								Selector: "name=myapp",
 							},
 						},
@@ -970,7 +972,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Try: []v1alpha1.Operation{
 					{
 						Create: &v1alpha1.Create{
-							FileRefOrResource: v1alpha1.FileRefOrResource{
+							ActionResourceRef: v1alpha1.ActionResourceRef{
 								FileRef: v1alpha1.FileRef{
 									File: "deployment.yaml",
 								},
@@ -979,7 +981,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					},
 					{
 						Create: &v1alpha1.Create{
-							FileRefOrResource: v1alpha1.FileRefOrResource{
+							ActionResourceRef: v1alpha1.ActionResourceRef{
 								FileRef: v1alpha1.FileRef{
 									File: "cron-job.yaml",
 								},

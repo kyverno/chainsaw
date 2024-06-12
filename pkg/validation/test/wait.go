@@ -11,7 +11,7 @@ func ValidateWait(path *field.Path, obj *v1alpha1.Wait) field.ErrorList {
 		if obj.Name != "" && obj.Selector != "" {
 			errs = append(errs, field.Invalid(path, obj, "a name or label selector must be specified (found both)"))
 		}
-		errs = append(errs, ValidateResourceReference(path, obj.ResourceReference)...)
+		errs = append(errs, ValidateResourceReference(path, obj.ObjectType)...)
 		errs = append(errs, ValidateFor(path.Child("for"), &obj.For)...)
 	}
 	return errs

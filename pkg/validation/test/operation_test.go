@@ -14,14 +14,14 @@ import (
 
 func TestValidateOperation(t *testing.T) {
 	exampleApply := &v1alpha1.Apply{
-		FileRefOrResource: v1alpha1.FileRefOrResource{
+		ActionResourceRef: v1alpha1.ActionResourceRef{
 			FileRef: v1alpha1.FileRef{
 				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
 		},
 	}
 	exampleAssert := &v1alpha1.Assert{
-		FileRefOrCheck: v1alpha1.FileRefOrCheck{
+		ActionCheckRef: v1alpha1.ActionCheckRef{
 			FileRef: v1alpha1.FileRef{
 				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
@@ -32,7 +32,7 @@ func TestValidateOperation(t *testing.T) {
 		Args:       []string{"hello world"},
 	}
 	exampleCreate := &v1alpha1.Create{
-		FileRefOrResource: v1alpha1.FileRefOrResource{
+		ActionResourceRef: v1alpha1.ActionResourceRef{
 			FileRef: v1alpha1.FileRef{
 				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
@@ -44,23 +44,23 @@ func TestValidateOperation(t *testing.T) {
 				APIVersion: "v1",
 				Kind:       "Pod",
 			},
-			ObjectSelector: v1alpha1.ObjectSelector{
+			ObjectName: v1alpha1.ObjectName{
 				Namespace: "chainsaw",
-				Labels: map[string]string{
-					"app": "chainsaw",
-				},
+			},
+			Labels: map[string]string{
+				"app": "chainsaw",
 			},
 		},
 	}
 	exampleError := &v1alpha1.Error{
-		FileRefOrCheck: v1alpha1.FileRefOrCheck{
+		ActionCheckRef: v1alpha1.ActionCheckRef{
 			FileRef: v1alpha1.FileRef{
 				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
 		},
 	}
 	examplePatch := &v1alpha1.Patch{
-		FileRefOrResource: v1alpha1.FileRefOrResource{
+		ActionResourceRef: v1alpha1.ActionResourceRef{
 			FileRef: v1alpha1.FileRef{
 				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
@@ -73,16 +73,18 @@ func TestValidateOperation(t *testing.T) {
 		Duration: metav1.Duration{Duration: 5 * time.Second},
 	}
 	exampleUpdate := &v1alpha1.Update{
-		FileRefOrResource: v1alpha1.FileRefOrResource{
+		ActionResourceRef: v1alpha1.ActionResourceRef{
 			FileRef: v1alpha1.FileRef{
 				File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 			},
 		},
 	}
 	exampleWait := &v1alpha1.Wait{
-		ResourceReference: v1alpha1.ResourceReference{
-			APIVersion: "v1",
-			Kind:       "Pod",
+		ActionObject: v1alpha1.ActionObject{
+			ObjectType: v1alpha1.ObjectType{
+				APIVersion: "v1",
+				Kind:       "Pod",
+			},
 		},
 		For: v1alpha1.For{
 			Deletion: &v1alpha1.Deletion{},
