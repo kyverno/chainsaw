@@ -13,7 +13,7 @@ import (
 
 func TestValidateCatchFinally(t *testing.T) {
 	examplePodLogs := &v1alpha1.PodLogs{
-		ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+		ActionObjectSelector: v1alpha1.ActionObjectSelector{
 			Selector: "app=example",
 		},
 	}
@@ -29,26 +29,32 @@ func TestValidateCatchFinally(t *testing.T) {
 		Duration: metav1.Duration{Duration: 5 * time.Second},
 	}
 	exampleDescribe := &v1alpha1.Describe{
-		ResourceReference: v1alpha1.ResourceReference{
-			APIVersion: "v1",
-			Kind:       "Pod",
+		ActionObject: v1alpha1.ActionObject{
+			ObjectType: v1alpha1.ObjectType{
+				APIVersion: "v1",
+				Kind:       "Pod",
+			},
 		},
 	}
 	exampleWait := &v1alpha1.Wait{
-		ResourceReference: v1alpha1.ResourceReference{
-			APIVersion: "v1",
-			Kind:       "Pod",
+		ActionObject: v1alpha1.ActionObject{
+			ObjectType: v1alpha1.ObjectType{
+				APIVersion: "v1",
+				Kind:       "Pod",
+			},
 		},
-		For: v1alpha1.For{
-			Condition: &v1alpha1.Condition{
+		WaitFor: v1alpha1.WaitFor{
+			Condition: &v1alpha1.WaitForCondition{
 				Name: "Ready",
 			},
 		},
 	}
 	exampleGet := &v1alpha1.Get{
-		ResourceReference: v1alpha1.ResourceReference{
-			APIVersion: "v1",
-			Kind:       "Pod",
+		ActionObject: v1alpha1.ActionObject{
+			ObjectType: v1alpha1.ObjectType{
+				APIVersion: "v1",
+				Kind:       "Pod",
+			},
 		},
 	}
 	exampleDelete := &v1alpha1.Delete{
@@ -57,11 +63,11 @@ func TestValidateCatchFinally(t *testing.T) {
 				APIVersion: "v1",
 				Kind:       "Pod",
 			},
-			ObjectSelector: v1alpha1.ObjectSelector{
+			ObjectName: v1alpha1.ObjectName{
 				Namespace: "chainsaw",
-				Labels: map[string]string{
-					"app": "chainsaw",
-				},
+			},
+			Labels: map[string]string{
+				"app": "chainsaw",
 			},
 		},
 	}

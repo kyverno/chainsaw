@@ -33,14 +33,18 @@ func Describe(client client.Client, bindings binding.Bindings, collector *v1alph
 	if name != "" && selector != "" {
 		return nil, errors.New("name cannot be provided when a selector is specified")
 	}
-	resource, clustered, err := mapResource(client, bindings, collector.ResourceReference)
+	resource, clustered, err := mapResource(client, bindings, collector.ObjectType)
 	if err != nil {
 		return nil, err
 	}
 	cmd := v1alpha1.Command{
-		Cluster:    cluster,
-		Clusters:   collector.Clusters,
-		Timeout:    collector.Timeout,
+		ActionClusters: v1alpha1.ActionClusters{
+			Cluster:  cluster,
+			Clusters: collector.Clusters,
+		},
+		ActionTimeout: v1alpha1.ActionTimeout{
+			Timeout: collector.Timeout,
+		},
 		Entrypoint: "kubectl",
 		Args:       []string{"describe", resource},
 	}

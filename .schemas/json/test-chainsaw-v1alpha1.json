@@ -1238,7 +1238,7 @@
                     "type": "string"
                   },
                   "cluster": {
-                    "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
+                    "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                     "type": [
                       "string",
                       "null"
@@ -1275,7 +1275,7 @@
                     }
                   },
                   "for": {
-                    "description": "For specifies the condition to wait for.",
+                    "description": "WaitFor specifies the condition to wait for.",
                     "type": "object",
                     "properties": {
                       "condition": {
@@ -1365,7 +1365,7 @@
                     ]
                   },
                   "timeout": {
-                    "description": "Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.",
+                    "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
                     "type": [
                       "string",
                       "null"
@@ -2450,7 +2450,7 @@
                           "type": "string"
                         },
                         "cluster": {
-                          "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
                             "string",
                             "null"
@@ -2487,7 +2487,7 @@
                           }
                         },
                         "for": {
-                          "description": "For specifies the condition to wait for.",
+                          "description": "WaitFor specifies the condition to wait for.",
                           "type": "object",
                           "properties": {
                             "condition": {
@@ -2577,7 +2577,7 @@
                           ]
                         },
                         "timeout": {
-                          "description": "Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.",
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
                           "type": [
                             "string",
                             "null"
@@ -3518,7 +3518,7 @@
                           "type": "string"
                         },
                         "cluster": {
-                          "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
                             "string",
                             "null"
@@ -3555,7 +3555,7 @@
                           }
                         },
                         "for": {
-                          "description": "For specifies the condition to wait for.",
+                          "description": "WaitFor specifies the condition to wait for.",
                           "type": "object",
                           "properties": {
                             "condition": {
@@ -3645,7 +3645,7 @@
                           ]
                         },
                         "timeout": {
-                          "description": "Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.",
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
                           "type": [
                             "string",
                             "null"
@@ -4642,7 +4642,7 @@
                           "type": "string"
                         },
                         "cluster": {
-                          "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
                             "string",
                             "null"
@@ -4679,7 +4679,7 @@
                           }
                         },
                         "for": {
-                          "description": "For specifies the condition to wait for.",
+                          "description": "WaitFor specifies the condition to wait for.",
                           "type": "object",
                           "properties": {
                             "condition": {
@@ -4769,7 +4769,7 @@
                           ]
                         },
                         "timeout": {
-                          "description": "Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.",
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
                           "type": [
                             "string",
                             "null"
@@ -6659,7 +6659,7 @@
                           "type": "string"
                         },
                         "cluster": {
-                          "description": "Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).",
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
                           "type": [
                             "string",
                             "null"
@@ -6696,7 +6696,7 @@
                           }
                         },
                         "for": {
-                          "description": "For specifies the condition to wait for.",
+                          "description": "WaitFor specifies the condition to wait for.",
                           "type": "object",
                           "properties": {
                             "condition": {
@@ -6786,7 +6786,7 @@
                           ]
                         },
                         "timeout": {
-                          "description": "Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.",
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
                           "type": [
                             "string",
                             "null"

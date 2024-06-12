@@ -171,9 +171,7 @@ codegen-mkdocs: codegen-cli-docs
 codegen-mkdocs: codegen-api-docs
 codegen-mkdocs: codegen-jp-docs
 	@echo Generate mkdocs website... >&2
-	@$(PIP) install mkdocs
-	@$(PIP) install --upgrade pip
-	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin mike Pillow cairosvg
+	@$(PIP) install -r requirements.txt
 	@mkdocs build -f ./website/mkdocs.yaml
 
 .PHONY: codegen-schemas-openapi
@@ -198,7 +196,7 @@ codegen-schemas-openapi: $(KIND)
 codegen-schemas-json: ## Generate json schemas
 codegen-schemas-json: codegen-schemas-openapi
 	@echo Generate json schema... >&2
-	@$(PIP) install openapi2jsonschema --no-build-isolation
+	@$(PIP) install -r requirements.txt
 	@rm -rf ./.temp/.schemas/json
 	@rm -rf ./.schemas/json
 	@openapi2jsonschema ./.temp/.schemas/openapi/v2/schema.json --kubernetes --stand-alone --expanded -o ./.temp/.schemas/json
@@ -243,9 +241,7 @@ verify-codegen: codegen
 .PHONY: mkdocs-serve
 mkdocs-serve: ## Generate and serve mkdocs website
 	@echo Generate and servemkdocs website... >&2
-	@$(PIP) install mkdocs
-	@$(PIP) install --upgrade pip
-	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin mike Pillow cairosvg
+	@$(PIP) install -r requirements.txt
 	@mkdocs serve -f ./website/mkdocs.yaml
 
 #########

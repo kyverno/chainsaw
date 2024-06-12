@@ -70,7 +70,7 @@ func TestLoad(t *testing.T) {
 					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Apply: &v1alpha1.Apply{
-								FileRefOrResource: v1alpha1.FileRefOrResource{
+								ActionResourceRef: v1alpha1.ActionResourceRef{
 									FileRef: v1alpha1.FileRef{
 										File: "foo.yaml",
 									},
@@ -79,16 +79,20 @@ func TestLoad(t *testing.T) {
 						}},
 						Catch: []v1alpha1.CatchFinally{{
 							PodLogs: &v1alpha1.PodLogs{
-								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-									Namespace: "foo",
-									Name:      "bar",
+								ActionObjectSelector: v1alpha1.ActionObjectSelector{
+									ObjectName: v1alpha1.ObjectName{
+										Namespace: "foo",
+										Name:      "bar",
+									},
 								},
 							},
 						}, {
 							Events: &v1alpha1.Events{
-								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-									Namespace: "foo",
-									Name:      "bar",
+								ActionObjectSelector: v1alpha1.ActionObjectSelector{
+									ObjectName: v1alpha1.ObjectName{
+										Namespace: "foo",
+										Name:      "bar",
+									},
 								},
 							},
 						}, {
@@ -105,7 +109,7 @@ func TestLoad(t *testing.T) {
 					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Assert: &v1alpha1.Assert{
-								FileRefOrCheck: v1alpha1.FileRefOrCheck{
+								ActionCheckRef: v1alpha1.ActionCheckRef{
 									FileRef: v1alpha1.FileRef{
 										File: "bar.yaml",
 									},
@@ -114,16 +118,20 @@ func TestLoad(t *testing.T) {
 						}},
 						Finally: []v1alpha1.CatchFinally{{
 							PodLogs: &v1alpha1.PodLogs{
-								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-									Namespace: "foo",
-									Name:      "bar",
+								ActionObjectSelector: v1alpha1.ActionObjectSelector{
+									ObjectName: v1alpha1.ObjectName{
+										Namespace: "foo",
+										Name:      "bar",
+									},
 								},
 							},
 						}, {
 							Events: &v1alpha1.Events{
-								ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-									Namespace: "foo",
-									Name:      "bar",
+								ActionObjectSelector: v1alpha1.ActionObjectSelector{
+									ObjectName: v1alpha1.ObjectName{
+										Namespace: "foo",
+										Name:      "bar",
+									},
 								},
 							},
 						}, {
@@ -181,7 +189,7 @@ func TestLoad(t *testing.T) {
 					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Apply: &v1alpha1.Apply{
-								FileRefOrResource: v1alpha1.FileRefOrResource{
+								ActionResourceRef: v1alpha1.ActionResourceRef{
 									Resource: &cm,
 								},
 							},
@@ -191,7 +199,7 @@ func TestLoad(t *testing.T) {
 					TestStepSpec: v1alpha1.TestStepSpec{
 						Try: []v1alpha1.Operation{{
 							Create: &v1alpha1.Create{
-								FileRefOrResource: v1alpha1.FileRefOrResource{
+								ActionResourceRef: v1alpha1.ActionResourceRef{
 									Resource: &cm,
 								},
 							},

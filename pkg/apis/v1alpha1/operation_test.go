@@ -27,56 +27,56 @@ func TestOperation_Bindings(t *testing.T) {
 	}{{
 		fields: fields{
 			Apply: &Apply{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Assert: &Assert{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Command: &Command{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Create: &Create{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Delete: &Delete{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Error: &Error{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Patch: &Patch{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Script: &Script{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
@@ -87,7 +87,7 @@ func TestOperation_Bindings(t *testing.T) {
 	}, {
 		fields: fields{
 			Update: &Update{
-				Bindings: []Binding{{"foo", Any{Value: "bar"}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
@@ -139,7 +139,7 @@ func TestOperation_Outputs(t *testing.T) {
 	}{{
 		fields: fields{
 			Apply: &Apply{
-				Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
@@ -150,14 +150,14 @@ func TestOperation_Outputs(t *testing.T) {
 	}, {
 		fields: fields{
 			Command: &Command{
-				Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Create: &Create{
-				Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
@@ -172,14 +172,14 @@ func TestOperation_Outputs(t *testing.T) {
 	}, {
 		fields: fields{
 			Patch: &Patch{
-				Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Script: &Script{
-				Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
@@ -190,7 +190,7 @@ func TestOperation_Outputs(t *testing.T) {
 	}, {
 		fields: fields{
 			Update: &Update{
-				Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,

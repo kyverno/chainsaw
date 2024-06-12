@@ -5,7 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func ValidateFileRefOrCheck(path *field.Path, obj v1alpha1.FileRefOrCheck) field.ErrorList {
+func ValidateFileRefOrCheck(path *field.Path, obj v1alpha1.ActionCheckRef) field.ErrorList {
 	var errs field.ErrorList
 	if obj.File == "" && obj.Check == nil {
 		errs = append(errs, field.Invalid(path, obj, "a file reference or raw check must be specified"))

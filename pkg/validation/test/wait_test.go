@@ -27,9 +27,11 @@ func TestValidateWait(t *testing.T) {
 	}, {
 		name: "No condition provided",
 		input: &v1alpha1.Wait{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
 			},
 		},
 		expectErr: true,
@@ -37,12 +39,14 @@ func TestValidateWait(t *testing.T) {
 	}, {
 		name: "Neither Name nor Selector provided",
 		input: &v1alpha1.Wait{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name: "Ready",
 				},
 			},
@@ -51,18 +55,22 @@ func TestValidateWait(t *testing.T) {
 	}, {
 		name: "Both Name and Selector provided",
 		input: &v1alpha1.Wait{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
-			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
-					Name: "Ready",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "example-name",
+					},
+					Selector: "foo=bar",
 				},
 			},
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name:     "example-name",
-				Selector: "foo=bar",
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
+					Name: "Ready",
+				},
 			},
 		},
 		expectErr: true,
@@ -70,30 +78,36 @@ func TestValidateWait(t *testing.T) {
 	}, {
 		name: "Only Name provided",
 		input: &v1alpha1.Wait{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "example-name",
+					},
+				},
 			},
-			For: v1alpha1.For{
-				Deletion: &v1alpha1.Deletion{},
-			},
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name: "example-name",
+			WaitFor: v1alpha1.WaitFor{
+				Deletion: &v1alpha1.WaitForDeletion{},
 			},
 		},
 		expectErr: false,
 	}, {
 		name: "Only Selector provided",
 		input: &v1alpha1.Wait{
-			ResourceReference: v1alpha1.ResourceReference{
-				APIVersion: "v1",
-				Kind:       "Pod",
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					Selector: "example-selector",
+				},
 			},
-			For: v1alpha1.For{
-				Deletion: &v1alpha1.Deletion{},
-			},
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Selector: "example-selector",
+			WaitFor: v1alpha1.WaitFor{
+				Deletion: &v1alpha1.WaitForDeletion{},
 			},
 		},
 		expectErr: false,

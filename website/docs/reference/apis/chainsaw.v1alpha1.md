@@ -37,6 +37,241 @@ auto_generated: true
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`TestSpec`](#chainsaw-kyverno-io-v1alpha1-TestSpec) | :white_check_mark: |  | <p>Test spec.</p> |
 
+## ActionBindings     {#chainsaw-kyverno-io-v1alpha1-ActionBindings}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
+- [Command](#chainsaw-kyverno-io-v1alpha1-Command)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
+- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [Script](#chainsaw-kyverno-io-v1alpha1-Script)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
+
+<p>ActionBindings contains bindings options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
+
+## ActionCheck     {#chainsaw-kyverno-io-v1alpha1-ActionCheck}
+
+**Appears in:**
+    
+- [Command](#chainsaw-kyverno-io-v1alpha1-Command)
+- [Script](#chainsaw-kyverno-io-v1alpha1-Script)
+
+<p>ActionCheck contains check for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
+
+## ActionCheckRef     {#chainsaw-kyverno-io-v1alpha1-ActionCheckRef}
+
+**Appears in:**
+    
+- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
+- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+
+<p>ActionCheckRef contains check reference options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `resource` | `policy/v1alpha1.Any` |  |  | <p>Check provides a check used in assertions.</p> |
+| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+
+## ActionClusters     {#chainsaw-kyverno-io-v1alpha1-ActionClusters}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
+- [Command](#chainsaw-kyverno-io-v1alpha1-Command)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
+- [Describe](#chainsaw-kyverno-io-v1alpha1-Describe)
+- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+- [Events](#chainsaw-kyverno-io-v1alpha1-Events)
+- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [PodLogs](#chainsaw-kyverno-io-v1alpha1-PodLogs)
+- [Script](#chainsaw-kyverno-io-v1alpha1-Script)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+<p>ActionClusters contains clusters options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
+| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
+
+## ActionDryRun     {#chainsaw-kyverno-io-v1alpha1-ActionDryRun}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
+
+<p>ActionDryRun contains dry run options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
+
+## ActionEnv     {#chainsaw-kyverno-io-v1alpha1-ActionEnv}
+
+**Appears in:**
+    
+- [Command](#chainsaw-kyverno-io-v1alpha1-Command)
+- [Script](#chainsaw-kyverno-io-v1alpha1-Script)
+
+<p>ActionEnv contains environment options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `env` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Env defines additional environment variables.</p> |
+| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
+
+## ActionExpectations     {#chainsaw-kyverno-io-v1alpha1-ActionExpectations}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
+
+<p>ActionExpectations contains expectations for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
+
+## ActionFormat     {#chainsaw-kyverno-io-v1alpha1-ActionFormat}
+
+**Appears in:**
+    
+- [Events](#chainsaw-kyverno-io-v1alpha1-Events)
+- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+<p>ActionFormat contains format for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
+
+## ActionObject     {#chainsaw-kyverno-io-v1alpha1-ActionObject}
+
+**Appears in:**
+    
+- [Describe](#chainsaw-kyverno-io-v1alpha1-Describe)
+- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+<p>ActionObject contains object selector options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ObjectType` | [`ObjectType`](#chainsaw-kyverno-io-v1alpha1-ObjectType) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionObjectSelector` | [`ActionObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ActionObjectSelector) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+
+## ActionObjectSelector     {#chainsaw-kyverno-io-v1alpha1-ActionObjectSelector}
+
+**Appears in:**
+    
+- [ActionObject](#chainsaw-kyverno-io-v1alpha1-ActionObject)
+- [Events](#chainsaw-kyverno-io-v1alpha1-Events)
+- [PodLogs](#chainsaw-kyverno-io-v1alpha1-PodLogs)
+
+<p>ActionObjectSelector contains object selector options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ObjectName` | [`ObjectName`](#chainsaw-kyverno-io-v1alpha1-ObjectName) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+
+## ActionOutputs     {#chainsaw-kyverno-io-v1alpha1-ActionOutputs}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Command](#chainsaw-kyverno-io-v1alpha1-Command)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [Script](#chainsaw-kyverno-io-v1alpha1-Script)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
+
+<p>ActionOutputs contains outputs options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `outputs` | [`[]Output`](#chainsaw-kyverno-io-v1alpha1-Output) |  |  | <p>Outputs defines output bindings.</p> |
+
+## ActionResourceRef     {#chainsaw-kyverno-io-v1alpha1-ActionResourceRef}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
+
+<p>ActionResourceRef contains resource reference options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `resource` | [`meta/v1/unstructured.Unstructured`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#unstructured-unstructured-v1) |  |  | <p>Resource provides a resource to be applied.</p> |
+| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+
+## ActionTimeout     {#chainsaw-kyverno-io-v1alpha1-ActionTimeout}
+
+**Appears in:**
+    
+- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
+- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
+- [Command](#chainsaw-kyverno-io-v1alpha1-Command)
+- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
+- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
+- [Describe](#chainsaw-kyverno-io-v1alpha1-Describe)
+- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+- [Events](#chainsaw-kyverno-io-v1alpha1-Events)
+- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
+- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [PodLogs](#chainsaw-kyverno-io-v1alpha1-PodLogs)
+- [Script](#chainsaw-kyverno-io-v1alpha1-Script)
+- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+<p>ActionTimeout contains timeout options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+
 ## Apply     {#chainsaw-kyverno-io-v1alpha1-Apply}
 
 **Appears in:**
@@ -49,15 +284,13 @@ should be applied during testing.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `outputs` | [`[]Output`](#chainsaw-kyverno-io-v1alpha1-Output) |  |  | <p>Outputs defines output bindings.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the resources to be applied.</p> |
-| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
-| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
-| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
+| `ActionBindings` | [`ActionBindings`](#chainsaw-kyverno-io-v1alpha1-ActionBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionDryRun` | [`ActionDryRun`](#chainsaw-kyverno-io-v1alpha1-ActionDryRun) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionExpectations` | [`ActionExpectations`](#chainsaw-kyverno-io-v1alpha1-ActionExpectations) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionResourceRef` | [`ActionResourceRef`](#chainsaw-kyverno-io-v1alpha1-ActionResourceRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 
 ## Assert     {#chainsaw-kyverno-io-v1alpha1-Assert}
 
@@ -71,29 +304,20 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `FileRefOrCheck` | [`FileRefOrCheck`](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck) | :white_check_mark: | :white_check_mark: | <p>FileRefOrAssert provides a reference to the assertion.</p> |
-| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+| `ActionBindings` | [`ActionBindings`](#chainsaw-kyverno-io-v1alpha1-ActionBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionCheckRef` | [`ActionCheckRef`](#chainsaw-kyverno-io-v1alpha1-ActionCheckRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 
 ## Binding     {#chainsaw-kyverno-io-v1alpha1-Binding}
 
 **Appears in:**
     
-- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
-- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
-- [Command](#chainsaw-kyverno-io-v1alpha1-Command)
-- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
-- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
-- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
+- [ActionBindings](#chainsaw-kyverno-io-v1alpha1-ActionBindings)
+- [ActionEnv](#chainsaw-kyverno-io-v1alpha1-ActionEnv)
 - [Output](#chainsaw-kyverno-io-v1alpha1-Output)
-- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
-- [Script](#chainsaw-kyverno-io-v1alpha1-Script)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
-- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
 
 <p>Binding represents a key/value set as a binding in an executing test.</p>
 
@@ -133,23 +357,10 @@ during the testing process.</p>
 
 **Appears in:**
     
-- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
-- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
-- [Command](#chainsaw-kyverno-io-v1alpha1-Command)
+- [ActionClusters](#chainsaw-kyverno-io-v1alpha1-ActionClusters)
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
-- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
-- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
-- [Describe](#chainsaw-kyverno-io-v1alpha1-Describe)
-- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
-- [Events](#chainsaw-kyverno-io-v1alpha1-Events)
-- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
-- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
-- [PodLogs](#chainsaw-kyverno-io-v1alpha1-PodLogs)
-- [Script](#chainsaw-kyverno-io-v1alpha1-Script)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
-- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
-- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
 
 <p>Clusters defines a cluster map.</p>
 
@@ -166,30 +377,14 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `outputs` | [`[]Output`](#chainsaw-kyverno-io-v1alpha1-Output) |  |  | <p>Outputs defines output bindings.</p> |
-| `env` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Env defines additional environment variables.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
+| `ActionBindings` | [`ActionBindings`](#chainsaw-kyverno-io-v1alpha1-ActionBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionCheck` | [`ActionCheck`](#chainsaw-kyverno-io-v1alpha1-ActionCheck) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionEnv` | [`ActionEnv`](#chainsaw-kyverno-io-v1alpha1-ActionEnv) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `entrypoint` | `string` | :white_check_mark: |  | <p>Entrypoint is the command entry point to run.</p> |
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
-| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
-| `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
-
-## Condition     {#chainsaw-kyverno-io-v1alpha1-Condition}
-
-**Appears in:**
-    
-- [For](#chainsaw-kyverno-io-v1alpha1-For)
-
-<p>Condition represents parameters for waiting on a specific condition of a resource.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `name` | `string` | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
-| `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
 
 ## ConfigurationSpec     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -235,15 +430,13 @@ If a resource already exists in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `outputs` | [`[]Output`](#chainsaw-kyverno-io-v1alpha1-Output) |  |  | <p>Outputs defines output bindings.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be created.</p> |
-| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
-| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
-| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
+| `ActionBindings` | [`ActionBindings`](#chainsaw-kyverno-io-v1alpha1-ActionBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionDryRun` | [`ActionDryRun`](#chainsaw-kyverno-io-v1alpha1-ActionDryRun) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionExpectations` | [`ActionExpectations`](#chainsaw-kyverno-io-v1alpha1-ActionExpectations) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionResourceRef` | [`ActionResourceRef`](#chainsaw-kyverno-io-v1alpha1-ActionResourceRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 
 ## Delete     {#chainsaw-kyverno-io-v1alpha1-Delete}
 
@@ -257,24 +450,14 @@ If a resource already exists in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
+| `ActionBindings` | [`ActionBindings`](#chainsaw-kyverno-io-v1alpha1-ActionBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionExpectations` | [`ActionExpectations`](#chainsaw-kyverno-io-v1alpha1-ActionExpectations) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `file` | `string` |  |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
 | `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) |  |  | <p>Ref determines objects to be deleted.</p> |
-| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation. Overrides the deletion propagation policy set in the Configuration, the Test and the TestStep.</p> |
-
-## Deletion     {#chainsaw-kyverno-io-v1alpha1-Deletion}
-
-**Appears in:**
-    
-- [For](#chainsaw-kyverno-io-v1alpha1-For)
-
-<p>Deletion represents parameters for waiting on a resource's deletion.</p>
-
 
 ## Describe     {#chainsaw-kyverno-io-v1alpha1-Describe}
 
@@ -288,11 +471,9 @@ If a resource already exists in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `ResourceReference` | [`ResourceReference`](#chainsaw-kyverno-io-v1alpha1-ResourceReference) | :white_check_mark: | :white_check_mark: | <p>ResourceReference referenced resource type.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionObject` | [`ActionObject`](#chainsaw-kyverno-io-v1alpha1-ActionObject) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `showEvents` | `bool` |  |  | <p>Show Events indicates whether to include related events.</p> |
 
 ## Error     {#chainsaw-kyverno-io-v1alpha1-Error}
@@ -307,12 +488,10 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `FileRefOrCheck` | [`FileRefOrCheck`](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck) | :white_check_mark: | :white_check_mark: | <p>FileRefOrAssert provides a reference to the expected error.</p> |
-| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+| `ActionBindings` | [`ActionBindings`](#chainsaw-kyverno-io-v1alpha1-ActionBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionCheckRef` | [`ActionCheckRef`](#chainsaw-kyverno-io-v1alpha1-ActionCheckRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 
 ## Events     {#chainsaw-kyverno-io-v1alpha1-Events}
 
@@ -326,21 +505,16 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
-| `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionFormat` | [`ActionFormat`](#chainsaw-kyverno-io-v1alpha1-ActionFormat) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionObjectSelector` | [`ActionObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ActionObjectSelector) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 
 ## Expectation     {#chainsaw-kyverno-io-v1alpha1-Expectation}
 
 **Appears in:**
     
-- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
-- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
-- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
-- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
-- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
+- [ActionExpectations](#chainsaw-kyverno-io-v1alpha1-ActionExpectations)
 
 <p>Expectation represents a check to be applied on the result of an operation
 with a match filter to determine if the verification should be considered.</p>
@@ -355,8 +529,8 @@ with a match filter to determine if the verification should be considered.</p>
 
 **Appears in:**
     
-- [FileRefOrCheck](#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck)
-- [FileRefOrResource](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource)
+- [ActionCheckRef](#chainsaw-kyverno-io-v1alpha1-ActionCheckRef)
+- [ActionResourceRef](#chainsaw-kyverno-io-v1alpha1-ActionResourceRef)
 
 <p>FileRef represents a file reference.</p>
 
@@ -365,62 +539,13 @@ with a match filter to determine if the verification should be considered.</p>
 |---|---|---|---|---|
 | `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
 
-## FileRefOrCheck     {#chainsaw-kyverno-io-v1alpha1-FileRefOrCheck}
-
-**Appears in:**
-    
-- [Assert](#chainsaw-kyverno-io-v1alpha1-Assert)
-- [Error](#chainsaw-kyverno-io-v1alpha1-Error)
-
-<p>FileRefOrCheck represents a file reference or resource.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
-| `resource` | `policy/v1alpha1.Any` |  |  | <p>Check provides a check used in assertions.</p> |
-
-## FileRefOrResource     {#chainsaw-kyverno-io-v1alpha1-FileRefOrResource}
-
-**Appears in:**
-    
-- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
-- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
-- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
-- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
-
-<p>FileRefOrResource represents a file reference or resource.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) |  | :white_check_mark: | <p>FileRef provides a reference to the file containing the resources to be applied.</p> |
-| `resource` | [`meta/v1/unstructured.Unstructured`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#unstructured-unstructured-v1) |  |  | <p>Resource provides a resource to be applied.</p> |
-
-## For     {#chainsaw-kyverno-io-v1alpha1-For}
-
-**Appears in:**
-    
-- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
-
-<p>For specifies the condition to wait for.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `deletion` | [`Deletion`](#chainsaw-kyverno-io-v1alpha1-Deletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
-| `condition` | [`Condition`](#chainsaw-kyverno-io-v1alpha1-Condition) |  |  | <p>Condition specifies the condition to wait for.</p> |
-| `jsonPath` | [`JsonPath`](#chainsaw-kyverno-io-v1alpha1-JsonPath) |  |  | <p>JsonPath specifies the json path condition to wait for.</p> |
-
 ## Format     {#chainsaw-kyverno-io-v1alpha1-Format}
 
 (Alias of `string`)
 
 **Appears in:**
     
-- [Events](#chainsaw-kyverno-io-v1alpha1-Events)
-- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
-- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+- [ActionFormat](#chainsaw-kyverno-io-v1alpha1-ActionFormat)
 
 <p>Format determines the output format (json or yaml).</p>
 
@@ -437,47 +562,25 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `ResourceReference` | [`ResourceReference`](#chainsaw-kyverno-io-v1alpha1-ResourceReference) | :white_check_mark: | :white_check_mark: | <p>ResourceReference referenced resource type.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
-| `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionFormat` | [`ActionFormat`](#chainsaw-kyverno-io-v1alpha1-ActionFormat) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionObject` | [`ActionObject`](#chainsaw-kyverno-io-v1alpha1-ActionObject) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 
-## JsonPath     {#chainsaw-kyverno-io-v1alpha1-JsonPath}
+## ObjectName     {#chainsaw-kyverno-io-v1alpha1-ObjectName}
 
 **Appears in:**
     
-- [For](#chainsaw-kyverno-io-v1alpha1-For)
+- [ActionObjectSelector](#chainsaw-kyverno-io-v1alpha1-ActionObjectSelector)
+- [ObjectReference](#chainsaw-kyverno-io-v1alpha1-ObjectReference)
 
-<p>JsonPath represents parameters for waiting on a json path of a resource.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `path` | `string` | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
-| `value` | `string` | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
-
-## ObjectLabelsSelector     {#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector}
-
-**Appears in:**
-    
-- [Describe](#chainsaw-kyverno-io-v1alpha1-Describe)
-- [Events](#chainsaw-kyverno-io-v1alpha1-Events)
-- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
-- [PodLogs](#chainsaw-kyverno-io-v1alpha1-PodLogs)
-- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
-
-<p>ObjectLabelsSelector represents a strategy to select objects.
-For a single object name and namespace are used to identify the object.
-For multiple objects use selector.</p>
+<p>ObjectName represents an object namespace and name.</p>
 
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
 | `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
-| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
 
 ## ObjectReference     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
 
@@ -492,30 +595,15 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `ObjectType` | [`ObjectType`](#chainsaw-kyverno-io-v1alpha1-ObjectType) | :white_check_mark: | :white_check_mark: | <p>ObjectType determines the type of referenced objects.</p> |
-| `ObjectSelector` | [`ObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectSelector) | :white_check_mark: | :white_check_mark: | <p>ObjectSelector determines the selection process of referenced objects.</p> |
-
-## ObjectSelector     {#chainsaw-kyverno-io-v1alpha1-ObjectSelector}
-
-**Appears in:**
-    
-- [ObjectReference](#chainsaw-kyverno-io-v1alpha1-ObjectReference)
-
-<p>ObjectSelector represents a strategy to select objects.
-For a single object name and namespace are used to identify the object.
-For multiple objects use labels.</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
-| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
+| `ObjectType` | [`ObjectType`](#chainsaw-kyverno-io-v1alpha1-ObjectType) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ObjectName` | [`ObjectName`](#chainsaw-kyverno-io-v1alpha1-ObjectName) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `labels` | `map[string]string` |  |  | <p>Label selector to match objects to delete</p> |
 
 ## ObjectType     {#chainsaw-kyverno-io-v1alpha1-ObjectType}
 
 **Appears in:**
     
+- [ActionObject](#chainsaw-kyverno-io-v1alpha1-ActionObject)
 - [ObjectReference](#chainsaw-kyverno-io-v1alpha1-ObjectReference)
 
 <p>ObjectType represents a specific apiVersion and kind.</p>
@@ -572,12 +660,7 @@ For multiple objects use labels.</p>
 
 **Appears in:**
     
-- [Apply](#chainsaw-kyverno-io-v1alpha1-Apply)
-- [Command](#chainsaw-kyverno-io-v1alpha1-Command)
-- [Create](#chainsaw-kyverno-io-v1alpha1-Create)
-- [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
-- [Script](#chainsaw-kyverno-io-v1alpha1-Script)
-- [Update](#chainsaw-kyverno-io-v1alpha1-Update)
+- [ActionOutputs](#chainsaw-kyverno-io-v1alpha1-ActionOutputs)
 
 <p>Output represents an output binding with a match to determine if the binding must be considered or not.</p>
 
@@ -599,15 +682,13 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `outputs` | [`[]Output`](#chainsaw-kyverno-io-v1alpha1-Output) |  |  | <p>Outputs defines output bindings.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be patched.</p> |
-| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
-| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
-| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
+| `ActionBindings` | [`ActionBindings`](#chainsaw-kyverno-io-v1alpha1-ActionBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionDryRun` | [`ActionDryRun`](#chainsaw-kyverno-io-v1alpha1-ActionDryRun) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionExpectations` | [`ActionExpectations`](#chainsaw-kyverno-io-v1alpha1-ActionExpectations) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionResourceRef` | [`ActionResourceRef`](#chainsaw-kyverno-io-v1alpha1-ActionResourceRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 
 ## PodLogs     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 
@@ -621,10 +702,9 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionObjectSelector` | [`ActionObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ActionObjectSelector) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `container` | `string` |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
 | `tail` | `int` |  |  | <p>Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.</p> |
 
@@ -635,22 +715,6 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
-
-## ResourceReference     {#chainsaw-kyverno-io-v1alpha1-ResourceReference}
-
-**Appears in:**
-    
-- [Describe](#chainsaw-kyverno-io-v1alpha1-Describe)
-- [Get](#chainsaw-kyverno-io-v1alpha1-Get)
-- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
-
-<p>ResourceReference represents a resource (API).</p>
-
-
-| Field | Type | Required | Inline | Description |
-|---|---|---|---|---|
-| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
-| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
 
 ## Script     {#chainsaw-kyverno-io-v1alpha1-Script}
 
@@ -664,15 +728,13 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `outputs` | [`[]Output`](#chainsaw-kyverno-io-v1alpha1-Output) |  |  | <p>Outputs defines output bindings.</p> |
-| `env` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Env defines additional environment variables.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
+| `ActionBindings` | [`ActionBindings`](#chainsaw-kyverno-io-v1alpha1-ActionBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionCheck` | [`ActionCheck`](#chainsaw-kyverno-io-v1alpha1-ActionCheck) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionEnv` | [`ActionEnv`](#chainsaw-kyverno-io-v1alpha1-ActionEnv) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
-| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
-| `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
 ## Sleep     {#chainsaw-kyverno-io-v1alpha1-Sleep}
 
@@ -786,15 +848,13 @@ If a resource does not exist in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
-| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `outputs` | [`[]Output`](#chainsaw-kyverno-io-v1alpha1-Output) |  |  | <p>Outputs defines output bindings.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `FileRefOrResource` | [`FileRefOrResource`](#chainsaw-kyverno-io-v1alpha1-FileRefOrResource) | :white_check_mark: | :white_check_mark: | <p>FileRefOrResource provides a reference to the file containing the resources to be created.</p> |
-| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
-| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
-| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
+| `ActionBindings` | [`ActionBindings`](#chainsaw-kyverno-io-v1alpha1-ActionBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionDryRun` | [`ActionDryRun`](#chainsaw-kyverno-io-v1alpha1-ActionDryRun) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionExpectations` | [`ActionExpectations`](#chainsaw-kyverno-io-v1alpha1-ActionExpectations) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionResourceRef` | [`ActionResourceRef`](#chainsaw-kyverno-io-v1alpha1-ActionResourceRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 
 ## Wait     {#chainsaw-kyverno-io-v1alpha1-Wait}
 
@@ -808,12 +868,62 @@ If a resource does not exist in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Specifies how long to wait for the condition to be met before timing out.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster where the wait operation will be performed (default cluster will be used if not specified).</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
-| `ResourceReference` | [`ResourceReference`](#chainsaw-kyverno-io-v1alpha1-ResourceReference) | :white_check_mark: | :white_check_mark: | <p>ResourceReference referenced resource type.</p> |
-| `ObjectLabelsSelector` | [`ObjectLabelsSelector`](#chainsaw-kyverno-io-v1alpha1-ObjectLabelsSelector) |  | :white_check_mark: | <p>ObjectLabelsSelector determines the selection process of referenced objects.</p> |
-| `for` | [`For`](#chainsaw-kyverno-io-v1alpha1-For) | :white_check_mark: |  | <p>For specifies the condition to wait for.</p> |
-| `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionFormat` | [`ActionFormat`](#chainsaw-kyverno-io-v1alpha1-ActionFormat) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionObject` | [`ActionObject`](#chainsaw-kyverno-io-v1alpha1-ActionObject) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `for` | [`WaitFor`](#chainsaw-kyverno-io-v1alpha1-WaitFor) | :white_check_mark: |  | <p>WaitFor specifies the condition to wait for.</p> |
+
+## WaitFor     {#chainsaw-kyverno-io-v1alpha1-WaitFor}
+
+**Appears in:**
+    
+- [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
+
+<p>WaitFor specifies the condition to wait for.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `deletion` | [`WaitForDeletion`](#chainsaw-kyverno-io-v1alpha1-WaitForDeletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
+| `condition` | [`WaitForCondition`](#chainsaw-kyverno-io-v1alpha1-WaitForCondition) |  |  | <p>Condition specifies the condition to wait for.</p> |
+| `jsonPath` | [`WaitForJsonPath`](#chainsaw-kyverno-io-v1alpha1-WaitForJsonPath) |  |  | <p>JsonPath specifies the json path condition to wait for.</p> |
+
+## WaitForCondition     {#chainsaw-kyverno-io-v1alpha1-WaitForCondition}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha1-WaitFor)
+
+<p>WaitForCondition represents parameters for waiting on a specific condition of a resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `name` | `string` | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
+| `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
+
+## WaitForDeletion     {#chainsaw-kyverno-io-v1alpha1-WaitForDeletion}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha1-WaitFor)
+
+<p>WaitForDeletion represents parameters for waiting on a resource's deletion.</p>
+
+
+## WaitForJsonPath     {#chainsaw-kyverno-io-v1alpha1-WaitForJsonPath}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha1-WaitFor)
+
+<p>WaitForJsonPath represents parameters for waiting on a json path of a resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `path` | `string` | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
+| `value` | `string` | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
 
   
