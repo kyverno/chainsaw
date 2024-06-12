@@ -20,35 +20,35 @@ func Test_operationCommand(t *testing.T) {
 	}{{
 		name: "Test with valid Command",
 		command: v1alpha1.Command{
-			Entrypoint:    "echo",
-			Args:          []string{"hello"},
-			SkipLogOutput: false,
+			Entrypoint: "echo",
+			Args:       []string{"hello"},
+			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: false},
 		},
 		namespace: "test-namespace",
 		wantErr:   false,
 	}, {
 		name: "Test with invalid Command",
 		command: v1alpha1.Command{
-			Entrypoint:    "invalidCmd",
-			SkipLogOutput: false,
+			Entrypoint: "invalidCmd",
+			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: false},
 		},
 		namespace: "test-namespace",
 		wantErr:   true,
 	}, {
 		name: "Test without logging",
 		command: v1alpha1.Command{
-			Entrypoint:    "echo",
-			Args:          []string{"silent"},
-			SkipLogOutput: true,
+			Entrypoint: "echo",
+			Args:       []string{"silent"},
+			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
 		},
 		namespace: "test-namespace",
 		wantErr:   false,
 	}, {
 		name: "Test base path",
 		command: v1alpha1.Command{
-			Entrypoint:    "cat",
-			Args:          []string{"operation.go"},
-			SkipLogOutput: true,
+			Entrypoint: "cat",
+			Args:       []string{"operation.go"},
+			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
 		},
 		basePath:  "..",
 		namespace: "test-namespace",
@@ -56,12 +56,14 @@ func Test_operationCommand(t *testing.T) {
 	}, {
 		name: "with check",
 		command: v1alpha1.Command{
-			Entrypoint:    "foo",
-			Args:          []string{"operation.go"},
-			SkipLogOutput: true,
-			Check: &v1alpha1.Check{
-				Value: map[string]any{
-					"($error != null)": true,
+			Entrypoint: "foo",
+			Args:       []string{"operation.go"},
+			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
+			ActionCheck: v1alpha1.ActionCheck{
+				Check: &v1alpha1.Check{
+					Value: map[string]any{
+						"($error != null)": true,
+					},
 				},
 			},
 		},
@@ -71,12 +73,14 @@ func Test_operationCommand(t *testing.T) {
 	}, {
 		name: "with bad check",
 		command: v1alpha1.Command{
-			Entrypoint:    "foo",
-			Args:          []string{"operation.go"},
-			SkipLogOutput: true,
-			Check: &v1alpha1.Check{
-				Value: map[string]any{
-					"(foo('bar'))": true,
+			Entrypoint: "foo",
+			Args:       []string{"operation.go"},
+			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
+			ActionCheck: v1alpha1.ActionCheck{
+				Check: &v1alpha1.Check{
+					Value: map[string]any{
+						"(foo('bar'))": true,
+					},
 				},
 			},
 		},
@@ -86,12 +90,14 @@ func Test_operationCommand(t *testing.T) {
 	}, {
 		name: "with bad check",
 		command: v1alpha1.Command{
-			Entrypoint:    "cat",
-			Args:          []string{"operation.go"},
-			SkipLogOutput: true,
-			Check: &v1alpha1.Check{
-				Value: map[string]any{
-					"(foo('bar'))": true,
+			Entrypoint: "cat",
+			Args:       []string{"operation.go"},
+			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
+			ActionCheck: v1alpha1.ActionCheck{
+				Check: &v1alpha1.Check{
+					Value: map[string]any{
+						"(foo('bar'))": true,
+					},
 				},
 			},
 		},

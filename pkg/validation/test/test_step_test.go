@@ -14,7 +14,7 @@ func TestValidateTestStep(t *testing.T) {
 		Try: []v1alpha1.Operation{
 			{
 				Apply: &v1alpha1.Apply{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
+					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
 							File: filepath.Join("..", "..", "testdata", "validation", "example-file.yaml"),
 						},

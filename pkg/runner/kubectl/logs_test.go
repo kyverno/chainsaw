@@ -26,8 +26,10 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with name",
 		collector: &v1alpha1.PodLogs{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name: "foo",
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Name: "foo",
+				},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -38,17 +40,21 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with namespace",
 		collector: &v1alpha1.PodLogs{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Namespace: "foo",
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Namespace: "foo",
+				},
 			},
 		},
 		wantErr: true,
 	}, {
 		name: "with name and namespace",
 		collector: &v1alpha1.PodLogs{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name:      "foo",
-				Namespace: "bar",
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Name:      "foo",
+					Namespace: "bar",
+				},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -59,8 +65,10 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with name and container",
 		collector: &v1alpha1.PodLogs{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name: "foo",
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Name: "foo",
+				},
 			},
 			Container: "bar",
 		},
@@ -72,9 +80,11 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with name, namespace and container",
 		collector: &v1alpha1.PodLogs{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name:      "foo",
-				Namespace: "lorem",
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Name:      "foo",
+					Namespace: "lorem",
+				},
 			},
 			Container: "bar",
 		},
@@ -86,9 +96,11 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with tail",
 		collector: &v1alpha1.PodLogs{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name:      "foo",
-				Namespace: "lorem",
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Name:      "foo",
+					Namespace: "lorem",
+				},
 			},
 			Container: "bar",
 			Tail:      ptr.To(100),
@@ -101,7 +113,7 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with selector",
 		collector: &v1alpha1.PodLogs{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
 				Selector: "foo=bar",
 			},
 		},
@@ -113,8 +125,10 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with name and selector",
 		collector: &v1alpha1.PodLogs{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Name:     "foo",
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Name: "foo",
+				},
 				Selector: "foo=bar",
 			},
 		},
@@ -123,9 +137,11 @@ func TestLogs(t *testing.T) {
 	}, {
 		name: "with namespace and selector",
 		collector: &v1alpha1.PodLogs{
-			ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-				Namespace: "foo",
-				Selector:  "foo=bar",
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Namespace: "foo",
+				},
+				Selector: "foo=bar",
 			},
 		},
 		want: &v1alpha1.Command{

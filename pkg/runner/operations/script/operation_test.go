@@ -20,32 +20,32 @@ func Test_operationScript(t *testing.T) {
 	}{{
 		name: "Test with valid Script",
 		script: v1alpha1.Script{
-			Content:       "echo hello",
-			SkipLogOutput: false,
+			Content:   "echo hello",
+			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: false},
 		},
 		namespace: "test-namespace",
 		wantErr:   false,
 	}, {
 		name: "Test with invalid Script",
 		script: v1alpha1.Script{
-			Content:       "invalidScriptCommand",
-			SkipLogOutput: false,
+			Content:   "invalidScriptCommand",
+			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: false},
 		},
 		namespace: "test-namespace",
 		wantErr:   true,
 	}, {
 		name: "Test script without logging",
 		script: v1alpha1.Script{
-			Content:       "echo silent",
-			SkipLogOutput: true,
+			Content:   "echo silent",
+			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
 		},
 		namespace: "test-namespace",
 		wantErr:   false,
 	}, {
 		name: "Test base path",
 		script: v1alpha1.Script{
-			Content:       "cat operation.go",
-			SkipLogOutput: true,
+			Content:   "cat operation.go",
+			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
 		},
 		basePath:  "..",
 		namespace: "test-namespace",
@@ -53,11 +53,13 @@ func Test_operationScript(t *testing.T) {
 	}, {
 		name: "with check",
 		script: v1alpha1.Script{
-			Content:       "foo",
-			SkipLogOutput: true,
-			Check: &v1alpha1.Check{
-				Value: map[string]any{
-					"($error != null)": true,
+			Content:   "foo",
+			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
+			ActionCheck: v1alpha1.ActionCheck{
+				Check: &v1alpha1.Check{
+					Value: map[string]any{
+						"($error != null)": true,
+					},
 				},
 			},
 		},
@@ -67,11 +69,13 @@ func Test_operationScript(t *testing.T) {
 	}, {
 		name: "with bad check",
 		script: v1alpha1.Script{
-			Content:       "foo",
-			SkipLogOutput: true,
-			Check: &v1alpha1.Check{
-				Value: map[string]any{
-					"(foo('bar'))": true,
+			Content:   "foo",
+			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
+			ActionCheck: v1alpha1.ActionCheck{
+				Check: &v1alpha1.Check{
+					Value: map[string]any{
+						"(foo('bar'))": true,
+					},
 				},
 			},
 		},
@@ -81,11 +85,13 @@ func Test_operationScript(t *testing.T) {
 	}, {
 		name: "with bad check",
 		script: v1alpha1.Script{
-			Content:       "cat operation.go",
-			SkipLogOutput: true,
-			Check: &v1alpha1.Check{
-				Value: map[string]any{
-					"(foo('bar'))": true,
+			Content:   "cat operation.go",
+			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
+			ActionCheck: v1alpha1.ActionCheck{
+				Check: &v1alpha1.Check{
+					Value: map[string]any{
+						"(foo('bar'))": true,
+					},
 				},
 			},
 		},

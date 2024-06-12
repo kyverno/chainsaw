@@ -36,7 +36,7 @@ func TestDiscoverTests(t *testing.T) {
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
 								Apply: &v1alpha1.Apply{
-									FileRefOrResource: v1alpha1.FileRefOrResource{
+									ActionResourceRef: v1alpha1.ActionResourceRef{
 										FileRef: v1alpha1.FileRef{
 											File: "configmap.yaml",
 										},
@@ -49,7 +49,7 @@ func TestDiscoverTests(t *testing.T) {
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
 								Assert: &v1alpha1.Assert{
-									FileRefOrCheck: v1alpha1.FileRefOrCheck{
+									ActionCheckRef: v1alpha1.ActionCheckRef{
 										FileRef: v1alpha1.FileRef{
 											File: "configmap.yaml",
 										},
@@ -82,7 +82,7 @@ func TestDiscoverTests(t *testing.T) {
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
 								Apply: &v1alpha1.Apply{
-									FileRefOrResource: v1alpha1.FileRefOrResource{
+									ActionResourceRef: v1alpha1.ActionResourceRef{
 										FileRef: v1alpha1.FileRef{
 											File: "01-configmap.yaml",
 										},
@@ -90,7 +90,7 @@ func TestDiscoverTests(t *testing.T) {
 								},
 							}, {
 								Assert: &v1alpha1.Assert{
-									FileRefOrCheck: v1alpha1.FileRefOrCheck{
+									ActionCheckRef: v1alpha1.ActionCheckRef{
 										FileRef: v1alpha1.FileRef{
 											File: "01-assert.yaml",
 										},
@@ -98,7 +98,7 @@ func TestDiscoverTests(t *testing.T) {
 								},
 							}, {
 								Error: &v1alpha1.Error{
-									FileRefOrCheck: v1alpha1.FileRefOrCheck{
+									ActionCheckRef: v1alpha1.ActionCheckRef{
 										FileRef: v1alpha1.FileRef{
 											File: "01-errors.yaml",
 										},

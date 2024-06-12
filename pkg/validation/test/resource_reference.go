@@ -5,7 +5,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func ValidateResourceReference(path *field.Path, obj v1alpha1.ResourceReference) field.ErrorList {
+func ValidateResourceReference(path *field.Path, obj v1alpha1.ObjectType) field.ErrorList {
 	var errs field.ErrorList
 	if obj.Kind == "" {
 		errs = append(errs, field.Invalid(path.Child("kind"), obj, "kind must be specified"))
