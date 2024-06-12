@@ -40,8 +40,8 @@ func TestWait(t *testing.T) {
 					Kind:       "Pod",
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name: "Ready",
 				},
 			},
@@ -60,8 +60,8 @@ func TestWait(t *testing.T) {
 					Kind:       "ClusterRole",
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name: "Ready",
 				},
 			},
@@ -80,8 +80,8 @@ func TestWait(t *testing.T) {
 					Kind:       "Pod",
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name:  "Ready",
 					Value: ptr.To("test"),
 				},
@@ -101,8 +101,8 @@ func TestWait(t *testing.T) {
 					Kind:       "Pod",
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name:  "Ready",
 					Value: ptr.To(""),
 				},
@@ -122,8 +122,8 @@ func TestWait(t *testing.T) {
 					Kind:       "Pod",
 				},
 			},
-			For: v1alpha1.For{
-				Deletion: &v1alpha1.Deletion{},
+			WaitFor: v1alpha1.WaitFor{
+				Deletion: &v1alpha1.WaitForDeletion{},
 			},
 		},
 		want: &v1alpha1.Command{
@@ -140,8 +140,8 @@ func TestWait(t *testing.T) {
 					Kind:       "Pod",
 				},
 			},
-			For: v1alpha1.For{
-				JsonPath: &v1alpha1.JsonPath{
+			WaitFor: v1alpha1.WaitFor{
+				JsonPath: &v1alpha1.WaitForJsonPath{
 					Path:  "{.status.phase}",
 					Value: "Running",
 				},
@@ -166,8 +166,8 @@ func TestWait(t *testing.T) {
 					},
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name: "Ready",
 				},
 			},
@@ -189,8 +189,8 @@ func TestWait(t *testing.T) {
 					Selector: "app=my-app",
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name: "Ready",
 				},
 			},
@@ -209,8 +209,8 @@ func TestWait(t *testing.T) {
 					Kind:       "Pod",
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name: "Ready",
 				},
 			},
@@ -237,8 +237,8 @@ func TestWait(t *testing.T) {
 					},
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name: "Ready",
 				},
 			},

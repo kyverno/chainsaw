@@ -45,8 +45,8 @@ func TestValidateWait(t *testing.T) {
 					Kind:       "Pod",
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name: "Ready",
 				},
 			},
@@ -67,8 +67,8 @@ func TestValidateWait(t *testing.T) {
 					Selector: "foo=bar",
 				},
 			},
-			For: v1alpha1.For{
-				Condition: &v1alpha1.Condition{
+			WaitFor: v1alpha1.WaitFor{
+				Condition: &v1alpha1.WaitForCondition{
 					Name: "Ready",
 				},
 			},
@@ -89,8 +89,8 @@ func TestValidateWait(t *testing.T) {
 					},
 				},
 			},
-			For: v1alpha1.For{
-				Deletion: &v1alpha1.Deletion{},
+			WaitFor: v1alpha1.WaitFor{
+				Deletion: &v1alpha1.WaitForDeletion{},
 			},
 		},
 		expectErr: false,
@@ -106,8 +106,8 @@ func TestValidateWait(t *testing.T) {
 					Selector: "example-selector",
 				},
 			},
-			For: v1alpha1.For{
-				Deletion: &v1alpha1.Deletion{},
+			WaitFor: v1alpha1.WaitFor{
+				Deletion: &v1alpha1.WaitForDeletion{},
 			},
 		},
 		expectErr: false,
