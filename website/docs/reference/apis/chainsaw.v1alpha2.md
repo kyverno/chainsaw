@@ -37,6 +37,134 @@ auto_generated: true
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`TestSpec`](#chainsaw-kyverno-io-v1alpha2-TestSpec) | :white_check_mark: |  | <p>Test spec.</p> |
 
+## ActionCheck     {#chainsaw-kyverno-io-v1alpha2-ActionCheck}
+
+**Appears in:**
+    
+
+<p>ActionCheck contains check for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
+
+## ActionCheckRef     {#chainsaw-kyverno-io-v1alpha2-ActionCheckRef}
+
+**Appears in:**
+    
+
+<p>ActionCheckRef contains check reference options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha2-FileRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `resource` | `policy/v1alpha1.Any` |  |  | <p>Check provides a check used in assertions.</p> |
+| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+
+## ActionDryRun     {#chainsaw-kyverno-io-v1alpha2-ActionDryRun}
+
+**Appears in:**
+    
+
+<p>ActionDryRun contains dry run options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `dryRun` | `bool` |  |  | <p>DryRun determines whether the file should be applied in dry run mode.</p> |
+
+## ActionEnv     {#chainsaw-kyverno-io-v1alpha2-ActionEnv}
+
+**Appears in:**
+    
+
+<p>ActionEnv contains environment options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `env` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Env defines additional environment variables.</p> |
+| `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
+
+## ActionExpectations     {#chainsaw-kyverno-io-v1alpha2-ActionExpectations}
+
+**Appears in:**
+    
+
+<p>ActionExpectations contains expectations for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `expect` | [`[]Expectation`](#chainsaw-kyverno-io-v1alpha1-Expectation) |  |  | <p>Expect defines a list of matched checks to validate the operation outcome.</p> |
+
+## ActionFormat     {#chainsaw-kyverno-io-v1alpha2-ActionFormat}
+
+**Appears in:**
+    
+
+<p>ActionFormat contains format for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `format` | [`Format`](#chainsaw-kyverno-io-v1alpha1-Format) |  |  | <p>Format determines the output format (json or yaml).</p> |
+
+## ActionObject     {#chainsaw-kyverno-io-v1alpha2-ActionObject}
+
+**Appears in:**
+    
+
+<p>ActionObject contains object selector options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ObjectType` | [`ObjectType`](#chainsaw-kyverno-io-v1alpha1-ObjectType) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionObjectSelector` | [`ActionObjectSelector`](#chainsaw-kyverno-io-v1alpha2-ActionObjectSelector) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+
+## ActionObjectSelector     {#chainsaw-kyverno-io-v1alpha2-ActionObjectSelector}
+
+**Appears in:**
+    
+- [ActionObject](#chainsaw-kyverno-io-v1alpha2-ActionObject)
+
+<p>ActionObjectSelector contains object selector options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ObjectName` | [`ObjectName`](#chainsaw-kyverno-io-v1alpha1-ObjectName) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+
+## ActionResourceRef     {#chainsaw-kyverno-io-v1alpha2-ActionResourceRef}
+
+**Appears in:**
+    
+
+<p>ActionResourceRef contains resource reference options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha2-FileRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `resource` | [`meta/v1/unstructured.Unstructured`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#unstructured-unstructured-v1) |  |  | <p>Resource provides a resource to be applied.</p> |
+| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+
+## ActionTimeout     {#chainsaw-kyverno-io-v1alpha2-ActionTimeout}
+
+**Appears in:**
+    
+
+<p>ActionTimeout contains timeout options for an action.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `timeout` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Timeout for the operation. Overrides the global timeout set in the Configuration.</p> |
+
 ## CleanupOptions     {#chainsaw-kyverno-io-v1alpha2-CleanupOptions}
 
 **Appears in:**
@@ -133,6 +261,20 @@ auto_generated: true
 | `parallel` | `int` |  |  | <p>The maximum number of tests to run at once.</p> |
 | `repeatCount` | `int` |  |  | <p>RepeatCount indicates how many times the tests should be executed.</p> |
 | `forceTerminationGracePeriod` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.</p> |
+
+## FileRef     {#chainsaw-kyverno-io-v1alpha2-FileRef}
+
+**Appears in:**
+    
+- [ActionCheckRef](#chainsaw-kyverno-io-v1alpha2-ActionCheckRef)
+- [ActionResourceRef](#chainsaw-kyverno-io-v1alpha2-ActionResourceRef)
+
+<p>FileRef represents a file reference.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
 
 ## NamespaceOptions     {#chainsaw-kyverno-io-v1alpha2-NamespaceOptions}
 
@@ -238,5 +380,56 @@ auto_generated: true
 |---|---|---|---|---|
 | `name` | `string` |  |  | <p>Name of the step.</p> |
 | `TestStepSpec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>TestStepSpec of the step.</p> |
+
+## WaitFor     {#chainsaw-kyverno-io-v1alpha2-WaitFor}
+
+**Appears in:**
+    
+
+<p>WaitFor specifies the condition to wait for.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `deletion` | [`WaitForDeletion`](#chainsaw-kyverno-io-v1alpha2-WaitForDeletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
+| `condition` | [`WaitForCondition`](#chainsaw-kyverno-io-v1alpha2-WaitForCondition) |  |  | <p>Condition specifies the condition to wait for.</p> |
+| `jsonPath` | [`WaitForJsonPath`](#chainsaw-kyverno-io-v1alpha2-WaitForJsonPath) |  |  | <p>JsonPath specifies the json path condition to wait for.</p> |
+
+## WaitForCondition     {#chainsaw-kyverno-io-v1alpha2-WaitForCondition}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha2-WaitFor)
+
+<p>WaitForCondition represents parameters for waiting on a specific condition of a resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `name` | `string` | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
+| `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
+
+## WaitForDeletion     {#chainsaw-kyverno-io-v1alpha2-WaitForDeletion}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha2-WaitFor)
+
+<p>WaitForDeletion represents parameters for waiting on a resource's deletion.</p>
+
+
+## WaitForJsonPath     {#chainsaw-kyverno-io-v1alpha2-WaitForJsonPath}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha2-WaitFor)
+
+<p>WaitForJsonPath represents parameters for waiting on a json path of a resource.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `path` | `string` | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
+| `value` | `string` | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
 
   
