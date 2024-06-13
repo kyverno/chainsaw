@@ -476,10 +476,29 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `name` | `string` |  |  | <p>Name defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
 | `template` | `policy/v1alpha1.Any` |  |  | <p>Template defines a template to create the test namespace.</p> |
 
+## Operation     {#chainsaw-kyverno-io-v1alpha2-Operation}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha2-TestStepSpec)
+- [TryOperation](#chainsaw-kyverno-io-v1alpha2-TryOperation)
+
+<p>Operation defines operation elements.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `OperationAction` | [`OperationAction`](#chainsaw-kyverno-io-v1alpha2-OperationAction) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `OperationBindings` | [`OperationBindings`](#chainsaw-kyverno-io-v1alpha2-OperationBindings) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `OperationClusters` | [`OperationClusters`](#chainsaw-kyverno-io-v1alpha2-OperationClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `OperationOutputs` | [`OperationOutputs`](#chainsaw-kyverno-io-v1alpha2-OperationOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
+
 ## OperationAction     {#chainsaw-kyverno-io-v1alpha2-OperationAction}
 
 **Appears in:**
     
+- [Operation](#chainsaw-kyverno-io-v1alpha2-Operation)
 
 <p>OperationAction defines an operation action, only one action should be specified per operation.</p>
 
@@ -506,6 +525,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 **Appears in:**
     
+- [Operation](#chainsaw-kyverno-io-v1alpha2-Operation)
 
 <p>OperationBindings contains bindings options for an operation.</p>
 
@@ -518,6 +538,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 **Appears in:**
     
+- [Operation](#chainsaw-kyverno-io-v1alpha2-Operation)
 
 <p>OperationClusters contains clusters options for an operation.</p>
 
@@ -531,6 +552,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 **Appears in:**
     
+- [Operation](#chainsaw-kyverno-io-v1alpha2-Operation)
 
 <p>OperationOutputs contains outputs options for an operation.</p>
 
@@ -689,7 +711,45 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | `string` |  |  | <p>Name of the step.</p> |
-| `TestStepSpec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>TestStepSpec of the step.</p> |
+| `TestStepSpec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha2-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>TestStepSpec of the step.</p> |
+
+## TestStepSpec     {#chainsaw-kyverno-io-v1alpha2-TestStepSpec}
+
+**Appears in:**
+    
+- [TestStep](#chainsaw-kyverno-io-v1alpha2-TestStep)
+
+<p>TestStepSpec defines the desired state and behavior for each test step.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `description` | `string` |  |  | <p>Description contains a description of the test step.</p> |
+| `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.</p> |
+| `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation. Overrides the deletion propagation policy set in both the Configuration and the Test.</p> |
+| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
+| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
+| `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
+| `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
+| `try` | [`[]TryOperation`](#chainsaw-kyverno-io-v1alpha2-TryOperation) | :white_check_mark: |  | <p>Try defines what the step will try to execute.</p> |
+| `catch` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha2-Operation) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
+| `finally` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha2-Operation) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
+| `cleanup` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha2-Operation) |  |  | <p>Cleanup defines what will be executed after the test is terminated.</p> |
+
+## TryOperation     {#chainsaw-kyverno-io-v1alpha2-TryOperation}
+
+**Appears in:**
+    
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha2-TestStepSpec)
+
+<p>TryOperation defines operation elements.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `Operation` | [`Operation`](#chainsaw-kyverno-io-v1alpha2-Operation) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
 
 ## Update     {#chainsaw-kyverno-io-v1alpha2-Update}
 

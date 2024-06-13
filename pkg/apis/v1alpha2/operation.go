@@ -8,11 +8,6 @@ type Operation struct {
 	OperationClusters `json:",inline"`
 	OperationOutputs  `json:",inline"`
 
-	// ContinueOnError determines whether a test should continue or not in case the operation was not successful.
-	// Even if the test continues executing, it will still be reported as failed.
-	// +optional
-	ContinueOnError *bool `json:"continueOnError,omitempty"`
-
 	// Description contains a description of the operation.
 	// +optional
 	Description string `json:"description,omitempty"`
@@ -106,4 +101,15 @@ type OperationOutputs struct {
 	// Outputs defines output bindings.
 	// +optional
 	Outputs []Output `json:"outputs,omitempty"`
+}
+
+// TryOperation defines operation elements.
+// +k8s:conversion-gen=false
+type TryOperation struct {
+	Operation `json:",inline"`
+
+	// ContinueOnError determines whether a test should continue or not in case the operation was not successful.
+	// Even if the test continues executing, it will still be reported as failed.
+	// +optional
+	ContinueOnError *bool `json:"continueOnError,omitempty"`
 }

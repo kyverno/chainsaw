@@ -18,6 +18,5 @@ type (
 	ObjectReference = v1alpha1.ObjectReference
 	ObjectType      = v1alpha1.ObjectType
 	Output          = v1alpha1.Output
-	TestStepSpec    = v1alpha1.TestStepSpec
 	Timeouts        = v1alpha1.Timeouts
 )
