@@ -52,7 +52,7 @@ type ErrorOptions struct {
 	// Catch defines what the tests steps will execute when an error happens.
 	// This will be combined with catch handlers defined at the test and step levels.
 	// +optional
-	Catch []Catch `json:"catch,omitempty"`
+	Catch []Operation `json:"catch,omitempty"`
 }
 
 // ExecutionOptions determines how tests are run.

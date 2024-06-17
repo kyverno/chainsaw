@@ -324,7 +324,7 @@ If a resource already exists in the cluster it will fail.</p>
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha2-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `file` | `string` |  |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
-| `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) |  |  | <p>Ref determines objects to be deleted.</p> |
+| `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha2-ObjectReference) |  |  | <p>Ref determines objects to be deleted.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation. Overrides the deletion propagation policy set in the Configuration, the Test and the TestStep.</p> |
 
 ## DeletionOptions     {#chainsaw-kyverno-io-v1alpha2-DeletionOptions}
@@ -399,7 +399,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
+| `catch` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha2-Operation) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
 
 ## Events     {#chainsaw-kyverno-io-v1alpha2-Events}
 
@@ -476,10 +476,28 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 | `name` | `string` |  |  | <p>Name defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
 | `template` | `policy/v1alpha1.Any` |  |  | <p>Template defines a template to create the test namespace.</p> |
 
+## ObjectReference     {#chainsaw-kyverno-io-v1alpha2-ObjectReference}
+
+**Appears in:**
+    
+- [Delete](#chainsaw-kyverno-io-v1alpha2-Delete)
+
+<p>ObjectReference represents one or more objects with a specific apiVersion and kind.
+For a single object name and namespace are used to identify the object.
+For multiple objects use labels.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ObjectType` | [`ObjectType`](#chainsaw-kyverno-io-v1alpha1-ObjectType) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ObjectName` | [`ObjectName`](#chainsaw-kyverno-io-v1alpha1-ObjectName) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `labelSelector` | [`meta/v1.LabelSelector`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#labelselector-v1-meta) |  |  | <p>Label selector to match objects to delete</p> |
+
 ## Operation     {#chainsaw-kyverno-io-v1alpha2-Operation}
 
 **Appears in:**
     
+- [ErrorOptions](#chainsaw-kyverno-io-v1alpha2-ErrorOptions)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha2-TestStepSpec)
 - [TryOperation](#chainsaw-kyverno-io-v1alpha2-TryOperation)
 
