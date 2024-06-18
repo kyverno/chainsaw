@@ -59,6 +59,7 @@ func TestOperation_Execute(t *testing.T) {
 			op := newOperation(
 				OperationInfo{},
 				localTC.continueOnError,
+				false,
 				&localTC.timeout,
 				func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 					return localTC.operation, bindings, nil

@@ -1453,6 +1453,13 @@
             "null"
           ]
         },
+        "inconclusive": {
+          "description": "Inconclusive determines whether the test is conclusive or not.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "namespace": {
           "description": "Namespace determines whether the test should run in a random ephemeral namespace or not.",
           "type": [

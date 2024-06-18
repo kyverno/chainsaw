@@ -122,7 +122,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 	clusterConfig, clusterClient, err := registeredClusters.Resolve(false, p.test.Spec.Cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
+		failer.FailNow(ctx, false)
 	}
 	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
 	setupLogger := logging.NewLogger(t, p.clock, p.test.Name, fmt.Sprintf("%-*s", size, "@setup"))
@@ -146,7 +146,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					Value: p.test.Spec.NamespaceTemplate.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
-					failer.FailNow(ctx)
+					failer.FailNow(ctx, false)
 				} else {
 					object = merged
 				}
@@ -156,7 +156,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					Value: p.config.NamespaceTemplate.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
-					failer.FailNow(ctx)
+					failer.FailNow(ctx, false)
 				} else {
 					object = merged
 				}
@@ -169,12 +169,13 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					failer.FailNow(ctx)
+					failer.FailNow(ctx, false)
 				}
 				if !cleanup.Skip(p.config.SkipDelete, p.test.Spec.SkipDelete, nil) {
 					t.Cleanup(func() {
 						operation := newOperation(
 							OperationInfo{},
+							false,
 							false,
 							timeout.Get(nil, p.timeouts.CleanupDuration()),
 							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
@@ -187,7 +188,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					})
 				}
 				if err := clusterClient.Create(logging.IntoContext(setupCtx, setupLogger), object.DeepCopy()); err != nil {
-					failer.FailNow(ctx)
+					failer.FailNow(ctx, false)
 				}
 			}
 		}
@@ -198,7 +199,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 	bindings, err = apibindings.RegisterBindings(ctx, bindings, p.test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
+		failer.FailNow(ctx, false)
 	}
 	for i, step := range p.test.Spec.Steps {
 		processor := p.CreateStepProcessor(nspacer, registeredClusters, step)

@@ -771,6 +771,10 @@ spec:
                 description: ForceTerminationGracePeriod forces the termination grace
                   period on pods, statefulsets, daemonsets and deployments.
                 type: string
+              inconclusive:
+                description: Inconclusive determines whether the test is conclusive
+                  or not.
+                type: boolean
               namespace:
                 description: Namespace determines whether the test should run in a
                   random ephemeral namespace or not.

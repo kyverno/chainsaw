@@ -44,6 +44,10 @@ type TestSpec struct {
 	// +optional
 	Skip *bool `json:"skip,omitempty"`
 
+	// Inconclusive determines whether the test is conclusive or not.
+	// +optional
+	Inconclusive bool `json:"inconclusive,omitempty"`
+
 	// Concurrent determines whether the test should run concurrently with other tests.
 	// +optional
 	Concurrent *bool `json:"concurrent,omitempty"`

@@ -34,6 +34,7 @@ func (c *cleaner) addObject(obj unstructured.Unstructured, client client.Client,
 	c.register(newOperation(
 		OperationInfo{},
 		true,
+		false,
 		timeout,
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			return opdelete.New(client, obj, c.namespacer, false, metav1.DeletePropagationBackground), bindings, nil

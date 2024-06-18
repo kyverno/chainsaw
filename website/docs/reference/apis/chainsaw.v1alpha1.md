@@ -766,6 +766,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `skip` | `bool` |  |  | <p>Skip determines whether the test should skipped.</p> |
+| `inconclusive` | `bool` |  |  | <p>Inconclusive determines whether the test is conclusive or not.</p> |
 | `concurrent` | `bool` |  |  | <p>Concurrent determines whether the test should run concurrently with other tests.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the test should be deleted after the test is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |

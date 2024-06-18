@@ -10,8 +10,8 @@ import (
 var defaultFailer = New(false)
 
 type Failer interface {
-	Fail(context.Context)
-	FailNow(context.Context)
+	Fail(context.Context, bool)
+	FailNow(context.Context, bool)
 }
 
 type failer struct {
@@ -24,16 +24,22 @@ func New(pause bool) Failer {
 	}
 }
 
-func (f failer) Fail(ctx context.Context) {
+func (f failer) Fail(ctx context.Context, inconclusive bool) {
 	f.wait()
 	t := testing.FromContext(ctx)
-	t.Fail()
+	if !inconclusive {
+		t.Fail()
+	}
 }
 
-func (f failer) FailNow(ctx context.Context) {
+func (f failer) FailNow(ctx context.Context, inconclusive bool) {
 	f.wait()
 	t := testing.FromContext(ctx)
-	t.FailNow()
+	if !inconclusive {
+		t.FailNow()
+	} else {
+		t.SkipNow()
+	}
 }
 
 func (f failer) wait() {
@@ -51,12 +57,12 @@ func getFailerOrDefault(ctx context.Context) Failer {
 	return f
 }
 
-func Fail(ctx context.Context) {
+func Fail(ctx context.Context, inconclusive bool) {
 	f := getFailerOrDefault(ctx)
-	f.Fail(ctx)
+	f.Fail(ctx, inconclusive)
 }
 
-func FailNow(ctx context.Context) {
+func FailNow(ctx context.Context, inconclusive bool) {
 	f := getFailerOrDefault(ctx)
-	f.FailNow(ctx)
+	f.FailNow(ctx, inconclusive)
 }
