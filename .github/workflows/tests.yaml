@@ -95,7 +95,7 @@ jobs:
         go-version-file: go.mod
         cache-dependency-path: go.sum
     - name: Install ko
-      uses: ko-build/setup-ko@ace48d793556083a76f1e3e6068850c1f4a369aa   #v0.6
+      uses: ko-build/setup-ko@3aebd0597dc1e9d1a26bcfdb7cbeb19c131d3037   #v0.7
     - name: Create test cluster
       run: |
         set -e
