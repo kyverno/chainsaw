@@ -138,21 +138,24 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 			failer.FailNow(ctx)
 		}
 		var tests []discovery.Test
-		if len(test.Spec.Scenarios) == 0 {
-			tests = append(tests, test)
-		} else {
-			for i := range test.Spec.Scenarios {
-				scenario := test.Spec.Scenarios[i]
-				test := test
-				test.Test = test.Test.DeepCopy()
-				test.Spec.Scenarios = nil
-				bindings := scenario.Bindings
-				bindings = append(bindings, test.Spec.Bindings...)
-				test.Spec.Bindings = bindings
+		if test.Test != nil {
+			if len(test.Spec.Scenarios) == 0 {
 				tests = append(tests, test)
+			} else {
+				for s := range test.Spec.Scenarios {
+					scenario := test.Spec.Scenarios[s]
+					test := test
+					test.Test = test.Test.DeepCopy()
+					test.Spec.Scenarios = nil
+					bindings := scenario.Bindings
+					bindings = append(bindings, test.Spec.Bindings...)
+					test.Spec.Bindings = bindings
+					tests = append(tests, test)
+				}
 			}
 		}
-		for _, test := range tests {
+		for s := range tests {
+			test := tests[s]
 			t.Run(name, func(t *testing.T) {
 				t.Helper()
 				t.Cleanup(func() {
