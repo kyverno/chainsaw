@@ -64,6 +64,10 @@ type TestSpec struct {
 	// +optional
 	NamespaceTemplate *Any `json:"namespaceTemplate,omitempty"`
 
+	// Scenarios defines test scenarios.
+	// +optional
+	Scenarios []Scenario `json:"scenarios,omitempty"`
+
 	// Bindings defines additional binding key/values.
 	// +optional
 	Bindings []Binding `json:"bindings,omitempty"`
@@ -90,4 +94,11 @@ type TestSpec struct {
 	// +optional
 	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
 	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
+}
+
+// Scenario defines per scenario bindings.
+type Scenario struct {
+	// Bindings defines binding key/values.
+	// +optional
+	Bindings []Binding `json:"bindings,omitempty"`
 }
