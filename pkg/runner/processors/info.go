@@ -5,8 +5,9 @@ import (
 )
 
 type TestInfo struct {
-	Id       int
-	Metadata metav1.ObjectMeta
+	Id         int
+	ScenarioId int
+	Metadata   metav1.ObjectMeta
 }
 
 type StepInfo struct {

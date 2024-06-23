@@ -316,6 +316,7 @@ during the testing process.</p>
 - [ActionBindings](#chainsaw-kyverno-io-v1alpha1-ActionBindings)
 - [ActionEnv](#chainsaw-kyverno-io-v1alpha1-ActionEnv)
 - [Output](#chainsaw-kyverno-io-v1alpha1-Output)
+- [Scenario](#chainsaw-kyverno-io-v1alpha1-Scenario)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
@@ -716,6 +717,19 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
 
+## Scenario     {#chainsaw-kyverno-io-v1alpha1-Scenario}
+
+**Appears in:**
+    
+- [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
+
+<p>Scenario defines per scenario bindings.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines binding key/values.</p> |
+
 ## Script     {#chainsaw-kyverno-io-v1alpha1-Script}
 
 **Appears in:**
@@ -771,6 +785,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `namespace` | `string` |  |  | <p>Namespace determines whether the test should run in a random ephemeral namespace or not.</p> |
 | `namespaceTemplate` | `policy/v1alpha1.Any` |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
+| `scenarios` | [`[]Scenario`](#chainsaw-kyverno-io-v1alpha1-Scenario) |  |  | <p>Scenarios defines test scenarios.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `steps` | [`[]TestStep`](#chainsaw-kyverno-io-v1alpha1-TestStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |
 | `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the steps will execute when an error happens. This will be combined with catch handlers defined at the step level.</p> |

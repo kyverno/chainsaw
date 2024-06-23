@@ -137,24 +137,45 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
 		}
-		t.Run(name, func(t *testing.T) {
-			t.Helper()
-			t.Cleanup(func() {
-				if t.Failed() {
-					p.shouldFailFast.Store(true)
+		var scenarios []discovery.Test
+		if test.Test != nil {
+			if len(test.Spec.Scenarios) == 0 {
+				scenarios = append(scenarios, test)
+			} else {
+				for s := range test.Spec.Scenarios {
+					scenario := test.Spec.Scenarios[s]
+					test := test
+					test.Test = test.Test.DeepCopy()
+					test.Spec.Scenarios = nil
+					bindings := scenario.Bindings
+					bindings = append(bindings, test.Spec.Bindings...)
+					test.Spec.Bindings = bindings
+					scenarios = append(scenarios, test)
 				}
-			})
-			processor := p.CreateTestProcessor(test)
-			info := TestInfo{
-				Id:       i + 1,
-				Metadata: test.ObjectMeta,
 			}
-			processor.Run(
-				testing.IntoContext(ctx, t),
-				apibindings.RegisterNamedBinding(ctx, bindings, "test", info),
-				nspacer,
-			)
-		})
+		}
+		for s := range scenarios {
+			test := scenarios[s]
+			t.Run(name, func(t *testing.T) {
+				t.Helper()
+				t.Cleanup(func() {
+					if t.Failed() {
+						p.shouldFailFast.Store(true)
+					}
+				})
+				processor := p.CreateTestProcessor(test)
+				info := TestInfo{
+					Id:         i + 1,
+					ScenarioId: s + 1,
+					Metadata:   test.ObjectMeta,
+				}
+				processor.Run(
+					testing.IntoContext(ctx, t),
+					apibindings.RegisterNamedBinding(ctx, bindings, "test", info),
+					nspacer,
+				)
+			})
+		}
 	}
 }
 
