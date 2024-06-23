@@ -137,10 +137,10 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
 		}
-		var tests []discovery.Test
+		var scenarios []discovery.Test
 		if test.Test != nil {
 			if len(test.Spec.Scenarios) == 0 {
-				tests = append(tests, test)
+				scenarios = append(scenarios, test)
 			} else {
 				for s := range test.Spec.Scenarios {
 					scenario := test.Spec.Scenarios[s]
@@ -150,12 +150,12 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 					bindings := scenario.Bindings
 					bindings = append(bindings, test.Spec.Bindings...)
 					test.Spec.Bindings = bindings
-					tests = append(tests, test)
+					scenarios = append(scenarios, test)
 				}
 			}
 		}
-		for s := range tests {
-			test := tests[s]
+		for s := range scenarios {
+			test := scenarios[s]
 			t.Run(name, func(t *testing.T) {
 				t.Helper()
 				t.Cleanup(func() {
@@ -165,8 +165,9 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				})
 				processor := p.CreateTestProcessor(test)
 				info := TestInfo{
-					Id:       i + 1,
-					Metadata: test.ObjectMeta,
+					Id:         i + 1,
+					ScenarioId: s + 1,
+					Metadata:   test.ObjectMeta,
 				}
 				processor.Run(
 					testing.IntoContext(ctx, t),

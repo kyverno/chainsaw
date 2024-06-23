@@ -18,3 +18,5 @@ spec:
         - name: message
           value: ($message)
         content: echo $message
+        check:
+         ($stdout): ((to_number($test.scenarioId) == `1` && 'hello') || 'goodbye')
