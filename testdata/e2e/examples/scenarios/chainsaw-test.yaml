@@ -1,0 +1,22 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: scenarios
+spec:
+  scenarios:
+  - bindings:
+    - name: message
+      value: hello
+  - bindings:
+    - name: message
+      value: goodbye
+  steps:
+  - try:
+    - script:
+        env:
+        - name: message
+          value: ($message)
+        content: echo $message
+        check:
+         ($stdout): ((to_number($test.scenarioId) == `1` && 'hello') || 'goodbye')
