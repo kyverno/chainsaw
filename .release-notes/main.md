@@ -5,6 +5,7 @@ Release notes for `TODO`.
 <!--
 ## ‼️ Breaking changes ‼️
 
+## 💫 New features 💫
 
 ## ✨ UI changes ✨
 
@@ -12,18 +13,9 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 📚 Docs 📚
-
--->
-
-## 💫 New features 💫
-
-- Add test scenarios support
-
 ## 🔧 Fixes 🔧
 
-- Fixed a potential issue with configuration defaults and marshaling
+## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
-
-- Improved all Python-based build operations
+-->
