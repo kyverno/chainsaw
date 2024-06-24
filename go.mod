@@ -8,7 +8,7 @@ require (
 	github.com/fatih/color v1.17.0
 	github.com/go-logr/logr v1.4.2
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
-	github.com/hashicorp/go-getter v1.7.4
+	github.com/hashicorp/go-getter v1.7.5
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240117150817-e430401a2172
 	github.com/kudobuilder/kuttl v0.17.0
 	github.com/kyverno/kyverno-json v0.0.3
