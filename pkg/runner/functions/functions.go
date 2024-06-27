@@ -6,7 +6,8 @@ import (
 
 var (
 	// stable functions
-	env = stable("env")
+	env       = stable("env")
+	trimSpace = stable("trim_space")
 	// experimental functions
 	k8sGet            = experimental("k8s_get")
 	k8sList           = experimental("k8s_list")
@@ -72,5 +73,11 @@ func GetFunctions() []functions.FunctionEntry {
 			{Types: []functions.JpType{functions.JpString}},
 		},
 		Handler: jpMetricsDecode,
+	}, {
+		Name: trimSpace,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpString}},
+		},
+		Handler: jpTrimSpace,
 	}}
 }

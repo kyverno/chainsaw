@@ -19,4 +19,4 @@ spec:
         content: echo $FOO
     - assert:
         resource:
-          ($OUTPUT): test-info-foo
+          (trim_space($OUTPUT)): test-info-foo

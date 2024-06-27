@@ -279,6 +279,23 @@ type PodLogs struct {
 	Tail *int `json:"tail,omitempty"`
 }
 
+// Proxy defines how to get resources.
+type Proxy struct {
+	ActionClusters `json:",inline"`
+	ActionOutputs  `json:",inline"`
+	ActionTimeout  `json:",inline"`
+	ObjectName     `json:",inline"`
+	ObjectType     `json:",inline"`
+
+	// TargetPort defines the target port to proxy the request.
+	// +optional
+	TargetPort string `json:"port,omitempty"`
+
+	// TargetPath defines the target path to proxy the request.
+	// +optional
+	TargetPath string `json:"path,omitempty"`
+}
+
 // Script describes a script to run as a part of a test step.
 type Script struct {
 	ActionBindings `json:",inline"`

@@ -244,6 +244,8 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, clea
 			register(loaded...)
 		} else if handler.PodLogs != nil {
 			register(p.logsOperation(i+1, registeredClusters, *handler.PodLogs))
+		} else if handler.Proxy != nil {
+			register(p.proxyOperation(i+1, registeredClusters, *handler.Proxy))
 		} else if handler.Script != nil {
 			register(p.scriptOperation(i+1, registeredClusters, *handler.Script))
 		} else if handler.Sleep != nil {
@@ -749,6 +751,39 @@ func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Regis
 		))
 	}
 	return ops, nil
+}
+
+func (p *stepProcessor) proxyOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Proxy) operation {
+	var operationReport *report.OperationReport
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Proxy ", report.OperationTypeCommand)
+	}
+	ns := ""
+	if p.namespacer != nil {
+		ns = p.namespacer.GetNamespace()
+	}
+	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
+	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	return newOperation(
+		OperationInfo{
+			Id: id,
+		},
+		false,
+		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
+			config, client, err := clusterResolver(false)
+			if err != nil {
+				return nil, nil, err
+			}
+			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
+			cmd, err := kubectl.Proxy(client, bindings, &op)
+			if err != nil {
+				return nil, nil, err
+			}
+			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
+		},
+		operationReport,
+	)
 }
 
 func (p *stepProcessor) scriptOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Script) operation {

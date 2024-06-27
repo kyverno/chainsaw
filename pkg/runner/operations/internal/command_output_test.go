@@ -20,14 +20,14 @@ func TestCommandOutput(t *testing.T) {
 		name:        "normal output and error",
 		stdout:      "  hello world  \n",
 		stderr:      "  error occurred  \n",
-		expectedOut: "hello world",
-		expectedErr: "error occurred",
+		expectedOut: "  hello world  \n",
+		expectedErr: "  error occurred  \n",
 	}, {
 		name:        "empty output and error",
 		stdout:      "   \n  ",
 		stderr:      "   \n  ",
-		expectedOut: "",
-		expectedErr: "",
+		expectedOut: "   \n  ",
+		expectedErr: "   \n  ",
 	}, {
 		name:        "no trimming needed",
 		stdout:      "hello",
@@ -38,14 +38,14 @@ func TestCommandOutput(t *testing.T) {
 		name:        "newlines only",
 		stdout:      "\n\n\n",
 		stderr:      "\n\n\n",
-		expectedOut: "",
-		expectedErr: "",
+		expectedOut: "\n\n\n",
+		expectedErr: "\n\n\n",
 	}, {
 		name:        "mixed spaces and newlines",
 		stdout:      "  \n hello \n world \n  ",
 		stderr:      "  \n error \n occurred \n  ",
-		expectedOut: "hello \n world",
-		expectedErr: "error \n occurred",
+		expectedOut: "  \n hello \n world \n  ",
+		expectedErr: "  \n error \n occurred \n  ",
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
