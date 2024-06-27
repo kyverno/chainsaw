@@ -122,4 +122,5 @@
 | x_k8s_exists | `x_k8s_exists(any, string, string, string, string)` |
 | x_k8s_resource_exists | `x_k8s_resource_exists(any, string, string)` |
 | x_k8s_server_version | `x_k8s_server_version(any)` |
+| x_metrics_decode | `x_metrics_decode(string)` |
 
