@@ -103,6 +103,7 @@ auto_generated: true
 - [Get](#chainsaw-kyverno-io-v1alpha1-Get)
 - [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
 - [PodLogs](#chainsaw-kyverno-io-v1alpha1-PodLogs)
+- [Proxy](#chainsaw-kyverno-io-v1alpha1-Proxy)
 - [Script](#chainsaw-kyverno-io-v1alpha1-Script)
 - [Update](#chainsaw-kyverno-io-v1alpha1-Update)
 - [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
@@ -218,6 +219,7 @@ auto_generated: true
 - [Command](#chainsaw-kyverno-io-v1alpha1-Command)
 - [Create](#chainsaw-kyverno-io-v1alpha1-Create)
 - [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
+- [Proxy](#chainsaw-kyverno-io-v1alpha1-Proxy)
 - [Script](#chainsaw-kyverno-io-v1alpha1-Script)
 - [Update](#chainsaw-kyverno-io-v1alpha1-Update)
 
@@ -261,6 +263,7 @@ auto_generated: true
 - [Get](#chainsaw-kyverno-io-v1alpha1-Get)
 - [Patch](#chainsaw-kyverno-io-v1alpha1-Patch)
 - [PodLogs](#chainsaw-kyverno-io-v1alpha1-PodLogs)
+- [Proxy](#chainsaw-kyverno-io-v1alpha1-Proxy)
 - [Script](#chainsaw-kyverno-io-v1alpha1-Script)
 - [Update](#chainsaw-kyverno-io-v1alpha1-Update)
 - [Wait](#chainsaw-kyverno-io-v1alpha1-Wait)
@@ -574,6 +577,7 @@ with a match filter to determine if the verification should be considered.</p>
     
 - [ActionObjectSelector](#chainsaw-kyverno-io-v1alpha1-ActionObjectSelector)
 - [ObjectReference](#chainsaw-kyverno-io-v1alpha1-ObjectReference)
+- [Proxy](#chainsaw-kyverno-io-v1alpha1-Proxy)
 
 <p>ObjectName represents an object namespace and name.</p>
 
@@ -606,6 +610,7 @@ For multiple objects use labels.</p>
     
 - [ActionObject](#chainsaw-kyverno-io-v1alpha1-ActionObject)
 - [ObjectReference](#chainsaw-kyverno-io-v1alpha1-ObjectReference)
+- [Proxy](#chainsaw-kyverno-io-v1alpha1-Proxy)
 
 <p>ObjectType represents a specific apiVersion and kind.</p>
 
@@ -638,6 +643,7 @@ For multiple objects use labels.</p>
 | `get` | [`Get`](#chainsaw-kyverno-io-v1alpha1-Get) |  |  | <p>Get determines the resource get collector to execute.</p> |
 | `patch` | [`Patch`](#chainsaw-kyverno-io-v1alpha1-Patch) |  |  | <p>Patch represents a patch operation.</p> |
 | `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
+| `proxy` | [`Proxy`](#chainsaw-kyverno-io-v1alpha1-Proxy) |  |  | <p>Proxy runs a proxy request.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
 | `update` | [`Update`](#chainsaw-kyverno-io-v1alpha1-Update) |  |  | <p>Update represents an update operation.</p> |
@@ -708,6 +714,25 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `container` | `string` |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
 | `tail` | `int` |  |  | <p>Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.</p> |
+
+## Proxy     {#chainsaw-kyverno-io-v1alpha1-Proxy}
+
+**Appears in:**
+    
+- [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
+
+<p>Proxy defines how to get resources.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ObjectName` | [`ObjectName`](#chainsaw-kyverno-io-v1alpha1-ObjectName) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `ObjectType` | [`ObjectType`](#chainsaw-kyverno-io-v1alpha1-ObjectType) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `port` | `string` |  |  | <p>TargetPort defines the target port to proxy the request.</p> |
+| `path` | `string` |  |  | <p>TargetPath defines the target path to proxy the request.</p> |
 
 ## ReportFormatType     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 

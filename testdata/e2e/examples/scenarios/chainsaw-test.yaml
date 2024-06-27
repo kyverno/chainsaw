@@ -19,4 +19,4 @@ spec:
           value: ($message)
         content: echo $message
         check:
-         ($stdout): ((to_number($test.scenarioId) == `1` && 'hello') || 'goodbye')
+         (trim_space($stdout)): ((to_number($test.scenarioId) == `1` && 'hello') || 'goodbye')

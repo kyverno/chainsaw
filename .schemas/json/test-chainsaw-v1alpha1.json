@@ -6341,6 +6341,132 @@
                         }
                       }
                     },
+                    "proxy": {
+                      "description": "Proxy runs a proxy request.",
+                      "type": [
+                        "object",
+                        "null"
+                      ],
+                      "required": [
+                        "apiVersion",
+                        "kind"
+                      ],
+                      "properties": {
+                        "apiVersion": {
+                          "description": "API version of the referent.",
+                          "type": "string"
+                        },
+                        "cluster": {
+                          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "clusters": {
+                          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "additionalProperties": {
+                            "description": "Cluster defines cluster config and context.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "kubeconfig"
+                            ],
+                            "properties": {
+                              "context": {
+                                "description": "Context is the name of the context to use.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ]
+                              },
+                              "kubeconfig": {
+                                "description": "Kubeconfig is the path to the referenced file.",
+                                "type": "string"
+                              }
+                            }
+                          }
+                        },
+                        "kind": {
+                          "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
+                          "type": "string"
+                        },
+                        "name": {
+                          "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "namespace": {
+                          "description": "Namespace of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "outputs": {
+                          "description": "Outputs defines output bindings.",
+                          "type": [
+                            "array",
+                            "null"
+                          ],
+                          "items": {
+                            "description": "Output represents an output binding with a match to determine if the binding must be considered or not.",
+                            "type": [
+                              "object",
+                              "null"
+                            ],
+                            "required": [
+                              "name",
+                              "value"
+                            ],
+                            "properties": {
+                              "match": {
+                                "description": "Match defines the matching statement.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              },
+                              "name": {
+                                "description": "Name the name of the binding.",
+                                "type": "string",
+                                "pattern": "^(?:\\w+|\\(.+\\))$"
+                              },
+                              "value": {
+                                "description": "Value value of the binding.",
+                                "x-kubernetes-preserve-unknown-fields": true
+                              }
+                            }
+                          }
+                        },
+                        "path": {
+                          "description": "TargetPath defines the target path to proxy the request.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "port": {
+                          "description": "TargetPort defines the target port to proxy the request.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        },
+                        "timeout": {
+                          "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
+                      }
+                    },
                     "script": {
                       "description": "Script defines a script to run.",
                       "type": [

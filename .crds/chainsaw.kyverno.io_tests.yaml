@@ -3906,6 +3906,89 @@ spec:
                                   the global timeout set in the Configuration.
                                 type: string
                             type: object
+                          proxy:
+                            description: Proxy runs a proxy request.
+                            properties:
+                              apiVersion:
+                                description: API version of the referent.
+                                type: string
+                              cluster:
+                                description: Cluster defines the target cluster (default
+                                  cluster will be used if not specified and/or overridden).
+                                type: string
+                              clusters:
+                                additionalProperties:
+                                  description: Cluster defines cluster config and
+                                    context.
+                                  properties:
+                                    context:
+                                      description: Context is the name of the context
+                                        to use.
+                                      type: string
+                                    kubeconfig:
+                                      description: Kubeconfig is the path to the referenced
+                                        file.
+                                      type: string
+                                  required:
+                                  - kubeconfig
+                                  type: object
+                                description: Clusters holds a registry to clusters
+                                  to support multi-cluster tests.
+                                type: object
+                              kind:
+                                description: |-
+                                  Kind of the referent.
+                                  More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+                                type: string
+                              name:
+                                description: |-
+                                  Name of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
+                                type: string
+                              namespace:
+                                description: |-
+                                  Namespace of the referent.
+                                  More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+                                type: string
+                              outputs:
+                                description: Outputs defines output bindings.
+                                items:
+                                  description: Output represents an output binding
+                                    with a match to determine if the binding must
+                                    be considered or not.
+                                  properties:
+                                    match:
+                                      description: Match defines the matching statement.
+                                      type: object
+                                      x-kubernetes-preserve-unknown-fields: true
+                                    name:
+                                      description: Name the name of the binding.
+                                      pattern: ^(?:\w+|\(.+\))$
+                                      type: string
+                                    value:
+                                      description: Value value of the binding.
+                                      x-kubernetes-preserve-unknown-fields: true
+                                  required:
+                                  - name
+                                  - value
+                                  type: object
+                                type: array
+                              path:
+                                description: TargetPath defines the target path to
+                                  proxy the request.
+                                type: string
+                              port:
+                                description: TargetPort defines the target port to
+                                  proxy the request.
+                                type: string
+                              timeout:
+                                description: Timeout for the operation. Overrides
+                                  the global timeout set in the Configuration.
+                                type: string
+                            required:
+                            - apiVersion
+                            - kind
+                            type: object
                           script:
                             description: Script defines a script to run.
                             properties:
