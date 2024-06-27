@@ -19,7 +19,7 @@ spec:
         content: echo $GREETINGS
         check:
           ($error): ~
-          ($stdout): hello chainsaw
+          (trim_space($stdout)): hello chainsaw
     - command:
         env:
         - name: GREETINGS
@@ -29,4 +29,4 @@ spec:
         - $GREETINGS
         check:
           ($error): ~
-          ($stdout): hello chainsaw
+          (trim_space($stdout)): hello chainsaw

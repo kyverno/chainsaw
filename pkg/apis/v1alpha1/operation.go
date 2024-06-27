@@ -64,6 +64,10 @@ type Operation struct {
 	// +optional
 	PodLogs *PodLogs `json:"podLogs,omitempty"`
 
+	// Proxy runs a proxy request.
+	// +optional
+	Proxy *Proxy `json:"proxy,omitempty"`
+
 	// Script defines a script to run.
 	// +optional
 	Script *Script `json:"script,omitempty"`
@@ -105,6 +109,8 @@ func (o *Operation) Bindings() []Binding {
 		return o.Patch.Bindings
 	case o.PodLogs != nil:
 		return nil
+	case o.Proxy != nil:
+		return nil
 	case o.Script != nil:
 		return o.Script.Bindings
 	case o.Sleep != nil:
@@ -141,6 +147,8 @@ func (o *Operation) Outputs() []Output {
 		return o.Patch.Outputs
 	case o.PodLogs != nil:
 		return nil
+	case o.Proxy != nil:
+		return o.Proxy.Outputs
 	case o.Script != nil:
 		return o.Script.Outputs
 	case o.Sleep != nil:

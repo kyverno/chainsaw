@@ -10,5 +10,5 @@ spec:
         content: kubectl get foo
         check:
           ($error != null): true
-          ($stderr): |-
+          ($stderr): |
             error: the server doesn't have a resource type "foo"

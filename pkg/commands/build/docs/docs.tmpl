@@ -9,10 +9,20 @@ command
 create
 {{- else if .Delete -}}
 delete
+{{- else if .Describe -}}
+describe
 {{- else if .Error -}}
 error
+{{- else if .Events -}}
+events
+{{- else if .Get -}}
+get
 {{- else if .Patch -}}
 patch
+{{- else if .PodLogs -}}
+pod logs
+{{- else if .Proxy -}}
+proxy
 {{- else if .Script -}}
 script
 {{- else if .Sleep -}}
