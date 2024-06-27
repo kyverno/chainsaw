@@ -20,6 +20,7 @@ func ValidateOperation(path *field.Path, obj v1alpha1.Operation) field.ErrorList
 		obj.Get != nil,
 		obj.Patch != nil,
 		obj.PodLogs != nil,
+		obj.Proxy != nil,
 		obj.Script != nil,
 		obj.Sleep != nil,
 		obj.Update != nil,
@@ -48,6 +49,7 @@ func ValidateOperation(path *field.Path, obj v1alpha1.Operation) field.ErrorList
 		errs = append(errs, ValidateGet(path.Child("get"), obj.Get)...)
 		errs = append(errs, ValidatePatch(path.Child("patch"), obj.Patch)...)
 		errs = append(errs, ValidatePodLogs(path.Child("podLogs"), obj.PodLogs)...)
+		errs = append(errs, ValidateProxy(path.Child("proxy"), obj.Proxy)...)
 		errs = append(errs, ValidateScript(path.Child("script"), obj.Script)...)
 		errs = append(errs, ValidateUpdate(path.Child("update"), obj.Update)...)
 		errs = append(errs, ValidateWait(path.Child("wait"), obj.Wait)...)

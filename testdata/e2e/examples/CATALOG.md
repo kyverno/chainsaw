@@ -25,6 +25,7 @@
 - [delete-test](orphan/README.md)
 - [outputs](outputs/README.md)
 - [patch](patch/README.md)
+- [proxy](proxy/README.md)
 - [quick-start](quick-start/README.md)
 - [scenarios](scenarios/README.md)
 - [script-env](script-env/README.md)

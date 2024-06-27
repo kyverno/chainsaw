@@ -14,17 +14,17 @@ type CommandOutput struct {
 }
 
 func (c *CommandOutput) Out() string {
-	return strings.TrimSpace(c.Stdout.String())
+	return c.Stdout.String()
 }
 
 func (c *CommandOutput) Err() string {
-	return strings.TrimSpace(c.Stderr.String())
+	return c.Stderr.String()
 }
 
 func (c *CommandOutput) Sections() []fmt.Stringer {
 	var sections []fmt.Stringer
-	o := c.Out()
-	e := c.Err()
+	o := strings.TrimSpace(c.Out())
+	e := strings.TrimSpace(c.Err())
 	if o != "" {
 		sections = append(sections, logging.Section("STDOUT", o))
 	}
