@@ -64,6 +64,7 @@ func Test_Cleaner_Run(t *testing.T) {
 			newOperation(
 				OperationInfo{},
 				true,
+				false,
 				nil,
 				func(_ context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 					return mock.MockOperation{
