@@ -125,4 +125,11 @@ nav:
     - guides/lint.md
     - guides/kuttl-migration.md
     - guides/test-docs.md
-- Community: community/index.md
+- Community: 
+  - community/index.md
+  - Contributing: community/contribute.md
+  - Reporting a bug: community/reporting-a-bug.md
+  - Reporting a docs issue: community/reporting-a-docs-issue.md
+  - Requesting a change: community/requesting-a-change.md
+  - Adding translations: community/adding-translations.md
+  - Making a pull request: community/making-a-pull-request.md
