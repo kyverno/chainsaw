@@ -1,6 +1,9 @@
 package functions
 
 import (
+	"fmt"
+	"reflect"
+
 	"github.com/jmespath-community/go-jmespath/pkg/functions"
 )
 
@@ -8,6 +11,7 @@ var (
 	// stable functions
 	env       = stable("env")
 	trimSpace = stable("trim_space")
+	asString  = stable("as_string")
 	// experimental functions
 	k8sGet            = experimental("k8s_get")
 	k8sList           = experimental("k8s_list")
@@ -79,5 +83,25 @@ func GetFunctions() []functions.FunctionEntry {
 			{Types: []functions.JpType{functions.JpString}},
 		},
 		Handler: jpTrimSpace,
+	}, {
+		Name: asString,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpAny}},
+		},
+		Handler: func(arguments []any) (any, error) {
+			in, err := getArgAt(arguments, 0)
+			if err != nil {
+				return nil, err
+			}
+			if in != nil {
+				if in, ok := in.(string); ok {
+					return in, nil
+				}
+				if reflect.ValueOf(in).Kind() == reflect.String {
+					return fmt.Sprint(in), nil
+				}
+			}
+			return nil, nil
+		},
 	}}
 }
