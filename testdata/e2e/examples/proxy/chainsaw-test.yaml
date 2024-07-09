@@ -16,13 +16,8 @@ spec:
         path: /metrics
         outputs:
         - name: metrics
-          value: (json_parse(to_string(x_metrics_decode($stdout))))
-    # - script:
-    #     env:
-    #     - name: TT
-    #       value: (to_string($metrics[?metric.__name__=='promhttp_metric_handler_requests_total']))
-    #     content: echo $TT
-    # - assert:
-    #     resource:
-    #       ($metrics[?metric.code == '500'].value[1]):
-    #       - '0'
+          value: (x_metrics_decode($stdout))
+    - assert:
+        resource:
+          ($metrics[?as_string(metric.code) == '500' && as_string(metric.__name__) == 'promhttp_metric_handler_requests_total'].value):
+          - 0

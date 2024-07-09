@@ -124,4 +124,5 @@
 | x_k8s_server_version | `x_k8s_server_version(any)` |
 | x_metrics_decode | `x_metrics_decode(string)` |
 | trim_space | `trim_space(string)` |
+| as_string | `as_string(any)` |
 
