@@ -35,5 +35,5 @@ spec:
 ```bash
 chainsaw test                   \
   --skip-delete                 \
-  --delay-before-cleanup 5s
+  --cleanup-delay 5s
 ```
