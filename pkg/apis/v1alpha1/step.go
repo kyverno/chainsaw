@@ -4,6 +4,24 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+// +genclient
+// +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
+// +kubebuilder:object:root=true
+// +kubebuilder:resource:scope=Cluster
+// +kubebuilder:storageversion
+
+// StepTemplate is the resource that contains a step definition.
+type StepTemplate struct {
+	metav1.TypeMeta `json:",inline"`
+
+	// Standard object's metadata.
+	// +optional
+	metav1.ObjectMeta `json:"metadata,omitempty"`
+
+	// Test step spec.
+	Spec TestStepSpec `json:"spec"`
+}
+
 // TestStep contains the test step definition used in a test spec.
 type TestStep struct {
 	// Name of the step.

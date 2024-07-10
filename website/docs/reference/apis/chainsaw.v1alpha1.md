@@ -11,6 +11,7 @@ auto_generated: true
 
 
 - [Configuration](#chainsaw-kyverno-io-v1alpha1-Configuration)
+- [StepTemplate](#chainsaw-kyverno-io-v1alpha1-StepTemplate)
 - [Test](#chainsaw-kyverno-io-v1alpha1-Test)
   
 ## Configuration     {#chainsaw-kyverno-io-v1alpha1-Configuration}
@@ -24,6 +25,18 @@ auto_generated: true
 | `kind` | `string` | :white_check_mark: | | `Configuration` |
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec) | :white_check_mark: |  | <p>Configuration spec.</p> |
+
+## StepTemplate     {#chainsaw-kyverno-io-v1alpha1-StepTemplate}
+
+<p>StepTemplate is the resource that contains a step definition.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `apiVersion` | `string` | :white_check_mark: | | `chainsaw.kyverno.io/v1alpha1` |
+| `kind` | `string` | :white_check_mark: | | `StepTemplate` |
+| `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
+| `spec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: |  | <p>Test step spec.</p> |
 
 ## Test     {#chainsaw-kyverno-io-v1alpha1-Test}
 
@@ -836,6 +849,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 **Appears in:**
     
+- [StepTemplate](#chainsaw-kyverno-io-v1alpha1-StepTemplate)
 - [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
 
 <p>TestStepSpec defines the desired state and behavior for each test step.</p>
