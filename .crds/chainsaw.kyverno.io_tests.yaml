@@ -2929,6 +2929,9 @@ spec:
                             type: object
                         type: object
                       type: array
+                    from:
+                      description: From references a step template.
+                      type: string
                     name:
                       description: Name of the step.
                       type: string

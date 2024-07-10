@@ -28,6 +28,9 @@ type TestStep struct {
 	// +optional
 	Name string `json:"name,omitempty"`
 
+	// From references a step template.
+	From string `json:"from,omitempty"`
+
 	// TestStepSpec of the step.
 	TestStepSpec `json:",inline"`
 }

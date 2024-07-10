@@ -4825,6 +4825,13 @@
                   }
                 }
               },
+              "from": {
+                "description": "From references a step template.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "name": {
                 "description": "Name of the step.",
                 "type": [
