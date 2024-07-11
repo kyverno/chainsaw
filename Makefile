@@ -105,7 +105,7 @@ codegen-register: $(PACKAGE_SHIM)
 codegen-register: $(REGISTER_GEN)
 	@echo Generate registration... >&2
 	@GOPATH=$(GOPATH_SHIM) $(REGISTER_GEN) \
-		--go-header-file=./.hack/boilerplate.go.txt \
+		--go-header-file=./hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS)
 
 .PHONY: codegen-deepcopy
@@ -114,7 +114,7 @@ codegen-deepcopy: $(PACKAGE_SHIM)
 codegen-deepcopy: $(DEEPCOPY_GEN)
 	@echo Generate deep copy functions... >&2
 	@GOPATH=$(GOPATH_SHIM) $(DEEPCOPY_GEN) \
-		--go-header-file=./.hack/boilerplate.go.txt \
+		--go-header-file=./hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS) \
 		--output-file-base=zz_generated.deepcopy
 
@@ -124,7 +124,7 @@ codegen-conversion: $(PACKAGE_SHIM)
 codegen-conversion: $(CONVERSION_GEN)
 	@echo Generate conversion functions... >&2
 	@GOPATH=$(GOPATH_SHIM) $(CONVERSION_GEN) \
-		--go-header-file=./.hack/boilerplate.go.txt \
+		--go-header-file=./hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS) \
 		--output-file-base=zz_generated.conversion
 
@@ -135,8 +135,8 @@ codegen-crds: codegen-deepcopy
 codegen-crds: codegen-register
 codegen-crds: codegen-conversion
 	@echo Generate crds... >&2
-	@rm -rf $(CRDS_PATH)
-	@$(CONTROLLER_GEN) paths=./pkg/apis/... crd:crdVersions=v1 output:dir=$(CRDS_PATH)
+	@rm -rf $(CRDS_PATH)	
+	@go run ./hack/controller-gen -- paths=./pkg/apis/... crd:crdVersions=v1,ignoreUnexportedFields=true output:dir=$(CRDS_PATH)
 	@echo Copy generated CRDs to embed in the CLI... >&2
 	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
 	@cp $(CRDS_PATH)/* pkg/data/crds
