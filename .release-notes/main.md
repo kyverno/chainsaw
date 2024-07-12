@@ -5,6 +5,8 @@ Release notes for `TODO`.
 <!--
 ## ‼️ Breaking changes ‼️
 
+## 💫 New features 💫
+
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
@@ -17,9 +19,3 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
-
-## 💫 New features 💫
-
-- Added a `proxy` action to allow HTTP calls to in-cluster services and pods
-- Added `as_string` JMESPath function to convert types based on strings to bare strings
-- Added `x_metrics_decode` JMESPath function to decode Prometheus metrics
