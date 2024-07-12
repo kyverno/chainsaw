@@ -16,6 +16,31 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://kyverno.github.io/chainsaw/main/community/contribute/</loc>
+         <lastmod>2024-07-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/community/making-a-pull-request/</loc>
+         <lastmod>2024-07-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/community/reporting-a-bug/</loc>
+         <lastmod>2024-07-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/community/reporting-a-docs-issue/</loc>
+         <lastmod>2024-07-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/community/requesting-a-change/</loc>
+         <lastmod>2024-07-12</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://kyverno.github.io/chainsaw/main/configuration/</loc>
          <lastmod>2024-07-12</lastmod>
          <changefreq>daily</changefreq>
