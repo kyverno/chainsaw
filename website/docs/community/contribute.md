@@ -62,17 +62,6 @@ We appreciate your efforts in reporting bugs, requesting features, and engaging 
 
 <div class="grid cards" markdown>
 
--   :material-translate: &nbsp;
-    **Missing support for your language?**
-
-    ---
-
-    Add or improve translations for a new or already supported language
-
-    ---
-
-    [:octicons-arrow-right-24: Add translations][add translations]
-
 -   :material-source-pull: &nbsp;
     **Want to create a pull request?**
 
