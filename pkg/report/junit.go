@@ -95,7 +95,7 @@ func saveJUnit(report *Report, file string) error {
 				}
 			}
 			testcase := testcaseNode{
-				Name:      test.test.Name,
+				Name:      test.test.Test.Name,
 				Timestamp: test.startTime.UTC().Format(time.RFC3339),
 				Time:      test.endTime.Sub(test.startTime).Seconds(),
 				File:      test.test.BasePath,
