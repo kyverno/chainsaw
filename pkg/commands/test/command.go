@@ -277,9 +277,9 @@ func Command() *cobra.Command {
 			var testToRun []discovery.Test
 			for _, test := range tests {
 				if test.Err != nil {
-					fmt.Fprintf(out, "- %s (%s) - (%s)\n", test.Name, test.BasePath, test.Err)
+					fmt.Fprintf(out, "- %s (%s) - (%s)\n", test.Test.Name, test.BasePath, test.Err)
 				} else {
-					fmt.Fprintf(out, "- %s (%s)\n", test.Name, test.BasePath)
+					fmt.Fprintf(out, "- %s (%s)\n", test.Test.Name, test.BasePath)
 					testToRun = append(testToRun, test)
 				}
 			}
