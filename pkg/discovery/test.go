@@ -5,7 +5,7 @@ import (
 )
 
 type Test struct {
-	*v1alpha1.Test
+	Test     *v1alpha1.Test
 	BasePath string
 	Err      error
 }

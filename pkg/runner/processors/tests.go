@@ -7,6 +7,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
@@ -35,7 +36,7 @@ type TestsProcessor interface {
 }
 
 func NewTestsProcessor(
-	config v1alpha1.ConfigurationSpec,
+	config v1alpha2.ConfigurationSpec,
 	clusters clusters.Registry,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
@@ -53,7 +54,7 @@ func NewTestsProcessor(
 }
 
 type testsProcessor struct {
-	config   v1alpha1.ConfigurationSpec
+	config   v1alpha2.ConfigurationSpec
 	clusters clusters.Registry
 	clock    clock.PassiveClock
 	summary  *summary.Summary
@@ -82,13 +83,13 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	}
 	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
 	if clusterClient != nil {
-		if p.config.Namespace != "" {
-			namespace := client.Namespace(p.config.Namespace)
+		if p.config.Namespace.Name != "" {
+			namespace := client.Namespace(p.config.Namespace.Name)
 			object := client.ToUnstructured(&namespace)
 			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-			if p.config.NamespaceTemplate != nil && p.config.NamespaceTemplate.Value != nil {
+			if p.config.Namespace.Template != nil && p.config.Namespace.Template.Value != nil {
 				template := v1alpha1.Any{
-					Value: p.config.NamespaceTemplate.Value,
+					Value: p.config.Namespace.Template.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
 					failer.FailNow(ctx)
@@ -104,7 +105,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 					logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.FailNow(ctx)
 				}
-				if !cleanup.Skip(p.config.SkipDelete, nil, nil) {
+				if !cleanup.Skip(p.config.Cleanup.SkipDelete, nil, nil) {
 					t.Cleanup(func() {
 						operation := newOperation(
 							OperationInfo{},
@@ -139,17 +140,17 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		}
 		var scenarios []discovery.Test
 		if test.Test != nil {
-			if len(test.Spec.Scenarios) == 0 {
+			if len(test.Test.Spec.Scenarios) == 0 {
 				scenarios = append(scenarios, test)
 			} else {
-				for s := range test.Spec.Scenarios {
-					scenario := test.Spec.Scenarios[s]
+				for s := range test.Test.Spec.Scenarios {
+					scenario := test.Test.Spec.Scenarios[s]
 					test := test
 					test.Test = test.Test.DeepCopy()
-					test.Spec.Scenarios = nil
+					test.Test.Spec.Scenarios = nil
 					bindings := scenario.Bindings
-					bindings = append(bindings, test.Spec.Bindings...)
-					test.Spec.Bindings = bindings
+					bindings = append(bindings, test.Test.Spec.Bindings...)
+					test.Test.Spec.Bindings = bindings
 					scenarios = append(scenarios, test)
 				}
 			}
@@ -167,7 +168,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				info := TestInfo{
 					Id:         i + 1,
 					ScenarioId: s + 1,
-					Metadata:   test.ObjectMeta,
+					Metadata:   test.Test.ObjectMeta,
 				}
 				processor.Run(
 					testing.IntoContext(ctx, t),
