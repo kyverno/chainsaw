@@ -78,7 +78,7 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 		converter = defaultConverter
 	}
 	if validator == nil {
-		// validator = configvalidation.ValidateConfiguration
+		// TODO: replace with schema validation
 		validator = func(obj *v1alpha2.Configuration) field.ErrorList {
 			return nil
 		}

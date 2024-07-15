@@ -45,7 +45,7 @@ func run(
 ) (*summary.Summary, error) {
 	var summary summary.Summary
 	var testsReport *report.Report
-	if config.Report.Format != "" {
+	if config.Report != nil && config.Report.Format != "" {
 		testsReport = report.New(config.Report.Name)
 	}
 	if len(tests) == 0 {
@@ -89,7 +89,7 @@ func run(
 	if code := m.Run(); code > 1 {
 		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
-	if testsReport != nil && config.Report.Format != "" {
+	if testsReport != nil && config.Report != nil && config.Report.Format != "" {
 		if err := testsReport.Save(config.Report.Format, config.Report.Path, config.Report.Name); err != nil {
 			return &summary, err
 		}

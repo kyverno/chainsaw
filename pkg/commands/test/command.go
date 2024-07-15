@@ -145,12 +145,21 @@ func Command() *cobra.Command {
 				configuration.Spec.Execution.RepeatCount = &options.repeatCount
 			}
 			if flagutils.IsSet(flags, "report-format") {
+				if configuration.Spec.Report == nil {
+					configuration.Spec.Report = &v1alpha2.ReportOptions{}
+				}
 				configuration.Spec.Report.Format = v1alpha2.ReportFormatType(options.reportFormat)
 			}
 			if flagutils.IsSet(flags, "report-path") {
+				if configuration.Spec.Report == nil {
+					configuration.Spec.Report = &v1alpha2.ReportOptions{}
+				}
 				configuration.Spec.Report.Path = options.reportPath
 			}
 			if flagutils.IsSet(flags, "report-name") {
+				if configuration.Spec.Report == nil {
+					configuration.Spec.Report = &v1alpha2.ReportOptions{}
+				}
 				configuration.Spec.Report.Name = options.reportName
 			}
 			if flagutils.IsSet(flags, "namespace") {
@@ -213,10 +222,12 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- TestDirs %v\n", options.testDirs)
 			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.Cleanup.SkipDelete)
 			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.Execution.FailFast)
-			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
-			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.Report.Name)
-			if configuration.Spec.Report.Path != "" {
-				fmt.Fprintf(out, "- ReportPath '%v'\n", configuration.Spec.Report.Path)
+			if configuration.Spec.Report != nil {
+				fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
+				fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.Report.Name)
+				if configuration.Spec.Report.Path != "" {
+					fmt.Fprintf(out, "- ReportPath '%v'\n", configuration.Spec.Report.Path)
+				}
 			}
 			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace.Name)
 			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.Discovery.FullName)
@@ -230,7 +241,7 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.ExecDuration())
 			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.Deletion.Propagation)
 			if configuration.Spec.Execution.Parallel != nil && *configuration.Spec.Execution.Parallel > 0 {
-				fmt.Fprintf(out, "- Parallel %d\n", configuration.Spec.Execution.Parallel)
+				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Execution.Parallel)
 			}
 			if configuration.Spec.Execution.RepeatCount != nil {
 				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.Execution.RepeatCount)

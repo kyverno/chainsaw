@@ -15,10 +15,7 @@ func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *v1alph
 	out.IncludeTestRegex = in.Discovery.IncludeTestRegex
 	out.TestFile = in.Discovery.TestFile
 	out.FullName = in.Discovery.FullName
-	// TODO
-	// if in := in.Error; in != nil {
-	// 	out.Catch = in.Catch
-	// }
+	out.Catch = in.Error.Catch
 	out.FailFast = in.Execution.FailFast
 	out.Parallel = in.Execution.Parallel
 	out.RepeatCount = in.Execution.RepeatCount
@@ -50,10 +47,9 @@ func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alph
 		TestFile:         in.TestFile,
 		FullName:         in.FullName,
 	}
-	// TODO
-	// out.Error = &ErrorOptions{
-	// 	Catch: in.Catch,
-	// }
+	out.Error = v1alpha2.ErrorOptions{
+		Catch: in.Catch,
+	}
 	out.Execution = v1alpha2.ExecutionOptions{
 		FailFast:                    in.FailFast,
 		Parallel:                    in.Parallel,
