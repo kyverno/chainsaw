@@ -77,12 +77,19 @@ func main() {
 			if err != nil {
 				return err
 			}
+			oneOf, err := markers.MakeDefinition("kubebuilder:oneOf", markers.DescribesType, OneOf(nil))
+			if err != nil {
+				return err
+			}
 			// otherwise, set up the runtime for actually running the generators
 			rt, err := genall.FromOptions(optionsRegistry, rawOpts)
 			if err != nil {
 				return err
 			}
 			if err := rt.Collector.Registry.Register(patch); err != nil {
+				return err
+			}
+			if err := rt.Collector.Registry.Register(oneOf); err != nil {
 				return err
 			}
 			if len(rt.Generators) == 0 {

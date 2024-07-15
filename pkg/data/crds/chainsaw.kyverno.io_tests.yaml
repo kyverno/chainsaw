@@ -64,6 +64,25 @@ spec:
                 items:
                   description: CatchFinally defines actions to be executed in catch,
                     finally and cleanup blocks.
+                  oneOf:
+                  - required:
+                    - podLogs
+                  - required:
+                    - events
+                  - required:
+                    - describe
+                  - required:
+                    - wait
+                  - required:
+                    - get
+                  - required:
+                    - delete
+                  - required:
+                    - command
+                  - required:
+                    - script
+                  - required:
+                    - sleep
                   properties:
                     command:
                       description: Command defines a command to run.
@@ -842,6 +861,25 @@ spec:
                       items:
                         description: CatchFinally defines actions to be executed in
                           catch, finally and cleanup blocks.
+                        oneOf:
+                        - required:
+                          - podLogs
+                        - required:
+                          - events
+                        - required:
+                          - describe
+                        - required:
+                          - wait
+                        - required:
+                          - get
+                        - required:
+                          - delete
+                        - required:
+                          - command
+                        - required:
+                          - script
+                        - required:
+                          - sleep
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -1528,6 +1566,25 @@ spec:
                       items:
                         description: CatchFinally defines actions to be executed in
                           catch, finally and cleanup blocks.
+                        oneOf:
+                        - required:
+                          - podLogs
+                        - required:
+                          - events
+                        - required:
+                          - describe
+                        - required:
+                          - wait
+                        - required:
+                          - get
+                        - required:
+                          - delete
+                        - required:
+                          - command
+                        - required:
+                          - script
+                        - required:
+                          - sleep
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -2249,6 +2306,25 @@ spec:
                       items:
                         description: CatchFinally defines actions to be executed in
                           catch, finally and cleanup blocks.
+                        oneOf:
+                        - required:
+                          - podLogs
+                        - required:
+                          - events
+                        - required:
+                          - describe
+                        - required:
+                          - wait
+                        - required:
+                          - get
+                        - required:
+                          - delete
+                        - required:
+                          - command
+                        - required:
+                          - script
+                        - required:
+                          - sleep
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -4463,6 +4539,25 @@ spec:
                     items:
                       description: CatchFinally defines actions to be executed in
                         catch, finally and cleanup blocks.
+                      oneOf:
+                      - required:
+                        - podLogs
+                      - required:
+                        - events
+                      - required:
+                        - describe
+                      - required:
+                        - wait
+                      - required:
+                        - get
+                      - required:
+                        - delete
+                      - required:
+                        - command
+                      - required:
+                        - script
+                      - required:
+                        - sleep
                       properties:
                         command:
                           description: Command defines a command to run.

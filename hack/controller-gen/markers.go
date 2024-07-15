@@ -29,3 +29,14 @@ func (m MergePatch) ApplyToSchema(schema *apiext.JSONSchemaProps) error {
 func (m MergePatch) ApplyPriority() markers.ApplyPriority {
 	return markers.ApplyPriorityDefault * 2
 }
+
+type OneOf []string
+
+func (m OneOf) ApplyToSchema(schema *apiext.JSONSchemaProps) error {
+	for _, prop := range m {
+		schema.OneOf = append(schema.OneOf, apiext.JSONSchemaProps{
+			Required: []string{prop},
+		})
+	}
+	return nil
+}
