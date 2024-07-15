@@ -9,6 +9,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
@@ -49,7 +50,7 @@ type StepProcessor interface {
 }
 
 func NewStepProcessor(
-	config v1alpha1.ConfigurationSpec,
+	config v1alpha2.ConfigurationSpec,
 	clusters clusters.Registry,
 	namespacer namespacer.Namespacer,
 	clock clock.PassiveClock,
@@ -70,7 +71,7 @@ func NewStepProcessor(
 }
 
 type stepProcessor struct {
-	config     v1alpha1.ConfigurationSpec
+	config     v1alpha2.ConfigurationSpec
 	clusters   clusters.Registry
 	namespacer namespacer.Namespacer
 	clock      clock.PassiveClock
@@ -104,7 +105,7 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	delay := p.config.DelayBeforeCleanup
+	delay := p.config.Cleanup.DelayBeforeCleanup
 	if p.test.Test.Spec.DelayBeforeCleanup != nil {
 		delay = p.test.Test.Spec.DelayBeforeCleanup
 	}
@@ -274,7 +275,7 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 		}
 	}
 	var handlers []v1alpha1.CatchFinally
-	handlers = append(handlers, p.config.Catch...)
+	handlers = append(handlers, p.config.Error.Catch...)
 	handlers = append(handlers, p.test.Test.Spec.Catch...)
 	handlers = append(handlers, p.step.Catch...)
 	for i, handler := range handlers {
@@ -380,7 +381,7 @@ func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Regis
 		operationReport = p.report.ForOperation("Apply "+op.File, report.OperationTypeApply)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	clusterResolver := p.getClusterResolver(clusters.Register(registeredClusters, p.test.BasePath, op.Clusters), op.Cluster)
 	for i := range resources {
 		resource := resources[i]
@@ -419,7 +420,7 @@ func (p *stepProcessor) assertOperation(id int, registeredClusters clusters.Regi
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Assert ", report.OperationTypeAssert)
 	}
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	clusterResolver := p.getClusterResolver(clusters.Register(registeredClusters, p.test.BasePath, op.Clusters), op.Cluster)
 	for i := range resources {
 		resource := resources[i]
@@ -486,7 +487,7 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 		operationReport = p.report.ForOperation("Create ", report.OperationTypeCreate)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	for i := range resources {
@@ -541,7 +542,7 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Delete ", report.OperationTypeDelete)
 	}
-	deletionPropagationPolicy := p.config.DeletionPropagationPolicy
+	deletionPropagationPolicy := p.config.Deletion.Propagation
 	if op.DeletionPropagationPolicy != nil {
 		deletionPropagationPolicy = *op.DeletionPropagationPolicy
 	} else if p.step.DeletionPropagationPolicy != nil {
@@ -549,7 +550,7 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 	} else if p.test.Test.Spec.DeletionPropagationPolicy != nil {
 		deletionPropagationPolicy = *p.test.Test.Spec.DeletionPropagationPolicy
 	}
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	for i := range resources {
@@ -619,7 +620,7 @@ func (p *stepProcessor) errorOperation(id int, registeredClusters clusters.Regis
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Error ", report.OperationTypeCommand)
 	}
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	for i := range resources {
@@ -723,7 +724,7 @@ func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Regis
 		operationReport = p.report.ForOperation("Patch ", report.OperationTypeCreate)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	for i := range resources {
@@ -846,7 +847,7 @@ func (p *stepProcessor) updateOperation(id int, registeredClusters clusters.Regi
 		operationReport = p.report.ForOperation("Update ", report.OperationTypeCreate)
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, p.config.Template)
+	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	for i := range resources {
@@ -948,7 +949,7 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.ActionResourceRef) ([]uns
 }
 
 func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) error {
-	terminationGracePeriod := p.config.ForceTerminationGracePeriod
+	terminationGracePeriod := p.config.Execution.ForceTerminationGracePeriod
 	if p.test.Test.Spec.ForceTerminationGracePeriod != nil {
 		terminationGracePeriod = p.test.Test.Spec.ForceTerminationGracePeriod
 	}
@@ -984,7 +985,7 @@ func (p *stepProcessor) getCleaner(cleaner *cleaner, dryRun bool) cleanup.Cleane
 	if dryRun {
 		return nil
 	}
-	if cleanup.Skip(p.config.SkipDelete, p.test.Test.Spec.SkipDelete, p.step.TestStepSpec.SkipDelete) {
+	if cleanup.Skip(p.config.Cleanup.SkipDelete, p.test.Test.Spec.SkipDelete, p.step.TestStepSpec.SkipDelete) {
 		return nil
 	}
 	return func(obj unstructured.Unstructured, c client.Client) {
