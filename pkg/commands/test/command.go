@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/config"
 	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -77,7 +78,7 @@ func Command() *cobra.Command {
 			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
 			fmt.Fprintf(out, "Version: %s\n", version.Version())
-			var configuration v1alpha1.Configuration
+			var configuration v1alpha2.Configuration
 			// if no config file was provided, give a chance to the default config name
 			if options.config == "" {
 				if _, err := os.Stat(config.DefaultFileName); err == nil {
@@ -108,7 +109,7 @@ func Command() *cobra.Command {
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
 			if flagutils.IsSet(flags, "test-file") {
-				configuration.Spec.TestFile = options.testFile
+				configuration.Spec.Discovery.TestFile = options.testFile
 			}
 			if flagutils.IsSet(flags, "apply-timeout") {
 				configuration.Spec.Timeouts.Apply = &options.applyTimeout
@@ -129,49 +130,58 @@ func Command() *cobra.Command {
 				configuration.Spec.Timeouts.Exec = &options.execTimeout
 			}
 			if flagutils.IsSet(flags, "skip-delete") {
-				configuration.Spec.SkipDelete = options.skipDelete
+				configuration.Spec.Cleanup.SkipDelete = options.skipDelete
 			}
 			if flagutils.IsSet(flags, "template") {
-				configuration.Spec.Template = &options.template
+				configuration.Spec.Templating.Enabled = options.template
 			}
 			if flagutils.IsSet(flags, "fail-fast") {
-				configuration.Spec.FailFast = options.failFast
+				configuration.Spec.Execution.FailFast = options.failFast
 			}
 			if flagutils.IsSet(flags, "parallel") {
-				configuration.Spec.Parallel = &options.parallel
+				configuration.Spec.Execution.Parallel = &options.parallel
 			}
 			if flagutils.IsSet(flags, "repeat-count") {
-				configuration.Spec.RepeatCount = &options.repeatCount
+				configuration.Spec.Execution.RepeatCount = &options.repeatCount
 			}
 			if flagutils.IsSet(flags, "report-format") {
-				configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
+				if configuration.Spec.Report == nil {
+					configuration.Spec.Report = &v1alpha2.ReportOptions{}
+				}
+				configuration.Spec.Report.Format = v1alpha2.ReportFormatType(options.reportFormat)
 			}
 			if flagutils.IsSet(flags, "report-path") {
-				configuration.Spec.ReportPath = options.reportPath
+				if configuration.Spec.Report == nil {
+					configuration.Spec.Report = &v1alpha2.ReportOptions{}
+				}
+				configuration.Spec.Report.Path = options.reportPath
 			}
 			if flagutils.IsSet(flags, "report-name") {
-				configuration.Spec.ReportName = options.reportName
+				if configuration.Spec.Report == nil {
+					configuration.Spec.Report = &v1alpha2.ReportOptions{}
+				}
+				configuration.Spec.Report.Name = options.reportName
 			}
 			if flagutils.IsSet(flags, "namespace") {
-				configuration.Spec.Namespace = options.namespace
+				configuration.Spec.Namespace.Name = options.namespace
 			}
 			if flagutils.IsSet(flags, "deletion-propagation-policy") {
-				configuration.Spec.DeletionPropagationPolicy = metav1.DeletionPropagation(options.deletionPropagationPolicy)
+				configuration.Spec.Deletion.Propagation = metav1.DeletionPropagation(options.deletionPropagationPolicy)
 			}
 			if flagutils.IsSet(flags, "full-name") {
-				configuration.Spec.FullName = options.fullName
+				configuration.Spec.Discovery.FullName = options.fullName
 			}
 			if flagutils.IsSet(flags, "include-test-regex") {
-				configuration.Spec.IncludeTestRegex = options.includeTestRegex
+				configuration.Spec.Discovery.IncludeTestRegex = options.includeTestRegex
 			}
 			if flagutils.IsSet(flags, "exclude-test-regex") {
-				configuration.Spec.ExcludeTestRegex = options.excludeTestRegex
+				configuration.Spec.Discovery.ExcludeTestRegex = options.excludeTestRegex
 			}
 			if flagutils.IsSet(flags, "force-termination-grace-period") {
-				configuration.Spec.ForceTerminationGracePeriod = &options.forceTerminationGracePeriod
+				configuration.Spec.Execution.ForceTerminationGracePeriod = &options.forceTerminationGracePeriod
 			}
 			if flagutils.IsSet(flags, "cleanup-delay") {
-				configuration.Spec.DelayBeforeCleanup = &options.delayBeforeCleanup
+				configuration.Spec.Cleanup.DelayBeforeCleanup = &options.delayBeforeCleanup
 			}
 			if flagutils.IsSet(flags, "cluster") {
 				for _, cluster := range options.clusters {
@@ -206,39 +216,41 @@ func Command() *cobra.Command {
 			}
 			// if pause on failure is set, force non concurrency
 			if options.pauseOnFailure {
-				configuration.Spec.Parallel = ptr.To(1)
+				configuration.Spec.Execution.Parallel = ptr.To(1)
 			}
-			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.TestFile)
+			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.Discovery.TestFile)
 			fmt.Fprintf(out, "- TestDirs %v\n", options.testDirs)
-			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
-			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
-			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
-			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.ReportName)
-			if configuration.Spec.ReportPath != "" {
-				fmt.Fprintf(out, "- ReportPath '%v'\n", configuration.Spec.ReportPath)
+			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.Cleanup.SkipDelete)
+			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.Execution.FailFast)
+			if configuration.Spec.Report != nil {
+				fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
+				fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.Report.Name)
+				if configuration.Spec.Report.Path != "" {
+					fmt.Fprintf(out, "- ReportPath '%v'\n", configuration.Spec.Report.Path)
+				}
 			}
-			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
-			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
-			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.IncludeTestRegex)
-			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.ExcludeTestRegex)
+			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace.Name)
+			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.Discovery.FullName)
+			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.Discovery.IncludeTestRegex)
+			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.Discovery.ExcludeTestRegex)
 			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.ApplyDuration())
 			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.AssertDuration())
 			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.CleanupDuration())
 			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.DeleteDuration())
 			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.ErrorDuration())
 			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.ExecDuration())
-			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.DeletionPropagationPolicy)
-			if configuration.Spec.Parallel != nil && *configuration.Spec.Parallel > 0 {
-				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Parallel)
+			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.Deletion.Propagation)
+			if configuration.Spec.Execution.Parallel != nil && *configuration.Spec.Execution.Parallel > 0 {
+				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Execution.Parallel)
 			}
-			if configuration.Spec.RepeatCount != nil {
-				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.RepeatCount)
+			if configuration.Spec.Execution.RepeatCount != nil {
+				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.Execution.RepeatCount)
 			}
-			if configuration.Spec.ForceTerminationGracePeriod != nil {
-				fmt.Fprintf(out, "- ForceTerminationGracePeriod %v\n", configuration.Spec.ForceTerminationGracePeriod.Duration)
+			if configuration.Spec.Execution.ForceTerminationGracePeriod != nil {
+				fmt.Fprintf(out, "- ForceTerminationGracePeriod %v\n", configuration.Spec.Execution.ForceTerminationGracePeriod.Duration)
 			}
-			if configuration.Spec.DelayBeforeCleanup != nil {
-				fmt.Fprintf(out, "- DelayBeforeCleanup %v\n", configuration.Spec.DelayBeforeCleanup.Duration)
+			if configuration.Spec.Cleanup.DelayBeforeCleanup != nil {
+				fmt.Fprintf(out, "- DelayBeforeCleanup %v\n", configuration.Spec.Cleanup.DelayBeforeCleanup.Duration)
 			}
 			if len(options.selector) != 0 {
 				fmt.Fprintf(out, "- Selector %v\n", options.selector)
@@ -246,9 +258,7 @@ func Command() *cobra.Command {
 			if len(options.values) != 0 {
 				fmt.Fprintf(out, "- Values %v\n", options.values)
 			}
-			if configuration.Spec.Template != nil {
-				fmt.Fprintf(out, "- Template %v\n", *configuration.Spec.Template)
-			}
+			fmt.Fprintf(out, "- Template %v\n", configuration.Spec.Templating.Enabled)
 			if len(configuration.Spec.Clusters) != 0 {
 				fmt.Fprintf(out, "- Clusters %v\n", configuration.Spec.Clusters)
 			}
@@ -270,7 +280,7 @@ func Command() *cobra.Command {
 				}
 				selector = parsed
 			}
-			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, selector, options.remarshal, options.testDirs...)
+			tests, err := discovery.DiscoverTests(configuration.Spec.Discovery.TestFile, selector, options.remarshal, options.testDirs...)
 			if err != nil {
 				return err
 			}

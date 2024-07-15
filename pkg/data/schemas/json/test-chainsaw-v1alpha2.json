@@ -410,181 +410,12 @@
                 "null"
               ],
               "items": {
-                "description": "Operation defines operation elements.",
+                "description": "CatchFinally defines actions to be executed in catch, finally and cleanup blocks.",
                 "type": [
                   "object",
                   "null"
                 ],
                 "properties": {
-                  "apply": {
-                    "description": "Apply represents resources that should be applied for this test step. This can include things\nlike configuration settings or any other resources that need to be available during the test.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
-                    "properties": {
-                      "dryRun": {
-                        "description": "DryRun determines whether the file should be applied in dry run mode.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "expect": {
-                        "description": "Expect defines a list of matched checks to validate the operation outcome.",
-                        "type": [
-                          "array",
-                          "null"
-                        ],
-                        "items": {
-                          "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
-                          "required": [
-                            "check"
-                          ],
-                          "properties": {
-                            "check": {
-                              "description": "Check defines the verification statement.",
-                              "x-kubernetes-preserve-unknown-fields": true
-                            },
-                            "match": {
-                              "description": "Match defines the matching statement.",
-                              "x-kubernetes-preserve-unknown-fields": true
-                            }
-                          }
-                        }
-                      },
-                      "file": {
-                        "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "resource": {
-                        "description": "Resource provides a resource to be applied.",
-                        "x-kubernetes-embedded-resource": true,
-                        "x-kubernetes-preserve-unknown-fields": true
-                      },
-                      "template": {
-                        "description": "Template determines whether resources should be considered for templating.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "timeout": {
-                        "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      }
-                    }
-                  },
-                  "assert": {
-                    "description": "Assert represents an assertion to be made. It checks whether the conditions specified in the assertion hold true.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
-                    "properties": {
-                      "file": {
-                        "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "resource": {
-                        "description": "Check provides a check used in assertions.",
-                        "x-kubernetes-preserve-unknown-fields": true
-                      },
-                      "template": {
-                        "description": "Template determines whether resources should be considered for templating.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "timeout": {
-                        "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      }
-                    }
-                  },
-                  "bindings": {
-                    "description": "Bindings defines additional binding key/values.",
-                    "type": [
-                      "array",
-                      "null"
-                    ],
-                    "items": {
-                      "description": "Binding represents a key/value set as a binding in an executing test.",
-                      "type": [
-                        "object",
-                        "null"
-                      ],
-                      "required": [
-                        "name",
-                        "value"
-                      ],
-                      "properties": {
-                        "name": {
-                          "description": "Name the name of the binding.",
-                          "type": "string",
-                          "pattern": "^(?:\\w+|\\(.+\\))$"
-                        },
-                        "value": {
-                          "description": "Value value of the binding.",
-                          "x-kubernetes-preserve-unknown-fields": true
-                        }
-                      }
-                    }
-                  },
-                  "cluster": {
-                    "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
-                  },
-                  "clusters": {
-                    "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
-                    "additionalProperties": {
-                      "description": "Cluster defines cluster config and context.",
-                      "type": [
-                        "object",
-                        "null"
-                      ],
-                      "required": [
-                        "kubeconfig"
-                      ],
-                      "properties": {
-                        "context": {
-                          "description": "Context is the name of the context to use.",
-                          "type": [
-                            "string",
-                            "null"
-                          ]
-                        },
-                        "kubeconfig": {
-                          "description": "Kubeconfig is the path to the referenced file.",
-                          "type": "string"
-                        }
-                      }
-                    }
-                  },
                   "command": {
                     "description": "Command defines a command to run.",
                     "type": [
@@ -608,9 +439,75 @@
                           ]
                         }
                       },
+                      "bindings": {
+                        "description": "Bindings defines additional binding key/values.",
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "description": "Binding represents a key/value set as a binding in an executing test.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "name",
+                            "value"
+                          ],
+                          "properties": {
+                            "name": {
+                              "description": "Name the name of the binding.",
+                              "type": "string",
+                              "pattern": "^(?:\\w+|\\(.+\\))$"
+                            },
+                            "value": {
+                              "description": "Value value of the binding.",
+                              "x-kubernetes-preserve-unknown-fields": true
+                            }
+                          }
+                        }
+                      },
                       "check": {
                         "description": "Check is an assertion tree to validate the operation outcome.",
                         "x-kubernetes-preserve-unknown-fields": true
+                      },
+                      "cluster": {
+                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clusters": {
+                        "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "description": "Cluster defines cluster config and context.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "kubeconfig"
+                          ],
+                          "properties": {
+                            "context": {
+                              "description": "Context is the name of the context to use.",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "kubeconfig": {
+                              "description": "Kubeconfig is the path to the referenced file.",
+                              "type": "string"
+                            }
+                          }
+                        }
                       },
                       "entrypoint": {
                         "description": "Entrypoint is the command entry point to run.",
@@ -645,77 +542,41 @@
                           }
                         }
                       },
-                      "skipLogOutput": {
-                        "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "timeout": {
-                        "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      }
-                    }
-                  },
-                  "create": {
-                    "description": "Create represents a creation operation.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
-                    "properties": {
-                      "dryRun": {
-                        "description": "DryRun determines whether the file should be applied in dry run mode.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "expect": {
-                        "description": "Expect defines a list of matched checks to validate the operation outcome.",
+                      "outputs": {
+                        "description": "Outputs defines output bindings.",
                         "type": [
                           "array",
                           "null"
                         ],
                         "items": {
-                          "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
+                          "description": "Output represents an output binding with a match to determine if the binding must be considered or not.",
                           "type": [
                             "object",
                             "null"
                           ],
                           "required": [
-                            "check"
+                            "name",
+                            "value"
                           ],
                           "properties": {
-                            "check": {
-                              "description": "Check defines the verification statement.",
-                              "x-kubernetes-preserve-unknown-fields": true
-                            },
                             "match": {
                               "description": "Match defines the matching statement.",
+                              "x-kubernetes-preserve-unknown-fields": true
+                            },
+                            "name": {
+                              "description": "Name the name of the binding.",
+                              "type": "string",
+                              "pattern": "^(?:\\w+|\\(.+\\))$"
+                            },
+                            "value": {
+                              "description": "Value value of the binding.",
                               "x-kubernetes-preserve-unknown-fields": true
                             }
                           }
                         }
                       },
-                      "file": {
-                        "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "resource": {
-                        "description": "Resource provides a resource to be applied.",
-                        "x-kubernetes-embedded-resource": true,
-                        "x-kubernetes-preserve-unknown-fields": true
-                      },
-                      "template": {
-                        "description": "Template determines whether resources should be considered for templating.",
+                      "skipLogOutput": {
+                        "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
                         "type": [
                           "boolean",
                           "null"
@@ -737,6 +598,72 @@
                       "null"
                     ],
                     "properties": {
+                      "bindings": {
+                        "description": "Bindings defines additional binding key/values.",
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "description": "Binding represents a key/value set as a binding in an executing test.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "name",
+                            "value"
+                          ],
+                          "properties": {
+                            "name": {
+                              "description": "Name the name of the binding.",
+                              "type": "string",
+                              "pattern": "^(?:\\w+|\\(.+\\))$"
+                            },
+                            "value": {
+                              "description": "Value value of the binding.",
+                              "x-kubernetes-preserve-unknown-fields": true
+                            }
+                          }
+                        }
+                      },
+                      "cluster": {
+                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clusters": {
+                        "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "description": "Cluster defines cluster config and context.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "kubeconfig"
+                          ],
+                          "properties": {
+                            "context": {
+                              "description": "Context is the name of the context to use.",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "kubeconfig": {
+                              "description": "Kubeconfig is the path to the referenced file.",
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
                       "deletionPropagationPolicy": {
                         "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in the Configuration, the Test and the TestStep.",
                         "type": [
@@ -802,71 +729,18 @@
                             "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                             "type": "string"
                           },
-                          "labelSelector": {
+                          "labels": {
                             "description": "Label selector to match objects to delete",
                             "type": [
                               "object",
                               "null"
                             ],
-                            "properties": {
-                              "matchExpressions": {
-                                "description": "matchExpressions is a list of label selector requirements. The requirements are ANDed.",
-                                "type": [
-                                  "array",
-                                  "null"
-                                ],
-                                "items": {
-                                  "description": "A label selector requirement is a selector that contains values, a key, and an operator that\nrelates the key and values.",
-                                  "type": [
-                                    "object",
-                                    "null"
-                                  ],
-                                  "required": [
-                                    "key",
-                                    "operator"
-                                  ],
-                                  "properties": {
-                                    "key": {
-                                      "description": "key is the label key that the selector applies to.",
-                                      "type": "string"
-                                    },
-                                    "operator": {
-                                      "description": "operator represents a key's relationship to a set of values.\nValid operators are In, NotIn, Exists and DoesNotExist.",
-                                      "type": "string"
-                                    },
-                                    "values": {
-                                      "description": "values is an array of string values. If the operator is In or NotIn,\nthe values array must be non-empty. If the operator is Exists or DoesNotExist,\nthe values array must be empty. This array is replaced during a strategic\nmerge patch.",
-                                      "type": [
-                                        "array",
-                                        "null"
-                                      ],
-                                      "items": {
-                                        "type": [
-                                          "string",
-                                          "null"
-                                        ]
-                                      },
-                                      "x-kubernetes-list-type": "atomic"
-                                    }
-                                  }
-                                },
-                                "x-kubernetes-list-type": "atomic"
-                              },
-                              "matchLabels": {
-                                "description": "matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels\nmap is equivalent to an element of matchExpressions, whose key field is \"key\", the\noperator is \"In\", and the values array contains only \"value\". The requirements are ANDed.",
-                                "type": [
-                                  "object",
-                                  "null"
-                                ],
-                                "additionalProperties": {
-                                  "type": [
-                                    "string",
-                                    "null"
-                                  ]
-                                }
-                              }
-                            },
-                            "x-kubernetes-map-type": "atomic"
+                            "additionalProperties": {
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            }
                           },
                           "name": {
                             "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -914,6 +788,43 @@
                       "apiVersion": {
                         "description": "API version of the referent.",
                         "type": "string"
+                      },
+                      "cluster": {
+                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clusters": {
+                        "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "description": "Cluster defines cluster config and context.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "kubeconfig"
+                          ],
+                          "properties": {
+                            "context": {
+                              "description": "Context is the name of the context to use.",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "kubeconfig": {
+                              "description": "Kubeconfig is the path to the referenced file.",
+                              "type": "string"
+                            }
+                          }
+                        }
                       },
                       "kind": {
                         "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
@@ -963,40 +874,6 @@
                       "null"
                     ]
                   },
-                  "error": {
-                    "description": "Error represents the expected errors for this test step. If any of these errors occur, the test\nwill consider them as expected; otherwise, they will be treated as test failures.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
-                    "properties": {
-                      "file": {
-                        "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "resource": {
-                        "description": "Check provides a check used in assertions.",
-                        "x-kubernetes-preserve-unknown-fields": true
-                      },
-                      "template": {
-                        "description": "Template determines whether resources should be considered for templating.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "timeout": {
-                        "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      }
-                    }
-                  },
                   "events": {
                     "description": "Events determines the events collector to execute.",
                     "type": [
@@ -1004,6 +881,43 @@
                       "null"
                     ],
                     "properties": {
+                      "cluster": {
+                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clusters": {
+                        "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "description": "Cluster defines cluster config and context.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "kubeconfig"
+                          ],
+                          "properties": {
+                            "context": {
+                              "description": "Context is the name of the context to use.",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "kubeconfig": {
+                              "description": "Kubeconfig is the path to the referenced file.",
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
                       "format": {
                         "description": "Format determines the output format (json or yaml).",
                         "type": [
@@ -1057,6 +971,43 @@
                         "description": "API version of the referent.",
                         "type": "string"
                       },
+                      "cluster": {
+                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clusters": {
+                        "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "description": "Cluster defines cluster config and context.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "kubeconfig"
+                          ],
+                          "properties": {
+                            "context": {
+                              "description": "Context is the name of the context to use.",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "kubeconfig": {
+                              "description": "Kubeconfig is the path to the referenced file.",
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
                       "format": {
                         "description": "Format determines the output format (json or yaml).",
                         "type": [
@@ -1099,108 +1050,6 @@
                       }
                     }
                   },
-                  "outputs": {
-                    "description": "Outputs defines output bindings.",
-                    "type": [
-                      "array",
-                      "null"
-                    ],
-                    "items": {
-                      "description": "Output represents an output binding with a match to determine if the binding must be considered or not.",
-                      "type": [
-                        "object",
-                        "null"
-                      ],
-                      "required": [
-                        "name",
-                        "value"
-                      ],
-                      "properties": {
-                        "match": {
-                          "description": "Match defines the matching statement.",
-                          "x-kubernetes-preserve-unknown-fields": true
-                        },
-                        "name": {
-                          "description": "Name the name of the binding.",
-                          "type": "string",
-                          "pattern": "^(?:\\w+|\\(.+\\))$"
-                        },
-                        "value": {
-                          "description": "Value value of the binding.",
-                          "x-kubernetes-preserve-unknown-fields": true
-                        }
-                      }
-                    }
-                  },
-                  "patch": {
-                    "description": "Patch represents a patch operation.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
-                    "properties": {
-                      "dryRun": {
-                        "description": "DryRun determines whether the file should be applied in dry run mode.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "expect": {
-                        "description": "Expect defines a list of matched checks to validate the operation outcome.",
-                        "type": [
-                          "array",
-                          "null"
-                        ],
-                        "items": {
-                          "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
-                          "required": [
-                            "check"
-                          ],
-                          "properties": {
-                            "check": {
-                              "description": "Check defines the verification statement.",
-                              "x-kubernetes-preserve-unknown-fields": true
-                            },
-                            "match": {
-                              "description": "Match defines the matching statement.",
-                              "x-kubernetes-preserve-unknown-fields": true
-                            }
-                          }
-                        }
-                      },
-                      "file": {
-                        "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "resource": {
-                        "description": "Resource provides a resource to be applied.",
-                        "x-kubernetes-embedded-resource": true,
-                        "x-kubernetes-preserve-unknown-fields": true
-                      },
-                      "template": {
-                        "description": "Template determines whether resources should be considered for templating.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "timeout": {
-                        "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      }
-                    }
-                  },
                   "podLogs": {
                     "description": "PodLogs determines the pod logs collector to execute.",
                     "type": [
@@ -1208,6 +1057,43 @@
                       "null"
                     ],
                     "properties": {
+                      "cluster": {
+                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clusters": {
+                        "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "description": "Cluster defines cluster config and context.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "kubeconfig"
+                          ],
+                          "properties": {
+                            "context": {
+                              "description": "Context is the name of the context to use.",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "kubeconfig": {
+                              "description": "Kubeconfig is the path to the referenced file.",
+                              "type": "string"
+                            }
+                          }
+                        }
+                      },
                       "container": {
                         "description": "Container in pod to get logs from else --all-containers is used.",
                         "type": [
@@ -1259,9 +1145,75 @@
                       "null"
                     ],
                     "properties": {
+                      "bindings": {
+                        "description": "Bindings defines additional binding key/values.",
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "description": "Binding represents a key/value set as a binding in an executing test.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "name",
+                            "value"
+                          ],
+                          "properties": {
+                            "name": {
+                              "description": "Name the name of the binding.",
+                              "type": "string",
+                              "pattern": "^(?:\\w+|\\(.+\\))$"
+                            },
+                            "value": {
+                              "description": "Value value of the binding.",
+                              "x-kubernetes-preserve-unknown-fields": true
+                            }
+                          }
+                        }
+                      },
                       "check": {
                         "description": "Check is an assertion tree to validate the operation outcome.",
                         "x-kubernetes-preserve-unknown-fields": true
+                      },
+                      "cluster": {
+                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clusters": {
+                        "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "description": "Cluster defines cluster config and context.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "kubeconfig"
+                          ],
+                          "properties": {
+                            "context": {
+                              "description": "Context is the name of the context to use.",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "kubeconfig": {
+                              "description": "Kubeconfig is the path to the referenced file.",
+                              "type": "string"
+                            }
+                          }
+                        }
                       },
                       "content": {
                         "description": "Content defines a shell script (run with \"sh -c ...\").",
@@ -1287,6 +1239,39 @@
                             "value"
                           ],
                           "properties": {
+                            "name": {
+                              "description": "Name the name of the binding.",
+                              "type": "string",
+                              "pattern": "^(?:\\w+|\\(.+\\))$"
+                            },
+                            "value": {
+                              "description": "Value value of the binding.",
+                              "x-kubernetes-preserve-unknown-fields": true
+                            }
+                          }
+                        }
+                      },
+                      "outputs": {
+                        "description": "Outputs defines output bindings.",
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "description": "Output represents an output binding with a match to determine if the binding must be considered or not.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "name",
+                            "value"
+                          ],
+                          "properties": {
+                            "match": {
+                              "description": "Match defines the matching statement.",
+                              "x-kubernetes-preserve-unknown-fields": true
+                            },
                             "name": {
                               "description": "Name the name of the binding.",
                               "type": "string",
@@ -1331,75 +1316,6 @@
                       }
                     }
                   },
-                  "update": {
-                    "description": "Update represents an update operation.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
-                    "properties": {
-                      "dryRun": {
-                        "description": "DryRun determines whether the file should be applied in dry run mode.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "expect": {
-                        "description": "Expect defines a list of matched checks to validate the operation outcome.",
-                        "type": [
-                          "array",
-                          "null"
-                        ],
-                        "items": {
-                          "description": "Expectation represents a check to be applied on the result of an operation\nwith a match filter to determine if the verification should be considered.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
-                          "required": [
-                            "check"
-                          ],
-                          "properties": {
-                            "check": {
-                              "description": "Check defines the verification statement.",
-                              "x-kubernetes-preserve-unknown-fields": true
-                            },
-                            "match": {
-                              "description": "Match defines the matching statement.",
-                              "x-kubernetes-preserve-unknown-fields": true
-                            }
-                          }
-                        }
-                      },
-                      "file": {
-                        "description": "File is the path to the referenced file. This can be a direct path to a file\nor an expression that matches multiple files, such as \"manifest/*.yaml\" for all YAML\nfiles within the \"manifest\" directory.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      },
-                      "resource": {
-                        "description": "Resource provides a resource to be applied.",
-                        "x-kubernetes-embedded-resource": true,
-                        "x-kubernetes-preserve-unknown-fields": true
-                      },
-                      "template": {
-                        "description": "Template determines whether resources should be considered for templating.",
-                        "type": [
-                          "boolean",
-                          "null"
-                        ]
-                      },
-                      "timeout": {
-                        "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
-                        "type": [
-                          "string",
-                          "null"
-                        ]
-                      }
-                    }
-                  },
                   "wait": {
                     "description": "Wait determines the resource wait collector to execute.",
                     "type": [
@@ -1415,6 +1331,43 @@
                       "apiVersion": {
                         "description": "API version of the referent.",
                         "type": "string"
+                      },
+                      "cluster": {
+                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "clusters": {
+                        "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
+                        "type": [
+                          "object",
+                          "null"
+                        ],
+                        "additionalProperties": {
+                          "description": "Cluster defines cluster config and context.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "kubeconfig"
+                          ],
+                          "properties": {
+                            "context": {
+                              "description": "Context is the name of the context to use.",
+                              "type": [
+                                "string",
+                                "null"
+                              ]
+                            },
+                            "kubeconfig": {
+                              "description": "Kubeconfig is the path to the referenced file.",
+                              "type": "string"
+                            }
+                          }
+                        }
                       },
                       "for": {
                         "description": "WaitFor specifies the condition to wait for.",

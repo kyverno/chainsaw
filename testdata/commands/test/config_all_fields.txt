@@ -18,6 +18,7 @@ Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)..
 - ExecTimeout 10s
 - DeletionPropagationPolicy Background
 - Parallel 5
+- Template true
 - NoCluster false
 - PauseOnFailure false
 Loading tests...

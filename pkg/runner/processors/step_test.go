@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -28,7 +29,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	testData := filepath.Join("..", "..", "..", "testdata", "runner", "processors")
 	testCases := []struct {
 		name         string
-		config       v1alpha1.ConfigurationSpec
+		config       v1alpha2.ConfigurationSpec
 		client       client.Client
 		namespacer   *fakeNamespacer.FakeNamespacer
 		clock        clock.PassiveClock
@@ -39,8 +40,8 @@ func TestStepProcessor_Run(t *testing.T) {
 		skipped      bool
 	}{{
 		name: "test with no handler",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
@@ -68,7 +69,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try operation with apply handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -115,7 +116,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with create handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -162,7 +163,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with assert handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -233,7 +234,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with error handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -304,7 +305,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with command handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{},
@@ -344,7 +345,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with script handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{},
@@ -383,7 +384,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with sleep handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client:     &fake.FakeClient{},
@@ -415,7 +416,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with delete handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -464,7 +465,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "dry run with create handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -514,7 +515,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "skip delete with create handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -562,7 +563,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try-raw resource with create handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -616,7 +617,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try-url resource with create handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -664,7 +665,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "raw resource with assert handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -758,7 +759,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try url-resource with assert handler",
-		config: v1alpha1.ConfigurationSpec{
+		config: v1alpha2.ConfigurationSpec{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -815,9 +816,11 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try, catch and finally operation with apply handler",
-		config: v1alpha1.ConfigurationSpec{
-			ForceTerminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
-			Timeouts:                    v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Execution: v1alpha2.ExecutionOptions{
+				ForceTerminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
+			},
+			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -939,8 +942,8 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "termination with create handler",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
