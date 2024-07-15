@@ -24,7 +24,7 @@ var (
 	optionsRegistry = &markers.Registry{}
 )
 
-func init() {
+func init() { //nolint:gochecknoinits
 	for genName, gen := range allGenerators {
 		// make the generator options marker itself
 		defn := markers.Must(markers.MakeDefinition(genName, markers.DescribesPackage, gen))

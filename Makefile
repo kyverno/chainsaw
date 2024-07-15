@@ -136,7 +136,7 @@ codegen-crds: codegen-register
 codegen-crds: codegen-conversion
 	@echo Generate crds... >&2
 	@rm -rf $(CRDS_PATH)	
-	@go run ./hack/controller-gen -- paths=./pkg/apis/... crd:crdVersions=v1,ignoreUnexportedFields=true output:dir=$(CRDS_PATH)
+	@go run ./hack/controller-gen -- paths=./pkg/apis/... crd:crdVersions=v1,ignoreUnexportedFields=true,generateEmbeddedObjectMeta=false output:dir=$(CRDS_PATH)
 	@echo Copy generated CRDs to embed in the CLI... >&2
 	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
 	@cp $(CRDS_PATH)/* pkg/data/crds
