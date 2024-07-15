@@ -139,17 +139,17 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		}
 		var scenarios []discovery.Test
 		if test.Test != nil {
-			if len(test.Spec.Scenarios) == 0 {
+			if len(test.Test.Spec.Scenarios) == 0 {
 				scenarios = append(scenarios, test)
 			} else {
-				for s := range test.Spec.Scenarios {
-					scenario := test.Spec.Scenarios[s]
+				for s := range test.Test.Spec.Scenarios {
+					scenario := test.Test.Spec.Scenarios[s]
 					test := test
 					test.Test = test.Test.DeepCopy()
-					test.Spec.Scenarios = nil
+					test.Test.Spec.Scenarios = nil
 					bindings := scenario.Bindings
-					bindings = append(bindings, test.Spec.Bindings...)
-					test.Spec.Bindings = bindings
+					bindings = append(bindings, test.Test.Spec.Bindings...)
+					test.Test.Spec.Bindings = bindings
 					scenarios = append(scenarios, test)
 				}
 			}
@@ -167,7 +167,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				info := TestInfo{
 					Id:         i + 1,
 					ScenarioId: s + 1,
-					Metadata:   test.ObjectMeta,
+					Metadata:   test.Test.ObjectMeta,
 				}
 				processor.Run(
 					testing.IntoContext(ctx, t),
