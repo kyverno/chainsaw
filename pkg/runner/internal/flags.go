@@ -4,11 +4,11 @@ import (
 	"flag"
 	"testing"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/runner/flags"
 )
 
-func SetupFlags(config v1alpha1.ConfigurationSpec) error {
+func SetupFlags(config v1alpha2.ConfigurationSpec) error {
 	testing.Init()
 	for k, v := range flags.GetFlags(config) {
 		if err := flag.Set(k, v); err != nil {

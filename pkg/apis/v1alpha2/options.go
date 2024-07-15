@@ -1,6 +1,7 @@
 package v1alpha2
 
 import (
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	_ "github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -52,7 +53,7 @@ type ErrorOptions struct {
 	// Catch defines what the tests steps will execute when an error happens.
 	// This will be combined with catch handlers defined at the test and step levels.
 	// +optional
-	Catch []Operation `json:"catch,omitempty"`
+	Catch []v1alpha1.CatchFinally `json:"catch,omitempty"`
 }
 
 // ExecutionOptions determines how tests are run.

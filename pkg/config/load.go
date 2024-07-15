@@ -9,9 +9,8 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
+	"github.com/kyverno/chainsaw/pkg/conversion"
 	"github.com/kyverno/chainsaw/pkg/data"
-	configvalidation "github.com/kyverno/chainsaw/pkg/validation/config"
-	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -29,8 +28,8 @@ const (
 type (
 	splitter      = func([]byte) ([][]byte, error)
 	loaderFactory = func(openapi.Client) (loader.Loader, error)
-	converter     = func(schema.GroupVersionKind, unstructured.Unstructured) (*v1alpha1.Configuration, error)
-	validator     = func(obj *v1alpha1.Configuration) field.ErrorList
+	converter     = func(schema.GroupVersionKind, unstructured.Unstructured) (*v1alpha2.Configuration, error)
+	validator     = func(obj *v1alpha2.Configuration) field.ErrorList
 )
 
 var (
@@ -38,7 +37,7 @@ var (
 	configuration_v1alpha2 = v1alpha2.SchemeGroupVersion.WithKind("Configuration")
 )
 
-func Load(path string) (*v1alpha1.Configuration, error) {
+func Load(path string) (*v1alpha2.Configuration, error) {
 	content, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		return nil, err
@@ -50,7 +49,7 @@ func Load(path string) (*v1alpha1.Configuration, error) {
 	return config, nil
 }
 
-func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
+func LoadBytes(content []byte) (*v1alpha2.Configuration, error) {
 	configs, err := Parse(content)
 	if err != nil {
 		return nil, err
@@ -64,11 +63,11 @@ func LoadBytes(content []byte) (*v1alpha1.Configuration, error) {
 	return configs[0], nil
 }
 
-func Parse(content []byte) ([]*v1alpha1.Configuration, error) {
+func Parse(content []byte) ([]*v1alpha2.Configuration, error) {
 	return parse(content, nil, nil, nil, nil)
 }
 
-func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter, validator validator) ([]*v1alpha1.Configuration, error) {
+func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter, validator validator) ([]*v1alpha2.Configuration, error) {
 	if splitter == nil {
 		splitter = yaml.SplitDocuments
 	}
@@ -79,13 +78,16 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 		converter = defaultConverter
 	}
 	if validator == nil {
-		validator = configvalidation.ValidateConfiguration
+		// TODO: replace with schema validation
+		validator = func(obj *v1alpha2.Configuration) field.ErrorList {
+			return nil
+		}
 	}
 	documents, err := splitter(content)
 	if err != nil {
 		return nil, err
 	}
-	var configs []*v1alpha1.Configuration
+	var configs []*v1alpha2.Configuration
 	// TODO: no need to allocate a validator every time
 	fs, err := fs.Sub(data.Crds(), data.CrdsFolder)
 	if err != nil {
@@ -112,15 +114,21 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 	return configs, nil
 }
 
-func defaultConverter(gvk schema.GroupVersionKind, untyped unstructured.Unstructured) (*v1alpha1.Configuration, error) {
+func defaultConverter(gvk schema.GroupVersionKind, untyped unstructured.Unstructured) (*v1alpha2.Configuration, error) {
 	scheme := runtime.NewScheme()
+	if err := v1alpha1.Install(scheme); err != nil {
+		return nil, err
+	}
 	if err := v1alpha2.Install(scheme); err != nil {
 		return nil, err
 	}
-	var out v1alpha1.Configuration
+	if err := conversion.RegisterConversions(scheme); err != nil {
+		return nil, err
+	}
+	var out v1alpha2.Configuration
 	switch gvk {
 	case configuration_v1alpha1:
-		if err := convert.Into(untyped, &out); err != nil {
+		if err := scheme.Convert(&untyped, &out, nil); err != nil {
 			return nil, err
 		}
 	case configuration_v1alpha2:

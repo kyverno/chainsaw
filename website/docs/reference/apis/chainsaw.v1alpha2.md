@@ -399,7 +399,7 @@ Instead of treating such an error as a test failure, it acknowledges it as expec
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `catch` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha2-Operation) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
+| `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the tests steps will execute when an error happens. This will be combined with catch handlers defined at the test and step levels.</p> |
 
 ## Events     {#chainsaw-kyverno-io-v1alpha2-Events}
 
@@ -497,7 +497,6 @@ For multiple objects use labels.</p>
 
 **Appears in:**
     
-- [ErrorOptions](#chainsaw-kyverno-io-v1alpha2-ErrorOptions)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha2-TestStepSpec)
 - [TryOperation](#chainsaw-kyverno-io-v1alpha2-TryOperation)
 
