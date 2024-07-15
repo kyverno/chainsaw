@@ -26,11 +26,12 @@ type Configuration struct {
 type ConfigurationSpec struct {
 	// Cleanup contains cleanup configuration.
 	// +optional
-	Cleanup *CleanupOptions `json:"cleanup,omitempty"`
+	// +kubebuilder:default:={}
+	Cleanup CleanupOptions `json:"cleanup"`
 
 	// Clusters holds a registry to clusters to support multi-cluster tests.
 	// +optional
-	Clusters Clusters `json:"clusters,omitempty"`
+	Clusters Clusters `json:"clusters"`
 
 	// Deletion contains the global deletion configuration.
 	// +optional
@@ -44,15 +45,18 @@ type ConfigurationSpec struct {
 
 	// Error contains the global error configuration.
 	// +optional
-	Error *ErrorOptions `json:"error,omitempty"`
+	// +kubebuilder:default:={}
+	Error ErrorOptions `json:"error,omitempty"`
 
 	// Execution contains tests execution configuration.
 	// +optional
-	Execution *ExecutionOptions `json:"execution,omitempty"`
+	// +kubebuilder:default:={}
+	Execution ExecutionOptions `json:"execution"`
 
 	// Namespace contains properties for the namespace to use for tests.
 	// +optional
-	Namespace *NamespaceOptions `json:"namespace,omitempty"`
+	// +kubebuilder:default:={}
+	Namespace NamespaceOptions `json:"namespace"`
 
 	// Report contains properties for the report.
 	// +optional
