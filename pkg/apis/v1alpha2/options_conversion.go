@@ -6,10 +6,8 @@ import (
 )
 
 func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *ConfigurationSpec, out *v1alpha1.ConfigurationSpec, _ conversion.Scope) error {
-	if in := in.Cleanup; in != nil {
-		out.SkipDelete = in.SkipDelete
-		out.DelayBeforeCleanup = in.DelayBeforeCleanup
-	}
+	out.SkipDelete = in.Cleanup.SkipDelete
+	out.DelayBeforeCleanup = in.Cleanup.DelayBeforeCleanup
 	out.Clusters = in.Clusters
 	out.DeletionPropagationPolicy = in.Deletion.Propagation
 	out.ExcludeTestRegex = in.Discovery.ExcludeTestRegex
@@ -20,16 +18,12 @@ func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *Config
 	// if in := in.Error; in != nil {
 	// 	out.Catch = in.Catch
 	// }
-	if in := in.Execution; in != nil {
-		out.FailFast = in.FailFast
-		out.Parallel = in.Parallel
-		out.RepeatCount = in.RepeatCount
-		out.ForceTerminationGracePeriod = in.ForceTerminationGracePeriod
-	}
-	if in := in.Namespace; in != nil {
-		out.Namespace = in.Name
-		out.NamespaceTemplate = in.Template
-	}
+	out.FailFast = in.Execution.FailFast
+	out.Parallel = in.Execution.Parallel
+	out.RepeatCount = in.Execution.RepeatCount
+	out.ForceTerminationGracePeriod = in.Execution.ForceTerminationGracePeriod
+	out.Namespace = in.Namespace.Name
+	out.NamespaceTemplate = in.Namespace.Template
 	if in := in.Report; in != nil {
 		out.ReportFormat = v1alpha1.ReportFormatType(in.Format)
 		out.ReportPath = in.Path
@@ -41,7 +35,7 @@ func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *Config
 }
 
 func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alpha1.ConfigurationSpec, out *ConfigurationSpec, _ conversion.Scope) error {
-	out.Cleanup = &CleanupOptions{
+	out.Cleanup = CleanupOptions{
 		SkipDelete:         in.SkipDelete,
 		DelayBeforeCleanup: in.DelayBeforeCleanup,
 	}
@@ -59,13 +53,13 @@ func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alph
 	// out.Error = &ErrorOptions{
 	// 	Catch: in.Catch,
 	// }
-	out.Execution = &ExecutionOptions{
+	out.Execution = ExecutionOptions{
 		FailFast:                    in.FailFast,
 		Parallel:                    in.Parallel,
 		RepeatCount:                 in.RepeatCount,
 		ForceTerminationGracePeriod: in.ForceTerminationGracePeriod,
 	}
-	out.Namespace = &NamespaceOptions{
+	out.Namespace = NamespaceOptions{
 		Name:     in.Namespace,
 		Template: in.NamespaceTemplate,
 	}

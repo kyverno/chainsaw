@@ -867,6 +867,7 @@ spec:
             description: Configuration spec.
             properties:
               cleanup:
+                default: {}
                 description: Cleanup contains cleanup configuration.
                 properties:
                   delayBeforeCleanup:
@@ -933,6 +934,7 @@ spec:
                     type: string
                 type: object
               error:
+                default: {}
                 description: Error contains the global error configuration.
                 properties:
                   catch:
@@ -1677,6 +1679,7 @@ spec:
                     type: array
                 type: object
               execution:
+                default: {}
                 description: Execution contains tests execution configuration.
                 properties:
                   failFast:
@@ -1700,6 +1703,7 @@ spec:
                     type: integer
                 type: object
               namespace:
+                default: {}
                 description: Namespace contains properties for the namespace to use
                   for tests.
                 properties:
