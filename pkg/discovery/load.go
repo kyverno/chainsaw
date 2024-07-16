@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/test"
+	"github.com/kyverno/chainsaw/pkg/loaders/test"
 	"golang.org/x/exp/maps"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )

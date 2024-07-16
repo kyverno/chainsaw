@@ -8,7 +8,7 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	basePath := "../../testdata/values"
+	basePath := "../../../testdata/values"
 	tests := []struct {
 		name    string
 		paths   []string
