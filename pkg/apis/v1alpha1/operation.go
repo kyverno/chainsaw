@@ -13,6 +13,7 @@ type OperationBase struct {
 }
 
 // Operation defines a single operation, only one action is permitted for a given operation.
+// +kubebuilder:oneOf:={apply,assert,command,create,delete,describe,error,events,patch,podLogs,proxy,script,sleep,update,wait}
 type Operation struct {
 	// OperationBase defines common elements to all operations.
 	// +optional

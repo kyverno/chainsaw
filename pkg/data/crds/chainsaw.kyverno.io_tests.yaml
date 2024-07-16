@@ -3046,6 +3046,37 @@ spec:
                       items:
                         description: Operation defines a single operation, only one
                           action is permitted for a given operation.
+                        oneOf:
+                        - required:
+                          - apply
+                        - required:
+                          - assert
+                        - required:
+                          - command
+                        - required:
+                          - create
+                        - required:
+                          - delete
+                        - required:
+                          - describe
+                        - required:
+                          - error
+                        - required:
+                          - events
+                        - required:
+                          - patch
+                        - required:
+                          - podLogs
+                        - required:
+                          - proxy
+                        - required:
+                          - script
+                        - required:
+                          - sleep
+                        - required:
+                          - update
+                        - required:
+                          - wait
                         properties:
                           apply:
                             description: |-

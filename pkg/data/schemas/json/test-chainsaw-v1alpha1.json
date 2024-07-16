@@ -5225,6 +5225,83 @@
                     "object",
                     "null"
                   ],
+                  "oneOf": [
+                    {
+                      "required": [
+                        "apply"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "assert"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "command"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "create"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "delete"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "describe"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "error"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "events"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "patch"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "podLogs"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "proxy"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "script"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "sleep"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "update"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "wait"
+                      ]
+                    }
+                  ],
                   "properties": {
                     "apply": {
                       "description": "Apply represents resources that should be applied for this test step. This can include things\nlike configuration settings or any other resources that need to be available during the test.",
