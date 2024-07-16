@@ -194,6 +194,11 @@ spec:
                       type: object
                     delete:
                       description: Delete represents a deletion operation.
+                      oneOf:
+                      - required:
+                        - file
+                      - required:
+                        - ref
                       properties:
                         bindings:
                           description: Bindings defines additional binding key/values.
@@ -994,6 +999,11 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - ref
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -1699,6 +1709,11 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - ref
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -2439,6 +2454,11 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - ref
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3201,6 +3221,11 @@ spec:
                             description: Assert represents an assertion to be made.
                               It checks whether the conditions specified in the assertion
                               hold true.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3497,6 +3522,11 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - ref
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3684,6 +3714,11 @@ spec:
                             description: |-
                               Error represents the expected errors for this test step. If any of these errors occur, the test
                               will consider them as expected; otherwise, they will be treated as test failures.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -4721,6 +4756,11 @@ spec:
                           type: object
                         delete:
                           description: Delete represents a deletion operation.
+                          oneOf:
+                          - required:
+                            - file
+                          - required:
+                            - ref
                           properties:
                             bindings:
                               description: Bindings defines additional binding key/values.

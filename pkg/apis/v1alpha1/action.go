@@ -20,6 +20,7 @@ type ActionCheck struct {
 }
 
 // ActionCheckRef contains check reference options for an action.
+// +kubebuilder:oneOf:={file,resource}
 type ActionCheckRef struct {
 	FileRef `json:",inline"`
 
@@ -187,6 +188,7 @@ type Create struct {
 }
 
 // Delete is a reference to an object that should be deleted
+// +kubebuilder:oneOf:={file,ref}
 type Delete struct {
 	ActionBindings     `json:",inline"`
 	ActionClusters     `json:",inline"`

@@ -177,6 +177,11 @@ spec:
                       type: object
                     delete:
                       description: Delete represents a deletion operation.
+                      oneOf:
+                      - required:
+                        - file
+                      - required:
+                        - ref
                       properties:
                         bindings:
                           description: Bindings defines additional binding key/values.
@@ -1094,6 +1099,11 @@ spec:
                           type: object
                         delete:
                           description: Delete represents a deletion operation.
+                          oneOf:
+                          - required:
+                            - file
+                          - required:
+                            - ref
                           properties:
                             bindings:
                               description: Bindings defines additional binding key/values.

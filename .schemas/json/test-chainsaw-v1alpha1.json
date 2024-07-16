@@ -599,6 +599,18 @@
                   "object",
                   "null"
                 ],
+                "oneOf": [
+                  {
+                    "required": [
+                      "file"
+                    ]
+                  },
+                  {
+                    "required": [
+                      "ref"
+                    ]
+                  }
+                ],
                 "properties": {
                   "bindings": {
                     "description": "Bindings defines additional binding key/values.",
@@ -1928,6 +1940,18 @@
                         "object",
                         "null"
                       ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "ref"
+                          ]
+                        }
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -3063,6 +3087,18 @@
                       "type": [
                         "object",
                         "null"
+                      ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "ref"
+                          ]
+                        }
                       ],
                       "properties": {
                         "bindings": {
@@ -4255,6 +4291,18 @@
                       "type": [
                         "object",
                         "null"
+                      ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "ref"
+                          ]
+                        }
                       ],
                       "properties": {
                         "bindings": {
@@ -5802,6 +5850,18 @@
                         "object",
                         "null"
                       ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "resource"
+                          ]
+                        }
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -6589,6 +6649,18 @@
                         "object",
                         "null"
                       ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "ref"
+                          ]
+                        }
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -6876,6 +6948,18 @@
                       "type": [
                         "object",
                         "null"
+                      ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "resource"
+                          ]
+                        }
                       ],
                       "properties": {
                         "bindings": {

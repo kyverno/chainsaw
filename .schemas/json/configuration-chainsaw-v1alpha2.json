@@ -691,6 +691,18 @@
                       "object",
                       "null"
                     ],
+                    "oneOf": [
+                      {
+                        "required": [
+                          "file"
+                        ]
+                      },
+                      {
+                        "required": [
+                          "ref"
+                        ]
+                      }
+                    ],
                     "properties": {
                       "bindings": {
                         "description": "Bindings defines additional binding key/values.",
