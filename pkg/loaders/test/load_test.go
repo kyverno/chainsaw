@@ -19,7 +19,7 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	basePath := "../../testdata/test"
+	basePath := "../../../testdata/test"
 	cm := unstructured.Unstructured{}
 	cm.SetAPIVersion("v1")
 	cm.SetKind("ConfigMap")
@@ -223,7 +223,7 @@ func TestLoad(t *testing.T) {
 }
 
 func Test_parse(t *testing.T) {
-	content, err := os.ReadFile("../../testdata/test/custom-test.yaml")
+	content, err := os.ReadFile("../../../testdata/test/custom-test.yaml")
 	assert.NoError(t, err)
 	tests := []struct {
 		name          string
@@ -299,7 +299,7 @@ func Test_parse(t *testing.T) {
 }
 
 func Test_parse_globalErr(t *testing.T) {
-	content, err := os.ReadFile("../../testdata/validation/example-file.yaml")
+	content, err := os.ReadFile("../../../testdata/validation/example-file.yaml")
 	assert.NoError(t, err)
 	internalloader.Err = errors.New("dummy error")
 	{
