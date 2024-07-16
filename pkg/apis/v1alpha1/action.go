@@ -114,6 +114,7 @@ type FileRef struct {
 }
 
 // ActionResourceRef contains resource reference options for an action.
+// +kubebuilder:oneOf:={file,resource}
 type ActionResourceRef struct {
 	FileRef `json:",inline"`
 	// Resource provides a resource to be applied.

@@ -3051,6 +3051,11 @@ spec:
                             description: |-
                               Apply represents resources that should be applied for this test step. This can include things
                               like configuration settings or any other resources that need to be available during the test.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3344,6 +3349,11 @@ spec:
                             type: boolean
                           create:
                             description: Create represents a creation operation.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3817,6 +3827,11 @@ spec:
                             type: object
                           patch:
                             description: Patch represents a patch operation.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -4180,6 +4195,11 @@ spec:
                             type: object
                           update:
                             description: Update represents an update operation.
+                            oneOf:
+                            - required:
+                              - file
+                            - required:
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
