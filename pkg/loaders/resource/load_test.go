@@ -12,7 +12,7 @@ import (
 )
 
 func TestLoad(t *testing.T) {
-	baseDir := filepath.Join("..", "..", "testdata", "resource")
+	baseDir := filepath.Join("..", "..", "..", "testdata", "resource")
 	tests := []struct {
 		fileName    string
 		expectError bool
@@ -97,7 +97,7 @@ func TestLoadFromURI(t *testing.T) {
 }
 
 func TestParse(t *testing.T) {
-	baseDir := filepath.Join("..", "..", "testdata", "resource")
+	baseDir := filepath.Join("..", "..", "..", "testdata", "resource")
 	tests := []struct {
 		fileName          string
 		expectError       bool
@@ -149,7 +149,7 @@ func TestParse(t *testing.T) {
 }
 
 func Test_parse(t *testing.T) {
-	content, err := os.ReadFile("../../testdata/resource/custom-resource.yaml")
+	content, err := os.ReadFile("../../../testdata/resource/custom-resource.yaml")
 	assert.NoError(t, err)
 	tests := []struct {
 		name      string
