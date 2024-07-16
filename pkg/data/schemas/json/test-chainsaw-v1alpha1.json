@@ -5225,12 +5225,101 @@
                     "object",
                     "null"
                   ],
+                  "oneOf": [
+                    {
+                      "required": [
+                        "apply"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "assert"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "command"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "create"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "delete"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "describe"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "error"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "events"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "patch"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "podLogs"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "proxy"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "script"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "sleep"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "update"
+                      ]
+                    },
+                    {
+                      "required": [
+                        "wait"
+                      ]
+                    }
+                  ],
                   "properties": {
                     "apply": {
                       "description": "Apply represents resources that should be applied for this test step. This can include things\nlike configuration settings or any other resources that need to be available during the test.",
                       "type": [
                         "object",
                         "null"
+                      ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "resource"
+                          ]
+                        }
                       ],
                       "properties": {
                         "bindings": {
@@ -6006,6 +6095,18 @@
                       "type": [
                         "object",
                         "null"
+                      ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "resource"
+                          ]
+                        }
                       ],
                       "properties": {
                         "bindings": {
@@ -7056,6 +7157,18 @@
                         "object",
                         "null"
                       ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "resource"
+                          ]
+                        }
+                      ],
                       "properties": {
                         "bindings": {
                           "description": "Bindings defines additional binding key/values.",
@@ -7940,6 +8053,18 @@
                       "type": [
                         "object",
                         "null"
+                      ],
+                      "oneOf": [
+                        {
+                          "required": [
+                            "file"
+                          ]
+                        },
+                        {
+                          "required": [
+                            "resource"
+                          ]
+                        }
                       ],
                       "properties": {
                         "bindings": {
