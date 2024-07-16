@@ -16,7 +16,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/client-go/openapi"
 	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
 )
@@ -29,7 +28,6 @@ type (
 	splitter      = func([]byte) ([][]byte, error)
 	loaderFactory = func(openapi.Client) (loader.Loader, error)
 	converter     = func(schema.GroupVersionKind, unstructured.Unstructured) (*v1alpha2.Configuration, error)
-	validator     = func(obj *v1alpha2.Configuration) field.ErrorList
 )
 
 var (
@@ -64,10 +62,10 @@ func LoadBytes(content []byte) (*v1alpha2.Configuration, error) {
 }
 
 func Parse(content []byte) ([]*v1alpha2.Configuration, error) {
-	return parse(content, nil, nil, nil, nil)
+	return parse(content, nil, nil, nil)
 }
 
-func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter, validator validator) ([]*v1alpha2.Configuration, error) {
+func parse(content []byte, splitter splitter, loaderFactory loaderFactory, converter converter) ([]*v1alpha2.Configuration, error) {
 	if splitter == nil {
 		splitter = yaml.SplitDocuments
 	}
@@ -76,12 +74,6 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 	}
 	if converter == nil {
 		converter = defaultConverter
-	}
-	if validator == nil {
-		// TODO: replace with schema validation
-		validator = func(obj *v1alpha2.Configuration) field.ErrorList {
-			return nil
-		}
 	}
 	documents, err := splitter(content)
 	if err != nil {
@@ -104,9 +96,6 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 		}
 		config, err := converter(gvk, untyped)
 		if err != nil {
-			return nil, err
-		}
-		if err := validator(config).ToAggregate(); err != nil {
 			return nil, err
 		}
 		configs = append(configs, config)

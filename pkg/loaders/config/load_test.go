@@ -14,7 +14,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/client-go/openapi"
 	"k8s.io/utils/ptr"
 )
@@ -141,7 +140,6 @@ func Test_parse(t *testing.T) {
 		splitter      splitter
 		loaderFactory loaderFactory
 		converter     converter
-		validator     validator
 		wantErr       bool
 	}{{
 		name:          "default",
@@ -185,21 +183,10 @@ func Test_parse(t *testing.T) {
 			return nil, errors.New("converter")
 		},
 		wantErr: true,
-	}, {
-		name:          "validator error",
-		splitter:      nil,
-		loaderFactory: nil,
-		converter:     nil,
-		validator: func(obj *v1alpha2.Configuration) field.ErrorList {
-			return field.ErrorList{
-				field.Invalid(nil, nil, ""),
-			}
-		},
-		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := parse(content, tt.splitter, tt.loaderFactory, tt.converter, tt.validator)
+			_, err := parse(content, tt.splitter, tt.loaderFactory, tt.converter)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
