@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	testvalidation "github.com/kyverno/chainsaw/pkg/apis/validation/test"
 	internalloader "github.com/kyverno/chainsaw/pkg/internal/loader"
 	yamlutils "github.com/kyverno/chainsaw/pkg/utils/yaml"
-	testvalidation "github.com/kyverno/chainsaw/pkg/validation/test"
 	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
