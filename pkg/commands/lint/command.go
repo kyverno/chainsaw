@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	testvalidation "github.com/kyverno/chainsaw/pkg/validation/test"
+	testvalidation "github.com/kyverno/chainsaw/pkg/apis/validation/test"
 	"github.com/spf13/cobra"
 	"github.com/xeipuuv/gojsonschema"
 	"k8s.io/apimachinery/pkg/util/yaml"

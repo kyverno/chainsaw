@@ -7,9 +7,9 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/kyverno/chainsaw/pkg/apis/conversion"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
-	"github.com/kyverno/chainsaw/pkg/conversion"
 	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
