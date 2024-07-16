@@ -9,7 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	ctrlClient "github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/resource"
+	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	nspacer "github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opassert "github.com/kyverno/chainsaw/pkg/runner/operations/assert"
