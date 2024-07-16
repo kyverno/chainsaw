@@ -8,6 +8,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/report"
@@ -36,7 +37,7 @@ type TestProcessor interface {
 }
 
 func NewTestProcessor(
-	config v1alpha1.ConfigurationSpec,
+	config v1alpha2.ConfigurationSpec,
 	clusters clusters.Registry,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
@@ -57,7 +58,7 @@ func NewTestProcessor(
 }
 
 type testProcessor struct {
-	config         v1alpha1.ConfigurationSpec
+	config         v1alpha2.ConfigurationSpec
 	clusters       clusters.Registry
 	clock          clock.PassiveClock
 	summary        *summary.Summary
@@ -113,7 +114,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 	if p.test.Test.Spec.Skip != nil && *p.test.Test.Spec.Skip {
 		t.SkipNow()
 	}
-	if p.config.FailFast {
+	if p.config.Execution.FailFast {
 		if p.shouldFailFast.Load() {
 			t.SkipNow()
 		}
@@ -151,9 +152,9 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					object = merged
 				}
 				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-			} else if p.config.NamespaceTemplate != nil && p.config.NamespaceTemplate.Value != nil {
+			} else if p.config.Namespace.Template != nil && p.config.Namespace.Template.Value != nil {
 				template := v1alpha1.Any{
-					Value: p.config.NamespaceTemplate.Value,
+					Value: p.config.Namespace.Template.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
 					failer.FailNow(ctx)
@@ -171,7 +172,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.FailNow(ctx)
 				}
-				if !cleanup.Skip(p.config.SkipDelete, p.test.Test.Spec.SkipDelete, nil) {
+				if !cleanup.Skip(p.config.Cleanup.SkipDelete, p.test.Test.Spec.SkipDelete, nil) {
 					t.Cleanup(func() {
 						operation := newOperation(
 							OperationInfo{},

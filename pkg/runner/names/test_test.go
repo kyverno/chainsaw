@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -17,14 +18,16 @@ func TestTest(t *testing.T) {
 	assert.NoError(t, err)
 	tests := []struct {
 		name    string
-		config  v1alpha1.ConfigurationSpec
+		config  v1alpha2.ConfigurationSpec
 		test    discovery.Test
 		want    string
 		wantErr bool
 	}{{
 		name: "nil test",
-		config: v1alpha1.ConfigurationSpec{
-			FullName: false,
+		config: v1alpha2.ConfigurationSpec{
+			Discovery: v1alpha2.DiscoveryOptions{
+				FullName: false,
+			},
 		},
 		test: discovery.Test{
 			BasePath: cwd,
@@ -33,8 +36,10 @@ func TestTest(t *testing.T) {
 		wantErr: true,
 	}, {
 		name: "no full name",
-		config: v1alpha1.ConfigurationSpec{
-			FullName: false,
+		config: v1alpha2.ConfigurationSpec{
+			Discovery: v1alpha2.DiscoveryOptions{
+				FullName: false,
+			},
 		},
 		test: discovery.Test{
 			BasePath: cwd,
@@ -48,8 +53,10 @@ func TestTest(t *testing.T) {
 		want:    "foo",
 	}, {
 		name: "full name",
-		config: v1alpha1.ConfigurationSpec{
-			FullName: true,
+		config: v1alpha2.ConfigurationSpec{
+			Discovery: v1alpha2.DiscoveryOptions{
+				FullName: true,
+			},
 		},
 		test: discovery.Test{
 			BasePath: cwd,
@@ -63,8 +70,10 @@ func TestTest(t *testing.T) {
 		want:    ".[foo]",
 	}, {
 		name: "full name",
-		config: v1alpha1.ConfigurationSpec{
-			FullName: true,
+		config: v1alpha2.ConfigurationSpec{
+			Discovery: v1alpha2.DiscoveryOptions{
+				FullName: true,
+			},
 		},
 		test: discovery.Test{
 			BasePath: filepath.Join(cwd, "..", "dir", "dir"),
@@ -78,8 +87,10 @@ func TestTest(t *testing.T) {
 		want:    "../dir/dir[foo]",
 	}, {
 		name: "full name",
-		config: v1alpha1.ConfigurationSpec{
-			FullName: true,
+		config: v1alpha2.ConfigurationSpec{
+			Discovery: v1alpha2.DiscoveryOptions{
+				FullName: true,
+			},
 		},
 		test: discovery.Test{
 			BasePath: filepath.Join(cwd, "dir", "dir"),
