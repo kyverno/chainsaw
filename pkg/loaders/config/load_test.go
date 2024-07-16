@@ -27,27 +27,27 @@ func TestLoad(t *testing.T) {
 		wantErr bool
 	}{{
 		name:    "confimap",
-		path:    "../../testdata/config/configmap.yaml",
+		path:    "../../../testdata/config/configmap.yaml",
 		wantErr: true,
 	}, {
 		name:    "not found",
-		path:    "../../testdata/config/not-found.yaml",
+		path:    "../../../testdata/config/not-found.yaml",
 		wantErr: true,
 	}, {
 		name:    "empty",
-		path:    "../../testdata/config/empty.yaml",
+		path:    "../../../testdata/config/empty.yaml",
 		wantErr: true,
 	}, {
 		name:    "multiple",
-		path:    "../../testdata/config/multiple.yaml",
+		path:    "../../../testdata/config/multiple.yaml",
 		wantErr: true,
 	}, {
 		name:    "bad catch",
-		path:    "../../testdata/config/v1alpha1/bad-catch.yaml",
+		path:    "../../../testdata/config/v1alpha1/bad-catch.yaml",
 		wantErr: true,
 	}, {
 		name: "default",
-		path: "../../testdata/config/v1alpha1/default.yaml",
+		path: "../../../testdata/config/v1alpha1/default.yaml",
 		want: &v1alpha2.Configuration{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "default",
@@ -79,7 +79,7 @@ func TestLoad(t *testing.T) {
 		},
 	}, {
 		name: "custom-config",
-		path: "../../testdata/config/v1alpha1/custom-config.yaml",
+		path: "../../../testdata/config/v1alpha1/custom-config.yaml",
 		want: &v1alpha2.Configuration{
 			ObjectMeta: metav1.ObjectMeta{
 				Name: "custom-config",
@@ -134,7 +134,7 @@ func TestLoad(t *testing.T) {
 }
 
 func Test_parse(t *testing.T) {
-	content, err := os.ReadFile("../../testdata/config/v1alpha1/custom-config.yaml")
+	content, err := os.ReadFile("../../../testdata/config/v1alpha1/custom-config.yaml")
 	assert.NoError(t, err)
 	tests := []struct {
 		name          string
