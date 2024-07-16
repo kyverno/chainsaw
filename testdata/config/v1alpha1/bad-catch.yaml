@@ -1,0 +1,10 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Configuration
+metadata:
+  name: default
+spec:
+  catch:
+  - description: this is a bad catch because it contains two actions
+    sleep:
+      duration: 1m
+    events: {}

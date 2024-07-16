@@ -38,6 +38,14 @@ func TestLoad(t *testing.T) {
 		path:    "../../testdata/config/empty.yaml",
 		wantErr: true,
 	}, {
+		name:    "multiple",
+		path:    "../../testdata/config/multiple.yaml",
+		wantErr: true,
+	}, {
+		name:    "bad catch",
+		path:    "../../testdata/config/v1alpha1/bad-catch.yaml",
+		wantErr: true,
+	}, {
 		name: "default",
 		path: "../../testdata/config/v1alpha1/default.yaml",
 		want: &v1alpha2.Configuration{
@@ -111,10 +119,6 @@ func TestLoad(t *testing.T) {
 				},
 			},
 		},
-	}, {
-		name:    "multiple",
-		path:    "../../testdata/config/multiple.yaml",
-		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
