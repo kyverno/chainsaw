@@ -13,7 +13,21 @@ type OperationBase struct {
 }
 
 // Operation defines a single operation, only one action is permitted for a given operation.
-// +kubebuilder:oneOf:={apply,assert,command,create,delete,describe,error,events,patch,podLogs,proxy,script,sleep,update,wait}
+// +kubebuilder:oneOf:={required:{apply}}
+// +kubebuilder:oneOf:={required:{assert}}
+// +kubebuilder:oneOf:={required:{command}}
+// +kubebuilder:oneOf:={required:{create}}
+// +kubebuilder:oneOf:={required:{delete}}
+// +kubebuilder:oneOf:={required:{describe}}
+// +kubebuilder:oneOf:={required:{error}}
+// +kubebuilder:oneOf:={required:{events}}
+// +kubebuilder:oneOf:={required:{patch}}
+// +kubebuilder:oneOf:={required:{podLogs}}
+// +kubebuilder:oneOf:={required:{proxy}}
+// +kubebuilder:oneOf:={required:{script}}
+// +kubebuilder:oneOf:={required:{sleep}}
+// +kubebuilder:oneOf:={required:{update}}
+// +kubebuilder:oneOf:={required:{wait}}
 type Operation struct {
 	// OperationBase defines common elements to all operations.
 	// +optional
