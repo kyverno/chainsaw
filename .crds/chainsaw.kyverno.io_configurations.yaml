@@ -49,23 +49,23 @@ spec:
                     finally and cleanup blocks.
                   oneOf:
                   - required:
-                    - podLogs
-                  - required:
-                    - events
-                  - required:
-                    - describe
-                  - required:
-                    - wait
-                  - required:
-                    - get
+                    - command
                   - required:
                     - delete
                   - required:
-                    - command
+                    - describe
+                  - required:
+                    - events
+                  - required:
+                    - get
+                  - required:
+                    - podLogs
                   - required:
                     - script
                   - required:
                     - sleep
+                  - required:
+                    - wait
                   properties:
                     command:
                       description: Command defines a command to run.
@@ -177,10 +177,9 @@ spec:
                       type: object
                     delete:
                       description: Delete represents a deletion operation.
-                      oneOf:
-                      - required:
+                      not:
+                        required:
                         - file
-                      - required:
                         - ref
                       properties:
                         bindings:
@@ -990,23 +989,23 @@ spec:
                         catch, finally and cleanup blocks.
                       oneOf:
                       - required:
-                        - podLogs
-                      - required:
-                        - events
-                      - required:
-                        - describe
-                      - required:
-                        - wait
-                      - required:
-                        - get
+                        - command
                       - required:
                         - delete
                       - required:
-                        - command
+                        - describe
+                      - required:
+                        - events
+                      - required:
+                        - get
+                      - required:
+                        - podLogs
                       - required:
                         - script
                       - required:
                         - sleep
+                      - required:
+                        - wait
                       properties:
                         command:
                           description: Command defines a command to run.
@@ -1119,10 +1118,9 @@ spec:
                           type: object
                         delete:
                           description: Delete represents a deletion operation.
-                          oneOf:
-                          - required:
+                          not:
+                            required:
                             - file
-                          - required:
                             - ref
                           properties:
                             bindings:
