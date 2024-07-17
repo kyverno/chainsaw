@@ -301,6 +301,10 @@ spec:
                     describe:
                       description: Describe determines the resource describe collector
                         to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         apiVersion:
                           description: API version of the referent.
@@ -362,6 +366,10 @@ spec:
                       type: string
                     events:
                       description: Events determines the events collector to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         cluster:
                           description: Cluster defines the target cluster (default
@@ -410,6 +418,10 @@ spec:
                       type: object
                     get:
                       description: Get determines the resource get collector to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         apiVersion:
                           description: API version of the referent.
@@ -469,6 +481,10 @@ spec:
                       type: object
                     podLogs:
                       description: PodLogs determines the pod logs collector to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         cluster:
                           description: Cluster defines the target cluster (default
@@ -634,6 +650,10 @@ spec:
                     wait:
                       description: Wait determines the resource wait collector to
                         execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         apiVersion:
                           description: API version of the referent.
@@ -1224,6 +1244,10 @@ spec:
                         describe:
                           description: Describe determines the resource describe collector
                             to execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             apiVersion:
                               description: API version of the referent.
@@ -1285,6 +1309,10 @@ spec:
                           type: string
                         events:
                           description: Events determines the events collector to execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             cluster:
                               description: Cluster defines the target cluster (default
@@ -1334,6 +1362,10 @@ spec:
                         get:
                           description: Get determines the resource get collector to
                             execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             apiVersion:
                               description: API version of the referent.
@@ -1394,6 +1426,10 @@ spec:
                         podLogs:
                           description: PodLogs determines the pod logs collector to
                             execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             cluster:
                               description: Cluster defines the target cluster (default
@@ -1559,6 +1595,10 @@ spec:
                         wait:
                           description: Wait determines the resource wait collector
                             to execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             apiVersion:
                               description: API version of the referent.

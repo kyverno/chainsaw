@@ -91,6 +91,7 @@ type ActionObject struct {
 }
 
 // ActionObjectSelector contains object selector options for an action.
+// +kubebuilder:not:={required:{name,selector}}
 type ActionObjectSelector struct {
 	ObjectName `json:",inline"`
 

@@ -803,6 +803,12 @@
                   "apiVersion",
                   "kind"
                 ],
+                "not": {
+                  "required": [
+                    "name",
+                    "selector"
+                  ]
+                },
                 "properties": {
                   "apiVersion": {
                     "description": "API version of the referent.",
@@ -899,6 +905,12 @@
                   "object",
                   "null"
                 ],
+                "not": {
+                  "required": [
+                    "name",
+                    "selector"
+                  ]
+                },
                 "properties": {
                   "cluster": {
                     "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -985,6 +997,12 @@
                   "apiVersion",
                   "kind"
                 ],
+                "not": {
+                  "required": [
+                    "name",
+                    "selector"
+                  ]
+                },
                 "properties": {
                   "apiVersion": {
                     "description": "API version of the referent.",
@@ -1075,6 +1093,12 @@
                   "object",
                   "null"
                 ],
+                "not": {
+                  "required": [
+                    "name",
+                    "selector"
+                  ]
+                },
                 "properties": {
                   "cluster": {
                     "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -1354,6 +1378,12 @@
                   "for",
                   "kind"
                 ],
+                "not": {
+                  "required": [
+                    "name",
+                    "selector"
+                  ]
+                },
                 "properties": {
                   "apiVersion": {
                     "description": "API version of the referent.",
@@ -2144,6 +2174,12 @@
                         "apiVersion",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -2240,6 +2276,12 @@
                         "object",
                         "null"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -2326,6 +2368,12 @@
                         "apiVersion",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -2416,6 +2464,12 @@
                         "object",
                         "null"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -2695,6 +2749,12 @@
                         "for",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -3292,6 +3352,12 @@
                         "apiVersion",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -3388,6 +3454,12 @@
                         "object",
                         "null"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -3474,6 +3546,12 @@
                         "apiVersion",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -3564,6 +3642,12 @@
                         "object",
                         "null"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -3843,6 +3927,12 @@
                         "for",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -4496,6 +4586,12 @@
                         "apiVersion",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -4592,6 +4688,12 @@
                         "object",
                         "null"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -4678,6 +4780,12 @@
                         "apiVersion",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -4768,6 +4876,12 @@
                         "object",
                         "null"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -5047,6 +5161,12 @@
                         "for",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -6853,6 +6973,12 @@
                         "apiVersion",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -7065,6 +7191,12 @@
                         "object",
                         "null"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -7151,6 +7283,12 @@
                         "apiVersion",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",
@@ -7734,6 +7872,12 @@
                         "object",
                         "null"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "cluster": {
                           "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
@@ -8636,6 +8780,12 @@
                         "for",
                         "kind"
                       ],
+                      "not": {
+                        "required": [
+                          "name",
+                          "selector"
+                        ]
+                      },
                       "properties": {
                         "apiVersion": {
                           "description": "API version of the referent.",

@@ -73,11 +73,11 @@ func main() {
 	cmd := &cobra.Command{
 		Use: "controller-gen",
 		RunE: func(c *cobra.Command, rawOpts []string) error {
-			patch, err := markers.MakeDefinition("kubebuilder:patch", markers.DescribesType, MergePatch(""))
+			oneOf, err := markers.MakeDefinition("kubebuilder:oneOf", markers.DescribesType, OneOf(nil))
 			if err != nil {
 				return err
 			}
-			oneOf, err := markers.MakeDefinition("kubebuilder:oneOf", markers.DescribesType, OneOf(nil))
+			not, err := markers.MakeAnyTypeDefinition("kubebuilder:not", markers.DescribesType, Not{})
 			if err != nil {
 				return err
 			}
@@ -86,10 +86,10 @@ func main() {
 			if err != nil {
 				return err
 			}
-			if err := rt.Collector.Registry.Register(patch); err != nil {
+			if err := rt.Collector.Registry.Register(oneOf); err != nil {
 				return err
 			}
-			if err := rt.Collector.Registry.Register(oneOf); err != nil {
+			if err := rt.Collector.Registry.Register(not); err != nil {
 				return err
 			}
 			if len(rt.Generators) == 0 {
