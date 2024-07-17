@@ -73,7 +73,7 @@ func main() {
 	cmd := &cobra.Command{
 		Use: "controller-gen",
 		RunE: func(c *cobra.Command, rawOpts []string) error {
-			oneOf, err := markers.MakeDefinition("kubebuilder:oneOf", markers.DescribesType, OneOf(nil))
+			oneOf, err := markers.MakeAnyTypeDefinition("kubebuilder:oneOf", markers.DescribesType, OneOf{})
 			if err != nil {
 				return err
 			}
