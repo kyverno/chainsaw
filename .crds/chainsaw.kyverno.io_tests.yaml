@@ -66,23 +66,23 @@ spec:
                     finally and cleanup blocks.
                   oneOf:
                   - required:
-                    - podLogs
-                  - required:
-                    - events
-                  - required:
-                    - describe
-                  - required:
-                    - wait
-                  - required:
-                    - get
+                    - command
                   - required:
                     - delete
                   - required:
-                    - command
+                    - describe
+                  - required:
+                    - events
+                  - required:
+                    - get
+                  - required:
+                    - podLogs
                   - required:
                     - script
                   - required:
                     - sleep
+                  - required:
+                    - wait
                   properties:
                     command:
                       description: Command defines a command to run.
@@ -194,10 +194,9 @@ spec:
                       type: object
                     delete:
                       description: Delete represents a deletion operation.
-                      oneOf:
-                      - required:
+                      not:
+                        required:
                         - file
-                      - required:
                         - ref
                       properties:
                         bindings:
@@ -888,23 +887,23 @@ spec:
                           catch, finally and cleanup blocks.
                         oneOf:
                         - required:
-                          - podLogs
-                        - required:
-                          - events
-                        - required:
-                          - describe
-                        - required:
-                          - wait
-                        - required:
-                          - get
+                          - command
                         - required:
                           - delete
                         - required:
-                          - command
+                          - describe
+                        - required:
+                          - events
+                        - required:
+                          - get
+                        - required:
+                          - podLogs
                         - required:
                           - script
                         - required:
                           - sleep
+                        - required:
+                          - wait
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -1019,10 +1018,9 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - ref
                             properties:
                               bindings:
@@ -1618,23 +1616,23 @@ spec:
                           catch, finally and cleanup blocks.
                         oneOf:
                         - required:
-                          - podLogs
-                        - required:
-                          - events
-                        - required:
-                          - describe
-                        - required:
-                          - wait
-                        - required:
-                          - get
+                          - command
                         - required:
                           - delete
                         - required:
-                          - command
+                          - describe
+                        - required:
+                          - events
+                        - required:
+                          - get
+                        - required:
+                          - podLogs
                         - required:
                           - script
                         - required:
                           - sleep
+                        - required:
+                          - wait
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -1749,10 +1747,9 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - ref
                             properties:
                               bindings:
@@ -2383,23 +2380,23 @@ spec:
                           catch, finally and cleanup blocks.
                         oneOf:
                         - required:
-                          - podLogs
-                        - required:
-                          - events
-                        - required:
-                          - describe
-                        - required:
-                          - wait
-                        - required:
-                          - get
+                          - command
                         - required:
                           - delete
                         - required:
-                          - command
+                          - describe
+                        - required:
+                          - events
+                        - required:
+                          - get
+                        - required:
+                          - podLogs
                         - required:
                           - script
                         - required:
                           - sleep
+                        - required:
+                          - wait
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -2514,10 +2511,9 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - ref
                             properties:
                               bindings:
@@ -3182,10 +3178,9 @@ spec:
                             description: |-
                               Apply represents resources that should be applied for this test step. This can include things
                               like configuration settings or any other resources that need to be available during the test.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - resource
                             properties:
                               bindings:
@@ -3301,10 +3296,9 @@ spec:
                             description: Assert represents an assertion to be made.
                               It checks whether the conditions specified in the assertion
                               hold true.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - resource
                             properties:
                               bindings:
@@ -3485,10 +3479,9 @@ spec:
                             type: boolean
                           create:
                             description: Create represents a creation operation.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - resource
                             properties:
                               bindings:
@@ -3602,10 +3595,9 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - ref
                             properties:
                               bindings:
@@ -3798,10 +3790,9 @@ spec:
                             description: |-
                               Error represents the expected errors for this test step. If any of these errors occur, the test
                               will consider them as expected; otherwise, they will be treated as test failures.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - resource
                             properties:
                               bindings:
@@ -3985,10 +3976,9 @@ spec:
                             type: object
                           patch:
                             description: Patch represents a patch operation.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - resource
                             properties:
                               bindings:
@@ -4357,10 +4347,9 @@ spec:
                             type: object
                           update:
                             description: Update represents an update operation.
-                            oneOf:
-                            - required:
+                            not:
+                              required:
                               - file
-                            - required:
                               - resource
                             properties:
                               bindings:
@@ -4727,23 +4716,23 @@ spec:
                         catch, finally and cleanup blocks.
                       oneOf:
                       - required:
-                        - podLogs
-                      - required:
-                        - events
-                      - required:
-                        - describe
-                      - required:
-                        - wait
-                      - required:
-                        - get
+                        - command
                       - required:
                         - delete
                       - required:
-                        - command
+                        - describe
+                      - required:
+                        - events
+                      - required:
+                        - get
+                      - required:
+                        - podLogs
                       - required:
                         - script
                       - required:
                         - sleep
+                      - required:
+                        - wait
                       properties:
                         command:
                           description: Command defines a command to run.
@@ -4856,10 +4845,9 @@ spec:
                           type: object
                         delete:
                           description: Delete represents a deletion operation.
-                          oneOf:
-                          - required:
+                          not:
+                            required:
                             - file
-                          - required:
                             - ref
                           properties:
                             bindings:

@@ -333,27 +333,7 @@
             "oneOf": [
               {
                 "required": [
-                  "podLogs"
-                ]
-              },
-              {
-                "required": [
-                  "events"
-                ]
-              },
-              {
-                "required": [
-                  "describe"
-                ]
-              },
-              {
-                "required": [
-                  "wait"
-                ]
-              },
-              {
-                "required": [
-                  "get"
+                  "command"
                 ]
               },
               {
@@ -363,7 +343,22 @@
               },
               {
                 "required": [
-                  "command"
+                  "describe"
+                ]
+              },
+              {
+                "required": [
+                  "events"
+                ]
+              },
+              {
+                "required": [
+                  "get"
+                ]
+              },
+              {
+                "required": [
+                  "podLogs"
                 ]
               },
               {
@@ -374,6 +369,11 @@
               {
                 "required": [
                   "sleep"
+                ]
+              },
+              {
+                "required": [
+                  "wait"
                 ]
               }
             ],
@@ -567,18 +567,12 @@
                   "object",
                   "null"
                 ],
-                "oneOf": [
-                  {
-                    "required": [
-                      "file"
-                    ]
-                  },
-                  {
-                    "required": [
-                      "ref"
-                    ]
-                  }
-                ],
+                "not": {
+                  "required": [
+                    "file",
+                    "ref"
+                  ]
+                },
                 "properties": {
                   "bindings": {
                     "description": "Bindings defines additional binding key/values.",
