@@ -11,6 +11,7 @@ auto_generated: true
 
 
 - [Configuration](#chainsaw-kyverno-io-v1alpha1-Configuration)
+- [StepTemplate](#chainsaw-kyverno-io-v1alpha1-StepTemplate)
 - [Test](#chainsaw-kyverno-io-v1alpha1-Test)
   
 ## Configuration     {#chainsaw-kyverno-io-v1alpha1-Configuration}
@@ -24,6 +25,18 @@ auto_generated: true
 | `kind` | `string` | :white_check_mark: | | `Configuration` |
 | `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
 | `spec` | [`ConfigurationSpec`](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec) | :white_check_mark: |  | <p>Configuration spec.</p> |
+
+## StepTemplate     {#chainsaw-kyverno-io-v1alpha1-StepTemplate}
+
+<p>StepTemplate is the resource that contains a step definition.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `apiVersion` | `string` | :white_check_mark: | | `chainsaw.kyverno.io/v1alpha1` |
+| `kind` | `string` | :white_check_mark: | | `StepTemplate` |
+| `metadata` | [`meta/v1.ObjectMeta`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |  |  | <p>Standard object's metadata.</p> |
+| `spec` | [`StepTemplateSpec`](#chainsaw-kyverno-io-v1alpha1-StepTemplateSpec) | :white_check_mark: |  | <p>Test step spec.</p> |
 
 ## Test     {#chainsaw-kyverno-io-v1alpha1-Test}
 
@@ -320,6 +333,7 @@ during the testing process.</p>
 - [ActionEnv](#chainsaw-kyverno-io-v1alpha1-ActionEnv)
 - [Output](#chainsaw-kyverno-io-v1alpha1-Output)
 - [Scenario](#chainsaw-kyverno-io-v1alpha1-Scenario)
+- [StepTemplateSpec](#chainsaw-kyverno-io-v1alpha1-StepTemplateSpec)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
@@ -336,6 +350,7 @@ during the testing process.</p>
 **Appears in:**
     
 - [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
+- [StepTemplateSpec](#chainsaw-kyverno-io-v1alpha1-StepTemplateSpec)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
@@ -624,6 +639,7 @@ For multiple objects use labels.</p>
 
 **Appears in:**
     
+- [StepTemplateSpec](#chainsaw-kyverno-io-v1alpha1-StepTemplateSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 
 <p>Operation defines a single operation, only one action is permitted for a given operation.</p>
@@ -789,6 +805,23 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 |---|---|---|---|---|
 | `duration` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) | :white_check_mark: |  | <p>Duration is the delay used for sleeping.</p> |
 
+## StepTemplateSpec     {#chainsaw-kyverno-io-v1alpha1-StepTemplateSpec}
+
+**Appears in:**
+    
+- [StepTemplate](#chainsaw-kyverno-io-v1alpha1-StepTemplate)
+
+<p>StepTemplateSpec defines the spec of a step template.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
+| `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) | :white_check_mark: |  | <p>Try defines what the step will try to execute.</p> |
+| `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
+| `finally` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
+| `cleanup` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Cleanup defines what will be executed after the test is terminated.</p> |
+
 ## TestSpec     {#chainsaw-kyverno-io-v1alpha1-TestSpec}
 
 **Appears in:**
@@ -830,6 +863,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | `string` |  |  | <p>Name of the step.</p> |
+| `from` | `string` | :white_check_mark: |  | <p>From references a step template.</p> |
 | `TestStepSpec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>TestStepSpec of the step.</p> |
 
 ## TestStepSpec     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}
@@ -851,7 +885,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) | :white_check_mark: |  | <p>Try defines what the step will try to execute.</p> |
+| `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) |  |  | <p>Try defines what the step will try to execute.</p> |
 | `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
 | `finally` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
 | `cleanup` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Cleanup defines what will be executed after the test is terminated.</p> |

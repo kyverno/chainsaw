@@ -30,6 +30,7 @@
 - [scenarios](scenarios/README.md)
 - [script-env](script-env/README.md)
 - [sleep](sleep/README.md)
+- [quick-start](step-template/README.md)
 - [template](template/README.md)
 - [test-info](test-info/README.md)
 - [timeout](timeout/README.md)

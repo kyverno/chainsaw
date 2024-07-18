@@ -1682,9 +1682,33 @@
               "object",
               "null"
             ],
-            "required": [
-              "try"
-            ],
+            "not": {
+              "required": [
+                "from"
+              ],
+              "anyOf": [
+                {
+                  "required": [
+                    "try"
+                  ]
+                },
+                {
+                  "required": [
+                    "catch"
+                  ]
+                },
+                {
+                  "required": [
+                    "finally"
+                  ]
+                },
+                {
+                  "required": [
+                    "cleanup"
+                  ]
+                }
+              ]
+            },
             "properties": {
               "bindings": {
                 "description": "Bindings defines additional binding key/values.",
@@ -5287,6 +5311,13 @@
                   }
                 }
               },
+              "from": {
+                "description": "From references a step template.",
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
               "name": {
                 "description": "Name of the step.",
                 "type": [
@@ -5361,7 +5392,10 @@
               },
               "try": {
                 "description": "Try defines what the step will try to execute.",
-                "type": "array",
+                "type": [
+                  "array",
+                  "null"
+                ],
                 "minItems": 1,
                 "items": {
                   "description": "Operation defines a single operation, only one action is permitted for a given operation.",
