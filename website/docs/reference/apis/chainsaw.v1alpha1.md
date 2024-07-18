@@ -863,7 +863,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | `string` |  |  | <p>Name of the step.</p> |
-| `from` | `string` | :white_check_mark: |  | <p>From references a step template.</p> |
+| `use` | `string` | :white_check_mark: |  | <p>Use references a step template.</p> |
 | `TestStepSpec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>TestStepSpec of the step.</p> |
 
 ## TestStepSpec     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}

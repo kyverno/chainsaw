@@ -5,4 +5,4 @@ metadata:
   name: quick-start
 spec:
   steps:
-  - from: step-template.yaml
+  - use: step-template.yaml

@@ -871,7 +871,7 @@ spec:
                     - required:
                       - cleanup
                     required:
-                    - from
+                    - use
                   properties:
                     bindings:
                       description: Bindings defines additional binding key/values.
@@ -3113,9 +3113,6 @@ spec:
                             type: object
                         type: object
                       type: array
-                    from:
-                      description: From references a step template.
-                      type: string
                     name:
                       description: Name of the step.
                       type: string
@@ -4585,6 +4582,9 @@ spec:
                         type: object
                       minItems: 1
                       type: array
+                    use:
+                      description: Use references a step template.
+                      type: string
                   type: object
                 type: array
               template:
