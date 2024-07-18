@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -27,14 +28,14 @@ func TestRun(t *testing.T) {
 	tests := []struct {
 		name       string
 		tests      []discovery.Test
-		config     v1alpha1.ConfigurationSpec
+		config     v1alpha2.ConfigurationSpec
 		restConfig *rest.Config
 		mockReturn int
 		wantErr    bool
 	}{{
 		name:       "Zero Tests",
 		tests:      []discovery.Test{},
-		config:     v1alpha1.ConfigurationSpec{},
+		config:     v1alpha2.ConfigurationSpec{},
 		restConfig: &rest.Config{},
 		wantErr:    false,
 	}, {
@@ -49,16 +50,20 @@ func TestRun(t *testing.T) {
 				},
 			},
 		},
-		config: v1alpha1.ConfigurationSpec{
-			ReportFormat: v1alpha1.JSONFormat,
+		config: v1alpha2.ConfigurationSpec{
+			Report: &v1alpha2.ReportOptions{
+				Format: v1alpha2.JSONFormat,
+			},
 		},
 		restConfig: nil,
 		wantErr:    false,
 	}, {
 		name:  "Zero Tests with JSON Report",
 		tests: []discovery.Test{},
-		config: v1alpha1.ConfigurationSpec{
-			ReportFormat: v1alpha1.JSONFormat,
+		config: v1alpha2.ConfigurationSpec{
+			Report: &v1alpha2.ReportOptions{
+				Format: v1alpha2.JSONFormat,
+			},
 		},
 		restConfig: &rest.Config{},
 		wantErr:    false,
@@ -104,9 +109,11 @@ func TestRun(t *testing.T) {
 				},
 			},
 		},
-		config: v1alpha1.ConfigurationSpec{
-			ReportFormat: v1alpha1.XMLFormat,
-			ReportName:   "chainsaw",
+		config: v1alpha2.ConfigurationSpec{
+			Report: &v1alpha2.ReportOptions{
+				Format: v1alpha2.XMLFormat,
+				Name:   "chainsaw",
+			},
 		},
 		restConfig: &rest.Config{},
 		mockReturn: 0,
@@ -123,8 +130,10 @@ func TestRun(t *testing.T) {
 				},
 			},
 		},
-		config: v1alpha1.ConfigurationSpec{
-			ReportFormat: "abc",
+		config: v1alpha2.ConfigurationSpec{
+			Report: &v1alpha2.ReportOptions{
+				Format: "abc",
+			},
 		},
 		restConfig: &rest.Config{},
 		mockReturn: 0,

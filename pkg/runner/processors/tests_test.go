@@ -5,6 +5,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -34,7 +35,7 @@ func (r registryMock) Resolve(bool, ...string) (*rest.Config, client.Client, err
 func TestTestsProcessor_Run(t *testing.T) {
 	testCases := []struct {
 		name         string
-		config       v1alpha1.ConfigurationSpec
+		config       v1alpha2.ConfigurationSpec
 		client       client.Client
 		clock        clock.PassiveClock
 		summary      *summary.Summary
@@ -44,8 +45,10 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail bool
 	}{{
 		name: "Namesapce exists",
-		config: v1alpha1.ConfigurationSpec{
-			Namespace: "default",
+		config: v1alpha2.ConfigurationSpec{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name: "default",
+			},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -60,8 +63,10 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail: false,
 	}, {
 		name: "Namesapce doesn't exists",
-		config: v1alpha1.ConfigurationSpec{
-			Namespace: "chain-saw",
+		config: v1alpha2.ConfigurationSpec{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name: "chain-saw",
+			},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -82,8 +87,10 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail: false,
 	}, {
 		name: "Namesapce not found with error",
-		config: v1alpha1.ConfigurationSpec{
-			Namespace: "chain-saw",
+		config: v1alpha2.ConfigurationSpec{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name: "chain-saw",
+			},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -101,8 +108,10 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail: true,
 	}, {
 		name: "Namesapce doesn't exists and can't be created",
-		config: v1alpha1.ConfigurationSpec{
-			Namespace: "chain-saw",
+		config: v1alpha2.ConfigurationSpec{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name: "chain-saw",
+			},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -120,8 +129,10 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail: true,
 	}, {
 		name: "Success",
-		config: v1alpha1.ConfigurationSpec{
-			Namespace: "default",
+		config: v1alpha2.ConfigurationSpec{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name: "default",
+			},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -142,8 +153,10 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail: false,
 	}, {
 		name: "Fail",
-		config: v1alpha1.ConfigurationSpec{
-			Namespace: "default",
+		config: v1alpha2.ConfigurationSpec{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name: "default",
+			},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {

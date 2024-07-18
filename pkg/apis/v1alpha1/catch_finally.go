@@ -1,6 +1,15 @@
 package v1alpha1
 
 // CatchFinally defines actions to be executed in catch, finally and cleanup blocks.
+// +kubebuilder:oneOf:={required:{command}}
+// +kubebuilder:oneOf:={required:{delete}}
+// +kubebuilder:oneOf:={required:{describe}}
+// +kubebuilder:oneOf:={required:{events}}
+// +kubebuilder:oneOf:={required:{get}}
+// +kubebuilder:oneOf:={required:{podLogs}}
+// +kubebuilder:oneOf:={required:{script}}
+// +kubebuilder:oneOf:={required:{sleep}}
+// +kubebuilder:oneOf:={required:{wait}}
 type CatchFinally struct {
 	// Description contains a description of the operation.
 	// +optional

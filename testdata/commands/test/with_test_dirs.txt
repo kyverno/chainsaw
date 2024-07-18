@@ -4,8 +4,6 @@ Loading default configuration...
 - TestDirs [.. .]
 - SkipDelete false
 - FailFast false
-- ReportFormat ''
-- ReportName ''
 - Namespace ''
 - FullName false
 - IncludeTestRegex ''

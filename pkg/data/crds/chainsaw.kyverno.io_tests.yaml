@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: (devel)
   name: tests.chainsaw.kyverno.io
 spec:
   group: chainsaw.kyverno.io
@@ -64,6 +64,25 @@ spec:
                 items:
                   description: CatchFinally defines actions to be executed in catch,
                     finally and cleanup blocks.
+                  oneOf:
+                  - required:
+                    - command
+                  - required:
+                    - delete
+                  - required:
+                    - describe
+                  - required:
+                    - events
+                  - required:
+                    - get
+                  - required:
+                    - podLogs
+                  - required:
+                    - script
+                  - required:
+                    - sleep
+                  - required:
+                    - wait
                   properties:
                     command:
                       description: Command defines a command to run.
@@ -175,6 +194,10 @@ spec:
                       type: object
                     delete:
                       description: Delete represents a deletion operation.
+                      not:
+                        required:
+                        - file
+                        - ref
                       properties:
                         bindings:
                           description: Bindings defines additional binding key/values.
@@ -294,6 +317,10 @@ spec:
                     describe:
                       description: Describe determines the resource describe collector
                         to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         apiVersion:
                           description: API version of the referent.
@@ -355,6 +382,10 @@ spec:
                       type: string
                     events:
                       description: Events determines the events collector to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         cluster:
                           description: Cluster defines the target cluster (default
@@ -403,6 +434,10 @@ spec:
                       type: object
                     get:
                       description: Get determines the resource get collector to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         apiVersion:
                           description: API version of the referent.
@@ -462,6 +497,10 @@ spec:
                       type: object
                     podLogs:
                       description: PodLogs determines the pod logs collector to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         cluster:
                           description: Cluster defines the target cluster (default
@@ -627,6 +666,10 @@ spec:
                     wait:
                       description: Wait determines the resource wait collector to
                         execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         apiVersion:
                           description: API version of the referent.
@@ -842,6 +885,25 @@ spec:
                       items:
                         description: CatchFinally defines actions to be executed in
                           catch, finally and cleanup blocks.
+                        oneOf:
+                        - required:
+                          - command
+                        - required:
+                          - delete
+                        - required:
+                          - describe
+                        - required:
+                          - events
+                        - required:
+                          - get
+                        - required:
+                          - podLogs
+                        - required:
+                          - script
+                        - required:
+                          - sleep
+                        - required:
+                          - wait
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -956,6 +1018,10 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
+                            not:
+                              required:
+                              - file
+                              - ref
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -1078,6 +1144,10 @@ spec:
                           describe:
                             description: Describe determines the resource describe
                               collector to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -1142,6 +1212,10 @@ spec:
                           events:
                             description: Events determines the events collector to
                               execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               cluster:
                                 description: Cluster defines the target cluster (default
@@ -1192,6 +1266,10 @@ spec:
                           get:
                             description: Get determines the resource get collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -1253,6 +1331,10 @@ spec:
                           podLogs:
                             description: PodLogs determines the pod logs collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               cluster:
                                 description: Cluster defines the target cluster (default
@@ -1421,6 +1503,10 @@ spec:
                           wait:
                             description: Wait determines the resource wait collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -1528,6 +1614,25 @@ spec:
                       items:
                         description: CatchFinally defines actions to be executed in
                           catch, finally and cleanup blocks.
+                        oneOf:
+                        - required:
+                          - command
+                        - required:
+                          - delete
+                        - required:
+                          - describe
+                        - required:
+                          - events
+                        - required:
+                          - get
+                        - required:
+                          - podLogs
+                        - required:
+                          - script
+                        - required:
+                          - sleep
+                        - required:
+                          - wait
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -1642,6 +1747,10 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
+                            not:
+                              required:
+                              - file
+                              - ref
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -1764,6 +1873,10 @@ spec:
                           describe:
                             description: Describe determines the resource describe
                               collector to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -1828,6 +1941,10 @@ spec:
                           events:
                             description: Events determines the events collector to
                               execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               cluster:
                                 description: Cluster defines the target cluster (default
@@ -1878,6 +1995,10 @@ spec:
                           get:
                             description: Get determines the resource get collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -1939,6 +2060,10 @@ spec:
                           podLogs:
                             description: PodLogs determines the pod logs collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               cluster:
                                 description: Cluster defines the target cluster (default
@@ -2107,6 +2232,10 @@ spec:
                           wait:
                             description: Wait determines the resource wait collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -2249,6 +2378,25 @@ spec:
                       items:
                         description: CatchFinally defines actions to be executed in
                           catch, finally and cleanup blocks.
+                        oneOf:
+                        - required:
+                          - command
+                        - required:
+                          - delete
+                        - required:
+                          - describe
+                        - required:
+                          - events
+                        - required:
+                          - get
+                        - required:
+                          - podLogs
+                        - required:
+                          - script
+                        - required:
+                          - sleep
+                        - required:
+                          - wait
                         properties:
                           command:
                             description: Command defines a command to run.
@@ -2363,6 +2511,10 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
+                            not:
+                              required:
+                              - file
+                              - ref
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -2485,6 +2637,10 @@ spec:
                           describe:
                             description: Describe determines the resource describe
                               collector to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -2549,6 +2705,10 @@ spec:
                           events:
                             description: Events determines the events collector to
                               execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               cluster:
                                 description: Cluster defines the target cluster (default
@@ -2599,6 +2759,10 @@ spec:
                           get:
                             description: Get determines the resource get collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -2660,6 +2824,10 @@ spec:
                           podLogs:
                             description: PodLogs determines the pod logs collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               cluster:
                                 description: Cluster defines the target cluster (default
@@ -2828,6 +2996,10 @@ spec:
                           wait:
                             description: Wait determines the resource wait collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -2973,11 +3145,46 @@ spec:
                       items:
                         description: Operation defines a single operation, only one
                           action is permitted for a given operation.
+                        oneOf:
+                        - required:
+                          - apply
+                        - required:
+                          - assert
+                        - required:
+                          - command
+                        - required:
+                          - create
+                        - required:
+                          - delete
+                        - required:
+                          - describe
+                        - required:
+                          - error
+                        - required:
+                          - events
+                        - required:
+                          - patch
+                        - required:
+                          - podLogs
+                        - required:
+                          - proxy
+                        - required:
+                          - script
+                        - required:
+                          - sleep
+                        - required:
+                          - update
+                        - required:
+                          - wait
                         properties:
                           apply:
                             description: |-
                               Apply represents resources that should be applied for this test step. This can include things
                               like configuration settings or any other resources that need to be available during the test.
+                            not:
+                              required:
+                              - file
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3092,6 +3299,10 @@ spec:
                             description: Assert represents an assertion to be made.
                               It checks whether the conditions specified in the assertion
                               hold true.
+                            not:
+                              required:
+                              - file
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3271,6 +3482,10 @@ spec:
                             type: boolean
                           create:
                             description: Create represents a creation operation.
+                            not:
+                              required:
+                              - file
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3383,6 +3598,10 @@ spec:
                             type: object
                           delete:
                             description: Delete represents a deletion operation.
+                            not:
+                              required:
+                              - file
+                              - ref
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3505,6 +3724,10 @@ spec:
                           describe:
                             description: Describe determines the resource describe
                               collector to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -3570,6 +3793,10 @@ spec:
                             description: |-
                               Error represents the expected errors for this test step. If any of these errors occur, the test
                               will consider them as expected; otherwise, they will be treated as test failures.
+                            not:
+                              required:
+                              - file
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3634,6 +3861,10 @@ spec:
                           events:
                             description: Events determines the events collector to
                               execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               cluster:
                                 description: Cluster defines the target cluster (default
@@ -3684,6 +3915,10 @@ spec:
                           get:
                             description: Get determines the resource get collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -3744,6 +3979,10 @@ spec:
                             type: object
                           patch:
                             description: Patch represents a patch operation.
+                            not:
+                              required:
+                              - file
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -3857,6 +4096,10 @@ spec:
                           podLogs:
                             description: PodLogs determines the pod logs collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               cluster:
                                 description: Cluster defines the target cluster (default
@@ -4107,6 +4350,10 @@ spec:
                             type: object
                           update:
                             description: Update represents an update operation.
+                            not:
+                              required:
+                              - file
+                              - resource
                             properties:
                               bindings:
                                 description: Bindings defines additional binding key/values.
@@ -4220,6 +4467,10 @@ spec:
                           wait:
                             description: Wait determines the resource wait collector
                               to execute.
+                            not:
+                              required:
+                              - name
+                              - selector
                             properties:
                               apiVersion:
                                 description: API version of the referent.
@@ -4464,121 +4715,28 @@ spec:
                       Catch defines what the tests steps will execute when an error happens.
                       This will be combined with catch handlers defined at the test and step levels.
                     items:
-                      description: Operation defines operation elements.
+                      description: CatchFinally defines actions to be executed in
+                        catch, finally and cleanup blocks.
+                      oneOf:
+                      - required:
+                        - command
+                      - required:
+                        - delete
+                      - required:
+                        - describe
+                      - required:
+                        - events
+                      - required:
+                        - get
+                      - required:
+                        - podLogs
+                      - required:
+                        - script
+                      - required:
+                        - sleep
+                      - required:
+                        - wait
                       properties:
-                        apply:
-                          description: |-
-                            Apply represents resources that should be applied for this test step. This can include things
-                            like configuration settings or any other resources that need to be available during the test.
-                          properties:
-                            dryRun:
-                              description: DryRun determines whether the file should
-                                be applied in dry run mode.
-                              type: boolean
-                            expect:
-                              description: Expect defines a list of matched checks
-                                to validate the operation outcome.
-                              items:
-                                description: |-
-                                  Expectation represents a check to be applied on the result of an operation
-                                  with a match filter to determine if the verification should be considered.
-                                properties:
-                                  check:
-                                    description: Check defines the verification statement.
-                                    type: object
-                                    x-kubernetes-preserve-unknown-fields: true
-                                  match:
-                                    description: Match defines the matching statement.
-                                    type: object
-                                    x-kubernetes-preserve-unknown-fields: true
-                                required:
-                                - check
-                                type: object
-                              type: array
-                            file:
-                              description: |-
-                                File is the path to the referenced file. This can be a direct path to a file
-                                or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
-                                files within the "manifest" directory.
-                              type: string
-                            resource:
-                              description: Resource provides a resource to be applied.
-                              type: object
-                              x-kubernetes-embedded-resource: true
-                              x-kubernetes-preserve-unknown-fields: true
-                            template:
-                              description: Template determines whether resources should
-                                be considered for templating.
-                              type: boolean
-                            timeout:
-                              description: Timeout for the operation. Overrides the
-                                global timeout set in the Configuration.
-                              type: string
-                          type: object
-                        assert:
-                          description: Assert represents an assertion to be made.
-                            It checks whether the conditions specified in the assertion
-                            hold true.
-                          properties:
-                            file:
-                              description: |-
-                                File is the path to the referenced file. This can be a direct path to a file
-                                or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
-                                files within the "manifest" directory.
-                              type: string
-                            resource:
-                              description: Check provides a check used in assertions.
-                              type: object
-                              x-kubernetes-preserve-unknown-fields: true
-                            template:
-                              description: Template determines whether resources should
-                                be considered for templating.
-                              type: boolean
-                            timeout:
-                              description: Timeout for the operation. Overrides the
-                                global timeout set in the Configuration.
-                              type: string
-                          type: object
-                        bindings:
-                          description: Bindings defines additional binding key/values.
-                          items:
-                            description: Binding represents a key/value set as a binding
-                              in an executing test.
-                            properties:
-                              name:
-                                description: Name the name of the binding.
-                                pattern: ^(?:\w+|\(.+\))$
-                                type: string
-                              value:
-                                description: Value value of the binding.
-                                x-kubernetes-preserve-unknown-fields: true
-                            required:
-                            - name
-                            - value
-                            type: object
-                          type: array
-                        cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
-                          type: string
-                        clusters:
-                          additionalProperties:
-                            description: Cluster defines cluster config and context.
-                            properties:
-                              context:
-                                description: Context is the name of the context to
-                                  use.
-                                type: string
-                              kubeconfig:
-                                description: Kubeconfig is the path to the referenced
-                                  file.
-                                type: string
-                            required:
-                            - kubeconfig
-                            type: object
-                          description: Clusters holds a registry to clusters to support
-                            multi-cluster tests.
-                          type: object
                         command:
                           description: Command defines a command to run.
                           properties:
@@ -4587,11 +4745,51 @@ spec:
                               items:
                                 type: string
                               type: array
+                            bindings:
+                              description: Bindings defines additional binding key/values.
+                              items:
+                                description: Binding represents a key/value set as
+                                  a binding in an executing test.
+                                properties:
+                                  name:
+                                    description: Name the name of the binding.
+                                    pattern: ^(?:\w+|\(.+\))$
+                                    type: string
+                                  value:
+                                    description: Value value of the binding.
+                                    x-kubernetes-preserve-unknown-fields: true
+                                required:
+                                - name
+                                - value
+                                type: object
+                              type: array
                             check:
                               description: Check is an assertion tree to validate
                                 the operation outcome.
                               type: object
                               x-kubernetes-preserve-unknown-fields: true
+                            cluster:
+                              description: Cluster defines the target cluster (default
+                                cluster will be used if not specified and/or overridden).
+                              type: string
+                            clusters:
+                              additionalProperties:
+                                description: Cluster defines cluster config and context.
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
+                              description: Clusters holds a registry to clusters to
+                                support multi-cluster tests.
+                              type: object
                             entrypoint:
                               description: Entrypoint is the command entry point to
                                 run.
@@ -4602,6 +4800,29 @@ spec:
                                 description: Binding represents a key/value set as
                                   a binding in an executing test.
                                 properties:
+                                  name:
+                                    description: Name the name of the binding.
+                                    pattern: ^(?:\w+|\(.+\))$
+                                    type: string
+                                  value:
+                                    description: Value value of the binding.
+                                    x-kubernetes-preserve-unknown-fields: true
+                                required:
+                                - name
+                                - value
+                                type: object
+                              type: array
+                            outputs:
+                              description: Outputs defines output bindings.
+                              items:
+                                description: Output represents an output binding with
+                                  a match to determine if the binding must be considered
+                                  or not.
+                                properties:
+                                  match:
+                                    description: Match defines the matching statement.
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
                                   name:
                                     description: Name the name of the binding.
                                     pattern: ^(?:\w+|\(.+\))$
@@ -4625,56 +4846,53 @@ spec:
                           required:
                           - entrypoint
                           type: object
-                        create:
-                          description: Create represents a creation operation.
-                          properties:
-                            dryRun:
-                              description: DryRun determines whether the file should
-                                be applied in dry run mode.
-                              type: boolean
-                            expect:
-                              description: Expect defines a list of matched checks
-                                to validate the operation outcome.
-                              items:
-                                description: |-
-                                  Expectation represents a check to be applied on the result of an operation
-                                  with a match filter to determine if the verification should be considered.
-                                properties:
-                                  check:
-                                    description: Check defines the verification statement.
-                                    type: object
-                                    x-kubernetes-preserve-unknown-fields: true
-                                  match:
-                                    description: Match defines the matching statement.
-                                    type: object
-                                    x-kubernetes-preserve-unknown-fields: true
-                                required:
-                                - check
-                                type: object
-                              type: array
-                            file:
-                              description: |-
-                                File is the path to the referenced file. This can be a direct path to a file
-                                or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
-                                files within the "manifest" directory.
-                              type: string
-                            resource:
-                              description: Resource provides a resource to be applied.
-                              type: object
-                              x-kubernetes-embedded-resource: true
-                              x-kubernetes-preserve-unknown-fields: true
-                            template:
-                              description: Template determines whether resources should
-                                be considered for templating.
-                              type: boolean
-                            timeout:
-                              description: Timeout for the operation. Overrides the
-                                global timeout set in the Configuration.
-                              type: string
-                          type: object
                         delete:
                           description: Delete represents a deletion operation.
+                          not:
+                            required:
+                            - file
+                            - ref
                           properties:
+                            bindings:
+                              description: Bindings defines additional binding key/values.
+                              items:
+                                description: Binding represents a key/value set as
+                                  a binding in an executing test.
+                                properties:
+                                  name:
+                                    description: Name the name of the binding.
+                                    pattern: ^(?:\w+|\(.+\))$
+                                    type: string
+                                  value:
+                                    description: Value value of the binding.
+                                    x-kubernetes-preserve-unknown-fields: true
+                                required:
+                                - name
+                                - value
+                                type: object
+                              type: array
+                            cluster:
+                              description: Cluster defines the target cluster (default
+                                cluster will be used if not specified and/or overridden).
+                              type: string
+                            clusters:
+                              additionalProperties:
+                                description: Cluster defines cluster config and context.
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
+                              description: Clusters holds a registry to clusters to
+                                support multi-cluster tests.
+                              type: object
                             deletionPropagationPolicy:
                               description: |-
                                 DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
@@ -4722,54 +4940,12 @@ spec:
                                     Kind of the referent.
                                     More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
                                   type: string
-                                labelSelector:
+                                labels:
+                                  additionalProperties:
+                                    type: string
                                   description: Label selector to match objects to
                                     delete
-                                  properties:
-                                    matchExpressions:
-                                      description: matchExpressions is a list of label
-                                        selector requirements. The requirements are
-                                        ANDed.
-                                      items:
-                                        description: |-
-                                          A label selector requirement is a selector that contains values, a key, and an operator that
-                                          relates the key and values.
-                                        properties:
-                                          key:
-                                            description: key is the label key that
-                                              the selector applies to.
-                                            type: string
-                                          operator:
-                                            description: |-
-                                              operator represents a key's relationship to a set of values.
-                                              Valid operators are In, NotIn, Exists and DoesNotExist.
-                                            type: string
-                                          values:
-                                            description: |-
-                                              values is an array of string values. If the operator is In or NotIn,
-                                              the values array must be non-empty. If the operator is Exists or DoesNotExist,
-                                              the values array must be empty. This array is replaced during a strategic
-                                              merge patch.
-                                            items:
-                                              type: string
-                                            type: array
-                                            x-kubernetes-list-type: atomic
-                                        required:
-                                        - key
-                                        - operator
-                                        type: object
-                                      type: array
-                                      x-kubernetes-list-type: atomic
-                                    matchLabels:
-                                      additionalProperties:
-                                        type: string
-                                      description: |-
-                                        matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
-                                        map is equivalent to an element of matchExpressions, whose key field is "key", the
-                                        operator is "In", and the values array contains only "value". The requirements are ANDed.
-                                      type: object
                                   type: object
-                                  x-kubernetes-map-type: atomic
                                 name:
                                   description: |-
                                     Name of the referent.
@@ -4796,10 +4972,36 @@ spec:
                         describe:
                           description: Describe determines the resource describe collector
                             to execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             apiVersion:
                               description: API version of the referent.
                               type: string
+                            cluster:
+                              description: Cluster defines the target cluster (default
+                                cluster will be used if not specified and/or overridden).
+                              type: string
+                            clusters:
+                              additionalProperties:
+                                description: Cluster defines cluster config and context.
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
+                              description: Clusters holds a registry to clusters to
+                                support multi-cluster tests.
+                              type: object
                             kind:
                               description: |-
                                 Kind of the referent.
@@ -4833,33 +5035,35 @@ spec:
                         description:
                           description: Description contains a description of the operation.
                           type: string
-                        error:
-                          description: |-
-                            Error represents the expected errors for this test step. If any of these errors occur, the test
-                            will consider them as expected; otherwise, they will be treated as test failures.
-                          properties:
-                            file:
-                              description: |-
-                                File is the path to the referenced file. This can be a direct path to a file
-                                or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
-                                files within the "manifest" directory.
-                              type: string
-                            resource:
-                              description: Check provides a check used in assertions.
-                              type: object
-                              x-kubernetes-preserve-unknown-fields: true
-                            template:
-                              description: Template determines whether resources should
-                                be considered for templating.
-                              type: boolean
-                            timeout:
-                              description: Timeout for the operation. Overrides the
-                                global timeout set in the Configuration.
-                              type: string
-                          type: object
                         events:
                           description: Events determines the events collector to execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
+                            cluster:
+                              description: Cluster defines the target cluster (default
+                                cluster will be used if not specified and/or overridden).
+                              type: string
+                            clusters:
+                              additionalProperties:
+                                description: Cluster defines cluster config and context.
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
+                              description: Clusters holds a registry to clusters to
+                                support multi-cluster tests.
+                              type: object
                             format:
                               description: Format determines the output format (json
                                 or yaml).
@@ -4886,10 +5090,36 @@ spec:
                         get:
                           description: Get determines the resource get collector to
                             execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             apiVersion:
                               description: API version of the referent.
                               type: string
+                            cluster:
+                              description: Cluster defines the target cluster (default
+                                cluster will be used if not specified and/or overridden).
+                              type: string
+                            clusters:
+                              additionalProperties:
+                                description: Cluster defines cluster config and context.
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
+                              description: Clusters holds a registry to clusters to
+                                support multi-cluster tests.
+                              type: object
                             format:
                               description: Format determines the output format (json
                                 or yaml).
@@ -4921,80 +5151,36 @@ spec:
                           - apiVersion
                           - kind
                           type: object
-                        outputs:
-                          description: Outputs defines output bindings.
-                          items:
-                            description: Output represents an output binding with
-                              a match to determine if the binding must be considered
-                              or not.
-                            properties:
-                              match:
-                                description: Match defines the matching statement.
-                                type: object
-                                x-kubernetes-preserve-unknown-fields: true
-                              name:
-                                description: Name the name of the binding.
-                                pattern: ^(?:\w+|\(.+\))$
-                                type: string
-                              value:
-                                description: Value value of the binding.
-                                x-kubernetes-preserve-unknown-fields: true
-                            required:
-                            - name
-                            - value
-                            type: object
-                          type: array
-                        patch:
-                          description: Patch represents a patch operation.
-                          properties:
-                            dryRun:
-                              description: DryRun determines whether the file should
-                                be applied in dry run mode.
-                              type: boolean
-                            expect:
-                              description: Expect defines a list of matched checks
-                                to validate the operation outcome.
-                              items:
-                                description: |-
-                                  Expectation represents a check to be applied on the result of an operation
-                                  with a match filter to determine if the verification should be considered.
-                                properties:
-                                  check:
-                                    description: Check defines the verification statement.
-                                    type: object
-                                    x-kubernetes-preserve-unknown-fields: true
-                                  match:
-                                    description: Match defines the matching statement.
-                                    type: object
-                                    x-kubernetes-preserve-unknown-fields: true
-                                required:
-                                - check
-                                type: object
-                              type: array
-                            file:
-                              description: |-
-                                File is the path to the referenced file. This can be a direct path to a file
-                                or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
-                                files within the "manifest" directory.
-                              type: string
-                            resource:
-                              description: Resource provides a resource to be applied.
-                              type: object
-                              x-kubernetes-embedded-resource: true
-                              x-kubernetes-preserve-unknown-fields: true
-                            template:
-                              description: Template determines whether resources should
-                                be considered for templating.
-                              type: boolean
-                            timeout:
-                              description: Timeout for the operation. Overrides the
-                                global timeout set in the Configuration.
-                              type: string
-                          type: object
                         podLogs:
                           description: PodLogs determines the pod logs collector to
                             execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
+                            cluster:
+                              description: Cluster defines the target cluster (default
+                                cluster will be used if not specified and/or overridden).
+                              type: string
+                            clusters:
+                              additionalProperties:
+                                description: Cluster defines cluster config and context.
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
+                              description: Clusters holds a registry to clusters to
+                                support multi-cluster tests.
+                              type: object
                             container:
                               description: Container in pod to get logs from else
                                 --all-containers is used.
@@ -5026,11 +5212,51 @@ spec:
                         script:
                           description: Script defines a script to run.
                           properties:
+                            bindings:
+                              description: Bindings defines additional binding key/values.
+                              items:
+                                description: Binding represents a key/value set as
+                                  a binding in an executing test.
+                                properties:
+                                  name:
+                                    description: Name the name of the binding.
+                                    pattern: ^(?:\w+|\(.+\))$
+                                    type: string
+                                  value:
+                                    description: Value value of the binding.
+                                    x-kubernetes-preserve-unknown-fields: true
+                                required:
+                                - name
+                                - value
+                                type: object
+                              type: array
                             check:
                               description: Check is an assertion tree to validate
                                 the operation outcome.
                               type: object
                               x-kubernetes-preserve-unknown-fields: true
+                            cluster:
+                              description: Cluster defines the target cluster (default
+                                cluster will be used if not specified and/or overridden).
+                              type: string
+                            clusters:
+                              additionalProperties:
+                                description: Cluster defines cluster config and context.
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
+                              description: Clusters holds a registry to clusters to
+                                support multi-cluster tests.
+                              type: object
                             content:
                               description: Content defines a shell script (run with
                                 "sh -c ...").
@@ -5041,6 +5267,29 @@ spec:
                                 description: Binding represents a key/value set as
                                   a binding in an executing test.
                                 properties:
+                                  name:
+                                    description: Name the name of the binding.
+                                    pattern: ^(?:\w+|\(.+\))$
+                                    type: string
+                                  value:
+                                    description: Value value of the binding.
+                                    x-kubernetes-preserve-unknown-fields: true
+                                required:
+                                - name
+                                - value
+                                type: object
+                              type: array
+                            outputs:
+                              description: Outputs defines output bindings.
+                              items:
+                                description: Output represents an output binding with
+                                  a match to determine if the binding must be considered
+                                  or not.
+                                properties:
+                                  match:
+                                    description: Match defines the matching statement.
+                                    type: object
+                                    x-kubernetes-preserve-unknown-fields: true
                                   name:
                                     description: Name the name of the binding.
                                     pattern: ^(?:\w+|\(.+\))$
@@ -5071,60 +5320,39 @@ spec:
                           required:
                           - duration
                           type: object
-                        update:
-                          description: Update represents an update operation.
-                          properties:
-                            dryRun:
-                              description: DryRun determines whether the file should
-                                be applied in dry run mode.
-                              type: boolean
-                            expect:
-                              description: Expect defines a list of matched checks
-                                to validate the operation outcome.
-                              items:
-                                description: |-
-                                  Expectation represents a check to be applied on the result of an operation
-                                  with a match filter to determine if the verification should be considered.
-                                properties:
-                                  check:
-                                    description: Check defines the verification statement.
-                                    type: object
-                                    x-kubernetes-preserve-unknown-fields: true
-                                  match:
-                                    description: Match defines the matching statement.
-                                    type: object
-                                    x-kubernetes-preserve-unknown-fields: true
-                                required:
-                                - check
-                                type: object
-                              type: array
-                            file:
-                              description: |-
-                                File is the path to the referenced file. This can be a direct path to a file
-                                or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
-                                files within the "manifest" directory.
-                              type: string
-                            resource:
-                              description: Resource provides a resource to be applied.
-                              type: object
-                              x-kubernetes-embedded-resource: true
-                              x-kubernetes-preserve-unknown-fields: true
-                            template:
-                              description: Template determines whether resources should
-                                be considered for templating.
-                              type: boolean
-                            timeout:
-                              description: Timeout for the operation. Overrides the
-                                global timeout set in the Configuration.
-                              type: string
-                          type: object
                         wait:
                           description: Wait determines the resource wait collector
                             to execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             apiVersion:
                               description: API version of the referent.
                               type: string
+                            cluster:
+                              description: Cluster defines the target cluster (default
+                                cluster will be used if not specified and/or overridden).
+                              type: string
+                            clusters:
+                              additionalProperties:
+                                description: Cluster defines cluster config and context.
+                                properties:
+                                  context:
+                                    description: Context is the name of the context
+                                      to use.
+                                    type: string
+                                  kubeconfig:
+                                    description: Kubeconfig is the path to the referenced
+                                      file.
+                                    type: string
+                                required:
+                                - kubeconfig
+                                type: object
+                              description: Clusters holds a registry to clusters to
+                                support multi-cluster tests.
+                              type: object
                             for:
                               description: WaitFor specifies the condition to wait
                                 for.

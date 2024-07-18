@@ -14,7 +14,7 @@ import (
 	kuttlapi "github.com/kudobuilder/kuttl/pkg/apis/testharness/v1beta1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/discovery"
-	"github.com/kyverno/chainsaw/pkg/resource"
+	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/spf13/cobra"

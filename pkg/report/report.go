@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 )
 
@@ -54,7 +55,7 @@ func (r *Report) ForTest(test *discovery.Test) *TestReport {
 	return out
 }
 
-func (r *Report) Save(format v1alpha1.ReportFormatType, path, name string) error {
+func (r *Report) Save(format v1alpha2.ReportFormatType, path, name string) error {
 	if filepath.Ext(name) == "" {
 		name += "." + strings.ToLower(string(format))
 	}
@@ -63,9 +64,9 @@ func (r *Report) Save(format v1alpha1.ReportFormatType, path, name string) error
 		filePath = filepath.Join(path, name)
 	}
 	switch format {
-	case v1alpha1.XMLFormat:
+	case v1alpha2.XMLFormat:
 		return saveJUnit(r, filePath)
-	case v1alpha1.JSONFormat:
+	case v1alpha2.JSONFormat:
 	default:
 		return fmt.Errorf("unknown report format: %s", format)
 	}

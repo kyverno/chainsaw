@@ -8,6 +8,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -27,7 +28,7 @@ import (
 func TestTestProcessor_Run(t *testing.T) {
 	testCases := []struct {
 		name           string
-		config         v1alpha1.ConfigurationSpec
+		config         v1alpha2.ConfigurationSpec
 		client         client.Client
 		clock          clock.PassiveClock
 		summary        *summary.Summary
@@ -40,8 +41,8 @@ func TestTestProcessor_Run(t *testing.T) {
 		skipped        bool
 	}{{
 		name: "test with no steps",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -66,8 +67,8 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "test with test steps",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -96,9 +97,11 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "fail fast",
-		config: v1alpha1.ConfigurationSpec{
-			FailFast: true,
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Execution: v1alpha2.ExecutionOptions{
+				FailFast: true,
+			},
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -127,8 +130,8 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "skip test",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -163,8 +166,8 @@ func TestTestProcessor_Run(t *testing.T) {
 		skipped:      true,
 	}, {
 		name: "with test namespace",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -198,8 +201,8 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "without test namespace",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -228,8 +231,8 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "delay before cleanup",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -259,8 +262,8 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "namespace not found and created",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -297,8 +300,8 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "namespace not found due to internal error",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -335,8 +338,8 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   true,
 	}, {
 		name: "namespace not found and not created due to internal error",
-		config: v1alpha1.ConfigurationSpec{
-			Timeouts: v1alpha1.Timeouts{},
+		config: v1alpha2.ConfigurationSpec{
+			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
