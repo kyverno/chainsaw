@@ -5,9 +5,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
@@ -28,14 +28,14 @@ func TestRun(t *testing.T) {
 	tests := []struct {
 		name       string
 		tests      []discovery.Test
-		config     v1alpha2.ConfigurationSpec
+		config     model.Configuration
 		restConfig *rest.Config
 		mockReturn int
 		wantErr    bool
 	}{{
 		name:       "Zero Tests",
 		tests:      []discovery.Test{},
-		config:     v1alpha2.ConfigurationSpec{},
+		config:     model.Configuration{},
 		restConfig: &rest.Config{},
 		wantErr:    false,
 	}, {
@@ -43,14 +43,14 @@ func TestRun(t *testing.T) {
 		tests: []discovery.Test{
 			{
 				Err: nil,
-				Test: &v1alpha1.Test{
+				Test: &model.Test{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "test1",
 					},
 				},
 			},
 		},
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Report: &v1alpha2.ReportOptions{
 				Format: v1alpha2.JSONFormat,
 			},
@@ -60,7 +60,7 @@ func TestRun(t *testing.T) {
 	}, {
 		name:  "Zero Tests with JSON Report",
 		tests: []discovery.Test{},
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Report: &v1alpha2.ReportOptions{
 				Format: v1alpha2.JSONFormat,
 			},
@@ -72,7 +72,7 @@ func TestRun(t *testing.T) {
 		tests: []discovery.Test{
 			{
 				Err: nil,
-				Test: &v1alpha1.Test{
+				Test: &model.Test{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "test1",
 					},
@@ -87,7 +87,7 @@ func TestRun(t *testing.T) {
 		tests: []discovery.Test{
 			{
 				Err: nil,
-				Test: &v1alpha1.Test{
+				Test: &model.Test{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "test1",
 					},
@@ -102,14 +102,14 @@ func TestRun(t *testing.T) {
 		tests: []discovery.Test{
 			{
 				Err: nil,
-				Test: &v1alpha1.Test{
+				Test: &model.Test{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "test1",
 					},
 				},
 			},
 		},
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Report: &v1alpha2.ReportOptions{
 				Format: v1alpha2.XMLFormat,
 				Name:   "chainsaw",
@@ -123,14 +123,14 @@ func TestRun(t *testing.T) {
 		tests: []discovery.Test{
 			{
 				Err: nil,
-				Test: &v1alpha1.Test{
+				Test: &model.Test{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "test1",
 					},
 				},
 			},
 		},
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Report: &v1alpha2.ReportOptions{
 				Format: "abc",
 			},

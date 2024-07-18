@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -22,7 +23,7 @@ func TestDiscoverTests(t *testing.T) {
 		paths:    []string{"../../testdata/discovery/test"},
 		want: []Test{{
 			BasePath: "../../testdata/discovery/test",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
@@ -68,7 +69,7 @@ func TestDiscoverTests(t *testing.T) {
 		paths:    []string{"../../testdata/discovery/manifests"},
 		want: []Test{{
 			BasePath: "../../testdata/discovery/manifests",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",

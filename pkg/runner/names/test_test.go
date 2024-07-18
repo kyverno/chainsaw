@@ -6,9 +6,9 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -18,13 +18,13 @@ func TestTest(t *testing.T) {
 	assert.NoError(t, err)
 	tests := []struct {
 		name    string
-		config  v1alpha2.ConfigurationSpec
+		config  model.Configuration
 		test    discovery.Test
 		want    string
 		wantErr bool
 	}{{
 		name: "nil test",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Discovery: v1alpha2.DiscoveryOptions{
 				FullName: false,
 			},
@@ -36,14 +36,14 @@ func TestTest(t *testing.T) {
 		wantErr: true,
 	}, {
 		name: "no full name",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Discovery: v1alpha2.DiscoveryOptions{
 				FullName: false,
 			},
 		},
 		test: discovery.Test{
 			BasePath: cwd,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "foo",
 				},
@@ -53,14 +53,14 @@ func TestTest(t *testing.T) {
 		want:    "foo",
 	}, {
 		name: "full name",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Discovery: v1alpha2.DiscoveryOptions{
 				FullName: true,
 			},
 		},
 		test: discovery.Test{
 			BasePath: cwd,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "foo",
 				},
@@ -70,14 +70,14 @@ func TestTest(t *testing.T) {
 		want:    ".[foo]",
 	}, {
 		name: "full name",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Discovery: v1alpha2.DiscoveryOptions{
 				FullName: true,
 			},
 		},
 		test: discovery.Test{
 			BasePath: filepath.Join(cwd, "..", "dir", "dir"),
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "foo",
 				},
@@ -87,14 +87,14 @@ func TestTest(t *testing.T) {
 		want:    "../dir/dir[foo]",
 	}, {
 		name: "full name",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Discovery: v1alpha2.DiscoveryOptions{
 				FullName: true,
 			},
 		},
 		test: discovery.Test{
 			BasePath: filepath.Join(cwd, "dir", "dir"),
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				ObjectMeta: metav1.ObjectMeta{
 					Name: "foo",
 				},
@@ -147,7 +147,7 @@ func TestHelpTest(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			test := discovery.Test{
 				BasePath: "/some/path",
-				Test: &v1alpha1.Test{
+				Test: &model.Test{
 					ObjectMeta: metav1.ObjectMeta{
 						Name: "foo",
 					},
