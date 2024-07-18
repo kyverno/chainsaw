@@ -46,14 +46,14 @@ type StepTemplateSpec struct {
 }
 
 // TestStep contains the test step definition used in a test spec.
-// +kubebuilder:not:={required:{from},anyOf:{{required:{try}},{required:{catch}},{required:{finally}},{required:{cleanup}}}}
+// +kubebuilder:not:={required:{use},anyOf:{{required:{try}},{required:{catch}},{required:{finally}},{required:{cleanup}}}}
 type TestStep struct {
 	// Name of the step.
 	// +optional
 	Name string `json:"name,omitempty"`
 
-	// From references a step template.
-	From string `json:"from,omitempty"`
+	// Use references a step template.
+	Use string `json:"use,omitempty"`
 
 	// TestStepSpec of the step.
 	TestStepSpec `json:",inline"`
