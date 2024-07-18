@@ -6,14 +6,12 @@ import (
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	testvalidation "github.com/kyverno/chainsaw/pkg/apis/validation/test"
 	internalloader "github.com/kyverno/chainsaw/pkg/internal/loader"
 	yamlutils "github.com/kyverno/chainsaw/pkg/utils/yaml"
 	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/apimachinery/pkg/util/validation/field"
 	"k8s.io/client-go/openapi"
 )
 
@@ -21,7 +19,6 @@ type (
 	splitter      = func([]byte) ([][]byte, error)
 	loaderFactory = func(openapi.Client) (loader.Loader, error)
 	converter     = func(unstructured.Unstructured) (*v1alpha1.Test, error)
-	validator     = func(obj *v1alpha1.Test) field.ErrorList
 )
 
 var test_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Test")
@@ -42,18 +39,15 @@ func Load(path string, remarshal bool) ([]*v1alpha1.Test, error) {
 }
 
 func Parse(content []byte, remarshal bool) ([]*v1alpha1.Test, error) {
-	return parse(content, remarshal, nil, nil, nil, nil)
+	return parse(content, remarshal, nil, nil, nil)
 }
 
-func parse(content []byte, remarshal bool, splitter splitter, loaderFactory loaderFactory, converter converter, validator validator) ([]*v1alpha1.Test, error) {
+func parse(content []byte, remarshal bool, splitter splitter, loaderFactory loaderFactory, converter converter) ([]*v1alpha1.Test, error) {
 	if splitter == nil {
 		splitter = yaml.SplitDocuments
 	}
 	if converter == nil {
 		converter = convert.To[v1alpha1.Test]
-	}
-	if validator == nil {
-		validator = testvalidation.ValidateTest
 	}
 	var loader loader.Loader
 	if loaderFactory != nil {
@@ -90,9 +84,6 @@ func parse(content []byte, remarshal bool, splitter splitter, loaderFactory load
 		case test_v1alpha1:
 			test, err := converter(untyped)
 			if err != nil {
-				return nil, err
-			}
-			if err := validator(test).ToAggregate(); err != nil {
 				return nil, err
 			}
 			tests = append(tests, test)
