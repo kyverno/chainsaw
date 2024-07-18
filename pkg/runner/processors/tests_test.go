@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
@@ -35,7 +36,7 @@ func (r registryMock) Resolve(bool, ...string) (*rest.Config, client.Client, err
 func TestTestsProcessor_Run(t *testing.T) {
 	testCases := []struct {
 		name         string
-		config       v1alpha2.ConfigurationSpec
+		config       model.Configuration
 		client       client.Client
 		clock        clock.PassiveClock
 		summary      *summary.Summary
@@ -45,7 +46,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail bool
 	}{{
 		name: "Namesapce exists",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{
 				Name: "default",
 			},
@@ -63,7 +64,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail: false,
 	}, {
 		name: "Namesapce doesn't exists",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{
 				Name: "chain-saw",
 			},
@@ -87,7 +88,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail: false,
 	}, {
 		name: "Namesapce not found with error",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{
 				Name: "chain-saw",
 			},
@@ -108,7 +109,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail: true,
 	}, {
 		name: "Namesapce doesn't exists and can't be created",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{
 				Name: "chain-saw",
 			},
@@ -129,7 +130,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 		expectedFail: true,
 	}, {
 		name: "Success",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{
 				Name: "default",
 			},
@@ -147,13 +148,13 @@ func TestTestsProcessor_Run(t *testing.T) {
 			{
 				Err:      nil,
 				BasePath: "fakePath",
-				Test:     &v1alpha1.Test{},
+				Test:     &model.Test{},
 			},
 		},
 		expectedFail: false,
 	}, {
 		name: "Fail",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{
 				Name: "default",
 			},

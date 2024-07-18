@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/clusters"
@@ -27,7 +27,7 @@ func Run(
 	ctx context.Context,
 	cfg *rest.Config,
 	clock clock.PassiveClock,
-	config v1alpha2.ConfigurationSpec,
+	config model.Configuration,
 	values map[string]any,
 	tests ...discovery.Test,
 ) (*summary.Summary, error) {
@@ -38,7 +38,7 @@ func run(
 	ctx context.Context,
 	cfg *rest.Config,
 	clock clock.PassiveClock,
-	config v1alpha2.ConfigurationSpec,
+	config model.Configuration,
 	m mainstart,
 	values map[string]any,
 	tests ...discovery.Test,
