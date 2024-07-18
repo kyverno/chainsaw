@@ -1684,7 +1684,7 @@
             ],
             "not": {
               "required": [
-                "from"
+                "use"
               ],
               "anyOf": [
                 {
@@ -5311,13 +5311,6 @@
                   }
                 }
               },
-              "from": {
-                "description": "From references a step template.",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
               "name": {
                 "description": "Name of the step.",
                 "type": [
@@ -8897,6 +8890,13 @@
                     }
                   }
                 }
+              },
+              "use": {
+                "description": "Use references a step template.",
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             }
           }
