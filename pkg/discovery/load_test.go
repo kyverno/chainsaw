@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -36,7 +37,7 @@ func TestLoadTest(t *testing.T) {
 		path:     filepath.Join(basePath, "test"),
 		want: []Test{{
 			BasePath: "../../testdata/discovery/test",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
@@ -84,7 +85,7 @@ func TestLoadTest(t *testing.T) {
 		path:     filepath.Join(basePath, "test"),
 		want: []Test{{
 			BasePath: "../../testdata/discovery/test",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
@@ -132,7 +133,7 @@ func TestLoadTest(t *testing.T) {
 		path:     filepath.Join(basePath, "test-yml"),
 		want: []Test{{
 			BasePath: "../../testdata/discovery/test-yml",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
@@ -180,7 +181,7 @@ func TestLoadTest(t *testing.T) {
 		path:     filepath.Join(basePath, "manifests"),
 		want: []Test{{
 			BasePath: "../../testdata/discovery/manifests",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
@@ -235,7 +236,7 @@ func TestLoadTest(t *testing.T) {
 		path:     filepath.Join(basePath, "multiple-tests"),
 		want: []Test{{
 			BasePath: "../../testdata/discovery/multiple-tests",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
@@ -277,7 +278,7 @@ func TestLoadTest(t *testing.T) {
 			},
 		}, {
 			BasePath: "../../testdata/discovery/multiple-tests",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",

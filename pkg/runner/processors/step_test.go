@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	fakeLogger "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
@@ -29,7 +30,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	testData := filepath.Join("..", "..", "..", "testdata", "runner", "processors")
 	testCases := []struct {
 		name         string
-		config       v1alpha2.ConfigurationSpec
+		config       model.Configuration
 		client       client.Client
 		namespacer   *fakeNamespacer.FakeNamespacer
 		clock        clock.PassiveClock
@@ -40,7 +41,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		skipped      bool
 	}{{
 		name: "test with no handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{},
@@ -52,7 +53,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -69,7 +70,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try operation with apply handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -88,7 +89,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -116,7 +117,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with create handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -135,7 +136,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -163,7 +164,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with assert handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -206,7 +207,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -234,7 +235,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with error handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -277,7 +278,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -305,7 +306,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with command handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{},
@@ -320,7 +321,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -345,7 +346,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with script handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{},
@@ -360,7 +361,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -384,7 +385,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with sleep handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client:     &fake.FakeClient{},
@@ -392,7 +393,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock:      tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -416,7 +417,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with delete handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -432,7 +433,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -465,7 +466,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "dry run with create handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -484,7 +485,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -515,7 +516,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "skip delete with create handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -534,7 +535,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -563,7 +564,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try-raw resource with create handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -582,7 +583,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -617,7 +618,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try-url resource with create handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -636,7 +637,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -665,7 +666,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "raw resource with assert handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -708,7 +709,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -759,7 +760,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try url-resource with assert handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha1.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -788,7 +789,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -816,7 +817,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try, catch and finally operation with apply handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Execution: v1alpha2.ExecutionOptions{
 				ForceTerminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
 			},
@@ -866,7 +867,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 				},
@@ -942,7 +943,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "termination with create handler",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -961,7 +962,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					ForceTerminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
 					Timeouts:                    &v1alpha1.Timeouts{},
