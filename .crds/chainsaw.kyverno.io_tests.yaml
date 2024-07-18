@@ -4585,8 +4585,6 @@ spec:
                         type: object
                       minItems: 1
                       type: array
-                  required:
-                  - try
                   type: object
                 type: array
               template:

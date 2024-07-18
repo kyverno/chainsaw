@@ -98,6 +98,7 @@ type TestStepSpec struct {
 
 	// Try defines what the step will try to execute.
 	// +kubebuilder:validation:MinItems:=1
+	// +optional
 	Try []Operation `json:"try"`
 
 	// Catch defines what the step will execute when an error happens.

@@ -885,7 +885,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
-| `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) | :white_check_mark: |  | <p>Try defines what the step will try to execute.</p> |
+| `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) |  |  | <p>Try defines what the step will try to execute.</p> |
 | `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
 | `finally` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Finally defines what the step will execute after the step is terminated.</p> |
 | `cleanup` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Cleanup defines what will be executed after the test is terminated.</p> |
