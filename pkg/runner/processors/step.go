@@ -9,10 +9,10 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
@@ -50,7 +50,7 @@ type StepProcessor interface {
 }
 
 func NewStepProcessor(
-	config v1alpha2.ConfigurationSpec,
+	config model.Configuration,
 	clusters clusters.Registry,
 	namespacer namespacer.Namespacer,
 	clock clock.PassiveClock,
@@ -71,7 +71,7 @@ func NewStepProcessor(
 }
 
 type stepProcessor struct {
-	config     v1alpha2.ConfigurationSpec
+	config     model.Configuration
 	clusters   clusters.Registry
 	namespacer namespacer.Namespacer
 	clock      clock.PassiveClock

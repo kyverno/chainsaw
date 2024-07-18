@@ -3,10 +3,10 @@ package flags
 import (
 	"strconv"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
+	"github.com/kyverno/chainsaw/pkg/model"
 )
 
-func GetFlags(config v1alpha2.ConfigurationSpec) map[string]string {
+func GetFlags(config model.Configuration) map[string]string {
 	flags := map[string]string{
 		"test.v":            "true",
 		"test.paniconexit0": "true",
