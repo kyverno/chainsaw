@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/loaders/steptemplate"
 	"github.com/kyverno/chainsaw/pkg/loaders/test"
 	"golang.org/x/exp/maps"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -54,6 +55,26 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 			return nil, err
 		}
 		if len(apiTests) != 0 {
+			for _, apiTest := range apiTests {
+				for step := range apiTest.Spec.Steps {
+					step := &apiTest.Spec.Steps[step]
+					if step.From != "" {
+						steptpl, err := steptemplate.Load(filepath.Join(path, step.From), remarshal)
+						if err != nil {
+							return nil, err
+						}
+						if len(steptpl) != 1 {
+							return nil, errors.New("step template not found or multiple templates exist")
+						}
+						step.From = ""
+						step.Bindings = append(step.Bindings, steptpl[0].Spec.Bindings...)
+						step.Try = append(step.Try, steptpl[0].Spec.Try...)
+						step.Catch = append(step.Catch, steptpl[0].Spec.Catch...)
+						step.Finally = append(step.Finally, steptpl[0].Spec.Finally...)
+						step.Cleanup = append(step.Cleanup, steptpl[0].Spec.Cleanup...)
+					}
+				}
+			}
 			for _, apiTest := range apiTests {
 				tests = append(tests, Test{
 					Test:     apiTest,
