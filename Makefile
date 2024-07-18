@@ -202,8 +202,9 @@ codegen-schemas-json: codegen-schemas-openapi
 	@openapi2jsonschema .temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha1.json --kubernetes --stand-alone --expanded -o ./.temp/.schemas/json
 	@openapi2jsonschema .temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha2.json --kubernetes --stand-alone --expanded -o ./.temp/.schemas/json
 	@mkdir -p ./.schemas/json
-	@cp ./.temp/.schemas/json/test-chainsaw-*.json ./.schemas/json
 	@cp ./.temp/.schemas/json/configuration-chainsaw-*.json ./.schemas/json
+	@cp ./.temp/.schemas/json/steptemplate-chainsaw-*.json ./.schemas/json
+	@cp ./.temp/.schemas/json/test-chainsaw-*.json ./.schemas/json
 	@echo Copy generated schemas to embed in the CLI... >&2
 	@rm -rf pkg/data/schemas/json && mkdir -p pkg/data/schemas/json
 	@cp ./.schemas/json/* pkg/data/schemas/json
