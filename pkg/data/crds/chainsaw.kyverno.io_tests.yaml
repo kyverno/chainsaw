@@ -860,6 +860,18 @@ spec:
                 items:
                   description: TestStep contains the test step definition used in
                     a test spec.
+                  not:
+                    anyOf:
+                    - required:
+                      - try
+                    - required:
+                      - catch
+                    - required:
+                      - finally
+                    - required:
+                      - cleanup
+                    required:
+                    - from
                   properties:
                     bindings:
                       description: Bindings defines additional binding key/values.
@@ -3101,6 +3113,9 @@ spec:
                             type: object
                         type: object
                       type: array
+                    from:
+                      description: From references a step template.
+                      type: string
                     name:
                       description: Name of the step.
                       type: string
@@ -4570,8 +4585,6 @@ spec:
                         type: object
                       minItems: 1
                       type: array
-                  required:
-                  - try
                   type: object
                 type: array
               template:
