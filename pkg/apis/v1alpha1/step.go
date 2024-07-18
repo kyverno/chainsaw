@@ -19,10 +19,34 @@ type StepTemplate struct {
 	metav1.ObjectMeta `json:"metadata,omitempty"`
 
 	// Test step spec.
-	Spec TestStepSpec `json:"spec"`
+	Spec StepTemplateSpec `json:"spec"`
+}
+
+// StepTemplateSpec defines the spec of a step template.
+type StepTemplateSpec struct {
+	// Bindings defines additional binding key/values.
+	// +optional
+	Bindings []Binding `json:"bindings,omitempty"`
+
+	// Try defines what the step will try to execute.
+	// +kubebuilder:validation:MinItems:=1
+	Try []Operation `json:"try"`
+
+	// Catch defines what the step will execute when an error happens.
+	// +optional
+	Catch []CatchFinally `json:"catch,omitempty"`
+
+	// Finally defines what the step will execute after the step is terminated.
+	// +optional
+	Finally []CatchFinally `json:"finally,omitempty"`
+
+	// Cleanup defines what will be executed after the test is terminated.
+	// +optional
+	Cleanup []CatchFinally `json:"cleanup,omitempty"`
 }
 
 // TestStep contains the test step definition used in a test spec.
+// +kubebuilder:not:={required:{from},anyOf:{{required:{try}},{required:{catch}},{required:{finally}},{required:{cleanup}}}}
 type TestStep struct {
 	// Name of the step.
 	// +optional

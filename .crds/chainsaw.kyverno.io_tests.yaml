@@ -860,6 +860,18 @@ spec:
                 items:
                   description: TestStep contains the test step definition used in
                     a test spec.
+                  not:
+                    anyOf:
+                    - required:
+                      - try
+                    - required:
+                      - catch
+                    - required:
+                      - finally
+                    - required:
+                      - cleanup
+                    required:
+                    - from
                   properties:
                     bindings:
                       description: Bindings defines additional binding key/values.

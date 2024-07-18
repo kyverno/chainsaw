@@ -2694,62 +2694,6 @@
             }
           }
         },
-        "cluster": {
-          "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
-          "type": [
-            "string",
-            "null"
-          ]
-        },
-        "clusters": {
-          "description": "Clusters holds a registry to clusters to support multi-cluster tests.",
-          "type": [
-            "object",
-            "null"
-          ],
-          "additionalProperties": {
-            "description": "Cluster defines cluster config and context.",
-            "type": [
-              "object",
-              "null"
-            ],
-            "required": [
-              "kubeconfig"
-            ],
-            "properties": {
-              "context": {
-                "description": "Context is the name of the context to use.",
-                "type": [
-                  "string",
-                  "null"
-                ]
-              },
-              "kubeconfig": {
-                "description": "Kubeconfig is the path to the referenced file.",
-                "type": "string"
-              }
-            }
-          }
-        },
-        "deletionPropagationPolicy": {
-          "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in both the Configuration and the Test.",
-          "type": [
-            "string",
-            "null"
-          ],
-          "enum": [
-            "Orphan",
-            "Background",
-            "Foreground"
-          ]
-        },
-        "description": {
-          "description": "Description contains a description of the test step.",
-          "type": [
-            "string",
-            "null"
-          ]
-        },
         "finally": {
           "description": "Finally defines what the step will execute after the step is terminated.",
           "type": [
@@ -3919,71 +3863,6 @@
                   }
                 }
               }
-            }
-          }
-        },
-        "skipDelete": {
-          "description": "SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "template": {
-          "description": "Template determines whether resources should be considered for templating.",
-          "type": [
-            "boolean",
-            "null"
-          ]
-        },
-        "timeouts": {
-          "description": "Timeouts for the test step. Overrides the global timeouts set in the Configuration and the timeouts eventually set in the Test.",
-          "type": [
-            "object",
-            "null"
-          ],
-          "properties": {
-            "apply": {
-              "description": "Apply defines the timeout for the apply operation",
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "assert": {
-              "description": "Assert defines the timeout for the assert operation",
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "cleanup": {
-              "description": "Cleanup defines the timeout for the cleanup operation",
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "delete": {
-              "description": "Delete defines the timeout for the delete operation",
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "error": {
-              "description": "Error defines the timeout for the error operation",
-              "type": [
-                "string",
-                "null"
-              ]
-            },
-            "exec": {
-              "description": "Exec defines the timeout for exec operations",
-              "type": [
-                "string",
-                "null"
-              ]
             }
           }
         },

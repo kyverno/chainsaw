@@ -1685,6 +1685,33 @@
             "required": [
               "try"
             ],
+            "not": {
+              "required": [
+                "from"
+              ],
+              "anyOf": [
+                {
+                  "required": [
+                    "try"
+                  ]
+                },
+                {
+                  "required": [
+                    "catch"
+                  ]
+                },
+                {
+                  "required": [
+                    "finally"
+                  ]
+                },
+                {
+                  "required": [
+                    "cleanup"
+                  ]
+                }
+              ]
+            },
             "properties": {
               "bindings": {
                 "description": "Bindings defines additional binding key/values.",

@@ -1479,39 +1479,6 @@ spec:
                       type: object
                   type: object
                 type: array
-              cluster:
-                description: Cluster defines the target cluster (default cluster will
-                  be used if not specified and/or overridden).
-                type: string
-              clusters:
-                additionalProperties:
-                  description: Cluster defines cluster config and context.
-                  properties:
-                    context:
-                      description: Context is the name of the context to use.
-                      type: string
-                    kubeconfig:
-                      description: Kubeconfig is the path to the referenced file.
-                      type: string
-                  required:
-                  - kubeconfig
-                  type: object
-                description: Clusters holds a registry to clusters to support multi-cluster
-                  tests.
-                type: object
-              deletionPropagationPolicy:
-                description: |-
-                  DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
-                  the object, and how the garbage collector will handle the propagation.
-                  Overrides the deletion propagation policy set in both the Configuration and the Test.
-                enum:
-                - Orphan
-                - Background
-                - Foreground
-                type: string
-              description:
-                description: Description contains a description of the test step.
-                type: string
               finally:
                 description: Finally defines what the step will execute after the
                   step is terminated.
@@ -2223,38 +2190,6 @@ spec:
                       type: object
                   type: object
                 type: array
-              skipDelete:
-                description: SkipDelete determines whether the resources created by
-                  the step should be deleted after the test step is executed.
-                type: boolean
-              template:
-                description: Template determines whether resources should be considered
-                  for templating.
-                type: boolean
-              timeouts:
-                description: Timeouts for the test step. Overrides the global timeouts
-                  set in the Configuration and the timeouts eventually set in the
-                  Test.
-                properties:
-                  apply:
-                    description: Apply defines the timeout for the apply operation
-                    type: string
-                  assert:
-                    description: Assert defines the timeout for the assert operation
-                    type: string
-                  cleanup:
-                    description: Cleanup defines the timeout for the cleanup operation
-                    type: string
-                  delete:
-                    description: Delete defines the timeout for the delete operation
-                    type: string
-                  error:
-                    description: Error defines the timeout for the error operation
-                    type: string
-                  exec:
-                    description: Exec defines the timeout for exec operations
-                    type: string
-                type: object
               try:
                 description: Try defines what the step will try to execute.
                 items:
