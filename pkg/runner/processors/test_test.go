@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
@@ -28,7 +29,7 @@ import (
 func TestTestProcessor_Run(t *testing.T) {
 	testCases := []struct {
 		name           string
-		config         v1alpha2.ConfigurationSpec
+		config         model.Configuration
 		client         client.Client
 		clock          clock.PassiveClock
 		summary        *summary.Summary
@@ -41,7 +42,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		skipped        bool
 	}{{
 		name: "test with no steps",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -54,7 +55,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Namespace: "chainsaw",
 					Timeouts:  &v1alpha1.Timeouts{},
@@ -67,7 +68,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "test with test steps",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -80,7 +81,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 					Steps: []v1alpha1.TestStep{
@@ -97,7 +98,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "fail fast",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Execution: v1alpha2.ExecutionOptions{
 				FailFast: true,
 			},
@@ -113,7 +114,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 					Steps: []v1alpha1.TestStep{
@@ -130,7 +131,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "skip test",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -143,7 +144,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 					Skip:     ptr.To[bool](true),
@@ -166,7 +167,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		skipped:      true,
 	}, {
 		name: "with test namespace",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -179,7 +180,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Namespace: "chainsaw",
 					Timeouts:  &v1alpha1.Timeouts{},
@@ -201,7 +202,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "without test namespace",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -214,7 +215,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Timeouts: &v1alpha1.Timeouts{},
 					Steps: []v1alpha1.TestStep{
@@ -231,7 +232,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "delay before cleanup",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -244,7 +245,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					DelayBeforeCleanup: ptr.To[v1.Duration](v1.Duration{Duration: 1 * time.Second}),
 					Timeouts:           &v1alpha1.Timeouts{},
@@ -262,7 +263,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "namespace not found and created",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -278,7 +279,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Namespace: "chainsaw",
 					Timeouts:  &v1alpha1.Timeouts{},
@@ -300,7 +301,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   false,
 	}, {
 		name: "namespace not found due to internal error",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -316,7 +317,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Namespace: "chainsaw",
 					Timeouts:  &v1alpha1.Timeouts{},
@@ -338,7 +339,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		expectedFail:   true,
 	}, {
 		name: "namespace not found and not created due to internal error",
-		config: v1alpha2.ConfigurationSpec{
+		config: model.Configuration{
 			Timeouts: v1alpha2.Timeouts{},
 		},
 		client: &fake.FakeClient{
@@ -354,7 +355,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		testsReport: nil,
 		test: discovery.Test{
 			Err: nil,
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
 					Namespace: "chainsaw",
 					Timeouts:  &v1alpha1.Timeouts{},
