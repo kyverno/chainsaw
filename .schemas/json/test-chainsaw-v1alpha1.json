@@ -8892,11 +8892,20 @@
                 }
               },
               "use": {
-                "description": "Use references a step template.",
+                "description": "Use defines a reference to a step template.",
                 "type": [
-                  "string",
+                  "object",
                   "null"
-                ]
+                ],
+                "properties": {
+                  "template": {
+                    "description": "Template references a step template.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  }
+                }
               }
             }
           }

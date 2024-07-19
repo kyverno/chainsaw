@@ -863,7 +863,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | `string` |  |  | <p>Name of the step.</p> |
-| `use` | `string` | :white_check_mark: |  | <p>Use references a step template.</p> |
+| `use` | [`Use`](#chainsaw-kyverno-io-v1alpha1-Use) | :white_check_mark: |  | <p>Use defines a reference to a step template.</p> |
 | `TestStepSpec` | [`TestStepSpec`](#chainsaw-kyverno-io-v1alpha1-TestStepSpec) | :white_check_mark: | :white_check_mark: | <p>TestStepSpec of the step.</p> |
 
 ## TestStepSpec     {#chainsaw-kyverno-io-v1alpha1-TestStepSpec}
@@ -929,6 +929,19 @@ If a resource does not exist in the cluster it will fail.</p>
 | `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionResourceRef` | [`ActionResourceRef`](#chainsaw-kyverno-io-v1alpha1-ActionResourceRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+
+## Use     {#chainsaw-kyverno-io-v1alpha1-Use}
+
+**Appears in:**
+    
+- [TestStep](#chainsaw-kyverno-io-v1alpha1-TestStep)
+
+<p>Use defines a reference to a step template.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `template` | `string` | :white_check_mark: |  | <p>Template references a step template.</p> |
 
 ## Wait     {#chainsaw-kyverno-io-v1alpha1-Wait}
 
