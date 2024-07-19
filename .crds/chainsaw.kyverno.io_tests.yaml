@@ -4583,8 +4583,12 @@ spec:
                       minItems: 1
                       type: array
                     use:
-                      description: Use references a step template.
-                      type: string
+                      description: Use defines a reference to a step template.
+                      properties:
+                        template:
+                          description: Template references a step template.
+                          type: string
+                      type: object
                   type: object
                 type: array
               template:
