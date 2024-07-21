@@ -11,7 +11,7 @@ require (
 	github.com/hashicorp/go-getter v1.7.5
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240627155901-bdbb290f571e
 	github.com/kudobuilder/kuttl v0.18.0
-	github.com/kyverno/kyverno-json v0.0.3
+	github.com/kyverno/kyverno-json v0.0.4-0.20240721204454-61c433c46e92
 	github.com/kyverno/pkg/ext v0.0.0-20240418121121-df8add26c55c
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
 	github.com/prometheus/common v0.47.0
