@@ -61,8 +61,6 @@ type testsProcessor struct {
 	summary  *summary.Summary
 	report   *report.Report
 	tests    []discovery.Test
-	// state
-	shouldFailFast atomic.Bool
 }
 
 func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
@@ -127,6 +125,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 			}
 		}
 	}
+	shouldFailFast := &atomic.Bool{}
 	for i := range p.tests {
 		test := p.tests[i]
 		name, err := names.Test(p.config, test)
@@ -157,9 +156,33 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				t.Helper()
 				t.Cleanup(func() {
 					if t.Failed() {
-						p.shouldFailFast.Store(true)
+						shouldFailFast.Store(true)
 					}
 				})
+				if p.summary != nil {
+					t.Cleanup(func() {
+						if t.Skipped() {
+							p.summary.IncSkipped()
+						} else {
+							if t.Failed() {
+								p.summary.IncFailed()
+							} else {
+								p.summary.IncPassed()
+							}
+						}
+					})
+				}
+				if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
+					t.Parallel()
+				}
+				if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
+					t.SkipNow()
+				}
+				if p.config.Execution.FailFast {
+					if shouldFailFast.Load() {
+						t.SkipNow()
+					}
+				}
 				processor := p.CreateTestProcessor(test)
 				info := TestInfo{
 					Id:         i + 1,
@@ -181,5 +204,5 @@ func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor 
 	if p.report != nil {
 		report = p.report.ForTest(&test)
 	}
-	return NewTestProcessor(p.config, p.clusters, p.clock, p.summary, report, test, &p.shouldFailFast)
+	return NewTestProcessor(p.config, p.clusters, p.clock, report, test)
 }
