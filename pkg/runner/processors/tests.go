@@ -35,30 +35,21 @@ type TestsProcessor interface {
 }
 
 func NewTestsProcessor(
-	// config model.Configuration,
-	// clusters clusters.Registry,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
 	report *report.Report,
-	// tests ...discovery.Test,
 ) TestsProcessor {
 	return &testsProcessor{
-		// config:   config,
-		// clusters: clusters,
 		clock:   clock,
 		summary: summary,
 		report:  report,
-		// tests:    tests,
 	}
 }
 
 type testsProcessor struct {
-	// config   model.Configuration
-	// clusters clusters.Registry
 	clock   clock.PassiveClock
 	summary *summary.Summary
 	report  *report.Report
-	// tests    []discovery.Test
 	// state
 	shouldFailFast atomic.Bool
 }
