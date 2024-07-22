@@ -2,12 +2,14 @@ package clusters
 
 import (
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client/dryrun"
+	"github.com/kyverno/chainsaw/pkg/client/simple"
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	"k8s.io/client-go/rest"
 )
 
 func makeClient(config *rest.Config, dryRun bool) (client.Client, error) {
-	c, err := client.New(config)
+	c, err := simple.New(config)
 	if err != nil {
 		return nil, err
 	}
@@ -15,5 +17,5 @@ func makeClient(config *rest.Config, dryRun bool) (client.Client, error) {
 	if !dryRun {
 		return c, nil
 	}
-	return client.DryRun(c), nil
+	return dryrun.New(c), nil
 }
