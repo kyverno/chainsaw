@@ -24,6 +24,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/chainsaw/pkg/utils/kube"
 	"github.com/kyverno/pkg/ext/output/color"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -133,14 +134,14 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		if nspacer == nil || p.test.Test.Spec.Namespace != "" {
 			var ns corev1.Namespace
 			if p.test.Test.Spec.Namespace != "" {
-				ns = client.Namespace(p.test.Test.Spec.Namespace)
+				ns = kube.Namespace(p.test.Test.Spec.Namespace)
 			} else {
-				ns = client.PetNamespace()
+				ns = kube.PetNamespace()
 			}
 			namespace = &ns
 		}
 		if namespace != nil {
-			object := client.ToUnstructured(namespace)
+			object := kube.ToUnstructured(namespace)
 			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			if p.test.Test.Spec.NamespaceTemplate != nil && p.test.Test.Spec.NamespaceTemplate.Value != nil {
 				template := v1alpha1.Any{
