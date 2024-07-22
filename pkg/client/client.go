@@ -5,7 +5,6 @@ import (
 
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/client-go/rest"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -40,9 +39,4 @@ type Client interface {
 
 	// RESTMapper returns the rest this client is using.
 	RESTMapper() meta.RESTMapper
-}
-
-func New(cfg *rest.Config) (Client, error) {
-	var opts ctrlclient.Options
-	return ctrlclient.New(cfg, opts)
 }

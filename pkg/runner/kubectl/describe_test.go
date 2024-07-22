@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client/simple"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/client-go/tools/clientcmd"
@@ -14,7 +14,7 @@ import (
 func TestDescribe(t *testing.T) {
 	config, err := restutils.DefaultConfig(clientcmd.ConfigOverrides{})
 	assert.NoError(t, err)
-	client, err := client.New(config)
+	client, err := simple.New(config)
 	assert.NoError(t, err)
 	tests := []struct {
 		name      string

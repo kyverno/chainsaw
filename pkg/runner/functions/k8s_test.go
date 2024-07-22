@@ -3,7 +3,7 @@ package functions
 import (
 	"testing"
 
-	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client/simple"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +14,7 @@ import (
 func Test_jpKubernetesResourceExists(t *testing.T) {
 	config, err := restutils.DefaultConfig(clientcmd.ConfigOverrides{})
 	assert.NoError(t, err)
-	client, err := client.New(config)
+	client, err := simple.New(config)
 	assert.NoError(t, err)
 	tests := []struct {
 		name    string
@@ -80,7 +80,7 @@ func Test_jpKubernetesResourceExists(t *testing.T) {
 func Test_jpKubernetesExists(t *testing.T) {
 	config, err := restutils.DefaultConfig(clientcmd.ConfigOverrides{})
 	assert.NoError(t, err)
-	client, err := client.New(config)
+	client, err := simple.New(config)
 	assert.NoError(t, err)
 	tests := []struct {
 		name    string
@@ -178,7 +178,7 @@ func Test_jpKubernetesExists(t *testing.T) {
 func Test_jpKubernetesGet(t *testing.T) {
 	config, err := restutils.DefaultConfig(clientcmd.ConfigOverrides{})
 	assert.NoError(t, err)
-	client, err := client.New(config)
+	client, err := simple.New(config)
 	assert.NoError(t, err)
 	tests := []struct {
 		name      string
@@ -230,7 +230,7 @@ func Test_jpKubernetesGet(t *testing.T) {
 func Test_jpKubernetesList(t *testing.T) {
 	config, err := restutils.DefaultConfig(clientcmd.ConfigOverrides{})
 	assert.NoError(t, err)
-	client, err := client.New(config)
+	client, err := simple.New(config)
 	assert.NoError(t, err)
 	tests := []struct {
 		name      string
