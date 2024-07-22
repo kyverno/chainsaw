@@ -1,0 +1,13 @@
+Upgrade Chainsaw resources
+
+Usage:
+  chainsaw renovate [flags]
+  chainsaw renovate [command]
+
+Available Commands:
+  config      Upgrade Chainsaw configuration to the latest version
+
+Flags:
+  -h, --help   help for renovate
+
+Use "chainsaw renovate [command] --help" for more information about a command.
