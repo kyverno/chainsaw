@@ -15,6 +15,7 @@ package processors
 // 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 // 	"github.com/kyverno/chainsaw/pkg/testing"
 // 	"github.com/stretchr/testify/assert"
+// 	corev1 "k8s.io/api/core/v1"
 // 	"k8s.io/apimachinery/pkg/api/errors"
 // 	"k8s.io/utils/clock"
 // 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
@@ -36,6 +37,10 @@ package processors
 
 // func (tc *testContext) Configuration() model.Configuration {
 // 	return tc.config
+// }
+
+// func (tc *testContext) Namespace(context.Context) (*corev1.Namespace, error) {
+// 	return nil, nil
 // }
 
 // func TestTestsProcessor_Run(t *testing.T) {

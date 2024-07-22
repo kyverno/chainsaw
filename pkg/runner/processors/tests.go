@@ -12,7 +12,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
@@ -24,22 +23,13 @@ import (
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/chainsaw/pkg/utils/kube"
 	"github.com/kyverno/pkg/ext/output/color"
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/clock"
 )
 
-type TestContext interface {
-	Bindings() binding.Bindings
-	Clusters() clusters.Registry
-	Configuration() model.Configuration
-	Namespace(context.Context) (*corev1.Namespace, error)
-}
-
 type TestsProcessor interface {
-	Run(context.Context, TestContext, ...discovery.Test)
-	CreateTestProcessor(TestContext, discovery.Test) TestProcessor
+	Run(context.Context, model.TestContext, ...discovery.Test)
 }
 
 func NewTestsProcessor(
@@ -62,7 +52,7 @@ type testsProcessor struct {
 	shouldFailFast atomic.Bool
 }
 
-func (p *testsProcessor) Run(ctx context.Context, tc TestContext, tests ...discovery.Test) {
+func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -144,7 +134,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc TestContext, tests ...disco
 						p.shouldFailFast.Store(true)
 					}
 				})
-				processor := p.CreateTestProcessor(tc, test)
+				processor := p.createTestProcessor(test)
 				info := TestInfo{
 					Id:         i + 1,
 					ScenarioId: s + 1,
@@ -152,18 +142,19 @@ func (p *testsProcessor) Run(ctx context.Context, tc TestContext, tests ...disco
 				}
 				processor.Run(
 					testing.IntoContext(ctx, t),
-					apibindings.RegisterNamedBinding(ctx, bindings, "test", info),
+					tc.WithBindings(ctx, "test", info),
 					nspacer,
+					test,
 				)
 			})
 		}
 	}
 }
 
-func (p *testsProcessor) CreateTestProcessor(tc TestContext, test discovery.Test) TestProcessor {
+func (p *testsProcessor) createTestProcessor(test discovery.Test) TestProcessor {
 	var report *report.TestReport
 	if p.report != nil {
 		report = p.report.ForTest(&test)
 	}
-	return NewTestProcessor(tc.Configuration(), tc.Clusters(), p.clock, p.summary, report, test, &p.shouldFailFast)
+	return NewTestProcessor(p.clock, p.summary, report, &p.shouldFailFast)
 }

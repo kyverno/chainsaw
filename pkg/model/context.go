@@ -10,14 +10,22 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-type TestContext struct {
+type TestContext interface {
+	Bindings() binding.Bindings
+	Clusters() clusters.Registry
+	Configuration() Configuration
+	Namespace(context.Context) (*corev1.Namespace, error)
+	WithBindings(ctx context.Context, name string, value any) TestContext
+}
+
+type testContext struct {
 	config   Configuration
 	bindings binding.Bindings
 	clusters clusters.Registry
 }
 
-func NewContext(ctx context.Context, values any, cluster *rest.Config, config Configuration) (*TestContext, error) {
-	out := TestContext{
+func NewContext(ctx context.Context, values any, cluster *rest.Config, config Configuration) (TestContext, error) {
+	out := testContext{
 		config:   config,
 		bindings: binding.NewBindings(),
 		clusters: clusters.NewRegistry(),
@@ -43,21 +51,29 @@ func NewContext(ctx context.Context, values any, cluster *rest.Config, config Co
 	return &out, nil
 }
 
-func (tc *TestContext) Bindings() binding.Bindings {
+func (tc *testContext) Bindings() binding.Bindings {
 	return tc.bindings
 }
 
-func (tc *TestContext) Clusters() clusters.Registry {
+func (tc *testContext) Clusters() clusters.Registry {
 	return tc.clusters
 }
 
-func (tc *TestContext) Configuration() Configuration {
+func (tc *testContext) Configuration() Configuration {
 	return tc.config
 }
 
-func (tc *TestContext) Namespace(ctx context.Context) (*corev1.Namespace, error) {
+func (tc *testContext) Namespace(ctx context.Context) (*corev1.Namespace, error) {
 	if tc.config.Namespace.Name == "" {
 		return nil, nil
 	}
 	return buildNamespace(ctx, tc.config.Namespace.Name, tc.config.Namespace.Template, tc.bindings)
+}
+
+func (tc *testContext) WithBindings(ctx context.Context, name string, value any) TestContext {
+	return &testContext{
+		config:   tc.config,
+		clusters: tc.clusters,
+		bindings: apibindings.RegisterNamedBinding(ctx, tc.bindings, name, value),
+	}
 }
