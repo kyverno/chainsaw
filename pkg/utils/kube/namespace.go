@@ -1,6 +1,9 @@
-package client
+package kube
 
 import (
+	"fmt"
+
+	petname "github.com/dustinkirkland/golang-petname"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -18,5 +21,5 @@ func Namespace(name string) corev1.Namespace {
 }
 
 func PetNamespace() corev1.Namespace {
-	return Namespace(Pet())
+	return Namespace(fmt.Sprintf("chainsaw-%s", petname.Generate(2, "-")))
 }
