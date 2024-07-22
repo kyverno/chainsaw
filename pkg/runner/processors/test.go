@@ -3,7 +3,6 @@ package processors
 import (
 	"context"
 	"fmt"
-	"sync/atomic"
 	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
@@ -21,7 +20,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
-	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/chainsaw/pkg/utils/kube"
@@ -41,32 +39,26 @@ func NewTestProcessor(
 	config model.Configuration,
 	clusters clusters.Registry,
 	clock clock.PassiveClock,
-	summary *summary.Summary,
 	report *report.TestReport,
 	test discovery.Test,
-	shouldFailFast *atomic.Bool,
 ) TestProcessor {
 	return &testProcessor{
-		config:         config,
-		clusters:       clusters,
-		clock:          clock,
-		summary:        summary,
-		report:         report,
-		test:           test,
-		shouldFailFast: shouldFailFast,
-		timeouts:       config.Timeouts.Combine(test.Test.Spec.Timeouts),
+		config:   config,
+		clusters: clusters,
+		clock:    clock,
+		report:   report,
+		test:     test,
+		timeouts: config.Timeouts.Combine(test.Test.Spec.Timeouts),
 	}
 }
 
 type testProcessor struct {
-	config         model.Configuration
-	clusters       clusters.Registry
-	clock          clock.PassiveClock
-	summary        *summary.Summary
-	report         *report.TestReport
-	test           discovery.Test
-	shouldFailFast *atomic.Bool
-	timeouts       v1alpha1.Timeouts
+	config   model.Configuration
+	clusters clusters.Registry
+	clock    clock.PassiveClock
+	report   *report.TestReport
+	test     discovery.Test
+	timeouts v1alpha1.Timeouts
 }
 
 func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspacer namespacer.Namespacer) {
@@ -94,30 +86,6 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		}
 		if size < len(name) {
 			size = len(name)
-		}
-	}
-	if p.summary != nil {
-		t.Cleanup(func() {
-			if t.Skipped() {
-				p.summary.IncSkipped()
-			} else {
-				if t.Failed() {
-					p.summary.IncFailed()
-				} else {
-					p.summary.IncPassed()
-				}
-			}
-		})
-	}
-	if p.test.Test.Spec.Concurrent == nil || *p.test.Test.Spec.Concurrent {
-		t.Parallel()
-	}
-	if p.test.Test.Spec.Skip != nil && *p.test.Test.Spec.Skip {
-		t.SkipNow()
-	}
-	if p.config.Execution.FailFast {
-		if p.shouldFailFast.Load() {
-			t.SkipNow()
 		}
 	}
 	registeredClusters := clusters.Register(p.clusters, p.test.BasePath, p.test.Test.Spec.Clusters)
