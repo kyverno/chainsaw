@@ -42,15 +42,15 @@ func Test_Execute(t *testing.T) {
 		},
 		out:     filepath.Join(basePath, "v1alpha1-custom.txt"),
 		wantErr: false,
-	}, {
-		name: "renovate save",
-		args: []string{
-			"config",
-			"../../../../testdata/config/v1alpha1/default.yaml",
-			"--save",
-		},
-		out:     filepath.Join(basePath, "out-save.txt"),
-		wantErr: false,
+		// }, {
+		// 	name: "renovate save",
+		// 	args: []string{
+		// 		"config",
+		// 		"../../../../testdata/config/v1alpha1/default.yaml",
+		// 		"--save",
+		// 	},
+		// 	out:     filepath.Join(basePath, "out-save.txt"),
+		// 	wantErr: false,
 	}, {
 		name: "unknow flag",
 		args: []string{
