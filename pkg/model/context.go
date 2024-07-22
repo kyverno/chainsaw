@@ -4,16 +4,10 @@ import (
 	"context"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/clusters"
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/rest"
-)
-
-type (
-	Configuration = v1alpha2.ConfigurationSpec
-	Test          = v1alpha1.Test
 )
 
 type TestContext struct {
@@ -59,4 +53,11 @@ func (tc *TestContext) Clusters() clusters.Registry {
 
 func (tc *TestContext) Configuration() Configuration {
 	return tc.config
+}
+
+func (tc *TestContext) Namespace(ctx context.Context) (*corev1.Namespace, error) {
+	if tc.config.Namespace.Name == "" {
+		return nil, nil
+	}
+	return buildNamespace(ctx, tc.config.Namespace.Name, tc.config.Namespace.Template, tc.bindings)
 }
