@@ -21,7 +21,6 @@ const schema = "# yaml-language-server: $schema=https://raw.githubusercontent.co
 
 func Command() *cobra.Command {
 	save := false
-	cleanup := false
 	cmd := &cobra.Command{
 		Use:          "config",
 		Short:        "Upgrade Chainsaw configuration to the latest version",
@@ -32,18 +31,15 @@ func Command() *cobra.Command {
 				cmd.OutOrStdout(),
 				cmd.ErrOrStderr(),
 				save,
-				cleanup,
 				args[0],
 			)
-
 		},
 	}
 	cmd.Flags().BoolVar(&save, "save", false, "If set, converted files will be saved")
-	cmd.Flags().BoolVar(&cleanup, "cleanup", false, "If set, delete converted files")
 	return cmd
 }
 
-func execute(stdout io.Writer, stderr io.Writer, save, cleanup bool, file string) error {
+func execute(stdout io.Writer, stderr io.Writer, save bool, file string) error {
 	c, err := loadConfig(file)
 	if err != nil {
 		return fmt.Errorf("failed to load configuration file %s: %w", file, err)
