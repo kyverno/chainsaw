@@ -24,6 +24,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/chainsaw/pkg/utils/kube"
 	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -84,8 +85,8 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
 	if clusterClient != nil {
 		if p.config.Namespace.Name != "" {
-			namespace := client.Namespace(p.config.Namespace.Name)
-			object := client.ToUnstructured(&namespace)
+			namespace := kube.Namespace(p.config.Namespace.Name)
+			object := kube.ToUnstructured(&namespace)
 			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
 			if p.config.Namespace.Template != nil && p.config.Namespace.Template.Value != nil {
 				template := v1alpha1.Any{
