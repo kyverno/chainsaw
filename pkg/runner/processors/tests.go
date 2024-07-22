@@ -22,6 +22,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/chainsaw/pkg/utils/kube"
 	"github.com/kyverno/pkg/ext/output/color"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -98,7 +99,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc TestContext, tests ...disco
 						timeout.Get(nil, config.Timeouts.CleanupDuration()),
 						func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 							bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
-							return opdelete.New(clusterClient, client.ToUnstructured(namespace), nspacer, false, metav1.DeletePropagationBackground), bindings, nil
+							return opdelete.New(clusterClient, kube.ToUnstructured(namespace), nspacer, false, metav1.DeletePropagationBackground), bindings, nil
 						},
 						nil,
 					)
