@@ -6,6 +6,9 @@ import (
 	"github.com/fatih/color"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime"
+	truntime "k8s.io/apimachinery/pkg/runtime/testing"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -94,6 +97,80 @@ func TestColouredName(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ColouredName(tt.key, tt.color)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestPatchObject(t *testing.T) {
+	tests := []struct {
+		name     string
+		actual   runtime.Object
+		expected runtime.Object
+		want     runtime.Object
+		wantErr  bool
+	}{{
+		name:     "acutal nil",
+		actual:   nil,
+		expected: &unstructured.Unstructured{},
+		wantErr:  true,
+	}, {
+		name:     "expected nil",
+		actual:   &unstructured.Unstructured{},
+		expected: nil,
+		wantErr:  true,
+	}, {
+		name: "ok",
+		actual: &unstructured.Unstructured{
+			Object: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]any{
+					"name":            "test-pod",
+					"resourceVersion": "12345",
+				},
+			},
+		},
+		expected: &unstructured.Unstructured{
+			Object: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]any{
+					"name": "test-pod",
+				},
+				"foo": "bar",
+			},
+		},
+		want: &unstructured.Unstructured{
+			Object: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]any{
+					"name":            "test-pod",
+					"resourceVersion": "12345",
+				},
+				"foo": "bar",
+			},
+		},
+	}, {
+		name:     "actual not meta",
+		actual:   &truntime.InternalSimple{},
+		expected: &unstructured.Unstructured{},
+		wantErr:  true,
+	}, {
+		name:     "expected not meta",
+		actual:   &unstructured.Unstructured{},
+		expected: &truntime.InternalSimple{},
+		wantErr:  true,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := PatchObject(tt.actual, tt.expected)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+				assert.Equal(t, tt.want, got)
+			}
 		})
 	}
 }

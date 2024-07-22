@@ -8,6 +8,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	ctrlClient "github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client/simple"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
@@ -113,7 +114,7 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 		if err != nil {
 			return err
 		}
-		newClient, err := ctrlClient.New(cfg)
+		newClient, err := simple.New(cfg)
 		if err != nil {
 			return err
 		}
