@@ -13,6 +13,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
+	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
@@ -29,9 +30,15 @@ import (
 	"k8s.io/utils/clock"
 )
 
+type TestContext interface {
+	Bindings() binding.Bindings
+	Clusters() clusters.Registry
+	Configuration() model.Configuration
+}
+
 type TestsProcessor interface {
-	Run(context.Context, *model.TestContext, ...discovery.Test)
-	CreateTestProcessor(*model.TestContext, discovery.Test) TestProcessor
+	Run(context.Context, TestContext, ...discovery.Test)
+	CreateTestProcessor(TestContext, discovery.Test) TestProcessor
 }
 
 func NewTestsProcessor(
@@ -54,7 +61,7 @@ type testsProcessor struct {
 	shouldFailFast atomic.Bool
 }
 
-func (p *testsProcessor) Run(ctx context.Context, tc *model.TestContext, tests ...discovery.Test) {
+func (p *testsProcessor) Run(ctx context.Context, tc TestContext, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -163,7 +170,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc *model.TestContext, tests .
 	}
 }
 
-func (p *testsProcessor) CreateTestProcessor(tc *model.TestContext, test discovery.Test) TestProcessor {
+func (p *testsProcessor) CreateTestProcessor(tc TestContext, test discovery.Test) TestProcessor {
 	var report *report.TestReport
 	if p.report != nil {
 		report = p.report.ForTest(&test)
