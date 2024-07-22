@@ -79,7 +79,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	clusterConfig, clusterClient, err := p.clusters.Resolve(false)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
+		failer.FailNow(ctx, false)
 	}
 	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
 	if clusterClient != nil {
@@ -92,7 +92,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 					Value: p.config.Namespace.Template.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
-					failer.FailNow(ctx)
+					failer.FailNow(ctx, false)
 				} else {
 					object = merged
 				}
@@ -103,12 +103,13 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					failer.FailNow(ctx)
+					failer.FailNow(ctx, false)
 				}
 				if !cleanup.Skip(p.config.Cleanup.SkipDelete, nil, nil) {
 					t.Cleanup(func() {
 						operation := newOperation(
 							OperationInfo{},
+							false,
 							false,
 							timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
 							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
@@ -121,7 +122,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 					})
 				}
 				if err := clusterClient.Create(ctx, object.DeepCopy()); err != nil {
-					failer.FailNow(ctx)
+					failer.FailNow(ctx, false)
 				}
 			}
 		}
@@ -129,14 +130,14 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	bindings, err = apibindings.RegisterBindings(ctx, bindings)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
+		failer.FailNow(ctx, false)
 	}
 	for i := range p.tests {
 		test := p.tests[i]
 		name, err := names.Test(p.config, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			failer.FailNow(ctx)
+			failer.FailNow(ctx, false)
 		}
 		var scenarios []discovery.Test
 		if test.Test != nil {

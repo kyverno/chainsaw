@@ -17,6 +17,7 @@ import (
 type operation struct {
 	info            OperationInfo
 	continueOnError bool
+	inconclusive    bool
 	timeout         *time.Duration
 	operation       func(context.Context, binding.Bindings) (operations.Operation, binding.Bindings, error)
 	report          *report.OperationReport
@@ -26,6 +27,7 @@ type operation struct {
 func newOperation(
 	info OperationInfo,
 	continueOnError bool,
+	inconclusive bool,
 	timeout *time.Duration,
 	op func(context.Context, binding.Bindings) (operations.Operation, binding.Bindings, error),
 	report *report.OperationReport,
@@ -34,6 +36,7 @@ func newOperation(
 	return operation{
 		info:            info,
 		continueOnError: continueOnError,
+		inconclusive:    inconclusive,
 		timeout:         timeout,
 		operation:       op,
 		report:          report,
@@ -58,9 +61,9 @@ func (o operation) execute(ctx context.Context, bindings binding.Bindings) opera
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		}
 		if o.continueOnError {
-			failer.Fail(ctx)
+			failer.Fail(ctx, o.inconclusive)
 		} else {
-			failer.FailNow(ctx)
+			failer.FailNow(ctx, o.inconclusive)
 		}
 	}
 	operation, bindings, err := o.operation(ctx, bindings)
