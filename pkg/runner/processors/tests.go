@@ -137,7 +137,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.GlobalContext, tests 
 				processor := p.createTestProcessor(test)
 				processor.Run(
 					testing.IntoContext(ctx, t),
-					tc.TestContext(ctx, test.Test, i+1, s+1),
+					tc.TestContext(ctx, test.Test, i, s),
 					nspacer,
 					test,
 				)
