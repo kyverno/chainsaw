@@ -11,7 +11,6 @@ import (
 )
 
 type GlobalContext interface {
-	Bindings() binding.Bindings
 	Clusters() clusters.Registry
 	Configuration() Configuration
 	Namespace(context.Context) (*corev1.Namespace, error)
@@ -63,10 +62,6 @@ func NewContext(ctx context.Context, values any, cluster *rest.Config, config Co
 	// 3. register clusters
 	tc.clusters = clusters.Register(tc.clusters, "", config.Clusters)
 	return &tc, nil
-}
-
-func (tc *globalContext) Bindings() binding.Bindings {
-	return tc.bindings
 }
 
 func (tc *globalContext) Clusters() clusters.Registry {

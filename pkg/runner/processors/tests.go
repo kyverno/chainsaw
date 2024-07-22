@@ -10,7 +10,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -48,8 +47,6 @@ type testsProcessor struct {
 	clock   clock.PassiveClock
 	summary *summary.Summary
 	report  *report.Report
-	// state
-	shouldFailFast atomic.Bool
 }
 
 func (p *testsProcessor) Run(ctx context.Context, tc model.GlobalContext, tests ...discovery.Test) {
@@ -61,7 +58,6 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.GlobalContext, tests 
 		})
 	}
 	config := tc.Configuration()
-	bindings := tc.Bindings()
 	var nspacer namespacer.Namespacer
 	namespace, err := tc.Namespace(ctx)
 	if err != nil {
@@ -69,7 +65,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.GlobalContext, tests 
 		failer.FailNow(ctx)
 	}
 	if namespace != nil {
-		clusterConfig, clusterClient, err := tc.Clusters().Resolve(false)
+		_, clusterClient, err := tc.Clusters().Resolve(false)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
@@ -88,12 +84,11 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.GlobalContext, tests 
 						false,
 						timeout.Get(nil, config.Timeouts.CleanupDuration()),
 						func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-							bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
 							return opdelete.New(clusterClient, kube.ToUnstructured(namespace), nspacer, false, metav1.DeletePropagationBackground), bindings, nil
 						},
 						nil,
 					)
-					operation.execute(ctx, bindings)
+					operation.execute(ctx, nil)
 				})
 			}
 			if err := clusterClient.Create(ctx, namespace.DeepCopy()); err != nil {
@@ -101,6 +96,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.GlobalContext, tests 
 			}
 		}
 	}
+	shouldFailFast := &atomic.Bool{}
 	for i := range tests {
 		test := tests[i]
 		name, err := names.Test(config, test)
@@ -131,9 +127,33 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.GlobalContext, tests 
 				t.Helper()
 				t.Cleanup(func() {
 					if t.Failed() {
-						p.shouldFailFast.Store(true)
+						shouldFailFast.Store(true)
 					}
 				})
+				if p.summary != nil {
+					t.Cleanup(func() {
+						if t.Skipped() {
+							p.summary.IncSkipped()
+						} else {
+							if t.Failed() {
+								p.summary.IncFailed()
+							} else {
+								p.summary.IncPassed()
+							}
+						}
+					})
+				}
+				if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
+					t.Parallel()
+				}
+				if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
+					t.SkipNow()
+				}
+				if config.Execution.FailFast {
+					if shouldFailFast.Load() {
+						t.SkipNow()
+					}
+				}
 				processor := p.createTestProcessor(test)
 				processor.Run(
 					testing.IntoContext(ctx, t),
@@ -151,5 +171,5 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test) TestProcessor 
 	if p.report != nil {
 		report = p.report.ForTest(&test)
 	}
-	return NewTestProcessor(p.clock, p.summary, report, &p.shouldFailFast)
+	return NewTestProcessor(p.clock, report)
 }

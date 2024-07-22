@@ -3,7 +3,6 @@ package processors
 import (
 	"context"
 	"fmt"
-	"sync/atomic"
 	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
@@ -21,7 +20,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
-	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/chainsaw/pkg/utils/kube"
@@ -38,23 +36,17 @@ type TestProcessor interface {
 
 func NewTestProcessor(
 	clock clock.PassiveClock,
-	summary *summary.Summary,
 	report *report.TestReport,
-	shouldFailFast *atomic.Bool,
 ) TestProcessor {
 	return &testProcessor{
-		clock:          clock,
-		summary:        summary,
-		report:         report,
-		shouldFailFast: shouldFailFast,
+		clock:  clock,
+		report: report,
 	}
 }
 
 type testProcessor struct {
-	clock          clock.PassiveClock
-	summary        *summary.Summary
-	report         *report.TestReport
-	shouldFailFast *atomic.Bool
+	clock  clock.PassiveClock
+	report *report.TestReport
 }
 
 func (p *testProcessor) Run(ctx context.Context, tc model.TestContext, nspacer namespacer.Namespacer, test discovery.Test) {
@@ -82,30 +74,6 @@ func (p *testProcessor) Run(ctx context.Context, tc model.TestContext, nspacer n
 		}
 		if size < len(name) {
 			size = len(name)
-		}
-	}
-	if p.summary != nil {
-		t.Cleanup(func() {
-			if t.Skipped() {
-				p.summary.IncSkipped()
-			} else {
-				if t.Failed() {
-					p.summary.IncFailed()
-				} else {
-					p.summary.IncPassed()
-				}
-			}
-		})
-	}
-	if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
-		t.Parallel()
-	}
-	if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
-		t.SkipNow()
-	}
-	if config.Execution.FailFast {
-		if p.shouldFailFast.Load() {
-			t.SkipNow()
 		}
 	}
 	registeredClusters := clusters.Register(tc.Clusters(), test.BasePath, test.Test.Spec.Clusters)
