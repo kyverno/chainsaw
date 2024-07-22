@@ -126,11 +126,6 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 			}
 		}
 	}
-	bindings, err = apibindings.RegisterBindings(ctx, bindings)
-	if err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	}
 	for i := range p.tests {
 		test := p.tests[i]
 		name, err := names.Test(p.config, test)
