@@ -106,6 +106,8 @@ nav:
     - chainsaw migrate kuttl: reference/commands/chainsaw_migrate_kuttl.md
     - chainsaw migrate kuttl config: reference/commands/chainsaw_migrate_kuttl_config.md
     - chainsaw migrate kuttl tests: reference/commands/chainsaw_migrate_kuttl_tests.md
+    - chainsaw renovate: reference/commands/chainsaw_renovate.md
+    - chainsaw renovate config: reference/commands/chainsaw_renovate_config.md
     - chainsaw test: reference/commands/chainsaw_test.md
     - chainsaw version: reference/commands/chainsaw_version.md
 - Examples:
