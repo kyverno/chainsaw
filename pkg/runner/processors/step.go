@@ -389,7 +389,7 @@ func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Regis
 			return nil, err
 		}
 		ops = append(ops, newOperation(
-			OperationInfo{
+			model.OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
@@ -425,7 +425,7 @@ func (p *stepProcessor) assertOperation(id int, registeredClusters clusters.Regi
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
-			OperationInfo{
+			model.OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
@@ -458,7 +458,7 @@ func (p *stepProcessor) commandOperation(id int, registeredClusters clusters.Reg
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	return newOperation(
-		OperationInfo{
+		model.OperationInfo{
 			Id: id,
 		},
 		false,
@@ -496,7 +496,7 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 			return nil, err
 		}
 		ops = append(ops, newOperation(
-			OperationInfo{
+			model.OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
@@ -556,7 +556,7 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
-			OperationInfo{
+			model.OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
@@ -589,7 +589,7 @@ func (p *stepProcessor) describeOperation(id int, registeredClusters clusters.Re
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	return newOperation(
-		OperationInfo{
+		model.OperationInfo{
 			Id: id,
 		},
 		false,
@@ -626,7 +626,7 @@ func (p *stepProcessor) errorOperation(id int, registeredClusters clusters.Regis
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
-			OperationInfo{
+			model.OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
@@ -659,7 +659,7 @@ func (p *stepProcessor) getOperation(id int, registeredClusters clusters.Registr
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	return newOperation(
-		OperationInfo{
+		model.OperationInfo{
 			Id: id,
 		},
 		false,
@@ -692,7 +692,7 @@ func (p *stepProcessor) logsOperation(id int, registeredClusters clusters.Regist
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	return newOperation(
-		OperationInfo{
+		model.OperationInfo{
 			Id: id,
 		},
 		false,
@@ -733,7 +733,7 @@ func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Regis
 			return nil, err
 		}
 		ops = append(ops, newOperation(
-			OperationInfo{
+			model.OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
@@ -766,7 +766,7 @@ func (p *stepProcessor) proxyOperation(id int, registeredClusters clusters.Regis
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	return newOperation(
-		OperationInfo{
+		model.OperationInfo{
 			Id: id,
 		},
 		false,
@@ -799,7 +799,7 @@ func (p *stepProcessor) scriptOperation(id int, registeredClusters clusters.Regi
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	return newOperation(
-		OperationInfo{
+		model.OperationInfo{
 			Id: id,
 		},
 		false,
@@ -823,7 +823,7 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 		operationReport = p.report.ForOperation("Sleep ", report.OperationTypeSleep)
 	}
 	return newOperation(
-		OperationInfo{
+		model.OperationInfo{
 			Id: id,
 		},
 		false,
@@ -856,7 +856,7 @@ func (p *stepProcessor) updateOperation(id int, registeredClusters clusters.Regi
 			return nil, err
 		}
 		ops = append(ops, newOperation(
-			OperationInfo{
+			model.OperationInfo{
 				Id:         id,
 				ResourceId: i + 1,
 			},
@@ -893,7 +893,7 @@ func (p *stepProcessor) waitOperation(id int, registeredClusters clusters.Regist
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
 	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
 	return newOperation(
-		OperationInfo{
+		model.OperationInfo{
 			Id: id,
 		},
 		false,

@@ -6,6 +6,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
@@ -32,7 +33,7 @@ func (c *cleaner) register(ops ...operation) {
 
 func (c *cleaner) addObject(obj unstructured.Unstructured, client client.Client, timeout *time.Duration) {
 	c.register(newOperation(
-		OperationInfo{},
+		model.OperationInfo{},
 		true,
 		timeout,
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {

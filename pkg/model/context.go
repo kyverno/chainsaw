@@ -10,12 +10,26 @@ import (
 	"k8s.io/client-go/rest"
 )
 
-type TestContext interface {
+type GlobalContext interface {
 	Bindings() binding.Bindings
 	Clusters() clusters.Registry
 	Configuration() Configuration
 	Namespace(context.Context) (*corev1.Namespace, error)
-	WithBindings(ctx context.Context, name string, value any) TestContext
+	TestContext(context.Context, *Test, int, int) TestContext
+}
+
+type TestContext interface {
+	Bindings() binding.Bindings
+	Clusters() clusters.Registry
+	Configuration() Configuration
+	// Namespace(context.Context) (*corev1.Namespace, error)
+	// WithBindings(context.Context, string, any) GlobalContext
+}
+
+type globalContext struct {
+	config   Configuration
+	bindings binding.Bindings
+	clusters clusters.Registry
 }
 
 type testContext struct {
@@ -24,31 +38,64 @@ type testContext struct {
 	clusters clusters.Registry
 }
 
-func NewContext(ctx context.Context, values any, cluster *rest.Config, config Configuration) (TestContext, error) {
-	out := testContext{
+func NewContext(ctx context.Context, values any, cluster *rest.Config, config Configuration) (GlobalContext, error) {
+	tc := globalContext{
 		config:   config,
 		bindings: binding.NewBindings(),
 		clusters: clusters.NewRegistry(),
 	}
 	// 1. register values first
-	out.bindings = apibindings.RegisterNamedBinding(ctx, out.bindings, "values", values)
+	tc.bindings = apibindings.RegisterNamedBinding(ctx, tc.bindings, "values", values)
 	// 2. register default cluster
 	if cluster != nil {
 		cluster, err := clusters.NewClusterFromConfig(cluster)
 		if err != nil {
 			return nil, err
 		}
-		out.clusters = out.clusters.Register(clusters.DefaultClient, cluster)
+		tc.clusters = tc.clusters.Register(clusters.DefaultClient, cluster)
 		// register default cluster in bindings
-		clusterConfig, clusterClient, err := out.clusters.Resolve(false)
+		clusterConfig, clusterClient, err := tc.clusters.Resolve(false)
 		if err != nil {
 			return nil, err
 		}
-		out.bindings = apibindings.RegisterClusterBindings(ctx, out.bindings, clusterConfig, clusterClient)
+		tc.bindings = apibindings.RegisterClusterBindings(ctx, tc.bindings, clusterConfig, clusterClient)
 	}
 	// 3. register clusters
-	out.clusters = clusters.Register(out.clusters, "", config.Clusters)
-	return &out, nil
+	tc.clusters = clusters.Register(tc.clusters, "", config.Clusters)
+	return &tc, nil
+}
+
+func (tc *globalContext) Bindings() binding.Bindings {
+	return tc.bindings
+}
+
+func (tc *globalContext) Clusters() clusters.Registry {
+	return tc.clusters
+}
+
+func (tc *globalContext) Configuration() Configuration {
+	return tc.config
+}
+
+func (tc *globalContext) Namespace(ctx context.Context) (*corev1.Namespace, error) {
+	if tc.config.Namespace.Name == "" {
+		return nil, nil
+	}
+	return buildNamespace(ctx, tc.config.Namespace.Name, tc.config.Namespace.Template, tc.bindings)
+}
+
+func (tc *globalContext) TestContext(ctx context.Context, test *Test, i int, s int) TestContext {
+	return &testContext{
+		config:   tc.config,
+		clusters: tc.clusters,
+		bindings: apibindings.RegisterNamedBinding(ctx, tc.bindings, "test",
+			TestInfo{
+				Id:         i + 1,
+				ScenarioId: s + 1,
+				Metadata:   test.ObjectMeta,
+			},
+		),
+	}
 }
 
 func (tc *testContext) Bindings() binding.Bindings {
@@ -61,19 +108,4 @@ func (tc *testContext) Clusters() clusters.Registry {
 
 func (tc *testContext) Configuration() Configuration {
 	return tc.config
-}
-
-func (tc *testContext) Namespace(ctx context.Context) (*corev1.Namespace, error) {
-	if tc.config.Namespace.Name == "" {
-		return nil, nil
-	}
-	return buildNamespace(ctx, tc.config.Namespace.Name, tc.config.Namespace.Template, tc.bindings)
-}
-
-func (tc *testContext) WithBindings(ctx context.Context, name string, value any) TestContext {
-	return &testContext{
-		config:   tc.config,
-		clusters: tc.clusters,
-		bindings: apibindings.RegisterNamedBinding(ctx, tc.bindings, name, value),
-	}
 }

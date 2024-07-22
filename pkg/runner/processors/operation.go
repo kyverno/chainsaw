@@ -6,6 +6,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
@@ -15,7 +16,7 @@ import (
 )
 
 type operation struct {
-	info            OperationInfo
+	info            model.OperationInfo
 	continueOnError bool
 	timeout         *time.Duration
 	operation       func(context.Context, binding.Bindings) (operations.Operation, binding.Bindings, error)
@@ -24,7 +25,7 @@ type operation struct {
 }
 
 func newOperation(
-	info OperationInfo,
+	info model.OperationInfo,
 	continueOnError bool,
 	timeout *time.Duration,
 	op func(context.Context, binding.Bindings) (operations.Operation, binding.Bindings, error),

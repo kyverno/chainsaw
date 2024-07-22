@@ -29,7 +29,7 @@ import (
 )
 
 type TestsProcessor interface {
-	Run(context.Context, model.TestContext, ...discovery.Test)
+	Run(context.Context, model.GlobalContext, ...discovery.Test)
 }
 
 func NewTestsProcessor(
@@ -52,7 +52,7 @@ type testsProcessor struct {
 	shouldFailFast atomic.Bool
 }
 
-func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ...discovery.Test) {
+func (p *testsProcessor) Run(ctx context.Context, tc model.GlobalContext, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -84,7 +84,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 			if !cleanup.Skip(config.Cleanup.SkipDelete, nil, nil) {
 				t.Cleanup(func() {
 					operation := newOperation(
-						OperationInfo{},
+						model.OperationInfo{},
 						false,
 						timeout.Get(nil, config.Timeouts.CleanupDuration()),
 						func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
@@ -135,14 +135,9 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 					}
 				})
 				processor := p.createTestProcessor(test)
-				info := TestInfo{
-					Id:         i + 1,
-					ScenarioId: s + 1,
-					Metadata:   test.Test.ObjectMeta,
-				}
 				processor.Run(
 					testing.IntoContext(ctx, t),
-					tc.WithBindings(ctx, "test", info),
+					tc.TestContext(ctx, test.Test, i+1, s+1),
 					nspacer,
 					test,
 				)

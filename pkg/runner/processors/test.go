@@ -164,7 +164,7 @@ func (p *testProcessor) Run(ctx context.Context, tc model.TestContext, nspacer n
 				if !cleanup.Skip(config.Cleanup.SkipDelete, test.Test.Spec.SkipDelete, nil) {
 					t.Cleanup(func() {
 						operation := newOperation(
-							OperationInfo{},
+							model.OperationInfo{},
 							false,
 							timeout.Get(nil, timeouts.CleanupDuration()),
 							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
@@ -204,7 +204,7 @@ func (p *testProcessor) Run(ctx context.Context, tc model.TestContext, nspacer n
 		}
 		processor.Run(
 			logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name))),
-			apibindings.RegisterNamedBinding(ctx, bindings, "step", StepInfo{Id: i + 1}),
+			apibindings.RegisterNamedBinding(ctx, bindings, "step", model.StepInfo{Id: i + 1}),
 		)
 	}
 }

@@ -7,6 +7,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	mock "github.com/kyverno/chainsaw/pkg/runner/operations/testing"
@@ -62,7 +63,7 @@ func Test_Cleaner_Run(t *testing.T) {
 		},
 		operations: []operation{
 			newOperation(
-				OperationInfo{},
+				model.OperationInfo{},
 				true,
 				nil,
 				func(_ context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {

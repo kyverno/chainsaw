@@ -1,4 +1,4 @@
-package client
+package dryrun
 
 import (
 	"context"
@@ -14,7 +14,7 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func TestDryRun(t *testing.T) {
+func TestNew(t *testing.T) {
 	tests := []struct {
 		name  string
 		inner Client
@@ -28,7 +28,7 @@ func TestDryRun(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := DryRun(tt.inner)
+			got := New(tt.inner)
 			assert.Equal(t, tt.want, got)
 		})
 	}
