@@ -511,6 +511,16 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
+         <loc>https://kyverno.github.io/chainsaw/main/reference/commands/chainsaw_renovate/</loc>
+         <lastmod>2024-07-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/reference/commands/chainsaw_renovate_config/</loc>
+         <lastmod>2024-07-22</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
          <loc>https://kyverno.github.io/chainsaw/main/reference/commands/chainsaw_test/</loc>
          <lastmod>2024-07-22</lastmod>
          <changefreq>daily</changefreq>
