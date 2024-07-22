@@ -56,7 +56,7 @@ func RegisterBinding(ctx context.Context, bindings binding.Bindings, input any, 
 	return RegisterNamedBinding(ctx, bindings, name, value), nil
 }
 
-func RegisterClusterBindings(ctx context.Context, bindings binding.Bindings, config *rest.Config, client client.Client) binding.Bindings {
+func RegisterClusterBindings(_ context.Context, bindings binding.Bindings, config *rest.Config, client client.Client) binding.Bindings {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
