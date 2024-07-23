@@ -34,11 +34,7 @@ type TestsProcessor interface {
 	Run(context.Context, model.TestContext, ...discovery.Test)
 }
 
-func NewTestsProcessor(
-	clock clock.PassiveClock,
-	summary *summary.Summary,
-	report *report.Report,
-) TestsProcessor {
+func NewTestsProcessor(clock clock.PassiveClock, summary *summary.Summary, report *report.Report) TestsProcessor {
 	return &testsProcessor{
 		clock:   clock,
 		summary: summary,
@@ -61,14 +57,13 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 		})
 	}
 	config := tc.Configuration()
-	clusters := tc.Clusters()
 	bindings := tc.Bindings()
-	var nspacer namespacer.Namespacer
-	clusterConfig, clusterClient, err := clusters.Resolve(false)
+	clusterConfig, clusterClient, err := tc.Cluster()
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
+	var nspacer namespacer.Namespacer
 	if clusterClient != nil {
 		if config.Namespace.Name != "" {
 			namespace := kube.Namespace(config.Namespace.Name)
@@ -142,6 +137,13 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 			test := scenarios[s]
 			t.Run(name, func(t *testing.T) {
 				t.Helper()
+				ctx := testing.IntoContext(ctx, t)
+				info := TestInfo{
+					Id:         i + 1,
+					ScenarioId: s + 1,
+					Metadata:   test.Test.ObjectMeta,
+				}
+				tc := tc.WithBindings(apibindings.RegisterNamedBinding(ctx, bindings, "test", info))
 				t.Cleanup(func() {
 					if t.Failed() {
 						shouldFailFast.Store(true)
@@ -171,26 +173,22 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 						t.SkipNow()
 					}
 				}
-				processor := p.createTestProcessor(tc, test)
-				info := TestInfo{
-					Id:         i + 1,
-					ScenarioId: s + 1,
-					Metadata:   test.Test.ObjectMeta,
-				}
+				processor := p.createTestProcessor(test)
 				processor.Run(
-					testing.IntoContext(ctx, t),
-					apibindings.RegisterNamedBinding(ctx, bindings, "test", info),
+					ctx,
 					nspacer,
+					tc,
+					test,
 				)
 			})
 		}
 	}
 }
 
-func (p *testsProcessor) createTestProcessor(tc model.TestContext, test discovery.Test) TestProcessor {
+func (p *testsProcessor) createTestProcessor(test discovery.Test) TestProcessor {
 	var report *report.TestReport
 	if p.report != nil {
 		report = p.report.ForTest(&test)
 	}
-	return NewTestProcessor(tc.Configuration(), tc.Clusters(), p.clock, report, test)
+	return NewTestProcessor(p.clock, report)
 }

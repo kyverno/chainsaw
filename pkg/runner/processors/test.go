@@ -31,40 +31,22 @@ import (
 )
 
 type TestProcessor interface {
-	Run(context.Context, binding.Bindings, namespacer.Namespacer)
-	CreateStepProcessor(namespacer.Namespacer, clusters.Registry, v1alpha1.TestStep) StepProcessor
+	Run(context.Context, namespacer.Namespacer, model.TestContext, discovery.Test)
 }
 
-func NewTestProcessor(
-	config model.Configuration,
-	clusters clusters.Registry,
-	clock clock.PassiveClock,
-	report *report.TestReport,
-	test discovery.Test,
-) TestProcessor {
+func NewTestProcessor(clock clock.PassiveClock, report *report.TestReport) TestProcessor {
 	return &testProcessor{
-		config:   config,
-		clusters: clusters,
-		clock:    clock,
-		report:   report,
-		test:     test,
-		timeouts: config.Timeouts.Combine(test.Test.Spec.Timeouts),
+		clock:  clock,
+		report: report,
 	}
 }
 
 type testProcessor struct {
-	config   model.Configuration
-	clusters clusters.Registry
-	clock    clock.PassiveClock
-	report   *report.TestReport
-	test     discovery.Test
-	timeouts v1alpha1.Timeouts
+	clock  clock.PassiveClock
+	report *report.TestReport
 }
 
-func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspacer namespacer.Namespacer) {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
+func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc model.TestContext, test discovery.Test) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -79,7 +61,7 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		})
 	}
 	size := len("@cleanup")
-	for i, step := range p.test.Test.Spec.Steps {
+	for i, step := range test.Test.Spec.Steps {
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
@@ -88,21 +70,23 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 			size = len(name)
 		}
 	}
-	registeredClusters := clusters.Register(p.clusters, p.test.BasePath, p.test.Test.Spec.Clusters)
-	clusterConfig, clusterClient, err := registeredClusters.Resolve(false, p.test.Test.Spec.Cluster)
+	config := tc.Configuration()
+	timeouts := config.Timeouts.Combine(test.Test.Spec.Timeouts)
+	registeredClusters := clusters.Register(tc.Clusters(), test.BasePath, test.Test.Spec.Clusters)
+	clusterConfig, clusterClient, err := registeredClusters.Resolve(false, test.Test.Spec.Cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
-	setupLogger := logging.NewLogger(t, p.clock, p.test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
-	cleanupLogger := logging.NewLogger(t, p.clock, p.test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
+	bindings := apibindings.RegisterClusterBindings(ctx, tc.Bindings(), clusterConfig, clusterClient)
+	setupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
+	cleanupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	var namespace *corev1.Namespace
 	if clusterClient != nil {
-		if nspacer == nil || p.test.Test.Spec.Namespace != "" {
+		if nspacer == nil || test.Test.Spec.Namespace != "" {
 			var ns corev1.Namespace
-			if p.test.Test.Spec.Namespace != "" {
-				ns = kube.Namespace(p.test.Test.Spec.Namespace)
+			if test.Test.Spec.Namespace != "" {
+				ns = kube.Namespace(test.Test.Spec.Namespace)
 			} else {
 				ns = kube.PetNamespace()
 			}
@@ -111,9 +95,9 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 		if namespace != nil {
 			object := kube.ToUnstructured(namespace)
 			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-			if p.test.Test.Spec.NamespaceTemplate != nil && p.test.Test.Spec.NamespaceTemplate.Value != nil {
+			if test.Test.Spec.NamespaceTemplate != nil && test.Test.Spec.NamespaceTemplate.Value != nil {
 				template := v1alpha1.Any{
-					Value: p.test.Test.Spec.NamespaceTemplate.Value,
+					Value: test.Test.Spec.NamespaceTemplate.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
 					failer.FailNow(ctx)
@@ -121,9 +105,9 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					object = merged
 				}
 				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-			} else if p.config.Namespace.Template != nil && p.config.Namespace.Template.Value != nil {
+			} else if config.Namespace.Template != nil && config.Namespace.Template.Value != nil {
 				template := v1alpha1.Any{
-					Value: p.config.Namespace.Template.Value,
+					Value: config.Namespace.Template.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
 					failer.FailNow(ctx)
@@ -141,12 +125,12 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.FailNow(ctx)
 				}
-				if !cleanup.Skip(p.config.Cleanup.SkipDelete, p.test.Test.Spec.SkipDelete, nil) {
+				if !cleanup.Skip(config.Cleanup.SkipDelete, test.Test.Spec.SkipDelete, nil) {
 					t.Cleanup(func() {
 						operation := newOperation(
 							OperationInfo{},
 							false,
-							timeout.Get(nil, p.timeouts.CleanupDuration()),
+							timeout.Get(nil, timeouts.CleanupDuration()),
 							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 								bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
 								return opdelete.New(clusterClient, object, nspacer, false, metav1.DeletePropagationBackground), bindings, nil
@@ -165,28 +149,28 @@ func (p *testProcessor) Run(ctx context.Context, bindings binding.Bindings, nspa
 	if p.report != nil && nspacer != nil {
 		p.report.SetNamespace(nspacer.GetNamespace())
 	}
-	bindings, err = apibindings.RegisterBindings(ctx, bindings, p.test.Test.Spec.Bindings...)
+	bindings, err = apibindings.RegisterBindings(ctx, bindings, test.Test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	for i, step := range p.test.Test.Spec.Steps {
-		processor := p.CreateStepProcessor(nspacer, registeredClusters, step)
+	for i, step := range test.Test.Spec.Steps {
+		processor := p.createStepProcessor(nspacer, tc, test, step)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
 		processor.Run(
-			logging.IntoContext(ctx, logging.NewLogger(t, p.clock, p.test.Test.Name, fmt.Sprintf("%-*s", size, name))),
+			logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name))),
 			apibindings.RegisterNamedBinding(ctx, bindings, "step", StepInfo{Id: i + 1}),
 		)
 	}
 }
 
-func (p *testProcessor) CreateStepProcessor(nspacer namespacer.Namespacer, clusters clusters.Registry, step v1alpha1.TestStep) StepProcessor {
+func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, tc model.TestContext, test discovery.Test, step v1alpha1.TestStep) StepProcessor {
 	var report *report.StepReport
 	if p.report != nil {
 		report = p.report.ForStep(&step)
 	}
-	return NewStepProcessor(p.config, clusters, nspacer, p.clock, p.test, step, report)
+	return NewStepProcessor(tc.Configuration(), tc.Clusters(), nspacer, p.clock, test, step, report)
 }

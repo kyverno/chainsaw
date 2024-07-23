@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/client"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"k8s.io/client-go/rest"
@@ -13,12 +14,15 @@ type TestContext interface {
 	Bindings() binding.Bindings
 	Clusters() clusters.Registry
 	Configuration() Configuration
+	Cluster() (*rest.Config, client.Client, error)
+	WithBindings(binding.Bindings) TestContext
 }
 
 type testContext struct {
 	config   Configuration
 	bindings binding.Bindings
 	clusters clusters.Registry
+	cluster  string
 }
 
 func NewContext(ctx context.Context, values any, cluster *rest.Config, config Configuration) (TestContext, error) {
@@ -26,6 +30,7 @@ func NewContext(ctx context.Context, values any, cluster *rest.Config, config Co
 		config:   config,
 		bindings: binding.NewBindings(),
 		clusters: clusters.NewRegistry(),
+		cluster:  clusters.DefaultClient,
 	}
 	// 1. register values first
 	tc.bindings = apibindings.RegisterNamedBinding(ctx, tc.bindings, "values", values)
@@ -56,6 +61,19 @@ func (tc *testContext) Clusters() clusters.Registry {
 	return tc.clusters
 }
 
+func (tc *testContext) Cluster() (*rest.Config, client.Client, error) {
+	return tc.clusters.Resolve(false, tc.cluster)
+}
+
 func (tc *testContext) Configuration() Configuration {
 	return tc.config
+}
+
+func (tc *testContext) WithBindings(bindings binding.Bindings) TestContext {
+	return &testContext{
+		config:   tc.config,
+		bindings: bindings,
+		clusters: tc.clusters,
+		cluster:  tc.cluster,
+	}
 }
