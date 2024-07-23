@@ -384,11 +384,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			processor := NewTestProcessor(tc.clock, tc.testsReport)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
-			tcontext := testContext{
-				config:   tc.config,
-				bindings: binding.NewBindings(),
-				clusters: registry,
-			}
+			tcontext := model.MakeContext(tc.config, binding.NewBindings(), registry)
 			processor.Run(ctx, tc.namespacer, &tcontext, tc.test)
 			nt.Cleanup(func() {})
 			if tc.expectedFail {

@@ -31,7 +31,7 @@ import (
 )
 
 type TestsProcessor interface {
-	Run(context.Context, model.TestContext, ...discovery.Test)
+	Run(context.Context, *model.TestContext, ...discovery.Test)
 }
 
 func NewTestsProcessor(clock clock.PassiveClock, summary *summary.Summary, report *report.Report) TestsProcessor {
@@ -48,7 +48,7 @@ type testsProcessor struct {
 	report  *report.Report
 }
 
-func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ...discovery.Test) {
+func (p *testsProcessor) Run(ctx context.Context, tc *model.TestContext, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -177,7 +177,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 				processor.Run(
 					ctx,
 					nspacer,
-					tc,
+					&tc,
 					test,
 				)
 			})

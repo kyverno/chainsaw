@@ -176,11 +176,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
-			tcontext := testContext{
-				config:   tc.config,
-				bindings: binding.NewBindings(),
-				clusters: registry,
-			}
+			tcontext := model.MakeContext(tc.config, binding.NewBindings(), registry)
 			processor.Run(ctx, &tcontext, tc.tests...)
 			nt.Cleanup(func() {
 			})
