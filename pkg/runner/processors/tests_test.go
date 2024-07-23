@@ -11,45 +11,13 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
-
-type testContext struct {
-	config   model.Configuration
-	bindings binding.Bindings
-	clusters clusters.Registry
-}
-
-func (tc *testContext) Bindings() binding.Bindings {
-	return tc.bindings
-}
-
-func (tc *testContext) Clusters() clusters.Registry {
-	return tc.clusters
-}
-
-func (tc *testContext) Configuration() model.Configuration {
-	return tc.config
-}
-
-type registryMock struct {
-	client client.Client
-}
-
-func (r registryMock) Register(string, clusters.Cluster) clusters.Registry {
-	return r
-}
-
-func (r registryMock) Resolve(bool, ...string) (*rest.Config, client.Client, error) {
-	return nil, r.client, nil
-}
 
 func TestTestsProcessor_Run(t *testing.T) {
 	testCases := []struct {
