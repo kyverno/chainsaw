@@ -21,6 +21,24 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+type testContext struct {
+	config   model.Configuration
+	bindings binding.Bindings
+	clusters clusters.Registry
+}
+
+func (tc *testContext) Bindings() binding.Bindings {
+	return tc.bindings
+}
+
+func (tc *testContext) Clusters() clusters.Registry {
+	return tc.clusters
+}
+
+func (tc *testContext) Configuration() model.Configuration {
+	return tc.config
+}
+
 type registryMock struct {
 	client client.Client
 }
@@ -184,16 +202,18 @@ func TestTestsProcessor_Run(t *testing.T) {
 				registry.client = tc.client
 			}
 			processor := NewTestsProcessor(
-				tc.config,
-				registry,
 				tc.clock,
 				tc.summary,
 				tc.testsReport,
-				tc.tests...,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
-			processor.Run(ctx, tc.bindings)
+			tcontext := testContext{
+				config:   tc.config,
+				bindings: binding.NewBindings(),
+				clusters: registry,
+			}
+			processor.Run(ctx, &tcontext, tc.tests...)
 			nt.Cleanup(func() {
 			})
 			if tc.expectedFail {
