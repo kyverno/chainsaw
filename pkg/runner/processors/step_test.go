@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -27,6 +28,10 @@ import (
 )
 
 func TestStepProcessor_Run(t *testing.T) {
+	config, err := config.DefaultConfiguration()
+	if err != nil {
+		assert.NoError(t, err)
+	}
 	testData := filepath.Join("..", "..", "..", "testdata", "runner", "processors")
 	testCases := []struct {
 		name         string
@@ -42,7 +47,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}{{
 		name: "test with no handler",
 		config: model.Configuration{
-			Timeouts: v1alpha2.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
@@ -71,7 +76,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try operation with apply handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -118,7 +123,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try operation with create handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -165,7 +170,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try operation with assert handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -236,7 +241,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try operation with error handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -307,7 +312,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try operation with command handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
@@ -347,7 +352,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try operation with script handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
@@ -386,7 +391,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try operation with sleep handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client:     &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{},
@@ -418,7 +423,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try operation with delete handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -467,7 +472,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "dry run with create handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -517,7 +522,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "skip delete with create handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -565,7 +570,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try-raw resource with create handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -619,7 +624,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try-url resource with create handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -667,7 +672,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "raw resource with assert handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -761,7 +766,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "try url-resource with assert handler",
 		config: model.Configuration{
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -821,7 +826,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			Execution: v1alpha2.ExecutionOptions{
 				ForceTerminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
 			},
-			Timeouts: v1alpha1.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -944,7 +949,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	}, {
 		name: "termination with create handler",
 		config: model.Configuration{
-			Timeouts: v1alpha2.DefaultTimeouts{},
+			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {

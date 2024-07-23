@@ -7,8 +7,7 @@ package steptemplate
 // 	"testing"
 
 // 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-// 	internalloader "github.com/kyverno/chainsaw/pkg/internal/loader"
-// 	tloader "github.com/kyverno/chainsaw/pkg/internal/loader/testing"
+// 	tloader "github.com/kyverno/chainsaw/pkg/loaders/testing"
 // 	"github.com/kyverno/pkg/ext/resource/loader"
 // 	"github.com/stretchr/testify/assert"
 // 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -282,15 +281,5 @@ package steptemplate
 // 				assert.NoError(t, err)
 // 			}
 // 		})
-// 	}
-// }
-
-// func Test_parse_globalErr(t *testing.T) {
-// 	content, err := os.ReadFile("../../../testdata/validation/example-file.yaml")
-// 	assert.NoError(t, err)
-// 	internalloader.Err = errors.New("dummy error")
-// 	{
-// 		_, err := parse(content, false, nil, nil, nil)
-// 		assert.Error(t, err)
 // 	}
 // }

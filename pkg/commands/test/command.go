@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"path"
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -96,7 +95,11 @@ func Command() *cobra.Command {
 				configuration = *config
 			} else {
 				fmt.Fprintln(out, "Loading default configuration...")
-				bytes, err := fs.ReadFile(data.Config(), path.Join("config", "default.yaml"))
+				configFs, err := data.Config()
+				if err != nil {
+					return err
+				}
+				bytes, err := fs.ReadFile(configFs, "default.yaml")
 				if err != nil {
 					return err
 				}
@@ -328,17 +331,21 @@ func Command() *cobra.Command {
 			return err
 		},
 	}
+	config, err := config.DefaultConfiguration()
+	if err != nil {
+		panic(err)
+	}
 	// config
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file")
 	cmd.Flags().StringSliceVar(&options.testDirs, "test-dir", nil, "Directories containing test cases to run")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	// timeouts options
-	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", v1alpha1.DefaultApplyTimeout, "The apply timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", v1alpha1.DefaultAssertTimeout, "The assert timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", v1alpha1.DefaultErrorTimeout, "The error timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", v1alpha1.DefaultDeleteTimeout, "The delete timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", v1alpha1.DefaultCleanupTimeout, "The cleanup timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", v1alpha1.DefaultExecTimeout, "The exec timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", config.Spec.Timeouts.Apply.Duration, "The apply timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", config.Spec.Timeouts.Assert.Duration, "The assert timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", config.Spec.Timeouts.Cleanup.Duration, "The cleanup timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", config.Spec.Timeouts.Delete.Duration, "The delete timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", config.Spec.Timeouts.Error.Duration, "The error timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", config.Spec.Timeouts.Exec.Duration, "The exec timeout to use as default for configuration")
 	// discovery options
 	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test", "Name of the test file")
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name")

@@ -3,7 +3,6 @@ package v1alpha1
 import (
 	"fmt"
 	"regexp"
-	"time"
 
 	"github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -111,15 +110,6 @@ type Output struct {
 	// +optional
 	Match *Match `json:"match,omitempty"`
 }
-
-const (
-	DefaultApplyTimeout   = 5 * time.Second
-	DefaultAssertTimeout  = 30 * time.Second
-	DefaultCleanupTimeout = 30 * time.Second
-	DefaultDeleteTimeout  = 15 * time.Second
-	DefaultErrorTimeout   = 30 * time.Second
-	DefaultExecTimeout    = 5 * time.Second
-)
 
 // DefaultTimeouts contains defautl timeouts per operation.
 type DefaultTimeouts struct {
