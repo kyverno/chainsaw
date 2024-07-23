@@ -21,26 +21,27 @@ import (
 	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/clock"
-	"k8s.io/utils/ptr"
 )
 
 type TestProcessor interface {
-	Run(context.Context, namespacer.Namespacer, *model.TestContext, discovery.Test)
+	Run(context.Context, namespacer.Namespacer, model.TestContext, discovery.Test)
 }
 
-func NewTestProcessor(clock clock.PassiveClock, report *report.TestReport) TestProcessor {
+func NewTestProcessor(config model.Configuration, clock clock.PassiveClock, report *report.TestReport) TestProcessor {
 	return &testProcessor{
+		config: config,
 		clock:  clock,
 		report: report,
 	}
 }
 
 type testProcessor struct {
+	config model.Configuration
 	clock  clock.PassiveClock
 	report *report.TestReport
 }
 
-func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc *model.TestContext, test discovery.Test) {
+func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc model.TestContext, test discovery.Test) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -64,8 +65,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			size = len(name)
 		}
 	}
-	config := tc.Configuration()
-	timeouts := config.Timeouts.Combine(test.Test.Spec.Timeouts)
+	timeouts := p.config.Timeouts.Combine(test.Test.Spec.Timeouts)
 	cleaner := cleanup.NewCleaner(timeouts.CleanupDuration(), nil)
 	setupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
@@ -89,8 +89,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	tc = ptr.To(tc.WithBinding(ctx, "client", clusterClient))
-	tc = ptr.To(tc.WithBinding(ctx, "config", clusterConfig))
+	tc = tc.WithBinding(ctx, "client", clusterClient)
+	tc = tc.WithBinding(ctx, "config", clusterConfig)
 	if clusterClient != nil {
 		nsName := test.Test.Spec.Namespace
 		if nspacer == nil && nsName == "" {
@@ -99,7 +99,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		if nsName != "" {
 			template := test.Test.Spec.NamespaceTemplate
 			if template == nil || template.Value == nil {
-				template = config.Namespace.Template
+				template = p.config.Namespace.Template
 			}
 			namespace, err := buildNamespace(ctx, nsName, template, tc.Bindings())
 			if err != nil {
@@ -114,11 +114,11 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 					failer.FailNow(ctx)
 				} else if err := clusterClient.Create(logging.IntoContext(setupCtx, setupLogger), namespace.DeepCopy()); err != nil {
 					failer.FailNow(ctx)
-				} else if !cleanup.Skip(config.Cleanup.SkipDelete, test.Test.Spec.SkipDelete, nil) {
+				} else if !cleanup.Skip(p.config.Cleanup.SkipDelete, test.Test.Spec.SkipDelete, nil) {
 					cleaner.Add(clusterClient, namespace)
 				}
 			}
-			tc = ptr.To(tc.WithBinding(ctx, "namespace", namespace.GetName()))
+			tc = tc.WithBinding(ctx, "namespace", namespace.GetName())
 		}
 	}
 	if p.report != nil && nspacer != nil {
@@ -142,10 +142,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 }
 
-func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, tc *model.TestContext, test discovery.Test, step v1alpha1.TestStep) StepProcessor {
+func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, tc model.TestContext, test discovery.Test, step v1alpha1.TestStep) StepProcessor {
 	var report *report.StepReport
 	if p.report != nil {
 		report = p.report.ForStep(&step)
 	}
-	return NewStepProcessor(tc.Configuration(), tc.Clusters(), nspacer, p.clock, test, step, report)
+	return NewStepProcessor(p.config, tc.Clusters(), nspacer, p.clock, test, step, report)
 }
