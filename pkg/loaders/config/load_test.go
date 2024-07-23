@@ -51,6 +51,14 @@ func TestLoad(t *testing.T) {
 				Name: "default",
 			},
 			Spec: v1alpha2.ConfigurationSpec{
+				Timeouts: v1alpha1.DefaultTimeouts{
+					Apply:   metav1.Duration{Duration: 5 * time.Second},
+					Assert:  metav1.Duration{Duration: 30 * time.Second},
+					Cleanup: metav1.Duration{Duration: 30 * time.Second},
+					Delete:  metav1.Duration{Duration: 15 * time.Second},
+					Error:   metav1.Duration{Duration: 30 * time.Second},
+					Exec:    metav1.Duration{Duration: 5 * time.Second},
+				},
 				Discovery: v1alpha2.DiscoveryOptions{
 					TestFile:         "chainsaw-test",
 					FullName:         false,
@@ -86,9 +94,9 @@ func TestLoad(t *testing.T) {
 				Timeouts: v1alpha1.DefaultTimeouts{
 					Apply:   metav1.Duration{Duration: 5 * time.Second},
 					Assert:  metav1.Duration{Duration: 10 * time.Second},
-					Error:   metav1.Duration{Duration: 10 * time.Second},
-					Delete:  metav1.Duration{Duration: 5 * time.Second},
 					Cleanup: metav1.Duration{Duration: 5 * time.Second},
+					Delete:  metav1.Duration{Duration: 5 * time.Second},
+					Error:   metav1.Duration{Duration: 10 * time.Second},
 					Exec:    metav1.Duration{Duration: 10 * time.Second},
 				},
 				Discovery: v1alpha2.DiscoveryOptions{

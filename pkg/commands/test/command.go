@@ -4,13 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/fs"
 	"os"
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
-	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/loaders/values"
@@ -95,15 +93,7 @@ func Command() *cobra.Command {
 				configuration = *config
 			} else {
 				fmt.Fprintln(out, "Loading default configuration...")
-				configFs, err := data.Config()
-				if err != nil {
-					return err
-				}
-				bytes, err := fs.ReadFile(configFs, "default.yaml")
-				if err != nil {
-					return err
-				}
-				config, err := config.LoadBytes(bytes)
+				config, err := config.DefaultConfiguration()
 				if err != nil {
 					return err
 				}
@@ -236,12 +226,12 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.Discovery.FullName)
 			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.Discovery.IncludeTestRegex)
 			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.Discovery.ExcludeTestRegex)
-			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.Apply)
-			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.Assert)
-			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.Cleanup)
-			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.Delete)
-			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.Error)
-			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.Exec)
+			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.Apply.Duration)
+			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.Assert.Duration)
+			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.Cleanup.Duration)
+			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.Delete.Duration)
+			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.Error.Duration)
+			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.Exec.Duration)
 			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.Deletion.Propagation)
 			if configuration.Spec.Execution.Parallel != nil && *configuration.Spec.Execution.Parallel > 0 {
 				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Execution.Parallel)

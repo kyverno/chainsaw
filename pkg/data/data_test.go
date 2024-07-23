@@ -23,8 +23,8 @@ func TestCrds(t *testing.T) {
 	}
 }
 
-func TestConfig(t *testing.T) {
-	data, err := Config()
+func Test_config(t *testing.T) {
+	data, err := config()
 	assert.NoError(t, err)
 	files := []string{
 		"default.yaml",
