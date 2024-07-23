@@ -3,21 +3,18 @@ package config
 import (
 	"errors"
 	"fmt"
-	"io/fs"
 	"os"
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/conversion"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
-	"github.com/kyverno/chainsaw/pkg/data"
+	"github.com/kyverno/chainsaw/pkg/loaders"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/openapi"
-	"sigs.k8s.io/kubectl-validate/pkg/openapiclient"
 )
 
 const (
@@ -26,7 +23,7 @@ const (
 
 type (
 	splitter      = func([]byte) ([][]byte, error)
-	loaderFactory = func(openapi.Client) (loader.Loader, error)
+	loaderFactory = func() (loader.Loader, error)
 	converter     = func(schema.GroupVersionKind, unstructured.Unstructured) (*v1alpha2.Configuration, error)
 )
 
@@ -70,7 +67,7 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 		splitter = yaml.SplitDocuments
 	}
 	if loaderFactory == nil {
-		loaderFactory = loader.New
+		loaderFactory = loaders.DefaultLoader
 	}
 	if converter == nil {
 		converter = defaultConverter
@@ -79,16 +76,11 @@ func parse(content []byte, splitter splitter, loaderFactory loaderFactory, conve
 	if err != nil {
 		return nil, err
 	}
+	loader, err := loaderFactory()
+	if err != nil {
+		return nil, err
+	}
 	var configs []*v1alpha2.Configuration
-	// TODO: no need to allocate a validator every time
-	fs, err := fs.Sub(data.Crds(), data.CrdsFolder)
-	if err != nil {
-		return nil, err
-	}
-	loader, err := loaderFactory(openapiclient.NewLocalCRDFiles(fs))
-	if err != nil {
-		return nil, err
-	}
 	for _, document := range documents {
 		gvk, untyped, err := loader.Load(document)
 		if err != nil {

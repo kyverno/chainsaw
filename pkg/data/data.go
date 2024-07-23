@@ -3,9 +3,14 @@ package data
 import (
 	"embed"
 	"io/fs"
+	"sync"
 )
 
-const CrdsFolder = "crds"
+const (
+	crdsFolder    = "crds"
+	configFolder  = "config"
+	schemasFolder = "schemas/json"
+)
 
 //go:embed crds
 var crdsFs embed.FS
@@ -16,14 +21,33 @@ var configFs embed.FS
 //go:embed schemas
 var schemasFs embed.FS
 
-func Crds() fs.FS {
-	return crdsFs
+func sub(f embed.FS, dir string) (fs.FS, error) {
+	return fs.Sub(f, dir)
 }
 
-func Config() fs.FS {
-	return configFs
+func crds() (fs.FS, error) {
+	return sub(crdsFs, crdsFolder)
 }
 
-func Schemas() fs.FS {
-	return schemasFs
+func config() (fs.FS, error) {
+	return sub(configFs, configFolder)
 }
+
+func schemas() (fs.FS, error) {
+	return sub(schemasFs, schemasFolder)
+}
+
+func configFile() ([]byte, error) {
+	configFs, err := Config()
+	if err != nil {
+		return nil, err
+	}
+	return fs.ReadFile(configFs, "default.yaml")
+}
+
+var (
+	Crds       = sync.OnceValues(crds)
+	Config     = sync.OnceValues(config)
+	Schemas    = sync.OnceValues(schemas)
+	ConfigFile = sync.OnceValues(configFile)
+)

@@ -4,7 +4,6 @@ import (
 	"errors"
 	"io/fs"
 	"os"
-	"path"
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/data"
@@ -27,13 +26,16 @@ func Command() *cobra.Command {
 					return err
 				}
 			}
-			schemasFs := data.Schemas()
-			entries, err := fs.ReadDir(schemasFs, path.Join("schemas", "json"))
+			schemasFs, err := data.Schemas()
+			if err != nil {
+				return err
+			}
+			entries, err := fs.ReadDir(schemasFs, ".")
 			if err != nil {
 				return err
 			}
 			for _, entry := range entries {
-				input, err := fs.ReadFile(schemasFs, path.Join("schemas", "json", entry.Name()))
+				input, err := fs.ReadFile(schemasFs, entry.Name())
 				if err != nil {
 					return err
 				}
