@@ -8,10 +8,10 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	ctrlClient "github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client/logged"
 	"github.com/kyverno/chainsaw/pkg/client/simple"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
-	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
 	nspacer "github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opassert "github.com/kyverno/chainsaw/pkg/runner/operations/assert"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
@@ -118,7 +118,7 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 		if err != nil {
 			return err
 		}
-		client = runnerclient.New(newClient)
+		client = logged.New(newClient)
 	}
 	if namespacer == nil {
 		namespacer = nspacer.New(client, opts.namespace)
