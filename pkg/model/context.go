@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	corev1 "k8s.io/api/core/v1"
@@ -11,8 +12,11 @@ import (
 )
 
 type GlobalContext interface {
+	Cleanup() bool
+	FailFast() bool
+	FullName() bool
+	Timeouts() v1alpha2.Timeouts
 	Clusters() clusters.Registry
-	Configuration() Configuration
 	Namespace(context.Context) (*corev1.Namespace, error)
 	TestContext(context.Context, *Test, int, int) TestContext
 }
@@ -64,12 +68,24 @@ func NewContext(ctx context.Context, values any, cluster *rest.Config, config Co
 	return &tc, nil
 }
 
-func (tc *globalContext) Clusters() clusters.Registry {
-	return tc.clusters
+func (tc *globalContext) Cleanup() bool {
+	return !tc.config.Cleanup.SkipDelete
 }
 
-func (tc *globalContext) Configuration() Configuration {
-	return tc.config
+func (tc *globalContext) FailFast() bool {
+	return tc.config.Execution.FailFast
+}
+
+func (tc *globalContext) FullName() bool {
+	return tc.config.Discovery.FullName
+}
+
+func (tc *globalContext) Timeouts() v1alpha2.Timeouts {
+	return tc.config.Timeouts
+}
+
+func (tc *globalContext) Clusters() clusters.Registry {
+	return tc.clusters
 }
 
 func (tc *globalContext) Namespace(ctx context.Context) (*corev1.Namespace, error) {

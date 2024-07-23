@@ -6,7 +6,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
@@ -17,30 +16,22 @@ func TestTest(t *testing.T) {
 	cwd, err := os.Getwd()
 	assert.NoError(t, err)
 	tests := []struct {
-		name    string
-		config  model.Configuration
-		test    discovery.Test
-		want    string
-		wantErr bool
+		name     string
+		fullName bool
+		test     discovery.Test
+		want     string
+		wantErr  bool
 	}{{
-		name: "nil test",
-		config: model.Configuration{
-			Discovery: v1alpha2.DiscoveryOptions{
-				FullName: false,
-			},
-		},
+		name:     "nil test",
+		fullName: false,
 		test: discovery.Test{
 			BasePath: cwd,
 			Test:     nil,
 		},
 		wantErr: true,
 	}, {
-		name: "no full name",
-		config: model.Configuration{
-			Discovery: v1alpha2.DiscoveryOptions{
-				FullName: false,
-			},
-		},
+		name:     "no full name",
+		fullName: false,
 		test: discovery.Test{
 			BasePath: cwd,
 			Test: &model.Test{
@@ -52,12 +43,8 @@ func TestTest(t *testing.T) {
 		wantErr: false,
 		want:    "foo",
 	}, {
-		name: "full name",
-		config: model.Configuration{
-			Discovery: v1alpha2.DiscoveryOptions{
-				FullName: true,
-			},
-		},
+		name:     "full name",
+		fullName: true,
 		test: discovery.Test{
 			BasePath: cwd,
 			Test: &model.Test{
@@ -69,12 +56,8 @@ func TestTest(t *testing.T) {
 		wantErr: false,
 		want:    ".[foo]",
 	}, {
-		name: "full name",
-		config: model.Configuration{
-			Discovery: v1alpha2.DiscoveryOptions{
-				FullName: true,
-			},
-		},
+		name:     "full name",
+		fullName: true,
 		test: discovery.Test{
 			BasePath: filepath.Join(cwd, "..", "dir", "dir"),
 			Test: &model.Test{
@@ -86,12 +69,8 @@ func TestTest(t *testing.T) {
 		wantErr: false,
 		want:    "../dir/dir[foo]",
 	}, {
-		name: "full name",
-		config: model.Configuration{
-			Discovery: v1alpha2.DiscoveryOptions{
-				FullName: true,
-			},
-		},
+		name:     "full name",
+		fullName: true,
 		test: discovery.Test{
 			BasePath: filepath.Join(cwd, "dir", "dir"),
 			Test: &model.Test{
@@ -105,7 +84,7 @@ func TestTest(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Test(tt.config, tt.test)
+			got, err := Test(tt.fullName, tt.test)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
