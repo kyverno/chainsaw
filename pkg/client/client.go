@@ -8,6 +8,8 @@ import (
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
+type Object = ctrlclient.Object
+
 type Client interface {
 	// Get retrieves an obj for the given object key from the Kubernetes Cluster.
 	// obj must be a struct pointer so that obj can be updated with the response

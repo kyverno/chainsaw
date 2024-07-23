@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	petname "github.com/dustinkirkland/golang-petname"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -16,18 +16,12 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
-	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
-	"github.com/kyverno/chainsaw/pkg/utils/kube"
 	"github.com/kyverno/pkg/ext/output/color"
-	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/clock"
+	"k8s.io/utils/ptr"
 )
 
 type TestProcessor interface {
@@ -72,84 +66,65 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 	config := tc.Configuration()
 	timeouts := config.Timeouts.Combine(test.Test.Spec.Timeouts)
+	cleaner := cleanup.NewCleaner(timeouts.CleanupDuration(), nil)
+	setupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
+	cleanupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
+	setupCtx := logging.IntoContext(ctx, setupLogger)
+	cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
+	t.Cleanup(func() {
+		if !cleaner.Empty() {
+			logging.Log(cleanupCtx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
+			defer func() {
+				logging.Log(cleanupCtx, logging.Cleanup, logging.DoneStatus, color.BoldFgCyan)
+			}()
+			for _, err := range cleaner.Run(cleanupCtx) {
+				logging.Log(cleanupCtx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				failer.Fail(cleanupCtx)
+			}
+		}
+	})
 	registeredClusters := clusters.Register(tc.Clusters(), test.BasePath, test.Test.Spec.Clusters)
 	clusterConfig, clusterClient, err := registeredClusters.Resolve(false, test.Test.Spec.Cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	bindings := apibindings.RegisterClusterBindings(ctx, tc.Bindings(), clusterConfig, clusterClient)
-	setupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
-	cleanupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
-	var namespace *corev1.Namespace
+	tc = ptr.To(tc.WithBinding(ctx, "client", clusterClient))
+	tc = ptr.To(tc.WithBinding(ctx, "config", clusterConfig))
 	if clusterClient != nil {
-		if nspacer == nil || test.Test.Spec.Namespace != "" {
-			var ns corev1.Namespace
-			if test.Test.Spec.Namespace != "" {
-				ns = kube.Namespace(test.Test.Spec.Namespace)
-			} else {
-				ns = kube.PetNamespace()
-			}
-			namespace = &ns
+		nsName := test.Test.Spec.Namespace
+		if nspacer == nil && nsName == "" {
+			nsName = fmt.Sprintf("chainsaw-%s", petname.Generate(2, "-"))
 		}
-		if namespace != nil {
-			object := kube.ToUnstructured(namespace)
-			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-			if test.Test.Spec.NamespaceTemplate != nil && test.Test.Spec.NamespaceTemplate.Value != nil {
-				template := v1alpha1.Any{
-					Value: test.Test.Spec.NamespaceTemplate.Value,
-				}
-				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
-					failer.FailNow(ctx)
-				} else {
-					object = merged
-				}
-				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-			} else if config.Namespace.Template != nil && config.Namespace.Template.Value != nil {
-				template := v1alpha1.Any{
-					Value: config.Namespace.Template.Value,
-				}
-				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
-					failer.FailNow(ctx)
-				} else {
-					object = merged
-				}
-				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
+		if nsName != "" {
+			template := test.Test.Spec.NamespaceTemplate
+			if template == nil || template.Value == nil {
+				template = config.Namespace.Template
 			}
-			nspacer = namespacer.New(clusterClient, object.GetName())
-			setupCtx := logging.IntoContext(ctx, setupLogger)
-			cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
-			if err := clusterClient.Get(setupCtx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
+			namespace, err := buildNamespace(ctx, nsName, template, tc.Bindings())
+			if err != nil {
+				logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				failer.FailNow(ctx)
+			}
+			nspacer = namespacer.New(clusterClient, namespace.GetName())
+			if err := clusterClient.Get(setupCtx, client.ObjectKey(namespace), namespace.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
 					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.FailNow(ctx)
-				}
-				if !cleanup.Skip(config.Cleanup.SkipDelete, test.Test.Spec.SkipDelete, nil) {
-					t.Cleanup(func() {
-						operation := newOperation(
-							OperationInfo{},
-							false,
-							timeout.Get(nil, timeouts.CleanupDuration()),
-							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-								bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
-								return opdelete.New(clusterClient, object, nspacer, false, metav1.DeletePropagationBackground), bindings, nil
-							},
-							nil,
-						)
-						operation.execute(cleanupCtx, bindings)
-					})
-				}
-				if err := clusterClient.Create(logging.IntoContext(setupCtx, setupLogger), object.DeepCopy()); err != nil {
+				} else if err := clusterClient.Create(logging.IntoContext(setupCtx, setupLogger), namespace.DeepCopy()); err != nil {
 					failer.FailNow(ctx)
+				} else if !cleanup.Skip(config.Cleanup.SkipDelete, test.Test.Spec.SkipDelete, nil) {
+					cleaner.Add(clusterClient, namespace)
 				}
 			}
+			tc = ptr.To(tc.WithBinding(ctx, "namespace", namespace.GetName()))
 		}
 	}
 	if p.report != nil && nspacer != nil {
 		p.report.SetNamespace(nspacer.GetNamespace())
 	}
-	bindings, err = apibindings.RegisterBindings(ctx, bindings, test.Test.Spec.Bindings...)
+	bindings, err := apibindings.RegisterBindings(ctx, tc.Bindings(), test.Test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
