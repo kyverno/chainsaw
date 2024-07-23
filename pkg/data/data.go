@@ -7,8 +7,8 @@ import (
 )
 
 const (
-	crdsFolder    = "crds"
 	configFolder  = "config"
+	crdsFolder    = "crds"
 	schemasFolder = "schemas/json"
 )
 
@@ -21,33 +21,33 @@ var configFs embed.FS
 //go:embed schemas
 var schemasFs embed.FS
 
-func sub(f embed.FS, dir string) (fs.FS, error) {
-	return fs.Sub(f, dir)
+func _config() (fs.FS, error) {
+	return _sub(configFs, configFolder)
 }
 
-func crds() (fs.FS, error) {
-	return sub(crdsFs, crdsFolder)
-}
-
-func config() (fs.FS, error) {
-	return sub(configFs, configFolder)
-}
-
-func schemas() (fs.FS, error) {
-	return sub(schemasFs, schemasFolder)
-}
-
-func configFile() ([]byte, error) {
-	configFs, err := Config()
+func _configFile() ([]byte, error) {
+	configFs, err := config()
 	if err != nil {
 		return nil, err
 	}
 	return fs.ReadFile(configFs, "default.yaml")
 }
 
+func _crds() (fs.FS, error) {
+	return _sub(crdsFs, crdsFolder)
+}
+
+func _schemas() (fs.FS, error) {
+	return _sub(schemasFs, schemasFolder)
+}
+
+func _sub(f embed.FS, dir string) (fs.FS, error) {
+	return fs.Sub(f, dir)
+}
+
 var (
-	Crds       = sync.OnceValues(crds)
-	Config     = sync.OnceValues(config)
-	Schemas    = sync.OnceValues(schemas)
-	ConfigFile = sync.OnceValues(configFile)
+	config     = sync.OnceValues(_config)
+	ConfigFile = sync.OnceValues(_configFile)
+	Crds       = sync.OnceValues(_crds)
+	Schemas    = sync.OnceValues(_schemas)
 )

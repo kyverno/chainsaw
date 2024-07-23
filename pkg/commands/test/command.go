@@ -4,13 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/fs"
 	"os"
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
-	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/loaders/values"
@@ -95,15 +93,7 @@ func Command() *cobra.Command {
 				configuration = *config
 			} else {
 				fmt.Fprintln(out, "Loading default configuration...")
-				configFs, err := data.Config()
-				if err != nil {
-					return err
-				}
-				bytes, err := fs.ReadFile(configFs, "default.yaml")
-				if err != nil {
-					return err
-				}
-				config, err := config.LoadBytes(bytes)
+				config, err := config.DefaultConfiguration()
 				if err != nil {
 					return err
 				}
