@@ -63,7 +63,7 @@ func run(
 			ctx := testing.IntoContext(ctx, t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
 			processor := processors.NewTestsProcessor(clock, &summary, testsReport)
-			processor.Run(ctx, tc, tests...)
+			processor.Run(ctx, &tc, tests...)
 		},
 	}}
 	deps := &internal.TestDeps{}

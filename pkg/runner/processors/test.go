@@ -31,7 +31,7 @@ import (
 )
 
 type TestProcessor interface {
-	Run(context.Context, namespacer.Namespacer, model.TestContext, discovery.Test)
+	Run(context.Context, namespacer.Namespacer, *model.TestContext, discovery.Test)
 }
 
 func NewTestProcessor(clock clock.PassiveClock, report *report.TestReport) TestProcessor {
@@ -46,7 +46,7 @@ type testProcessor struct {
 	report *report.TestReport
 }
 
-func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc model.TestContext, test discovery.Test) {
+func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc *model.TestContext, test discovery.Test) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -167,7 +167,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 }
 
-func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, tc model.TestContext, test discovery.Test, step v1alpha1.TestStep) StepProcessor {
+func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, tc *model.TestContext, test discovery.Test, step v1alpha1.TestStep) StepProcessor {
 	var report *report.StepReport
 	if p.report != nil {
 		report = p.report.ForStep(&step)
