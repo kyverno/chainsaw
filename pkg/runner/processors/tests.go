@@ -33,7 +33,6 @@ import (
 
 type TestsProcessor interface {
 	Run(context.Context, binding.Bindings)
-	CreateTestProcessor(discovery.Test) TestProcessor
 }
 
 func NewTestsProcessor(
@@ -183,7 +182,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 						t.SkipNow()
 					}
 				}
-				processor := p.CreateTestProcessor(test)
+				processor := p.createTestProcessor(test)
 				info := TestInfo{
 					Id:         i + 1,
 					ScenarioId: s + 1,
@@ -199,7 +198,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	}
 }
 
-func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor {
+func (p *testsProcessor) createTestProcessor(test discovery.Test) TestProcessor {
 	var report *report.TestReport
 	if p.report != nil {
 		report = p.report.ForTest(&test)

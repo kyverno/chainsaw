@@ -70,9 +70,9 @@ func run(
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			processor := processors.NewTestsProcessor(config, registeredClusters, clock, &summary, testsReport, tests...)
 			ctx := testing.IntoContext(ctx, t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
+			processor := processors.NewTestsProcessor(config, registeredClusters, clock, &summary, testsReport, tests...)
 			processor.Run(ctx, bindings)
 		},
 	}}
