@@ -381,16 +381,15 @@ func TestTestProcessor_Run(t *testing.T) {
 			if tc.client != nil {
 				registry.client = tc.client
 			}
-			processor := NewTestProcessor(
-				tc.config,
-				registry,
-				tc.clock,
-				tc.testsReport,
-				tc.test,
-			)
+			processor := NewTestProcessor(tc.clock, tc.testsReport)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
-			processor.Run(ctx, tc.binding, tc.namespacer)
+			tcontext := testContext{
+				config:   tc.config,
+				bindings: binding.NewBindings(),
+				clusters: registry,
+			}
+			processor.Run(ctx, tc.namespacer, &tcontext, tc.test)
 			nt.Cleanup(func() {})
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
