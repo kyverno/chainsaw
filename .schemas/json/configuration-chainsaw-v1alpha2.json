@@ -1750,42 +1750,48 @@
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "default": "5s"
             },
             "assert": {
               "description": "Assert defines the timeout for the assert operation",
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "default": "30s"
             },
             "cleanup": {
               "description": "Cleanup defines the timeout for the cleanup operation",
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "default": "30s"
             },
             "delete": {
               "description": "Delete defines the timeout for the delete operation",
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "default": "15s"
             },
             "error": {
               "description": "Error defines the timeout for the error operation",
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "default": "30s"
             },
             "exec": {
               "description": "Exec defines the timeout for exec operations",
               "type": [
                 "string",
                 "null"
-              ]
+              ],
+              "default": "5s"
             }
           }
         }

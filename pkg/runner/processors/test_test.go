@@ -42,7 +42,7 @@ func TestTestProcessor_Run(t *testing.T) {
 	}{{
 		name: "test with no steps",
 		config: model.Configuration{
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -68,7 +68,7 @@ func TestTestProcessor_Run(t *testing.T) {
 	}, {
 		name: "test with test steps",
 		config: model.Configuration{
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -101,7 +101,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			Execution: v1alpha2.ExecutionOptions{
 				FailFast: true,
 			},
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -131,7 +131,7 @@ func TestTestProcessor_Run(t *testing.T) {
 	}, {
 		name: "skip test",
 		config: model.Configuration{
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -167,7 +167,7 @@ func TestTestProcessor_Run(t *testing.T) {
 	}, {
 		name: "with test namespace",
 		config: model.Configuration{
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -202,7 +202,7 @@ func TestTestProcessor_Run(t *testing.T) {
 	}, {
 		name: "without test namespace",
 		config: model.Configuration{
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -232,7 +232,7 @@ func TestTestProcessor_Run(t *testing.T) {
 	}, {
 		name: "delay before cleanup",
 		config: model.Configuration{
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -263,7 +263,7 @@ func TestTestProcessor_Run(t *testing.T) {
 	}, {
 		name: "namespace not found and created",
 		config: model.Configuration{
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -301,7 +301,7 @@ func TestTestProcessor_Run(t *testing.T) {
 	}, {
 		name: "namespace not found due to internal error",
 		config: model.Configuration{
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
@@ -339,7 +339,7 @@ func TestTestProcessor_Run(t *testing.T) {
 	}, {
 		name: "namespace not found and not created due to internal error",
 		config: model.Configuration{
-			Timeouts: v1alpha2.Timeouts{},
+			Timeouts: v1alpha2.DefaultTimeouts{},
 		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {

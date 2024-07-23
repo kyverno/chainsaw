@@ -112,22 +112,22 @@ func Command() *cobra.Command {
 				configuration.Spec.Discovery.TestFile = options.testFile
 			}
 			if flagutils.IsSet(flags, "apply-timeout") {
-				configuration.Spec.Timeouts.Apply = &options.applyTimeout
+				configuration.Spec.Timeouts.Apply = options.applyTimeout
 			}
 			if flagutils.IsSet(flags, "assert-timeout") {
-				configuration.Spec.Timeouts.Assert = &options.assertTimeout
+				configuration.Spec.Timeouts.Assert = options.assertTimeout
 			}
 			if flagutils.IsSet(flags, "error-timeout") {
-				configuration.Spec.Timeouts.Error = &options.errorTimeout
+				configuration.Spec.Timeouts.Error = options.errorTimeout
 			}
 			if flagutils.IsSet(flags, "delete-timeout") {
-				configuration.Spec.Timeouts.Delete = &options.deleteTimeout
+				configuration.Spec.Timeouts.Delete = options.deleteTimeout
 			}
 			if flagutils.IsSet(flags, "cleanup-timeout") {
-				configuration.Spec.Timeouts.Cleanup = &options.cleanupTimeout
+				configuration.Spec.Timeouts.Cleanup = options.cleanupTimeout
 			}
 			if flagutils.IsSet(flags, "exec-timeout") {
-				configuration.Spec.Timeouts.Exec = &options.execTimeout
+				configuration.Spec.Timeouts.Exec = options.execTimeout
 			}
 			if flagutils.IsSet(flags, "skip-delete") {
 				configuration.Spec.Cleanup.SkipDelete = options.skipDelete
@@ -233,12 +233,12 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.Discovery.FullName)
 			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.Discovery.IncludeTestRegex)
 			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.Discovery.ExcludeTestRegex)
-			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.ApplyDuration())
-			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.AssertDuration())
-			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.CleanupDuration())
-			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.DeleteDuration())
-			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.ErrorDuration())
-			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.ExecDuration())
+			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.Apply)
+			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.Assert)
+			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.Cleanup)
+			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.Delete)
+			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.Error)
+			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.Exec)
 			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.Deletion.Propagation)
 			if configuration.Spec.Execution.Parallel != nil && *configuration.Spec.Execution.Parallel > 0 {
 				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Execution.Parallel)
