@@ -109,7 +109,7 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	if p.test.Test.Spec.DelayBeforeCleanup != nil {
 		delay = p.test.Test.Spec.DelayBeforeCleanup
 	}
-	cleaner := newCleaner(p.namespacer, delay)
+	cleaner := cleanup.NewCleaner(p.timeouts.CleanupDuration(), delay)
 	try, err := p.tryOperations(registeredClusters, cleaner)
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -131,12 +131,15 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		failer.FailNow(ctx)
 	}
 	t.Cleanup(func() {
-		if !cleaner.isEmpty() || len(cleanup) != 0 {
+		if !cleaner.Empty() || len(cleanup) != 0 {
 			logger.Log(logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
 			defer func() {
 				logger.Log(logging.Cleanup, logging.DoneStatus, color.BoldFgCyan)
 			}()
-			cleaner.run(ctx)
+			for _, err := range cleaner.Run(ctx) {
+				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				failer.Fail(ctx)
+			}
 			for _, operation := range cleanup {
 				operation.execute(ctx, bindings)
 			}
@@ -177,7 +180,7 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	}
 }
 
-func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, cleaner *cleaner) ([]operation, error) {
+func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, cleaner cleanup.Cleaner) ([]operation, error) {
 	var ops []operation
 	for i, handler := range p.step.Try {
 		register := func(o ...operation) {
@@ -370,7 +373,7 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, 
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Registry, cleaner *cleaner, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Registry, cleaner cleanup.Cleaner, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -476,7 +479,7 @@ func (p *stepProcessor) commandOperation(id int, registeredClusters clusters.Reg
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Registry, cleaner *cleaner, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Registry, cleaner cleanup.Cleaner, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -981,14 +984,12 @@ func (p *stepProcessor) getClusterResolver(registeredClusters clusters.Registry,
 	}
 }
 
-func (p *stepProcessor) getCleaner(cleaner *cleaner, dryRun bool) cleanup.Cleaner {
+func (p *stepProcessor) getCleaner(cleaner cleanup.Cleaner, dryRun bool) cleanup.CleanerCollector {
 	if dryRun {
 		return nil
 	}
 	if cleanup.Skip(p.config.Cleanup.SkipDelete, p.test.Test.Spec.SkipDelete, p.step.TestStepSpec.SkipDelete) {
 		return nil
 	}
-	return func(obj unstructured.Unstructured, c client.Client) {
-		cleaner.addObject(obj, c, timeout.Get(nil, p.timeouts.CleanupDuration()))
-	}
+	return cleaner
 }
