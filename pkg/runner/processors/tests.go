@@ -13,7 +13,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
@@ -32,40 +31,28 @@ import (
 )
 
 type TestsProcessor interface {
-	Run(context.Context, binding.Bindings)
+	Run(context.Context, model.TestContext, ...discovery.Test)
 }
 
 func NewTestsProcessor(
-	config model.Configuration,
-	clusters clusters.Registry,
 	clock clock.PassiveClock,
 	summary *summary.Summary,
 	report *report.Report,
-	tests ...discovery.Test,
 ) TestsProcessor {
 	return &testsProcessor{
-		config:   config,
-		clusters: clusters,
-		clock:    clock,
-		summary:  summary,
-		report:   report,
-		tests:    tests,
+		clock:   clock,
+		summary: summary,
+		report:  report,
 	}
 }
 
 type testsProcessor struct {
-	config   model.Configuration
-	clusters clusters.Registry
-	clock    clock.PassiveClock
-	summary  *summary.Summary
-	report   *report.Report
-	tests    []discovery.Test
+	clock   clock.PassiveClock
+	summary *summary.Summary
+	report  *report.Report
 }
 
-func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
+func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -73,21 +60,23 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 			p.report.SetEndTime(time.Now())
 		})
 	}
+	config := tc.Configuration()
+	clusters := tc.Clusters()
+	bindings := tc.Bindings()
 	var nspacer namespacer.Namespacer
-	clusterConfig, clusterClient, err := p.clusters.Resolve(false)
+	clusterConfig, clusterClient, err := clusters.Resolve(false)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
 	if clusterClient != nil {
-		if p.config.Namespace.Name != "" {
-			namespace := kube.Namespace(p.config.Namespace.Name)
+		if config.Namespace.Name != "" {
+			namespace := kube.Namespace(config.Namespace.Name)
 			object := kube.ToUnstructured(&namespace)
 			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-			if p.config.Namespace.Template != nil && p.config.Namespace.Template.Value != nil {
+			if config.Namespace.Template != nil && config.Namespace.Template.Value != nil {
 				template := v1alpha1.Any{
-					Value: p.config.Namespace.Template.Value,
+					Value: config.Namespace.Template.Value,
 				}
 				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
 					failer.FailNow(ctx)
@@ -103,12 +92,12 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 					logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.FailNow(ctx)
 				}
-				if !cleanup.Skip(p.config.Cleanup.SkipDelete, nil, nil) {
+				if !cleanup.Skip(config.Cleanup.SkipDelete, nil, nil) {
 					t.Cleanup(func() {
 						operation := newOperation(
 							OperationInfo{},
 							false,
-							timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
+							timeout.Get(nil, config.Timeouts.CleanupDuration()),
 							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 								bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
 								return opdelete.New(clusterClient, object, nspacer, false, metav1.DeletePropagationBackground), bindings, nil
@@ -125,9 +114,9 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		}
 	}
 	shouldFailFast := &atomic.Bool{}
-	for i := range p.tests {
-		test := p.tests[i]
-		name, err := names.Test(p.config.Discovery.FullName, test)
+	for i := range tests {
+		test := tests[i]
+		name, err := names.Test(config.Discovery.FullName, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
@@ -177,12 +166,12 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 				if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
 					t.SkipNow()
 				}
-				if p.config.Execution.FailFast {
+				if config.Execution.FailFast {
 					if shouldFailFast.Load() {
 						t.SkipNow()
 					}
 				}
-				processor := p.createTestProcessor(test)
+				processor := p.createTestProcessor(tc, test)
 				info := TestInfo{
 					Id:         i + 1,
 					ScenarioId: s + 1,
@@ -198,10 +187,10 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	}
 }
 
-func (p *testsProcessor) createTestProcessor(test discovery.Test) TestProcessor {
+func (p *testsProcessor) createTestProcessor(tc model.TestContext, test discovery.Test) TestProcessor {
 	var report *report.TestReport
 	if p.report != nil {
 		report = p.report.ForTest(&test)
 	}
-	return NewTestProcessor(p.config, p.clusters, p.clock, report, test)
+	return NewTestProcessor(tc.Configuration(), tc.Clusters(), p.clock, report, test)
 }
