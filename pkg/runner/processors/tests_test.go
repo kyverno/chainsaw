@@ -170,14 +170,15 @@ func TestTestsProcessor_Run(t *testing.T) {
 				registry.client = tc.client
 			}
 			processor := NewTestsProcessor(
+				tc.config,
 				tc.clock,
 				tc.summary,
 				tc.testsReport,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
-			tcontext := model.MakeContext(tc.config, binding.NewBindings(), registry)
-			processor.Run(ctx, &tcontext, tc.tests...)
+			tcontext := model.MakeContext(binding.NewBindings(), registry)
+			processor.Run(ctx, tcontext, tc.tests...)
 			nt.Cleanup(func() {
 			})
 			if tc.expectedFail {
