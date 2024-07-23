@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
+	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
@@ -51,10 +52,20 @@ func run(
 	if err := internal.SetupFlags(config); err != nil {
 		return nil, err
 	}
-	tc, err := model.NewContext(ctx, values, cfg, config)
-	if err != nil {
-		return nil, err
+	tc := model.WithValues(ctx, model.EmptyContext(), values)
+	if cfg != nil {
+		cluster, err := clusters.NewClusterFromConfig(cfg)
+		if err != nil {
+			return nil, err
+		}
+		tc = tc.WithCluster(ctx, clusters.DefaultClient, cluster)
+		_tc, err := model.UseCluster(ctx, tc, clusters.DefaultClient)
+		if err != nil {
+			return nil, err
+		}
+		tc = _tc
 	}
+	tc = model.WithClusters(ctx, tc, "", config.Clusters)
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
@@ -62,8 +73,8 @@ func run(
 			t.Parallel()
 			ctx := testing.IntoContext(ctx, t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
-			processor := processors.NewTestsProcessor(clock, &summary, testsReport)
-			processor.Run(ctx, &tc, tests...)
+			processor := processors.NewTestsProcessor(config, clock, &summary, testsReport)
+			processor.Run(ctx, tc, tests...)
 		},
 	}}
 	deps := &internal.TestDeps{}

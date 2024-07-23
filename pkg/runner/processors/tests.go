@@ -29,11 +29,12 @@ import (
 )
 
 type TestsProcessor interface {
-	Run(context.Context, *model.TestContext, ...discovery.Test)
+	Run(context.Context, model.TestContext, ...discovery.Test)
 }
 
-func NewTestsProcessor(clock clock.PassiveClock, summary *summary.Summary, report *report.Report) TestsProcessor {
+func NewTestsProcessor(config model.Configuration, clock clock.PassiveClock, summary *summary.Summary, report *report.Report) TestsProcessor {
 	return &testsProcessor{
+		config:  config,
 		clock:   clock,
 		summary: summary,
 		report:  report,
@@ -41,19 +42,19 @@ func NewTestsProcessor(clock clock.PassiveClock, summary *summary.Summary, repor
 }
 
 type testsProcessor struct {
+	config  model.Configuration
 	clock   clock.PassiveClock
 	summary *summary.Summary
 	report  *report.Report
 }
 
-func (p *testsProcessor) Run(ctx context.Context, tc *model.TestContext, tests ...discovery.Test) {
+func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
 	tc, nspacer := p.setup(ctx, tc)
-	config := tc.Configuration()
 	shouldFailFast := &atomic.Bool{}
 	for i := range tests {
 		test := tests[i]
-		name, err := names.Test(config.Discovery.FullName, test)
+		name, err := names.Test(p.config.Discovery.FullName, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
@@ -110,13 +111,13 @@ func (p *testsProcessor) Run(ctx context.Context, tc *model.TestContext, tests .
 				if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
 					t.SkipNow()
 				}
-				if config.Execution.FailFast {
+				if p.config.Execution.FailFast {
 					if shouldFailFast.Load() {
 						t.SkipNow()
 					}
 				}
 				processor := p.createTestProcessor(test)
-				processor.Run(ctx, nspacer, &tc, test)
+				processor.Run(ctx, nspacer, tc, test)
 			})
 		}
 	}
@@ -139,7 +140,7 @@ func buildNamespace(ctx context.Context, name string, template *v1alpha1.Any, bi
 	return convert.To[corev1.Namespace](merged)
 }
 
-func (p *testsProcessor) setup(ctx context.Context, tc *model.TestContext) (*model.TestContext, namespacer.Namespacer) {
+func (p *testsProcessor) setup(ctx context.Context, tc model.TestContext) (model.TestContext, namespacer.Namespacer) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -147,8 +148,7 @@ func (p *testsProcessor) setup(ctx context.Context, tc *model.TestContext) (*mod
 			p.report.SetEndTime(time.Now())
 		})
 	}
-	config := tc.Configuration()
-	cleaner := cleanup.NewCleaner(config.Timeouts.CleanupDuration(), nil)
+	cleaner := cleanup.NewCleaner(p.config.Timeouts.CleanupDuration(), nil)
 	t.Cleanup(func() {
 		if !cleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
@@ -162,8 +162,8 @@ func (p *testsProcessor) setup(ctx context.Context, tc *model.TestContext) (*mod
 		}
 	})
 	var nspacer namespacer.Namespacer
-	if config.Namespace.Name != "" {
-		namespace, err := buildNamespace(ctx, config.Namespace.Name, config.Namespace.Template, tc.Bindings())
+	if p.config.Namespace.Name != "" {
+		namespace, err := buildNamespace(ctx, p.config.Namespace.Name, p.config.Namespace.Template, tc.Bindings())
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
@@ -181,7 +181,7 @@ func (p *testsProcessor) setup(ctx context.Context, tc *model.TestContext) (*mod
 				failer.FailNow(ctx)
 			} else if err := clusterClient.Create(ctx, namespace.DeepCopy()); err != nil {
 				failer.FailNow(ctx)
-			} else if !config.Cleanup.SkipDelete {
+			} else if !p.config.Cleanup.SkipDelete {
 				cleaner.Add(clusterClient, namespace)
 			}
 		}
@@ -194,5 +194,5 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test) TestProcessor 
 	if p.report != nil {
 		report = p.report.ForTest(&test)
 	}
-	return NewTestProcessor(p.clock, report)
+	return NewTestProcessor(p.config, p.clock, report)
 }
