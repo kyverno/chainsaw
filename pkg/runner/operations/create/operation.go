@@ -24,7 +24,7 @@ type operation struct {
 	client     client.Client
 	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
-	cleaner    cleanup.Cleaner
+	cleaner    cleanup.CleanerCollector
 	template   bool
 	expect     []v1alpha1.Expectation
 	outputs    []v1alpha1.Output
@@ -34,7 +34,7 @@ func New(
 	client client.Client,
 	obj unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
-	cleaner cleanup.Cleaner,
+	cleaner cleanup.CleanerCollector,
 	template bool,
 	expect []v1alpha1.Expectation,
 	outputs []v1alpha1.Output,
@@ -110,7 +110,7 @@ func (o *operation) tryCreateResource(ctx context.Context, bindings binding.Bind
 func (o *operation) createResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
 	err := o.client.Create(ctx, &obj)
 	if err == nil && o.cleaner != nil {
-		o.cleaner(obj, o.client)
+		o.cleaner.Add(o.client, &obj)
 	}
 	return o.handleCheck(ctx, bindings, obj, err)
 }
