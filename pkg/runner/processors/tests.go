@@ -128,7 +128,7 @@ func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	shouldFailFast := &atomic.Bool{}
 	for i := range p.tests {
 		test := p.tests[i]
-		name, err := names.Test(p.config, test)
+		name, err := names.Test(p.config.Discovery.FullName, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
