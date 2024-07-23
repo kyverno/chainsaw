@@ -6,7 +6,6 @@ import (
 	"io"
 	"io/fs"
 	"os"
-	"path"
 
 	jsonpatch "github.com/evanphx/json-patch"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
@@ -77,7 +76,11 @@ func loadConfig(file string) (*v1alpha2.Configuration, error) {
 }
 
 func loadDefaultConfig() (*v1alpha2.Configuration, error) {
-	bytes, err := fs.ReadFile(data.Config(), path.Join("config", "default.yaml"))
+	configFs, err := data.Config()
+	if err != nil {
+		return nil, err
+	}
+	bytes, err := fs.ReadFile(configFs, "default.yaml")
 	if err != nil {
 		return nil, err
 	}

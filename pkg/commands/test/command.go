@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io/fs"
 	"os"
-	"path"
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -96,7 +95,11 @@ func Command() *cobra.Command {
 				configuration = *config
 			} else {
 				fmt.Fprintln(out, "Loading default configuration...")
-				bytes, err := fs.ReadFile(data.Config(), path.Join("config", "default.yaml"))
+				configFs, err := data.Config()
+				if err != nil {
+					return err
+				}
+				bytes, err := fs.ReadFile(configFs, "default.yaml")
 				if err != nil {
 					return err
 				}
