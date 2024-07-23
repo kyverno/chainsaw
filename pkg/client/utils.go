@@ -1,13 +1,17 @@
 package client
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/kyverno/pkg/ext/output/color"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/meta"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/util/wait"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -53,4 +57,17 @@ func PatchObject(actual, expected runtime.Object) (runtime.Object, error) {
 	}
 	expectedMeta.SetResourceVersion(actualMeta.GetResourceVersion())
 	return copy, nil
+}
+
+func WaitForDeletion(ctx context.Context, client Client, object Object) error {
+	key := ObjectKey(object)
+	return wait.PollUntilContextCancel(ctx, 50*time.Millisecond, true, func(ctx context.Context) (bool, error) {
+		if err := client.Get(ctx, key, object); err != nil {
+			if kerrors.IsNotFound(err) {
+				return true, nil
+			}
+			return false, err
+		}
+		return false, nil
+	})
 }
