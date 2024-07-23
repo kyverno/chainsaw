@@ -7,14 +7,12 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	internalloader "github.com/kyverno/chainsaw/pkg/internal/loader"
-	tloader "github.com/kyverno/chainsaw/pkg/internal/loader/testing"
+	tloader "github.com/kyverno/chainsaw/pkg/loaders/testing"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/openapi"
 )
 
 func TestLoad(t *testing.T) {
@@ -247,7 +245,7 @@ func Test_parse(t *testing.T) {
 	}, {
 		name:     "loader factory error",
 		splitter: nil,
-		loaderFactory: func(openapi.Client) (loader.Loader, error) {
+		loaderFactory: func() (loader.Loader, error) {
 			return nil, errors.New("loader factory")
 		},
 		converter: nil,
@@ -255,7 +253,7 @@ func Test_parse(t *testing.T) {
 	}, {
 		name:     "loader error",
 		splitter: nil,
-		loaderFactory: func(openapi.Client) (loader.Loader, error) {
+		loaderFactory: func() (loader.Loader, error) {
 			return &tloader.FakeLoader{
 				LoadFn: func(_ int, _ []byte) (schema.GroupVersionKind, unstructured.Unstructured, error) {
 					return schema.GroupVersionKind{Group: "v1", Kind: "Something"}, unstructured.Unstructured{}, nil
@@ -282,15 +280,5 @@ func Test_parse(t *testing.T) {
 				assert.NoError(t, err)
 			}
 		})
-	}
-}
-
-func Test_parse_globalErr(t *testing.T) {
-	content, err := os.ReadFile("../../../testdata/validation/example-file.yaml")
-	assert.NoError(t, err)
-	internalloader.Err = errors.New("dummy error")
-	{
-		_, err := parse(content, false, nil, nil, nil)
-		assert.Error(t, err)
 	}
 }

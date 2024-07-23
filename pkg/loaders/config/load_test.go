@@ -8,13 +8,12 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
-	tloader "github.com/kyverno/chainsaw/pkg/internal/loader/testing"
+	tloader "github.com/kyverno/chainsaw/pkg/loaders/testing"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/client-go/openapi"
 	"k8s.io/utils/ptr"
 )
 
@@ -158,7 +157,7 @@ func Test_parse(t *testing.T) {
 	}, {
 		name:     "loader factory error",
 		splitter: nil,
-		loaderFactory: func(openapi.Client) (loader.Loader, error) {
+		loaderFactory: func() (loader.Loader, error) {
 			return nil, errors.New("loader factory")
 		},
 		converter: nil,
@@ -166,7 +165,7 @@ func Test_parse(t *testing.T) {
 	}, {
 		name:     "loader error",
 		splitter: nil,
-		loaderFactory: func(openapi.Client) (loader.Loader, error) {
+		loaderFactory: func() (loader.Loader, error) {
 			return &tloader.FakeLoader{
 				LoadFn: func(_ int, _ []byte) (schema.GroupVersionKind, unstructured.Unstructured, error) {
 					return schema.GroupVersionKind{Group: "v1", Kind: "Something"}, unstructured.Unstructured{}, nil
