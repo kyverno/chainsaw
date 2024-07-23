@@ -4,12 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/fs"
 	"os"
 
 	jsonpatch "github.com/evanphx/json-patch"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
-	"github.com/kyverno/chainsaw/pkg/data"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -76,15 +74,7 @@ func loadConfig(file string) (*v1alpha2.Configuration, error) {
 }
 
 func loadDefaultConfig() (*v1alpha2.Configuration, error) {
-	configFs, err := data.Config()
-	if err != nil {
-		return nil, err
-	}
-	bytes, err := fs.ReadFile(configFs, "default.yaml")
-	if err != nil {
-		return nil, err
-	}
-	return config.LoadBytes(bytes)
+	return config.DefaultConfiguration()
 }
 
 func buildConfigPatch(c *v1alpha2.Configuration) (*unstructured.Unstructured, error) {
