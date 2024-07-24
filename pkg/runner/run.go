@@ -103,5 +103,6 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 	}
 	tc = model.WithClusters(ctx, tc, "", config.Clusters)
 	tc = model.WithDefaultTimeouts(ctx, tc, config.Timeouts)
+	tc = tc.WithCleanup(ctx, !config.Cleanup.SkipDelete)
 	return tc, nil
 }

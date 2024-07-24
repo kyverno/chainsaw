@@ -25,6 +25,7 @@ type Timeouts struct {
 type TestContext struct {
 	Summary
 	timeouts Timeouts
+	cleanup  bool
 	bindings binding.Bindings
 	clusters clusters.Registry
 	cluster  string
@@ -33,6 +34,7 @@ type TestContext struct {
 func MakeContext(bindings binding.Bindings, registry clusters.Registry) TestContext {
 	return TestContext{
 		Summary:  &summary{},
+		cleanup:  true,
 		bindings: bindings,
 		clusters: registry,
 		cluster:  clusters.DefaultClient,
@@ -45,6 +47,10 @@ func EmptyContext() TestContext {
 
 func (tc *TestContext) Bindings() binding.Bindings {
 	return tc.bindings
+}
+
+func (tc *TestContext) Cleanup() bool {
+	return tc.cleanup
 }
 
 func (tc *TestContext) Clusters() clusters.Registry {
@@ -61,6 +67,11 @@ func (tc *TestContext) Timeouts() Timeouts {
 
 func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
 	tc.bindings = apibindings.RegisterNamedBinding(ctx, tc.bindings, name, value)
+	return tc
+}
+
+func (tc TestContext) WithCleanup(ctx context.Context, cleanup bool) TestContext {
+	tc.cleanup = cleanup
 	return tc
 }
 
