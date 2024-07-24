@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -25,7 +24,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 		config       model.Configuration
 		client       client.Client
 		clock        clock.PassiveClock
-		summary      *summary.Summary
 		testsReport  *report.Report
 		bindings     binding.Bindings
 		tests        []discovery.Test
@@ -43,7 +41,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		summary:      &summary.Summary{},
 		testsReport:  &report.Report{},
 		bindings:     binding.NewBindings(),
 		tests:        []discovery.Test{},
@@ -67,7 +64,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		summary:      &summary.Summary{},
 		testsReport:  &report.Report{},
 		bindings:     binding.NewBindings(),
 		tests:        []discovery.Test{},
@@ -88,7 +84,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		summary:      &summary.Summary{},
 		testsReport:  &report.Report{},
 		bindings:     binding.NewBindings(),
 		tests:        []discovery.Test{},
@@ -109,7 +104,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		summary:      &summary.Summary{},
 		testsReport:  &report.Report{},
 		bindings:     binding.NewBindings(),
 		tests:        []discovery.Test{},
@@ -127,7 +121,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:       nil,
-		summary:     &summary.Summary{},
 		testsReport: &report.Report{},
 		bindings:    binding.NewBindings(),
 		tests: []discovery.Test{
@@ -151,7 +144,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:       nil,
-		summary:     &summary.Summary{},
 		testsReport: &report.Report{},
 		bindings:    binding.NewBindings(),
 		tests: []discovery.Test{
@@ -172,7 +164,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			processor := NewTestsProcessor(
 				tc.config,
 				tc.clock,
-				tc.summary,
 				tc.testsReport,
 			)
 			nt := testing.MockT{}
