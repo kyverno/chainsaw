@@ -5,8 +5,8 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/engine/functions"
 	"github.com/kyverno/chainsaw/pkg/mutate"
-	"github.com/kyverno/chainsaw/pkg/runner/functions"
 	mapsutils "github.com/kyverno/chainsaw/pkg/utils/maps"
 	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
