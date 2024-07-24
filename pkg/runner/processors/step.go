@@ -78,7 +78,7 @@ type stepProcessor struct {
 	test       discovery.Test
 	step       v1alpha1.TestStep
 	report     *report.StepReport
-	timeouts   v1alpha1.Timeouts
+	timeouts   v1alpha1.DefaultTimeouts
 }
 
 func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
@@ -109,7 +109,7 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	if p.test.Test.Spec.DelayBeforeCleanup != nil {
 		delay = p.test.Test.Spec.DelayBeforeCleanup
 	}
-	cleaner := cleanup.NewCleaner(p.timeouts.CleanupDuration(), delay)
+	cleaner := cleanup.NewCleaner(p.timeouts.Cleanup.Duration, delay)
 	try, err := p.tryOperations(registeredClusters, cleaner)
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -397,7 +397,7 @@ func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Regis
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
+			timeout.Get(op.Timeout, p.timeouts.Apply.Duration),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(dryRun)
 				if err != nil {
@@ -433,7 +433,7 @@ func (p *stepProcessor) assertOperation(id int, registeredClusters clusters.Regi
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.AssertDuration()),
+			timeout.Get(op.Timeout, p.timeouts.Assert.Duration),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(false)
 				if err != nil {
@@ -465,7 +465,7 @@ func (p *stepProcessor) commandOperation(id int, registeredClusters clusters.Reg
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -504,7 +504,7 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
+			timeout.Get(op.Timeout, p.timeouts.Apply.Duration),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(dryRun)
 				if err != nil {
@@ -564,7 +564,7 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.DeleteDuration()),
+			timeout.Get(op.Timeout, p.timeouts.Delete.Duration),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(false)
 				if err != nil {
@@ -596,7 +596,7 @@ func (p *stepProcessor) describeOperation(id int, registeredClusters clusters.Re
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -634,7 +634,7 @@ func (p *stepProcessor) errorOperation(id int, registeredClusters clusters.Regis
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.ErrorDuration()),
+			timeout.Get(op.Timeout, p.timeouts.Error.Duration),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(false)
 				if err != nil {
@@ -666,7 +666,7 @@ func (p *stepProcessor) getOperation(id int, registeredClusters clusters.Registr
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -699,7 +699,7 @@ func (p *stepProcessor) logsOperation(id int, registeredClusters clusters.Regist
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -741,7 +741,7 @@ func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Regis
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
+			timeout.Get(op.Timeout, p.timeouts.Apply.Duration),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(dryRun)
 				if err != nil {
@@ -773,7 +773,7 @@ func (p *stepProcessor) proxyOperation(id int, registeredClusters clusters.Regis
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -806,7 +806,7 @@ func (p *stepProcessor) scriptOperation(id int, registeredClusters clusters.Regi
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.ExecDuration()),
+		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -864,7 +864,7 @@ func (p *stepProcessor) updateOperation(id int, registeredClusters clusters.Regi
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.ApplyDuration()),
+			timeout.Get(op.Timeout, p.timeouts.Apply.Duration),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(dryRun)
 				if err != nil {
@@ -890,7 +890,7 @@ func (p *stepProcessor) waitOperation(id int, registeredClusters clusters.Regist
 		ns = p.namespacer.GetNamespace()
 	}
 	// make sure timeout is set to populate the command flag
-	op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.ExecDuration())}
+	op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.Exec.Duration)}
 	// shift operation timeout
 	timeout := op.Timeout.Duration + 30*time.Second
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)

@@ -416,7 +416,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |
+| `timeouts` | [`DefaultTimeouts`](#chainsaw-kyverno-io-v1alpha1-DefaultTimeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running the tests (implies SkipClusterDelete).</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
@@ -456,6 +456,24 @@ If a resource already exists in the cluster it will fail.</p>
 | `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionResourceRef` | [`ActionResourceRef`](#chainsaw-kyverno-io-v1alpha1-ActionResourceRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+
+## DefaultTimeouts     {#chainsaw-kyverno-io-v1alpha1-DefaultTimeouts}
+
+**Appears in:**
+    
+- [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
+
+<p>DefaultTimeouts contains defautl timeouts per operation.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `apply` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Apply defines the timeout for the apply operation</p> |
+| `assert` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Assert defines the timeout for the assert operation</p> |
+| `cleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Cleanup defines the timeout for the cleanup operation</p> |
+| `delete` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Delete defines the timeout for the delete operation</p> |
+| `error` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Error defines the timeout for the error operation</p> |
+| `exec` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>Exec defines the timeout for exec operations</p> |
 
 ## Delete     {#chainsaw-kyverno-io-v1alpha1-Delete}
 
@@ -894,7 +912,6 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 **Appears in:**
     
-- [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
 

@@ -105,22 +105,22 @@ func Command() *cobra.Command {
 				configuration.Spec.Discovery.TestFile = options.testFile
 			}
 			if flagutils.IsSet(flags, "apply-timeout") {
-				configuration.Spec.Timeouts.Apply = &options.applyTimeout
+				configuration.Spec.Timeouts.Apply = options.applyTimeout
 			}
 			if flagutils.IsSet(flags, "assert-timeout") {
-				configuration.Spec.Timeouts.Assert = &options.assertTimeout
+				configuration.Spec.Timeouts.Assert = options.assertTimeout
 			}
 			if flagutils.IsSet(flags, "error-timeout") {
-				configuration.Spec.Timeouts.Error = &options.errorTimeout
+				configuration.Spec.Timeouts.Error = options.errorTimeout
 			}
 			if flagutils.IsSet(flags, "delete-timeout") {
-				configuration.Spec.Timeouts.Delete = &options.deleteTimeout
+				configuration.Spec.Timeouts.Delete = options.deleteTimeout
 			}
 			if flagutils.IsSet(flags, "cleanup-timeout") {
-				configuration.Spec.Timeouts.Cleanup = &options.cleanupTimeout
+				configuration.Spec.Timeouts.Cleanup = options.cleanupTimeout
 			}
 			if flagutils.IsSet(flags, "exec-timeout") {
-				configuration.Spec.Timeouts.Exec = &options.execTimeout
+				configuration.Spec.Timeouts.Exec = options.execTimeout
 			}
 			if flagutils.IsSet(flags, "skip-delete") {
 				configuration.Spec.Cleanup.SkipDelete = options.skipDelete
@@ -226,12 +226,12 @@ func Command() *cobra.Command {
 			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.Discovery.FullName)
 			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.Discovery.IncludeTestRegex)
 			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.Discovery.ExcludeTestRegex)
-			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.ApplyDuration())
-			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.AssertDuration())
-			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.CleanupDuration())
-			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.DeleteDuration())
-			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.ErrorDuration())
-			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.ExecDuration())
+			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.Apply.Duration)
+			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.Assert.Duration)
+			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.Cleanup.Duration)
+			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.Delete.Duration)
+			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.Error.Duration)
+			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.Exec.Duration)
 			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.Deletion.Propagation)
 			if configuration.Spec.Execution.Parallel != nil && *configuration.Spec.Execution.Parallel > 0 {
 				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Execution.Parallel)
@@ -321,17 +321,21 @@ func Command() *cobra.Command {
 			return err
 		},
 	}
+	config, err := config.DefaultConfiguration()
+	if err != nil {
+		panic(err)
+	}
 	// config
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file")
 	cmd.Flags().StringSliceVar(&options.testDirs, "test-dir", nil, "Directories containing test cases to run")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	// timeouts options
-	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", v1alpha1.DefaultApplyTimeout, "The apply timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", v1alpha1.DefaultAssertTimeout, "The assert timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", v1alpha1.DefaultErrorTimeout, "The error timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", v1alpha1.DefaultDeleteTimeout, "The delete timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", v1alpha1.DefaultCleanupTimeout, "The cleanup timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", v1alpha1.DefaultExecTimeout, "The exec timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", config.Spec.Timeouts.Apply.Duration, "The apply timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", config.Spec.Timeouts.Assert.Duration, "The assert timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", config.Spec.Timeouts.Cleanup.Duration, "The cleanup timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", config.Spec.Timeouts.Delete.Duration, "The delete timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", config.Spec.Timeouts.Error.Duration, "The error timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", config.Spec.Timeouts.Exec.Duration, "The exec timeout to use as default for configuration")
 	// discovery options
 	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test", "Name of the test file")
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name")

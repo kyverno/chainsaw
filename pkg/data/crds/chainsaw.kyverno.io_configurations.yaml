@@ -855,25 +855,32 @@ spec:
                   If no extension is provided, chainsaw will try with .yaml first and .yml if needed.
                 type: string
               timeouts:
+                default: {}
                 description: Global timeouts configuration. Applies to all tests/test
                   steps if not overridden.
                 properties:
                   apply:
+                    default: 5s
                     description: Apply defines the timeout for the apply operation
                     type: string
                   assert:
+                    default: 30s
                     description: Assert defines the timeout for the assert operation
                     type: string
                   cleanup:
+                    default: 30s
                     description: Cleanup defines the timeout for the cleanup operation
                     type: string
                   delete:
+                    default: 15s
                     description: Delete defines the timeout for the delete operation
                     type: string
                   error:
+                    default: 30s
                     description: Error defines the timeout for the error operation
                     type: string
                   exec:
+                    default: 5s
                     description: Exec defines the timeout for exec operations
                     type: string
                 type: object
@@ -1773,21 +1780,27 @@ spec:
                   steps if not overridden.
                 properties:
                   apply:
+                    default: 5s
                     description: Apply defines the timeout for the apply operation
                     type: string
                   assert:
+                    default: 30s
                     description: Assert defines the timeout for the assert operation
                     type: string
                   cleanup:
+                    default: 30s
                     description: Cleanup defines the timeout for the cleanup operation
                     type: string
                   delete:
+                    default: 15s
                     description: Delete defines the timeout for the delete operation
                     type: string
                   error:
+                    default: 30s
                     description: Error defines the timeout for the error operation
                     type: string
                   exec:
+                    default: 5s
                     description: Exec defines the timeout for exec operations
                     type: string
                 type: object

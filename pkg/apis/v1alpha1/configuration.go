@@ -25,7 +25,8 @@ type Configuration struct {
 type ConfigurationSpec struct {
 	// Global timeouts configuration. Applies to all tests/test steps if not overridden.
 	// +optional
-	Timeouts Timeouts `json:"timeouts"`
+	// +kubebuilder:default:={}
+	Timeouts DefaultTimeouts `json:"timeouts"`
 
 	// If set, do not delete the resources after running the tests (implies SkipClusterDelete).
 	// +optional
