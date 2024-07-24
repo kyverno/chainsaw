@@ -6,11 +6,11 @@ import (
 	"io"
 	"time"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	ctrlClient "github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/client/logged"
 	"github.com/kyverno/chainsaw/pkg/client/simple"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
+	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	nspacer "github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opassert "github.com/kyverno/chainsaw/pkg/runner/operations/assert"
@@ -47,9 +47,13 @@ func Command() *cobra.Command {
 			return runE(opts, cmd, nil, nil)
 		},
 	}
+	config, err := config.DefaultConfiguration()
+	if err != nil {
+		panic(err)
+	}
 	cmd.Flags().StringVarP(&opts.assertPath, "file", "f", "", "Path to the file to assert or '-' to read from stdin")
 	cmd.Flags().StringVarP(&opts.resourcePath, "resource", "r", "", "Path to the file containing the resource")
-	cmd.Flags().DurationVar(&opts.timeout.Duration, "timeout", v1alpha1.DefaultAssertTimeout, "The assert timeout to use")
+	cmd.Flags().DurationVar(&opts.timeout.Duration, "timeout", config.Spec.Timeouts.Assert.Duration, "The assert timeout to use")
 	cmd.Flags().StringVar(&opts.namespace, "namespace", "default", "Namespace to use")
 	cmd.Flags().BoolVar(&opts.noColor, "no-color", false, "Removes output colors")
 	cmd.Flags().BoolVar(&opts.noColor, "clustered", false, "Defines if the resource is clustered (only applies when resource is loaded from a file)")

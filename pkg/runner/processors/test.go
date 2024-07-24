@@ -66,7 +66,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		}
 	}
 	timeouts := p.config.Timeouts.Combine(test.Test.Spec.Timeouts)
-	cleaner := cleanup.NewCleaner(timeouts.CleanupDuration(), nil)
+	cleaner := cleanup.NewCleaner(timeouts.Cleanup.Duration, nil)
 	setupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	setupCtx := logging.IntoContext(ctx, setupLogger)

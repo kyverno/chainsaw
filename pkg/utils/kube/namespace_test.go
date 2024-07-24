@@ -10,14 +10,7 @@ import (
 func TestNamespace(t *testing.T) {
 	expectedName := "testNamespace"
 	ns := Namespace(expectedName)
-
 	assert.Equal(t, corev1.SchemeGroupVersion.String(), ns.APIVersion)
 	assert.Equal(t, "Namespace", ns.Kind)
 	assert.Equal(t, expectedName, ns.Name)
-}
-
-func TestPetNamespace(t *testing.T) {
-	ns := PetNamespace()
-
-	assert.NotEmpty(t, ns.Name)
 }
