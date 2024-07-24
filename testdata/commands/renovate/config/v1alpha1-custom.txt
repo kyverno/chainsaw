@@ -19,7 +19,6 @@ spec:
     format: JSON
     name: custom-report
   timeouts:
-    apply: 5s
     assert: 10s
     cleanup: 5s
     delete: 5s
