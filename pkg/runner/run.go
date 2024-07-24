@@ -87,7 +87,8 @@ func run(
 }
 
 func setupTestContext(ctx context.Context, values any, cluster *rest.Config, config model.Configuration) (model.TestContext, error) {
-	tc := model.WithValues(ctx, model.EmptyContext(), values)
+	tc := model.EmptyContext()
+	tc = model.WithValues(ctx, tc, values)
 	if cluster != nil {
 		cluster, err := clusters.NewClusterFromConfig(cluster)
 		if err != nil {
@@ -101,5 +102,6 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 		tc = _tc
 	}
 	tc = model.WithClusters(ctx, tc, "", config.Clusters)
+	tc = model.WithDefaultTimeouts(ctx, tc, config.Timeouts)
 	return tc, nil
 }
