@@ -8,8 +8,8 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"k8s.io/client-go/rest"
 )
 
@@ -24,25 +24,25 @@ type Timeouts struct {
 
 type TestContext struct {
 	Summary
-	timeouts Timeouts
-	cleanup  bool
 	bindings binding.Bindings
+	cleanup  bool
+	cluster  clusters.Cluster
 	clusters clusters.Registry
-	cluster  string
+	timeouts Timeouts
 }
 
 func MakeContext(bindings binding.Bindings, registry clusters.Registry) TestContext {
 	return TestContext{
 		Summary:  &summary{},
-		cleanup:  true,
 		bindings: bindings,
+		cleanup:  true,
 		clusters: registry,
-		cluster:  clusters.DefaultClient,
+		cluster:  nil,
 	}
 }
 
 func EmptyContext() TestContext {
-	return MakeContext(binding.NewBindings(), clusters.NewRegistry())
+	return MakeContext(binding.NewBindings(), clusters.NewRegistry(nil))
 }
 
 func (tc *TestContext) Bindings() binding.Bindings {
@@ -53,12 +53,20 @@ func (tc *TestContext) Cleanup() bool {
 	return tc.cleanup
 }
 
+func (tc *TestContext) Cluster(name string) clusters.Cluster {
+	return tc.clusters.Lookup(name)
+}
+
 func (tc *TestContext) Clusters() clusters.Registry {
 	return tc.clusters
 }
 
-func (tc *TestContext) Cluster() (*rest.Config, client.Client, error) {
-	return tc.clusters.Resolve(false, tc.cluster)
+func (tc *TestContext) CurrentCluster() clusters.Cluster {
+	return tc.cluster
+}
+
+func (tc *TestContext) CurrentClusterClient() (*rest.Config, client.Client, error) {
+	return tc.clusters.Build(tc.cluster)
 }
 
 func (tc *TestContext) Timeouts() Timeouts {
@@ -77,6 +85,11 @@ func (tc TestContext) WithCleanup(ctx context.Context, cleanup bool) TestContext
 
 func (tc TestContext) WithCluster(ctx context.Context, name string, cluster clusters.Cluster) TestContext {
 	tc.clusters = tc.clusters.Register(name, cluster)
+	return tc
+}
+
+func (tc TestContext) WithCurrentCluster(ctx context.Context, name string) TestContext {
+	tc.cluster = tc.Cluster(name)
 	return tc
 }
 
@@ -101,6 +114,17 @@ func WithClusters(ctx context.Context, tc TestContext, basePath string, c map[st
 		tc = tc.WithCluster(ctx, name, cluster)
 	}
 	return tc
+}
+
+func WithCurrentCluster(ctx context.Context, tc TestContext, name string) (*rest.Config, client.Client, TestContext, error) {
+	tc = tc.WithCurrentCluster(ctx, name)
+	config, client, err := tc.CurrentClusterClient()
+	if err != nil {
+		return nil, nil, tc, err
+	}
+	tc = tc.WithBinding(ctx, "client", client)
+	tc = tc.WithBinding(ctx, "config", config)
+	return config, client, tc, nil
 }
 
 func WithDefaultTimeouts(ctx context.Context, tc TestContext, timeouts v1alpha1.DefaultTimeouts) TestContext {
@@ -139,14 +163,4 @@ func WithTimeouts(ctx context.Context, tc TestContext, timeouts v1alpha1.Timeout
 
 func WithValues(ctx context.Context, tc TestContext, values any) TestContext {
 	return tc.WithBinding(ctx, "values", values)
-}
-
-func UseCluster(ctx context.Context, tc TestContext, name string) (TestContext, error) {
-	clusterConfig, clusterClient, err := tc.clusters.Resolve(false)
-	if err != nil {
-		return tc, err
-	}
-	tc = tc.WithBinding(ctx, "client", clusterClient)
-	tc = tc.WithBinding(ctx, "config", clusterConfig)
-	return tc, nil
 }
