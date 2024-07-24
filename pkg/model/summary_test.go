@@ -7,9 +7,9 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestSummay(t *testing.T) {
+func Test_summay(t *testing.T) {
 	var wg sync.WaitGroup
-	var s Summary
+	var s summary
 	const count int32 = 10000
 	for i := 0; i < int(count); i++ {
 		wg.Add(3)
