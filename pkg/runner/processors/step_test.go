@@ -1023,6 +1023,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			ctx := testing.IntoContext(context.Background(), nt)
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
 			tcontext := model.MakeContext(binding.NewBindings(), registry)
+			tcontext = model.WithDefaultTimeouts(ctx, tcontext, config.Spec.Timeouts)
 			stepProcessor.Run(ctx, tcontext)
 			nt.Cleanup(func() {})
 			if tc.expectedFail {

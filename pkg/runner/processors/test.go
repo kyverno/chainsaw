@@ -126,12 +126,12 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	if p.report != nil && nspacer != nil {
 		p.report.SetNamespace(nspacer.GetNamespace())
 	}
-	// TODO
-	// bindings, err := apibindings.RegisterBindings(ctx, tc.Bindings(), test.Test.Spec.Bindings...)
+	_tc, err := model.WithBindings(ctx, tc, test.Test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
+	tc = _tc
 	for i, step := range test.Test.Spec.Steps {
 		processor := p.createStepProcessor(nspacer, tc, test, step)
 		name := step.Name

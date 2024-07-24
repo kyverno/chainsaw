@@ -74,6 +74,15 @@ func (tc TestContext) WithTimeouts(ctx context.Context, timeouts Timeouts) TestC
 	return tc
 }
 
+func WithBindings(ctx context.Context, tc TestContext, variables ...v1alpha1.Binding) (TestContext, error) {
+	bindings, err := apibindings.RegisterBindings(ctx, tc.Bindings(), variables...)
+	if err != nil {
+		return tc, err
+	}
+	tc.bindings = bindings
+	return tc, nil
+}
+
 func WithClusters(ctx context.Context, tc TestContext, basePath string, c map[string]v1alpha1.Cluster) TestContext {
 	for name, cluster := range c {
 		kubeconfig := filepath.Join(basePath, cluster.Kubeconfig)
