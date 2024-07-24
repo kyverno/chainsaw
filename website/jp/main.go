@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	jpfunctions "github.com/jmespath-community/go-jmespath/pkg/functions"
-	chainsawfunctions "github.com/kyverno/chainsaw/pkg/runner/functions"
+	chainsawfunctions "github.com/kyverno/chainsaw/pkg/engine/functions"
 	"github.com/kyverno/kyverno-json/pkg/engine/template/functions"
 	kyvernofunctions "github.com/kyverno/kyverno-json/pkg/engine/template/kyverno"
 )
