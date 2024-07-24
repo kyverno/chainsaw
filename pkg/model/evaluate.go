@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/engine/functions"
 	"github.com/kyverno/chainsaw/pkg/mutate"
-	"github.com/kyverno/chainsaw/pkg/runner/functions"
 	"github.com/kyverno/kyverno-json/pkg/engine/template"
 )
 
