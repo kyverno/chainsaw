@@ -16,19 +16,19 @@ type dryRunClient struct {
 	inner Client
 }
 
-func (c *dryRunClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+func (c *dryRunClient) Create(ctx context.Context, obj client.Object, opts ...client.CreateOption) error {
 	return c.inner.Create(ctx, obj, append(opts, ctrlclient.DryRunAll)...)
 }
 
-func (c *dryRunClient) Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
+func (c *dryRunClient) Update(ctx context.Context, obj client.Object, opts ...client.UpdateOption) error {
 	return c.inner.Update(ctx, obj, append(opts, ctrlclient.DryRunAll)...)
 }
 
-func (c *dryRunClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+func (c *dryRunClient) Delete(ctx context.Context, obj client.Object, opts ...client.DeleteOption) error {
 	return c.inner.Delete(ctx, obj, append(opts, ctrlclient.DryRunAll)...)
 }
 
-func (c *dryRunClient) Get(ctx context.Context, key types.NamespacedName, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+func (c *dryRunClient) Get(ctx context.Context, key types.NamespacedName, obj client.Object, opts ...client.GetOption) error {
 	return c.inner.Get(ctx, key, obj, opts...)
 }
 
@@ -36,11 +36,11 @@ func (c *dryRunClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
 	return c.inner.IsObjectNamespaced(obj)
 }
 
-func (c *dryRunClient) List(ctx context.Context, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+func (c *dryRunClient) List(ctx context.Context, list client.ObjectList, opts ...client.ListOption) error {
 	return c.inner.List(ctx, list, opts...)
 }
 
-func (c *dryRunClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
+func (c *dryRunClient) Patch(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
 	return c.inner.Patch(ctx, obj, patch, append(opts, ctrlclient.DryRunAll)...)
 }
 

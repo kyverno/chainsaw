@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
+	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	ttesting "github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

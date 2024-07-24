@@ -2,8 +2,8 @@ package clusters
 
 import (
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/client/logged"
 	"github.com/kyverno/chainsaw/pkg/client/simple"
+	engineclient "github.com/kyverno/chainsaw/pkg/engine/client"
 	"k8s.io/client-go/rest"
 )
 
@@ -29,7 +29,7 @@ func defaultClientFactory(cluster Cluster) (*rest.Config, client.Client, error) 
 	if err != nil {
 		return nil, nil, err
 	}
-	client = logged.New(client)
+	client = engineclient.New(client)
 	return config, client, nil
 }
 
