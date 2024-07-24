@@ -1,4 +1,4 @@
-package logged
+package client
 
 import (
 	"context"
@@ -7,8 +7,8 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
+	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

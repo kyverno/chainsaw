@@ -6,10 +6,10 @@ import (
 	"io"
 	"time"
 
-	ctrlClient "github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/client/logged"
+	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/client/simple"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
+	engineclient "github.com/kyverno/chainsaw/pkg/engine/client"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	nspacer "github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -70,7 +70,7 @@ func preRunE(opts *options, _ *cobra.Command, args []string) error {
 	return nil
 }
 
-func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer nspacer.Namespacer) error {
+func runE(opts options, cmd *cobra.Command, client client.Client, namespacer nspacer.Namespacer) error {
 	color.Init(opts.noColor, true)
 	out := cmd.OutOrStdout()
 	var assertions []unstructured.Unstructured
@@ -122,7 +122,7 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 		if err != nil {
 			return err
 		}
-		client = logged.New(newClient)
+		client = engineclient.New(newClient)
 	}
 	if namespacer == nil {
 		namespacer = nspacer.New(client, opts.namespace)
@@ -136,7 +136,7 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 	return nil
 }
 
-func assert(opts options, client ctrlClient.Client, resource unstructured.Unstructured, namespacer nspacer.Namespacer) error {
+func assert(opts options, client client.Client, resource unstructured.Unstructured, namespacer nspacer.Namespacer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), opts.timeout.Duration)
 	defer cancel()
 	op := opassert.New(client, resource, namespacer, false)

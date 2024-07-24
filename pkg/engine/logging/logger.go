@@ -1,7 +1,7 @@
 package logging
 
 import (
-	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
+	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 )
 
 type (
