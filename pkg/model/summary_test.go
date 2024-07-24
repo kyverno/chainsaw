@@ -1,4 +1,4 @@
-package summary
+package model
 
 import (
 	"sync"

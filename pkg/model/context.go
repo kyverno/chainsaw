@@ -13,6 +13,7 @@ import (
 )
 
 type TestContext struct {
+	Summary
 	bindings binding.Bindings
 	clusters clusters.Registry
 	cluster  string
@@ -20,6 +21,7 @@ type TestContext struct {
 
 func MakeContext(bindings binding.Bindings, registry clusters.Registry) TestContext {
 	return TestContext{
+		Summary:  &summary{},
 		bindings: bindings,
 		clusters: registry,
 		cluster:  clusters.DefaultClient,

@@ -18,7 +18,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/chainsaw/pkg/utils/kube"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -32,20 +31,18 @@ type TestsProcessor interface {
 	Run(context.Context, model.TestContext, ...discovery.Test)
 }
 
-func NewTestsProcessor(config model.Configuration, clock clock.PassiveClock, summary *summary.Summary, report *report.Report) TestsProcessor {
+func NewTestsProcessor(config model.Configuration, clock clock.PassiveClock, report *report.Report) TestsProcessor {
 	return &testsProcessor{
-		config:  config,
-		clock:   clock,
-		summary: summary,
-		report:  report,
+		config: config,
+		clock:  clock,
+		report: report,
 	}
 }
 
 type testsProcessor struct {
-	config  model.Configuration
-	clock   clock.PassiveClock
-	summary *summary.Summary
-	report  *report.Report
+	config model.Configuration
+	clock  clock.PassiveClock
+	report *report.Report
 }
 
 func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ...discovery.Test) {
@@ -92,19 +89,17 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 						shouldFailFast.Store(true)
 					}
 				})
-				if p.summary != nil {
-					t.Cleanup(func() {
-						if t.Skipped() {
-							p.summary.IncSkipped()
+				t.Cleanup(func() {
+					if t.Skipped() {
+						tc.IncSkipped()
+					} else {
+						if t.Failed() {
+							tc.IncFailed()
 						} else {
-							if t.Failed() {
-								p.summary.IncFailed()
-							} else {
-								p.summary.IncPassed()
-							}
+							tc.IncPassed()
 						}
-					})
-				}
+					}
+				})
 				if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
 					t.Parallel()
 				}
