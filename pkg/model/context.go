@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"path/filepath"
+	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -12,8 +13,18 @@ import (
 	"k8s.io/client-go/rest"
 )
 
+type Timeouts struct {
+	Apply   time.Duration
+	Assert  time.Duration
+	Cleanup time.Duration
+	Delete  time.Duration
+	Error   time.Duration
+	Exec    time.Duration
+}
+
 type TestContext struct {
 	Summary
+	timeouts Timeouts
 	bindings binding.Bindings
 	clusters clusters.Registry
 	cluster  string
@@ -44,9 +55,8 @@ func (tc *TestContext) Cluster() (*rest.Config, client.Client, error) {
 	return tc.clusters.Resolve(false, tc.cluster)
 }
 
-func (tc TestContext) WithCluster(ctx context.Context, name string, cluster clusters.Cluster) TestContext {
-	tc.clusters = tc.clusters.Register(name, cluster)
-	return tc
+func (tc *TestContext) Timeouts() Timeouts {
+	return tc.timeouts
 }
 
 func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
@@ -54,8 +64,23 @@ func (tc TestContext) WithBinding(ctx context.Context, name string, value any) T
 	return tc
 }
 
-func WithValues(ctx context.Context, tc TestContext, values any) TestContext {
-	return tc.WithBinding(ctx, "values", values)
+func (tc TestContext) WithCluster(ctx context.Context, name string, cluster clusters.Cluster) TestContext {
+	tc.clusters = tc.clusters.Register(name, cluster)
+	return tc
+}
+
+func (tc TestContext) WithTimeouts(ctx context.Context, timeouts Timeouts) TestContext {
+	tc.timeouts = timeouts
+	return tc
+}
+
+func WithBindings(ctx context.Context, tc TestContext, variables ...v1alpha1.Binding) (TestContext, error) {
+	bindings, err := apibindings.RegisterBindings(ctx, tc.Bindings(), variables...)
+	if err != nil {
+		return tc, err
+	}
+	tc.bindings = bindings
+	return tc, nil
 }
 
 func WithClusters(ctx context.Context, tc TestContext, basePath string, c map[string]v1alpha1.Cluster) TestContext {
@@ -65,6 +90,44 @@ func WithClusters(ctx context.Context, tc TestContext, basePath string, c map[st
 		tc = tc.WithCluster(ctx, name, cluster)
 	}
 	return tc
+}
+
+func WithDefaultTimeouts(ctx context.Context, tc TestContext, timeouts v1alpha1.DefaultTimeouts) TestContext {
+	return tc.WithTimeouts(ctx, Timeouts{
+		Apply:   timeouts.Apply.Duration,
+		Assert:  timeouts.Assert.Duration,
+		Cleanup: timeouts.Cleanup.Duration,
+		Delete:  timeouts.Delete.Duration,
+		Error:   timeouts.Error.Duration,
+		Exec:    timeouts.Exec.Duration,
+	})
+}
+
+func WithTimeouts(ctx context.Context, tc TestContext, timeouts v1alpha1.Timeouts) TestContext {
+	old := tc.timeouts
+	if new := timeouts.Apply; new != nil {
+		old.Apply = new.Duration
+	}
+	if new := timeouts.Assert; new != nil {
+		old.Assert = new.Duration
+	}
+	if new := timeouts.Cleanup; new != nil {
+		old.Cleanup = new.Duration
+	}
+	if new := timeouts.Delete; new != nil {
+		old.Delete = new.Duration
+	}
+	if new := timeouts.Error; new != nil {
+		old.Error = new.Duration
+	}
+	if new := timeouts.Exec; new != nil {
+		old.Exec = new.Duration
+	}
+	return tc.WithTimeouts(ctx, old)
+}
+
+func WithValues(ctx context.Context, tc TestContext, values any) TestContext {
+	return tc.WithBinding(ctx, "values", values)
 }
 
 func UseCluster(ctx context.Context, tc TestContext, name string) (TestContext, error) {

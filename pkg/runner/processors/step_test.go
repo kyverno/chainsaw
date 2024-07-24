@@ -5,6 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -1012,7 +1013,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			}
 			stepProcessor := NewStepProcessor(
 				tc.config,
-				registry,
 				tc.namespacer,
 				tc.clock,
 				tc.test,
@@ -1022,7 +1022,9 @@ func TestStepProcessor_Run(t *testing.T) {
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
-			stepProcessor.Run(ctx, nil)
+			tcontext := model.MakeContext(binding.NewBindings(), registry)
+			tcontext = model.WithDefaultTimeouts(ctx, tcontext, config.Spec.Timeouts)
+			stepProcessor.Run(ctx, tcontext)
 			nt.Cleanup(func() {})
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
