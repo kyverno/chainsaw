@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
@@ -95,7 +95,7 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 			return tc, err
 		}
 		tc = tc.WithCluster(ctx, clusters.DefaultClient, cluster)
-		_tc, err := model.UseCluster(ctx, tc, clusters.DefaultClient)
+		_, _, _tc, err := model.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
 		if err != nil {
 			return tc, err
 		}
