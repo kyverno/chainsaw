@@ -390,7 +390,7 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		**out = **in
 	}
 	out.Templating = in.Templating
-	in.Timeouts.DeepCopyInto(&out.Timeouts)
+	out.Timeouts = in.Timeouts
 	return
 }
 

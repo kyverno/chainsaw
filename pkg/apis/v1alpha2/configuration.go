@@ -71,5 +71,5 @@ type ConfigurationSpec struct {
 	// Global timeouts configuration. Applies to all tests/test steps if not overridden.
 	// +optional
 	// +kubebuilder:default:={}
-	Timeouts Timeouts `json:"timeouts"`
+	Timeouts DefaultTimeouts `json:"timeouts"`
 }

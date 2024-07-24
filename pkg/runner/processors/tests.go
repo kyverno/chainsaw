@@ -148,7 +148,7 @@ func (p *testsProcessor) setup(ctx context.Context, tc model.TestContext) (model
 			p.report.SetEndTime(time.Now())
 		})
 	}
-	cleaner := cleanup.NewCleaner(p.config.Timeouts.CleanupDuration(), nil)
+	cleaner := cleanup.NewCleaner(p.config.Timeouts.Cleanup.Duration, nil)
 	t.Cleanup(func() {
 		if !cleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)

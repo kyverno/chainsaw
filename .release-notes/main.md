@@ -21,3 +21,4 @@ Release notes for `TODO`.
 ## 💫 New features 💫
 
 - Added `chainsaw renovate config` to upgrade configuration manifests to `v1alpha2`
+- Made default timeouts part of the schemas
