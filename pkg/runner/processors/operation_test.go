@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	mock "github.com/kyverno/chainsaw/pkg/runner/operations/testing"
@@ -60,14 +61,15 @@ func TestOperation_Execute(t *testing.T) {
 				OperationInfo{},
 				localTC.continueOnError,
 				&localTC.timeout,
-				func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-					return localTC.operation, bindings, nil
+				func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+					return localTC.operation, tc, nil
 				},
 				localTC.operationReport,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
-			op.execute(ctx, nil)
+			tcontext := model.EmptyContext()
+			op.execute(ctx, tcontext)
 			if localTC.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {

@@ -11,8 +11,6 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 🔧 Fixes 🔧
-
 ## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
@@ -22,3 +20,7 @@ Release notes for `TODO`.
 
 - Added `chainsaw renovate config` to upgrade configuration manifests to `v1alpha2`
 - Made default timeouts part of the schemas
+
+## 🔧 Fixes 🔧
+
+- Fixed incorrect bindings when operations are run against different clusters
