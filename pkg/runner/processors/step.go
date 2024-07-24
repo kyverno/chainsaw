@@ -7,7 +7,6 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client/dryrun"
@@ -17,7 +16,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -105,22 +103,22 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 		delay = p.test.Test.Spec.DelayBeforeCleanup
 	}
 	cleaner := cleaner.New(timeouts.Cleanup, delay)
-	try, err := p.tryOperations(tc, getCleanerOrNil(cleaner, tc.Cleanup()))
+	try, err := p.tryOperations(timeouts, getCleanerOrNil(cleaner, tc.Cleanup()))
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	catch, err := p.catchOperations(tc)
+	catch, err := p.catchOperations(timeouts)
 	if err != nil {
 		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	finally, err := p.finallyOperations(tc, p.step.Finally...)
+	finally, err := p.finallyOperations(timeouts, p.step.Finally...)
 	if err != nil {
 		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	cleanup, err := p.finallyOperations(tc, p.step.Cleanup...)
+	cleanup, err := p.finallyOperations(timeouts, p.step.Cleanup...)
 	if err != nil {
 		logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -136,7 +134,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 				failer.Fail(ctx)
 			}
 			for _, operation := range cleanup {
-				operation.execute(ctx, tc.Bindings())
+				operation.execute(ctx, tc)
 			}
 		}
 	})
@@ -147,7 +145,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 				logger.Log(logging.Finally, logging.DoneStatus, color.BoldFgCyan)
 			}()
 			for _, operation := range finally {
-				operation.execute(ctx, tc.Bindings())
+				operation.execute(ctx, tc)
 			}
 		}()
 	}
@@ -159,7 +157,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 					logger.Log(logging.Catch, logging.DoneStatus, color.BoldFgCyan)
 				}()
 				for _, operation := range catch {
-					operation.execute(ctx, tc.Bindings())
+					operation.execute(ctx, tc)
 				}
 			}
 		}()
@@ -169,13 +167,13 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 		logger.Log(logging.Try, logging.DoneStatus, color.BoldFgCyan)
 	}()
 	for _, operation := range try {
-		for k, v := range operation.execute(ctx, tc.Bindings()) {
+		for k, v := range operation.execute(ctx, tc) {
 			tc = tc.WithBinding(ctx, k, v)
 		}
 	}
 }
 
-func (p *stepProcessor) tryOperations(tc model.TestContext, cleaner cleaner.CleanerCollector) ([]operation, error) {
+func (p *stepProcessor) tryOperations(tc model.Timeouts, cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
 	for i, handler := range p.step.Try {
 		register := func(o ...operation) {
@@ -264,7 +262,7 @@ func (p *stepProcessor) tryOperations(tc model.TestContext, cleaner cleaner.Clea
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperations(tc model.TestContext) ([]operation, error) {
+func (p *stepProcessor) catchOperations(tc model.Timeouts) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -318,7 +316,7 @@ func (p *stepProcessor) catchOperations(tc model.TestContext) ([]operation, erro
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(tc model.TestContext, operations ...v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) finallyOperations(tc model.Timeouts, operations ...v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -368,7 +366,7 @@ func (p *stepProcessor) finallyOperations(tc model.TestContext, operations ...v1
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, tc model.TestContext, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -380,7 +378,6 @@ func (p *stepProcessor) applyOperation(id int, tc model.TestContext, cleaner cle
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -392,23 +389,37 @@ func (p *stepProcessor) applyOperation(id int, tc model.TestContext, cleaner cle
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, tc.Timeouts().Apply),
-			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+			timeout.Get(op.Timeout, timeouts.Apply),
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
-					return nil, nil, err
+					return nil, tc, err
 				}
-				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return opapply.New(client, resource, p.namespacer, getCleanerOrNil(cleaner, !dryRun), template, op.Expect, op.Outputs), bindings, nil
+				tc = _tc
+				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+					return nil, tc, err
+				} else {
+					tc = _tc
+				}
+				op := opapply.New(
+					client,
+					resource,
+					p.namespacer,
+					getCleanerOrNil(cleaner, !dryRun),
+					template,
+					op.Expect,
+					op.Outputs,
+				)
+				return op, tc, nil
 			},
 			operationReport,
-			op.Bindings...,
 		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(id int, tc model.TestContext, op v1alpha1.Assert) ([]operation, error) {
+func (p *stepProcessor) assertOperation(id int, timeouts model.Timeouts, op v1alpha1.Assert) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
@@ -419,7 +430,6 @@ func (p *stepProcessor) assertOperation(id int, tc model.TestContext, op v1alpha
 		operationReport = p.report.ForOperation("Assert ", report.OperationTypeAssert)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -428,23 +438,34 @@ func (p *stepProcessor) assertOperation(id int, tc model.TestContext, op v1alpha
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, tc.Timeouts().Assert),
-			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+			timeout.Get(op.Timeout, timeouts.Assert),
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
-					return nil, nil, err
+					return nil, tc, err
 				}
-				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return opassert.New(client, resource, p.namespacer, template), bindings, nil
+				tc = _tc
+				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+					return nil, tc, err
+				} else {
+					tc = _tc
+				}
+				op := opassert.New(
+					client,
+					resource,
+					p.namespacer,
+					template,
+				)
+				return op, tc, nil
 			},
 			operationReport,
-			op.Bindings...,
 		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(id int, tc model.TestContext, op v1alpha1.Command) operation {
+func (p *stepProcessor) commandOperation(id int, timeouts model.Timeouts, op v1alpha1.Command) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Command ", report.OperationTypeCommand)
@@ -453,27 +474,37 @@ func (p *stepProcessor) commandOperation(id int, tc model.TestContext, op v1alph
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, tc.Timeouts().Exec),
-		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+		timeout.Get(op.Timeout, timeouts.Exec),
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+			config, _, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-			return opcommand.New(op, p.test.BasePath, ns, config), bindings, nil
+			tc = _tc
+			if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+				return nil, tc, err
+			} else {
+				tc = _tc
+			}
+			op := opcommand.New(
+				op,
+				p.test.BasePath,
+				ns,
+				config,
+			)
+			return op, tc, nil
 		},
 		operationReport,
-		op.Bindings...,
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, tc model.TestContext, cleaner cleaner.CleanerCollector, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner cleaner.CleanerCollector, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -485,7 +516,6 @@ func (p *stepProcessor) createOperation(id int, tc model.TestContext, cleaner cl
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -497,23 +527,37 @@ func (p *stepProcessor) createOperation(id int, tc model.TestContext, cleaner cl
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, tc.Timeouts().Apply),
-			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+			timeout.Get(op.Timeout, timeouts.Apply),
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
-					return nil, nil, err
+					return nil, tc, err
 				}
-				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return opcreate.New(client, resource, p.namespacer, getCleanerOrNil(cleaner, !dryRun), template, op.Expect, op.Outputs), bindings, nil
+				tc = _tc
+				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+					return nil, tc, err
+				} else {
+					tc = _tc
+				}
+				op := opcreate.New(
+					client,
+					resource,
+					p.namespacer,
+					getCleanerOrNil(cleaner, !dryRun),
+					template,
+					op.Expect,
+					op.Outputs,
+				)
+				return op, tc, nil
 			},
 			operationReport,
-			op.Bindings...,
 		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(id int, tc model.TestContext, op v1alpha1.Delete) ([]operation, error) {
+func (p *stepProcessor) deleteOperation(id int, timeouts model.Timeouts, op v1alpha1.Delete) ([]operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -533,7 +577,6 @@ func (p *stepProcessor) deleteOperation(id int, tc model.TestContext, op v1alpha
 		return nil, err
 	}
 	var ops []operation
-
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Delete ", report.OperationTypeDelete)
@@ -547,7 +590,6 @@ func (p *stepProcessor) deleteOperation(id int, tc model.TestContext, op v1alpha
 		deletionPropagationPolicy = *p.test.Test.Spec.DeletionPropagationPolicy
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -556,23 +598,36 @@ func (p *stepProcessor) deleteOperation(id int, tc model.TestContext, op v1alpha
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, tc.Timeouts().Delete),
-			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+			timeout.Get(op.Timeout, timeouts.Delete),
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
-					return nil, nil, err
+					return nil, tc, err
 				}
-				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return opdelete.New(client, resource, p.namespacer, template, deletionPropagationPolicy, op.Expect...), bindings, nil
+				tc = _tc
+				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+					return nil, tc, err
+				} else {
+					tc = _tc
+				}
+				op := opdelete.New(
+					client,
+					resource,
+					p.namespacer,
+					template,
+					deletionPropagationPolicy,
+					op.Expect...,
+				)
+				return op, tc, nil
 			},
 			operationReport,
-			op.Bindings...,
 		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) describeOperation(id int, tc model.TestContext, op v1alpha1.Describe) operation {
+func (p *stepProcessor) describeOperation(id int, timeouts model.Timeouts, op v1alpha1.Describe) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Describe ", report.OperationTypeCommand)
@@ -581,30 +636,36 @@ func (p *stepProcessor) describeOperation(id int, tc model.TestContext, op v1alp
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, tc.Timeouts().Exec),
-		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+		timeout.Get(op.Timeout, timeouts.Exec),
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+			config, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-			cmd, err := kubectl.Describe(client, bindings, &op)
+			tc = _tc
+			cmd, err := kubectl.Describe(client, tc.Bindings(), &op)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
+			op := opcommand.New(
+				*cmd,
+				p.test.BasePath,
+				ns,
+				config,
+			)
+			return op, tc, nil
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) errorOperation(id int, tc model.TestContext, op v1alpha1.Error) ([]operation, error) {
+func (p *stepProcessor) errorOperation(id int, timeouts model.Timeouts, op v1alpha1.Error) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
@@ -615,7 +676,6 @@ func (p *stepProcessor) errorOperation(id int, tc model.TestContext, op v1alpha1
 		operationReport = p.report.ForOperation("Error ", report.OperationTypeCommand)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -624,23 +684,34 @@ func (p *stepProcessor) errorOperation(id int, tc model.TestContext, op v1alpha1
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, tc.Timeouts().Error),
-			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+			timeout.Get(op.Timeout, timeouts.Error),
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
-					return nil, nil, err
+					return nil, tc, err
 				}
-				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return operror.New(client, resource, p.namespacer, template), bindings, nil
+				tc = _tc
+				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+					return nil, tc, err
+				} else {
+					tc = _tc
+				}
+				op := operror.New(
+					client,
+					resource,
+					p.namespacer,
+					template,
+				)
+				return op, tc, nil
 			},
 			operationReport,
-			op.Bindings...,
 		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) getOperation(id int, tc model.TestContext, op v1alpha1.Get) operation {
+func (p *stepProcessor) getOperation(id int, timeouts model.Timeouts, op v1alpha1.Get) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Get ", report.OperationTypeCommand)
@@ -649,30 +720,36 @@ func (p *stepProcessor) getOperation(id int, tc model.TestContext, op v1alpha1.G
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, tc.Timeouts().Exec),
-		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+		timeout.Get(op.Timeout, timeouts.Exec),
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+			config, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-			cmd, err := kubectl.Get(client, bindings, &op)
+			tc = _tc
+			cmd, err := kubectl.Get(client, tc.Bindings(), &op)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
+			op := opcommand.New(
+				*cmd,
+				p.test.BasePath,
+				ns,
+				config,
+			)
+			return op, tc, nil
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) logsOperation(id int, tc model.TestContext, op v1alpha1.PodLogs) operation {
+func (p *stepProcessor) logsOperation(id int, timeouts model.Timeouts, op v1alpha1.PodLogs) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Logs ", report.OperationTypeCommand)
@@ -681,30 +758,36 @@ func (p *stepProcessor) logsOperation(id int, tc model.TestContext, op v1alpha1.
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, tc.Timeouts().Exec),
-		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+		timeout.Get(op.Timeout, timeouts.Exec),
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+			config, _, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-			cmd, err := kubectl.Logs(bindings, &op)
+			tc = _tc
+			cmd, err := kubectl.Logs(tc.Bindings(), &op)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
+			op := opcommand.New(
+				*cmd,
+				p.test.BasePath,
+				ns,
+				config,
+			)
+			return op, tc, nil
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) patchOperation(id int, tc model.TestContext, op v1alpha1.Patch) ([]operation, error) {
+func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alpha1.Patch) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -716,7 +799,6 @@ func (p *stepProcessor) patchOperation(id int, tc model.TestContext, op v1alpha1
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -728,26 +810,39 @@ func (p *stepProcessor) patchOperation(id int, tc model.TestContext, op v1alpha1
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, tc.Timeouts().Apply),
-			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+			timeout.Get(op.Timeout, timeouts.Apply),
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
-					return nil, nil, err
+					return nil, tc, err
+				}
+				tc = _tc
+				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+					return nil, tc, err
+				} else {
+					tc = _tc
 				}
 				if dryRun {
 					client = dryrun.New(client)
 				}
-				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return oppatch.New(client, resource, p.namespacer, template, op.Expect, op.Outputs), bindings, nil
+				op := oppatch.New(
+					client,
+					resource,
+					p.namespacer,
+					template,
+					op.Expect,
+					op.Outputs,
+				)
+				return op, tc, nil
 			},
 			operationReport,
-			op.Bindings...,
 		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) proxyOperation(id int, tc model.TestContext, op v1alpha1.Proxy) operation {
+func (p *stepProcessor) proxyOperation(id int, timeouts model.Timeouts, op v1alpha1.Proxy) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Proxy ", report.OperationTypeCommand)
@@ -756,30 +851,36 @@ func (p *stepProcessor) proxyOperation(id int, tc model.TestContext, op v1alpha1
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, tc.Timeouts().Exec),
-		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+		timeout.Get(op.Timeout, timeouts.Exec),
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+			config, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-			cmd, err := kubectl.Proxy(client, bindings, &op)
+			tc = _tc
+			cmd, err := kubectl.Proxy(client, tc.Bindings(), &op)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
+			op := opcommand.New(
+				*cmd,
+				p.test.BasePath,
+				ns,
+				config,
+			)
+			return op, tc, nil
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) scriptOperation(id int, tc model.TestContext, op v1alpha1.Script) operation {
+func (p *stepProcessor) scriptOperation(id int, timeouts model.Timeouts, op v1alpha1.Script) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Script ", report.OperationTypeScript)
@@ -788,27 +889,37 @@ func (p *stepProcessor) scriptOperation(id int, tc model.TestContext, op v1alpha
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, tc.Timeouts().Exec),
-		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+		timeout.Get(op.Timeout, timeouts.Exec),
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+			config, _, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-			return opscript.New(op, p.test.BasePath, ns, config), bindings, nil
+			tc = _tc
+			if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+				return nil, tc, err
+			} else {
+				tc = _tc
+			}
+			op := opscript.New(
+				op,
+				p.test.BasePath,
+				ns,
+				config,
+			)
+			return op, tc, nil
 		},
 		operationReport,
-		op.Bindings...,
 	)
 }
 
-func (p *stepProcessor) sleepOperation(id int, _ model.TestContext, op v1alpha1.Sleep) operation {
+func (p *stepProcessor) sleepOperation(id int, _ model.Timeouts, op v1alpha1.Sleep) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Sleep ", report.OperationTypeSleep)
@@ -819,15 +930,14 @@ func (p *stepProcessor) sleepOperation(id int, _ model.TestContext, op v1alpha1.
 		},
 		false,
 		nil,
-		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			bindings = apibindings.RegisterClusterBindings(ctx, bindings, nil, nil)
-			return opsleep.New(op), bindings, nil
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			return opsleep.New(op), tc, nil
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) updateOperation(id int, tc model.TestContext, op v1alpha1.Update) ([]operation, error) {
+func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1alpha1.Update) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -839,7 +949,6 @@ func (p *stepProcessor) updateOperation(id int, tc model.TestContext, op v1alpha
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -851,26 +960,39 @@ func (p *stepProcessor) updateOperation(id int, tc model.TestContext, op v1alpha
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, tc.Timeouts().Apply),
-			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+			timeout.Get(op.Timeout, timeouts.Apply),
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
-					return nil, nil, err
+					return nil, tc, err
+				}
+				tc = _tc
+				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+					return nil, tc, err
+				} else {
+					tc = _tc
 				}
 				if dryRun {
 					client = dryrun.New(client)
 				}
-				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return opupdate.New(client, resource, p.namespacer, template, op.Expect, op.Outputs), bindings, nil
+				op := opupdate.New(
+					client,
+					resource,
+					p.namespacer,
+					template,
+					op.Expect,
+					op.Outputs,
+				)
+				return op, tc, nil
 			},
 			operationReport,
-			op.Bindings...,
 		))
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) waitOperation(id int, tc model.TestContext, op v1alpha1.Wait) operation {
+func (p *stepProcessor) waitOperation(id int, timeouts model.Timeouts, op v1alpha1.Wait) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Wait ", report.OperationTypeCommand)
@@ -880,27 +1002,28 @@ func (p *stepProcessor) waitOperation(id int, tc model.TestContext, op v1alpha1.
 		ns = p.namespacer.GetNamespace()
 	}
 	// make sure timeout is set to populate the command flag
-	op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, tc.Timeouts().Exec)}
+	op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, timeouts.Exec)}
 	// shift operation timeout
 	timeout := op.Timeout.Duration + 30*time.Second
-	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
 		&timeout,
-		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
+			config, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-			cmd, err := kubectl.Wait(client, bindings, &op)
+			tc = _tc
+			cmd, err := kubectl.Wait(client, tc.Bindings(), &op)
 			if err != nil {
-				return nil, nil, err
+				return nil, tc, err
 			}
-			return opcommand.New(*cmd, p.test.BasePath, ns, config), bindings, nil
+			op := opcommand.New(*cmd, p.test.BasePath, ns, config)
+			return op, tc, nil
 		},
 		operationReport,
 	)
