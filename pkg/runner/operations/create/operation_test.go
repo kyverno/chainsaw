@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
 	"github.com/stretchr/testify/assert"
@@ -39,7 +39,7 @@ func Test_create(t *testing.T) {
 		name        string
 		object      unstructured.Unstructured
 		client      *tclient.FakeClient
-		cleaner     cleanup.Cleaner
+		cleaner     cleaner.Cleaner
 		expect      []v1alpha1.Expectation
 		expectedErr error
 	}{{

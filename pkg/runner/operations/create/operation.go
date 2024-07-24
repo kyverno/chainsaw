@@ -6,10 +6,10 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
-	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -24,7 +24,7 @@ type operation struct {
 	client     client.Client
 	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
-	cleaner    cleanup.CleanerCollector
+	cleaner    cleaner.CleanerCollector
 	template   bool
 	expect     []v1alpha1.Expectation
 	outputs    []v1alpha1.Output
@@ -34,7 +34,7 @@ func New(
 	client client.Client,
 	obj unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
-	cleaner cleanup.CleanerCollector,
+	cleaner cleaner.CleanerCollector,
 	template bool,
 	expect []v1alpha1.Expectation,
 	outputs []v1alpha1.Output,

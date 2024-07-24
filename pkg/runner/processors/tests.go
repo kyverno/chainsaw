@@ -7,12 +7,12 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
-	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
@@ -143,7 +143,7 @@ func (p *testsProcessor) setup(ctx context.Context, tc model.TestContext) (model
 			p.report.SetEndTime(time.Now())
 		})
 	}
-	cleaner := cleanup.NewCleaner(tc.Timeouts().Cleanup, nil)
+	cleaner := cleaner.New(tc.Timeouts().Cleanup, nil)
 	t.Cleanup(func() {
 		if !cleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
@@ -176,7 +176,7 @@ func (p *testsProcessor) setup(ctx context.Context, tc model.TestContext) (model
 				failer.FailNow(ctx)
 			} else if err := clusterClient.Create(ctx, namespace.DeepCopy()); err != nil {
 				failer.FailNow(ctx)
-			} else if !p.config.Cleanup.SkipDelete {
+			} else if tc.Cleanup() {
 				cleaner.Add(clusterClient, namespace)
 			}
 		}
