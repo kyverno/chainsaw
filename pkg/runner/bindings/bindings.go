@@ -8,8 +8,8 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/engine/functions"
 	mutation "github.com/kyverno/chainsaw/pkg/mutate"
-	"github.com/kyverno/chainsaw/pkg/runner/functions"
 	"github.com/kyverno/kyverno-json/pkg/engine/template"
 	"k8s.io/client-go/rest"
 )
