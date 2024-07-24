@@ -9,13 +9,13 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
-	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/kubectl"
@@ -85,6 +85,9 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 	if p.step.Timeouts != nil {
 		tc = model.WithTimeouts(ctx, tc, *p.step.Timeouts)
 	}
+	if p.step.TestStepSpec.SkipDelete != nil {
+		tc = tc.WithCleanup(ctx, !*p.step.TestStepSpec.SkipDelete)
+	}
 	timeouts := tc.Timeouts()
 	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, p.step.Clusters)
 	clusterConfig, clusterClient, err := registeredClusters.Resolve(false, p.test.Test.Spec.Cluster)
@@ -102,8 +105,8 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 	if p.test.Test.Spec.DelayBeforeCleanup != nil {
 		delay = p.test.Test.Spec.DelayBeforeCleanup
 	}
-	cleaner := cleanup.NewCleaner(timeouts.Cleanup, delay)
-	try, err := p.tryOperations(timeouts, registeredClusters, cleaner)
+	cleaner := cleaner.New(timeouts.Cleanup, delay)
+	try, err := p.tryOperations(timeouts, registeredClusters, getCleanerOrNil(cleaner, tc.Cleanup()))
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -173,7 +176,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 	}
 }
 
-func (p *stepProcessor) tryOperations(timeouts model.Timeouts, registeredClusters clusters.Registry, cleaner cleanup.Cleaner) ([]operation, error) {
+func (p *stepProcessor) tryOperations(timeouts model.Timeouts, registeredClusters clusters.Registry, cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
 	for i, handler := range p.step.Try {
 		register := func(o ...operation) {
@@ -366,7 +369,7 @@ func (p *stepProcessor) finallyOperations(timeouts model.Timeouts, registeredClu
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, cleaner cleanup.Cleaner, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -397,7 +400,7 @@ func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, register
 					return nil, nil, err
 				}
 				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return opapply.New(client, resource, p.namespacer, p.getCleaner(cleaner, dryRun), template, op.Expect, op.Outputs), bindings, nil
+				return opapply.New(client, resource, p.namespacer, getCleanerOrNil(cleaner, !dryRun), template, op.Expect, op.Outputs), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -472,7 +475,7 @@ func (p *stepProcessor) commandOperation(id int, timeouts model.Timeouts, regist
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, cleaner cleanup.Cleaner, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, cleaner cleaner.CleanerCollector, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -504,7 +507,7 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, registe
 					return nil, nil, err
 				}
 				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
-				return opcreate.New(client, resource, p.namespacer, p.getCleaner(cleaner, dryRun), template, op.Expect, op.Outputs), bindings, nil
+				return opcreate.New(client, resource, p.namespacer, getCleanerOrNil(cleaner, !dryRun), template, op.Expect, op.Outputs), bindings, nil
 			},
 			operationReport,
 			op.Bindings...,
@@ -977,11 +980,8 @@ func (p *stepProcessor) getClusterResolver(registeredClusters clusters.Registry,
 	}
 }
 
-func (p *stepProcessor) getCleaner(cleaner cleanup.Cleaner, dryRun bool) cleanup.CleanerCollector {
-	if dryRun {
-		return nil
-	}
-	if cleanup.Skip(p.config.Cleanup.SkipDelete, p.test.Test.Spec.SkipDelete, p.step.TestStepSpec.SkipDelete) {
+func getCleanerOrNil(cleaner cleaner.CleanerCollector, enabled bool) cleaner.CleanerCollector {
+	if !enabled {
 		return nil
 	}
 	return cleaner

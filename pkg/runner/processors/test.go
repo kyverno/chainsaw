@@ -7,11 +7,11 @@ import (
 
 	petname "github.com/dustinkirkland/golang-petname"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
@@ -68,7 +68,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		tc = model.WithTimeouts(ctx, tc, *test.Test.Spec.Timeouts)
 	}
 	timeouts := tc.Timeouts()
-	cleaner := cleanup.NewCleaner(timeouts.Cleanup, nil)
+	cleaner := cleaner.New(timeouts.Cleanup, nil)
 	setupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	setupCtx := logging.IntoContext(ctx, setupLogger)
@@ -93,6 +93,9 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 	tc = tc.WithBinding(ctx, "client", clusterClient)
 	tc = tc.WithBinding(ctx, "config", clusterConfig)
+	if test.Test.Spec.SkipDelete != nil {
+		tc = tc.WithCleanup(ctx, !*test.Test.Spec.SkipDelete)
+	}
 	if clusterClient != nil {
 		nsName := test.Test.Spec.Namespace
 		if nspacer == nil && nsName == "" {
@@ -116,7 +119,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 					failer.FailNow(ctx)
 				} else if err := clusterClient.Create(logging.IntoContext(setupCtx, setupLogger), namespace.DeepCopy()); err != nil {
 					failer.FailNow(ctx)
-				} else if !cleanup.Skip(p.config.Cleanup.SkipDelete, test.Test.Spec.SkipDelete, nil) {
+				} else if tc.Cleanup() {
 					cleaner.Add(clusterClient, namespace)
 				}
 			}
@@ -133,7 +136,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 	tc = _tc
 	for i, step := range test.Test.Spec.Steps {
-		processor := p.createStepProcessor(nspacer, tc, test, step)
+		processor := p.createStepProcessor(nspacer, test, step)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
@@ -146,7 +149,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 }
 
-func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, tc model.TestContext, test discovery.Test, step v1alpha1.TestStep) StepProcessor {
+func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, test discovery.Test, step v1alpha1.TestStep) StepProcessor {
 	var report *report.StepReport
 	if p.report != nil {
 		report = p.report.ForStep(&step)

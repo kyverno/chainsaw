@@ -1,4 +1,4 @@
-package cleanup
+package cleaner
 
 import (
 	"context"
@@ -25,7 +25,7 @@ type Cleaner interface {
 	Run(ctx context.Context) []error
 }
 
-func NewCleaner(timeout time.Duration, delay *metav1.Duration) Cleaner {
+func New(timeout time.Duration, delay *metav1.Duration) Cleaner {
 	var d *time.Duration
 	if delay != nil {
 		d = &delay.Duration
