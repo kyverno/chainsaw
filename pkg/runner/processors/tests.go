@@ -156,7 +156,7 @@ func (p *testsProcessor) setup(ctx context.Context, tc model.TestContext) (model
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
 		}
-		_, clusterClient, err := tc.Cluster()
+		_, clusterClient, err := tc.CurrentClusterClient()
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
