@@ -46,7 +46,9 @@ type testsProcessor struct {
 
 func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
+	// 1. setup the processor
 	tc, nspacer := p.setup(ctx, tc)
+	// 2. loop through tests
 	for i := range tests {
 		test := tests[i]
 		name, err := names.Test(p.config.Discovery.FullName, test)
@@ -54,25 +56,12 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
 		}
-		var scenarios []discovery.Test
-		if test.Test != nil {
-			if len(test.Test.Spec.Scenarios) == 0 {
-				scenarios = append(scenarios, test)
-			} else {
-				for s := range test.Test.Spec.Scenarios {
-					scenario := test.Test.Spec.Scenarios[s]
-					test := test
-					test.Test = test.Test.DeepCopy()
-					test.Test.Spec.Scenarios = nil
-					bindings := scenario.Bindings
-					bindings = append(bindings, test.Test.Spec.Bindings...)
-					test.Test.Spec.Bindings = bindings
-					scenarios = append(scenarios, test)
-				}
-			}
-		}
+		// 3. compute test scenarios
+		scenarios := applyScenarios(test)
+		// 4. loop through test scenarios
 		for s := range scenarios {
 			test := scenarios[s]
+			// 5. run each test scenario in a separate T
 			t.Run(name, func(t *testing.T) {
 				t.Helper()
 				ctx := testing.IntoContext(ctx, t)
@@ -109,6 +98,27 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 			})
 		}
 	}
+}
+
+func applyScenarios(test discovery.Test) []discovery.Test {
+	var scenarios []discovery.Test
+	if test.Test != nil {
+		if len(test.Test.Spec.Scenarios) == 0 {
+			scenarios = append(scenarios, test)
+		} else {
+			for s := range test.Test.Spec.Scenarios {
+				scenario := test.Test.Spec.Scenarios[s]
+				test := test
+				test.Test = test.Test.DeepCopy()
+				test.Test.Spec.Scenarios = nil
+				bindings := scenario.Bindings
+				bindings = append(bindings, test.Test.Spec.Bindings...)
+				test.Test.Spec.Bindings = bindings
+				scenarios = append(scenarios, test)
+			}
+		}
+	}
+	return scenarios
 }
 
 func buildNamespace(ctx context.Context, name string, template *v1alpha1.Any, bindings binding.Bindings) (*corev1.Namespace, error) {
