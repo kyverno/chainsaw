@@ -6,9 +6,9 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
-	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -127,7 +127,7 @@ func (o *operation) deleteResource(ctx context.Context, resource unstructured.Un
 
 func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.Unstructured) error {
 	gvk := resource.GetObjectKind().GroupVersionKind()
-	key := client.ObjectKey(&resource)
+	key := client.Key(&resource)
 	return wait.PollUntilContextCancel(ctx, internal.PollInterval, true, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(gvk)

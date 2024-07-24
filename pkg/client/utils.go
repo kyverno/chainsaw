@@ -12,21 +12,20 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func ObjectKey(obj metav1.Object) ctrlclient.ObjectKey {
-	return ctrlclient.ObjectKey{
+func Key(obj metav1.Object) ObjectKey {
+	return ObjectKey{
 		Name:      obj.GetName(),
 		Namespace: obj.GetNamespace(),
 	}
 }
 
-func Name(key ctrlclient.ObjectKey) string {
+func Name(key ObjectKey) string {
 	return ColouredName(key, nil)
 }
 
-func ColouredName(key ctrlclient.ObjectKey, color *color.Color) string {
+func ColouredName(key ObjectKey, color *color.Color) string {
 	sprint := fmt.Sprint
 	if color != nil {
 		sprint = color.Sprint
@@ -60,7 +59,7 @@ func PatchObject(actual, expected runtime.Object) (runtime.Object, error) {
 }
 
 func WaitForDeletion(ctx context.Context, client Client, object Object) error {
-	key := ObjectKey(object)
+	key := Key(object)
 	return wait.PollUntilContextCancel(ctx, 50*time.Millisecond, true, func(ctx context.Context) (bool, error) {
 		if err := client.Get(ctx, key, object); err != nil {
 			if kerrors.IsNotFound(err) {

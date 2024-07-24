@@ -42,7 +42,7 @@ func (l *logger) Log(operation Operation, status Status, color *color.Color, arg
 	prefix := fmt.Sprintf("%s| %s | %s | %s | %-*s | %-*s |", eraser, l.clock.Now().Format("15:04:05"), sprint(l.test), sprint(l.step), opLen, sprint(operation), stLen, sprint(status))
 	if l.resource != nil {
 		gvk := l.resource.GetObjectKind().GroupVersionKind()
-		key := client.ObjectKey(l.resource)
+		key := client.Key(l.resource)
 		prefix = fmt.Sprintf("%s %s/%s @ %s", prefix, gvk.GroupVersion(), gvk.Kind, client.Name(key))
 	}
 	a = append(a, prefix)

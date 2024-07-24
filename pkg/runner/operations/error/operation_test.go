@@ -9,8 +9,8 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/runner/logging/testing"
+	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	tnamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
 	ttesting "github.com/kyverno/chainsaw/pkg/testing"

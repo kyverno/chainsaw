@@ -9,7 +9,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	truntime "k8s.io/apimachinery/pkg/runtime/testing"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestObjectKey(t *testing.T) {
@@ -18,13 +17,13 @@ func TestObjectKey(t *testing.T) {
 		Namespace: "test-namespace",
 	}
 
-	key := ObjectKey(obj)
+	key := Key(obj)
 	assert.Equal(t, "test-name", key.Name)
 	assert.Equal(t, "test-namespace", key.Namespace)
 }
 
 func TestName(t *testing.T) {
-	key := ctrlclient.ObjectKey{Name: "test-name"}
+	key := ObjectKey{Name: "test-name"}
 	name := Name(key)
 	assert.Equal(t, "test-name", name)
 
@@ -32,7 +31,7 @@ func TestName(t *testing.T) {
 	name = Name(key)
 	assert.Equal(t, "test-namespace/test-name", name)
 
-	key = ctrlclient.ObjectKey{}
+	key = ObjectKey{}
 	name = Name(key)
 	assert.Equal(t, "*", name)
 }
@@ -44,52 +43,52 @@ func TestColouredName(t *testing.T) {
 	enabled.EnableColor()
 	tests := []struct {
 		name  string
-		key   ctrlclient.ObjectKey
+		key   ObjectKey
 		color *color.Color
 		want  string
 	}{{
 		name:  "empty",
-		key:   ctrlclient.ObjectKey{},
+		key:   ObjectKey{},
 		color: nil,
 		want:  "*",
 	}, {
 		name:  "name only",
-		key:   ctrlclient.ObjectKey{Name: "test-name"},
+		key:   ObjectKey{Name: "test-name"},
 		color: nil,
 		want:  "test-name",
 	}, {
 		name:  "name and namespace",
-		key:   ctrlclient.ObjectKey{Name: "test-name", Namespace: "test-namespace"},
+		key:   ObjectKey{Name: "test-name", Namespace: "test-namespace"},
 		color: nil,
 		want:  "test-namespace/test-name",
 	}, {
 		name:  "empty",
-		key:   ctrlclient.ObjectKey{},
+		key:   ObjectKey{},
 		color: disabled,
 		want:  "*",
 	}, {
 		name:  "name only",
-		key:   ctrlclient.ObjectKey{Name: "test-name"},
+		key:   ObjectKey{Name: "test-name"},
 		color: disabled,
 		want:  "test-name",
 	}, {
 		name:  "name and namespace",
-		key:   ctrlclient.ObjectKey{Name: "test-name", Namespace: "test-namespace"},
+		key:   ObjectKey{Name: "test-name", Namespace: "test-namespace"},
 		color: disabled,
 		want:  "test-namespace/test-name",
 	}, {
 		name:  "empty",
-		key:   ctrlclient.ObjectKey{},
+		key:   ObjectKey{},
 		color: enabled,
 		want:  "\x1b[34m*\x1b[0m",
 	}, {
 		name:  "name only",
-		key:   ctrlclient.ObjectKey{Name: "test-name"},
+		key:   ObjectKey{Name: "test-name"},
 		color: enabled,
 		want:  "\x1b[34mtest-name\x1b[0m",
 	}, {
 		name:  "name and namespace",
-		key:   ctrlclient.ObjectKey{Name: "test-name", Namespace: "test-namespace"},
+		key:   ObjectKey{Name: "test-name", Namespace: "test-namespace"},
 		color: enabled,
 		want:  "\x1b[34mtest-namespace\x1b[0m/\x1b[34mtest-name\x1b[0m",
 	}}

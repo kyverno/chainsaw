@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -61,28 +61,28 @@ func Test_dryRunClient_Create(t *testing.T) {
 				return nil
 			}
 			inner := &tclient.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				UpdateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				UpdateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.UpdateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				DeleteFn: func(ctx context.Context, call int, obj client.Object, opts ...client.DeleteOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				PatchFn: func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
 				IsObjectNamespacedFn: func(call int, obj runtime.Object) (bool, error) {
@@ -130,28 +130,28 @@ func Test_dryRunClient_Update(t *testing.T) {
 				return nil
 			}
 			inner := &tclient.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				UpdateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				UpdateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.UpdateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				DeleteFn: func(ctx context.Context, call int, obj client.Object, opts ...client.DeleteOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				PatchFn: func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
 				IsObjectNamespacedFn: func(call int, obj runtime.Object) (bool, error) {
@@ -199,28 +199,28 @@ func Test_dryRunClient_Delete(t *testing.T) {
 				return nil
 			}
 			inner := &tclient.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				UpdateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				UpdateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.UpdateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				DeleteFn: func(ctx context.Context, call int, obj client.Object, opts ...client.DeleteOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				PatchFn: func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
 				IsObjectNamespacedFn: func(call int, obj runtime.Object) (bool, error) {
@@ -268,28 +268,28 @@ func Test_dryRunClient_Get(t *testing.T) {
 				return nil
 			}
 			inner := &tclient.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				UpdateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				UpdateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.UpdateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				DeleteFn: func(ctx context.Context, call int, obj client.Object, opts ...client.DeleteOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				PatchFn: func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
 				IsObjectNamespacedFn: func(call int, obj runtime.Object) (bool, error) {
@@ -337,28 +337,28 @@ func Test_dryRunClient_List(t *testing.T) {
 				return nil
 			}
 			inner := &tclient.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				UpdateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				UpdateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.UpdateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				DeleteFn: func(ctx context.Context, call int, obj client.Object, opts ...client.DeleteOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				PatchFn: func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
 				IsObjectNamespacedFn: func(call int, obj runtime.Object) (bool, error) {
@@ -406,28 +406,28 @@ func Test_dryRunClient_Patch(t *testing.T) {
 				return nil
 			}
 			inner := &tclient.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				UpdateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				UpdateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.UpdateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				DeleteFn: func(ctx context.Context, call int, obj client.Object, opts ...client.DeleteOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				PatchFn: func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
 				IsObjectNamespacedFn: func(call int, obj runtime.Object) (bool, error) {
@@ -484,28 +484,28 @@ func Test_dryRunClient_IsObjectNamespaced(t *testing.T) {
 				return nil
 			}
 			inner := &tclient.FakeClient{
-				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				UpdateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				UpdateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.UpdateOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				DeleteFn: func(ctx context.Context, call int, obj client.Object, opts ...client.DeleteOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
-					assert.NotContains(t, opts, client.DryRunAll)
+				ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
+					assert.NotContains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
-				PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
-					assert.Contains(t, opts, client.DryRunAll)
+				PatchFn: func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
+					assert.Contains(t, opts, ctrlclient.DryRunAll)
 					return wantErr()
 				},
 				IsObjectNamespacedFn: func(call int, obj runtime.Object) (bool, error) {

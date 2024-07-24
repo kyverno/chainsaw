@@ -15,7 +15,7 @@ func Read(ctx context.Context, expected ctrlclient.Object, c client.Client) ([]u
 	if useGet {
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(gvk)
-		if err := c.Get(ctx, client.ObjectKey(expected), &actual); err != nil {
+		if err := c.Get(ctx, client.Key(expected), &actual); err != nil {
 			return nil, err
 		}
 		results = append(results, actual)

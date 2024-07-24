@@ -1,10 +1,10 @@
-package logged
+package client
 
 import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/runner/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
