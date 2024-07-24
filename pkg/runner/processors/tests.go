@@ -2,7 +2,6 @@ package processors
 
 import (
 	"context"
-	"sync/atomic"
 	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
@@ -48,7 +47,6 @@ type testsProcessor struct {
 func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
 	tc, nspacer := p.setup(ctx, tc)
-	shouldFailFast := &atomic.Bool{}
 	for i := range tests {
 		test := tests[i]
 		name, err := names.Test(p.config.Discovery.FullName, test)
@@ -85,11 +83,6 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 				}
 				tc := tc.WithBinding(ctx, "test", info)
 				t.Cleanup(func() {
-					if t.Failed() {
-						shouldFailFast.Store(true)
-					}
-				})
-				t.Cleanup(func() {
 					if t.Skipped() {
 						tc.IncSkipped()
 					} else {
@@ -107,7 +100,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 					t.SkipNow()
 				}
 				if p.config.Execution.FailFast {
-					if shouldFailFast.Load() {
+					if tc.Failed() > 0 {
 						t.SkipNow()
 					}
 				}
