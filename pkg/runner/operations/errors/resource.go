@@ -41,7 +41,7 @@ func ResourceError(
 
 func (e resourceError) Error() string {
 	var lines []string
-	header := fmt.Sprintf("%s/%s/%s", e.actual.GetAPIVersion(), e.actual.GetKind(), client.Name(client.ObjectKey(&e.actual)))
+	header := fmt.Sprintf("%s/%s/%s", e.actual.GetAPIVersion(), e.actual.GetKind(), client.Name(client.Key(&e.actual)))
 	sep := strings.Repeat("-", len(header))
 	lines = append(lines, sep, header, sep)
 	if len(e.errs) != 0 {
