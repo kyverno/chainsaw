@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
-	"github.com/kyverno/chainsaw/pkg/runner/summary"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
@@ -28,7 +27,7 @@ func Run(
 	config model.Configuration,
 	values map[string]any,
 	tests ...discovery.Test,
-) (*summary.Summary, error) {
+) (model.SummaryResult, error) {
 	return run(ctx, cfg, clock, config, nil, values, tests...)
 }
 
@@ -40,32 +39,21 @@ func run(
 	m mainstart,
 	values map[string]any,
 	tests ...discovery.Test,
-) (*summary.Summary, error) {
-	var summary summary.Summary
+) (model.SummaryResult, error) {
 	var testsReport *report.Report
 	if config.Report != nil && config.Report.Format != "" {
 		testsReport = report.New(config.Report.Name)
 	}
+	tc, err := setupTestContext(ctx, values, cfg, config)
+	if err != nil {
+		return nil, err
+	}
 	if len(tests) == 0 {
-		return &summary, nil
+		return tc, nil
 	}
 	if err := internal.SetupFlags(config); err != nil {
 		return nil, err
 	}
-	tc := model.WithValues(ctx, model.EmptyContext(), values)
-	if cfg != nil {
-		cluster, err := clusters.NewClusterFromConfig(cfg)
-		if err != nil {
-			return nil, err
-		}
-		tc = tc.WithCluster(ctx, clusters.DefaultClient, cluster)
-		_tc, err := model.UseCluster(ctx, tc, clusters.DefaultClient)
-		if err != nil {
-			return nil, err
-		}
-		tc = _tc
-	}
-	tc = model.WithClusters(ctx, tc, "", config.Clusters)
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
@@ -73,7 +61,7 @@ func run(
 			t.Parallel()
 			ctx := testing.IntoContext(ctx, t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
-			processor := processors.NewTestsProcessor(config, clock, &summary, testsReport)
+			processor := processors.NewTestsProcessor(config, clock, testsReport)
 			processor.Run(ctx, tc, tests...)
 		},
 	}}
@@ -88,12 +76,30 @@ func run(
 	// In our case, we consider an error only when running the tests was not possible.
 	// For now, the case where some of the tests failed will be covered by the summary.
 	if code := m.Run(); code > 1 {
-		return &summary, fmt.Errorf("testing framework exited with non zero code %d", code)
+		return tc.Summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
 	if testsReport != nil && config.Report != nil && config.Report.Format != "" {
 		if err := testsReport.Save(config.Report.Format, config.Report.Path, config.Report.Name); err != nil {
-			return &summary, err
+			return tc.Summary, err
 		}
 	}
-	return &summary, nil
+	return tc.Summary, nil
+}
+
+func setupTestContext(ctx context.Context, values any, cluster *rest.Config, config model.Configuration) (model.TestContext, error) {
+	tc := model.WithValues(ctx, model.EmptyContext(), values)
+	if cluster != nil {
+		cluster, err := clusters.NewClusterFromConfig(cluster)
+		if err != nil {
+			return tc, err
+		}
+		tc = tc.WithCluster(ctx, clusters.DefaultClient, cluster)
+		_tc, err := model.UseCluster(ctx, tc, clusters.DefaultClient)
+		if err != nil {
+			return tc, err
+		}
+		tc = _tc
+	}
+	tc = model.WithClusters(ctx, tc, "", config.Clusters)
+	return tc, nil
 }
