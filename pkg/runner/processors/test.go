@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
 	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
@@ -65,8 +64,11 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			size = len(name)
 		}
 	}
-	timeouts := p.config.Timeouts.Combine(test.Test.Spec.Timeouts)
-	cleaner := cleanup.NewCleaner(timeouts.Cleanup.Duration, nil)
+	if test.Test.Spec.Timeouts != nil {
+		tc = model.WithTimeouts(ctx, tc, *test.Test.Spec.Timeouts)
+	}
+	timeouts := tc.Timeouts()
+	cleaner := cleanup.NewCleaner(timeouts.Cleanup, nil)
 	setupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	setupCtx := logging.IntoContext(ctx, setupLogger)
@@ -124,7 +126,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	if p.report != nil && nspacer != nil {
 		p.report.SetNamespace(nspacer.GetNamespace())
 	}
-	bindings, err := apibindings.RegisterBindings(ctx, tc.Bindings(), test.Test.Spec.Bindings...)
+	// TODO
+	// bindings, err := apibindings.RegisterBindings(ctx, tc.Bindings(), test.Test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -135,9 +138,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
+		tc := tc.WithBinding(ctx, "step", StepInfo{Id: i + 1})
 		processor.Run(
 			logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name))),
-			apibindings.RegisterNamedBinding(ctx, bindings, "step", StepInfo{Id: i + 1}),
+			tc,
 		)
 	}
 }
@@ -147,5 +151,5 @@ func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, tc mo
 	if p.report != nil {
 		report = p.report.ForStep(&step)
 	}
-	return NewStepProcessor(p.config, tc.Clusters(), nspacer, p.clock, test, step, report)
+	return NewStepProcessor(p.config, nspacer, p.clock, test, step, report)
 }
