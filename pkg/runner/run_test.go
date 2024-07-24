@@ -7,6 +7,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -24,7 +25,10 @@ func (m *MockMainStart) Run() int {
 
 func TestRun(t *testing.T) {
 	fakeClock := tclock.NewFakePassiveClock(time.Now())
-
+	config, err := config.DefaultConfiguration()
+	if err != nil {
+		assert.NoError(t, err)
+	}
 	tests := []struct {
 		name       string
 		tests      []discovery.Test
@@ -33,9 +37,11 @@ func TestRun(t *testing.T) {
 		mockReturn int
 		wantErr    bool
 	}{{
-		name:       "Zero Tests",
-		tests:      []discovery.Test{},
-		config:     model.Configuration{},
+		name:  "Zero Tests",
+		tests: []discovery.Test{},
+		config: model.Configuration{
+			Timeouts: config.Spec.Timeouts,
+		},
 		restConfig: &rest.Config{},
 		wantErr:    false,
 	}, {
@@ -51,6 +57,7 @@ func TestRun(t *testing.T) {
 			},
 		},
 		config: model.Configuration{
+			Timeouts: config.Spec.Timeouts,
 			Report: &v1alpha2.ReportOptions{
 				Format: v1alpha2.JSONFormat,
 			},
@@ -61,6 +68,7 @@ func TestRun(t *testing.T) {
 		name:  "Zero Tests with JSON Report",
 		tests: []discovery.Test{},
 		config: model.Configuration{
+			Timeouts: config.Spec.Timeouts,
 			Report: &v1alpha2.ReportOptions{
 				Format: v1alpha2.JSONFormat,
 			},
@@ -110,6 +118,7 @@ func TestRun(t *testing.T) {
 			},
 		},
 		config: model.Configuration{
+			Timeouts: config.Spec.Timeouts,
 			Report: &v1alpha2.ReportOptions{
 				Format: v1alpha2.XMLFormat,
 				Name:   "chainsaw",
@@ -131,6 +140,7 @@ func TestRun(t *testing.T) {
 			},
 		},
 		config: model.Configuration{
+			Timeouts: config.Spec.Timeouts,
 			Report: &v1alpha2.ReportOptions{
 				Format: "abc",
 			},

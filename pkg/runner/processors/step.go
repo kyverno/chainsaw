@@ -42,16 +42,12 @@ import (
 	"k8s.io/utils/clock"
 )
 
-// TODO
-// - create if not exists
-
 type StepProcessor interface {
-	Run(context.Context, binding.Bindings)
+	Run(context.Context, model.TestContext)
 }
 
 func NewStepProcessor(
 	config model.Configuration,
-	clusters clusters.Registry,
 	namespacer namespacer.Namespacer,
 	clock clock.PassiveClock,
 	test discovery.Test,
@@ -60,31 +56,24 @@ func NewStepProcessor(
 ) StepProcessor {
 	return &stepProcessor{
 		config:     config,
-		clusters:   clusters,
 		namespacer: namespacer,
 		clock:      clock,
 		test:       test,
 		step:       step,
 		report:     report,
-		timeouts:   config.Timeouts.Combine(test.Test.Spec.Timeouts).Combine(step.Timeouts),
 	}
 }
 
 type stepProcessor struct {
 	config     model.Configuration
-	clusters   clusters.Registry
 	namespacer namespacer.Namespacer
 	clock      clock.PassiveClock
 	test       discovery.Test
 	step       v1alpha1.TestStep
 	report     *report.StepReport
-	timeouts   v1alpha1.DefaultTimeouts
 }
 
-func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
+func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -93,13 +82,17 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 		})
 	}
 	logger := logging.FromContext(ctx)
-	registeredClusters := clusters.Register(p.clusters, p.test.BasePath, p.step.Clusters)
+	if p.step.Timeouts != nil {
+		tc = model.WithTimeouts(ctx, tc, *p.step.Timeouts)
+	}
+	timeouts := tc.Timeouts()
+	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, p.step.Clusters)
 	clusterConfig, clusterClient, err := registeredClusters.Resolve(false, p.test.Test.Spec.Cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
+	bindings := apibindings.RegisterClusterBindings(ctx, tc.Bindings(), clusterConfig, clusterClient)
 	bindings, err = apibindings.RegisterBindings(ctx, bindings, p.step.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -109,23 +102,23 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	if p.test.Test.Spec.DelayBeforeCleanup != nil {
 		delay = p.test.Test.Spec.DelayBeforeCleanup
 	}
-	cleaner := cleanup.NewCleaner(p.timeouts.Cleanup.Duration, delay)
-	try, err := p.tryOperations(registeredClusters, cleaner)
+	cleaner := cleanup.NewCleaner(timeouts.Cleanup, delay)
+	try, err := p.tryOperations(timeouts, registeredClusters, cleaner)
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	catch, err := p.catchOperations(registeredClusters)
+	catch, err := p.catchOperations(timeouts, registeredClusters)
 	if err != nil {
 		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	finally, err := p.finallyOperations(registeredClusters, p.step.Finally...)
+	finally, err := p.finallyOperations(timeouts, registeredClusters, p.step.Finally...)
 	if err != nil {
 		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	cleanup, err := p.finallyOperations(registeredClusters, p.step.Cleanup...)
+	cleanup, err := p.finallyOperations(timeouts, registeredClusters, p.step.Cleanup...)
 	if err != nil {
 		logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -180,7 +173,7 @@ func (p *stepProcessor) Run(ctx context.Context, bindings binding.Bindings) {
 	}
 }
 
-func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, cleaner cleanup.Cleaner) ([]operation, error) {
+func (p *stepProcessor) tryOperations(timeouts model.Timeouts, registeredClusters clusters.Registry, cleaner cleanup.Cleaner) ([]operation, error) {
 	var ops []operation
 	for i, handler := range p.step.Try {
 		register := func(o ...operation) {
@@ -191,35 +184,35 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, clea
 			}
 		}
 		if handler.Apply != nil {
-			loaded, err := p.applyOperation(i+1, registeredClusters, cleaner, *handler.Apply)
+			loaded, err := p.applyOperation(i+1, timeouts, registeredClusters, cleaner, *handler.Apply)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Assert != nil {
-			loaded, err := p.assertOperation(i+1, registeredClusters, *handler.Assert)
+			loaded, err := p.assertOperation(i+1, timeouts, registeredClusters, *handler.Assert)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, registeredClusters, *handler.Command))
+			register(p.commandOperation(i+1, timeouts, registeredClusters, *handler.Command))
 		} else if handler.Create != nil {
-			loaded, err := p.createOperation(i+1, registeredClusters, cleaner, *handler.Create)
+			loaded, err := p.createOperation(i+1, timeouts, registeredClusters, cleaner, *handler.Create)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(i+1, registeredClusters, *handler.Delete)
+			loaded, err := p.deleteOperation(i+1, timeouts, registeredClusters, *handler.Delete)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, registeredClusters, *handler.Describe))
+			register(p.describeOperation(i+1, timeouts, registeredClusters, *handler.Describe))
 		} else if handler.Error != nil {
-			loaded, err := p.errorOperation(i+1, registeredClusters, *handler.Error)
+			loaded, err := p.errorOperation(i+1, timeouts, registeredClusters, *handler.Error)
 			if err != nil {
 				return nil, err
 			}
@@ -237,31 +230,31 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, clea
 					ActionObjectSelector: handler.Events.ActionObjectSelector,
 				},
 			}
-			register(p.getOperation(i+1, registeredClusters, get))
+			register(p.getOperation(i+1, timeouts, registeredClusters, get))
 		} else if handler.Get != nil {
-			register(p.getOperation(i+1, registeredClusters, *handler.Get))
+			register(p.getOperation(i+1, timeouts, registeredClusters, *handler.Get))
 		} else if handler.Patch != nil {
-			loaded, err := p.patchOperation(i+1, registeredClusters, *handler.Patch)
+			loaded, err := p.patchOperation(i+1, timeouts, registeredClusters, *handler.Patch)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, registeredClusters, *handler.PodLogs))
+			register(p.logsOperation(i+1, timeouts, registeredClusters, *handler.PodLogs))
 		} else if handler.Proxy != nil {
-			register(p.proxyOperation(i+1, registeredClusters, *handler.Proxy))
+			register(p.proxyOperation(i+1, timeouts, registeredClusters, *handler.Proxy))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(i+1, registeredClusters, *handler.Script))
+			register(p.scriptOperation(i+1, timeouts, registeredClusters, *handler.Script))
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(i+1, *handler.Sleep))
 		} else if handler.Update != nil {
-			loaded, err := p.updateOperation(i+1, registeredClusters, *handler.Update)
+			loaded, err := p.updateOperation(i+1, timeouts, registeredClusters, *handler.Update)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Wait != nil {
-			register(p.waitOperation(i+1, registeredClusters, *handler.Wait))
+			register(p.waitOperation(i+1, timeouts, registeredClusters, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -269,7 +262,7 @@ func (p *stepProcessor) tryOperations(registeredClusters clusters.Registry, clea
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([]operation, error) {
+func (p *stepProcessor) catchOperations(timeouts model.Timeouts, registeredClusters clusters.Registry) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -283,7 +276,7 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 	handlers = append(handlers, p.step.Catch...)
 	for i, handler := range handlers {
 		if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, registeredClusters, *handler.PodLogs))
+			register(p.logsOperation(i+1, timeouts, registeredClusters, *handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				ActionClusters: handler.Events.ActionClusters,
@@ -297,25 +290,25 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 					ActionObjectSelector: handler.Events.ActionObjectSelector,
 				},
 			}
-			register(p.getOperation(i+1, registeredClusters, get))
+			register(p.getOperation(i+1, timeouts, registeredClusters, get))
 		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, registeredClusters, *handler.Describe))
+			register(p.describeOperation(i+1, timeouts, registeredClusters, *handler.Describe))
 		} else if handler.Get != nil {
-			register(p.getOperation(i+1, registeredClusters, *handler.Get))
+			register(p.getOperation(i+1, timeouts, registeredClusters, *handler.Get))
 		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(i+1, registeredClusters, *handler.Delete)
+			loaded, err := p.deleteOperation(i+1, timeouts, registeredClusters, *handler.Delete)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, registeredClusters, *handler.Command))
+			register(p.commandOperation(i+1, timeouts, registeredClusters, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(i+1, registeredClusters, *handler.Script))
+			register(p.scriptOperation(i+1, timeouts, registeredClusters, *handler.Script))
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(i+1, *handler.Sleep))
 		} else if handler.Wait != nil {
-			register(p.waitOperation(i+1, registeredClusters, *handler.Wait))
+			register(p.waitOperation(i+1, timeouts, registeredClusters, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -323,7 +316,7 @@ func (p *stepProcessor) catchOperations(registeredClusters clusters.Registry) ([
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, operations ...v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) finallyOperations(timeouts model.Timeouts, registeredClusters clusters.Registry, operations ...v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -333,7 +326,7 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, 
 	}
 	for i, handler := range operations {
 		if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, registeredClusters, *handler.PodLogs))
+			register(p.logsOperation(i+1, timeouts, registeredClusters, *handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				ActionClusters: handler.Events.ActionClusters,
@@ -347,25 +340,25 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, 
 					ActionObjectSelector: handler.Events.ActionObjectSelector,
 				},
 			}
-			register(p.getOperation(i+1, registeredClusters, get))
+			register(p.getOperation(i+1, timeouts, registeredClusters, get))
 		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, registeredClusters, *handler.Describe))
+			register(p.describeOperation(i+1, timeouts, registeredClusters, *handler.Describe))
 		} else if handler.Get != nil {
-			register(p.getOperation(i+1, registeredClusters, *handler.Get))
+			register(p.getOperation(i+1, timeouts, registeredClusters, *handler.Get))
 		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(i+1, registeredClusters, *handler.Delete)
+			loaded, err := p.deleteOperation(i+1, timeouts, registeredClusters, *handler.Delete)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, registeredClusters, *handler.Command))
+			register(p.commandOperation(i+1, timeouts, registeredClusters, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(i+1, registeredClusters, *handler.Script))
+			register(p.scriptOperation(i+1, timeouts, registeredClusters, *handler.Script))
 		} else if handler.Sleep != nil {
 			register(p.sleepOperation(i+1, *handler.Sleep))
 		} else if handler.Wait != nil {
-			register(p.waitOperation(i+1, registeredClusters, *handler.Wait))
+			register(p.waitOperation(i+1, timeouts, registeredClusters, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -373,7 +366,7 @@ func (p *stepProcessor) finallyOperations(registeredClusters clusters.Registry, 
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Registry, cleaner cleanup.Cleaner, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, cleaner cleanup.Cleaner, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -397,7 +390,7 @@ func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Regis
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.Apply.Duration),
+			timeout.Get(op.Timeout, timeouts.Apply),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(dryRun)
 				if err != nil {
@@ -413,7 +406,7 @@ func (p *stepProcessor) applyOperation(id int, registeredClusters clusters.Regis
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Assert) ([]operation, error) {
+func (p *stepProcessor) assertOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Assert) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
@@ -433,7 +426,7 @@ func (p *stepProcessor) assertOperation(id int, registeredClusters clusters.Regi
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.Assert.Duration),
+			timeout.Get(op.Timeout, timeouts.Assert),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(false)
 				if err != nil {
@@ -449,7 +442,7 @@ func (p *stepProcessor) assertOperation(id int, registeredClusters clusters.Regi
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Command) operation {
+func (p *stepProcessor) commandOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Command) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Command ", report.OperationTypeCommand)
@@ -465,7 +458,7 @@ func (p *stepProcessor) commandOperation(id int, registeredClusters clusters.Reg
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
+		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -479,7 +472,7 @@ func (p *stepProcessor) commandOperation(id int, registeredClusters clusters.Reg
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Registry, cleaner cleanup.Cleaner, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, cleaner cleanup.Cleaner, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -504,7 +497,7 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.Apply.Duration),
+			timeout.Get(op.Timeout, timeouts.Apply),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(dryRun)
 				if err != nil {
@@ -520,7 +513,7 @@ func (p *stepProcessor) createOperation(id int, registeredClusters clusters.Regi
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Delete) ([]operation, error) {
+func (p *stepProcessor) deleteOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Delete) ([]operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -564,7 +557,7 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.Delete.Duration),
+			timeout.Get(op.Timeout, timeouts.Delete),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(false)
 				if err != nil {
@@ -580,7 +573,7 @@ func (p *stepProcessor) deleteOperation(id int, registeredClusters clusters.Regi
 	return ops, nil
 }
 
-func (p *stepProcessor) describeOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Describe) operation {
+func (p *stepProcessor) describeOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Describe) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Describe ", report.OperationTypeCommand)
@@ -596,7 +589,7 @@ func (p *stepProcessor) describeOperation(id int, registeredClusters clusters.Re
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
+		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -613,7 +606,7 @@ func (p *stepProcessor) describeOperation(id int, registeredClusters clusters.Re
 	)
 }
 
-func (p *stepProcessor) errorOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Error) ([]operation, error) {
+func (p *stepProcessor) errorOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Error) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
@@ -634,7 +627,7 @@ func (p *stepProcessor) errorOperation(id int, registeredClusters clusters.Regis
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.Error.Duration),
+			timeout.Get(op.Timeout, timeouts.Error),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(false)
 				if err != nil {
@@ -650,7 +643,7 @@ func (p *stepProcessor) errorOperation(id int, registeredClusters clusters.Regis
 	return ops, nil
 }
 
-func (p *stepProcessor) getOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Get) operation {
+func (p *stepProcessor) getOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Get) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Get ", report.OperationTypeCommand)
@@ -666,7 +659,7 @@ func (p *stepProcessor) getOperation(id int, registeredClusters clusters.Registr
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
+		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -683,7 +676,7 @@ func (p *stepProcessor) getOperation(id int, registeredClusters clusters.Registr
 	)
 }
 
-func (p *stepProcessor) logsOperation(id int, registeredClusters clusters.Registry, op v1alpha1.PodLogs) operation {
+func (p *stepProcessor) logsOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.PodLogs) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Logs ", report.OperationTypeCommand)
@@ -699,7 +692,7 @@ func (p *stepProcessor) logsOperation(id int, registeredClusters clusters.Regist
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
+		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -716,7 +709,7 @@ func (p *stepProcessor) logsOperation(id int, registeredClusters clusters.Regist
 	)
 }
 
-func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Patch) ([]operation, error) {
+func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Patch) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -741,7 +734,7 @@ func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Regis
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.Apply.Duration),
+			timeout.Get(op.Timeout, timeouts.Apply),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(dryRun)
 				if err != nil {
@@ -757,7 +750,7 @@ func (p *stepProcessor) patchOperation(id int, registeredClusters clusters.Regis
 	return ops, nil
 }
 
-func (p *stepProcessor) proxyOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Proxy) operation {
+func (p *stepProcessor) proxyOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Proxy) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Proxy ", report.OperationTypeCommand)
@@ -773,7 +766,7 @@ func (p *stepProcessor) proxyOperation(id int, registeredClusters clusters.Regis
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
+		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -790,7 +783,7 @@ func (p *stepProcessor) proxyOperation(id int, registeredClusters clusters.Regis
 	)
 }
 
-func (p *stepProcessor) scriptOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Script) operation {
+func (p *stepProcessor) scriptOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Script) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Script ", report.OperationTypeScript)
@@ -806,7 +799,7 @@ func (p *stepProcessor) scriptOperation(id int, registeredClusters clusters.Regi
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, p.timeouts.Exec.Duration),
+		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 			config, client, err := clusterResolver(false)
 			if err != nil {
@@ -839,7 +832,7 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 	)
 }
 
-func (p *stepProcessor) updateOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Update) ([]operation, error) {
+func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Update) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -864,7 +857,7 @@ func (p *stepProcessor) updateOperation(id int, registeredClusters clusters.Regi
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, p.timeouts.Apply.Duration),
+			timeout.Get(op.Timeout, timeouts.Apply),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
 				config, client, err := clusterResolver(dryRun)
 				if err != nil {
@@ -880,7 +873,7 @@ func (p *stepProcessor) updateOperation(id int, registeredClusters clusters.Regi
 	return ops, nil
 }
 
-func (p *stepProcessor) waitOperation(id int, registeredClusters clusters.Registry, op v1alpha1.Wait) operation {
+func (p *stepProcessor) waitOperation(id int, timeouts model.Timeouts, registeredClusters clusters.Registry, op v1alpha1.Wait) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Wait ", report.OperationTypeCommand)
@@ -890,7 +883,7 @@ func (p *stepProcessor) waitOperation(id int, registeredClusters clusters.Regist
 		ns = p.namespacer.GetNamespace()
 	}
 	// make sure timeout is set to populate the command flag
-	op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.Exec.Duration)}
+	op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, timeouts.Exec)}
 	// shift operation timeout
 	timeout := op.Timeout.Duration + 30*time.Second
 	registeredClusters = clusters.Register(registeredClusters, p.test.BasePath, op.Clusters)
