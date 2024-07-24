@@ -12,7 +12,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -85,14 +84,13 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			}
 		}
 	})
-	registeredClusters := clusters.Register(tc.Clusters(), test.BasePath, test.Test.Spec.Clusters)
-	clusterConfig, clusterClient, err := registeredClusters.Resolve(false, test.Test.Spec.Cluster)
+	tc = model.WithClusters(ctx, tc, test.BasePath, test.Test.Spec.Clusters)
+	_, clusterClient, _tc, err := model.WithCurrentCluster(ctx, tc, test.Test.Spec.Cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	tc = tc.WithBinding(ctx, "client", clusterClient)
-	tc = tc.WithBinding(ctx, "config", clusterConfig)
+	tc = _tc
 	if test.Test.Spec.SkipDelete != nil {
 		tc = tc.WithCleanup(ctx, !*test.Test.Spec.SkipDelete)
 	}
@@ -129,23 +127,21 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	if p.report != nil && nspacer != nil {
 		p.report.SetNamespace(nspacer.GetNamespace())
 	}
-	_tc, err := model.WithBindings(ctx, tc, test.Test.Spec.Bindings...)
-	if err != nil {
+	if _tc, err := model.WithBindings(ctx, tc, test.Test.Spec.Bindings...); err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
+	} else {
+		tc = _tc
 	}
-	tc = _tc
 	for i, step := range test.Test.Spec.Steps {
-		processor := p.createStepProcessor(nspacer, test, step)
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
+		ctx := logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name)))
 		tc := tc.WithBinding(ctx, "step", StepInfo{Id: i + 1})
-		processor.Run(
-			logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name))),
-			tc,
-		)
+		processor := p.createStepProcessor(nspacer, test, step)
+		processor.Run(ctx, tc)
 	}
 }
 

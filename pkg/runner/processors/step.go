@@ -10,14 +10,13 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
-	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client/dryrun"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/logging"
 	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
@@ -38,7 +37,6 @@ import (
 	"github.com/kyverno/pkg/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 )
 
@@ -89,7 +87,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 		tc = tc.WithCleanup(ctx, !*p.step.TestStepSpec.SkipDelete)
 	}
 	tc = model.WithClusters(ctx, tc, p.test.BasePath, p.step.Clusters)
-	if _tc, err := model.UseCluster(ctx, tc, p.test.Test.Spec.Cluster); err != nil {
+	if _, _, _tc, err := model.WithCurrentCluster(ctx, tc, p.test.Test.Spec.Cluster); err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	} else {
@@ -382,7 +380,7 @@ func (p *stepProcessor) applyOperation(id int, tc model.TestContext, cleaner cle
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	clusterResolver := p.getClusterResolver(clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters), op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -396,7 +394,7 @@ func (p *stepProcessor) applyOperation(id int, tc model.TestContext, cleaner cle
 			false,
 			timeout.Get(op.Timeout, tc.Timeouts().Apply),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, err := clusterResolver(dryRun)
+				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -421,7 +419,7 @@ func (p *stepProcessor) assertOperation(id int, tc model.TestContext, op v1alpha
 		operationReport = p.report.ForOperation("Assert ", report.OperationTypeAssert)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	clusterResolver := p.getClusterResolver(clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters), op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -432,7 +430,7 @@ func (p *stepProcessor) assertOperation(id int, tc model.TestContext, op v1alpha
 			false,
 			timeout.Get(op.Timeout, tc.Timeouts().Assert),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, err := clusterResolver(false)
+				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -455,8 +453,7 @@ func (p *stepProcessor) commandOperation(id int, tc model.TestContext, op v1alph
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -464,7 +461,7 @@ func (p *stepProcessor) commandOperation(id int, tc model.TestContext, op v1alph
 		false,
 		timeout.Get(op.Timeout, tc.Timeouts().Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, err := clusterResolver(false)
+			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -488,8 +485,7 @@ func (p *stepProcessor) createOperation(id int, tc model.TestContext, cleaner cl
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -503,7 +499,7 @@ func (p *stepProcessor) createOperation(id int, tc model.TestContext, cleaner cl
 			false,
 			timeout.Get(op.Timeout, tc.Timeouts().Apply),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, err := clusterResolver(dryRun)
+				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -551,8 +547,7 @@ func (p *stepProcessor) deleteOperation(id int, tc model.TestContext, op v1alpha
 		deletionPropagationPolicy = *p.test.Test.Spec.DeletionPropagationPolicy
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -563,7 +558,7 @@ func (p *stepProcessor) deleteOperation(id int, tc model.TestContext, op v1alpha
 			false,
 			timeout.Get(op.Timeout, tc.Timeouts().Delete),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, err := clusterResolver(false)
+				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -586,8 +581,7 @@ func (p *stepProcessor) describeOperation(id int, tc model.TestContext, op v1alp
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -595,7 +589,7 @@ func (p *stepProcessor) describeOperation(id int, tc model.TestContext, op v1alp
 		false,
 		timeout.Get(op.Timeout, tc.Timeouts().Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, err := clusterResolver(false)
+			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -621,8 +615,7 @@ func (p *stepProcessor) errorOperation(id int, tc model.TestContext, op v1alpha1
 		operationReport = p.report.ForOperation("Error ", report.OperationTypeCommand)
 	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -633,7 +626,7 @@ func (p *stepProcessor) errorOperation(id int, tc model.TestContext, op v1alpha1
 			false,
 			timeout.Get(op.Timeout, tc.Timeouts().Error),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, err := clusterResolver(false)
+				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
 					return nil, nil, err
 				}
@@ -656,8 +649,7 @@ func (p *stepProcessor) getOperation(id int, tc model.TestContext, op v1alpha1.G
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -665,7 +657,7 @@ func (p *stepProcessor) getOperation(id int, tc model.TestContext, op v1alpha1.G
 		false,
 		timeout.Get(op.Timeout, tc.Timeouts().Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, err := clusterResolver(false)
+			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -689,8 +681,7 @@ func (p *stepProcessor) logsOperation(id int, tc model.TestContext, op v1alpha1.
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -698,7 +689,7 @@ func (p *stepProcessor) logsOperation(id int, tc model.TestContext, op v1alpha1.
 		false,
 		timeout.Get(op.Timeout, tc.Timeouts().Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, err := clusterResolver(false)
+			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -725,8 +716,7 @@ func (p *stepProcessor) patchOperation(id int, tc model.TestContext, op v1alpha1
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -740,9 +730,12 @@ func (p *stepProcessor) patchOperation(id int, tc model.TestContext, op v1alpha1
 			false,
 			timeout.Get(op.Timeout, tc.Timeouts().Apply),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, err := clusterResolver(dryRun)
+				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
 					return nil, nil, err
+				}
+				if dryRun {
+					client = dryrun.New(client)
 				}
 				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
 				return oppatch.New(client, resource, p.namespacer, template, op.Expect, op.Outputs), bindings, nil
@@ -763,8 +756,7 @@ func (p *stepProcessor) proxyOperation(id int, tc model.TestContext, op v1alpha1
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -772,7 +764,7 @@ func (p *stepProcessor) proxyOperation(id int, tc model.TestContext, op v1alpha1
 		false,
 		timeout.Get(op.Timeout, tc.Timeouts().Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, err := clusterResolver(false)
+			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -796,8 +788,7 @@ func (p *stepProcessor) scriptOperation(id int, tc model.TestContext, op v1alpha
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -805,7 +796,7 @@ func (p *stepProcessor) scriptOperation(id int, tc model.TestContext, op v1alpha
 		false,
 		timeout.Get(op.Timeout, tc.Timeouts().Exec),
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, err := clusterResolver(false)
+			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -848,8 +839,7 @@ func (p *stepProcessor) updateOperation(id int, tc model.TestContext, op v1alpha
 	}
 	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -863,9 +853,12 @@ func (p *stepProcessor) updateOperation(id int, tc model.TestContext, op v1alpha
 			false,
 			timeout.Get(op.Timeout, tc.Timeouts().Apply),
 			func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-				config, client, err := clusterResolver(dryRun)
+				config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 				if err != nil {
 					return nil, nil, err
+				}
+				if dryRun {
+					client = dryrun.New(client)
 				}
 				bindings = apibindings.RegisterClusterBindings(ctx, bindings, config, client)
 				return opupdate.New(client, resource, p.namespacer, template, op.Expect, op.Outputs), bindings, nil
@@ -890,8 +883,7 @@ func (p *stepProcessor) waitOperation(id int, tc model.TestContext, op v1alpha1.
 	op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, tc.Timeouts().Exec)}
 	// shift operation timeout
 	timeout := op.Timeout.Duration + 30*time.Second
-	registeredClusters := clusters.Register(tc.Clusters(), p.test.BasePath, op.Clusters)
-	clusterResolver := p.getClusterResolver(registeredClusters, op.Cluster)
+	tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -899,7 +891,7 @@ func (p *stepProcessor) waitOperation(id int, tc model.TestContext, op v1alpha1.
 		false,
 		&timeout,
 		func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-			config, client, err := clusterResolver(false)
+			config, client, _, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -973,12 +965,6 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 		}
 	}
 	return nil
-}
-
-func (p *stepProcessor) getClusterResolver(registeredClusters clusters.Registry, opCluster string) func(bool) (*rest.Config, client.Client, error) {
-	return func(dryRun bool) (*rest.Config, client.Client, error) {
-		return registeredClusters.Resolve(dryRun, opCluster, p.step.Cluster, p.test.Test.Spec.Cluster)
-	}
 }
 
 func getCleanerOrNil(cleaner cleaner.CleanerCollector, enabled bool) cleaner.CleanerCollector {
