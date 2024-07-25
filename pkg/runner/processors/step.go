@@ -391,27 +391,27 @@ func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner 
 			false,
 			timeout.Get(op.Timeout, timeouts.Apply),
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-				if err != nil {
+				if tc, err := setupContextData(ctx, tc, contextData{
+					basePath: p.test.BasePath,
+					clusters: op.Clusters,
+					cluster:  &op.Cluster,
+					bindings: op.Bindings,
+				}); err != nil {
 					return nil, tc, err
-				}
-				tc = _tc
-				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, tc, err
 				} else {
-					tc = _tc
+					op := opapply.New(
+						client,
+						resource,
+						p.namespacer,
+						getCleanerOrNil(cleaner, !dryRun),
+						template,
+						op.Expect,
+						op.Outputs,
+					)
+					return op, tc, nil
 				}
-				op := opapply.New(
-					client,
-					resource,
-					p.namespacer,
-					getCleanerOrNil(cleaner, !dryRun),
-					template,
-					op.Expect,
-					op.Outputs,
-				)
-				return op, tc, nil
 			},
 			operationReport,
 		))
@@ -440,24 +440,24 @@ func (p *stepProcessor) assertOperation(id int, timeouts model.Timeouts, op v1al
 			false,
 			timeout.Get(op.Timeout, timeouts.Assert),
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-				if err != nil {
+				if tc, err := setupContextData(ctx, tc, contextData{
+					basePath: p.test.BasePath,
+					clusters: op.Clusters,
+					cluster:  &op.Cluster,
+					bindings: op.Bindings,
+				}); err != nil {
 					return nil, tc, err
-				}
-				tc = _tc
-				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, tc, err
 				} else {
-					tc = _tc
+					op := opassert.New(
+						client,
+						resource,
+						p.namespacer,
+						template,
+					)
+					return op, tc, nil
 				}
-				op := opassert.New(
-					client,
-					resource,
-					p.namespacer,
-					template,
-				)
-				return op, tc, nil
 			},
 			operationReport,
 		))
@@ -481,24 +481,24 @@ func (p *stepProcessor) commandOperation(id int, timeouts model.Timeouts, op v1a
 		false,
 		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-			config, _, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-			if err != nil {
+			if tc, err := setupContextData(ctx, tc, contextData{
+				basePath: p.test.BasePath,
+				clusters: op.Clusters,
+				cluster:  &op.Cluster,
+				bindings: op.Bindings,
+			}); err != nil {
 				return nil, tc, err
-			}
-			tc = _tc
-			if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, tc, err
 			} else {
-				tc = _tc
+				op := opcommand.New(
+					op,
+					p.test.BasePath,
+					ns,
+					config,
+				)
+				return op, tc, nil
 			}
-			op := opcommand.New(
-				op,
-				p.test.BasePath,
-				ns,
-				config,
-			)
-			return op, tc, nil
 		},
 		operationReport,
 	)
@@ -529,27 +529,27 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner
 			false,
 			timeout.Get(op.Timeout, timeouts.Apply),
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-				if err != nil {
+				if tc, err := setupContextData(ctx, tc, contextData{
+					basePath: p.test.BasePath,
+					clusters: op.Clusters,
+					cluster:  &op.Cluster,
+					bindings: op.Bindings,
+				}); err != nil {
 					return nil, tc, err
-				}
-				tc = _tc
-				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, tc, err
 				} else {
-					tc = _tc
+					op := opcreate.New(
+						client,
+						resource,
+						p.namespacer,
+						getCleanerOrNil(cleaner, !dryRun),
+						template,
+						op.Expect,
+						op.Outputs,
+					)
+					return op, tc, nil
 				}
-				op := opcreate.New(
-					client,
-					resource,
-					p.namespacer,
-					getCleanerOrNil(cleaner, !dryRun),
-					template,
-					op.Expect,
-					op.Outputs,
-				)
-				return op, tc, nil
 			},
 			operationReport,
 		))
@@ -600,26 +600,26 @@ func (p *stepProcessor) deleteOperation(id int, timeouts model.Timeouts, op v1al
 			false,
 			timeout.Get(op.Timeout, timeouts.Delete),
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-				if err != nil {
+				if tc, err := setupContextData(ctx, tc, contextData{
+					basePath: p.test.BasePath,
+					clusters: op.Clusters,
+					cluster:  &op.Cluster,
+					bindings: op.Bindings,
+				}); err != nil {
 					return nil, tc, err
-				}
-				tc = _tc
-				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, tc, err
 				} else {
-					tc = _tc
+					op := opdelete.New(
+						client,
+						resource,
+						p.namespacer,
+						template,
+						deletionPropagationPolicy,
+						op.Expect...,
+					)
+					return op, tc, nil
 				}
-				op := opdelete.New(
-					client,
-					resource,
-					p.namespacer,
-					template,
-					deletionPropagationPolicy,
-					op.Expect...,
-				)
-				return op, tc, nil
 			},
 			operationReport,
 		))
@@ -643,23 +643,28 @@ func (p *stepProcessor) describeOperation(id int, timeouts model.Timeouts, op v1
 		false,
 		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-			config, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-			if err != nil {
+			if tc, err := setupContextData(ctx, tc, contextData{
+				basePath: p.test.BasePath,
+				clusters: op.Clusters,
+				cluster:  &op.Cluster,
+				bindings: nil,
+			}); err != nil {
 				return nil, tc, err
-			}
-			tc = _tc
-			cmd, err := kubectl.Describe(client, tc.Bindings(), &op)
-			if err != nil {
+			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, tc, err
+			} else {
+				cmd, err := kubectl.Describe(client, tc.Bindings(), &op)
+				if err != nil {
+					return nil, tc, err
+				}
+				op := opcommand.New(
+					*cmd,
+					p.test.BasePath,
+					ns,
+					config,
+				)
+				return op, tc, nil
 			}
-			op := opcommand.New(
-				*cmd,
-				p.test.BasePath,
-				ns,
-				config,
-			)
-			return op, tc, nil
 		},
 		operationReport,
 	)
@@ -686,24 +691,24 @@ func (p *stepProcessor) errorOperation(id int, timeouts model.Timeouts, op v1alp
 			false,
 			timeout.Get(op.Timeout, timeouts.Error),
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-				if err != nil {
+				if tc, err := setupContextData(ctx, tc, contextData{
+					basePath: p.test.BasePath,
+					clusters: op.Clusters,
+					cluster:  &op.Cluster,
+					bindings: op.Bindings,
+				}); err != nil {
 					return nil, tc, err
-				}
-				tc = _tc
-				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, tc, err
 				} else {
-					tc = _tc
+					op := operror.New(
+						client,
+						resource,
+						p.namespacer,
+						template,
+					)
+					return op, tc, nil
 				}
-				op := operror.New(
-					client,
-					resource,
-					p.namespacer,
-					template,
-				)
-				return op, tc, nil
 			},
 			operationReport,
 		))
@@ -727,23 +732,28 @@ func (p *stepProcessor) getOperation(id int, timeouts model.Timeouts, op v1alpha
 		false,
 		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-			config, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-			if err != nil {
+			if tc, err := setupContextData(ctx, tc, contextData{
+				basePath: p.test.BasePath,
+				clusters: op.Clusters,
+				cluster:  &op.Cluster,
+				bindings: nil,
+			}); err != nil {
 				return nil, tc, err
-			}
-			tc = _tc
-			cmd, err := kubectl.Get(client, tc.Bindings(), &op)
-			if err != nil {
+			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, tc, err
+			} else {
+				cmd, err := kubectl.Get(client, tc.Bindings(), &op)
+				if err != nil {
+					return nil, tc, err
+				}
+				op := opcommand.New(
+					*cmd,
+					p.test.BasePath,
+					ns,
+					config,
+				)
+				return op, tc, nil
 			}
-			op := opcommand.New(
-				*cmd,
-				p.test.BasePath,
-				ns,
-				config,
-			)
-			return op, tc, nil
 		},
 		operationReport,
 	)
@@ -765,23 +775,28 @@ func (p *stepProcessor) logsOperation(id int, timeouts model.Timeouts, op v1alph
 		false,
 		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-			config, _, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-			if err != nil {
+			if tc, err := setupContextData(ctx, tc, contextData{
+				basePath: p.test.BasePath,
+				clusters: op.Clusters,
+				cluster:  &op.Cluster,
+				bindings: nil,
+			}); err != nil {
 				return nil, tc, err
-			}
-			tc = _tc
-			cmd, err := kubectl.Logs(tc.Bindings(), &op)
-			if err != nil {
+			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, tc, err
+			} else {
+				cmd, err := kubectl.Logs(tc.Bindings(), &op)
+				if err != nil {
+					return nil, tc, err
+				}
+				op := opcommand.New(
+					*cmd,
+					p.test.BasePath,
+					ns,
+					config,
+				)
+				return op, tc, nil
 			}
-			op := opcommand.New(
-				*cmd,
-				p.test.BasePath,
-				ns,
-				config,
-			)
-			return op, tc, nil
 		},
 		operationReport,
 	)
@@ -812,29 +827,29 @@ func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alp
 			false,
 			timeout.Get(op.Timeout, timeouts.Apply),
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-				if err != nil {
+				if tc, err := setupContextData(ctx, tc, contextData{
+					basePath: p.test.BasePath,
+					clusters: op.Clusters,
+					cluster:  &op.Cluster,
+					bindings: op.Bindings,
+				}); err != nil {
 					return nil, tc, err
-				}
-				tc = _tc
-				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, tc, err
 				} else {
-					tc = _tc
+					if dryRun {
+						client = dryrun.New(client)
+					}
+					op := oppatch.New(
+						client,
+						resource,
+						p.namespacer,
+						template,
+						op.Expect,
+						op.Outputs,
+					)
+					return op, tc, nil
 				}
-				if dryRun {
-					client = dryrun.New(client)
-				}
-				op := oppatch.New(
-					client,
-					resource,
-					p.namespacer,
-					template,
-					op.Expect,
-					op.Outputs,
-				)
-				return op, tc, nil
 			},
 			operationReport,
 		))
@@ -858,23 +873,28 @@ func (p *stepProcessor) proxyOperation(id int, timeouts model.Timeouts, op v1alp
 		false,
 		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-			config, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-			if err != nil {
+			if tc, err := setupContextData(ctx, tc, contextData{
+				basePath: p.test.BasePath,
+				clusters: op.Clusters,
+				cluster:  &op.Cluster,
+				bindings: nil,
+			}); err != nil {
 				return nil, tc, err
-			}
-			tc = _tc
-			cmd, err := kubectl.Proxy(client, tc.Bindings(), &op)
-			if err != nil {
+			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, tc, err
+			} else {
+				cmd, err := kubectl.Proxy(client, tc.Bindings(), &op)
+				if err != nil {
+					return nil, tc, err
+				}
+				op := opcommand.New(
+					*cmd,
+					p.test.BasePath,
+					ns,
+					config,
+				)
+				return op, tc, nil
 			}
-			op := opcommand.New(
-				*cmd,
-				p.test.BasePath,
-				ns,
-				config,
-			)
-			return op, tc, nil
 		},
 		operationReport,
 	)
@@ -896,24 +916,24 @@ func (p *stepProcessor) scriptOperation(id int, timeouts model.Timeouts, op v1al
 		false,
 		timeout.Get(op.Timeout, timeouts.Exec),
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-			config, _, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-			if err != nil {
+			if tc, err := setupContextData(ctx, tc, contextData{
+				basePath: p.test.BasePath,
+				clusters: op.Clusters,
+				cluster:  &op.Cluster,
+				bindings: op.Bindings,
+			}); err != nil {
 				return nil, tc, err
-			}
-			tc = _tc
-			if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, tc, err
 			} else {
-				tc = _tc
+				op := opscript.New(
+					op,
+					p.test.BasePath,
+					ns,
+					config,
+				)
+				return op, tc, nil
 			}
-			op := opscript.New(
-				op,
-				p.test.BasePath,
-				ns,
-				config,
-			)
-			return op, tc, nil
 		},
 		operationReport,
 	)
@@ -962,29 +982,29 @@ func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1al
 			false,
 			timeout.Get(op.Timeout, timeouts.Apply),
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-				tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-				_, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-				if err != nil {
+				if tc, err := setupContextData(ctx, tc, contextData{
+					basePath: p.test.BasePath,
+					clusters: op.Clusters,
+					cluster:  &op.Cluster,
+					bindings: op.Bindings,
+				}); err != nil {
 					return nil, tc, err
-				}
-				tc = _tc
-				if _tc, err := model.WithBindings(ctx, tc, op.Bindings...); err != nil {
+				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, tc, err
 				} else {
-					tc = _tc
+					if dryRun {
+						client = dryrun.New(client)
+					}
+					op := opupdate.New(
+						client,
+						resource,
+						p.namespacer,
+						template,
+						op.Expect,
+						op.Outputs,
+					)
+					return op, tc, nil
 				}
-				if dryRun {
-					client = dryrun.New(client)
-				}
-				op := opupdate.New(
-					client,
-					resource,
-					p.namespacer,
-					template,
-					op.Expect,
-					op.Outputs,
-				)
-				return op, tc, nil
 			},
 			operationReport,
 		))
@@ -1012,18 +1032,23 @@ func (p *stepProcessor) waitOperation(id int, timeouts model.Timeouts, op v1alph
 		false,
 		&timeout,
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-			tc = model.WithClusters(context.TODO(), tc, p.test.BasePath, op.Clusters)
-			config, client, _tc, err := model.WithCurrentCluster(ctx, tc, op.Cluster)
-			if err != nil {
+			if tc, err := setupContextData(ctx, tc, contextData{
+				basePath: p.test.BasePath,
+				clusters: op.Clusters,
+				cluster:  &op.Cluster,
+				bindings: nil,
+			}); err != nil {
 				return nil, tc, err
-			}
-			tc = _tc
-			cmd, err := kubectl.Wait(client, tc.Bindings(), &op)
-			if err != nil {
+			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, tc, err
+			} else {
+				cmd, err := kubectl.Wait(client, tc.Bindings(), &op)
+				if err != nil {
+					return nil, tc, err
+				}
+				op := opcommand.New(*cmd, p.test.BasePath, ns, config)
+				return op, tc, nil
 			}
-			op := opcommand.New(*cmd, p.test.BasePath, ns, config)
-			return op, tc, nil
 		},
 		operationReport,
 	)
