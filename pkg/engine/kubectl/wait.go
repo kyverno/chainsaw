@@ -30,7 +30,7 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 	if err != nil {
 		return nil, err
 	}
-	cluster, err := apibindings.String(collector.Cluster, bindings)
+	cluster, err := apibindings.StringPointer(collector.Cluster, bindings)
 	if err != nil {
 		return nil, err
 	}

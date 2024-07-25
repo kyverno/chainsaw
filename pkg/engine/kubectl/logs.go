@@ -29,7 +29,7 @@ func Logs(bindings binding.Bindings, collector *v1alpha1.PodLogs) (*v1alpha1.Com
 	if err != nil {
 		return nil, err
 	}
-	cluster, err := apibindings.String(collector.Cluster, bindings)
+	cluster, err := apibindings.StringPointer(collector.Cluster, bindings)
 	if err != nil {
 		return nil, err
 	}

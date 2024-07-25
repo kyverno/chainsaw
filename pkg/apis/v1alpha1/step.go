@@ -82,9 +82,9 @@ type TestStepSpec struct {
 	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
 	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
 
-	// Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).
+	// Cluster defines the target cluster (will be inherited if not specified).
 	// +optional
-	Cluster string `json:"cluster,omitempty"`
+	Cluster *string `json:"cluster,omitempty"`
 
 	// Clusters holds a registry to clusters to support multi-cluster tests.
 	// +optional
