@@ -29,7 +29,7 @@ func Get(client client.Client, bindings binding.Bindings, collector *v1alpha1.Ge
 	if err != nil {
 		return nil, err
 	}
-	cluster, err := apibindings.String(collector.Cluster, bindings)
+	cluster, err := apibindings.StringPointer(collector.Cluster, bindings)
 	if err != nil {
 		return nil, err
 	}

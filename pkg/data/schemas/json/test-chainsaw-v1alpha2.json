@@ -570,7 +570,7 @@
                         "x-kubernetes-preserve-unknown-fields": true
                       },
                       "cluster": {
-                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "description": "Cluster defines the target cluster (will be inherited if not specified).",
                         "type": [
                           "string",
                           "null"
@@ -735,7 +735,7 @@
                         }
                       },
                       "cluster": {
-                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "description": "Cluster defines the target cluster (will be inherited if not specified).",
                         "type": [
                           "string",
                           "null"
@@ -908,7 +908,7 @@
                         "type": "string"
                       },
                       "cluster": {
-                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "description": "Cluster defines the target cluster (will be inherited if not specified).",
                         "type": [
                           "string",
                           "null"
@@ -1006,7 +1006,7 @@
                     },
                     "properties": {
                       "cluster": {
-                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "description": "Cluster defines the target cluster (will be inherited if not specified).",
                         "type": [
                           "string",
                           "null"
@@ -1102,7 +1102,7 @@
                         "type": "string"
                       },
                       "cluster": {
-                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "description": "Cluster defines the target cluster (will be inherited if not specified).",
                         "type": [
                           "string",
                           "null"
@@ -1194,7 +1194,7 @@
                     },
                     "properties": {
                       "cluster": {
-                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "description": "Cluster defines the target cluster (will be inherited if not specified).",
                         "type": [
                           "string",
                           "null"
@@ -1319,7 +1319,7 @@
                         "x-kubernetes-preserve-unknown-fields": true
                       },
                       "cluster": {
-                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "description": "Cluster defines the target cluster (will be inherited if not specified).",
                         "type": [
                           "string",
                           "null"
@@ -1483,7 +1483,7 @@
                         "type": "string"
                       },
                       "cluster": {
-                        "description": "Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).",
+                        "description": "Cluster defines the target cluster (will be inherited if not specified).",
                         "type": [
                           "string",
                           "null"

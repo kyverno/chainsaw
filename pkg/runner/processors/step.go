@@ -394,7 +394,7 @@ func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner 
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					clusters: op.Clusters,
-					cluster:  &op.Cluster,
+					cluster:  op.Cluster,
 					bindings: op.Bindings,
 				}); err != nil {
 					return nil, tc, err
@@ -443,7 +443,7 @@ func (p *stepProcessor) assertOperation(id int, timeouts model.Timeouts, op v1al
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					clusters: op.Clusters,
-					cluster:  &op.Cluster,
+					cluster:  op.Cluster,
 					bindings: op.Bindings,
 				}); err != nil {
 					return nil, tc, err
@@ -484,7 +484,7 @@ func (p *stepProcessor) commandOperation(id int, timeouts model.Timeouts, op v1a
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				clusters: op.Clusters,
-				cluster:  &op.Cluster,
+				cluster:  op.Cluster,
 				bindings: op.Bindings,
 			}); err != nil {
 				return nil, tc, err
@@ -532,7 +532,7 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					clusters: op.Clusters,
-					cluster:  &op.Cluster,
+					cluster:  op.Cluster,
 					bindings: op.Bindings,
 				}); err != nil {
 					return nil, tc, err
@@ -603,7 +603,7 @@ func (p *stepProcessor) deleteOperation(id int, timeouts model.Timeouts, op v1al
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					clusters: op.Clusters,
-					cluster:  &op.Cluster,
+					cluster:  op.Cluster,
 					bindings: op.Bindings,
 				}); err != nil {
 					return nil, tc, err
@@ -646,7 +646,7 @@ func (p *stepProcessor) describeOperation(id int, timeouts model.Timeouts, op v1
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				clusters: op.Clusters,
-				cluster:  &op.Cluster,
+				cluster:  op.Cluster,
 				bindings: nil,
 			}); err != nil {
 				return nil, tc, err
@@ -694,7 +694,7 @@ func (p *stepProcessor) errorOperation(id int, timeouts model.Timeouts, op v1alp
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					clusters: op.Clusters,
-					cluster:  &op.Cluster,
+					cluster:  op.Cluster,
 					bindings: op.Bindings,
 				}); err != nil {
 					return nil, tc, err
@@ -735,7 +735,7 @@ func (p *stepProcessor) getOperation(id int, timeouts model.Timeouts, op v1alpha
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				clusters: op.Clusters,
-				cluster:  &op.Cluster,
+				cluster:  op.Cluster,
 				bindings: nil,
 			}); err != nil {
 				return nil, tc, err
@@ -778,7 +778,7 @@ func (p *stepProcessor) logsOperation(id int, timeouts model.Timeouts, op v1alph
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				clusters: op.Clusters,
-				cluster:  &op.Cluster,
+				cluster:  op.Cluster,
 				bindings: nil,
 			}); err != nil {
 				return nil, tc, err
@@ -830,7 +830,7 @@ func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alp
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					clusters: op.Clusters,
-					cluster:  &op.Cluster,
+					cluster:  op.Cluster,
 					bindings: op.Bindings,
 				}); err != nil {
 					return nil, tc, err
@@ -876,7 +876,7 @@ func (p *stepProcessor) proxyOperation(id int, timeouts model.Timeouts, op v1alp
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				clusters: op.Clusters,
-				cluster:  &op.Cluster,
+				cluster:  op.Cluster,
 				bindings: nil,
 			}); err != nil {
 				return nil, tc, err
@@ -919,7 +919,7 @@ func (p *stepProcessor) scriptOperation(id int, timeouts model.Timeouts, op v1al
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				clusters: op.Clusters,
-				cluster:  &op.Cluster,
+				cluster:  op.Cluster,
 				bindings: op.Bindings,
 			}); err != nil {
 				return nil, tc, err
@@ -985,7 +985,7 @@ func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1al
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					clusters: op.Clusters,
-					cluster:  &op.Cluster,
+					cluster:  op.Cluster,
 					bindings: op.Bindings,
 				}); err != nil {
 					return nil, tc, err
@@ -1035,7 +1035,7 @@ func (p *stepProcessor) waitOperation(id int, timeouts model.Timeouts, op v1alph
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				clusters: op.Clusters,
-				cluster:  &op.Cluster,
+				cluster:  op.Cluster,
 				bindings: nil,
 			}); err != nil {
 				return nil, tc, err

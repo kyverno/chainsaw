@@ -99,8 +99,8 @@ spec:
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -201,8 +201,8 @@ spec:
                             type: object
                           type: array
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -309,8 +309,8 @@ spec:
                           description: API version of the referent.
                           type: string
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -371,8 +371,8 @@ spec:
                         - selector
                       properties:
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -426,8 +426,8 @@ spec:
                           description: API version of the referent.
                           type: string
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -486,8 +486,8 @@ spec:
                         - selector
                       properties:
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -562,8 +562,8 @@ spec:
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -658,8 +658,8 @@ spec:
                           description: API version of the referent.
                           type: string
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -1046,8 +1046,8 @@ spec:
                               type: object
                               x-kubernetes-preserve-unknown-fields: true
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1149,8 +1149,8 @@ spec:
                                 type: object
                               type: array
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1258,8 +1258,8 @@ spec:
                               description: API version of the referent.
                               type: string
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1320,8 +1320,8 @@ spec:
                             - selector
                           properties:
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1376,8 +1376,8 @@ spec:
                               description: API version of the referent.
                               type: string
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1437,8 +1437,8 @@ spec:
                             - selector
                           properties:
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1513,8 +1513,8 @@ spec:
                               type: object
                               x-kubernetes-preserve-unknown-fields: true
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1609,8 +1609,8 @@ spec:
                               description: API version of the referent.
                               type: string
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
