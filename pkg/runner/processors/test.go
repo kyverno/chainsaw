@@ -139,7 +139,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			name = fmt.Sprintf("step-%d", i+1)
 		}
 		ctx := logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name)))
-		tc := tc.WithBinding(ctx, "step", StepInfo{Id: i + 1})
+		info := StepInfo{
+			Id: i + 1,
+		}
+		tc := tc.WithBinding(ctx, "step", info)
 		processor := p.createStepProcessor(nspacer, test, step)
 		processor.Run(ctx, tc)
 	}

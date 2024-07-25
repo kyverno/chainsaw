@@ -27,3 +27,4 @@ Release notes for `TODO`.
 ## 🔧 Fixes 🔧
 
 - Fixed incorrect bindings when operations are run against different clusters
+- Fixed operation info built-in bindings not registered before other bindings

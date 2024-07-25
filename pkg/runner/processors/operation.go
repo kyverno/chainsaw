@@ -7,7 +7,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -59,11 +58,12 @@ func (o operation) execute(ctx context.Context, tc model.TestContext) operations
 			failer.FailNow(ctx)
 		}
 	}
+	tc = tc.WithBinding(ctx, "operation", o.info)
 	operation, tc, err := o.operation(ctx, tc)
 	if err != nil {
 		handleError(err)
 	} else {
-		outputs, err := operation.Exec(ctx, apibindings.RegisterNamedBinding(ctx, tc.Bindings(), "operation", o.info))
+		outputs, err := operation.Exec(ctx, tc.Bindings())
 		// TODO
 		// if o.operationReport != nil {
 		// 	o.operationReport.MarkOperationEnd(err)
