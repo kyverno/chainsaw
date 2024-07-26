@@ -88,7 +88,11 @@ func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ..
 				if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
 					t.SkipNow()
 				}
-				if p.config.Execution.FailFast {
+				failFast := p.config.Execution.FailFast
+				if test.Test.Spec.FailFast != nil {
+					failFast = *test.Test.Spec.FailFast
+				}
+				if failFast {
 					if tc.Failed() > 0 {
 						t.SkipNow()
 					}
