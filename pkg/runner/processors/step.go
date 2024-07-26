@@ -9,7 +9,6 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
-	"github.com/kyverno/chainsaw/pkg/client/dryrun"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
@@ -103,7 +102,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 		delay = p.test.Test.Spec.DelayBeforeCleanup
 	}
 	cleaner := cleaner.New(timeouts.Cleanup, delay)
-	try, err := p.tryOperations(timeouts, getCleanerOrNil(cleaner, tc.Cleanup()))
+	try, err := p.tryOperations(timeouts, cleaner)
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -376,7 +375,6 @@ func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner 
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Apply "+op.File, report.OperationTypeApply)
 	}
-	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	for i := range resources {
 		resource := resources[i]
@@ -393,24 +391,27 @@ func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner 
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
-					clusters: op.Clusters,
-					cluster:  op.Cluster,
 					bindings: op.Bindings,
+					cluster:  op.Cluster,
+					clusters: op.Clusters,
+					dryRun:   op.DryRun,
 				}); err != nil {
 					return nil, tc, err
-				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
-					return nil, tc, err
 				} else {
-					op := opapply.New(
-						client,
-						resource,
-						p.namespacer,
-						getCleanerOrNil(cleaner, !dryRun),
-						template,
-						op.Expect,
-						op.Outputs,
-					)
-					return op, tc, nil
+					if _, client, err := tc.CurrentClusterClient(); err != nil {
+						return nil, tc, err
+					} else {
+						op := opapply.New(
+							client,
+							resource,
+							p.namespacer,
+							getCleanerOrNil(cleaner, tc),
+							template,
+							op.Expect,
+							op.Outputs,
+						)
+						return op, tc, nil
+					}
 				}
 			},
 			operationReport,
@@ -442,9 +443,9 @@ func (p *stepProcessor) assertOperation(id int, timeouts model.Timeouts, op v1al
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
-					clusters: op.Clusters,
-					cluster:  op.Cluster,
 					bindings: op.Bindings,
+					cluster:  op.Cluster,
+					clusters: op.Clusters,
 				}); err != nil {
 					return nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -483,9 +484,9 @@ func (p *stepProcessor) commandOperation(id int, timeouts model.Timeouts, op v1a
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
-				clusters: op.Clusters,
-				cluster:  op.Cluster,
 				bindings: op.Bindings,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
 			}); err != nil {
 				return nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
@@ -514,7 +515,6 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Create ", report.OperationTypeCreate)
 	}
-	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	for i := range resources {
 		resource := resources[i]
@@ -531,9 +531,10 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
-					clusters: op.Clusters,
-					cluster:  op.Cluster,
 					bindings: op.Bindings,
+					cluster:  op.Cluster,
+					clusters: op.Clusters,
+					dryRun:   op.DryRun,
 				}); err != nil {
 					return nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -543,7 +544,7 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner
 						client,
 						resource,
 						p.namespacer,
-						getCleanerOrNil(cleaner, !dryRun),
+						getCleanerOrNil(cleaner, tc),
 						template,
 						op.Expect,
 						op.Outputs,
@@ -602,9 +603,9 @@ func (p *stepProcessor) deleteOperation(id int, timeouts model.Timeouts, op v1al
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
-					clusters: op.Clusters,
-					cluster:  op.Cluster,
 					bindings: op.Bindings,
+					cluster:  op.Cluster,
+					clusters: op.Clusters,
 				}); err != nil {
 					return nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -645,9 +646,9 @@ func (p *stepProcessor) describeOperation(id int, timeouts model.Timeouts, op v1
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
-				clusters: op.Clusters,
-				cluster:  op.Cluster,
 				bindings: nil,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
 			}); err != nil {
 				return nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
@@ -693,9 +694,9 @@ func (p *stepProcessor) errorOperation(id int, timeouts model.Timeouts, op v1alp
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
-					clusters: op.Clusters,
-					cluster:  op.Cluster,
 					bindings: op.Bindings,
+					cluster:  op.Cluster,
+					clusters: op.Clusters,
 				}); err != nil {
 					return nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -734,9 +735,9 @@ func (p *stepProcessor) getOperation(id int, timeouts model.Timeouts, op v1alpha
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
-				clusters: op.Clusters,
-				cluster:  op.Cluster,
 				bindings: nil,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
 			}); err != nil {
 				return nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
@@ -777,9 +778,9 @@ func (p *stepProcessor) logsOperation(id int, timeouts model.Timeouts, op v1alph
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
-				clusters: op.Clusters,
-				cluster:  op.Cluster,
 				bindings: nil,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
 			}); err != nil {
 				return nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
@@ -812,7 +813,6 @@ func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alp
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Patch ", report.OperationTypeCreate)
 	}
-	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	for i := range resources {
 		resource := resources[i]
@@ -829,17 +829,15 @@ func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alp
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
-					clusters: op.Clusters,
-					cluster:  op.Cluster,
 					bindings: op.Bindings,
+					cluster:  op.Cluster,
+					clusters: op.Clusters,
+					dryRun:   op.DryRun,
 				}); err != nil {
 					return nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, tc, err
 				} else {
-					if dryRun {
-						client = dryrun.New(client)
-					}
 					op := oppatch.New(
 						client,
 						resource,
@@ -875,9 +873,9 @@ func (p *stepProcessor) proxyOperation(id int, timeouts model.Timeouts, op v1alp
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
-				clusters: op.Clusters,
-				cluster:  op.Cluster,
 				bindings: nil,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
 			}); err != nil {
 				return nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
@@ -918,9 +916,9 @@ func (p *stepProcessor) scriptOperation(id int, timeouts model.Timeouts, op v1al
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
-				clusters: op.Clusters,
-				cluster:  op.Cluster,
 				bindings: op.Bindings,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
 			}); err != nil {
 				return nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
@@ -967,7 +965,6 @@ func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1al
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Update ", report.OperationTypeCreate)
 	}
-	dryRun := op.DryRun != nil && *op.DryRun
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	for i := range resources {
 		resource := resources[i]
@@ -984,17 +981,15 @@ func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1al
 			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
-					clusters: op.Clusters,
-					cluster:  op.Cluster,
 					bindings: op.Bindings,
+					cluster:  op.Cluster,
+					clusters: op.Clusters,
+					dryRun:   op.DryRun,
 				}); err != nil {
 					return nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, tc, err
 				} else {
-					if dryRun {
-						client = dryrun.New(client)
-					}
 					op := opupdate.New(
 						client,
 						resource,
@@ -1034,9 +1029,9 @@ func (p *stepProcessor) waitOperation(id int, timeouts model.Timeouts, op v1alph
 		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
-				clusters: op.Clusters,
-				cluster:  op.Cluster,
 				bindings: nil,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
 			}); err != nil {
 				return nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
@@ -1115,8 +1110,11 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 	return nil
 }
 
-func getCleanerOrNil(cleaner cleaner.CleanerCollector, enabled bool) cleaner.CleanerCollector {
-	if !enabled {
+func getCleanerOrNil(cleaner cleaner.CleanerCollector, tc model.TestContext) cleaner.CleanerCollector {
+	if tc.DryRun() {
+		return nil
+	}
+	if !tc.Cleanup() {
 		return nil
 	}
 	return cleaner
