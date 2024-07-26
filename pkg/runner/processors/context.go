@@ -9,13 +9,17 @@ import (
 
 type contextData struct {
 	basePath string
-	clusters v1alpha1.Clusters
-	cluster  *string
 	bindings []v1alpha1.Binding
+	cluster  *string
+	clusters v1alpha1.Clusters
+	dryRun   *bool
 }
 
 func setupContextData(ctx context.Context, tc model.TestContext, data contextData) (model.TestContext, error) {
 	tc = model.WithClusters(ctx, tc, data.basePath, data.clusters)
+	if data.dryRun != nil {
+		tc = tc.WithDryRun(ctx, *data.dryRun)
+	}
 	if data.cluster != nil {
 		if _, _, _tc, err := model.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {
 			return tc, err

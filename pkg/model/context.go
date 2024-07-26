@@ -8,6 +8,7 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client/dryrun"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"k8s.io/client-go/rest"
@@ -28,6 +29,7 @@ type TestContext struct {
 	cleanup  bool
 	cluster  clusters.Cluster
 	clusters clusters.Registry
+	dryRun   bool
 	timeouts Timeouts
 }
 
@@ -66,7 +68,15 @@ func (tc *TestContext) CurrentCluster() clusters.Cluster {
 }
 
 func (tc *TestContext) CurrentClusterClient() (*rest.Config, client.Client, error) {
-	return tc.clusters.Build(tc.cluster)
+	config, client, err := tc.clusters.Build(tc.cluster)
+	if err == nil && client != nil && tc.DryRun() {
+		client = dryrun.New(client)
+	}
+	return config, client, err
+}
+
+func (tc *TestContext) DryRun() bool {
+	return tc.dryRun
 }
 
 func (tc *TestContext) Timeouts() Timeouts {
@@ -90,6 +100,11 @@ func (tc TestContext) WithCluster(ctx context.Context, name string, cluster clus
 
 func (tc TestContext) WithCurrentCluster(ctx context.Context, name string) TestContext {
 	tc.cluster = tc.Cluster(name)
+	return tc
+}
+
+func (tc TestContext) WithDryRun(ctx context.Context, dryRun bool) TestContext {
+	tc.dryRun = dryRun
 	return tc
 }
 
