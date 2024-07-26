@@ -60,9 +60,8 @@ func TestOperation_Execute(t *testing.T) {
 			op := newOperation(
 				OperationInfo{},
 				localTC.continueOnError,
-				&localTC.timeout,
-				func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-					return localTC.operation, tc, nil
+				func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+					return localTC.operation, &localTC.timeout, tc, nil
 				},
 				localTC.operationReport,
 			)

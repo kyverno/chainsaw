@@ -153,5 +153,5 @@ func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, test 
 	if p.report != nil {
 		report = p.report.ForStep(&step)
 	}
-	return NewStepProcessor(p.config, nspacer, p.clock, test, step, report)
+	return NewStepProcessor(p.config, nspacer, test, step, report)
 }
