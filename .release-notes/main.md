@@ -23,6 +23,7 @@ Release notes for `TODO`.
     - `null` means inherit the current cluster
     - an empty string means the default cluster
 - Made default timeouts part of the schemas
+- Added support to fail fast at the test level (test will be skipped if a previous error was already reported)
 
 ## 🔧 Fixes 🔧
 

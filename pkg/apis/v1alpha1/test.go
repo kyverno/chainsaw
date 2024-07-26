@@ -28,6 +28,10 @@ type TestSpec struct {
 	// +optional
 	Description string `json:"description,omitempty"`
 
+	// FailFast determines whether the test should stop upon encountering the first failure.
+	// +optional
+	FailFast *bool `json:"failFast,omitempty"`
+
 	// Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.
 	// +optional
 	Timeouts *Timeouts `json:"timeouts,omitempty"`
