@@ -12,25 +12,24 @@ import (
 	"github.com/kyverno/pkg/ext/output/color"
 )
 
+type operationFactory = func(context.Context, model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error)
+
 type operation struct {
 	info            OperationInfo
 	continueOnError bool
-	timeout         *time.Duration
-	operation       func(context.Context, model.TestContext) (operations.Operation, model.TestContext, error)
+	operation       operationFactory
 	report          *report.OperationReport
 }
 
 func newOperation(
 	info OperationInfo,
 	continueOnError bool,
-	timeout *time.Duration,
-	op func(context.Context, model.TestContext) (operations.Operation, model.TestContext, error),
+	op operationFactory,
 	report *report.OperationReport,
 ) operation {
 	return operation{
 		info:            info,
 		continueOnError: continueOnError,
-		timeout:         timeout,
 		operation:       op,
 		report:          report,
 	}
@@ -43,11 +42,6 @@ func (o operation) execute(ctx context.Context, tc model.TestContext) operations
 			o.report.SetEndTime(time.Now())
 		}()
 	}
-	if o.timeout != nil {
-		toCtx, cancel := context.WithTimeout(ctx, *o.timeout)
-		ctx = toCtx
-		defer cancel()
-	}
 	handleError := func(err error) {
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -59,10 +53,15 @@ func (o operation) execute(ctx context.Context, tc model.TestContext) operations
 		}
 	}
 	tc = tc.WithBinding(ctx, "operation", o.info)
-	operation, tc, err := o.operation(ctx, tc)
+	operation, timeout, tc, err := o.operation(ctx, tc)
 	if err != nil {
 		handleError(err)
 	} else {
+		if timeout != nil {
+			toCtx, cancel := context.WithTimeout(ctx, *timeout)
+			ctx = toCtx
+			defer cancel()
+		}
 		outputs, err := operation.Exec(ctx, tc.Bindings())
 		// TODO
 		// if o.operationReport != nil {

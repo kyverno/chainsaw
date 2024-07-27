@@ -22,8 +22,6 @@ import (
 	kerror "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/utils/clock"
-	tclock "k8s.io/utils/clock/testing"
 	"k8s.io/utils/ptr"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -39,7 +37,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		config       model.Configuration
 		client       client.Client
 		namespacer   *fakeNamespacer.FakeNamespacer
-		clock        clock.PassiveClock
 		test         discovery.Test
 		stepSpec     v1alpha1.TestStep
 		stepReport   *report.StepReport
@@ -56,7 +53,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -92,7 +88,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -139,7 +134,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -210,7 +204,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -281,7 +274,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -324,7 +316,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -364,7 +355,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -396,7 +386,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		},
 		client:     &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{},
-		clock:      tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -436,7 +425,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -488,7 +476,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -538,7 +525,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -586,7 +572,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -640,7 +625,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -712,7 +696,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -792,7 +775,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -870,7 +852,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -965,7 +946,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -1014,7 +994,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			stepProcessor := NewStepProcessor(
 				tc.config,
 				tc.namespacer,
-				tc.clock,
 				tc.test,
 				tc.stepSpec,
 				tc.stepReport,

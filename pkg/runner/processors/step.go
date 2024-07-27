@@ -34,7 +34,6 @@ import (
 	"github.com/kyverno/pkg/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/utils/clock"
 )
 
 type StepProcessor interface {
@@ -44,7 +43,6 @@ type StepProcessor interface {
 func NewStepProcessor(
 	config model.Configuration,
 	namespacer namespacer.Namespacer,
-	clock clock.PassiveClock,
 	test discovery.Test,
 	step v1alpha1.TestStep,
 	report *report.StepReport,
@@ -52,7 +50,6 @@ func NewStepProcessor(
 	return &stepProcessor{
 		config:     config,
 		namespacer: namespacer,
-		clock:      clock,
 		test:       test,
 		step:       step,
 		report:     report,
@@ -62,7 +59,6 @@ func NewStepProcessor(
 type stepProcessor struct {
 	config     model.Configuration
 	namespacer namespacer.Namespacer
-	clock      clock.PassiveClock
 	test       discovery.Test
 	step       v1alpha1.TestStep
 	report     *report.StepReport
@@ -102,22 +98,22 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 		delay = p.test.Test.Spec.DelayBeforeCleanup
 	}
 	cleaner := cleaner.New(timeouts.Cleanup, delay)
-	try, err := p.tryOperations(timeouts, cleaner)
+	try, err := p.tryOperations(cleaner)
 	if err != nil {
 		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	catch, err := p.catchOperations(timeouts)
+	catch, err := p.catchOperations()
 	if err != nil {
 		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	finally, err := p.finallyOperations(timeouts, p.step.Finally...)
+	finally, err := p.finallyOperations(p.step.Finally...)
 	if err != nil {
 		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	cleanup, err := p.finallyOperations(timeouts, p.step.Cleanup...)
+	cleanup, err := p.finallyOperations(p.step.Cleanup...)
 	if err != nil {
 		logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -172,7 +168,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 	}
 }
 
-func (p *stepProcessor) tryOperations(tc model.Timeouts, cleaner cleaner.CleanerCollector) ([]operation, error) {
+func (p *stepProcessor) tryOperations(cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
 	for i, handler := range p.step.Try {
 		register := func(o ...operation) {
@@ -183,35 +179,35 @@ func (p *stepProcessor) tryOperations(tc model.Timeouts, cleaner cleaner.Cleaner
 			}
 		}
 		if handler.Apply != nil {
-			loaded, err := p.applyOperation(i+1, tc, cleaner, *handler.Apply)
+			loaded, err := p.applyOperation(i+1, cleaner, *handler.Apply)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Assert != nil {
-			loaded, err := p.assertOperation(i+1, tc, *handler.Assert)
+			loaded, err := p.assertOperation(i+1, *handler.Assert)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, tc, *handler.Command))
+			register(p.commandOperation(i+1, *handler.Command))
 		} else if handler.Create != nil {
-			loaded, err := p.createOperation(i+1, tc, cleaner, *handler.Create)
+			loaded, err := p.createOperation(i+1, cleaner, *handler.Create)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(i+1, tc, *handler.Delete)
+			loaded, err := p.deleteOperation(i+1, *handler.Delete)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, tc, *handler.Describe))
+			register(p.describeOperation(i+1, *handler.Describe))
 		} else if handler.Error != nil {
-			loaded, err := p.errorOperation(i+1, tc, *handler.Error)
+			loaded, err := p.errorOperation(i+1, *handler.Error)
 			if err != nil {
 				return nil, err
 			}
@@ -229,31 +225,31 @@ func (p *stepProcessor) tryOperations(tc model.Timeouts, cleaner cleaner.Cleaner
 					ActionObjectSelector: handler.Events.ActionObjectSelector,
 				},
 			}
-			register(p.getOperation(i+1, tc, get))
+			register(p.getOperation(i+1, get))
 		} else if handler.Get != nil {
-			register(p.getOperation(i+1, tc, *handler.Get))
+			register(p.getOperation(i+1, *handler.Get))
 		} else if handler.Patch != nil {
-			loaded, err := p.patchOperation(i+1, tc, *handler.Patch)
+			loaded, err := p.patchOperation(i+1, *handler.Patch)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, tc, *handler.PodLogs))
+			register(p.logsOperation(i+1, *handler.PodLogs))
 		} else if handler.Proxy != nil {
-			register(p.proxyOperation(i+1, tc, *handler.Proxy))
+			register(p.proxyOperation(i+1, *handler.Proxy))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(i+1, tc, *handler.Script))
+			register(p.scriptOperation(i+1, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(i+1, tc, *handler.Sleep))
+			register(p.sleepOperation(i+1, *handler.Sleep))
 		} else if handler.Update != nil {
-			loaded, err := p.updateOperation(i+1, tc, *handler.Update)
+			loaded, err := p.updateOperation(i+1, *handler.Update)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Wait != nil {
-			register(p.waitOperation(i+1, tc, *handler.Wait))
+			register(p.waitOperation(i+1, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -261,7 +257,7 @@ func (p *stepProcessor) tryOperations(tc model.Timeouts, cleaner cleaner.Cleaner
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperations(tc model.Timeouts) ([]operation, error) {
+func (p *stepProcessor) catchOperations() ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -275,7 +271,7 @@ func (p *stepProcessor) catchOperations(tc model.Timeouts) ([]operation, error) 
 	handlers = append(handlers, p.step.Catch...)
 	for i, handler := range handlers {
 		if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, tc, *handler.PodLogs))
+			register(p.logsOperation(i+1, *handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				ActionClusters: handler.Events.ActionClusters,
@@ -289,25 +285,25 @@ func (p *stepProcessor) catchOperations(tc model.Timeouts) ([]operation, error) 
 					ActionObjectSelector: handler.Events.ActionObjectSelector,
 				},
 			}
-			register(p.getOperation(i+1, tc, get))
+			register(p.getOperation(i+1, get))
 		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, tc, *handler.Describe))
+			register(p.describeOperation(i+1, *handler.Describe))
 		} else if handler.Get != nil {
-			register(p.getOperation(i+1, tc, *handler.Get))
+			register(p.getOperation(i+1, *handler.Get))
 		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(i+1, tc, *handler.Delete)
+			loaded, err := p.deleteOperation(i+1, *handler.Delete)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, tc, *handler.Command))
+			register(p.commandOperation(i+1, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(i+1, tc, *handler.Script))
+			register(p.scriptOperation(i+1, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(i+1, tc, *handler.Sleep))
+			register(p.sleepOperation(i+1, *handler.Sleep))
 		} else if handler.Wait != nil {
-			register(p.waitOperation(i+1, tc, *handler.Wait))
+			register(p.waitOperation(i+1, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -315,7 +311,7 @@ func (p *stepProcessor) catchOperations(tc model.Timeouts) ([]operation, error) 
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(tc model.Timeouts, operations ...v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) finallyOperations(operations ...v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -325,7 +321,7 @@ func (p *stepProcessor) finallyOperations(tc model.Timeouts, operations ...v1alp
 	}
 	for i, handler := range operations {
 		if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, tc, *handler.PodLogs))
+			register(p.logsOperation(i+1, *handler.PodLogs))
 		} else if handler.Events != nil {
 			get := v1alpha1.Get{
 				ActionClusters: handler.Events.ActionClusters,
@@ -339,25 +335,25 @@ func (p *stepProcessor) finallyOperations(tc model.Timeouts, operations ...v1alp
 					ActionObjectSelector: handler.Events.ActionObjectSelector,
 				},
 			}
-			register(p.getOperation(i+1, tc, get))
+			register(p.getOperation(i+1, get))
 		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, tc, *handler.Describe))
+			register(p.describeOperation(i+1, *handler.Describe))
 		} else if handler.Get != nil {
-			register(p.getOperation(i+1, tc, *handler.Get))
+			register(p.getOperation(i+1, *handler.Get))
 		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(i+1, tc, *handler.Delete)
+			loaded, err := p.deleteOperation(i+1, *handler.Delete)
 			if err != nil {
 				return nil, err
 			}
 			register(loaded...)
 		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, tc, *handler.Command))
+			register(p.commandOperation(i+1, *handler.Command))
 		} else if handler.Script != nil {
-			register(p.scriptOperation(i+1, tc, *handler.Script))
+			register(p.scriptOperation(i+1, *handler.Script))
 		} else if handler.Sleep != nil {
-			register(p.sleepOperation(i+1, tc, *handler.Sleep))
+			register(p.sleepOperation(i+1, *handler.Sleep))
 		} else if handler.Wait != nil {
-			register(p.waitOperation(i+1, tc, *handler.Wait))
+			register(p.waitOperation(i+1, *handler.Wait))
 		} else {
 			return nil, errors.New("no operation found")
 		}
@@ -365,7 +361,7 @@ func (p *stepProcessor) finallyOperations(tc model.Timeouts, operations ...v1alp
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -387,8 +383,9 @@ func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner 
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, timeouts.Apply),
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+				timeouts := tc.Timeouts()
+				timeout := timeout.Get(op.Timeout, timeouts.Apply)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -396,10 +393,10 @@ func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner 
 					clusters: op.Clusters,
 					dryRun:   op.DryRun,
 				}); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else {
 					if _, client, err := tc.CurrentClusterClient(); err != nil {
-						return nil, tc, err
+						return nil, nil, tc, err
 					} else {
 						op := opapply.New(
 							client,
@@ -410,7 +407,7 @@ func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner 
 							op.Expect,
 							op.Outputs,
 						)
-						return op, tc, nil
+						return op, timeout, tc, nil
 					}
 				}
 			},
@@ -420,7 +417,7 @@ func (p *stepProcessor) applyOperation(id int, timeouts model.Timeouts, cleaner 
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(id int, timeouts model.Timeouts, op v1alpha1.Assert) ([]operation, error) {
+func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
@@ -439,17 +436,18 @@ func (p *stepProcessor) assertOperation(id int, timeouts model.Timeouts, op v1al
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, timeouts.Assert),
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+				timeouts := tc.Timeouts()
+				timeout := timeout.Get(op.Timeout, timeouts.Assert)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
 				}); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else {
 					op := opassert.New(
 						client,
@@ -457,7 +455,7 @@ func (p *stepProcessor) assertOperation(id int, timeouts model.Timeouts, op v1al
 						p.namespacer,
 						template,
 					)
-					return op, tc, nil
+					return op, timeout, tc, nil
 				}
 			},
 			operationReport,
@@ -466,7 +464,7 @@ func (p *stepProcessor) assertOperation(id int, timeouts model.Timeouts, op v1al
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(id int, timeouts model.Timeouts, op v1alpha1.Command) operation {
+func (p *stepProcessor) commandOperation(id int, op v1alpha1.Command) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Command ", report.OperationTypeCommand)
@@ -480,17 +478,18 @@ func (p *stepProcessor) commandOperation(id int, timeouts model.Timeouts, op v1a
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, timeouts.Exec),
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+			timeouts := tc.Timeouts()
+			timeout := timeout.Get(op.Timeout, timeouts.Exec)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: op.Bindings,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
 			}); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else {
 				op := opcommand.New(
 					op,
@@ -498,14 +497,14 @@ func (p *stepProcessor) commandOperation(id int, timeouts model.Timeouts, op v1a
 					ns,
 					config,
 				)
-				return op, tc, nil
+				return op, timeout, tc, nil
 			}
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner cleaner.CleanerCollector, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(id int, cleaner cleaner.CleanerCollector, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -527,8 +526,9 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, timeouts.Apply),
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+				timeouts := tc.Timeouts()
+				timeout := timeout.Get(op.Timeout, timeouts.Apply)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -536,9 +536,9 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner
 					clusters: op.Clusters,
 					dryRun:   op.DryRun,
 				}); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else {
 					op := opcreate.New(
 						client,
@@ -549,7 +549,7 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner
 						op.Expect,
 						op.Outputs,
 					)
-					return op, tc, nil
+					return op, timeout, tc, nil
 				}
 			},
 			operationReport,
@@ -558,7 +558,7 @@ func (p *stepProcessor) createOperation(id int, timeouts model.Timeouts, cleaner
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(id int, timeouts model.Timeouts, op v1alpha1.Delete) ([]operation, error) {
+func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) ([]operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -599,17 +599,18 @@ func (p *stepProcessor) deleteOperation(id int, timeouts model.Timeouts, op v1al
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, timeouts.Delete),
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+				timeouts := tc.Timeouts()
+				timeout := timeout.Get(op.Timeout, timeouts.Delete)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
 				}); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else {
 					op := opdelete.New(
 						client,
@@ -619,7 +620,7 @@ func (p *stepProcessor) deleteOperation(id int, timeouts model.Timeouts, op v1al
 						deletionPropagationPolicy,
 						op.Expect...,
 					)
-					return op, tc, nil
+					return op, timeout, tc, nil
 				}
 			},
 			operationReport,
@@ -628,7 +629,7 @@ func (p *stepProcessor) deleteOperation(id int, timeouts model.Timeouts, op v1al
 	return ops, nil
 }
 
-func (p *stepProcessor) describeOperation(id int, timeouts model.Timeouts, op v1alpha1.Describe) operation {
+func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Describe ", report.OperationTypeCommand)
@@ -642,21 +643,22 @@ func (p *stepProcessor) describeOperation(id int, timeouts model.Timeouts, op v1
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, timeouts.Exec),
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+			timeouts := tc.Timeouts()
+			timeout := timeout.Get(op.Timeout, timeouts.Exec)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
 			}); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else {
 				cmd, err := kubectl.Describe(client, tc.Bindings(), &op)
 				if err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				}
 				op := opcommand.New(
 					*cmd,
@@ -664,14 +666,14 @@ func (p *stepProcessor) describeOperation(id int, timeouts model.Timeouts, op v1
 					ns,
 					config,
 				)
-				return op, tc, nil
+				return op, timeout, tc, nil
 			}
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) errorOperation(id int, timeouts model.Timeouts, op v1alpha1.Error) ([]operation, error) {
+func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
@@ -690,17 +692,18 @@ func (p *stepProcessor) errorOperation(id int, timeouts model.Timeouts, op v1alp
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, timeouts.Error),
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+				timeouts := tc.Timeouts()
+				timeout := timeout.Get(op.Timeout, timeouts.Error)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
 				}); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else {
 					op := operror.New(
 						client,
@@ -708,7 +711,7 @@ func (p *stepProcessor) errorOperation(id int, timeouts model.Timeouts, op v1alp
 						p.namespacer,
 						template,
 					)
-					return op, tc, nil
+					return op, timeout, tc, nil
 				}
 			},
 			operationReport,
@@ -717,7 +720,7 @@ func (p *stepProcessor) errorOperation(id int, timeouts model.Timeouts, op v1alp
 	return ops, nil
 }
 
-func (p *stepProcessor) getOperation(id int, timeouts model.Timeouts, op v1alpha1.Get) operation {
+func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Get ", report.OperationTypeCommand)
@@ -731,21 +734,22 @@ func (p *stepProcessor) getOperation(id int, timeouts model.Timeouts, op v1alpha
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, timeouts.Exec),
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+			timeouts := tc.Timeouts()
+			timeout := timeout.Get(op.Timeout, timeouts.Exec)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
 			}); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else {
 				cmd, err := kubectl.Get(client, tc.Bindings(), &op)
 				if err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				}
 				op := opcommand.New(
 					*cmd,
@@ -753,14 +757,14 @@ func (p *stepProcessor) getOperation(id int, timeouts model.Timeouts, op v1alpha
 					ns,
 					config,
 				)
-				return op, tc, nil
+				return op, timeout, tc, nil
 			}
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) logsOperation(id int, timeouts model.Timeouts, op v1alpha1.PodLogs) operation {
+func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Logs ", report.OperationTypeCommand)
@@ -774,21 +778,22 @@ func (p *stepProcessor) logsOperation(id int, timeouts model.Timeouts, op v1alph
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, timeouts.Exec),
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+			timeouts := tc.Timeouts()
+			timeout := timeout.Get(op.Timeout, timeouts.Exec)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
 			}); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else {
 				cmd, err := kubectl.Logs(tc.Bindings(), &op)
 				if err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				}
 				op := opcommand.New(
 					*cmd,
@@ -796,14 +801,14 @@ func (p *stepProcessor) logsOperation(id int, timeouts model.Timeouts, op v1alph
 					ns,
 					config,
 				)
-				return op, tc, nil
+				return op, timeout, tc, nil
 			}
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alpha1.Patch) ([]operation, error) {
+func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -825,8 +830,9 @@ func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alp
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, timeouts.Apply),
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+				timeouts := tc.Timeouts()
+				timeout := timeout.Get(op.Timeout, timeouts.Apply)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -834,9 +840,9 @@ func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alp
 					clusters: op.Clusters,
 					dryRun:   op.DryRun,
 				}); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else {
 					op := oppatch.New(
 						client,
@@ -846,7 +852,7 @@ func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alp
 						op.Expect,
 						op.Outputs,
 					)
-					return op, tc, nil
+					return op, timeout, tc, nil
 				}
 			},
 			operationReport,
@@ -855,7 +861,7 @@ func (p *stepProcessor) patchOperation(id int, timeouts model.Timeouts, op v1alp
 	return ops, nil
 }
 
-func (p *stepProcessor) proxyOperation(id int, timeouts model.Timeouts, op v1alpha1.Proxy) operation {
+func (p *stepProcessor) proxyOperation(id int, op v1alpha1.Proxy) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Proxy ", report.OperationTypeCommand)
@@ -869,21 +875,22 @@ func (p *stepProcessor) proxyOperation(id int, timeouts model.Timeouts, op v1alp
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, timeouts.Exec),
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+			timeouts := tc.Timeouts()
+			timeout := timeout.Get(op.Timeout, timeouts.Exec)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
 			}); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else {
 				cmd, err := kubectl.Proxy(client, tc.Bindings(), &op)
 				if err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				}
 				op := opcommand.New(
 					*cmd,
@@ -891,14 +898,14 @@ func (p *stepProcessor) proxyOperation(id int, timeouts model.Timeouts, op v1alp
 					ns,
 					config,
 				)
-				return op, tc, nil
+				return op, timeout, tc, nil
 			}
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) scriptOperation(id int, timeouts model.Timeouts, op v1alpha1.Script) operation {
+func (p *stepProcessor) scriptOperation(id int, op v1alpha1.Script) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Script ", report.OperationTypeScript)
@@ -912,17 +919,18 @@ func (p *stepProcessor) scriptOperation(id int, timeouts model.Timeouts, op v1al
 			Id: id,
 		},
 		false,
-		timeout.Get(op.Timeout, timeouts.Exec),
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+			timeouts := tc.Timeouts()
+			timeout := timeout.Get(op.Timeout, timeouts.Exec)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: op.Bindings,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
 			}); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else {
 				op := opscript.New(
 					op,
@@ -930,14 +938,14 @@ func (p *stepProcessor) scriptOperation(id int, timeouts model.Timeouts, op v1al
 					ns,
 					config,
 				)
-				return op, tc, nil
+				return op, timeout, tc, nil
 			}
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) sleepOperation(id int, _ model.Timeouts, op v1alpha1.Sleep) operation {
+func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Sleep ", report.OperationTypeSleep)
@@ -947,15 +955,14 @@ func (p *stepProcessor) sleepOperation(id int, _ model.Timeouts, op v1alpha1.Sle
 			Id: id,
 		},
 		false,
-		nil,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
-			return opsleep.New(op), tc, nil
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+			return opsleep.New(op), nil, tc, nil
 		},
 		operationReport,
 	)
 }
 
-func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1alpha1.Update) ([]operation, error) {
+func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -977,8 +984,9 @@ func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1al
 				ResourceId: i + 1,
 			},
 			false,
-			timeout.Get(op.Timeout, timeouts.Apply),
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+				timeouts := tc.Timeouts()
+				timeout := timeout.Get(op.Timeout, timeouts.Apply)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -986,9 +994,9 @@ func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1al
 					clusters: op.Clusters,
 					dryRun:   op.DryRun,
 				}); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				} else {
 					op := opupdate.New(
 						client,
@@ -998,7 +1006,7 @@ func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1al
 						op.Expect,
 						op.Outputs,
 					)
-					return op, tc, nil
+					return op, timeout, tc, nil
 				}
 			},
 			operationReport,
@@ -1007,7 +1015,7 @@ func (p *stepProcessor) updateOperation(id int, timeouts model.Timeouts, op v1al
 	return ops, nil
 }
 
-func (p *stepProcessor) waitOperation(id int, timeouts model.Timeouts, op v1alpha1.Wait) operation {
+func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Wait ", report.OperationTypeCommand)
@@ -1016,33 +1024,33 @@ func (p *stepProcessor) waitOperation(id int, timeouts model.Timeouts, op v1alph
 	if p.namespacer != nil {
 		ns = p.namespacer.GetNamespace()
 	}
-	// make sure timeout is set to populate the command flag
-	op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, timeouts.Exec)}
-	// shift operation timeout
-	timeout := op.Timeout.Duration + 30*time.Second
 	return newOperation(
 		OperationInfo{
 			Id: id,
 		},
 		false,
-		&timeout,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, model.TestContext, error) {
+		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+			timeouts := tc.Timeouts()
+			// make sure timeout is set to populate the command flag
+			op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, timeouts.Exec)}
+			// shift operation timeout
+			timeout := op.Timeout.Duration + 30*time.Second
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
 			}); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
-				return nil, tc, err
+				return nil, nil, tc, err
 			} else {
 				cmd, err := kubectl.Wait(client, tc.Bindings(), &op)
 				if err != nil {
-					return nil, tc, err
+					return nil, nil, tc, err
 				}
 				op := opcommand.New(*cmd, p.test.BasePath, ns, config)
-				return op, tc, nil
+				return op, &timeout, tc, nil
 			}
 		},
 		operationReport,
