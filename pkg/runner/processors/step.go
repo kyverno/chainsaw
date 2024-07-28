@@ -98,28 +98,8 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 		delay = p.test.Test.Spec.DelayBeforeCleanup
 	}
 	cleaner := cleaner.New(timeouts.Cleanup, delay)
-	try, err := p.tryOperations(cleaner)
-	if err != nil {
-		logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	}
-	catch, err := p.catchOperations()
-	if err != nil {
-		logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	}
-	finally, err := p.finallyOperations(p.step.Finally...)
-	if err != nil {
-		logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	}
-	cleanup, err := p.finallyOperations(p.step.Cleanup...)
-	if err != nil {
-		logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	}
 	t.Cleanup(func() {
-		if !cleaner.Empty() || len(cleanup) != 0 {
+		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
 			logger.Log(logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
 			defer func() {
 				logger.Log(logging.Cleanup, logging.DoneStatus, color.BoldFgCyan)
@@ -128,22 +108,40 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 				failer.Fail(ctx)
 			}
-			for _, operation := range cleanup {
-				operation.execute(ctx, tc)
+			for i, operation := range p.step.Cleanup {
+				operations, err := p.finallyOperation(i, operation)
+				if err != nil {
+					logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+					failer.Fail(ctx)
+				}
+				for _, operation := range operations {
+					operation.execute(ctx, tc)
+				}
 			}
 		}
 	})
-	if len(finally) != 0 {
+	if len(p.step.Finally) != 0 {
 		defer func() {
 			logger.Log(logging.Finally, logging.RunStatus, color.BoldFgCyan)
 			defer func() {
 				logger.Log(logging.Finally, logging.DoneStatus, color.BoldFgCyan)
 			}()
-			for _, operation := range finally {
-				operation.execute(ctx, tc)
+			for i, operation := range p.step.Finally {
+				operations, err := p.finallyOperation(i, operation)
+				if err != nil {
+					logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+					failer.Fail(ctx)
+				}
+				for _, operation := range operations {
+					operation.execute(ctx, tc)
+				}
 			}
 		}()
 	}
+	var catch []v1alpha1.CatchFinally
+	catch = append(catch, p.config.Error.Catch...)
+	catch = append(catch, p.test.Test.Spec.Catch...)
+	catch = append(catch, p.step.Catch...)
 	if len(catch) != 0 {
 		defer func() {
 			if t.Failed() {
@@ -151,8 +149,15 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 				defer func() {
 					logger.Log(logging.Catch, logging.DoneStatus, color.BoldFgCyan)
 				}()
-				for _, operation := range catch {
-					operation.execute(ctx, tc)
+				for i, operation := range catch {
+					operations, err := p.catchOperation(i, operation)
+					if err != nil {
+						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+						failer.Fail(ctx)
+					}
+					for _, operation := range operations {
+						operation.execute(ctx, tc)
+					}
 				}
 			}
 		}()
@@ -161,103 +166,108 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 	defer func() {
 		logger.Log(logging.Try, logging.DoneStatus, color.BoldFgCyan)
 	}()
-	for _, operation := range try {
-		for k, v := range operation.execute(ctx, tc) {
-			tc = tc.WithBinding(ctx, k, v)
+	for i, operation := range p.step.Try {
+		operations, err := p.tryOperation(i, operation, cleaner)
+		if err != nil {
+			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			failer.FailNow(ctx)
+		}
+		for _, operation := range operations {
+			for k, v := range operation.execute(ctx, tc) {
+				tc = tc.WithBinding(ctx, k, v)
+			}
 		}
 	}
 }
 
-func (p *stepProcessor) tryOperations(cleaner cleaner.CleanerCollector) ([]operation, error) {
+func (p *stepProcessor) tryOperation(id int, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
-	for i, handler := range p.step.Try {
-		register := func(o ...operation) {
-			continueOnError := handler.ContinueOnError != nil && *handler.ContinueOnError
-			for _, o := range o {
-				o.continueOnError = continueOnError
-				ops = append(ops, o)
-			}
+	register := func(o ...operation) {
+		continueOnError := handler.ContinueOnError != nil && *handler.ContinueOnError
+		for _, o := range o {
+			o.continueOnError = continueOnError
+			ops = append(ops, o)
 		}
-		if handler.Apply != nil {
-			loaded, err := p.applyOperation(i+1, cleaner, *handler.Apply)
-			if err != nil {
-				return nil, err
-			}
-			register(loaded...)
-		} else if handler.Assert != nil {
-			loaded, err := p.assertOperation(i+1, *handler.Assert)
-			if err != nil {
-				return nil, err
-			}
-			register(loaded...)
-		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, *handler.Command))
-		} else if handler.Create != nil {
-			loaded, err := p.createOperation(i+1, cleaner, *handler.Create)
-			if err != nil {
-				return nil, err
-			}
-			register(loaded...)
-		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(i+1, *handler.Delete)
-			if err != nil {
-				return nil, err
-			}
-			register(loaded...)
-		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, *handler.Describe))
-		} else if handler.Error != nil {
-			loaded, err := p.errorOperation(i+1, *handler.Error)
-			if err != nil {
-				return nil, err
-			}
-			register(loaded...)
-		} else if handler.Events != nil {
-			get := v1alpha1.Get{
-				ActionClusters: handler.Events.ActionClusters,
-				ActionFormat:   handler.Events.ActionFormat,
-				ActionTimeout:  handler.Events.ActionTimeout,
-				ActionObject: v1alpha1.ActionObject{
-					ObjectType: v1alpha1.ObjectType{
-						APIVersion: "v1",
-						Kind:       "Event",
-					},
-					ActionObjectSelector: handler.Events.ActionObjectSelector,
+	}
+	if handler.Apply != nil {
+		loaded, err := p.applyOperation(id+1, cleaner, *handler.Apply)
+		if err != nil {
+			return nil, err
+		}
+		register(loaded...)
+	} else if handler.Assert != nil {
+		loaded, err := p.assertOperation(id+1, *handler.Assert)
+		if err != nil {
+			return nil, err
+		}
+		register(loaded...)
+	} else if handler.Command != nil {
+		register(p.commandOperation(id+1, *handler.Command))
+	} else if handler.Create != nil {
+		loaded, err := p.createOperation(id+1, cleaner, *handler.Create)
+		if err != nil {
+			return nil, err
+		}
+		register(loaded...)
+	} else if handler.Delete != nil {
+		loaded, err := p.deleteOperation(id+1, *handler.Delete)
+		if err != nil {
+			return nil, err
+		}
+		register(loaded...)
+	} else if handler.Describe != nil {
+		register(p.describeOperation(id+1, *handler.Describe))
+	} else if handler.Error != nil {
+		loaded, err := p.errorOperation(id+1, *handler.Error)
+		if err != nil {
+			return nil, err
+		}
+		register(loaded...)
+	} else if handler.Events != nil {
+		get := v1alpha1.Get{
+			ActionClusters: handler.Events.ActionClusters,
+			ActionFormat:   handler.Events.ActionFormat,
+			ActionTimeout:  handler.Events.ActionTimeout,
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Event",
 				},
-			}
-			register(p.getOperation(i+1, get))
-		} else if handler.Get != nil {
-			register(p.getOperation(i+1, *handler.Get))
-		} else if handler.Patch != nil {
-			loaded, err := p.patchOperation(i+1, *handler.Patch)
-			if err != nil {
-				return nil, err
-			}
-			register(loaded...)
-		} else if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, *handler.PodLogs))
-		} else if handler.Proxy != nil {
-			register(p.proxyOperation(i+1, *handler.Proxy))
-		} else if handler.Script != nil {
-			register(p.scriptOperation(i+1, *handler.Script))
-		} else if handler.Sleep != nil {
-			register(p.sleepOperation(i+1, *handler.Sleep))
-		} else if handler.Update != nil {
-			loaded, err := p.updateOperation(i+1, *handler.Update)
-			if err != nil {
-				return nil, err
-			}
-			register(loaded...)
-		} else if handler.Wait != nil {
-			register(p.waitOperation(i+1, *handler.Wait))
-		} else {
-			return nil, errors.New("no operation found")
+				ActionObjectSelector: handler.Events.ActionObjectSelector,
+			},
 		}
+		register(p.getOperation(id+1, get))
+	} else if handler.Get != nil {
+		register(p.getOperation(id+1, *handler.Get))
+	} else if handler.Patch != nil {
+		loaded, err := p.patchOperation(id+1, *handler.Patch)
+		if err != nil {
+			return nil, err
+		}
+		register(loaded...)
+	} else if handler.PodLogs != nil {
+		register(p.logsOperation(id+1, *handler.PodLogs))
+	} else if handler.Proxy != nil {
+		register(p.proxyOperation(id+1, *handler.Proxy))
+	} else if handler.Script != nil {
+		register(p.scriptOperation(id+1, *handler.Script))
+	} else if handler.Sleep != nil {
+		register(p.sleepOperation(id+1, *handler.Sleep))
+	} else if handler.Update != nil {
+		loaded, err := p.updateOperation(id+1, *handler.Update)
+		if err != nil {
+			return nil, err
+		}
+		register(loaded...)
+	} else if handler.Wait != nil {
+		register(p.waitOperation(id+1, *handler.Wait))
+	} else {
+		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperations() ([]operation, error) {
+func (p *stepProcessor) catchOperation(id int, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -265,53 +275,47 @@ func (p *stepProcessor) catchOperations() ([]operation, error) {
 			ops = append(ops, o)
 		}
 	}
-	var handlers []v1alpha1.CatchFinally
-	handlers = append(handlers, p.config.Error.Catch...)
-	handlers = append(handlers, p.test.Test.Spec.Catch...)
-	handlers = append(handlers, p.step.Catch...)
-	for i, handler := range handlers {
-		if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, *handler.PodLogs))
-		} else if handler.Events != nil {
-			get := v1alpha1.Get{
-				ActionClusters: handler.Events.ActionClusters,
-				ActionFormat:   handler.Events.ActionFormat,
-				ActionTimeout:  handler.Events.ActionTimeout,
-				ActionObject: v1alpha1.ActionObject{
-					ObjectType: v1alpha1.ObjectType{
-						APIVersion: "v1",
-						Kind:       "Event",
-					},
-					ActionObjectSelector: handler.Events.ActionObjectSelector,
+	if handler.PodLogs != nil {
+		register(p.logsOperation(id+1, *handler.PodLogs))
+	} else if handler.Events != nil {
+		get := v1alpha1.Get{
+			ActionClusters: handler.Events.ActionClusters,
+			ActionFormat:   handler.Events.ActionFormat,
+			ActionTimeout:  handler.Events.ActionTimeout,
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Event",
 				},
-			}
-			register(p.getOperation(i+1, get))
-		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, *handler.Describe))
-		} else if handler.Get != nil {
-			register(p.getOperation(i+1, *handler.Get))
-		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(i+1, *handler.Delete)
-			if err != nil {
-				return nil, err
-			}
-			register(loaded...)
-		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, *handler.Command))
-		} else if handler.Script != nil {
-			register(p.scriptOperation(i+1, *handler.Script))
-		} else if handler.Sleep != nil {
-			register(p.sleepOperation(i+1, *handler.Sleep))
-		} else if handler.Wait != nil {
-			register(p.waitOperation(i+1, *handler.Wait))
-		} else {
-			return nil, errors.New("no operation found")
+				ActionObjectSelector: handler.Events.ActionObjectSelector,
+			},
 		}
+		register(p.getOperation(id+1, get))
+	} else if handler.Describe != nil {
+		register(p.describeOperation(id+1, *handler.Describe))
+	} else if handler.Get != nil {
+		register(p.getOperation(id+1, *handler.Get))
+	} else if handler.Delete != nil {
+		loaded, err := p.deleteOperation(id+1, *handler.Delete)
+		if err != nil {
+			return nil, err
+		}
+		register(loaded...)
+	} else if handler.Command != nil {
+		register(p.commandOperation(id+1, *handler.Command))
+	} else if handler.Script != nil {
+		register(p.scriptOperation(id+1, *handler.Script))
+	} else if handler.Sleep != nil {
+		register(p.sleepOperation(id+1, *handler.Sleep))
+	} else if handler.Wait != nil {
+		register(p.waitOperation(id+1, *handler.Wait))
+	} else {
+		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperations(operations ...v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) finallyOperation(id int, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -319,58 +323,56 @@ func (p *stepProcessor) finallyOperations(operations ...v1alpha1.CatchFinally) (
 			ops = append(ops, o)
 		}
 	}
-	for i, handler := range operations {
-		if handler.PodLogs != nil {
-			register(p.logsOperation(i+1, *handler.PodLogs))
-		} else if handler.Events != nil {
-			get := v1alpha1.Get{
-				ActionClusters: handler.Events.ActionClusters,
-				ActionFormat:   handler.Events.ActionFormat,
-				ActionTimeout:  handler.Events.ActionTimeout,
-				ActionObject: v1alpha1.ActionObject{
-					ObjectType: v1alpha1.ObjectType{
-						APIVersion: "v1",
-						Kind:       "Event",
-					},
-					ActionObjectSelector: handler.Events.ActionObjectSelector,
+	if handler.PodLogs != nil {
+		register(p.logsOperation(id+1, *handler.PodLogs))
+	} else if handler.Events != nil {
+		get := v1alpha1.Get{
+			ActionClusters: handler.Events.ActionClusters,
+			ActionFormat:   handler.Events.ActionFormat,
+			ActionTimeout:  handler.Events.ActionTimeout,
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Event",
 				},
-			}
-			register(p.getOperation(i+1, get))
-		} else if handler.Describe != nil {
-			register(p.describeOperation(i+1, *handler.Describe))
-		} else if handler.Get != nil {
-			register(p.getOperation(i+1, *handler.Get))
-		} else if handler.Delete != nil {
-			loaded, err := p.deleteOperation(i+1, *handler.Delete)
-			if err != nil {
-				return nil, err
-			}
-			register(loaded...)
-		} else if handler.Command != nil {
-			register(p.commandOperation(i+1, *handler.Command))
-		} else if handler.Script != nil {
-			register(p.scriptOperation(i+1, *handler.Script))
-		} else if handler.Sleep != nil {
-			register(p.sleepOperation(i+1, *handler.Sleep))
-		} else if handler.Wait != nil {
-			register(p.waitOperation(i+1, *handler.Wait))
-		} else {
-			return nil, errors.New("no operation found")
+				ActionObjectSelector: handler.Events.ActionObjectSelector,
+			},
 		}
+		register(p.getOperation(id+1, get))
+	} else if handler.Describe != nil {
+		register(p.describeOperation(id+1, *handler.Describe))
+	} else if handler.Get != nil {
+		register(p.getOperation(id+1, *handler.Get))
+	} else if handler.Delete != nil {
+		loaded, err := p.deleteOperation(id+1, *handler.Delete)
+		if err != nil {
+			return nil, err
+		}
+		register(loaded...)
+	} else if handler.Command != nil {
+		register(p.commandOperation(id+1, *handler.Command))
+	} else if handler.Script != nil {
+		register(p.scriptOperation(id+1, *handler.Script))
+	} else if handler.Sleep != nil {
+		register(p.sleepOperation(id+1, *handler.Sleep))
+	} else if handler.Wait != nil {
+		register(p.waitOperation(id+1, *handler.Wait))
+	} else {
+		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) applyOperation(id int, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]operation, error) {
+	var operationReport *report.OperationReport
+	if p.report != nil {
+		operationReport = p.report.ForOperation("Apply "+op.File, report.OperationTypeApply)
+	}
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
 	}
 	var ops []operation
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Apply "+op.File, report.OperationTypeApply)
-	}
 	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
 	for i := range resources {
 		resource := resources[i]
