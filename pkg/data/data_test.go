@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"io/fs"
 	"testing"
 
@@ -59,4 +60,12 @@ func TestConfigFile(t *testing.T) {
 	data, err := ConfigFile()
 	assert.NoError(t, err)
 	assert.NotNil(t, data)
+}
+
+func Test_configFile(t *testing.T) {
+	data, err := _configFile(func() (fs.FS, error) {
+		return nil, errors.New("dummy")
+	})
+	assert.Error(t, err)
+	assert.Nil(t, data)
 }
