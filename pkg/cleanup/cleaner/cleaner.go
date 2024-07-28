@@ -25,13 +25,9 @@ type Cleaner interface {
 	Run(ctx context.Context) []error
 }
 
-func New(timeout time.Duration, delay *metav1.Duration) Cleaner {
-	var d *time.Duration
-	if delay != nil {
-		d = &delay.Duration
-	}
+func New(timeout time.Duration, delay *time.Duration) Cleaner {
 	return &cleaner{
-		delay:   d,
+		delay:   delay,
 		timeout: timeout,
 	}
 }
@@ -73,8 +69,7 @@ func (c *cleaner) delete(ctx context.Context, entry cleanupEntry) error {
 		if !kerrors.IsNotFound(err) {
 			return err
 		}
-	}
-	if err := client.WaitForDeletion(ctx, entry.client, entry.object); err != nil {
+	} else if err := client.WaitForDeletion(ctx, entry.client, entry.object); err != nil {
 		return err
 	}
 	return nil

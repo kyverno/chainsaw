@@ -93,9 +93,12 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 		tc = _tc
 	}
 	timeouts := tc.Timeouts()
-	delay := p.config.Cleanup.DelayBeforeCleanup
+	var delay *time.Duration
+	if p.config.Cleanup.DelayBeforeCleanup != nil {
+		delay = &p.config.Cleanup.DelayBeforeCleanup.Duration
+	}
 	if p.test.Test.Spec.DelayBeforeCleanup != nil {
-		delay = p.test.Test.Spec.DelayBeforeCleanup
+		delay = &p.test.Test.Spec.DelayBeforeCleanup.Duration
 	}
 	cleaner := cleaner.New(timeouts.Cleanup, delay)
 	t.Cleanup(func() {
