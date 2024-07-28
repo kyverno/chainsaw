@@ -3,9 +3,9 @@ package testing
 import (
 	"context"
 
-	"github.com/kyverno/chainsaw/pkg/client"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
+	client "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 // TODO: not thread safe

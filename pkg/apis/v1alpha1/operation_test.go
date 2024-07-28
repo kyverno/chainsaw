@@ -7,111 +7,110 @@ import (
 )
 
 func TestOperation_Bindings(t *testing.T) {
-	type fields struct {
-		Apply   *Apply
-		Assert  *Assert
-		Command *Command
-		Create  *Create
-		Delete  *Delete
-		Error   *Error
-		Patch   *Patch
-		Script  *Script
-		Sleep   *Sleep
-		Update  *Update
-		Wait    *Wait
-	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   int
+		name      string
+		operation Operation
+		want      int
 	}{{
-		fields: fields{
+		operation: Operation{
 			Apply: &Apply{
 				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Assert: &Assert{
 				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Command: &Command{
 				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Create: &Create{
 				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Delete: &Delete{
 				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
+			Describe: &Describe{},
+		},
+		want: 0,
+	}, {
+		operation: Operation{
 			Error: &Error{
 				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
+			Events: &Events{},
+		},
+		want: 0,
+	}, {
+		operation: Operation{
+			Get: &Get{},
+		},
+		want: 0,
+	}, {
+		operation: Operation{
 			Patch: &Patch{
 				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
+			PodLogs: &PodLogs{},
+		},
+		want: 0,
+	}, {
+		operation: Operation{
+			Proxy: &Proxy{},
+		},
+		want: 0,
+	}, {
+		operation: Operation{
 			Script: &Script{
 				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Sleep: &Sleep{},
 		},
 	}, {
-		fields: fields{
+		operation: Operation{
 			Update: &Update{
 				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Wait: &Wait{},
 		},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Operation{
-				Apply:   tt.fields.Apply,
-				Assert:  tt.fields.Assert,
-				Command: tt.fields.Command,
-				Create:  tt.fields.Create,
-				Delete:  tt.fields.Delete,
-				Error:   tt.fields.Error,
-				Patch:   tt.fields.Patch,
-				Script:  tt.fields.Script,
-				Sleep:   tt.fields.Sleep,
-				Update:  tt.fields.Update,
-				Wait:    tt.fields.Wait,
-			}
-			got := c.Bindings()
+			got := tt.operation.Bindings()
 			assert.Equal(t, tt.want, len(got))
 		})
 	}
@@ -119,102 +118,96 @@ func TestOperation_Bindings(t *testing.T) {
 }
 
 func TestOperation_Outputs(t *testing.T) {
-	type fields struct {
-		Apply   *Apply
-		Assert  *Assert
-		Command *Command
-		Create  *Create
-		Delete  *Delete
-		Error   *Error
-		Patch   *Patch
-		Script  *Script
-		Sleep   *Sleep
-		Update  *Update
-		Wait    *Wait
-	}
 	tests := []struct {
-		name   string
-		fields fields
-		want   int
+		name      string
+		operation Operation
+		want      int
 	}{{
-		fields: fields{
+		operation: Operation{
 			Apply: &Apply{
 				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Assert: &Assert{},
 		},
 	}, {
-		fields: fields{
+		operation: Operation{
 			Command: &Command{
 				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Create: &Create{
 				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Delete: &Delete{},
 		},
 	}, {
-		fields: fields{
+		operation: Operation{
+			Describe: &Describe{},
+		},
+	}, {
+		operation: Operation{
 			Error: &Error{},
 		},
 	}, {
-		fields: fields{
+		operation: Operation{
+			Events: &Events{},
+		},
+	}, {
+		operation: Operation{
+			Get: &Get{},
+		},
+	}, {
+		operation: Operation{
 			Patch: &Patch{
 				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
+			PodLogs: &PodLogs{},
+		},
+	}, {
+		operation: Operation{
+			Proxy: &Proxy{},
+		},
+	}, {
+		operation: Operation{
 			Script: &Script{
 				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Sleep: &Sleep{},
 		},
 	}, {
-		fields: fields{
+		operation: Operation{
 			Update: &Update{
 				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
 			},
 		},
 		want: 1,
 	}, {
-		fields: fields{
+		operation: Operation{
 			Wait: &Wait{},
 		},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := &Operation{
-				Apply:   tt.fields.Apply,
-				Assert:  tt.fields.Assert,
-				Command: tt.fields.Command,
-				Create:  tt.fields.Create,
-				Delete:  tt.fields.Delete,
-				Error:   tt.fields.Error,
-				Patch:   tt.fields.Patch,
-				Script:  tt.fields.Script,
-				Sleep:   tt.fields.Sleep,
-				Update:  tt.fields.Update,
-				Wait:    tt.fields.Wait,
-			}
-			got := c.Outputs()
+			got := tt.operation.Outputs()
 			assert.Equal(t, tt.want, len(got))
 		})
 	}
