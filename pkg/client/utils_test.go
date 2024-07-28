@@ -1,10 +1,16 @@
 package client
 
 import (
+	"context"
+	"errors"
 	"testing"
+	"time"
 
 	"github.com/fatih/color"
+	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/stretchr/testify/assert"
+	corev1 "k8s.io/api/core/v1"
+	kerror "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -169,6 +175,60 @@ func TestPatchObject(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.want, got)
+			}
+		})
+	}
+}
+
+func TestWaitForDeletion(t *testing.T) {
+	obj := &corev1.Namespace{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: "foo",
+		},
+	}
+	tests := []struct {
+		name    string
+		object  Object
+		client  Client
+		wantErr bool
+	}{{
+		name:   "ok",
+		object: obj,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, call int, key ObjectKey, obj Object, opts ...GetOption) error {
+				return kerror.NewNotFound(corev1.Resource("namespace"), "foo")
+			},
+		},
+		wantErr: false,
+	}, {
+		name:   "error",
+		object: obj,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, call int, key ObjectKey, obj Object, opts ...GetOption) error {
+				return errors.New("dummy")
+			},
+		},
+		wantErr: true,
+	}, {
+		name:   "timeout",
+		object: obj,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, call int, key ObjectKey, obj Object, opts ...GetOption) error {
+				return nil
+			},
+		},
+		wantErr: true,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.TODO()
+			ctx, cancel := context.WithTimeout(ctx, time.Second)
+			defer cancel()
+			err := WaitForDeletion(ctx, tt.client, tt.object)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
 			}
 		})
 	}
