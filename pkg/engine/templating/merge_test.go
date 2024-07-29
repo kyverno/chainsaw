@@ -1,4 +1,4 @@
-package mutate
+package templating
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-func TestMerge(t *testing.T) {
+func TestTemplateAndMerge(t *testing.T) {
 	in := unstructured.Unstructured{
 		Object: map[string]any{
 			"foo": "bar",
@@ -19,7 +19,7 @@ func TestMerge(t *testing.T) {
 		name      string
 		in        unstructured.Unstructured
 		out       unstructured.Unstructured
-		modifiers []v1alpha1.Any
+		templates []v1alpha1.Any
 		wantErr   bool
 	}{{
 		name: "nil",
@@ -28,12 +28,12 @@ func TestMerge(t *testing.T) {
 	}, {
 		name:      "empty",
 		in:        in,
-		modifiers: []v1alpha1.Any{},
+		templates: []v1alpha1.Any{},
 		out:       in,
 	}, {
 		name: "merge",
 		in:   in,
-		modifiers: []v1alpha1.Any{{
+		templates: []v1alpha1.Any{{
 			Value: map[string]any{
 				"foo": "baz",
 			},
@@ -46,7 +46,7 @@ func TestMerge(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Merge(context.TODO(), tt.in, nil, tt.modifiers...)
+			got, err := TemplateAndMerge(context.TODO(), tt.in, nil, tt.templates...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

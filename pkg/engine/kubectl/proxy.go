@@ -1,36 +1,37 @@
 package kubectl
 
 import (
+	"context"
 	"errors"
 	"path"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/engine/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/templating"
 )
 
-func Proxy(client client.Client, tc binding.Bindings, collector *v1alpha1.Proxy) (string, []string, error) {
+func Proxy(ctx context.Context, client client.Client, tc binding.Bindings, collector *v1alpha1.Proxy) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := bindings.String(collector.Name, tc)
+	name, err := templating.String(ctx, collector.Name, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := bindings.String(collector.Namespace, tc)
+	namespace, err := templating.String(ctx, collector.Namespace, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	targetPath, err := bindings.String(collector.TargetPath, tc)
+	targetPath, err := templating.String(ctx, collector.TargetPath, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	targetPort, err := bindings.String(collector.TargetPort, tc)
+	targetPort, err := templating.String(ctx, collector.TargetPort, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	resource, _, err := mapResource(client, tc, collector.ObjectType)
+	resource, _, err := mapResource(ctx, client, tc, collector.ObjectType)
 	if err != nil {
 		return "", nil, err
 	}

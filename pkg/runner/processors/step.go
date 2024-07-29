@@ -653,7 +653,7 @@ func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespac
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Describe(client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Describe(ctx, client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
@@ -747,7 +747,7 @@ func (p *stepProcessor) getOperation(id int, namespacer namespacer.Namespacer, o
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Get(client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Get(ctx, client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
@@ -795,7 +795,7 @@ func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, 
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Logs(tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Logs(ctx, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
@@ -895,7 +895,7 @@ func (p *stepProcessor) proxyOperation(id int, namespacer namespacer.Namespacer,
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Proxy(client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Proxy(ctx, client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
@@ -1054,7 +1054,7 @@ func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, 
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Wait(client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Wait(ctx, client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
