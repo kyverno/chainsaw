@@ -96,21 +96,18 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 		})
 	}
 	logger := logging.FromContext(ctx)
-	if p.step.TestStepSpec.SkipDelete != nil {
-		tc = tc.WithCleanup(ctx, !*p.step.TestStepSpec.SkipDelete)
-	}
-	tc = engine.WithClusters(ctx, tc, p.basePath, p.step.Clusters)
-	// if _, _, _tc, err := engine.WithCurrentCluster(ctx, tc, p.step.Cluster); err != nil {
-	// 	logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-	// 	failer.FailNow(ctx)
-	// } else {
-	// 	tc = _tc
-	// }
-	if _tc, err := engine.WithBindings(ctx, tc, p.step.Bindings...); err != nil {
+	tc, err := setupContextData(ctx, tc, contextData{
+		basePath: p.basePath,
+		bindings: p.step.Bindings,
+		cluster:  p.step.Cluster,
+		clusters: p.step.Clusters,
+	})
+	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
-	} else {
-		tc = _tc
+	}
+	if p.step.TestStepSpec.SkipDelete != nil {
+		tc = tc.WithCleanup(ctx, !*p.step.TestStepSpec.SkipDelete)
 	}
 	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup)
 	t.Cleanup(func() {
