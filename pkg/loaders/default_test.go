@@ -36,3 +36,9 @@ func Test_defaultLoader(t *testing.T) {
 		})
 	}
 }
+
+func TestDefaultLoader(t *testing.T) {
+	data, err := DefaultLoader()
+	assert.NoError(t, err)
+	assert.NotNil(t, data)
+}
