@@ -34,7 +34,7 @@ func StringPointer(in *string, bindings binding.Bindings) (*string, error) {
 		return in, nil
 	}
 	ctx := context.TODO()
-	if converted, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, in), nil, bindings, template.WithFunctionCaller(functions.Caller)); err != nil {
+	if converted, err := mutate.Mutate(ctx, nil, mutate.Parse(ctx, *in), nil, bindings, template.WithFunctionCaller(functions.Caller)); err != nil {
 		return nil, err
 	} else if converted == nil {
 		return nil, nil
