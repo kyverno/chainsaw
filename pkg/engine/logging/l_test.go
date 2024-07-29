@@ -7,11 +7,11 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/kyverno/chainsaw/pkg/client"
 	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	tclock "k8s.io/utils/clock/testing"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestNewLogger(t *testing.T) {
@@ -43,7 +43,7 @@ func Test_logger_Log(t *testing.T) {
 	enabled.EnableColor()
 	testCases := []struct {
 		name           string
-		resource       ctrlclient.Object
+		resource       client.Object
 		operation      string
 		status         string
 		color          *color.Color
@@ -73,7 +73,7 @@ func Test_logger_Log(t *testing.T) {
 		},
 		{
 			name: "with resource",
-			resource: func() ctrlclient.Object {
+			resource: func() client.Object {
 				var r unstructured.Unstructured
 				r.SetName("testResource")
 				r.SetNamespace("default")
@@ -114,11 +114,11 @@ func Test_logger_Log(t *testing.T) {
 func Test_logger_WithResource(t *testing.T) {
 	testCases := []struct {
 		name      string
-		resource  ctrlclient.Object
+		resource  client.Object
 		expectNil bool
 	}{{
 		name: "Valid Resource",
-		resource: func() ctrlclient.Object {
+		resource: func() client.Object {
 			var r unstructured.Unstructured
 			r.SetName("testResource")
 			return &r

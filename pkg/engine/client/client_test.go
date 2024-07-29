@@ -14,7 +14,6 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestNew(t *testing.T) {
@@ -44,8 +43,8 @@ func TestNew(t *testing.T) {
 func Test_runnerClient_Get(t *testing.T) {
 	type args struct {
 		key  types.NamespacedName
-		obj  ctrlclient.Object
-		opts []ctrlclient.GetOption
+		obj  client.Object
+		opts []client.GetOption
 	}
 	tests := []struct {
 		name        string
@@ -64,7 +63,7 @@ func Test_runnerClient_Get(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				GetFn: func(_ context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+				GetFn: func(_ context.Context, _ int, _ client.ObjectKey, _ client.Object, _ ...client.GetOption) error {
 					return errors.New("test")
 				},
 			}
@@ -85,7 +84,7 @@ func Test_runnerClient_Get(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				GetFn: func(_ context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+				GetFn: func(_ context.Context, _ int, _ client.ObjectKey, _ client.Object, _ ...client.GetOption) error {
 					return nil
 				},
 			}
@@ -106,7 +105,7 @@ func Test_runnerClient_Get(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				GetFn: func(_ context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				GetFn: func(_ context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 					assert.Equal(t, types.NamespacedName{Namespace: "foo", Name: "bar"}, key)
 					assert.Equal(t, &unstructured.Unstructured{}, obj)
 					assert.Nil(t, opts)
@@ -130,7 +129,7 @@ func Test_runnerClient_Get(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				GetFn: func(_ context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+				GetFn: func(_ context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 					assert.Equal(t, types.NamespacedName{Namespace: "foo", Name: "bar"}, key)
 					assert.Equal(t, &unstructured.Unstructured{}, obj)
 					assert.Nil(t, opts)
@@ -168,8 +167,8 @@ func Test_runnerClient_Get(t *testing.T) {
 
 func Test_runnerClient_Create(t *testing.T) {
 	type args struct {
-		obj  ctrlclient.Object
-		opts []ctrlclient.CreateOption
+		obj  client.Object
+		opts []client.CreateOption
 	}
 	tests := []struct {
 		name        string
@@ -188,7 +187,7 @@ func Test_runnerClient_Create(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				CreateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.CreateOption) error {
 					return errors.New("test")
 				},
 			}
@@ -209,7 +208,7 @@ func Test_runnerClient_Create(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+				CreateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.CreateOption) error {
 					return nil
 				},
 			}
@@ -244,8 +243,8 @@ func Test_runnerClient_Create(t *testing.T) {
 
 func Test_runnerClient_Update(t *testing.T) {
 	type args struct {
-		obj  ctrlclient.Object
-		opts []ctrlclient.UpdateOption
+		obj  client.Object
+		opts []client.UpdateOption
 	}
 	tests := []struct {
 		name        string
@@ -264,7 +263,7 @@ func Test_runnerClient_Update(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				UpdateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.UpdateOption) error {
+				UpdateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.UpdateOption) error {
 					return errors.New("test")
 				},
 			}
@@ -285,7 +284,7 @@ func Test_runnerClient_Update(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				UpdateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.UpdateOption) error {
+				UpdateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.UpdateOption) error {
 					return nil
 				},
 			}
@@ -320,8 +319,8 @@ func Test_runnerClient_Update(t *testing.T) {
 
 func Test_runnerClient_Delete(t *testing.T) {
 	type args struct {
-		obj  ctrlclient.Object
-		opts []ctrlclient.DeleteOption
+		obj  client.Object
+		opts []client.DeleteOption
 	}
 	tests := []struct {
 		name        string
@@ -340,7 +339,7 @@ func Test_runnerClient_Delete(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+				DeleteFn: func(_ context.Context, _ int, _ client.Object, _ ...client.DeleteOption) error {
 					return errors.New("test")
 				},
 			}
@@ -361,7 +360,7 @@ func Test_runnerClient_Delete(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+				DeleteFn: func(_ context.Context, _ int, _ client.Object, _ ...client.DeleteOption) error {
 					return nil
 				},
 			}
@@ -396,8 +395,8 @@ func Test_runnerClient_Delete(t *testing.T) {
 
 func Test_runnerClient_List(t *testing.T) {
 	type args struct {
-		obj  ctrlclient.ObjectList
-		opts []ctrlclient.ListOption
+		obj  client.ObjectList
+		opts []client.ListOption
 	}
 	tests := []struct {
 		name        string
@@ -416,7 +415,7 @@ func Test_runnerClient_List(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				ListFn: func(_ context.Context, _ int, _ ctrlclient.ObjectList, _ ...ctrlclient.ListOption) error {
+				ListFn: func(_ context.Context, _ int, _ client.ObjectList, _ ...client.ListOption) error {
 					return errors.New("test")
 				},
 			}
@@ -437,7 +436,7 @@ func Test_runnerClient_List(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				ListFn: func(_ context.Context, _ int, _ ctrlclient.ObjectList, _ ...ctrlclient.ListOption) error {
+				ListFn: func(_ context.Context, _ int, _ client.ObjectList, _ ...client.ListOption) error {
 					return nil
 				},
 			}
@@ -472,9 +471,9 @@ func Test_runnerClient_List(t *testing.T) {
 
 func Test_runnerClient_Patch(t *testing.T) {
 	type args struct {
-		obj   ctrlclient.Object
-		patch ctrlclient.Patch
-		opts  []ctrlclient.PatchOption
+		obj   client.Object
+		patch client.Patch
+		opts  []client.PatchOption
 	}
 	tests := []struct {
 		name        string
@@ -493,7 +492,7 @@ func Test_runnerClient_Patch(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+				PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 					return errors.New("test")
 				},
 			}
@@ -514,7 +513,7 @@ func Test_runnerClient_Patch(t *testing.T) {
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
-				PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+				PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 					return nil
 				},
 			}
