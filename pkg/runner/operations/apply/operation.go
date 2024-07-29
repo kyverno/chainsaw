@@ -8,7 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	bindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
-	"github.com/kyverno/chainsaw/pkg/engine/check"
+	"github.com/kyverno/chainsaw/pkg/engine/checks"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
@@ -52,7 +52,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, tc binding.Bindings) (_ operations.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, tc binding.Bindings) (_ outputs.Outputs, _err error) {
 	if tc == nil {
 		tc = binding.NewBindings()
 	}
@@ -78,9 +78,9 @@ func (o *operation) Exec(ctx context.Context, tc binding.Bindings) (_ operations
 	return o.execute(ctx, tc, obj)
 }
 
-func (o *operation) execute(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) execute(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	var lastErr error
-	var outputs operations.Outputs
+	var outputs outputs.Outputs
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		outputs, lastErr = o.tryApplyResource(ctx, tc, obj)
 		// TODO: determine if the error can be retried
@@ -95,7 +95,7 @@ func (o *operation) execute(ctx context.Context, tc binding.Bindings, obj unstru
 	return outputs, err
 }
 
-func (o *operation) tryApplyResource(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) tryApplyResource(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 	err := o.client.Get(ctx, client.Key(&obj), &actual)
@@ -108,7 +108,7 @@ func (o *operation) tryApplyResource(ctx context.Context, tc binding.Bindings, o
 	return nil, err
 }
 
-func (o *operation) updateResource(ctx context.Context, tc binding.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) updateResource(ctx context.Context, tc binding.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	patched, err := client.PatchObject(actual, &obj)
 	if err != nil {
 		return nil, err
@@ -120,7 +120,7 @@ func (o *operation) updateResource(ctx context.Context, tc binding.Bindings, act
 	return o.handleCheck(ctx, tc, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 }
 
-func (o *operation) createResource(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) createResource(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	err := o.client.Create(ctx, &obj)
 	if err == nil && o.cleaner != nil {
 		o.cleaner.Add(o.client, &obj)
@@ -128,15 +128,15 @@ func (o *operation) createResource(ctx context.Context, tc binding.Bindings, obj
 	return o.handleCheck(ctx, tc, obj, err)
 }
 
-func (o *operation) handleCheck(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured, err error) (_outputs operations.Outputs, _err error) {
+func (o *operation) handleCheck(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured, err error) (_outputs outputs.Outputs, _err error) {
 	if err == nil {
-		tc = bindings.RegisterNamedBinding(ctx, tc, "error", nil)
+		tc = bindings.RegisterBinding(ctx, tc, "error", nil)
 	} else {
-		tc = bindings.RegisterNamedBinding(ctx, tc, "error", err.Error())
+		tc = bindings.RegisterBinding(ctx, tc, "error", err.Error())
 	}
 	defer func(tc binding.Bindings) {
 		if _err == nil {
-			outputs, err := outputs.ProcessOutputs(ctx, tc, obj.UnstructuredContent(), o.outputs...)
+			outputs, err := outputs.Process(ctx, tc, obj.UnstructuredContent(), o.outputs...)
 			if err != nil {
 				_err = err
 				return
@@ -144,7 +144,7 @@ func (o *operation) handleCheck(ctx context.Context, tc binding.Bindings, obj un
 			_outputs = outputs
 		}
 	}(tc)
-	if matched, err := check.Expect(ctx, obj, tc, o.expect...); matched {
+	if matched, err := checks.Expect(ctx, obj, tc, o.expect...); matched {
 		return nil, err
 	}
 	return nil, err

@@ -7,9 +7,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
-	"github.com/kyverno/chainsaw/pkg/engine/check"
+	"github.com/kyverno/chainsaw/pkg/engine/checks"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
@@ -47,7 +48,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outputs.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
@@ -142,11 +143,11 @@ func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.U
 
 func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, resource unstructured.Unstructured, err error) error {
 	if err == nil {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", nil)
+		bindings = apibindings.RegisterBinding(ctx, bindings, "error", nil)
 	} else {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
+		bindings = apibindings.RegisterBinding(ctx, bindings, "error", err.Error())
 	}
-	if matched, err := check.Expect(ctx, resource, bindings, o.expect...); matched {
+	if matched, err := checks.Expect(ctx, resource, bindings, o.expect...); matched {
 		return err
 	}
 	return err

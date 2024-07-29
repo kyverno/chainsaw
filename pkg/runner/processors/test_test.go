@@ -7,7 +7,6 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -32,22 +31,16 @@ func TestTestProcessor_Run(t *testing.T) {
 		assert.NoError(t, err)
 	}
 	testCases := []struct {
-		name           string
-		config         model.Configuration
-		client         client.Client
-		clock          clock.PassiveClock
-		testsReport    *report.TestReport
-		test           discovery.Test
-		shouldFailFast bool
-		binding        binding.Bindings
-		namespacer     *fakeNamespacer.FakeNamespacer
-		expectedFail   bool
-		skipped        bool
+		name         string
+		client       client.Client
+		clock        clock.PassiveClock
+		testsReport  *report.TestReport
+		test         discovery.Test
+		namespacer   *fakeNamespacer.FakeNamespacer
+		expectedFail bool
+		skipped      bool
 	}{{
 		name: "test with no steps",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				return nil
@@ -64,15 +57,10 @@ func TestTestProcessor_Run(t *testing.T) {
 				},
 			},
 		},
-		shouldFailFast: false,
-		binding:        binding.NewBindings(),
-		namespacer:     nil,
-		expectedFail:   false,
+		namespacer:   nil,
+		expectedFail: false,
 	}, {
 		name: "test with test steps",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				return nil
@@ -93,47 +81,10 @@ func TestTestProcessor_Run(t *testing.T) {
 				},
 			},
 		},
-		shouldFailFast: false,
-		binding:        binding.NewBindings(),
-		namespacer:     nil,
-		expectedFail:   false,
-	}, {
-		name: "fail fast",
-		config: model.Configuration{
-			Execution: v1alpha2.ExecutionOptions{
-				FailFast: true,
-			},
-			Timeouts: config.Spec.Timeouts,
-		},
-		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
-				return nil
-			},
-		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-					Steps: []v1alpha1.TestStep{
-						{
-							TestStepSpec: v1alpha1.TestStepSpec{},
-						},
-					},
-				},
-			},
-		},
-		shouldFailFast: true,
-		binding:        binding.NewBindings(),
-		namespacer:     nil,
-		expectedFail:   false,
+		namespacer:   nil,
+		expectedFail: false,
 	}, {
 		name: "skip test",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				return nil
@@ -155,8 +106,6 @@ func TestTestProcessor_Run(t *testing.T) {
 				},
 			},
 		},
-		shouldFailFast: false,
-		binding:        binding.NewBindings(),
 		namespacer: &fakeNamespacer.FakeNamespacer{
 			GetNamespaceFn: func(call int) string {
 				return "chainsaw"
@@ -166,9 +115,6 @@ func TestTestProcessor_Run(t *testing.T) {
 		skipped:      true,
 	}, {
 		name: "with test namespace",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				return nil
@@ -195,14 +141,9 @@ func TestTestProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		shouldFailFast: false,
-		binding:        binding.NewBindings(),
-		expectedFail:   false,
+		expectedFail: false,
 	}, {
 		name: "without test namespace",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				return nil
@@ -223,15 +164,10 @@ func TestTestProcessor_Run(t *testing.T) {
 				},
 			},
 		},
-		namespacer:     nil,
-		shouldFailFast: false,
-		binding:        binding.NewBindings(),
-		expectedFail:   false,
+		namespacer:   nil,
+		expectedFail: false,
 	}, {
 		name: "delay before cleanup",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				return nil
@@ -253,15 +189,10 @@ func TestTestProcessor_Run(t *testing.T) {
 				},
 			},
 		},
-		namespacer:     nil,
-		shouldFailFast: false,
-		binding:        binding.NewBindings(),
-		expectedFail:   false,
+		namespacer:   nil,
+		expectedFail: false,
 	}, {
 		name: "namespace not found and created",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("namespace"), "chainsaw")
@@ -291,14 +222,9 @@ func TestTestProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		shouldFailFast: false,
-		binding:        binding.NewBindings(),
-		expectedFail:   false,
+		expectedFail: false,
 	}, {
 		name: "namespace not found due to internal error",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				return kerror.NewInternalError(errors.New("internal error"))
@@ -328,14 +254,9 @@ func TestTestProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		shouldFailFast: false,
-		binding:        binding.NewBindings(),
-		expectedFail:   true,
+		expectedFail: true,
 	}, {
 		name: "namespace not found and not created due to internal error",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("namespace"), "chainsaw")
@@ -365,9 +286,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		shouldFailFast: false,
-		binding:        binding.NewBindings(),
-		expectedFail:   true,
+		expectedFail: true,
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -375,22 +294,29 @@ func TestTestProcessor_Run(t *testing.T) {
 			if tc.client != nil {
 				registry.client = tc.client
 			}
-			processor := NewTestProcessor(tc.config, tc.clock, tc.testsReport, 0)
+			processor := NewTestProcessor(
+				tc.test,
+				0,
+				tc.clock,
+				tc.testsReport,
+				config.Spec.Namespace.Template,
+				nil,
+				config.Spec.Execution.ForceTerminationGracePeriod,
+				config.Spec.Timeouts,
+				config.Spec.Deletion.Propagation,
+				config.Spec.Templating.Enabled,
+				config.Spec.Cleanup.SkipDelete,
+				config.Spec.Error.Catch...,
+			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
 			tcontext := enginecontext.MakeContext(binding.NewBindings(), registry)
-			processor.Run(ctx, tc.namespacer, tcontext, tc.test)
-			nt.Cleanup(func() {})
+			processor.Run(ctx, tc.namespacer, tcontext)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {
 				assert.False(t, nt.FailedVar, "expected no error but got one")
 			}
-			// if shouldFailVar.Load() || tc.skipped {
-			// 	assert.True(t, nt.SkippedVar, "test should be skipped but it was not")
-			// } else {
-			// 	assert.False(t, nt.SkippedVar, "test should not be skipped but it was")
-			// }
 		})
 	}
 }
