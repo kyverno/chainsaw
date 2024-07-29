@@ -97,8 +97,7 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 			return tc, err
 		}
 		tc = tc.WithCluster(ctx, clusters.DefaultClient, cluster)
-		tc, _, _, err := engine.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
-		return tc, err
+		return engine.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
 	}
 	return tc, nil
 }

@@ -63,11 +63,9 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 		basePath: "",
 		clusters: p.config.Clusters,
 	}
-	// TODO: remove
-	tc = tc.WithCleanup(ctx, !p.config.Cleanup.SkipDelete)
 	if p.config.Namespace.Name != "" {
 		var nsCleaner cleaner.CleanerCollector
-		if tc.Cleanup() {
+		if !p.config.Cleanup.SkipDelete {
 			nsCleaner = mainCleaner
 		}
 		contextData.namespace = &namespaceData{
@@ -146,7 +144,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 					}
 				}
 				processor := p.createTestProcessor(test, size)
-				processor.Run(ctx, nspacer, tc, test)
+				processor.Run(ctx, nspacer, tc)
 			})
 		}
 	}
@@ -157,5 +155,22 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) Test
 	if p.report != nil {
 		report = p.report.ForTest(&test)
 	}
-	return NewTestProcessor(p.config, p.clock, report, size)
+	var delayBeforeCleanup *time.Duration
+	if p.config.Cleanup.DelayBeforeCleanup != nil {
+		delayBeforeCleanup = &p.config.Cleanup.DelayBeforeCleanup.Duration
+	}
+	return NewTestProcessor(
+		test,
+		size,
+		p.clock,
+		report,
+		p.config.Namespace.Template,
+		delayBeforeCleanup,
+		p.config.Execution.ForceTerminationGracePeriod,
+		p.config.Timeouts,
+		p.config.Deletion.Propagation,
+		p.config.Templating.Enabled,
+		p.config.Cleanup.SkipDelete,
+		p.config.Error.Catch...,
+	)
 }

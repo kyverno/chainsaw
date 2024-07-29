@@ -32,7 +32,7 @@ func setupContextData(ctx context.Context, tc engine.Context, data contextData) 
 		tc = tc.WithDryRun(ctx, *data.dryRun)
 	}
 	if data.cluster != nil {
-		if _tc, _, _, err := engine.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {
+		if _tc, err := engine.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {
 			return tc, nil, err
 		} else {
 			tc = _tc

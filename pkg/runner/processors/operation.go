@@ -6,6 +6,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -35,7 +36,7 @@ func newOperation(
 	}
 }
 
-func (o operation) execute(ctx context.Context, tc engine.Context) operations.Outputs {
+func (o operation) execute(ctx context.Context, tc engine.Context) outputs.Outputs {
 	if o.report != nil {
 		o.report.SetStartTime(time.Now())
 		defer func() {

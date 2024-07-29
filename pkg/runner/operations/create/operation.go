@@ -9,7 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
-	"github.com/kyverno/chainsaw/pkg/engine/check"
+	"github.com/kyverno/chainsaw/pkg/engine/checks"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
@@ -51,7 +51,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outputs.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
@@ -77,9 +77,9 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ oper
 	return o.execute(ctx, bindings, obj)
 }
 
-func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	var lastErr error
-	var outputs operations.Outputs
+	var outputs outputs.Outputs
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
 		outputs, lastErr = o.tryCreateResource(ctx, bindings, obj)
 		// TODO: determine if the error can be retried
@@ -95,7 +95,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 }
 
 // TODO: could be replaced by checking the already exists error
-func (o *operation) tryCreateResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) tryCreateResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 	err := o.client.Get(ctx, client.Key(&obj), &actual)
@@ -108,7 +108,7 @@ func (o *operation) tryCreateResource(ctx context.Context, bindings binding.Bind
 	return nil, err
 }
 
-func (o *operation) createResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) createResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	err := o.client.Create(ctx, &obj)
 	if err == nil && o.cleaner != nil {
 		o.cleaner.Add(o.client, &obj)
@@ -116,15 +116,15 @@ func (o *operation) createResource(ctx context.Context, bindings binding.Binding
 	return o.handleCheck(ctx, bindings, obj, err)
 }
 
-func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured, err error) (_outputs operations.Outputs, _err error) {
+func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured, err error) (_outputs outputs.Outputs, _err error) {
 	if err == nil {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", nil)
+		bindings = apibindings.RegisterBinding(ctx, bindings, "error", nil)
 	} else {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
+		bindings = apibindings.RegisterBinding(ctx, bindings, "error", err.Error())
 	}
 	defer func(bindings binding.Bindings) {
 		if _err == nil {
-			outputs, err := outputs.ProcessOutputs(ctx, bindings, obj.UnstructuredContent(), o.outputs...)
+			outputs, err := outputs.Process(ctx, bindings, obj.UnstructuredContent(), o.outputs...)
 			if err != nil {
 				_err = err
 				return
@@ -132,7 +132,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, 
 			_outputs = outputs
 		}
 	}(bindings)
-	if matched, err := check.Expect(ctx, obj, bindings, o.expect...); matched {
+	if matched, err := checks.Expect(ctx, obj, bindings, o.expect...); matched {
 		return nil, err
 	}
 	return nil, err
