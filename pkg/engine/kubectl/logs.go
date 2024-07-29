@@ -6,26 +6,26 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 )
 
-func Logs(bindings binding.Bindings, collector *v1alpha1.PodLogs) (string, []string, error) {
+func Logs(tc binding.Bindings, collector *v1alpha1.PodLogs) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := apibindings.String(collector.Name, bindings)
+	name, err := bindings.String(collector.Name, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := apibindings.String(collector.Namespace, bindings)
+	namespace, err := bindings.String(collector.Namespace, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := apibindings.String(collector.Selector, bindings)
+	selector, err := bindings.String(collector.Selector, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	container, err := apibindings.String(collector.Container, bindings)
+	container, err := bindings.String(collector.Container, tc)
 	if err != nil {
 		return "", nil, err
 	}

@@ -7,33 +7,33 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 )
 
-func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.Wait) (string, []string, error) {
+func Wait(client client.Client, tc binding.Bindings, collector *v1alpha1.Wait) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := apibindings.String(collector.Name, bindings)
+	name, err := bindings.String(collector.Name, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := apibindings.String(collector.Namespace, bindings)
+	namespace, err := bindings.String(collector.Namespace, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := apibindings.String(collector.Selector, bindings)
+	selector, err := bindings.String(collector.Selector, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	format, err := apibindings.String(string(collector.Format), bindings)
+	format, err := bindings.String(string(collector.Format), tc)
 	if err != nil {
 		return "", nil, err
 	}
 	if name != "" && selector != "" {
 		return "", nil, errors.New("name cannot be provided when a selector is specified")
 	}
-	resource, clustered, err := mapResource(client, bindings, collector.ObjectType)
+	resource, clustered, err := mapResource(client, tc, collector.ObjectType)
 	if err != nil {
 		return "", nil, err
 	}
@@ -41,7 +41,7 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 	if collector.WaitFor.Deletion != nil {
 		args = append(args, "--for=delete")
 	} else if collector.WaitFor.Condition != nil {
-		name, err := apibindings.String(collector.WaitFor.Condition.Name, bindings)
+		name, err := bindings.String(collector.WaitFor.Condition.Name, tc)
 		if err != nil {
 			return "", nil, err
 		}
@@ -49,7 +49,7 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 			return "", nil, errors.New("a condition name must be specified for condition wait type")
 		}
 		if collector.WaitFor.Condition.Value != nil {
-			value, err := apibindings.String(*collector.WaitFor.Condition.Value, bindings)
+			value, err := bindings.String(*collector.WaitFor.Condition.Value, tc)
 			if err != nil {
 				return "", nil, err
 			}
@@ -58,14 +58,14 @@ func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.W
 			args = append(args, fmt.Sprintf("--for=condition=%s", name))
 		}
 	} else if collector.WaitFor.JsonPath != nil {
-		path, err := apibindings.String(collector.WaitFor.JsonPath.Path, bindings)
+		path, err := bindings.String(collector.WaitFor.JsonPath.Path, tc)
 		if err != nil {
 			return "", nil, err
 		}
 		if path == "" {
 			return "", nil, errors.New("a path must be specified for jsonpath wait type")
 		}
-		value, err := apibindings.String(collector.WaitFor.JsonPath.Value, bindings)
+		value, err := bindings.String(collector.WaitFor.JsonPath.Value, tc)
 		if err != nil {
 			return "", nil, err
 		}
