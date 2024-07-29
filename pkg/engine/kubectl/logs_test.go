@@ -10,14 +10,14 @@ import (
 
 func TestLogs(t *testing.T) {
 	tests := []struct {
-		name      string
-		collector *v1alpha1.PodLogs
-		want      *v1alpha1.Command
-		wantErr   bool
+		name           string
+		collector      *v1alpha1.PodLogs
+		wantEntrypoint string
+		wantArgs       []string
+		wantErr        bool
 	}{{
 		name:      "nil",
 		collector: nil,
-		want:      nil,
 		wantErr:   true,
 	}, {
 		name:      "empty",
@@ -32,11 +32,9 @@ func TestLogs(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"logs", "--prefix", "foo", "-n", "$NAMESPACE", "--all-containers"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"logs", "--prefix", "foo", "-n", "$NAMESPACE", "--all-containers"},
+		wantErr:        false,
 	}, {
 		name: "with namespace",
 		collector: &v1alpha1.PodLogs{
@@ -57,11 +55,9 @@ func TestLogs(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"logs", "--prefix", "foo", "-n", "bar", "--all-containers"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"logs", "--prefix", "foo", "-n", "bar", "--all-containers"},
+		wantErr:        false,
 	}, {
 		name: "with name and container",
 		collector: &v1alpha1.PodLogs{
@@ -72,11 +68,9 @@ func TestLogs(t *testing.T) {
 			},
 			Container: "bar",
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"logs", "--prefix", "foo", "-n", "$NAMESPACE", "-c", "bar"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"logs", "--prefix", "foo", "-n", "$NAMESPACE", "-c", "bar"},
+		wantErr:        false,
 	}, {
 		name: "with name, namespace and container",
 		collector: &v1alpha1.PodLogs{
@@ -88,11 +82,9 @@ func TestLogs(t *testing.T) {
 			},
 			Container: "bar",
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"logs", "--prefix", "foo", "-n", "lorem", "-c", "bar"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"logs", "--prefix", "foo", "-n", "lorem", "-c", "bar"},
+		wantErr:        false,
 	}, {
 		name: "with tail",
 		collector: &v1alpha1.PodLogs{
@@ -105,11 +97,9 @@ func TestLogs(t *testing.T) {
 			Container: "bar",
 			Tail:      ptr.To(100),
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"logs", "--prefix", "foo", "-n", "lorem", "-c", "bar", "--tail", "100"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"logs", "--prefix", "foo", "-n", "lorem", "-c", "bar", "--tail", "100"},
+		wantErr:        false,
 	}, {
 		name: "with selector",
 		collector: &v1alpha1.PodLogs{
@@ -117,11 +107,9 @@ func TestLogs(t *testing.T) {
 				Selector: "foo=bar",
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"logs", "--prefix", "-l", "foo=bar", "-n", "$NAMESPACE", "--all-containers"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"logs", "--prefix", "-l", "foo=bar", "-n", "$NAMESPACE", "--all-containers"},
+		wantErr:        false,
 	}, {
 		name: "with name and selector",
 		collector: &v1alpha1.PodLogs{
@@ -132,7 +120,6 @@ func TestLogs(t *testing.T) {
 				Selector: "foo=bar",
 			},
 		},
-		want:    nil,
 		wantErr: true,
 	}, {
 		name: "with namespace and selector",
@@ -144,21 +131,62 @@ func TestLogs(t *testing.T) {
 				Selector: "foo=bar",
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"logs", "--prefix", "-l", "foo=bar", "-n", "foo", "--all-containers"},
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"logs", "--prefix", "-l", "foo=bar", "-n", "foo", "--all-containers"},
+		wantErr:        false,
+	}, {
+		name: "bad name",
+		collector: &v1alpha1.PodLogs{
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Name: "($bad)",
+				},
+			},
 		},
-		wantErr: false,
+		wantErr: true,
+	}, {
+		name: "bad namespace",
+		collector: &v1alpha1.PodLogs{
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Namespace: "($bad)",
+				},
+			},
+		},
+		wantErr: true,
+	}, {
+		name: "bad selector",
+		collector: &v1alpha1.PodLogs{
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Name: "foo",
+				},
+				Selector: "($bad)",
+			},
+		},
+		wantErr: true,
+	}, {
+		name: "bad container",
+		collector: &v1alpha1.PodLogs{
+			ActionObjectSelector: v1alpha1.ActionObjectSelector{
+				ObjectName: v1alpha1.ObjectName{
+					Name: "foo",
+				},
+			},
+			Container: "($bad)",
+		},
+		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Logs(nil, tt.collector)
+			entrypoint, args, err := Logs(nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
-				assert.Equal(t, tt.want, got)
 			}
+			assert.Equal(t, tt.wantEntrypoint, entrypoint)
+			assert.Equal(t, tt.wantArgs, args)
 		})
 	}
 }

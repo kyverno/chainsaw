@@ -9,63 +9,49 @@ import (
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 )
 
-func Logs(bindings binding.Bindings, collector *v1alpha1.PodLogs) (*v1alpha1.Command, error) {
+func Logs(bindings binding.Bindings, collector *v1alpha1.PodLogs) (string, []string, error) {
 	if collector == nil {
-		return nil, errors.New("collector is null")
+		return "", nil, errors.New("collector is null")
 	}
 	name, err := apibindings.String(collector.Name, bindings)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	namespace, err := apibindings.String(collector.Namespace, bindings)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	selector, err := apibindings.String(collector.Selector, bindings)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	container, err := apibindings.String(collector.Container, bindings)
 	if err != nil {
-		return nil, err
-	}
-	cluster, err := apibindings.StringPointer(collector.Cluster, bindings)
-	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	if name == "" && selector == "" {
-		return nil, errors.New("a name or selector must be specified")
+		return "", nil, errors.New("a name or selector must be specified")
 	}
 	if name != "" && selector != "" {
-		return nil, errors.New("name cannot be provided when a selector is specified")
+		return "", nil, errors.New("name cannot be provided when a selector is specified")
 	}
-	cmd := v1alpha1.Command{
-		ActionClusters: v1alpha1.ActionClusters{
-			Cluster:  cluster,
-			Clusters: collector.Clusters,
-		},
-		ActionTimeout: v1alpha1.ActionTimeout{
-			Timeout: collector.Timeout,
-		},
-		Entrypoint: "kubectl",
-		Args:       []string{"logs", "--prefix"},
-	}
+	args := []string{"logs", "--prefix"}
 	if name != "" {
-		cmd.Args = append(cmd.Args, name)
+		args = append(args, name)
 	} else if selector != "" {
-		cmd.Args = append(cmd.Args, "-l", selector)
+		args = append(args, "-l", selector)
 	}
 	if namespace == "" {
 		namespace = "$NAMESPACE"
 	}
-	cmd.Args = append(cmd.Args, "-n", namespace)
+	args = append(args, "-n", namespace)
 	if container == "" {
-		cmd.Args = append(cmd.Args, "--all-containers")
+		args = append(args, "--all-containers")
 	} else {
-		cmd.Args = append(cmd.Args, "-c", container)
+		args = append(args, "-c", container)
 	}
 	if collector.Tail != nil {
-		cmd.Args = append(cmd.Args, "--tail", fmt.Sprint(*collector.Tail))
+		args = append(args, "--tail", fmt.Sprint(*collector.Tail))
 	}
-	return &cmd, nil
+	return "kubectl", args, nil
 }
