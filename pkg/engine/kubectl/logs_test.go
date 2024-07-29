@@ -1,6 +1,7 @@
 package kubectl
 
 import (
+	"context"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -179,7 +180,7 @@ func TestLogs(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entrypoint, args, err := Logs(nil, tt.collector)
+			entrypoint, args, err := Logs(context.TODO(), nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
