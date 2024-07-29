@@ -208,7 +208,7 @@ func TestLoad(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Load(tt.path, false)
+			got, err := Load(tt.path, true)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -273,7 +273,7 @@ func Test_parse(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := parse(content, false, tt.splitter, tt.loaderFactory, tt.converter)
+			_, err := parse(content, true, tt.splitter, tt.loaderFactory, tt.converter)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
