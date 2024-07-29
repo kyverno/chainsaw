@@ -7,12 +7,15 @@ import (
 	"github.com/kyverno/chainsaw/pkg/data"
 )
 
-func defaultConfiguration() (*v1alpha2.Configuration, error) {
-	bytes, err := data.ConfigFile()
+func defaultConfiguration(_fs func() ([]byte, error)) (*v1alpha2.Configuration, error) {
+	if _fs == nil {
+		_fs = data.ConfigFile
+	}
+	bytes, err := _fs()
 	if err != nil {
 		return nil, err
 	}
 	return LoadBytes(bytes)
 }
 
-var DefaultConfiguration = sync.OnceValues(defaultConfiguration)
+var DefaultConfiguration = sync.OnceValues(func() (*v1alpha2.Configuration, error) { return defaultConfiguration(nil) })
