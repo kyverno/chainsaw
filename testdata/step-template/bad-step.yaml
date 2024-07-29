@@ -1,0 +1,8 @@
+# yaml-language-server: $schema=../../.schemas/json/steptemplate-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: StepTemplate
+metadata:
+  name: quick-start
+spec:
+  try:
+  - foo: bar
