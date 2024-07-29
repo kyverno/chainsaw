@@ -9,13 +9,11 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
-	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
-	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -29,7 +27,6 @@ import (
 	opscript "github.com/kyverno/chainsaw/pkg/runner/operations/script"
 	opsleep "github.com/kyverno/chainsaw/pkg/runner/operations/sleep"
 	opupdate "github.com/kyverno/chainsaw/pkg/runner/operations/update"
-	runnertemplate "github.com/kyverno/chainsaw/pkg/runner/template"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -42,36 +39,52 @@ type StepProcessor interface {
 }
 
 func NewStepProcessor(
-	config model.Configuration,
-	namespacer namespacer.Namespacer,
-	test discovery.Test,
 	step v1alpha1.TestStep,
+	basePath string,
 	report *report.StepReport,
+	namespacer namespacer.Namespacer,
+	delayBeforeCleanup *time.Duration,
+	terminationGracePeriod *metav1.Duration,
+	timeouts v1alpha1.DefaultTimeouts,
+	deletionPropagationPolicy metav1.DeletionPropagation,
+	templating bool,
+	catch ...v1alpha1.CatchFinally,
 ) StepProcessor {
-	timeouts := config.Timeouts
-	if test.Test.Spec.Timeouts != nil {
-		timeouts = withTimeouts(timeouts, *test.Test.Spec.Timeouts)
-	}
 	if step.Timeouts != nil {
 		timeouts = withTimeouts(timeouts, *step.Timeouts)
 	}
+	if step.DeletionPropagationPolicy != nil {
+		deletionPropagationPolicy = *step.DeletionPropagationPolicy
+	}
+	if step.Template != nil {
+		templating = *step.Template
+	}
+	catch = append(catch, step.Catch...)
 	return &stepProcessor{
-		config:     config,
-		namespacer: namespacer,
-		test:       test,
-		step:       step,
-		report:     report,
-		timeouts:   timeouts,
+		step:                      step,
+		basePath:                  basePath,
+		report:                    report,
+		namespacer:                namespacer,
+		delayBeforeCleanup:        delayBeforeCleanup,
+		terminationGracePeriod:    terminationGracePeriod,
+		timeouts:                  timeouts,
+		deletionPropagationPolicy: deletionPropagationPolicy,
+		templating:                templating,
+		catch:                     catch,
 	}
 }
 
 type stepProcessor struct {
-	config     model.Configuration
-	namespacer namespacer.Namespacer
-	test       discovery.Test
-	step       v1alpha1.TestStep
-	report     *report.StepReport
-	timeouts   v1alpha1.DefaultTimeouts
+	basePath                  string
+	step                      v1alpha1.TestStep
+	report                    *report.StepReport
+	namespacer                namespacer.Namespacer
+	delayBeforeCleanup        *time.Duration
+	terminationGracePeriod    *metav1.Duration
+	timeouts                  v1alpha1.DefaultTimeouts
+	deletionPropagationPolicy metav1.DeletionPropagation
+	templating                bool
+	catch                     []v1alpha1.CatchFinally
 }
 
 func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
@@ -83,30 +96,20 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 		})
 	}
 	logger := logging.FromContext(ctx)
+	tc, err := setupContextData(ctx, tc, contextData{
+		basePath: p.basePath,
+		bindings: p.step.Bindings,
+		cluster:  p.step.Cluster,
+		clusters: p.step.Clusters,
+	})
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		failer.FailNow(ctx)
+	}
 	if p.step.TestStepSpec.SkipDelete != nil {
 		tc = tc.WithCleanup(ctx, !*p.step.TestStepSpec.SkipDelete)
 	}
-	tc = engine.WithClusters(ctx, tc, p.test.BasePath, p.step.Clusters)
-	if _, _, _tc, err := engine.WithCurrentCluster(ctx, tc, p.test.Test.Spec.Cluster); err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	} else {
-		tc = _tc
-	}
-	if _tc, err := engine.WithBindings(ctx, tc, p.step.Bindings...); err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	} else {
-		tc = _tc
-	}
-	var delay *time.Duration
-	if p.config.Cleanup.DelayBeforeCleanup != nil {
-		delay = &p.config.Cleanup.DelayBeforeCleanup.Duration
-	}
-	if p.test.Test.Spec.DelayBeforeCleanup != nil {
-		delay = &p.test.Test.Spec.DelayBeforeCleanup.Duration
-	}
-	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, delay)
+	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup)
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
 			logger.Log(logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
@@ -147,18 +150,14 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 			}
 		}()
 	}
-	var catch []v1alpha1.CatchFinally
-	catch = append(catch, p.config.Error.Catch...)
-	catch = append(catch, p.test.Test.Spec.Catch...)
-	catch = append(catch, p.step.Catch...)
-	if len(catch) != 0 {
+	if len(p.catch) != 0 {
 		defer func() {
 			if t.Failed() {
 				logger.Log(logging.Catch, logging.RunStatus, color.BoldFgCyan)
 				defer func() {
 					logger.Log(logging.Catch, logging.DoneStatus, color.BoldFgCyan)
 				}()
-				for i, operation := range catch {
+				for i, operation := range p.catch {
 					operations, err := p.catchOperation(i, operation)
 					if err != nil {
 						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -382,7 +381,7 @@ func (p *stepProcessor) applyOperation(id int, cleaner cleaner.CleanerCollector,
 		return nil, err
 	}
 	var ops []operation
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
+	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -397,7 +396,7 @@ func (p *stepProcessor) applyOperation(id int, cleaner cleaner.CleanerCollector,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
-					basePath: p.test.BasePath,
+					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
@@ -437,7 +436,7 @@ func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Assert ", report.OperationTypeAssert)
 	}
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
+	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -449,7 +448,7 @@ func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Assert.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
-					basePath: p.test.BasePath,
+					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
@@ -490,7 +489,7 @@ func (p *stepProcessor) commandOperation(id int, op v1alpha1.Command) operation 
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
-				basePath: p.test.BasePath,
+				basePath: p.basePath,
 				bindings: op.Bindings,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
@@ -501,7 +500,7 @@ func (p *stepProcessor) commandOperation(id int, op v1alpha1.Command) operation 
 			} else {
 				op := opcommand.New(
 					op,
-					p.test.BasePath,
+					p.basePath,
 					ns,
 					config,
 				)
@@ -522,7 +521,7 @@ func (p *stepProcessor) createOperation(id int, cleaner cleaner.CleanerCollector
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Create ", report.OperationTypeCreate)
 	}
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
+	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -537,7 +536,7 @@ func (p *stepProcessor) createOperation(id int, cleaner cleaner.CleanerCollector
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
-					basePath: p.test.BasePath,
+					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
@@ -589,15 +588,8 @@ func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) ([]operation
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Delete ", report.OperationTypeDelete)
 	}
-	deletionPropagationPolicy := p.config.Deletion.Propagation
-	if op.DeletionPropagationPolicy != nil {
-		deletionPropagationPolicy = *op.DeletionPropagationPolicy
-	} else if p.step.DeletionPropagationPolicy != nil {
-		deletionPropagationPolicy = *p.step.DeletionPropagationPolicy
-	} else if p.test.Test.Spec.DeletionPropagationPolicy != nil {
-		deletionPropagationPolicy = *p.test.Test.Spec.DeletionPropagationPolicy
-	}
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
+	deletionPropagationPolicy := p.getDeletionPropagationPolicy(op.DeletionPropagationPolicy)
+	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -609,7 +601,7 @@ func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) ([]operation
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Delete.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
-					basePath: p.test.BasePath,
+					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
@@ -652,7 +644,7 @@ func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operatio
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
-				basePath: p.test.BasePath,
+				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
@@ -672,7 +664,7 @@ func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operatio
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.test.BasePath,
+					p.basePath,
 					ns,
 					config,
 				)
@@ -693,7 +685,7 @@ func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, 
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Error ", report.OperationTypeCommand)
 	}
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
+	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -705,7 +697,7 @@ func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, 
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Error.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
-					basePath: p.test.BasePath,
+					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
@@ -746,7 +738,7 @@ func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
-				basePath: p.test.BasePath,
+				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
@@ -766,7 +758,7 @@ func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.test.BasePath,
+					p.basePath,
 					ns,
 					config,
 				)
@@ -794,7 +786,7 @@ func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
-				basePath: p.test.BasePath,
+				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
@@ -814,7 +806,7 @@ func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.test.BasePath,
+					p.basePath,
 					ns,
 					config,
 				)
@@ -835,7 +827,7 @@ func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, 
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Patch ", report.OperationTypeCreate)
 	}
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
+	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -850,7 +842,7 @@ func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, 
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
-					basePath: p.test.BasePath,
+					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
@@ -894,7 +886,7 @@ func (p *stepProcessor) proxyOperation(id int, op v1alpha1.Proxy) operation {
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
-				basePath: p.test.BasePath,
+				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
@@ -914,7 +906,7 @@ func (p *stepProcessor) proxyOperation(id int, op v1alpha1.Proxy) operation {
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.test.BasePath,
+					p.basePath,
 					ns,
 					config,
 				)
@@ -942,7 +934,7 @@ func (p *stepProcessor) scriptOperation(id int, op v1alpha1.Script) operation {
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
-				basePath: p.test.BasePath,
+				basePath: p.basePath,
 				bindings: op.Bindings,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
@@ -953,7 +945,7 @@ func (p *stepProcessor) scriptOperation(id int, op v1alpha1.Script) operation {
 			} else {
 				op := opscript.New(
 					op,
-					p.test.BasePath,
+					p.basePath,
 					ns,
 					config,
 				)
@@ -991,7 +983,7 @@ func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Update ", report.OperationTypeCreate)
 	}
-	template := runnertemplate.Get(op.Template, p.step.Template, p.test.Test.Spec.Template, &p.config.Templating.Enabled)
+	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -1006,7 +998,7 @@ func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
-					basePath: p.test.BasePath,
+					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
 					clusters: op.Clusters,
@@ -1053,7 +1045,7 @@ func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
 			// shift operation timeout
 			timeout := op.Timeout.Duration + 30*time.Second
 			if tc, err := setupContextData(ctx, tc, contextData{
-				basePath: p.test.BasePath,
+				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
@@ -1073,7 +1065,7 @@ func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.test.BasePath,
+					p.basePath,
 					ns,
 					config,
 				)
@@ -1095,7 +1087,7 @@ func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.ActionCheckRef) ([]unstructu
 	if ref.File != "" {
 		url, err := url.ParseRequestURI(ref.File)
 		if err != nil {
-			return resource.Load(filepath.Join(p.test.BasePath, ref.File), false)
+			return resource.Load(filepath.Join(p.basePath, ref.File), false)
 		} else {
 			return resource.LoadFromURI(url, false)
 		}
@@ -1110,7 +1102,7 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.ActionResourceRef) ([]uns
 	if ref.File != "" {
 		url, err := url.ParseRequestURI(ref.File)
 		if err != nil {
-			return resource.Load(filepath.Join(p.test.BasePath, ref.File), true)
+			return resource.Load(filepath.Join(p.basePath, ref.File), true)
 		} else {
 			return resource.LoadFromURI(url, true)
 		}
@@ -1119,12 +1111,8 @@ func (p *stepProcessor) fileRefOrResource(ref v1alpha1.ActionResourceRef) ([]uns
 }
 
 func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) error {
-	terminationGracePeriod := p.config.Execution.ForceTerminationGracePeriod
-	if p.test.Test.Spec.ForceTerminationGracePeriod != nil {
-		terminationGracePeriod = p.test.Test.Spec.ForceTerminationGracePeriod
-	}
-	if terminationGracePeriod != nil {
-		seconds := int64(terminationGracePeriod.Seconds())
+	if p.terminationGracePeriod != nil {
+		seconds := int64(p.terminationGracePeriod.Seconds())
 		if seconds != 0 {
 			switch resource.GetKind() {
 			case "Pod":
@@ -1153,4 +1141,18 @@ func getCleanerOrNil(cleaner cleaner.CleanerCollector, tc engine.Context) cleane
 		return nil
 	}
 	return cleaner
+}
+
+func (p *stepProcessor) getTemplating(op *bool) bool {
+	if op != nil {
+		return *op
+	}
+	return p.templating
+}
+
+func (p *stepProcessor) getDeletionPropagationPolicy(op *metav1.DeletionPropagation) metav1.DeletionPropagation {
+	if op != nil {
+		return *op
+	}
+	return p.deletionPropagationPolicy
 }

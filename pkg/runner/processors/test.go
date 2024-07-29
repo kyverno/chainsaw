@@ -154,5 +154,42 @@ func (p *testProcessor) createStepProcessor(nspacer namespacer.Namespacer, test 
 	if p.report != nil {
 		report = p.report.ForStep(&step)
 	}
-	return NewStepProcessor(p.config, nspacer, test, step, report)
+	timeouts := p.config.Timeouts
+	if test.Test.Spec.Timeouts != nil {
+		timeouts = withTimeouts(timeouts, *test.Test.Spec.Timeouts)
+	}
+	deletionPropagationPolicy := p.config.Deletion.Propagation
+	if test.Test.Spec.DeletionPropagationPolicy != nil {
+		deletionPropagationPolicy = *test.Test.Spec.DeletionPropagationPolicy
+	}
+	var delayBeforeCleanup *time.Duration
+	if p.config.Cleanup.DelayBeforeCleanup != nil {
+		delayBeforeCleanup = &p.config.Cleanup.DelayBeforeCleanup.Duration
+	}
+	if test.Test.Spec.DelayBeforeCleanup != nil {
+		delayBeforeCleanup = &test.Test.Spec.DelayBeforeCleanup.Duration
+	}
+	templating := p.config.Templating.Enabled
+	if test.Test.Spec.Template != nil {
+		templating = *test.Test.Spec.Template
+	}
+	terminationGracePeriod := p.config.Execution.ForceTerminationGracePeriod
+	if test.Test.Spec.ForceTerminationGracePeriod != nil {
+		terminationGracePeriod = test.Test.Spec.ForceTerminationGracePeriod
+	}
+	var catch []v1alpha1.CatchFinally
+	catch = append(catch, p.config.Error.Catch...)
+	catch = append(catch, test.Test.Spec.Catch...)
+	return NewStepProcessor(
+		step,
+		test.BasePath,
+		report,
+		nspacer,
+		delayBeforeCleanup,
+		terminationGracePeriod,
+		timeouts,
+		deletionPropagationPolicy,
+		templating,
+		catch...,
+	)
 }

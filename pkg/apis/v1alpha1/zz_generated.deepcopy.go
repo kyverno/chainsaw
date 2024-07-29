@@ -548,11 +548,6 @@ func (in *Configuration) DeepCopyObject() runtime.Object {
 func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 	*out = *in
 	out.Timeouts = in.Timeouts
-	if in.Template != nil {
-		in, out := &in.Template, &out.Template
-		*out = new(bool)
-		**out = **in
-	}
 	if in.Parallel != nil {
 		in, out := &in.Parallel, &out.Parallel
 		*out = new(int)

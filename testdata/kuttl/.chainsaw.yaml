@@ -6,6 +6,7 @@ metadata:
   name: configuration
 spec:
   parallel: 4
+  template: false
   timeouts:
     apply: 5m0s
     assert: 5m0s
