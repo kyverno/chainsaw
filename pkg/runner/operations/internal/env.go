@@ -6,7 +6,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 )
 
 func RegisterEnvs(ctx context.Context, namespace string, bindings binding.Bindings, envs ...v1alpha1.Binding) (map[string]string, []string, error) {

@@ -7,16 +7,16 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func mapResource(client client.Client, bindings binding.Bindings, resource v1alpha1.ObjectType) (string, bool, error) {
+func mapResource(client client.Client, tc binding.Bindings, resource v1alpha1.ObjectType) (string, bool, error) {
 	if resource.APIVersion != "" && resource.Kind != "" {
-		if apiVersion, err := apibindings.String(resource.APIVersion, bindings); err != nil {
+		if apiVersion, err := bindings.String(resource.APIVersion, tc); err != nil {
 			return "", false, err
-		} else if kind, err := apibindings.String(resource.Kind, bindings); err != nil {
+		} else if kind, err := bindings.String(resource.Kind, tc); err != nil {
 			return "", false, err
 		} else {
 			return mapResourceFromApiVersionAndKind(client, apiVersion, kind)
