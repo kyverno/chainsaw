@@ -8,7 +8,6 @@ import (
 	petname "github.com/dustinkirkland/golang-petname"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
-	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
@@ -18,7 +17,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/clock"
 )
 
@@ -26,11 +24,12 @@ type TestProcessor interface {
 	Run(context.Context, namespacer.Namespacer, engine.Context, discovery.Test)
 }
 
-func NewTestProcessor(config model.Configuration, clock clock.PassiveClock, report *report.TestReport) TestProcessor {
+func NewTestProcessor(config model.Configuration, clock clock.PassiveClock, report *report.TestReport, size int) TestProcessor {
 	return &testProcessor{
 		config: config,
 		clock:  clock,
 		report: report,
+		size:   size,
 	}
 }
 
@@ -38,6 +37,7 @@ type testProcessor struct {
 	config model.Configuration
 	clock  clock.PassiveClock
 	report *report.TestReport
+	size   int
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc engine.Context, test discovery.Test) {
@@ -54,92 +54,69 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			}
 		})
 	}
-	size := len("@cleanup")
-	for i, step := range test.Test.Spec.Steps {
-		name := step.Name
-		if name == "" {
-			name = fmt.Sprintf("step-%d", i+1)
-		}
-		if size < len(name) {
-			size = len(name)
-		}
-	}
 	timeouts := p.config.Timeouts
 	if test.Test.Spec.Timeouts != nil {
 		timeouts = withTimeouts(timeouts, *test.Test.Spec.Timeouts)
 	}
-	cleaner := cleaner.New(timeouts.Cleanup.Duration, nil)
-	setupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
-	cleanupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
-	setupCtx := logging.IntoContext(ctx, setupLogger)
-	cleanupCtx := logging.IntoContext(ctx, cleanupLogger)
+	mainCleaner := cleaner.New(timeouts.Cleanup.Duration, nil)
 	t.Cleanup(func() {
-		if !cleaner.Empty() {
-			logging.Log(cleanupCtx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
+		if !mainCleaner.Empty() {
+			logging.Log(ctx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
 			defer func() {
-				logging.Log(cleanupCtx, logging.Cleanup, logging.DoneStatus, color.BoldFgCyan)
+				logging.Log(ctx, logging.Cleanup, logging.DoneStatus, color.BoldFgCyan)
 			}()
-			for _, err := range cleaner.Run(cleanupCtx) {
-				logging.Log(cleanupCtx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				failer.Fail(cleanupCtx)
+			for _, err := range mainCleaner.Run(ctx) {
+				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				failer.Fail(ctx)
 			}
 		}
 	})
-	tc = engine.WithClusters(ctx, tc, test.BasePath, test.Test.Spec.Clusters)
-	_, clusterClient, _tc, err := engine.WithCurrentCluster(ctx, tc, test.Test.Spec.Cluster)
+	contextData := contextData{
+		basePath: test.BasePath,
+		clusters: p.config.Clusters,
+		cluster:  test.Test.Spec.Cluster,
+		bindings: test.Test.Spec.Bindings,
+	}
+	nsName := test.Test.Spec.Namespace
+	if nspacer == nil && nsName == "" {
+		nsName = fmt.Sprintf("chainsaw-%s", petname.Generate(2, "-"))
+	}
+	// TODO: remove
+	if test.Test.Spec.SkipDelete != nil {
+		tc = tc.WithCleanup(ctx, !*test.Test.Spec.SkipDelete)
+	}
+	if nsName != "" {
+		template := test.Test.Spec.NamespaceTemplate
+		if template == nil || template.Value == nil {
+			template = p.config.Namespace.Template
+		}
+		var nsCleaner cleaner.CleanerCollector
+		if tc.Cleanup() {
+			nsCleaner = mainCleaner
+		}
+		contextData.namespace = &namespaceData{
+			name:     nsName,
+			template: template,
+			cleaner:  nsCleaner,
+		}
+	}
+	tc, namespace, err := setupContextData(ctx, tc, contextData)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	tc = _tc
-	if test.Test.Spec.SkipDelete != nil {
-		tc = tc.WithCleanup(ctx, !*test.Test.Spec.SkipDelete)
-	}
-	if clusterClient != nil {
-		nsName := test.Test.Spec.Namespace
-		if nspacer == nil && nsName == "" {
-			nsName = fmt.Sprintf("chainsaw-%s", petname.Generate(2, "-"))
-		}
-		if nsName != "" {
-			template := test.Test.Spec.NamespaceTemplate
-			if template == nil || template.Value == nil {
-				template = p.config.Namespace.Template
-			}
-			namespace, err := buildNamespace(ctx, nsName, template, tc.Bindings())
-			if err != nil {
-				logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				failer.FailNow(ctx)
-			}
-			nspacer = namespacer.New(namespace.GetName())
-			if err := clusterClient.Get(setupCtx, client.Key(namespace), namespace.DeepCopy()); err != nil {
-				if !errors.IsNotFound(err) {
-					// Get doesn't log
-					setupLogger.Log(logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					failer.FailNow(ctx)
-				} else if err := clusterClient.Create(logging.IntoContext(setupCtx, setupLogger), namespace.DeepCopy()); err != nil {
-					failer.FailNow(ctx)
-				} else if tc.Cleanup() {
-					cleaner.Add(clusterClient, namespace)
-				}
-			}
-			tc = tc.WithBinding(ctx, "namespace", namespace.GetName())
-		}
+	if namespace != nil {
+		nspacer = namespacer.New(namespace.GetName())
 	}
 	if p.report != nil && nspacer != nil {
 		p.report.SetNamespace(nspacer.GetNamespace())
-	}
-	if _tc, err := engine.WithBindings(ctx, tc, test.Test.Spec.Bindings...); err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	} else {
-		tc = _tc
 	}
 	for i, step := range test.Test.Spec.Steps {
 		name := step.Name
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		ctx := logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name)))
+		ctx := logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", p.size, name)))
 		info := StepInfo{
 			Id: i + 1,
 		}
