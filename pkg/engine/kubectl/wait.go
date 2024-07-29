@@ -10,110 +10,96 @@ import (
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 )
 
-func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.Wait) (*v1alpha1.Command, error) {
+func Wait(client client.Client, bindings binding.Bindings, collector *v1alpha1.Wait) (string, []string, error) {
 	if collector == nil {
-		return nil, errors.New("collector is null")
+		return "", nil, errors.New("collector is null")
 	}
 	name, err := apibindings.String(collector.Name, bindings)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	namespace, err := apibindings.String(collector.Namespace, bindings)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	selector, err := apibindings.String(collector.Selector, bindings)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	format, err := apibindings.String(string(collector.Format), bindings)
 	if err != nil {
-		return nil, err
-	}
-	cluster, err := apibindings.StringPointer(collector.Cluster, bindings)
-	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
 	if name != "" && selector != "" {
-		return nil, errors.New("name cannot be provided when a selector is specified")
+		return "", nil, errors.New("name cannot be provided when a selector is specified")
 	}
 	resource, clustered, err := mapResource(client, bindings, collector.ObjectType)
 	if err != nil {
-		return nil, err
+		return "", nil, err
 	}
-	cmd := v1alpha1.Command{
-		ActionClusters: v1alpha1.ActionClusters{
-			Cluster:  cluster,
-			Clusters: collector.Clusters,
-		},
-		ActionTimeout: v1alpha1.ActionTimeout{
-			Timeout: collector.Timeout,
-		},
-		Entrypoint: "kubectl",
-		Args:       []string{"wait", resource},
-	}
+	args := []string{"wait", resource}
 	if collector.WaitFor.Deletion != nil {
-		cmd.Args = append(cmd.Args, "--for=delete")
+		args = append(args, "--for=delete")
 	} else if collector.WaitFor.Condition != nil {
 		name, err := apibindings.String(collector.WaitFor.Condition.Name, bindings)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 		if name == "" {
-			return nil, errors.New("a condition name must be specified for condition wait type")
+			return "", nil, errors.New("a condition name must be specified for condition wait type")
 		}
 		if collector.WaitFor.Condition.Value != nil {
 			value, err := apibindings.String(*collector.WaitFor.Condition.Value, bindings)
 			if err != nil {
-				return nil, err
+				return "", nil, err
 			}
-			cmd.Args = append(cmd.Args, fmt.Sprintf(`--for=condition=%s=%s`, name, value))
+			args = append(args, fmt.Sprintf(`--for=condition=%s=%s`, name, value))
 		} else {
-			cmd.Args = append(cmd.Args, fmt.Sprintf("--for=condition=%s", name))
+			args = append(args, fmt.Sprintf("--for=condition=%s", name))
 		}
 	} else if collector.WaitFor.JsonPath != nil {
 		path, err := apibindings.String(collector.WaitFor.JsonPath.Path, bindings)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 		if path == "" {
-			return nil, errors.New("a path must be specified for jsonpath wait type")
+			return "", nil, errors.New("a path must be specified for jsonpath wait type")
 		}
 		value, err := apibindings.String(collector.WaitFor.JsonPath.Value, bindings)
 		if err != nil {
-			return nil, err
+			return "", nil, err
 		}
 		if value == "" {
-			return nil, errors.New("a value must be specified for jsonpath wait type")
+			return "", nil, errors.New("a value must be specified for jsonpath wait type")
 		}
-		cmd.Args = append(cmd.Args, fmt.Sprintf(`--for=jsonpath=%s=%s`, path, value))
+		args = append(args, fmt.Sprintf(`--for=jsonpath=%s=%s`, path, value))
 	} else {
-		return nil, errors.New("either a deletion or a condition must be specified")
+		return "", nil, errors.New("either a deletion or a condition must be specified")
 	}
 	if name != "" {
-		cmd.Args = append(cmd.Args, name)
+		args = append(args, name)
 	} else if selector != "" {
-		cmd.Args = append(cmd.Args, "-l", selector)
+		args = append(args, "-l", selector)
 	} else {
-		cmd.Args = append(cmd.Args, "--all")
+		args = append(args, "--all")
 	}
 	if !clustered {
 		if namespace == "*" {
-			cmd.Args = append(cmd.Args, "--all-namespaces")
+			args = append(args, "--all-namespaces")
 		} else {
 			if namespace == "" {
 				namespace = "$NAMESPACE"
 			}
-			cmd.Args = append(cmd.Args, "-n", namespace)
+			args = append(args, "-n", namespace)
 		}
 	}
 	if format != "" {
-		cmd.Args = append(cmd.Args, "-o", format)
+		args = append(args, "-o", format)
 	}
 	if collector.Timeout != nil {
-		cmd.Args = append(cmd.Args, "--timeout", collector.Timeout.Duration.String())
+		args = append(args, "--timeout", collector.Timeout.Duration.String())
 	} else {
-		cmd.Args = append(cmd.Args, "--timeout=-1s")
+		args = append(args, "--timeout=-1s")
 	}
-	return &cmd, nil
+	return "kubectl", args, nil
 }

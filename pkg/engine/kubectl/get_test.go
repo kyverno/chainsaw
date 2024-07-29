@@ -16,14 +16,14 @@ func TestGet(t *testing.T) {
 	client, err := simple.New(config)
 	assert.NoError(t, err)
 	tests := []struct {
-		name      string
-		collector *v1alpha1.Get
-		want      *v1alpha1.Command
-		wantErr   bool
+		name           string
+		collector      *v1alpha1.Get
+		wantEntrypoint string
+		wantArgs       []string
+		wantErr        bool
 	}{{
 		name:      "nil",
 		collector: nil,
-		want:      nil,
 		wantErr:   true,
 	}, {
 		name:      "empty",
@@ -51,11 +51,9 @@ func TestGet(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"get", "pods", "-n", "$NAMESPACE"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"get", "pods", "-n", "$NAMESPACE"},
+		wantErr:        false,
 	}, {
 		name: "with clustered resource",
 		collector: &v1alpha1.Get{
@@ -66,11 +64,9 @@ func TestGet(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"get", "clusterroles.v1.rbac.authorization.k8s.io"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"get", "clusterroles.v1.rbac.authorization.k8s.io"},
+		wantErr:        false,
 	}, {
 		name: "with name",
 		collector: &v1alpha1.Get{
@@ -86,11 +82,9 @@ func TestGet(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"get", "pods", "foo", "-n", "$NAMESPACE"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"get", "pods", "foo", "-n", "$NAMESPACE"},
+		wantErr:        false,
 	}, {
 		name: "with namespace",
 		collector: &v1alpha1.Get{
@@ -106,11 +100,9 @@ func TestGet(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"get", "pods", "-n", "bar"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"get", "pods", "-n", "bar"},
+		wantErr:        false,
 	}, {
 		name: "with name and namespace",
 		collector: &v1alpha1.Get{
@@ -127,11 +119,9 @@ func TestGet(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"get", "pods", "foo", "-n", "bar"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"get", "pods", "foo", "-n", "bar"},
+		wantErr:        false,
 	}, {
 		name: "with selector",
 		collector: &v1alpha1.Get{
@@ -145,11 +135,9 @@ func TestGet(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"get", "pods", "-l", "foo=bar", "-n", "$NAMESPACE"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"get", "pods", "-l", "foo=bar", "-n", "$NAMESPACE"},
+		wantErr:        false,
 	}, {
 		name: "with name and selector",
 		collector: &v1alpha1.Get{
@@ -183,21 +171,98 @@ func TestGet(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"get", "pods", "-l", "foo=bar", "-n", "bar"},
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"get", "pods", "-l", "foo=bar", "-n", "bar"},
+		wantErr:        false,
+	}, {
+		name: "with all namespaces",
+		collector: &v1alpha1.Get{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Namespace: "*",
+					},
+				},
+			},
 		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"get", "pods", "--all-namespaces"},
+		wantErr:        false,
+	}, {
+		name: "bad name",
+		collector: &v1alpha1.Get{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "($bad)",
+					},
+				},
+			},
+		},
+		wantErr: true,
+	}, {
+		name: "bad namespace",
+		collector: &v1alpha1.Get{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Namespace: "($bad)",
+					},
+				},
+			},
+		},
+		wantErr: true,
+	}, {
+		name: "bad selector",
+		collector: &v1alpha1.Get{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					Selector: "($bad)",
+				},
+			},
+		},
+		wantErr: true,
+	}, {
+		name: "bad format",
+		collector: &v1alpha1.Get{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+			},
+			ActionFormat: v1alpha1.ActionFormat{
+				Format: "($bad)",
+			},
+		},
+		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Get(client, nil, tt.collector)
+			entrypoint, args, err := Get(client, nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
-				assert.Equal(t, tt.want, got)
 			}
+			assert.Equal(t, tt.wantEntrypoint, entrypoint)
+			assert.Equal(t, tt.wantArgs, args)
 		})
 	}
 }
