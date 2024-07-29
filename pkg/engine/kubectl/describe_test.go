@@ -17,14 +17,14 @@ func TestDescribe(t *testing.T) {
 	client, err := simple.New(config)
 	assert.NoError(t, err)
 	tests := []struct {
-		name      string
-		collector *v1alpha1.Describe
-		want      *v1alpha1.Command
-		wantErr   bool
+		name           string
+		collector      *v1alpha1.Describe
+		wantEntrypoint string
+		wantArgs       []string
+		wantErr        bool
 	}{{
 		name:      "nil",
 		collector: nil,
-		want:      nil,
 		wantErr:   true,
 	}, {
 		name:      "empty",
@@ -52,11 +52,9 @@ func TestDescribe(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "pods", "-n", "$NAMESPACE"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "pods", "-n", "$NAMESPACE"},
+		wantErr:        false,
 	}, {
 		name: "with clustered resource",
 		collector: &v1alpha1.Describe{
@@ -67,11 +65,9 @@ func TestDescribe(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "clusterroles.v1.rbac.authorization.k8s.io"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "clusterroles.v1.rbac.authorization.k8s.io"},
+		wantErr:        false,
 	}, {
 		name: "with name",
 		collector: &v1alpha1.Describe{
@@ -87,11 +83,9 @@ func TestDescribe(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "pods", "foo", "-n", "$NAMESPACE"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "pods", "foo", "-n", "$NAMESPACE"},
+		wantErr:        false,
 	}, {
 		name: "with namespace",
 		collector: &v1alpha1.Describe{
@@ -107,11 +101,9 @@ func TestDescribe(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "pods", "-n", "bar"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "pods", "-n", "bar"},
+		wantErr:        false,
 	}, {
 		name: "with name and namespace",
 		collector: &v1alpha1.Describe{
@@ -128,11 +120,9 @@ func TestDescribe(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "pods", "foo", "-n", "bar"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "pods", "foo", "-n", "bar"},
+		wantErr:        false,
 	}, {
 		name: "with selector",
 		collector: &v1alpha1.Describe{
@@ -146,11 +136,9 @@ func TestDescribe(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "pods", "-l", "foo=bar", "-n", "$NAMESPACE"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "pods", "-l", "foo=bar", "-n", "$NAMESPACE"},
+		wantErr:        false,
 	}, {
 		name: "with name and selector",
 		collector: &v1alpha1.Describe{
@@ -184,11 +172,9 @@ func TestDescribe(t *testing.T) {
 				},
 			},
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "pods", "-l", "foo=bar", "-n", "bar"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "pods", "-l", "foo=bar", "-n", "bar"},
+		wantErr:        false,
 	}, {
 		name: "with show-events marked as true",
 		collector: &v1alpha1.Describe{
@@ -200,11 +186,9 @@ func TestDescribe(t *testing.T) {
 			},
 			ShowEvents: ptr.To(true),
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "pods", "-n", "$NAMESPACE", "--show-events=true"},
-		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "pods", "-n", "$NAMESPACE", "--show-events=true"},
+		wantErr:        false,
 	}, {
 		name: "with show-events marked as false",
 		collector: &v1alpha1.Describe{
@@ -216,21 +200,85 @@ func TestDescribe(t *testing.T) {
 			},
 			ShowEvents: ptr.To(false),
 		},
-		want: &v1alpha1.Command{
-			Entrypoint: "kubectl",
-			Args:       []string{"describe", "pods", "-n", "$NAMESPACE", "--show-events=false"},
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "pods", "-n", "$NAMESPACE", "--show-events=false"},
+		wantErr:        false,
+	}, {
+		name: "with all namespace",
+		collector: &v1alpha1.Describe{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Namespace: "*",
+					},
+				},
+			},
+			ShowEvents: ptr.To(false),
 		},
-		wantErr: false,
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"describe", "pods", "--all-namespaces", "--show-events=false"},
+		wantErr:        false,
+	}, {
+		name: "bad name",
+		collector: &v1alpha1.Describe{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Name: "($bad)",
+					},
+				},
+			},
+		},
+		wantErr: true,
+	}, {
+		name: "bad namespaces",
+		collector: &v1alpha1.Describe{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					ObjectName: v1alpha1.ObjectName{
+						Namespace: "($bad)",
+					},
+				},
+			},
+		},
+		wantErr: true,
+	}, {
+		name: "bad selector",
+		collector: &v1alpha1.Describe{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+				ActionObjectSelector: v1alpha1.ActionObjectSelector{
+					Selector: "($bad)",
+				},
+			},
+		},
+		wantErr: true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Describe(client, nil, tt.collector)
+			entrypoint, args, err := Describe(client, nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
-				assert.Equal(t, tt.want, got)
 			}
+			assert.Equal(t, tt.wantEntrypoint, entrypoint)
+			assert.Equal(t, tt.wantArgs, args)
 		})
 	}
 }

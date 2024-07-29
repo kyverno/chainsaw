@@ -661,12 +661,17 @@ func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operatio
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				cmd, err := kubectl.Describe(client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Describe(client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
 				op := opcommand.New(
-					*cmd,
+					v1alpha1.Command{
+						ActionClusters: op.ActionClusters,
+						ActionTimeout:  op.ActionTimeout,
+						Entrypoint:     entrypoint,
+						Args:           args,
+					},
 					p.test.BasePath,
 					ns,
 					config,
@@ -750,12 +755,17 @@ func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				cmd, err := kubectl.Get(client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Get(client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
 				op := opcommand.New(
-					*cmd,
+					v1alpha1.Command{
+						ActionClusters: op.ActionClusters,
+						ActionTimeout:  op.ActionTimeout,
+						Entrypoint:     entrypoint,
+						Args:           args,
+					},
 					p.test.BasePath,
 					ns,
 					config,
@@ -793,12 +803,17 @@ func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				cmd, err := kubectl.Logs(tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Logs(tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
 				op := opcommand.New(
-					*cmd,
+					v1alpha1.Command{
+						ActionClusters: op.ActionClusters,
+						ActionTimeout:  op.ActionTimeout,
+						Entrypoint:     entrypoint,
+						Args:           args,
+					},
 					p.test.BasePath,
 					ns,
 					config,
@@ -888,12 +903,17 @@ func (p *stepProcessor) proxyOperation(id int, op v1alpha1.Proxy) operation {
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				cmd, err := kubectl.Proxy(client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Proxy(client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
 				op := opcommand.New(
-					*cmd,
+					v1alpha1.Command{
+						ActionClusters: op.ActionClusters,
+						ActionTimeout:  op.ActionTimeout,
+						Entrypoint:     entrypoint,
+						Args:           args,
+					},
 					p.test.BasePath,
 					ns,
 					config,
@@ -1042,11 +1062,21 @@ func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				cmd, err := kubectl.Wait(client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Wait(client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
-				op := opcommand.New(*cmd, p.test.BasePath, ns, config)
+				op := opcommand.New(
+					v1alpha1.Command{
+						ActionClusters: op.ActionClusters,
+						ActionTimeout:  op.ActionTimeout,
+						Entrypoint:     entrypoint,
+						Args:           args,
+					},
+					p.test.BasePath,
+					ns,
+					config,
+				)
 				return op, &timeout, tc, nil
 			}
 		},
