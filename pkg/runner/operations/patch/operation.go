@@ -11,7 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
-	"github.com/kyverno/chainsaw/pkg/runner/mutate"
+	"github.com/kyverno/chainsaw/pkg/engine/templating"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -60,7 +60,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outp
 		template := v1alpha1.Any{
 			Value: obj.UnstructuredContent(),
 		}
-		if merged, err := mutate.Merge(ctx, obj, bindings, template); err != nil {
+		if merged, err := templating.TemplateAndMerge(ctx, obj, bindings, template); err != nil {
 			return nil, err
 		} else {
 			obj = merged

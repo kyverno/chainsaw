@@ -1,38 +1,39 @@
 package kubectl
 
 import (
+	"context"
 	"errors"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/engine/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/templating"
 )
 
-func Get(client client.Client, tc binding.Bindings, collector *v1alpha1.Get) (string, []string, error) {
+func Get(ctx context.Context, client client.Client, tc binding.Bindings, collector *v1alpha1.Get) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := bindings.String(collector.Name, tc)
+	name, err := templating.String(ctx, collector.Name, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := bindings.String(collector.Namespace, tc)
+	namespace, err := templating.String(ctx, collector.Namespace, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := bindings.String(collector.Selector, tc)
+	selector, err := templating.String(ctx, collector.Selector, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	format, err := bindings.String(string(collector.Format), tc)
+	format, err := templating.String(ctx, string(collector.Format), tc)
 	if err != nil {
 		return "", nil, err
 	}
 	if name != "" && selector != "" {
 		return "", nil, errors.New("name cannot be provided when a selector is specified")
 	}
-	resource, clustered, err := mapResource(client, tc, collector.ObjectType)
+	resource, clustered, err := mapResource(ctx, client, tc, collector.ObjectType)
 	if err != nil {
 		return "", nil, err
 	}
