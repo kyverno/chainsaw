@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -168,7 +169,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
-			tcontext := model.MakeContext(binding.NewBindings(), registry)
+			tcontext := enginecontext.MakeContext(binding.NewBindings(), registry)
 			processor.Run(ctx, tcontext, tc.tests...)
 			nt.Cleanup(func() {
 			})

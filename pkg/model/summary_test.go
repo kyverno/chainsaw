@@ -9,7 +9,7 @@ import (
 
 func Test_summay(t *testing.T) {
 	var wg sync.WaitGroup
-	var s summary
+	var s Summary
 	const count int32 = 10000
 	for i := 0; i < int(count); i++ {
 		wg.Add(3)
