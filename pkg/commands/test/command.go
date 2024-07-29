@@ -14,7 +14,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/loaders/values"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
-	"github.com/kyverno/chainsaw/pkg/runner/template"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
@@ -349,7 +348,7 @@ func Command() *cobra.Command {
 	// namespace options
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests")
 	// templating options
-	cmd.Flags().BoolVar(&options.template, "template", template.DefaultTemplate, "If set, resources will be considered for templating")
+	cmd.Flags().BoolVar(&options.template, "template", config.Spec.Templating.Enabled, "If set, resources will be considered for templating")
 	// cleanup options
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests")
 	cmd.Flags().DurationVar(&options.delayBeforeCleanup.Duration, "cleanup-delay", 0, "Adds a delay between the time a test ends and the time cleanup starts")

@@ -34,7 +34,8 @@ type ConfigurationSpec struct {
 
 	// Template determines whether resources should be considered for templating.
 	// +optional
-	Template *bool `json:"template,omitempty"`
+	// +kubebuilder:default:=true
+	Template bool `json:"template"`
 
 	// FailFast determines whether the test should stop upon encountering the first failure.
 	// +optional
