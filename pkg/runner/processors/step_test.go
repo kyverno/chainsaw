@@ -10,7 +10,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/discovery"
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	fakeLogger "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
@@ -33,15 +32,16 @@ func TestStepProcessor_Run(t *testing.T) {
 	}
 	testData := filepath.Join("..", "..", "..", "testdata", "runner", "processors")
 	testCases := []struct {
-		name         string
-		config       model.Configuration
-		client       client.Client
-		namespacer   *fakeNamespacer.FakeNamespacer
-		test         discovery.Test
-		stepSpec     v1alpha1.TestStep
-		stepReport   *report.StepReport
-		expectedFail bool
-		skipped      bool
+		name                   string
+		config                 model.Configuration
+		client                 client.Client
+		namespacer             *fakeNamespacer.FakeNamespacer
+		basePath               string
+		terminationGracePeriod *metav1.Duration
+		stepSpec               v1alpha1.TestStep
+		stepReport             *report.StepReport
+		expectedFail           bool
+		skipped                bool
 	}{{
 		name: "test with no handler",
 		config: model.Configuration{
@@ -53,14 +53,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-		},
+		basePath: "",
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -88,15 +81,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -134,15 +119,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -204,15 +181,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -274,15 +243,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -316,15 +277,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -355,15 +308,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -386,15 +331,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		},
 		client:     &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath:   testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -425,15 +362,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -476,15 +405,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -525,15 +446,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				SkipDelete: ptr.To[bool](true),
@@ -572,15 +485,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				SkipDelete: ptr.To[bool](true),
@@ -625,15 +530,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				SkipDelete: ptr.To[bool](true),
@@ -696,15 +593,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -775,15 +664,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -852,15 +733,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					Timeouts: &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -946,16 +819,8 @@ func TestStepProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		test: discovery.Test{
-			Err: nil,
-			Test: &model.Test{
-				Spec: v1alpha1.TestSpec{
-					ForceTerminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
-					Timeouts:                    &v1alpha1.Timeouts{},
-				},
-			},
-			BasePath: testData,
-		},
+		basePath:               testData,
+		terminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -987,16 +852,22 @@ func TestStepProcessor_Run(t *testing.T) {
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
 			registry := registryMock{}
 			if tc.client != nil {
 				registry.client = tc.client
 			}
 			stepProcessor := NewStepProcessor(
-				tc.config,
-				tc.namespacer,
-				tc.test,
 				tc.stepSpec,
+				tc.basePath,
 				tc.stepReport,
+				tc.namespacer,
+				nil,
+				tc.terminationGracePeriod,
+				config.Spec.Timeouts,
+				config.Spec.Deletion.Propagation,
+				config.Spec.Templating.Enabled,
+				config.Spec.Error.Catch...,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
