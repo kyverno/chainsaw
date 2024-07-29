@@ -8,9 +8,10 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/check"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
@@ -113,7 +114,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 	}
 	defer func(bindings binding.Bindings) {
 		if _err == nil {
-			outputs, err := apibindings.ProcessOutputs(ctx, bindings, nil, o.script.Outputs...)
+			outputs, err := outputs.ProcessOutputs(ctx, bindings, nil, o.script.Outputs...)
 			if err != nil {
 				_err = err
 				return

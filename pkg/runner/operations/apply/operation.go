@@ -7,10 +7,11 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
+	bindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/check"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
@@ -51,9 +52,9 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, _err error) {
-	if bindings == nil {
-		bindings = binding.NewBindings()
+func (o *operation) Exec(ctx context.Context, tc binding.Bindings) (_ operations.Outputs, _err error) {
+	if tc == nil {
+		tc = binding.NewBindings()
 	}
 	obj := o.base
 	logger := internal.GetLogger(ctx, &obj)
@@ -64,7 +65,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ oper
 		template := v1alpha1.Any{
 			Value: obj.UnstructuredContent(),
 		}
-		if merged, err := mutate.Merge(ctx, obj, bindings, template); err != nil {
+		if merged, err := mutate.Merge(ctx, obj, tc, template); err != nil {
 			return nil, err
 		} else {
 			obj = merged
@@ -74,14 +75,14 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ oper
 		return nil, err
 	}
 	internal.LogStart(logger, logging.Apply)
-	return o.execute(ctx, bindings, obj)
+	return o.execute(ctx, tc, obj)
 }
 
-func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) execute(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
 	var lastErr error
 	var outputs operations.Outputs
 	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
-		outputs, lastErr = o.tryApplyResource(ctx, bindings, obj)
+		outputs, lastErr = o.tryApplyResource(ctx, tc, obj)
 		// TODO: determine if the error can be retried
 		return lastErr == nil, nil
 	})
@@ -94,20 +95,20 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 	return outputs, err
 }
 
-func (o *operation) tryApplyResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) tryApplyResource(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 	err := o.client.Get(ctx, client.Key(&obj), &actual)
 	if err == nil {
-		return o.updateResource(ctx, bindings, &actual, obj)
+		return o.updateResource(ctx, tc, &actual, obj)
 	}
 	if kerrors.IsNotFound(err) {
-		return o.createResource(ctx, bindings, obj)
+		return o.createResource(ctx, tc, obj)
 	}
 	return nil, err
 }
 
-func (o *operation) updateResource(ctx context.Context, bindings binding.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) updateResource(ctx context.Context, tc binding.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (operations.Outputs, error) {
 	patched, err := client.PatchObject(actual, &obj)
 	if err != nil {
 		return nil, err
@@ -116,34 +117,34 @@ func (o *operation) updateResource(ctx context.Context, bindings binding.Binding
 	if err != nil {
 		return nil, err
 	}
-	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
+	return o.handleCheck(ctx, tc, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 }
 
-func (o *operation) createResource(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
+func (o *operation) createResource(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (operations.Outputs, error) {
 	err := o.client.Create(ctx, &obj)
 	if err == nil && o.cleaner != nil {
 		o.cleaner.Add(o.client, &obj)
 	}
-	return o.handleCheck(ctx, bindings, obj, err)
+	return o.handleCheck(ctx, tc, obj, err)
 }
 
-func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured, err error) (_outputs operations.Outputs, _err error) {
+func (o *operation) handleCheck(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured, err error) (_outputs operations.Outputs, _err error) {
 	if err == nil {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", nil)
+		tc = bindings.RegisterNamedBinding(ctx, tc, "error", nil)
 	} else {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
+		tc = bindings.RegisterNamedBinding(ctx, tc, "error", err.Error())
 	}
-	defer func(bindings binding.Bindings) {
+	defer func(tc binding.Bindings) {
 		if _err == nil {
-			outputs, err := apibindings.ProcessOutputs(ctx, bindings, obj.UnstructuredContent(), o.outputs...)
+			outputs, err := outputs.ProcessOutputs(ctx, tc, obj.UnstructuredContent(), o.outputs...)
 			if err != nil {
 				_err = err
 				return
 			}
 			_outputs = outputs
 		}
-	}(bindings)
-	if matched, err := check.Expect(ctx, obj, bindings, o.expect...); matched {
+	}(tc)
+	if matched, err := check.Expect(ctx, obj, tc, o.expect...); matched {
 		return nil, err
 	}
 	return nil, err

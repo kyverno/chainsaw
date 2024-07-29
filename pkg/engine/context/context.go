@@ -6,9 +6,9 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/client/dryrun"
+	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	"github.com/kyverno/chainsaw/pkg/model"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"k8s.io/client-go/rest"
 )
 
