@@ -27,7 +27,7 @@ func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *v1alph
 		out.ReportPath = in.Path
 		out.ReportName = in.Name
 	}
-	out.Template = &in.Templating.Enabled
+	out.Template = in.Templating.Enabled
 	out.Timeouts = in.Timeouts
 	return nil
 }
@@ -65,14 +65,8 @@ func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alph
 		Path:   in.ReportPath,
 		Name:   in.ReportName,
 	}
-	if in.Template == nil {
-		out.Templating = v1alpha2.TemplatingOptions{
-			Enabled: true,
-		}
-	} else {
-		out.Templating = v1alpha2.TemplatingOptions{
-			Enabled: *in.Template,
-		}
+	out.Templating = v1alpha2.TemplatingOptions{
+		Enabled: in.Template,
 	}
 	out.Timeouts = in.Timeouts
 	return nil

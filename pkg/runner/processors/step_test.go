@@ -852,7 +852,6 @@ func TestStepProcessor_Run(t *testing.T) {
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
 			registry := registryMock{}
 			if tc.client != nil {
 				registry.client = tc.client
@@ -874,7 +873,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
 			tcontext := enginecontext.MakeContext(binding.NewBindings(), registry)
 			stepProcessor.Run(ctx, tcontext)
-			nt.Cleanup(func() {})
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {

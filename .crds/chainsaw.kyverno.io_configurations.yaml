@@ -845,6 +845,7 @@ spec:
                   tests (implies SkipClusterDelete).
                 type: boolean
               template:
+                default: true
                 description: Template determines whether resources should be considered
                   for templating.
                 type: boolean
