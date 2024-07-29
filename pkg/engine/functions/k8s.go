@@ -11,7 +11,6 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/discovery"
 	"k8s.io/client-go/rest"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func jpKubernetesResourceExists(arguments []any) (any, error) {
@@ -42,9 +41,9 @@ func jpKubernetesResourceExists(arguments []any) (any, error) {
 }
 
 func jpKubernetesExists(arguments []any) (any, error) {
-	var client client.Client
 	var apiVersion, kind string
-	var key ctrlclient.ObjectKey
+	var key client.ObjectKey
+	var client client.Client
 	if err := getArg(arguments, 0, &client); err != nil {
 		return nil, err
 	}
@@ -74,9 +73,9 @@ func jpKubernetesExists(arguments []any) (any, error) {
 }
 
 func jpKubernetesGet(arguments []any) (any, error) {
-	var client client.Client
 	var apiVersion, kind string
-	var key ctrlclient.ObjectKey
+	var key client.ObjectKey
+	var client client.Client
 	if err := getArg(arguments, 0, &client); err != nil {
 		return nil, err
 	}
@@ -102,9 +101,9 @@ func jpKubernetesGet(arguments []any) (any, error) {
 }
 
 func jpKubernetesList(arguments []any) (any, error) {
-	var client client.Client
+	var c client.Client
 	var apiVersion, kind, namespace string
-	if err := getArg(arguments, 0, &client); err != nil {
+	if err := getArg(arguments, 0, &c); err != nil {
 		return nil, err
 	}
 	if err := getArg(arguments, 1, &apiVersion); err != nil {
@@ -121,11 +120,11 @@ func jpKubernetesList(arguments []any) (any, error) {
 	var list unstructured.UnstructuredList
 	list.SetAPIVersion(apiVersion)
 	list.SetKind(kind)
-	var listOptions []ctrlclient.ListOption
+	var listOptions []client.ListOption
 	if namespace != "" {
-		listOptions = append(listOptions, ctrlclient.InNamespace(namespace))
+		listOptions = append(listOptions, client.InNamespace(namespace))
 	}
-	if err := client.List(context.TODO(), &list, listOptions...); err != nil {
+	if err := c.List(context.TODO(), &list, listOptions...); err != nil {
 		return nil, err
 	}
 	return list.UnstructuredContent(), nil

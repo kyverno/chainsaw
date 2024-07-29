@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/fatih/color"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client"
 )
 
 // TODO: not thread safe
@@ -13,7 +13,7 @@ type FakeLogger struct {
 	numCalls int
 }
 
-func (f *FakeLogger) WithResource(resource ctrlclient.Object) Logger {
+func (f *FakeLogger) WithResource(resource client.Object) Logger {
 	defer func() { f.numCalls++ }()
 	return f
 }
