@@ -10,39 +10,32 @@ type SummaryResult interface {
 	Skipped() int32
 }
 
-type Summary interface {
-	SummaryResult
-	IncPassed()
-	IncFailed()
-	IncSkipped()
-}
-
-type summary struct {
+type Summary struct {
 	passed  atomic.Int32
 	failed  atomic.Int32
 	skipped atomic.Int32
 }
 
-func (s *summary) IncPassed() {
+func (s *Summary) IncPassed() {
 	s.passed.Add(1)
 }
 
-func (s *summary) IncFailed() {
+func (s *Summary) IncFailed() {
 	s.failed.Add(1)
 }
 
-func (s *summary) IncSkipped() {
+func (s *Summary) IncSkipped() {
 	s.skipped.Add(1)
 }
 
-func (s *summary) Passed() int32 {
+func (s *Summary) Passed() int32 {
 	return s.passed.Load()
 }
 
-func (s *summary) Failed() int32 {
+func (s *Summary) Failed() int32 {
 	return s.failed.Load()
 }
 
-func (s *summary) Skipped() int32 {
+func (s *Summary) Skipped() int32 {
 	return s.skipped.Load()
 }

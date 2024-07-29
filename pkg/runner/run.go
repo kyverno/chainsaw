@@ -5,7 +5,9 @@ import (
 	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
+	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
@@ -86,23 +88,22 @@ func run(
 	return tc.Summary, nil
 }
 
-func setupTestContext(ctx context.Context, values any, cluster *rest.Config, config model.Configuration) (model.TestContext, error) {
-	tc := model.EmptyContext()
-	tc = model.WithValues(ctx, tc, values)
+func setupTestContext(ctx context.Context, values any, cluster *rest.Config, config model.Configuration) (engine.Context, error) {
+	tc := enginecontext.EmptyContext()
+	tc = engine.WithValues(ctx, tc, values)
 	if cluster != nil {
 		cluster, err := clusters.NewClusterFromConfig(cluster)
 		if err != nil {
 			return tc, err
 		}
 		tc = tc.WithCluster(ctx, clusters.DefaultClient, cluster)
-		_, _, _tc, err := model.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
+		_, _, _tc, err := engine.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
 		if err != nil {
 			return tc, err
 		}
 		tc = _tc
 	}
-	tc = model.WithClusters(ctx, tc, "", config.Clusters)
-	tc = model.WithDefaultTimeouts(ctx, tc, config.Timeouts)
+	tc = engine.WithClusters(ctx, tc, "", config.Clusters)
 	tc = tc.WithCleanup(ctx, !config.Cleanup.SkipDelete)
 	return tc, nil
 }

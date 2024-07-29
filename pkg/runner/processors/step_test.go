@@ -11,6 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	fakeLogger "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
@@ -1000,8 +1001,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
-			tcontext := model.MakeContext(binding.NewBindings(), registry)
-			tcontext = model.WithDefaultTimeouts(ctx, tcontext, config.Spec.Timeouts)
+			tcontext := enginecontext.MakeContext(binding.NewBindings(), registry)
 			stepProcessor.Run(ctx, tcontext)
 			nt.Cleanup(func() {})
 			if tc.expectedFail {

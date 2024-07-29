@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
@@ -37,7 +38,7 @@ import (
 )
 
 type StepProcessor interface {
-	Run(context.Context, model.TestContext)
+	Run(context.Context, engine.Context)
 }
 
 func NewStepProcessor(
@@ -47,12 +48,20 @@ func NewStepProcessor(
 	step v1alpha1.TestStep,
 	report *report.StepReport,
 ) StepProcessor {
+	timeouts := config.Timeouts
+	if test.Test.Spec.Timeouts != nil {
+		timeouts = withTimeouts(timeouts, *test.Test.Spec.Timeouts)
+	}
+	if step.Timeouts != nil {
+		timeouts = withTimeouts(timeouts, *step.Timeouts)
+	}
 	return &stepProcessor{
 		config:     config,
 		namespacer: namespacer,
 		test:       test,
 		step:       step,
 		report:     report,
+		timeouts:   timeouts,
 	}
 }
 
@@ -62,9 +71,10 @@ type stepProcessor struct {
 	test       discovery.Test
 	step       v1alpha1.TestStep
 	report     *report.StepReport
+	timeouts   v1alpha1.DefaultTimeouts
 }
 
-func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
+func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -73,26 +83,22 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 		})
 	}
 	logger := logging.FromContext(ctx)
-	if p.step.Timeouts != nil {
-		tc = model.WithTimeouts(ctx, tc, *p.step.Timeouts)
-	}
 	if p.step.TestStepSpec.SkipDelete != nil {
 		tc = tc.WithCleanup(ctx, !*p.step.TestStepSpec.SkipDelete)
 	}
-	tc = model.WithClusters(ctx, tc, p.test.BasePath, p.step.Clusters)
-	if _, _, _tc, err := model.WithCurrentCluster(ctx, tc, p.test.Test.Spec.Cluster); err != nil {
+	tc = engine.WithClusters(ctx, tc, p.test.BasePath, p.step.Clusters)
+	if _, _, _tc, err := engine.WithCurrentCluster(ctx, tc, p.test.Test.Spec.Cluster); err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	} else {
 		tc = _tc
 	}
-	if _tc, err := model.WithBindings(ctx, tc, p.step.Bindings...); err != nil {
+	if _tc, err := engine.WithBindings(ctx, tc, p.step.Bindings...); err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	} else {
 		tc = _tc
 	}
-	timeouts := tc.Timeouts()
 	var delay *time.Duration
 	if p.config.Cleanup.DelayBeforeCleanup != nil {
 		delay = &p.config.Cleanup.DelayBeforeCleanup.Duration
@@ -100,7 +106,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc model.TestContext) {
 	if p.test.Test.Spec.DelayBeforeCleanup != nil {
 		delay = &p.test.Test.Spec.DelayBeforeCleanup.Duration
 	}
-	cleaner := cleaner.New(timeouts.Cleanup, delay)
+	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, delay)
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
 			logger.Log(logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
@@ -388,9 +394,8 @@ func (p *stepProcessor) applyOperation(id int, cleaner cleaner.CleanerCollector,
 				ResourceId: i + 1,
 			},
 			false,
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-				timeouts := tc.Timeouts()
-				timeout := timeout.Get(op.Timeout, timeouts.Apply)
+			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -441,9 +446,8 @@ func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation
 				ResourceId: i + 1,
 			},
 			false,
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-				timeouts := tc.Timeouts()
-				timeout := timeout.Get(op.Timeout, timeouts.Assert)
+			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+				timeout := timeout.Get(op.Timeout, p.timeouts.Assert.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -483,9 +487,8 @@ func (p *stepProcessor) commandOperation(id int, op v1alpha1.Command) operation 
 			Id: id,
 		},
 		false,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-			timeouts := tc.Timeouts()
-			timeout := timeout.Get(op.Timeout, timeouts.Exec)
+		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: op.Bindings,
@@ -531,9 +534,8 @@ func (p *stepProcessor) createOperation(id int, cleaner cleaner.CleanerCollector
 				ResourceId: i + 1,
 			},
 			false,
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-				timeouts := tc.Timeouts()
-				timeout := timeout.Get(op.Timeout, timeouts.Apply)
+			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -604,9 +606,8 @@ func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) ([]operation
 				ResourceId: i + 1,
 			},
 			false,
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-				timeouts := tc.Timeouts()
-				timeout := timeout.Get(op.Timeout, timeouts.Delete)
+			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+				timeout := timeout.Get(op.Timeout, p.timeouts.Delete.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -648,9 +649,8 @@ func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operatio
 			Id: id,
 		},
 		false,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-			timeouts := tc.Timeouts()
-			timeout := timeout.Get(op.Timeout, timeouts.Exec)
+		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: nil,
@@ -697,9 +697,8 @@ func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, 
 				ResourceId: i + 1,
 			},
 			false,
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-				timeouts := tc.Timeouts()
-				timeout := timeout.Get(op.Timeout, timeouts.Error)
+			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+				timeout := timeout.Get(op.Timeout, p.timeouts.Error.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -739,9 +738,8 @@ func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 			Id: id,
 		},
 		false,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-			timeouts := tc.Timeouts()
-			timeout := timeout.Get(op.Timeout, timeouts.Exec)
+		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: nil,
@@ -783,9 +781,8 @@ func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
 			Id: id,
 		},
 		false,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-			timeouts := tc.Timeouts()
-			timeout := timeout.Get(op.Timeout, timeouts.Exec)
+		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: nil,
@@ -835,9 +832,8 @@ func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, 
 				ResourceId: i + 1,
 			},
 			false,
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-				timeouts := tc.Timeouts()
-				timeout := timeout.Get(op.Timeout, timeouts.Apply)
+			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -880,9 +876,8 @@ func (p *stepProcessor) proxyOperation(id int, op v1alpha1.Proxy) operation {
 			Id: id,
 		},
 		false,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-			timeouts := tc.Timeouts()
-			timeout := timeout.Get(op.Timeout, timeouts.Exec)
+		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: nil,
@@ -924,9 +919,8 @@ func (p *stepProcessor) scriptOperation(id int, op v1alpha1.Script) operation {
 			Id: id,
 		},
 		false,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-			timeouts := tc.Timeouts()
-			timeout := timeout.Get(op.Timeout, timeouts.Exec)
+		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, err := setupContextData(ctx, tc, contextData{
 				basePath: p.test.BasePath,
 				bindings: op.Bindings,
@@ -960,7 +954,7 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 			Id: id,
 		},
 		false,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
+		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			return opsleep.New(op), nil, tc, nil
 		},
 		operationReport,
@@ -989,9 +983,8 @@ func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation
 				ResourceId: i + 1,
 			},
 			false,
-			func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-				timeouts := tc.Timeouts()
-				timeout := timeout.Get(op.Timeout, timeouts.Apply)
+			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, err := setupContextData(ctx, tc, contextData{
 					basePath: p.test.BasePath,
 					bindings: op.Bindings,
@@ -1034,10 +1027,9 @@ func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
 			Id: id,
 		},
 		false,
-		func(ctx context.Context, tc model.TestContext) (operations.Operation, *time.Duration, model.TestContext, error) {
-			timeouts := tc.Timeouts()
+		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			// make sure timeout is set to populate the command flag
-			op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, timeouts.Exec)}
+			op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.Exec.Duration)}
 			// shift operation timeout
 			timeout := op.Timeout.Duration + 30*time.Second
 			if tc, err := setupContextData(ctx, tc, contextData{
@@ -1123,7 +1115,7 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 	return nil
 }
 
-func getCleanerOrNil(cleaner cleaner.CleanerCollector, tc model.TestContext) cleaner.CleanerCollector {
+func getCleanerOrNil(cleaner cleaner.CleanerCollector, tc engine.Context) cleaner.CleanerCollector {
 	if tc.DryRun() {
 		return nil
 	}

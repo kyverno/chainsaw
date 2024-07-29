@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/model"
@@ -22,7 +23,7 @@ import (
 )
 
 type TestProcessor interface {
-	Run(context.Context, namespacer.Namespacer, model.TestContext, discovery.Test)
+	Run(context.Context, namespacer.Namespacer, engine.Context, discovery.Test)
 }
 
 func NewTestProcessor(config model.Configuration, clock clock.PassiveClock, report *report.TestReport) TestProcessor {
@@ -39,7 +40,7 @@ type testProcessor struct {
 	report *report.TestReport
 }
 
-func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc model.TestContext, test discovery.Test) {
+func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc engine.Context, test discovery.Test) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -63,11 +64,11 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			size = len(name)
 		}
 	}
+	timeouts := p.config.Timeouts
 	if test.Test.Spec.Timeouts != nil {
-		tc = model.WithTimeouts(ctx, tc, *test.Test.Spec.Timeouts)
+		timeouts = withTimeouts(timeouts, *test.Test.Spec.Timeouts)
 	}
-	timeouts := tc.Timeouts()
-	cleaner := cleaner.New(timeouts.Cleanup, nil)
+	cleaner := cleaner.New(timeouts.Cleanup.Duration, nil)
 	setupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@setup"))
 	cleanupLogger := logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@cleanup"))
 	setupCtx := logging.IntoContext(ctx, setupLogger)
@@ -84,8 +85,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			}
 		}
 	})
-	tc = model.WithClusters(ctx, tc, test.BasePath, test.Test.Spec.Clusters)
-	_, clusterClient, _tc, err := model.WithCurrentCluster(ctx, tc, test.Test.Spec.Cluster)
+	tc = engine.WithClusters(ctx, tc, test.BasePath, test.Test.Spec.Clusters)
+	_, clusterClient, _tc, err := engine.WithCurrentCluster(ctx, tc, test.Test.Spec.Cluster)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -127,7 +128,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	if p.report != nil && nspacer != nil {
 		p.report.SetNamespace(nspacer.GetNamespace())
 	}
-	if _tc, err := model.WithBindings(ctx, tc, test.Test.Spec.Bindings...); err != nil {
+	if _tc, err := engine.WithBindings(ctx, tc, test.Test.Spec.Bindings...); err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	} else {

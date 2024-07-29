@@ -5,7 +5,7 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/runner/check"
+	"github.com/kyverno/chainsaw/pkg/engine/check"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 )
 
