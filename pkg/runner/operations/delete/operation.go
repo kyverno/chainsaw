@@ -7,10 +7,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"go.uber.org/multierr"
@@ -18,7 +18,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type operation struct {
@@ -67,7 +66,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ oper
 			obj = merged
 		}
 	}
-	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
+	if err := internal.ApplyNamespacer(o.namespacer, o.client, &obj); err != nil {
 		return nil, err
 	}
 	internal.LogStart(logger, logging.Delete)
@@ -116,7 +115,7 @@ func (o *operation) deleteResources(ctx context.Context, bindings binding.Bindin
 }
 
 func (o *operation) deleteResource(ctx context.Context, resource unstructured.Unstructured) error {
-	if err := o.client.Delete(ctx, &resource, ctrlclient.PropagationPolicy(o.propagationPolicy)); err != nil {
+	if err := o.client.Delete(ctx, &resource, client.PropagationPolicy(o.propagationPolicy)); err != nil {
 		if kerrors.IsNotFound(err) {
 			return nil
 		}

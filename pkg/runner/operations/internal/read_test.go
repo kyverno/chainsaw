@@ -4,16 +4,16 @@ import (
 	"context"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestRead(t *testing.T) {
 	tests := []struct {
 		name           string
-		expected       ctrlclient.Object
+		expected       client.Object
 		client         *tclient.FakeClient
 		expectedResult []unstructured.Unstructured
 		expectedError  string
@@ -29,7 +29,7 @@ func TestRead(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
@@ -60,7 +60,7 @@ func TestRead(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				list.(*unstructured.UnstructuredList).Items = []unstructured.Unstructured{
 					{
 						Object: map[string]any{
