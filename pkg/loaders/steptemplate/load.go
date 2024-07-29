@@ -20,6 +20,8 @@ type (
 	converter     = func(unstructured.Unstructured) (*v1alpha1.StepTemplate, error)
 )
 
+var stepTemplate_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("StepTemplate")
+
 func Load(path string, remarshal bool) ([]*v1alpha1.StepTemplate, error) {
 	content, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
@@ -57,7 +59,7 @@ func parse(content []byte, remarshal bool, splitter splitter, loaderFactory load
 	if err != nil {
 		return nil, err
 	}
-	var tests []*v1alpha1.StepTemplate
+	var steps []*v1alpha1.StepTemplate
 	for _, document := range documents {
 		if remarshal {
 			altered, err := yamlutils.Remarshal(document)
@@ -66,15 +68,20 @@ func parse(content []byte, remarshal bool, splitter splitter, loaderFactory load
 			}
 			document = altered
 		}
-		_, untyped, err := loader.Load(document)
+		gvk, untyped, err := loader.Load(document)
 		if err != nil {
 			return nil, err
 		}
-		test, err := converter(untyped)
-		if err != nil {
-			return nil, err
+		switch gvk {
+		case stepTemplate_v1alpha1:
+			step, err := converter(untyped)
+			if err != nil {
+				return nil, err
+			}
+			steps = append(steps, step)
+		default:
+			return nil, fmt.Errorf("type not supported %s", gvk)
 		}
-		tests = append(tests, test)
 	}
-	return tests, nil
+	return steps, nil
 }
