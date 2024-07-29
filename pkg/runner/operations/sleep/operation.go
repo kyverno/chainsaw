@@ -7,6 +7,7 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 )
@@ -21,7 +22,7 @@ func New(duration v1alpha1.Sleep) operations.Operation {
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, _ binding.Bindings) (_ operations.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, _ binding.Bindings) (_ outputs.Outputs, _err error) {
 	logger := internal.GetLogger(ctx, nil)
 	defer func() {
 		internal.LogEnd(logger, logging.Sleep, _err)

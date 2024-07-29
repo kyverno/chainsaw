@@ -9,7 +9,7 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
-	"github.com/kyverno/chainsaw/pkg/engine/check"
+	"github.com/kyverno/chainsaw/pkg/engine/checks"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
@@ -40,7 +40,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outputs.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
@@ -92,7 +92,7 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 	return cmd, cancel, nil
 }
 
-func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd *exec.Cmd) (_outputs operations.Outputs, _err error) {
+func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd *exec.Cmd) (_outputs outputs.Outputs, _err error) {
 	logger := internal.GetLogger(ctx, nil)
 	var output internal.CommandOutput
 	if !o.script.SkipLogOutput {
@@ -105,16 +105,16 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	err := cmd.Run()
-	bindings = apibindings.RegisterNamedBinding(ctx, bindings, "stdout", output.Out())
-	bindings = apibindings.RegisterNamedBinding(ctx, bindings, "stderr", output.Err())
+	bindings = apibindings.RegisterBinding(ctx, bindings, "stdout", output.Out())
+	bindings = apibindings.RegisterBinding(ctx, bindings, "stderr", output.Err())
 	if err == nil {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", nil)
+		bindings = apibindings.RegisterBinding(ctx, bindings, "error", nil)
 	} else {
-		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
+		bindings = apibindings.RegisterBinding(ctx, bindings, "error", err.Error())
 	}
 	defer func(bindings binding.Bindings) {
 		if _err == nil {
-			outputs, err := outputs.ProcessOutputs(ctx, bindings, nil, o.script.Outputs...)
+			outputs, err := outputs.Process(ctx, bindings, nil, o.script.Outputs...)
 			if err != nil {
 				_err = err
 				return
@@ -125,7 +125,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 	if o.script.Check == nil || o.script.Check.Value == nil {
 		return nil, err
 	}
-	if errs, err := check.Check(ctx, nil, bindings, o.script.Check); err != nil {
+	if errs, err := checks.Check(ctx, nil, bindings, o.script.Check); err != nil {
 		return nil, err
 	} else {
 		return nil, errs.ToAggregate()

@@ -15,7 +15,6 @@ import (
 type TestContext struct {
 	*model.Summary
 	bindings binding.Bindings
-	cleanup  bool
 	cluster  clusters.Cluster
 	clusters clusters.Registry
 	dryRun   bool
@@ -25,7 +24,6 @@ func MakeContext(bindings binding.Bindings, registry clusters.Registry) TestCont
 	return TestContext{
 		Summary:  &model.Summary{},
 		bindings: bindings,
-		cleanup:  true,
 		clusters: registry,
 		cluster:  nil,
 	}
@@ -37,10 +35,6 @@ func EmptyContext() TestContext {
 
 func (tc *TestContext) Bindings() binding.Bindings {
 	return tc.bindings
-}
-
-func (tc *TestContext) Cleanup() bool {
-	return tc.cleanup
 }
 
 func (tc *TestContext) Cluster(name string) clusters.Cluster {
@@ -68,12 +62,7 @@ func (tc *TestContext) DryRun() bool {
 }
 
 func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
-	tc.bindings = apibindings.RegisterNamedBinding(ctx, tc.bindings, name, value)
-	return tc
-}
-
-func (tc TestContext) WithCleanup(ctx context.Context, cleanup bool) TestContext {
-	tc.cleanup = cleanup
+	tc.bindings = apibindings.RegisterBinding(ctx, tc.bindings, name, value)
 	return tc
 }
 
