@@ -10,15 +10,14 @@ import (
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	tnamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	tnamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	ttesting "github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Test_operationAssert(t *testing.T) {
@@ -41,7 +40,7 @@ func Test_operationAssert(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				t.Helper()
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
@@ -74,7 +73,7 @@ func Test_operationAssert(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				t.Helper()
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
@@ -111,7 +110,7 @@ func Test_operationAssert(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				t.Helper()
 				obj.(*unstructured.Unstructured).Object = nil
 				return kerror.NewNotFound(schema.GroupResource{Group: "", Resource: "pods"}, "test-pod")
@@ -134,7 +133,7 @@ func Test_operationAssert(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				t.Helper()
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
@@ -163,7 +162,7 @@ func Test_operationAssert(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				t.Helper()
 				uList := list.(*unstructured.UnstructuredList)
 				uList.Items = append(uList.Items, unstructured.Unstructured{
@@ -205,7 +204,7 @@ func Test_operationAssert(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				t.Helper()
 				uList := list.(*unstructured.UnstructuredList)
 				uList.Items = nil
@@ -229,7 +228,7 @@ func Test_operationAssert(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				t.Helper()
 				return errors.New("internal server error")
 			},
@@ -250,9 +249,9 @@ func Test_operationAssert(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				t := ttesting.FromContext(ctx)
-				assert.Contains(t, opts, ctrlclient.InNamespace("bar"))
+				assert.Contains(t, opts, client.InNamespace("bar"))
 				uList := list.(*unstructured.UnstructuredList)
 				uList.Items = append(uList.Items, unstructured.Unstructured{
 					Object: map[string]any{
@@ -273,7 +272,7 @@ func Test_operationAssert(t *testing.T) {
 			},
 		},
 		namespacer: func(c client.Client) namespacer.Namespacer {
-			return namespacer.New(c, "bar")
+			return namespacer.New("bar")
 		},
 		expectedLogs: []string{"ASSERT: RUN - []", "ASSERT: DONE - []"},
 	}, {
@@ -296,7 +295,7 @@ func Test_operationAssert(t *testing.T) {
 		},
 		namespacer: func(c client.Client) namespacer.Namespacer {
 			return &tnamespacer.FakeNamespacer{
-				ApplyFn: func(obj ctrlclient.Object, call int) error {
+				ApplyFn: func(call int, client client.Client, obj client.Object) error {
 					return errors.New("namespacer error")
 				},
 			}

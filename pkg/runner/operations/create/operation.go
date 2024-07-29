@@ -9,10 +9,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -69,7 +69,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ oper
 			obj = merged
 		}
 	}
-	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
+	if err := internal.ApplyNamespacer(o.namespacer, o.client, &obj); err != nil {
 		return nil, err
 	}
 	internal.LogStart(logger, logging.Create)

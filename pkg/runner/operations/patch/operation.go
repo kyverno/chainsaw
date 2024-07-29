@@ -7,17 +7,16 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
 	"k8s.io/apimachinery/pkg/util/wait"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type operation struct {
@@ -66,7 +65,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ oper
 			obj = merged
 		}
 	}
-	if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
+	if err := internal.ApplyNamespacer(o.namespacer, o.client, &obj); err != nil {
 		return nil, err
 	}
 	internal.LogStart(logger, logging.Patch)
@@ -109,7 +108,7 @@ func (o *operation) updateResource(ctx context.Context, bindings binding.Binding
 	if err != nil {
 		return nil, err
 	}
-	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, ctrlclient.RawPatch(types.MergePatchType, bytes)))
+	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 }
 
 func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured, err error) (_outputs operations.Outputs, _err error) {
