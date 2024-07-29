@@ -10,9 +10,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client/simple"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	engineclient "github.com/kyverno/chainsaw/pkg/engine/client"
+	nspacer "github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
-	nspacer "github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	opassert "github.com/kyverno/chainsaw/pkg/runner/operations/assert"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -125,7 +125,7 @@ func runE(opts options, cmd *cobra.Command, client client.Client, namespacer nsp
 		client = engineclient.New(newClient)
 	}
 	if namespacer == nil {
-		namespacer = nspacer.New(client, opts.namespace)
+		namespacer = nspacer.New(opts.namespace)
 	}
 	for _, assertion := range assertions {
 		if err := assert(opts, client, assertion, namespacer); err != nil {

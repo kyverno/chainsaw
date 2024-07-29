@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Test_apply(t *testing.T) {
@@ -61,11 +61,11 @@ func Test_apply(t *testing.T) {
 		name:   "Resource already exists, patch it",
 		object: podv2,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = podv1
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},
@@ -75,11 +75,11 @@ func Test_apply(t *testing.T) {
 		name:   "Dry Run Resource already exists, patch it",
 		object: podv2,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = podv1
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},
@@ -89,10 +89,10 @@ func Test_apply(t *testing.T) {
 		name:   "Resource does not exist, create it",
 		object: podv1,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
-			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+			CreateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.CreateOption) error {
 				return nil
 			},
 		},
@@ -102,10 +102,10 @@ func Test_apply(t *testing.T) {
 		name:   "Dry Run Resource does not exist, create it",
 		object: podv1,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
-			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+			CreateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.CreateOption) error {
 				return nil
 			},
 		},
@@ -115,7 +115,7 @@ func Test_apply(t *testing.T) {
 		name:   "Error while getting resource",
 		object: podv1,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				return errors.New("some arbitrary error")
 			},
 		},
@@ -125,11 +125,11 @@ func Test_apply(t *testing.T) {
 		name:   "Fail to patch existing resource",
 		object: podv2,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = podv1
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return errors.New("patch failed")
 			},
 		},
@@ -139,10 +139,10 @@ func Test_apply(t *testing.T) {
 		name:   "Fail to create non-existing resource",
 		object: podv1,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
-			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+			CreateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.CreateOption) error {
 				return errors.New("create failed")
 			},
 		},
@@ -152,11 +152,11 @@ func Test_apply(t *testing.T) {
 		name:   "Unexpected patch success when should fail",
 		object: podv2,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = podv1
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},
@@ -172,10 +172,10 @@ func Test_apply(t *testing.T) {
 		name:   "Unexpected create success when should fail",
 		object: podv1,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pods").GroupResource(), key.Name)
 			},
-			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+			CreateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.CreateOption) error {
 				return nil
 			},
 		},
@@ -191,11 +191,11 @@ func Test_apply(t *testing.T) {
 		name:   "Expected patch failure",
 		object: podv2,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = podv1
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return errors.New("expected patch failure")
 			},
 		},
@@ -211,10 +211,10 @@ func Test_apply(t *testing.T) {
 		name:   "Expected create failure",
 		object: podv1,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pods").GroupResource(), key.Name)
 			},
-			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+			CreateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.CreateOption) error {
 				return errors.New("expected create failure")
 			},
 		},
@@ -230,11 +230,11 @@ func Test_apply(t *testing.T) {
 		name:   "Don't match",
 		object: podv1,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = podv1
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},
@@ -253,11 +253,11 @@ func Test_apply(t *testing.T) {
 		name:   "Match",
 		object: podv1,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = podv1
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},
@@ -276,10 +276,10 @@ func Test_apply(t *testing.T) {
 		name:   "Resource does not exist, create it and call cleaner",
 		object: podv1,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pods").GroupResource(), key.Name)
 			},
-			CreateFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.CreateOption) error {
+			CreateFn: func(_ context.Context, _ int, _ client.Object, _ ...client.CreateOption) error {
 				return nil
 			},
 		},

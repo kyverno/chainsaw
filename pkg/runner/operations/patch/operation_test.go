@@ -7,13 +7,13 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Test_create(t *testing.T) {
@@ -44,7 +44,7 @@ func Test_create(t *testing.T) {
 		name:   "Resource doesn't exist",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
 		},
@@ -54,7 +54,7 @@ func Test_create(t *testing.T) {
 		name:   "Dry Run Resource doesn't exist",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
 		},
@@ -64,11 +64,11 @@ func Test_create(t *testing.T) {
 		name:   "Resource exists, patch it",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = pod
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},
@@ -78,11 +78,11 @@ func Test_create(t *testing.T) {
 		name:   "Dry Run Resource exists, patch it",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = pod
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},
@@ -92,7 +92,7 @@ func Test_create(t *testing.T) {
 		name:   "failed get",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, _ client.Object, opts ...client.GetOption) error {
 				return errors.New("some arbitrary error")
 			},
 		},
@@ -102,11 +102,11 @@ func Test_create(t *testing.T) {
 		name:   "failed patch",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = pod
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return errors.New("some arbitrary error")
 			},
 		},
@@ -116,11 +116,11 @@ func Test_create(t *testing.T) {
 		name:   "failed patch (expected)",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = pod
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return errors.New("some arbitrary error")
 			},
 		},
@@ -136,11 +136,11 @@ func Test_create(t *testing.T) {
 		name:   "Should fail is true but no error occurs",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = pod
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},
@@ -156,11 +156,11 @@ func Test_create(t *testing.T) {
 		name:   "Don't match",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = pod
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},
@@ -181,11 +181,11 @@ func Test_create(t *testing.T) {
 		name:   "Match",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = pod
 				return nil
 			},
-			PatchFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ctrlclient.Patch, _ ...ctrlclient.PatchOption) error {
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
 				return nil
 			},
 		},

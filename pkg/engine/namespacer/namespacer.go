@@ -4,32 +4,29 @@ import (
 	"errors"
 
 	"github.com/kyverno/chainsaw/pkg/client"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type Namespacer interface {
-	Apply(ctrlclient.Object) error
+	Apply(client.Client, client.Object) error
 	GetNamespace() string
 }
 
 type namespacer struct {
-	c         client.Client
 	namespace string
 }
 
-func New(c client.Client, namespace string) Namespacer {
+func New(namespace string) Namespacer {
 	return &namespacer{
-		c:         c,
 		namespace: namespace,
 	}
 }
 
-func (n *namespacer) Apply(resource ctrlclient.Object) error {
+func (n *namespacer) Apply(client client.Client, resource client.Object) error {
 	if resource == nil {
 		return errors.New("resource is nil")
 	}
 	if resource.GetNamespace() == "" {
-		namespaced, err := n.c.IsObjectNamespaced(resource)
+		namespaced, err := client.IsObjectNamespaced(resource)
 		if err != nil {
 			return err
 		}
