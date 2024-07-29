@@ -9,7 +9,6 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func New(inner client.Client) client.Client {
@@ -22,7 +21,7 @@ type runnerClient struct {
 	inner client.Client
 }
 
-func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) (_err error) {
+func (c *runnerClient) Create(ctx context.Context, obj client.Object, opts ...client.CreateOption) (_err error) {
 	gvk := obj.GetObjectKind().GroupVersionKind()
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
@@ -39,7 +38,7 @@ func (c *runnerClient) Create(ctx context.Context, obj ctrlclient.Object, opts .
 	return nil
 }
 
-func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.UpdateOption) (_err error) {
+func (c *runnerClient) Update(ctx context.Context, obj client.Object, opts ...client.UpdateOption) (_err error) {
 	gvk := obj.GetObjectKind().GroupVersionKind()
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
@@ -52,7 +51,7 @@ func (c *runnerClient) Update(ctx context.Context, obj ctrlclient.Object, opts .
 	return c.inner.Update(ctx, obj, opts...)
 }
 
-func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) (_err error) {
+func (c *runnerClient) Delete(ctx context.Context, obj client.Object, opts ...client.DeleteOption) (_err error) {
 	gvk := obj.GetObjectKind().GroupVersionKind()
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
@@ -65,15 +64,15 @@ func (c *runnerClient) Delete(ctx context.Context, obj ctrlclient.Object, opts .
 	return c.inner.Delete(ctx, obj, opts...)
 }
 
-func (c *runnerClient) Get(ctx context.Context, key types.NamespacedName, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+func (c *runnerClient) Get(ctx context.Context, key types.NamespacedName, obj client.Object, opts ...client.GetOption) error {
 	return c.inner.Get(ctx, key, obj, opts...)
 }
 
-func (c *runnerClient) List(ctx context.Context, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) (_err error) {
+func (c *runnerClient) List(ctx context.Context, list client.ObjectList, opts ...client.ListOption) (_err error) {
 	return c.inner.List(ctx, list, opts...)
 }
 
-func (c *runnerClient) Patch(ctx context.Context, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) (_err error) {
+func (c *runnerClient) Patch(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.PatchOption) (_err error) {
 	gvk := obj.GetObjectKind().GroupVersionKind()
 	defer func() {
 		obj.GetObjectKind().SetGroupVersionKind(gvk)
@@ -94,14 +93,14 @@ func (c *runnerClient) RESTMapper() meta.RESTMapper {
 	return c.inner.RESTMapper()
 }
 
-func (c *runnerClient) ok(ctx context.Context, op logging.Operation, obj ctrlclient.Object) {
+func (c *runnerClient) ok(ctx context.Context, op logging.Operation, obj client.Object) {
 	logger := logging.FromContext(ctx)
 	if logger != nil {
 		logger.WithResource(obj).Log(op, logging.OkStatus, color.BoldGreen)
 	}
 }
 
-func (c *runnerClient) error(ctx context.Context, op logging.Operation, obj ctrlclient.Object, err error) {
+func (c *runnerClient) error(ctx context.Context, op logging.Operation, obj client.Object, err error) {
 	logger := logging.FromContext(ctx)
 	if logger != nil {
 		logger.WithResource(obj).Log(op, logging.ErrorStatus, color.BoldYellow, logging.ErrSection(err))

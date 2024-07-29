@@ -8,8 +8,8 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/check"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/template"
@@ -55,7 +55,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ oper
 		}
 	}
 	if obj.GetKind() != "" {
-		if err := internal.ApplyNamespacer(o.namespacer, &obj); err != nil {
+		if err := internal.ApplyNamespacer(o.namespacer, o.client, &obj); err != nil {
 			return nil, err
 		}
 	}

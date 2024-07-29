@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/pkg/ext/output/color"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func GetLogger(ctx context.Context, obj client.Object) logging.Logger {

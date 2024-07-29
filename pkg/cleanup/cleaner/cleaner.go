@@ -7,7 +7,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type cleanupEntry struct {
@@ -65,7 +64,7 @@ func (c *cleaner) Run(ctx context.Context) []error {
 func (c *cleaner) delete(ctx context.Context, entry cleanupEntry) error {
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
-	if err := entry.client.Delete(ctx, entry.object, ctrlclient.PropagationPolicy(metav1.DeletePropagationForeground)); err != nil {
+	if err := entry.client.Delete(ctx, entry.object, client.PropagationPolicy(metav1.DeletePropagationForeground)); err != nil {
 		if !kerrors.IsNotFound(err) {
 			return err
 		}

@@ -11,14 +11,13 @@ import (
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	tnamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	tnamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	ttesting "github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Test_operationError(t *testing.T) {
@@ -43,10 +42,10 @@ func Test_operationError(t *testing.T) {
 		name:     "Resource not found",
 		expected: expected,
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				return kerrors.NewNotFound(list.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), "test-pod")
 			},
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), "test-pod")
 			},
 		},
@@ -56,10 +55,10 @@ func Test_operationError(t *testing.T) {
 		name:     "Internal error",
 		expected: expected,
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				return errors.New("internal error")
 			},
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return errors.New("internal error")
 			},
 		},
@@ -69,10 +68,10 @@ func Test_operationError(t *testing.T) {
 		name:     "Resource matches actual",
 		expected: expected,
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				return nil
 			},
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				uObj, ok := obj.(*unstructured.Unstructured)
 				if !ok {
 					t.Fatalf("obj is not of type *unstructured.Unstructured, it's %T", obj)
@@ -98,7 +97,7 @@ func Test_operationError(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				t.Helper()
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
@@ -135,7 +134,7 @@ func Test_operationError(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				t.Helper()
 				uList := list.(*unstructured.UnstructuredList)
 				uList.Items = nil
@@ -158,9 +157,9 @@ func Test_operationError(t *testing.T) {
 			},
 		},
 		client: &tclient.FakeClient{
-			ListFn: func(ctx context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
 				t := ttesting.FromContext(ctx)
-				assert.Contains(t, opts, ctrlclient.InNamespace("bar"))
+				assert.Contains(t, opts, client.InNamespace("bar"))
 				uList := list.(*unstructured.UnstructuredList)
 				uList.Items = nil
 				return nil
@@ -170,7 +169,7 @@ func Test_operationError(t *testing.T) {
 			},
 		},
 		namespacer: func(c client.Client) namespacer.Namespacer {
-			return namespacer.New(c, "bar")
+			return namespacer.New("bar")
 		},
 		expectedLogs: []string{"ERROR: RUN - []", "ERROR: DONE - []"},
 	}, {
@@ -193,7 +192,7 @@ func Test_operationError(t *testing.T) {
 		},
 		namespacer: func(c client.Client) namespacer.Namespacer {
 			return &tnamespacer.FakeNamespacer{
-				ApplyFn: func(obj ctrlclient.Object, call int) error {
+				ApplyFn: func(call int, client client.Client, obj client.Object) error {
 					return errors.New("namespacer error")
 				},
 			}

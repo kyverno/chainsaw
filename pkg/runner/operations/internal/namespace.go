@@ -1,13 +1,13 @@
 package internal
 
 import (
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	"sigs.k8s.io/controller-runtime/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 )
 
-func ApplyNamespacer(namespacer namespacer.Namespacer, obj client.Object) error {
+func ApplyNamespacer(namespacer namespacer.Namespacer, client client.Client, obj client.Object) error {
 	if namespacer == nil {
 		return nil
 	}
-	return namespacer.Apply(obj)
+	return namespacer.Apply(client, obj)
 }

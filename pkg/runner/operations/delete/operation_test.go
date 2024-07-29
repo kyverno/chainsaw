@@ -11,14 +11,13 @@ import (
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	ttesting "github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Test_operationDelete(t *testing.T) {
@@ -43,10 +42,10 @@ func Test_operationDelete(t *testing.T) {
 		name:   "not found",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(_ context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(_ context.Context, _ int, key client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
-			DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+			DeleteFn: func(_ context.Context, _ int, _ client.Object, _ ...client.DeleteOption) error {
 				return nil
 			},
 		},
@@ -56,10 +55,10 @@ func Test_operationDelete(t *testing.T) {
 		name:   "failed get",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(_ context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(_ context.Context, _ int, _ client.ObjectKey, _ client.Object, _ ...client.GetOption) error {
 				return kerrors.NewInternalError(errors.New("failed to get the pod"))
 			},
-			DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+			DeleteFn: func(_ context.Context, _ int, _ client.Object, _ ...client.DeleteOption) error {
 				return nil
 			},
 		},
@@ -69,10 +68,10 @@ func Test_operationDelete(t *testing.T) {
 		name:   "failed delete",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(_ context.Context, _ int, _ ctrlclient.ObjectKey, _ ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(_ context.Context, _ int, _ client.ObjectKey, _ client.Object, _ ...client.GetOption) error {
 				return nil
 			},
-			DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+			DeleteFn: func(_ context.Context, _ int, _ client.Object, _ ...client.DeleteOption) error {
 				return kerrors.NewInternalError(errors.New("failed to delete the pod"))
 			},
 		},
@@ -82,13 +81,13 @@ func Test_operationDelete(t *testing.T) {
 		name:   "ok",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(_ context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(_ context.Context, call int, key client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				if call < 10 {
 					return nil
 				}
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
-			DeleteFn: func(_ context.Context, _ int, _ ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+			DeleteFn: func(_ context.Context, _ int, _ client.Object, _ ...client.DeleteOption) error {
 				return nil
 			},
 		},
@@ -98,10 +97,10 @@ func Test_operationDelete(t *testing.T) {
 		name:   "poll succeeds but returns error after",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				return nil
 			},
-			DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+			DeleteFn: func(ctx context.Context, call int, obj client.Object, _ ...client.DeleteOption) error {
 				return nil
 			},
 		},
@@ -111,7 +110,7 @@ func Test_operationDelete(t *testing.T) {
 		name:   "with namespacer",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				t := ttesting.FromContext(ctx)
 				assert.Equal(t, "bar", key.Namespace)
 				if call == 0 {
@@ -119,7 +118,7 @@ func Test_operationDelete(t *testing.T) {
 				}
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
-			DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+			DeleteFn: func(ctx context.Context, call int, obj client.Object, _ ...client.DeleteOption) error {
 				t := ttesting.FromContext(ctx)
 				assert.Equal(t, "bar", obj.GetNamespace())
 				return nil
@@ -129,7 +128,7 @@ func Test_operationDelete(t *testing.T) {
 			},
 		},
 		namespacer: func(c client.Client) namespacer.Namespacer {
-			return namespacer.New(c, "bar")
+			return namespacer.New("bar")
 		},
 		expectedErr:  nil,
 		expectedLogs: []string{"DELETE: RUN - []", "DELETE: DONE - []"},
@@ -137,13 +136,13 @@ func Test_operationDelete(t *testing.T) {
 		name:   "with check",
 		object: pod,
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
 				if call < 10 {
 					return nil
 				}
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
-			DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, _ ...ctrlclient.DeleteOption) error {
+			DeleteFn: func(ctx context.Context, call int, obj client.Object, _ ...client.DeleteOption) error {
 				t := ttesting.FromContext(ctx)
 				assert.Equal(t, 1, call)
 				return errors.New("dummy error")
