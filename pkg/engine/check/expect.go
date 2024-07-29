@@ -10,7 +10,7 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-func Expectations(ctx context.Context, obj unstructured.Unstructured, bindings binding.Bindings, expect ...v1alpha1.Expectation) (bool, error) {
+func Expect(ctx context.Context, obj unstructured.Unstructured, bindings binding.Bindings, expect ...v1alpha1.Expectation) (bool, error) {
 	matched := false
 	var results field.ErrorList
 	for _, expectation := range expect {

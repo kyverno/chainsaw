@@ -11,6 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
@@ -377,7 +378,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			processor := NewTestProcessor(tc.config, tc.clock, tc.testsReport)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
-			tcontext := model.MakeContext(binding.NewBindings(), registry)
+			tcontext := enginecontext.MakeContext(binding.NewBindings(), registry)
 			processor.Run(ctx, tc.namespacer, tcontext, tc.test)
 			nt.Cleanup(func() {})
 			if tc.expectedFail {
