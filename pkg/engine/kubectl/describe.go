@@ -7,29 +7,29 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 )
 
-func Describe(client client.Client, bindings binding.Bindings, collector *v1alpha1.Describe) (string, []string, error) {
+func Describe(client client.Client, tc binding.Bindings, collector *v1alpha1.Describe) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := apibindings.String(collector.Name, bindings)
+	name, err := bindings.String(collector.Name, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := apibindings.String(collector.Namespace, bindings)
+	namespace, err := bindings.String(collector.Namespace, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := apibindings.String(collector.Selector, bindings)
+	selector, err := bindings.String(collector.Selector, tc)
 	if err != nil {
 		return "", nil, err
 	}
 	if name != "" && selector != "" {
 		return "", nil, errors.New("name cannot be provided when a selector is specified")
 	}
-	resource, clustered, err := mapResource(client, bindings, collector.ObjectType)
+	resource, clustered, err := mapResource(client, tc, collector.ObjectType)
 	if err != nil {
 		return "", nil, err
 	}

@@ -6,10 +6,11 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/check"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
@@ -119,7 +120,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, 
 	}
 	defer func(bindings binding.Bindings) {
 		if _err == nil {
-			outputs, err := apibindings.ProcessOutputs(ctx, bindings, obj.UnstructuredContent(), o.outputs...)
+			outputs, err := outputs.ProcessOutputs(ctx, bindings, obj.UnstructuredContent(), o.outputs...)
 			if err != nil {
 				_err = err
 				return

@@ -10,11 +10,11 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine"
+	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
@@ -126,7 +126,7 @@ func applyScenarios(test discovery.Test) []discovery.Test {
 	return scenarios
 }
 
-func buildNamespace(ctx context.Context, name string, template *v1alpha1.Any, bindings binding.Bindings) (*corev1.Namespace, error) {
+func buildNamespace(ctx context.Context, name string, template *v1alpha1.Any, tc binding.Bindings) (*corev1.Namespace, error) {
 	namespace := kube.Namespace(name)
 	if template == nil {
 		return &namespace, nil
@@ -135,8 +135,8 @@ func buildNamespace(ctx context.Context, name string, template *v1alpha1.Any, bi
 		return &namespace, nil
 	}
 	object := kube.ToUnstructured(&namespace)
-	bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-	merged, err := mutate.Merge(ctx, object, bindings, *template)
+	tc = bindings.RegisterNamedBinding(ctx, tc, "namespace", object.GetName())
+	merged, err := mutate.Merge(ctx, object, tc, *template)
 	if err != nil {
 		return nil, err
 	}

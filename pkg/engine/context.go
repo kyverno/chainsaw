@@ -6,14 +6,14 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
 	"k8s.io/client-go/rest"
 )
 
 func WithBindings(ctx context.Context, tc Context, variables ...v1alpha1.Binding) (Context, error) {
 	for _, variable := range variables {
-		name, value, err := apibindings.ResolveBinding(ctx, tc.Bindings(), nil, variable)
+		name, value, err := bindings.ResolveBinding(ctx, tc.Bindings(), nil, variable)
 		if err != nil {
 			return tc, err
 		}
