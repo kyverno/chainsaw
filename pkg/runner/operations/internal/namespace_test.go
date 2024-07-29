@@ -4,10 +4,10 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	tnamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
+	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	tnamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/stretchr/testify/assert"
-	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestApplyNamespacer(t *testing.T) {
@@ -24,7 +24,7 @@ func TestApplyNamespacer(t *testing.T) {
 	}, {
 		name: "namespacer err",
 		namespacer: &tnamespacer.FakeNamespacer{
-			ApplyFn: func(_ client.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return errors.New("namespacer err")
 			},
 		},
@@ -33,7 +33,7 @@ func TestApplyNamespacer(t *testing.T) {
 	}, {
 		name: "namespacer ok",
 		namespacer: &tnamespacer.FakeNamespacer{
-			ApplyFn: func(_ client.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -42,7 +42,7 @@ func TestApplyNamespacer(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ApplyNamespacer(tt.namespacer, tt.obj)
+			err := ApplyNamespacer(tt.namespacer, nil, tt.obj)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

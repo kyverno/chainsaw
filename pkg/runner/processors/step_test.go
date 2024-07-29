@@ -13,17 +13,16 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	fakeLogger "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
+	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	fakeNamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/ptr"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestStepProcessor_Run(t *testing.T) {
@@ -49,7 +48,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		},
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -76,15 +75,15 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return nil
 			},
-			PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
+			PatchFn: func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -122,15 +121,15 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
 			},
-			CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+			CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -168,7 +167,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
@@ -195,12 +194,12 @@ func TestStepProcessor_Run(t *testing.T) {
 				}
 				return nil
 			},
-			ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -238,7 +237,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
@@ -265,12 +264,12 @@ func TestStepProcessor_Run(t *testing.T) {
 				}
 				return nil
 			},
-			ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -309,7 +308,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		},
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 			GetNamespaceFn: func(call int) string {
@@ -348,7 +347,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		},
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 			GetNamespaceFn: func(call int) string {
@@ -416,12 +415,12 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("Deployment"), "chainsaw")
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -464,15 +463,15 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
 			},
-			CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+			CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -513,15 +512,15 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
 			},
-			CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+			CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -560,15 +559,15 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
 			},
-			CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+			CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -613,15 +612,15 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
 			},
-			CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+			CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -660,7 +659,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
@@ -687,12 +686,12 @@ func TestStepProcessor_Run(t *testing.T) {
 				}
 				return nil
 			},
-			ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -753,7 +752,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "ConfigMap",
@@ -766,12 +765,12 @@ func TestStepProcessor_Run(t *testing.T) {
 				}
 				return nil
 			},
-			ListFn: func(ctx context.Context, call int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+			ListFn: func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},
@@ -812,7 +811,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "Pod",
@@ -840,12 +839,12 @@ func TestStepProcessor_Run(t *testing.T) {
 				}
 				return nil
 			},
-			PatchFn: func(ctx context.Context, call int, obj ctrlclient.Object, patch ctrlclient.Patch, opts ...ctrlclient.PatchOption) error {
+			PatchFn: func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 			GetNamespaceFn: func(call int) string {
@@ -934,15 +933,15 @@ func TestStepProcessor_Run(t *testing.T) {
 			Timeouts: config.Spec.Timeouts,
 		},
 		client: &fake.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("Deployment"), "chainsaw")
 			},
-			CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+			CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
 				return nil
 			},
 		},
 		namespacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(int, client.Client, client.Object) error {
 				return nil
 			},
 		},

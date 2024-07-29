@@ -4,11 +4,11 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestNamespacer(t *testing.T) {
@@ -17,7 +17,7 @@ func TestNamespacer(t *testing.T) {
 	nsSet.SetNamespace("already-set")
 	tests := []struct {
 		name          string
-		resource      ctrlclient.Object
+		resource      client.Object
 		namespaced    bool
 		expectErr     bool
 		expectNS      string
@@ -61,8 +61,8 @@ func TestNamespacer(t *testing.T) {
 					return tt.namespaced, nil
 				},
 			}
-			n := New(mock, "test-namespace")
-			err := n.Apply(tt.resource)
+			n := New("test-namespace")
+			err := n.Apply(mock, tt.resource)
 			if tt.expectErr {
 				assert.Error(t, err)
 			} else {
@@ -73,7 +73,7 @@ func TestNamespacer(t *testing.T) {
 		})
 	}
 	t.Run("test GetNamespace", func(t *testing.T) {
-		n := New(nil, "test-namespace")
+		n := New("test-namespace")
 		ns := n.GetNamespace()
 		assert.Equal(t, "test-namespace", ns)
 	})

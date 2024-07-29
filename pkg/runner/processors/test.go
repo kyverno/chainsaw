@@ -11,10 +11,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -109,7 +109,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 				logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 				failer.FailNow(ctx)
 			}
-			nspacer = namespacer.New(clusterClient, namespace.GetName())
+			nspacer = namespacer.New(namespace.GetName())
 			if err := clusterClient.Get(setupCtx, client.Key(namespace), namespace.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					// Get doesn't log
