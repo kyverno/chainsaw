@@ -6,10 +6,10 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/engine/check"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
-	"github.com/kyverno/chainsaw/pkg/runner/check"
 	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
@@ -146,7 +146,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, 
 	} else {
 		bindings = apibindings.RegisterNamedBinding(ctx, bindings, "error", err.Error())
 	}
-	if matched, err := check.Expectations(ctx, resource, bindings, o.expect...); matched {
+	if matched, err := check.Expect(ctx, resource, bindings, o.expect...); matched {
 		return err
 	}
 	return err

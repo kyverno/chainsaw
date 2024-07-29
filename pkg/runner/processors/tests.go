@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/model"
@@ -27,7 +28,7 @@ import (
 )
 
 type TestsProcessor interface {
-	Run(context.Context, model.TestContext, ...discovery.Test)
+	Run(context.Context, engine.Context, ...discovery.Test)
 }
 
 func NewTestsProcessor(config model.Configuration, clock clock.PassiveClock, report *report.Report) TestsProcessor {
@@ -44,7 +45,7 @@ type testsProcessor struct {
 	report *report.Report
 }
 
-func (p *testsProcessor) Run(ctx context.Context, tc model.TestContext, tests ...discovery.Test) {
+func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
 	// 1. setup the processor
 	tc, nspacer := p.setup(ctx, tc)
@@ -142,7 +143,7 @@ func buildNamespace(ctx context.Context, name string, template *v1alpha1.Any, bi
 	return convert.To[corev1.Namespace](merged)
 }
 
-func (p *testsProcessor) setup(ctx context.Context, tc model.TestContext) (model.TestContext, namespacer.Namespacer) {
+func (p *testsProcessor) setup(ctx context.Context, tc engine.Context) (engine.Context, namespacer.Namespacer) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -150,7 +151,7 @@ func (p *testsProcessor) setup(ctx context.Context, tc model.TestContext) (model
 			p.report.SetEndTime(time.Now())
 		})
 	}
-	cleaner := cleaner.New(tc.Timeouts().Cleanup, nil)
+	cleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil)
 	t.Cleanup(func() {
 		if !cleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/model"
+	"github.com/kyverno/chainsaw/pkg/engine"
 )
 
 type contextData struct {
@@ -15,19 +15,19 @@ type contextData struct {
 	dryRun   *bool
 }
 
-func setupContextData(ctx context.Context, tc model.TestContext, data contextData) (model.TestContext, error) {
-	tc = model.WithClusters(ctx, tc, data.basePath, data.clusters)
+func setupContextData(ctx context.Context, tc engine.Context, data contextData) (engine.Context, error) {
+	tc = engine.WithClusters(ctx, tc, data.basePath, data.clusters)
 	if data.dryRun != nil {
 		tc = tc.WithDryRun(ctx, *data.dryRun)
 	}
 	if data.cluster != nil {
-		if _, _, _tc, err := model.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {
+		if _, _, _tc, err := engine.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {
 			return tc, err
 		} else {
 			tc = _tc
 		}
 	}
-	if _tc, err := model.WithBindings(ctx, tc, data.bindings...); err != nil {
+	if _tc, err := engine.WithBindings(ctx, tc, data.bindings...); err != nil {
 		return tc, err
 	} else {
 		tc = _tc

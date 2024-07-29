@@ -123,7 +123,7 @@ func TestExpectations(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Expectations(context.TODO(), tt.obj, tt.bindings, tt.expect...)
+			got, err := Expect(context.TODO(), tt.obj, tt.bindings, tt.expect...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
