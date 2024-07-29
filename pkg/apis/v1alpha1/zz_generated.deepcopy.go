@@ -1244,6 +1244,11 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		*out = new(Timeouts)
 		(*in).DeepCopyInto(*out)
 	}
+	if in.Cluster != nil {
+		in, out := &in.Cluster, &out.Cluster
+		*out = new(string)
+		**out = **in
+	}
 	if in.Clusters != nil {
 		in, out := &in.Clusters, &out.Clusters
 		*out = make(Clusters, len(*in))

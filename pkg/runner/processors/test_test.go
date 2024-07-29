@@ -375,7 +375,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			if tc.client != nil {
 				registry.client = tc.client
 			}
-			processor := NewTestProcessor(tc.config, tc.clock, tc.testsReport)
+			processor := NewTestProcessor(tc.config, tc.clock, tc.testsReport, 0)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
 			tcontext := enginecontext.MakeContext(binding.NewBindings(), registry)

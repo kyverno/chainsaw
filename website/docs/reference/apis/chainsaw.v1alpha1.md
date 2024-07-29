@@ -854,7 +854,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `description` | `string` |  |  | <p>Description contains a description of the test.</p> |
 | `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
 | `timeouts` | [`Timeouts`](#chainsaw-kyverno-io-v1alpha1-Timeouts) |  |  | <p>Timeouts for the test. Overrides the global timeouts set in the Configuration on a per operation basis.</p> |
-| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (default cluster will be used if not specified and/or overridden).</p> |
+| `cluster` | `string` |  |  | <p>Cluster defines the target cluster (will be inherited if not specified).</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `skip` | `bool` |  |  | <p>Skip determines whether the test should skipped.</p> |
 | `concurrent` | `bool` |  |  | <p>Concurrent determines whether the test should run concurrently with other tests.</p> |
