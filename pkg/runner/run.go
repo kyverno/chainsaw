@@ -62,7 +62,7 @@ func run(
 			t.Helper()
 			t.Parallel()
 			ctx := testing.IntoContext(ctx, t)
-			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@main"))
+			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@chainsaw"))
 			processor := processors.NewTestsProcessor(config, clock, testsReport)
 			processor.Run(ctx, tc, tests...)
 		},
@@ -97,13 +97,8 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 			return tc, err
 		}
 		tc = tc.WithCluster(ctx, clusters.DefaultClient, cluster)
-		_, _, _tc, err := engine.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
-		if err != nil {
-			return tc, err
-		}
-		tc = _tc
+		tc, _, _, err := engine.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
+		return tc, err
 	}
-	tc = engine.WithClusters(ctx, tc, "", config.Clusters)
-	tc = tc.WithCleanup(ctx, !config.Cleanup.SkipDelete)
 	return tc, nil
 }

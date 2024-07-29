@@ -96,7 +96,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 		})
 	}
 	logger := logging.FromContext(ctx)
-	tc, err := setupContextData(ctx, tc, contextData{
+	tc, _, err := setupContextData(ctx, tc, contextData{
 		basePath: p.basePath,
 		bindings: p.step.Bindings,
 		cluster:  p.step.Cluster,
@@ -395,7 +395,7 @@ func (p *stepProcessor) applyOperation(id int, cleaner cleaner.CleanerCollector,
 			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
-				if tc, err := setupContextData(ctx, tc, contextData{
+				if tc, _, err := setupContextData(ctx, tc, contextData{
 					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
@@ -447,7 +447,7 @@ func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation
 			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Assert.Duration)
-				if tc, err := setupContextData(ctx, tc, contextData{
+				if tc, _, err := setupContextData(ctx, tc, contextData{
 					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
@@ -488,7 +488,7 @@ func (p *stepProcessor) commandOperation(id int, op v1alpha1.Command) operation 
 		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, err := setupContextData(ctx, tc, contextData{
+			if tc, _, err := setupContextData(ctx, tc, contextData{
 				basePath: p.basePath,
 				bindings: op.Bindings,
 				cluster:  op.Cluster,
@@ -535,7 +535,7 @@ func (p *stepProcessor) createOperation(id int, cleaner cleaner.CleanerCollector
 			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
-				if tc, err := setupContextData(ctx, tc, contextData{
+				if tc, _, err := setupContextData(ctx, tc, contextData{
 					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
@@ -600,7 +600,7 @@ func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) ([]operation
 			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Delete.Duration)
-				if tc, err := setupContextData(ctx, tc, contextData{
+				if tc, _, err := setupContextData(ctx, tc, contextData{
 					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
@@ -643,7 +643,7 @@ func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operatio
 		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, err := setupContextData(ctx, tc, contextData{
+			if tc, _, err := setupContextData(ctx, tc, contextData{
 				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,
@@ -696,7 +696,7 @@ func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, 
 			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Error.Duration)
-				if tc, err := setupContextData(ctx, tc, contextData{
+				if tc, _, err := setupContextData(ctx, tc, contextData{
 					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
@@ -737,7 +737,7 @@ func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, err := setupContextData(ctx, tc, contextData{
+			if tc, _, err := setupContextData(ctx, tc, contextData{
 				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,
@@ -785,7 +785,7 @@ func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
 		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, err := setupContextData(ctx, tc, contextData{
+			if tc, _, err := setupContextData(ctx, tc, contextData{
 				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,
@@ -841,7 +841,7 @@ func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, 
 			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
-				if tc, err := setupContextData(ctx, tc, contextData{
+				if tc, _, err := setupContextData(ctx, tc, contextData{
 					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
@@ -885,7 +885,7 @@ func (p *stepProcessor) proxyOperation(id int, op v1alpha1.Proxy) operation {
 		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, err := setupContextData(ctx, tc, contextData{
+			if tc, _, err := setupContextData(ctx, tc, contextData{
 				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,
@@ -933,7 +933,7 @@ func (p *stepProcessor) scriptOperation(id int, op v1alpha1.Script) operation {
 		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, err := setupContextData(ctx, tc, contextData{
+			if tc, _, err := setupContextData(ctx, tc, contextData{
 				basePath: p.basePath,
 				bindings: op.Bindings,
 				cluster:  op.Cluster,
@@ -997,7 +997,7 @@ func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation
 			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
-				if tc, err := setupContextData(ctx, tc, contextData{
+				if tc, _, err := setupContextData(ctx, tc, contextData{
 					basePath: p.basePath,
 					bindings: op.Bindings,
 					cluster:  op.Cluster,
@@ -1044,7 +1044,7 @@ func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
 			op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.Exec.Duration)}
 			// shift operation timeout
 			timeout := op.Timeout.Duration + 30*time.Second
-			if tc, err := setupContextData(ctx, tc, contextData{
+			if tc, _, err := setupContextData(ctx, tc, contextData{
 				basePath: p.basePath,
 				bindings: nil,
 				cluster:  op.Cluster,

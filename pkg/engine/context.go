@@ -31,15 +31,19 @@ func WithClusters(ctx context.Context, tc Context, basePath string, c map[string
 	return tc
 }
 
-func WithCurrentCluster(ctx context.Context, tc Context, name string) (*rest.Config, client.Client, Context, error) {
+func WithCurrentCluster(ctx context.Context, tc Context, name string) (Context, *rest.Config, client.Client, error) {
 	tc = tc.WithCurrentCluster(ctx, name)
 	config, client, err := tc.CurrentClusterClient()
 	if err != nil {
-		return nil, nil, tc, err
+		return tc, nil, nil, err
 	}
 	tc = tc.WithBinding(ctx, "client", client)
 	tc = tc.WithBinding(ctx, "config", config)
-	return config, client, tc, nil
+	return tc, config, client, nil
+}
+
+func WithNamespace(ctx context.Context, tc Context, namespace string) Context {
+	return tc.WithBinding(ctx, "namespace", namespace)
 }
 
 func WithValues(ctx context.Context, tc Context, values any) Context {
