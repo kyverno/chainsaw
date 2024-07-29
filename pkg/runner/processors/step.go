@@ -35,19 +35,19 @@ import (
 )
 
 type StepProcessor interface {
-	Run(context.Context, engine.Context)
+	Run(context.Context, namespacer.Namespacer, engine.Context)
 }
 
 func NewStepProcessor(
 	step v1alpha1.TestStep,
 	basePath string,
 	report *report.StepReport,
-	namespacer namespacer.Namespacer,
 	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
 	deletionPropagationPolicy metav1.DeletionPropagation,
 	templating bool,
+	skipDelete bool,
 	catch ...v1alpha1.CatchFinally,
 ) StepProcessor {
 	if step.Timeouts != nil {
@@ -59,17 +59,20 @@ func NewStepProcessor(
 	if step.Template != nil {
 		templating = *step.Template
 	}
+	if step.SkipDelete != nil {
+		skipDelete = *step.SkipDelete
+	}
 	catch = append(catch, step.Catch...)
 	return &stepProcessor{
 		step:                      step,
 		basePath:                  basePath,
 		report:                    report,
-		namespacer:                namespacer,
 		delayBeforeCleanup:        delayBeforeCleanup,
 		terminationGracePeriod:    terminationGracePeriod,
 		timeouts:                  timeouts,
 		deletionPropagationPolicy: deletionPropagationPolicy,
 		templating:                templating,
+		skipDelete:                skipDelete,
 		catch:                     catch,
 	}
 }
@@ -78,16 +81,16 @@ type stepProcessor struct {
 	basePath                  string
 	step                      v1alpha1.TestStep
 	report                    *report.StepReport
-	namespacer                namespacer.Namespacer
 	delayBeforeCleanup        *time.Duration
 	terminationGracePeriod    *metav1.Duration
 	timeouts                  v1alpha1.DefaultTimeouts
 	deletionPropagationPolicy metav1.DeletionPropagation
 	templating                bool
+	skipDelete                bool
 	catch                     []v1alpha1.CatchFinally
 }
 
-func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
+func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
 	t := testing.FromContext(ctx)
 	if p.report != nil {
 		p.report.SetStartTime(time.Now())
@@ -106,9 +109,6 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	if p.step.TestStepSpec.SkipDelete != nil {
-		tc = tc.WithCleanup(ctx, !*p.step.TestStepSpec.SkipDelete)
-	}
 	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup)
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
@@ -121,7 +121,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 				failer.Fail(ctx)
 			}
 			for i, operation := range p.step.Cleanup {
-				operations, err := p.finallyOperation(i, operation)
+				operations, err := p.finallyOperation(i, namespacer, operation)
 				if err != nil {
 					logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.Fail(ctx)
@@ -139,7 +139,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 				logger.Log(logging.Finally, logging.DoneStatus, color.BoldFgCyan)
 			}()
 			for i, operation := range p.step.Finally {
-				operations, err := p.finallyOperation(i, operation)
+				operations, err := p.finallyOperation(i, namespacer, operation)
 				if err != nil {
 					logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.Fail(ctx)
@@ -158,7 +158,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 					logger.Log(logging.Catch, logging.DoneStatus, color.BoldFgCyan)
 				}()
 				for i, operation := range p.catch {
-					operations, err := p.catchOperation(i, operation)
+					operations, err := p.catchOperation(i, namespacer, operation)
 					if err != nil {
 						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 						failer.Fail(ctx)
@@ -175,7 +175,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 		logger.Log(logging.Try, logging.DoneStatus, color.BoldFgCyan)
 	}()
 	for i, operation := range p.step.Try {
-		operations, err := p.tryOperation(i, operation, cleaner)
+		operations, err := p.tryOperation(i, namespacer, operation, cleaner)
 		if err != nil {
 			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
@@ -188,7 +188,7 @@ func (p *stepProcessor) Run(ctx context.Context, tc engine.Context) {
 	}
 }
 
-func (p *stepProcessor) tryOperation(id int, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
+func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		continueOnError := handler.ContinueOnError != nil && *handler.ContinueOnError
@@ -198,35 +198,35 @@ func (p *stepProcessor) tryOperation(id int, handler v1alpha1.Operation, cleaner
 		}
 	}
 	if handler.Apply != nil {
-		loaded, err := p.applyOperation(id+1, cleaner, *handler.Apply)
+		loaded, err := p.applyOperation(id+1, namespacer, cleaner, *handler.Apply)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.Assert != nil {
-		loaded, err := p.assertOperation(id+1, *handler.Assert)
+		loaded, err := p.assertOperation(id+1, namespacer, *handler.Assert)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.Command != nil {
-		register(p.commandOperation(id+1, *handler.Command))
+		register(p.commandOperation(id+1, namespacer, *handler.Command))
 	} else if handler.Create != nil {
-		loaded, err := p.createOperation(id+1, cleaner, *handler.Create)
+		loaded, err := p.createOperation(id+1, namespacer, cleaner, *handler.Create)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(id+1, *handler.Delete)
+		loaded, err := p.deleteOperation(id+1, namespacer, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.Describe != nil {
-		register(p.describeOperation(id+1, *handler.Describe))
+		register(p.describeOperation(id+1, namespacer, *handler.Describe))
 	} else if handler.Error != nil {
-		loaded, err := p.errorOperation(id+1, *handler.Error)
+		loaded, err := p.errorOperation(id+1, namespacer, *handler.Error)
 		if err != nil {
 			return nil, err
 		}
@@ -244,38 +244,38 @@ func (p *stepProcessor) tryOperation(id int, handler v1alpha1.Operation, cleaner
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		register(p.getOperation(id+1, get))
+		register(p.getOperation(id+1, namespacer, get))
 	} else if handler.Get != nil {
-		register(p.getOperation(id+1, *handler.Get))
+		register(p.getOperation(id+1, namespacer, *handler.Get))
 	} else if handler.Patch != nil {
-		loaded, err := p.patchOperation(id+1, *handler.Patch)
+		loaded, err := p.patchOperation(id+1, namespacer, *handler.Patch)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.PodLogs != nil {
-		register(p.logsOperation(id+1, *handler.PodLogs))
+		register(p.logsOperation(id+1, namespacer, *handler.PodLogs))
 	} else if handler.Proxy != nil {
-		register(p.proxyOperation(id+1, *handler.Proxy))
+		register(p.proxyOperation(id+1, namespacer, *handler.Proxy))
 	} else if handler.Script != nil {
-		register(p.scriptOperation(id+1, *handler.Script))
+		register(p.scriptOperation(id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
 		register(p.sleepOperation(id+1, *handler.Sleep))
 	} else if handler.Update != nil {
-		loaded, err := p.updateOperation(id+1, *handler.Update)
+		loaded, err := p.updateOperation(id+1, namespacer, *handler.Update)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.Wait != nil {
-		register(p.waitOperation(id+1, *handler.Wait))
+		register(p.waitOperation(id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperation(id int, handler v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -284,7 +284,7 @@ func (p *stepProcessor) catchOperation(id int, handler v1alpha1.CatchFinally) ([
 		}
 	}
 	if handler.PodLogs != nil {
-		register(p.logsOperation(id+1, *handler.PodLogs))
+		register(p.logsOperation(id+1, namespacer, *handler.PodLogs))
 	} else if handler.Events != nil {
 		get := v1alpha1.Get{
 			ActionClusters: handler.Events.ActionClusters,
@@ -298,32 +298,32 @@ func (p *stepProcessor) catchOperation(id int, handler v1alpha1.CatchFinally) ([
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		register(p.getOperation(id+1, get))
+		register(p.getOperation(id+1, namespacer, get))
 	} else if handler.Describe != nil {
-		register(p.describeOperation(id+1, *handler.Describe))
+		register(p.describeOperation(id+1, namespacer, *handler.Describe))
 	} else if handler.Get != nil {
-		register(p.getOperation(id+1, *handler.Get))
+		register(p.getOperation(id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(id+1, *handler.Delete)
+		loaded, err := p.deleteOperation(id+1, namespacer, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.Command != nil {
-		register(p.commandOperation(id+1, *handler.Command))
+		register(p.commandOperation(id+1, namespacer, *handler.Command))
 	} else if handler.Script != nil {
-		register(p.scriptOperation(id+1, *handler.Script))
+		register(p.scriptOperation(id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
 		register(p.sleepOperation(id+1, *handler.Sleep))
 	} else if handler.Wait != nil {
-		register(p.waitOperation(id+1, *handler.Wait))
+		register(p.waitOperation(id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperation(id int, handler v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespacer, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -332,7 +332,7 @@ func (p *stepProcessor) finallyOperation(id int, handler v1alpha1.CatchFinally) 
 		}
 	}
 	if handler.PodLogs != nil {
-		register(p.logsOperation(id+1, *handler.PodLogs))
+		register(p.logsOperation(id+1, namespacer, *handler.PodLogs))
 	} else if handler.Events != nil {
 		get := v1alpha1.Get{
 			ActionClusters: handler.Events.ActionClusters,
@@ -346,32 +346,32 @@ func (p *stepProcessor) finallyOperation(id int, handler v1alpha1.CatchFinally) 
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		register(p.getOperation(id+1, get))
+		register(p.getOperation(id+1, namespacer, get))
 	} else if handler.Describe != nil {
-		register(p.describeOperation(id+1, *handler.Describe))
+		register(p.describeOperation(id+1, namespacer, *handler.Describe))
 	} else if handler.Get != nil {
-		register(p.getOperation(id+1, *handler.Get))
+		register(p.getOperation(id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(id+1, *handler.Delete)
+		loaded, err := p.deleteOperation(id+1, namespacer, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.Command != nil {
-		register(p.commandOperation(id+1, *handler.Command))
+		register(p.commandOperation(id+1, namespacer, *handler.Command))
 	} else if handler.Script != nil {
-		register(p.scriptOperation(id+1, *handler.Script))
+		register(p.scriptOperation(id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
 		register(p.sleepOperation(id+1, *handler.Sleep))
 	} else if handler.Wait != nil {
-		register(p.waitOperation(id+1, *handler.Wait))
+		register(p.waitOperation(id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]operation, error) {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Apply "+op.File, report.OperationTypeApply)
@@ -410,8 +410,8 @@ func (p *stepProcessor) applyOperation(id int, cleaner cleaner.CleanerCollector,
 						op := opapply.New(
 							client,
 							resource,
-							p.namespacer,
-							getCleanerOrNil(cleaner, tc),
+							namespacer,
+							p.getCleanerOrNil(cleaner, tc),
 							template,
 							op.Expect,
 							op.Outputs,
@@ -426,7 +426,7 @@ func (p *stepProcessor) applyOperation(id int, cleaner cleaner.CleanerCollector,
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation, error) {
+func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Assert) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
@@ -460,7 +460,7 @@ func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation
 					op := opassert.New(
 						client,
 						resource,
-						p.namespacer,
+						namespacer,
 						template,
 					)
 					return op, timeout, tc, nil
@@ -472,14 +472,14 @@ func (p *stepProcessor) assertOperation(id int, op v1alpha1.Assert) ([]operation
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(id int, op v1alpha1.Command) operation {
+func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Command) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Command ", report.OperationTypeCommand)
 	}
 	ns := ""
-	if p.namespacer != nil {
-		ns = p.namespacer.GetNamespace()
+	if namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	return newOperation(
 		OperationInfo{
@@ -511,7 +511,7 @@ func (p *stepProcessor) commandOperation(id int, op v1alpha1.Command) operation 
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, cleaner cleaner.CleanerCollector, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -549,8 +549,8 @@ func (p *stepProcessor) createOperation(id int, cleaner cleaner.CleanerCollector
 					op := opcreate.New(
 						client,
 						resource,
-						p.namespacer,
-						getCleanerOrNil(cleaner, tc),
+						namespacer,
+						p.getCleanerOrNil(cleaner, tc),
 						template,
 						op.Expect,
 						op.Outputs,
@@ -564,7 +564,7 @@ func (p *stepProcessor) createOperation(id int, cleaner cleaner.CleanerCollector
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) ([]operation, error) {
+func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Delete) ([]operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -613,7 +613,7 @@ func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) ([]operation
 					op := opdelete.New(
 						client,
 						resource,
-						p.namespacer,
+						namespacer,
 						template,
 						deletionPropagationPolicy,
 						op.Expect...,
@@ -627,14 +627,14 @@ func (p *stepProcessor) deleteOperation(id int, op v1alpha1.Delete) ([]operation
 	return ops, nil
 }
 
-func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operation {
+func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Describe) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Describe ", report.OperationTypeCommand)
 	}
 	ns := ""
-	if p.namespacer != nil {
-		ns = p.namespacer.GetNamespace()
+	if namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	return newOperation(
 		OperationInfo{
@@ -675,7 +675,7 @@ func (p *stepProcessor) describeOperation(id int, op v1alpha1.Describe) operatio
 	)
 }
 
-func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, error) {
+func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Error) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
 	if err != nil {
 		return nil, err
@@ -709,7 +709,7 @@ func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, 
 					op := operror.New(
 						client,
 						resource,
-						p.namespacer,
+						namespacer,
 						template,
 					)
 					return op, timeout, tc, nil
@@ -721,14 +721,14 @@ func (p *stepProcessor) errorOperation(id int, op v1alpha1.Error) ([]operation, 
 	return ops, nil
 }
 
-func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
+func (p *stepProcessor) getOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Get) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Get ", report.OperationTypeCommand)
 	}
 	ns := ""
-	if p.namespacer != nil {
-		ns = p.namespacer.GetNamespace()
+	if namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	return newOperation(
 		OperationInfo{
@@ -769,14 +769,14 @@ func (p *stepProcessor) getOperation(id int, op v1alpha1.Get) operation {
 	)
 }
 
-func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
+func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.PodLogs) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Logs ", report.OperationTypeCommand)
 	}
 	ns := ""
-	if p.namespacer != nil {
-		ns = p.namespacer.GetNamespace()
+	if namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	return newOperation(
 		OperationInfo{
@@ -817,7 +817,7 @@ func (p *stepProcessor) logsOperation(id int, op v1alpha1.PodLogs) operation {
 	)
 }
 
-func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, error) {
+func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Patch) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -855,7 +855,7 @@ func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, 
 					op := oppatch.New(
 						client,
 						resource,
-						p.namespacer,
+						namespacer,
 						template,
 						op.Expect,
 						op.Outputs,
@@ -869,14 +869,14 @@ func (p *stepProcessor) patchOperation(id int, op v1alpha1.Patch) ([]operation, 
 	return ops, nil
 }
 
-func (p *stepProcessor) proxyOperation(id int, op v1alpha1.Proxy) operation {
+func (p *stepProcessor) proxyOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Proxy) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Proxy ", report.OperationTypeCommand)
 	}
 	ns := ""
-	if p.namespacer != nil {
-		ns = p.namespacer.GetNamespace()
+	if namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	return newOperation(
 		OperationInfo{
@@ -917,14 +917,14 @@ func (p *stepProcessor) proxyOperation(id int, op v1alpha1.Proxy) operation {
 	)
 }
 
-func (p *stepProcessor) scriptOperation(id int, op v1alpha1.Script) operation {
+func (p *stepProcessor) scriptOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Script) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Script ", report.OperationTypeScript)
 	}
 	ns := ""
-	if p.namespacer != nil {
-		ns = p.namespacer.GetNamespace()
+	if namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	return newOperation(
 		OperationInfo{
@@ -973,7 +973,7 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 	)
 }
 
-func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation, error) {
+func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Update) ([]operation, error) {
 	resources, err := p.fileRefOrResource(op.ActionResourceRef)
 	if err != nil {
 		return nil, err
@@ -1011,7 +1011,7 @@ func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation
 					op := opupdate.New(
 						client,
 						resource,
-						p.namespacer,
+						namespacer,
 						template,
 						op.Expect,
 						op.Outputs,
@@ -1025,14 +1025,14 @@ func (p *stepProcessor) updateOperation(id int, op v1alpha1.Update) ([]operation
 	return ops, nil
 }
 
-func (p *stepProcessor) waitOperation(id int, op v1alpha1.Wait) operation {
+func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Wait) operation {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Wait ", report.OperationTypeCommand)
 	}
 	ns := ""
-	if p.namespacer != nil {
-		ns = p.namespacer.GetNamespace()
+	if namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	return newOperation(
 		OperationInfo{
@@ -1133,11 +1133,11 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 	return nil
 }
 
-func getCleanerOrNil(cleaner cleaner.CleanerCollector, tc engine.Context) cleaner.CleanerCollector {
+func (p *stepProcessor) getCleanerOrNil(cleaner cleaner.CleanerCollector, tc engine.Context) cleaner.CleanerCollector {
 	if tc.DryRun() {
 		return nil
 	}
-	if !tc.Cleanup() {
+	if p.skipDelete {
 		return nil
 	}
 	return cleaner

@@ -5,10 +5,8 @@ import (
 	"path/filepath"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
-	"k8s.io/client-go/rest"
 )
 
 func WithBindings(ctx context.Context, tc Context, variables ...v1alpha1.Binding) (Context, error) {
@@ -31,15 +29,15 @@ func WithClusters(ctx context.Context, tc Context, basePath string, c map[string
 	return tc
 }
 
-func WithCurrentCluster(ctx context.Context, tc Context, name string) (Context, *rest.Config, client.Client, error) {
+func WithCurrentCluster(ctx context.Context, tc Context, name string) (Context, error) {
 	tc = tc.WithCurrentCluster(ctx, name)
 	config, client, err := tc.CurrentClusterClient()
 	if err != nil {
-		return tc, nil, nil, err
+		return tc, err
 	}
 	tc = tc.WithBinding(ctx, "client", client)
 	tc = tc.WithBinding(ctx, "config", config)
-	return tc, config, client, nil
+	return tc, nil
 }
 
 func WithNamespace(ctx context.Context, tc Context, namespace string) Context {

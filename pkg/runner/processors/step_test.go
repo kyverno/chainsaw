@@ -7,7 +7,6 @@ import (
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
@@ -15,7 +14,6 @@ import (
 	fakeLogger "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
-	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
@@ -33,7 +31,6 @@ func TestStepProcessor_Run(t *testing.T) {
 	testData := filepath.Join("..", "..", "..", "testdata", "runner", "processors")
 	testCases := []struct {
 		name                   string
-		config                 model.Configuration
 		client                 client.Client
 		namespacer             *fakeNamespacer.FakeNamespacer
 		basePath               string
@@ -43,10 +40,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		expectedFail           bool
 		skipped                bool
 	}{{
-		name: "test with no handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
+		name:   "test with no handler",
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
 			ApplyFn: func(int, client.Client, client.Object) error {
@@ -65,9 +59,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try operation with apply handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return nil
@@ -103,9 +94,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with create handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
@@ -141,9 +129,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with assert handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
@@ -203,9 +188,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with error handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
@@ -264,10 +246,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		},
 		stepReport: &report.StepReport{},
 	}, {
-		name: "try operation with command handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
+		name:   "try operation with command handler",
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
 			ApplyFn: func(int, client.Client, client.Object) error {
@@ -295,10 +274,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		},
 		stepReport: &report.StepReport{},
 	}, {
-		name: "try operation with script handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
+		name:   "try operation with script handler",
 		client: &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{
 			ApplyFn: func(int, client.Client, client.Object) error {
@@ -325,10 +301,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		},
 		stepReport: &report.StepReport{},
 	}, {
-		name: "try operation with sleep handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
+		name:       "try operation with sleep handler",
 		client:     &fake.FakeClient{},
 		namespacer: &fakeNamespacer.FakeNamespacer{},
 		basePath:   testData,
@@ -349,9 +322,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with delete handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("Deployment"), "chainsaw")
@@ -389,9 +359,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "dry run with create handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
@@ -430,9 +397,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "skip delete with create handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
@@ -469,9 +433,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try-raw resource with create handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
@@ -514,9 +475,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try-url resource with create handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("pod"), "chainsaw")
@@ -553,9 +511,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "raw resource with assert handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
@@ -638,9 +593,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try url-resource with assert handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
@@ -686,12 +638,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: nil,
 	}, {
 		name: "try, catch and finally operation with apply handler",
-		config: model.Configuration{
-			Execution: v1alpha2.ExecutionOptions{
-				ForceTerminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
-			},
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
@@ -733,7 +679,8 @@ func TestStepProcessor_Run(t *testing.T) {
 				return "chainsaw"
 			},
 		},
-		basePath: testData,
+		basePath:               testData,
+		terminationGracePeriod: &metav1.Duration{Duration: time.Duration(1) * time.Second},
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
 				Timeouts: &v1alpha1.Timeouts{},
@@ -803,9 +750,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		stepReport: &report.StepReport{},
 	}, {
 		name: "termination with create handler",
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-		},
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				return kerror.NewNotFound(v1alpha1.Resource("Deployment"), "chainsaw")
@@ -860,19 +804,19 @@ func TestStepProcessor_Run(t *testing.T) {
 				tc.stepSpec,
 				tc.basePath,
 				tc.stepReport,
-				tc.namespacer,
 				nil,
 				tc.terminationGracePeriod,
 				config.Spec.Timeouts,
 				config.Spec.Deletion.Propagation,
 				config.Spec.Templating.Enabled,
+				config.Spec.Cleanup.SkipDelete,
 				config.Spec.Error.Catch...,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
 			tcontext := enginecontext.MakeContext(binding.NewBindings(), registry)
-			stepProcessor.Run(ctx, tcontext)
+			stepProcessor.Run(ctx, tc.namespacer, tcontext)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {

@@ -7,9 +7,10 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/engine/check"
+	"github.com/kyverno/chainsaw/pkg/engine/checks"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	operrors "github.com/kyverno/chainsaw/pkg/runner/operations/errors"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
@@ -41,7 +42,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ operations.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outputs.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
@@ -75,7 +76,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 			}
 		}()
 		if obj.GetAPIVersion() == "" || obj.GetKind() == "" {
-			_errs, err := check.Check(ctx, nil, bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
+			_errs, err := checks.Check(ctx, nil, bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
 			if err != nil {
 				return false, err
 			}
@@ -99,7 +100,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 			} else {
 				for i := range candidates {
 					candidate := candidates[i]
-					_errs, err := check.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
+					_errs, err := checks.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
 					if err != nil {
 						return false, err
 					}
