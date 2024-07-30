@@ -105,6 +105,7 @@ func Test_operationError(t *testing.T) {
 					"metadata": map[string]any{
 						"name": "test-pod",
 					},
+					"spec": map[string]any{},
 				}
 				return nil
 			},
