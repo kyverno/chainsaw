@@ -14,5 +14,6 @@ type (
 
 type Logger interface {
 	Log(Operation, Status, *color.Color, ...fmt.Stringer)
+	WithCluster(*string) Logger
 	WithResource(client.Object) Logger
 }
