@@ -203,7 +203,8 @@
                           }
                         ]
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   }
                 ]
               }
@@ -279,7 +280,8 @@
                         "default": ""
                       }
                     },
-                    "x-kubernetes-map-type": "atomic"
+                    "x-kubernetes-map-type": "atomic",
+                    "additionalProperties": false
                   }
                 ]
               },
@@ -307,7 +309,8 @@
                 "null"
               ]
             }
-          }
+          },
+          "additionalProperties": false
         }
       ]
     },
@@ -347,7 +350,8 @@
                 "description": "Value value of the binding.",
                 "x-kubernetes-preserve-unknown-fields": true
               }
-            }
+            },
+            "additionalProperties": false
           }
         },
         "catch": {
@@ -459,7 +463,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "check": {
@@ -504,7 +509,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "entrypoint": {
@@ -537,7 +543,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "outputs": {
@@ -574,7 +581,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "skipLogOutput": {
@@ -591,7 +599,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "delete": {
                 "description": "Delete represents a deletion operation.",
@@ -632,7 +641,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -669,7 +679,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "deletionPropagationPolicy": {
@@ -713,7 +724,8 @@
                           ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -769,7 +781,8 @@
                           "null"
                         ]
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -785,7 +798,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "describe": {
                 "description": "Describe determines the resource describe collector to execute.",
@@ -842,7 +856,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "kind": {
@@ -884,7 +899,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "description": {
                 "description": "Description contains a description of the operation.",
@@ -940,7 +956,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "format": {
@@ -979,7 +996,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "get": {
                 "description": "Get determines the resource get collector to execute.",
@@ -1036,7 +1054,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "format": {
@@ -1079,7 +1098,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "podLogs": {
                 "description": "PodLogs determines the pod logs collector to execute.",
@@ -1128,7 +1148,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "container": {
@@ -1173,7 +1194,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "script": {
                 "description": "Script defines a script to run.",
@@ -1208,7 +1230,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "check": {
@@ -1253,7 +1276,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "content": {
@@ -1289,7 +1313,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "outputs": {
@@ -1326,7 +1351,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "skipLogOutput": {
@@ -1343,7 +1369,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "sleep": {
                 "description": "Sleep defines zzzz.",
@@ -1359,7 +1386,8 @@
                     "description": "Duration is the delay used for sleeping.",
                     "type": "string"
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "wait": {
                 "description": "Wait determines the resource wait collector to execute.",
@@ -1417,7 +1445,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "for": {
@@ -1445,7 +1474,8 @@
                               "null"
                             ]
                           }
-                        }
+                        },
+                        "additionalProperties": false
                       },
                       "deletion": {
                         "description": "Deletion specifies parameters for waiting on a resource's deletion.",
@@ -1473,9 +1503,11 @@
                             "description": "Value defines the expected value to wait for, e.g., \"Running\".",
                             "type": "string"
                           }
-                        }
+                        },
+                        "additionalProperties": false
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   },
                   "format": {
                     "description": "Format determines the output format (json or yaml).",
@@ -1517,9 +1549,11 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               }
-            }
+            },
+            "additionalProperties": false
           }
         },
         "cleanup": {
@@ -1631,7 +1665,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "check": {
@@ -1676,7 +1711,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "entrypoint": {
@@ -1709,7 +1745,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "outputs": {
@@ -1746,7 +1783,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "skipLogOutput": {
@@ -1763,7 +1801,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "delete": {
                 "description": "Delete represents a deletion operation.",
@@ -1804,7 +1843,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -1841,7 +1881,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "deletionPropagationPolicy": {
@@ -1885,7 +1926,8 @@
                           ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -1941,7 +1983,8 @@
                           "null"
                         ]
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -1957,7 +2000,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "describe": {
                 "description": "Describe determines the resource describe collector to execute.",
@@ -2014,7 +2058,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "kind": {
@@ -2056,7 +2101,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "description": {
                 "description": "Description contains a description of the operation.",
@@ -2112,7 +2158,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "format": {
@@ -2151,7 +2198,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "get": {
                 "description": "Get determines the resource get collector to execute.",
@@ -2208,7 +2256,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "format": {
@@ -2251,7 +2300,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "podLogs": {
                 "description": "PodLogs determines the pod logs collector to execute.",
@@ -2300,7 +2350,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "container": {
@@ -2345,7 +2396,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "script": {
                 "description": "Script defines a script to run.",
@@ -2380,7 +2432,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "check": {
@@ -2425,7 +2478,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "content": {
@@ -2461,7 +2515,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "outputs": {
@@ -2498,7 +2553,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "skipLogOutput": {
@@ -2515,7 +2571,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "sleep": {
                 "description": "Sleep defines zzzz.",
@@ -2531,7 +2588,8 @@
                     "description": "Duration is the delay used for sleeping.",
                     "type": "string"
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "wait": {
                 "description": "Wait determines the resource wait collector to execute.",
@@ -2589,7 +2647,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "for": {
@@ -2617,7 +2676,8 @@
                               "null"
                             ]
                           }
-                        }
+                        },
+                        "additionalProperties": false
                       },
                       "deletion": {
                         "description": "Deletion specifies parameters for waiting on a resource's deletion.",
@@ -2645,9 +2705,11 @@
                             "description": "Value defines the expected value to wait for, e.g., \"Running\".",
                             "type": "string"
                           }
-                        }
+                        },
+                        "additionalProperties": false
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   },
                   "format": {
                     "description": "Format determines the output format (json or yaml).",
@@ -2689,9 +2751,11 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               }
-            }
+            },
+            "additionalProperties": false
           }
         },
         "finally": {
@@ -2803,7 +2867,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "check": {
@@ -2848,7 +2913,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "entrypoint": {
@@ -2881,7 +2947,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "outputs": {
@@ -2918,7 +2985,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "skipLogOutput": {
@@ -2935,7 +3003,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "delete": {
                 "description": "Delete represents a deletion operation.",
@@ -2976,7 +3045,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -3013,7 +3083,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "deletionPropagationPolicy": {
@@ -3057,7 +3128,8 @@
                           ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -3113,7 +3185,8 @@
                           "null"
                         ]
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -3129,7 +3202,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "describe": {
                 "description": "Describe determines the resource describe collector to execute.",
@@ -3186,7 +3260,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "kind": {
@@ -3228,7 +3303,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "description": {
                 "description": "Description contains a description of the operation.",
@@ -3284,7 +3360,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "format": {
@@ -3323,7 +3400,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "get": {
                 "description": "Get determines the resource get collector to execute.",
@@ -3380,7 +3458,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "format": {
@@ -3423,7 +3502,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "podLogs": {
                 "description": "PodLogs determines the pod logs collector to execute.",
@@ -3472,7 +3552,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "container": {
@@ -3517,7 +3598,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "script": {
                 "description": "Script defines a script to run.",
@@ -3552,7 +3634,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "check": {
@@ -3597,7 +3680,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "content": {
@@ -3633,7 +3717,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "outputs": {
@@ -3670,7 +3755,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "skipLogOutput": {
@@ -3687,7 +3773,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "sleep": {
                 "description": "Sleep defines zzzz.",
@@ -3703,7 +3790,8 @@
                     "description": "Duration is the delay used for sleeping.",
                     "type": "string"
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "wait": {
                 "description": "Wait determines the resource wait collector to execute.",
@@ -3761,7 +3849,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "for": {
@@ -3789,7 +3878,8 @@
                               "null"
                             ]
                           }
-                        }
+                        },
+                        "additionalProperties": false
                       },
                       "deletion": {
                         "description": "Deletion specifies parameters for waiting on a resource's deletion.",
@@ -3817,9 +3907,11 @@
                             "description": "Value defines the expected value to wait for, e.g., \"Running\".",
                             "type": "string"
                           }
-                        }
+                        },
+                        "additionalProperties": false
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   },
                   "format": {
                     "description": "Format determines the output format (json or yaml).",
@@ -3861,9 +3953,11 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               }
-            }
+            },
+            "additionalProperties": false
           }
         },
         "try": {
@@ -3993,7 +4087,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -4030,7 +4125,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "dryRun": {
@@ -4069,7 +4165,8 @@
                           ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -4113,7 +4210,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "resource": {
@@ -4313,7 +4411,8 @@
                                             }
                                           ]
                                         }
-                                      }
+                                      },
+                                      "additionalProperties": false
                                     }
                                   ]
                                 }
@@ -4389,7 +4488,8 @@
                                           "default": ""
                                         }
                                       },
-                                      "x-kubernetes-map-type": "atomic"
+                                      "x-kubernetes-map-type": "atomic",
+                                      "additionalProperties": false
                                     }
                                   ]
                                 },
@@ -4417,13 +4517,15 @@
                                   "null"
                                 ]
                               }
-                            }
+                            },
+                            "additionalProperties": false
                           }
                         ]
                       }
                     },
                     "x-kubernetes-embedded-resource": true,
-                    "x-kubernetes-preserve-unknown-fields": true
+                    "x-kubernetes-preserve-unknown-fields": true,
+                    "additionalProperties": false
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -4439,7 +4541,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "assert": {
                 "description": "Assert represents an assertion to be made. It checks whether the conditions specified in the assertion hold true.",
@@ -4480,7 +4583,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -4517,7 +4621,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -4549,7 +4654,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "command": {
                 "description": "Command defines a command to run.",
@@ -4600,7 +4706,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "check": {
@@ -4645,7 +4752,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "entrypoint": {
@@ -4678,7 +4786,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "outputs": {
@@ -4715,7 +4824,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "skipLogOutput": {
@@ -4732,7 +4842,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "continueOnError": {
                 "description": "ContinueOnError determines whether a test should continue or not in case the operation was not successful.\nEven if the test continues executing, it will still be reported as failed.",
@@ -4780,7 +4891,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -4817,7 +4929,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "dryRun": {
@@ -4856,7 +4969,8 @@
                           ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -4900,7 +5014,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "resource": {
@@ -5100,7 +5215,8 @@
                                             }
                                           ]
                                         }
-                                      }
+                                      },
+                                      "additionalProperties": false
                                     }
                                   ]
                                 }
@@ -5176,7 +5292,8 @@
                                           "default": ""
                                         }
                                       },
-                                      "x-kubernetes-map-type": "atomic"
+                                      "x-kubernetes-map-type": "atomic",
+                                      "additionalProperties": false
                                     }
                                   ]
                                 },
@@ -5204,13 +5321,15 @@
                                   "null"
                                 ]
                               }
-                            }
+                            },
+                            "additionalProperties": false
                           }
                         ]
                       }
                     },
                     "x-kubernetes-embedded-resource": true,
-                    "x-kubernetes-preserve-unknown-fields": true
+                    "x-kubernetes-preserve-unknown-fields": true,
+                    "additionalProperties": false
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -5226,7 +5345,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "delete": {
                 "description": "Delete represents a deletion operation.",
@@ -5267,7 +5387,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -5304,7 +5425,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "deletionPropagationPolicy": {
@@ -5348,7 +5470,8 @@
                           ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -5404,7 +5527,8 @@
                           "null"
                         ]
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -5420,7 +5544,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "describe": {
                 "description": "Describe determines the resource describe collector to execute.",
@@ -5477,7 +5602,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "kind": {
@@ -5519,7 +5645,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "description": {
                 "description": "Description contains a description of the operation.",
@@ -5567,7 +5694,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -5604,7 +5732,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -5636,7 +5765,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "events": {
                 "description": "Events determines the events collector to execute.",
@@ -5685,7 +5815,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "format": {
@@ -5724,7 +5855,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "get": {
                 "description": "Get determines the resource get collector to execute.",
@@ -5781,7 +5913,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "format": {
@@ -5824,7 +5957,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "patch": {
                 "description": "Patch represents a patch operation.",
@@ -5865,7 +5999,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -5902,7 +6037,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "dryRun": {
@@ -5941,7 +6077,8 @@
                           ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -5985,7 +6122,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "resource": {
@@ -6185,7 +6323,8 @@
                                             }
                                           ]
                                         }
-                                      }
+                                      },
+                                      "additionalProperties": false
                                     }
                                   ]
                                 }
@@ -6261,7 +6400,8 @@
                                           "default": ""
                                         }
                                       },
-                                      "x-kubernetes-map-type": "atomic"
+                                      "x-kubernetes-map-type": "atomic",
+                                      "additionalProperties": false
                                     }
                                   ]
                                 },
@@ -6289,13 +6429,15 @@
                                   "null"
                                 ]
                               }
-                            }
+                            },
+                            "additionalProperties": false
                           }
                         ]
                       }
                     },
                     "x-kubernetes-embedded-resource": true,
-                    "x-kubernetes-preserve-unknown-fields": true
+                    "x-kubernetes-preserve-unknown-fields": true,
+                    "additionalProperties": false
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -6311,7 +6453,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "podLogs": {
                 "description": "PodLogs determines the pod logs collector to execute.",
@@ -6360,7 +6503,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "container": {
@@ -6405,7 +6549,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "proxy": {
                 "description": "Proxy runs a proxy request.",
@@ -6456,7 +6601,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "kind": {
@@ -6511,7 +6657,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "path": {
@@ -6535,7 +6682,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "script": {
                 "description": "Script defines a script to run.",
@@ -6570,7 +6718,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "check": {
@@ -6615,7 +6764,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "content": {
@@ -6651,7 +6801,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "outputs": {
@@ -6688,7 +6839,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "skipLogOutput": {
@@ -6705,7 +6857,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "sleep": {
                 "description": "Sleep defines zzzz.",
@@ -6721,7 +6874,8 @@
                     "description": "Duration is the delay used for sleeping.",
                     "type": "string"
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "update": {
                 "description": "Update represents an update operation.",
@@ -6762,7 +6916,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "cluster": {
@@ -6799,7 +6954,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "dryRun": {
@@ -6838,7 +6994,8 @@
                           ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "file": {
@@ -6882,7 +7039,8 @@
                           "description": "Value value of the binding.",
                           "x-kubernetes-preserve-unknown-fields": true
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "resource": {
@@ -7082,7 +7240,8 @@
                                             }
                                           ]
                                         }
-                                      }
+                                      },
+                                      "additionalProperties": false
                                     }
                                   ]
                                 }
@@ -7158,7 +7317,8 @@
                                           "default": ""
                                         }
                                       },
-                                      "x-kubernetes-map-type": "atomic"
+                                      "x-kubernetes-map-type": "atomic",
+                                      "additionalProperties": false
                                     }
                                   ]
                                 },
@@ -7186,13 +7346,15 @@
                                   "null"
                                 ]
                               }
-                            }
+                            },
+                            "additionalProperties": false
                           }
                         ]
                       }
                     },
                     "x-kubernetes-embedded-resource": true,
-                    "x-kubernetes-preserve-unknown-fields": true
+                    "x-kubernetes-preserve-unknown-fields": true,
+                    "additionalProperties": false
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -7208,7 +7370,8 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               },
               "wait": {
                 "description": "Wait determines the resource wait collector to execute.",
@@ -7266,7 +7429,8 @@
                           "description": "Kubeconfig is the path to the referenced file.",
                           "type": "string"
                         }
-                      }
+                      },
+                      "additionalProperties": false
                     }
                   },
                   "for": {
@@ -7294,7 +7458,8 @@
                               "null"
                             ]
                           }
-                        }
+                        },
+                        "additionalProperties": false
                       },
                       "deletion": {
                         "description": "Deletion specifies parameters for waiting on a resource's deletion.",
@@ -7322,9 +7487,11 @@
                             "description": "Value defines the expected value to wait for, e.g., \"Running\".",
                             "type": "string"
                           }
-                        }
+                        },
+                        "additionalProperties": false
                       }
-                    }
+                    },
+                    "additionalProperties": false
                   },
                   "format": {
                     "description": "Format determines the output format (json or yaml).",
@@ -7366,12 +7533,15 @@
                       "null"
                     ]
                   }
-                }
+                },
+                "additionalProperties": false
               }
-            }
+            },
+            "additionalProperties": false
           }
         }
-      }
+      },
+      "additionalProperties": false
     }
   },
   "x-kubernetes-group-version-kind": [
@@ -7381,5 +7551,6 @@
       "version": "v1alpha1"
     }
   ],
+  "additionalProperties": false,
   "$schema": "http://json-schema.org/schema#"
 }
