@@ -215,7 +215,7 @@ func Test_runE(t *testing.T) {
 			"------------------------\n" +
 			"v1/ConfigMap/quick-start\n" +
 			"------------------------\n" +
-			"* data.foo: Required value: projection is not valid\n\n" +
+			"* data.foo: Required value: field not found in the input object\n\n" +
 			"--- expected\n" +
 			"+++ actual\n" +
 			"@@ -1,6 +1,5 @@\n" +
