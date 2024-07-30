@@ -199,8 +199,8 @@ codegen-schemas-json: codegen-schemas-openapi
 	@$(PIP) install -r requirements.txt
 	@rm -rf ./.temp/.schemas/json
 	@rm -rf ./.schemas/json
-	@openapi2jsonschema .temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha1.json --kubernetes --stand-alone --expanded -o ./.temp/.schemas/json
-	@openapi2jsonschema .temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha2.json --kubernetes --stand-alone --expanded -o ./.temp/.schemas/json
+	@openapi2jsonschema .temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha1.json --kubernetes --strict --stand-alone --expanded -o ./.temp/.schemas/json
+	@openapi2jsonschema .temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha2.json --kubernetes --strict --stand-alone --expanded -o ./.temp/.schemas/json
 	@mkdir -p ./.schemas/json
 	@cp ./.temp/.schemas/json/configuration-chainsaw-*.json ./.schemas/json
 	@cp ./.temp/.schemas/json/steptemplate-chainsaw-*.json ./.schemas/json
