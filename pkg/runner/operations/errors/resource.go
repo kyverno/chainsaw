@@ -9,7 +9,7 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/runner/mutate"
+	"github.com/kyverno/chainsaw/pkg/engine/templating"
 	diffutils "github.com/kyverno/chainsaw/pkg/utils/diff"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/validation/field"
@@ -58,7 +58,7 @@ func (e resourceError) Error() string {
 		template := v1alpha1.Any{
 			Value: expected.UnstructuredContent(),
 		}
-		if merged, err := mutate.Merge(context.TODO(), expected, e.bindings, template); err != nil {
+		if merged, err := templating.TemplateAndMerge(context.TODO(), expected, e.bindings, template); err != nil {
 			templateErr = err
 		} else {
 			expected = merged

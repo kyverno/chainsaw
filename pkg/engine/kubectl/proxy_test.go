@@ -1,6 +1,7 @@
 package kubectl
 
 import (
+	"context"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -332,7 +333,7 @@ func TestProxy(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entrypoint, args, err := Proxy(client, nil, tt.collector)
+			entrypoint, args, err := Proxy(context.TODO(), client, nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

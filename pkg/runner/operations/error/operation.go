@@ -11,9 +11,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
+	"github.com/kyverno/chainsaw/pkg/engine/templating"
 	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
-	"github.com/kyverno/chainsaw/pkg/runner/template"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -51,7 +51,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outp
 		internal.LogEnd(logger, logging.Error, _err)
 	}()
 	if o.template {
-		if err := template.ResourceRef(ctx, &obj, bindings); err != nil {
+		if err := templating.ResourceRef(ctx, &obj, bindings); err != nil {
 			return nil, err
 		}
 	}
