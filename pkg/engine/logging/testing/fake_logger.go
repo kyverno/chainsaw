@@ -13,7 +13,12 @@ type FakeLogger struct {
 	numCalls int
 }
 
-func (f *FakeLogger) WithResource(resource client.Object) Logger {
+func (f *FakeLogger) WithCluster(*string) Logger {
+	defer func() { f.numCalls++ }()
+	return f
+}
+
+func (f *FakeLogger) WithResource(client.Object) Logger {
 	defer func() { f.numCalls++ }()
 	return f
 }

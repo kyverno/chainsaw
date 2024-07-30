@@ -79,6 +79,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
+	ctx = logging.WithCluster(ctx, tc.CurrentCluster().Name())
 	var nspacer namespacer.Namespacer
 	if namespace != nil {
 		nspacer = namespacer.New(namespace.GetName())
@@ -111,6 +112,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 					}
 				}
 				ctx = logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
+				ctx = logging.WithCluster(ctx, tc.CurrentCluster().Name())
 				info := TestInfo{
 					Id:         i + 1,
 					ScenarioId: s + 1,

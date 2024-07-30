@@ -32,9 +32,9 @@ const (
 )
 
 const (
-	DoneStatus  Status = "DONE"
-	ErrorStatus Status = "ERROR"
-	OkStatus    Status = "OK"
-	RunStatus   Status = "RUN"
-	LogStatus   Status = "LOG"
+	DoneStatus  Status = "🏁"
+	ErrorStatus Status = "❌"
+	OkStatus    Status = "✅"
+	RunStatus   Status = "🚧"
+	LogStatus   Status = "📄"
 )
