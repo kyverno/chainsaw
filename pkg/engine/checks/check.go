@@ -22,5 +22,5 @@ func Check(ctx context.Context, obj any, bindings binding.Bindings, check *v1alp
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
-	return assert.Assert(ctx, nil, assert.Parse(ctx, check.Value), obj, bindings, template.WithFunctionCaller(functions.Caller))
+	return assert.Assert(ctx, nil, assert.Parse(ctx, check.Value), obj, bindings, template.WithFunctionCaller(functions.Caller()))
 }

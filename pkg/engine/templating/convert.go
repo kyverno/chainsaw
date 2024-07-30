@@ -1,4 +1,4 @@
-package mutate
+package templating
 
 func convertSlice(in any) []any {
 	data, ok := in.([]any)

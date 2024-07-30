@@ -1,31 +1,32 @@
 package kubectl
 
 import (
+	"context"
 	"errors"
 	"fmt"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/engine/bindings"
+	"github.com/kyverno/chainsaw/pkg/engine/templating"
 )
 
-func Logs(tc binding.Bindings, collector *v1alpha1.PodLogs) (string, []string, error) {
+func Logs(ctx context.Context, tc binding.Bindings, collector *v1alpha1.PodLogs) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := bindings.String(collector.Name, tc)
+	name, err := templating.String(ctx, collector.Name, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := bindings.String(collector.Namespace, tc)
+	namespace, err := templating.String(ctx, collector.Namespace, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := bindings.String(collector.Selector, tc)
+	selector, err := templating.String(ctx, collector.Selector, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	container, err := bindings.String(collector.Container, tc)
+	container, err := templating.String(ctx, collector.Container, tc)
 	if err != nil {
 		return "", nil, err
 	}
