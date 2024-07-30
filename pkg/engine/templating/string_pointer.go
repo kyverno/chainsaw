@@ -23,7 +23,7 @@ func StringPointer(ctx context.Context, in *string, bindings binding.Bindings) (
 		if converted, ok := converted.(*string); ok {
 			return converted, nil
 		}
-		if converted, ok := converted.(string); !ok {
+		if converted, ok := converted.(string); ok {
 			return &converted, nil
 		}
 		return nil, fmt.Errorf("expression didn't evaluate to a string pointer (%s)", *in)
