@@ -141,11 +141,42 @@ func Test_operationAssert(t *testing.T) {
 					"metadata": map[string]any{
 						"name": "test-pod",
 					},
+					"spec": map[string]any{},
 				}
 				return nil
 			},
 		},
 		expectedLogs: []string{"ASSERT: RUN - []", "ASSERT: ERROR - [=== ERROR\nspec.(foo('bar')): Internal error: unknown function: foo]"},
+		expectErr:    true,
+	}, {
+		name: "Bad projection",
+		expected: unstructured.Unstructured{
+			Object: map[string]any{
+				"apiVersion": "v1",
+				"kind":       "Pod",
+				"metadata": map[string]any{
+					"name": "test-pod",
+				},
+				"spec": map[string]any{
+					"foo": "bar",
+				},
+			},
+		},
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+				t.Helper()
+				obj.(*unstructured.Unstructured).Object = map[string]any{
+					"apiVersion": "v1",
+					"kind":       "Pod",
+					"metadata": map[string]any{
+						"name": "test-pod",
+					},
+					"spec": map[string]any{},
+				}
+				return nil
+			},
+		},
+		expectedLogs: []string{"ASSERT: RUN - []", "ASSERT: ERROR - [=== ERROR\n---------------\nv1/Pod/test-pod\n---------------\n* spec.foo: Required value: projection is not valid\n\n--- expected\n+++ actual\n@@ -2,6 +2,5 @@\n kind: Pod\n metadata:\n   name: test-pod\n-spec:\n-  foo: bar\n+spec: {}]"},
 		expectErr:    true,
 	}, {
 		name: "Successful match using List",
