@@ -24,17 +24,19 @@ type Cleaner interface {
 	Run(ctx context.Context) []error
 }
 
-func New(timeout time.Duration, delay *time.Duration) Cleaner {
+func New(timeout time.Duration, delay *time.Duration, propagation metav1.DeletionPropagation) Cleaner {
 	return &cleaner{
-		delay:   delay,
-		timeout: timeout,
+		delay:       delay,
+		timeout:     timeout,
+		propagation: propagation,
 	}
 }
 
 type cleaner struct {
-	delay   *time.Duration
-	timeout time.Duration
-	entries []cleanupEntry
+	delay       *time.Duration
+	timeout     time.Duration
+	propagation metav1.DeletionPropagation
+	entries     []cleanupEntry
 }
 
 func (c *cleaner) Add(client client.Client, object client.Object) {
@@ -64,7 +66,7 @@ func (c *cleaner) Run(ctx context.Context) []error {
 func (c *cleaner) delete(ctx context.Context, entry cleanupEntry) error {
 	ctx, cancel := context.WithTimeout(ctx, c.timeout)
 	defer cancel()
-	if err := entry.client.Delete(ctx, entry.object, client.PropagationPolicy(metav1.DeletePropagationForeground)); err != nil {
+	if err := entry.client.Delete(ctx, entry.object, client.PropagationPolicy(c.propagation)); err != nil {
 		if !kerrors.IsNotFound(err) {
 			return err
 		}

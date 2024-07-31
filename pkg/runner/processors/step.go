@@ -109,7 +109,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup)
+	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup, p.deletionPropagationPolicy)
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
 			logger.Log(logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
