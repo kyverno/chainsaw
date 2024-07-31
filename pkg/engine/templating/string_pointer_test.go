@@ -38,13 +38,13 @@ func TestStringPointer(t *testing.T) {
 		name:     "error",
 		in:       ptr.To("($foo)"),
 		bindings: binding.NewBindings(),
-		want:     ptr.To(""),
+		want:     nil,
 		wantErr:  true,
 	}, {
 		name:     "not string",
 		in:       ptr.To("(`42`)"),
 		bindings: binding.NewBindings(),
-		want:     ptr.To(""),
+		want:     nil,
 		wantErr:  true,
 	}, {
 		name:     "string",
@@ -78,8 +78,8 @@ func TestStringPointer(t *testing.T) {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
-				assert.Equal(t, tt.want, got)
 			}
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
