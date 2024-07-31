@@ -46,7 +46,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 			p.report.SetEndTime(time.Now())
 		})
 	}
-	mainCleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil)
+	mainCleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil, p.config.Deletion.Propagation)
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)

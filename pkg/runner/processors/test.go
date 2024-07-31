@@ -105,7 +105,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			}
 		})
 	}
-	mainCleaner := cleaner.New(p.timeouts.Cleanup.Duration, nil)
+	mainCleaner := cleaner.New(p.timeouts.Cleanup.Duration, nil, p.deletionPropagationPolicy)
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
