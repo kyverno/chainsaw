@@ -27,21 +27,23 @@ func TestNew(t *testing.T) {
 		timeout: time.Minute,
 		delay:   nil,
 		want: &cleaner{
-			timeout: time.Minute,
-			delay:   nil,
+			timeout:     time.Minute,
+			delay:       nil,
+			propagation: metav1.DeletePropagationBackground,
 		},
 	}, {
 		name:    "with delay",
 		timeout: time.Minute,
 		delay:   ptr.To(10 * time.Second),
 		want: &cleaner{
-			timeout: time.Minute,
-			delay:   ptr.To(10 * time.Second),
+			timeout:     time.Minute,
+			delay:       ptr.To(10 * time.Second),
+			propagation: metav1.DeletePropagationBackground,
 		},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := New(tt.timeout, tt.delay)
+			got := New(tt.timeout, tt.delay, metav1.DeletePropagationBackground)
 			assert.Equal(t, tt.want, got)
 		})
 	}
