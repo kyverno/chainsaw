@@ -10,16 +10,22 @@ import (
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 
-func DiscoverFolders(paths ...string) ([]string, error) {
+func discoverFolders(stat func(string) (os.FileInfo, error), walk func(string, filepath.WalkFunc) error, paths ...string) ([]string, error) {
+	if stat == nil {
+		stat = os.Stat
+	}
+	if walk == nil {
+		walk = filepath.Walk
+	}
 	folders := sets.New[string]()
 	var errors []error
 	for _, path := range paths {
-		_, err := os.Stat(path)
+		_, err := stat(path)
 		if err != nil {
 			errors = append(errors, fmt.Errorf("error checking path %s: %v", path, err))
 			continue
 		}
-		err = filepath.Walk(path, func(file string, info fs.FileInfo, err error) error {
+		err = walk(path, func(file string, info fs.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
@@ -36,4 +42,8 @@ func DiscoverFolders(paths ...string) ([]string, error) {
 		return nil, multierr.Combine(errors...)
 	}
 	return sets.List(folders), nil
+}
+
+func DiscoverFolders(paths ...string) ([]string, error) {
+	return discoverFolders(nil, nil, paths...)
 }
