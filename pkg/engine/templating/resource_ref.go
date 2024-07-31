@@ -9,6 +9,9 @@ import (
 )
 
 func ResourceRef(ctx context.Context, obj *unstructured.Unstructured, bindings binding.Bindings) error {
+	if obj == nil {
+		return nil
+	}
 	apiVersion := obj.GetAPIVersion()
 	kind := obj.GetKind()
 	// this is not a valid resource (non resource assertion maybe ?)
