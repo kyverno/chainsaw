@@ -4524,8 +4524,7 @@
                       }
                     },
                     "x-kubernetes-embedded-resource": true,
-                    "x-kubernetes-preserve-unknown-fields": true,
-                    "additionalProperties": false
+                    "x-kubernetes-preserve-unknown-fields": true
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -5328,8 +5327,7 @@
                       }
                     },
                     "x-kubernetes-embedded-resource": true,
-                    "x-kubernetes-preserve-unknown-fields": true,
-                    "additionalProperties": false
+                    "x-kubernetes-preserve-unknown-fields": true
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -6436,8 +6434,7 @@
                       }
                     },
                     "x-kubernetes-embedded-resource": true,
-                    "x-kubernetes-preserve-unknown-fields": true,
-                    "additionalProperties": false
+                    "x-kubernetes-preserve-unknown-fields": true
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
@@ -7353,8 +7350,7 @@
                       }
                     },
                     "x-kubernetes-embedded-resource": true,
-                    "x-kubernetes-preserve-unknown-fields": true,
-                    "additionalProperties": false
+                    "x-kubernetes-preserve-unknown-fields": true
                   },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
