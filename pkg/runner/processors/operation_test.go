@@ -8,10 +8,10 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/engine"
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
+	"github.com/kyverno/chainsaw/pkg/engine/operations"
+	mock "github.com/kyverno/chainsaw/pkg/engine/operations/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/report"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	mock "github.com/kyverno/chainsaw/pkg/runner/operations/testing"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 )
