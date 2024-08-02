@@ -11,10 +11,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	"github.com/kyverno/chainsaw/pkg/engine/operations"
+	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
@@ -78,7 +78,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outp
 func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	var lastErr error
 	var outputs outputs.Outputs
-	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (bool, error) {
+	err := wait.PollUntilContextCancel(ctx, client.PollInterval, false, func(ctx context.Context) (bool, error) {
 		outputs, lastErr = o.tryUpdateResource(ctx, bindings, obj)
 		// TODO: determine if the error can be retried
 		return lastErr == nil, nil
