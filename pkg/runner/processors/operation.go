@@ -6,10 +6,10 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
 	"github.com/kyverno/pkg/ext/output/color"
 )
 

@@ -10,10 +10,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	"github.com/kyverno/chainsaw/pkg/engine/operations"
+	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -66,7 +66,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outp
 
 func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
 	var lastErrs []error
-	err := wait.PollUntilContextCancel(ctx, internal.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
+	err := wait.PollUntilContextCancel(ctx, client.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
 		defer func() {
 			// record last errors only if there was no real error

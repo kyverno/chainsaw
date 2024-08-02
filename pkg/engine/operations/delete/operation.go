@@ -10,10 +10,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	"github.com/kyverno/chainsaw/pkg/engine/operations"
+	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	"github.com/kyverno/chainsaw/pkg/runner/operations/internal"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -128,7 +128,7 @@ func (o *operation) deleteResource(ctx context.Context, resource unstructured.Un
 func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.Unstructured) error {
 	gvk := resource.GetObjectKind().GroupVersionKind()
 	key := client.Key(&resource)
-	return wait.PollUntilContextCancel(ctx, internal.PollInterval, true, func(ctx context.Context) (bool, error) {
+	return wait.PollUntilContextCancel(ctx, client.PollInterval, true, func(ctx context.Context) (bool, error) {
 		var actual unstructured.Unstructured
 		actual.SetGroupVersionKind(gvk)
 		if err := o.client.Get(ctx, key, &actual); err != nil {
