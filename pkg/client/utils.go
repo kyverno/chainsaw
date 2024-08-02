@@ -14,6 +14,8 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
+const PollInterval = 50 * time.Millisecond
+
 func Key(obj metav1.Object) ObjectKey {
 	return ObjectKey{
 		Name:      obj.GetName(),
@@ -60,7 +62,7 @@ func PatchObject(actual, expected runtime.Object) (runtime.Object, error) {
 
 func WaitForDeletion(ctx context.Context, client Client, object Object) error {
 	key := Key(object)
-	return wait.PollUntilContextCancel(ctx, 50*time.Millisecond, true, func(ctx context.Context) (bool, error) {
+	return wait.PollUntilContextCancel(ctx, PollInterval, true, func(ctx context.Context) (bool, error) {
 		if err := client.Get(ctx, key, object); err != nil {
 			if kerrors.IsNotFound(err) {
 				return true, nil
