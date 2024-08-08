@@ -113,7 +113,7 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 				Apply: &v1alpha1.Apply{
 					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -124,7 +124,7 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 				Assert: &v1alpha1.Assert{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -135,7 +135,7 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 				Error: &v1alpha1.Error{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},

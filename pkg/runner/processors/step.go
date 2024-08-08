@@ -376,7 +376,7 @@ func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespace
 func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings binding.Bindings, op v1alpha1.Apply) ([]operation, error) {
 	var operationReport *report.OperationReport
 	if p.report != nil {
-		operationReport = p.report.ForOperation("Apply "+op.File, report.OperationTypeApply)
+		operationReport = p.report.ForOperation("Apply "+string(op.File), report.OperationTypeApply)
 	}
 	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
@@ -1087,7 +1087,7 @@ func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionC
 		}
 	}
 	if ref.File != "" {
-		ref, err := templating.String(ctx, ref.File, bindings)
+		ref, err := templating.String(ctx, string(ref.File), bindings)
 		if err != nil {
 			return nil, err
 		}
@@ -1106,7 +1106,7 @@ func (p *stepProcessor) fileRefOrResource(ctx context.Context, ref v1alpha1.Acti
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}
 	if ref.File != "" {
-		ref, err := templating.String(ctx, ref.File, bindings)
+		ref, err := templating.String(ctx, string(ref.File), bindings)
 		if err != nil {
 			return nil, err
 		}
