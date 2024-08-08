@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/engine"
@@ -24,6 +25,7 @@ import (
 	opscript "github.com/kyverno/chainsaw/pkg/engine/operations/script"
 	opsleep "github.com/kyverno/chainsaw/pkg/engine/operations/sleep"
 	opupdate "github.com/kyverno/chainsaw/pkg/engine/operations/update"
+	"github.com/kyverno/chainsaw/pkg/engine/templating"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
@@ -121,7 +123,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 				failer.Fail(ctx)
 			}
 			for i, operation := range p.step.Cleanup {
-				operations, err := p.finallyOperation(i, namespacer, operation)
+				operations, err := p.finallyOperation(i, namespacer, tc.Bindings(), operation)
 				if err != nil {
 					logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.Fail(ctx)
@@ -139,7 +141,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 				logger.Log(logging.Finally, logging.DoneStatus, color.BoldFgCyan)
 			}()
 			for i, operation := range p.step.Finally {
-				operations, err := p.finallyOperation(i, namespacer, operation)
+				operations, err := p.finallyOperation(i, namespacer, tc.Bindings(), operation)
 				if err != nil {
 					logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.Fail(ctx)
@@ -158,7 +160,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 					logger.Log(logging.Catch, logging.DoneStatus, color.BoldFgCyan)
 				}()
 				for i, operation := range p.catch {
-					operations, err := p.catchOperation(i, namespacer, operation)
+					operations, err := p.catchOperation(i, namespacer, tc.Bindings(), operation)
 					if err != nil {
 						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 						failer.Fail(ctx)
@@ -175,7 +177,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		logger.Log(logging.Try, logging.DoneStatus, color.BoldFgCyan)
 	}()
 	for i, operation := range p.step.Try {
-		operations, err := p.tryOperation(i, namespacer, operation, cleaner)
+		operations, err := p.tryOperation(i, namespacer, tc.Bindings(), operation, cleaner)
 		if err != nil {
 			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
@@ -188,7 +190,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	}
 }
 
-func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
+func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		continueOnError := handler.ContinueOnError != nil && *handler.ContinueOnError
@@ -198,13 +200,13 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, h
 		}
 	}
 	if handler.Apply != nil {
-		loaded, err := p.applyOperation(id+1, namespacer, cleaner, *handler.Apply)
+		loaded, err := p.applyOperation(id+1, namespacer, cleaner, bindings, *handler.Apply)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.Assert != nil {
-		loaded, err := p.assertOperation(id+1, namespacer, *handler.Assert)
+		loaded, err := p.assertOperation(id+1, namespacer, bindings, *handler.Assert)
 		if err != nil {
 			return nil, err
 		}
@@ -212,13 +214,13 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, h
 	} else if handler.Command != nil {
 		register(p.commandOperation(id+1, namespacer, *handler.Command))
 	} else if handler.Create != nil {
-		loaded, err := p.createOperation(id+1, namespacer, cleaner, *handler.Create)
+		loaded, err := p.createOperation(id+1, namespacer, cleaner, bindings, *handler.Create)
 		if err != nil {
 			return nil, err
 		}
 		register(loaded...)
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(id+1, namespacer, *handler.Delete)
+		loaded, err := p.deleteOperation(id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
@@ -226,7 +228,7 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, h
 	} else if handler.Describe != nil {
 		register(p.describeOperation(id+1, namespacer, *handler.Describe))
 	} else if handler.Error != nil {
-		loaded, err := p.errorOperation(id+1, namespacer, *handler.Error)
+		loaded, err := p.errorOperation(id+1, namespacer, bindings, *handler.Error)
 		if err != nil {
 			return nil, err
 		}
@@ -248,7 +250,7 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, h
 	} else if handler.Get != nil {
 		register(p.getOperation(id+1, namespacer, *handler.Get))
 	} else if handler.Patch != nil {
-		loaded, err := p.patchOperation(id+1, namespacer, *handler.Patch)
+		loaded, err := p.patchOperation(id+1, namespacer, bindings, *handler.Patch)
 		if err != nil {
 			return nil, err
 		}
@@ -262,7 +264,7 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, h
 	} else if handler.Sleep != nil {
 		register(p.sleepOperation(id+1, *handler.Sleep))
 	} else if handler.Update != nil {
-		loaded, err := p.updateOperation(id+1, namespacer, *handler.Update)
+		loaded, err := p.updateOperation(id+1, namespacer, bindings, *handler.Update)
 		if err != nil {
 			return nil, err
 		}
@@ -275,7 +277,7 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, h
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer, handler v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -304,7 +306,7 @@ func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer,
 	} else if handler.Get != nil {
 		register(p.getOperation(id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(id+1, namespacer, *handler.Delete)
+		loaded, err := p.deleteOperation(id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
@@ -323,7 +325,7 @@ func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer,
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespacer, handler v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	register := func(o ...operation) {
 		for _, o := range o {
@@ -352,7 +354,7 @@ func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespace
 	} else if handler.Get != nil {
 		register(p.getOperation(id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(id+1, namespacer, *handler.Delete)
+		loaded, err := p.deleteOperation(id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
@@ -371,12 +373,12 @@ func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespace
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings binding.Bindings, op v1alpha1.Apply) ([]operation, error) {
 	var operationReport *report.OperationReport
 	if p.report != nil {
 		operationReport = p.report.ForOperation("Apply "+op.File, report.OperationTypeApply)
 	}
-	resources, err := p.fileRefOrResource(op.ActionResourceRef)
+	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -426,8 +428,8 @@ func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer,
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Assert) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
+func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Assert) ([]operation, error) {
+	resources, err := p.fileRefOrCheck(context.TODO(), op.ActionCheckRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -511,8 +513,8 @@ func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespace
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, op v1alpha1.Create) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.ActionResourceRef)
+func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings binding.Bindings, op v1alpha1.Create) ([]operation, error) {
+	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -564,7 +566,7 @@ func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Delete) ([]operation, error) {
+func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Delete) ([]operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -579,7 +581,7 @@ func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer
 		resource.SetLabels(op.Ref.Labels)
 		ref.Resource = &resource
 	}
-	resources, err := p.fileRefOrResource(ref)
+	resources, err := p.fileRefOrResource(context.TODO(), ref, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -675,8 +677,8 @@ func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespac
 	)
 }
 
-func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Error) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(op.ActionCheckRef)
+func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Error) ([]operation, error) {
+	resources, err := p.fileRefOrCheck(context.TODO(), op.ActionCheckRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -817,8 +819,8 @@ func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, 
 	)
 }
 
-func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Patch) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.ActionResourceRef)
+func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Patch) ([]operation, error) {
+	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -973,8 +975,8 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 	)
 }
 
-func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Update) ([]operation, error) {
-	resources, err := p.fileRefOrResource(op.ActionResourceRef)
+func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Update) ([]operation, error) {
+	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -1076,7 +1078,7 @@ func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, 
 	)
 }
 
-func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.ActionCheckRef) ([]unstructured.Unstructured, error) {
+func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionCheckRef, bindings binding.Bindings) ([]unstructured.Unstructured, error) {
 	if ref.Check != nil && ref.Check.Value != nil {
 		if object, ok := ref.Check.Value.(map[string]any); !ok {
 			return nil, errors.New("resource must be an object")
@@ -1085,9 +1087,13 @@ func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.ActionCheckRef) ([]unstructu
 		}
 	}
 	if ref.File != "" {
-		url, err := url.ParseRequestURI(ref.File)
+		ref, err := templating.String(ctx, ref.File, bindings)
 		if err != nil {
-			return resource.Load(filepath.Join(p.basePath, ref.File), false)
+			return nil, err
+		}
+		url, err := url.ParseRequestURI(ref)
+		if err != nil {
+			return resource.Load(filepath.Join(p.basePath, ref), false)
 		} else {
 			return resource.LoadFromURI(url, false)
 		}
@@ -1095,14 +1101,18 @@ func (p *stepProcessor) fileRefOrCheck(ref v1alpha1.ActionCheckRef) ([]unstructu
 	return nil, errors.New("file or resource must be set")
 }
 
-func (p *stepProcessor) fileRefOrResource(ref v1alpha1.ActionResourceRef) ([]unstructured.Unstructured, error) {
+func (p *stepProcessor) fileRefOrResource(ctx context.Context, ref v1alpha1.ActionResourceRef, bindings binding.Bindings) ([]unstructured.Unstructured, error) {
 	if ref.Resource != nil {
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}
 	if ref.File != "" {
-		url, err := url.ParseRequestURI(ref.File)
+		ref, err := templating.String(ctx, ref.File, bindings)
 		if err != nil {
-			return resource.Load(filepath.Join(p.basePath, ref.File), true)
+			return nil, err
+		}
+		url, err := url.ParseRequestURI(ref)
+		if err != nil {
+			return resource.Load(filepath.Join(p.basePath, ref), true)
 		} else {
 			return resource.LoadFromURI(url, true)
 		}
