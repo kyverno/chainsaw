@@ -157,7 +157,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 				Apply: &v1alpha1.Apply{
 					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -199,7 +199,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 				Apply: &v1alpha1.Apply{
 					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -224,7 +224,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 				Assert: &v1alpha1.Assert{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -260,7 +260,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 				Assert: &v1alpha1.Assert{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -285,7 +285,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 				Error: &v1alpha1.Error{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -321,7 +321,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 				Error: &v1alpha1.Error{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -422,7 +422,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			Apply: &v1alpha1.Apply{
 				ActionResourceRef: v1alpha1.ActionResourceRef{
 					FileRef: v1alpha1.FileRef{
-						File: operation,
+						File: v1alpha1.Expression(operation),
 					},
 				},
 			},
@@ -433,7 +433,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			Assert: &v1alpha1.Assert{
 				ActionCheckRef: v1alpha1.ActionCheckRef{
 					FileRef: v1alpha1.FileRef{
-						File: operation,
+						File: v1alpha1.Expression(operation),
 					},
 				},
 			},
@@ -444,7 +444,7 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			Error: &v1alpha1.Error{
 				ActionCheckRef: v1alpha1.ActionCheckRef{
 					FileRef: v1alpha1.FileRef{
-						File: operation,
+						File: v1alpha1.Expression(operation),
 					},
 				},
 			},
