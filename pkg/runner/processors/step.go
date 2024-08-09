@@ -25,7 +25,7 @@ import (
 	opscript "github.com/kyverno/chainsaw/pkg/engine/operations/script"
 	opsleep "github.com/kyverno/chainsaw/pkg/engine/operations/sleep"
 	opupdate "github.com/kyverno/chainsaw/pkg/engine/operations/update"
-	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/chainsaw/pkg/expressions"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
@@ -1087,7 +1087,7 @@ func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionC
 		}
 	}
 	if ref.File != "" {
-		ref, err := templating.String(ctx, string(ref.File), bindings)
+		ref, err := expressions.String(ctx, string(ref.File), bindings)
 		if err != nil {
 			return nil, err
 		}
@@ -1106,7 +1106,7 @@ func (p *stepProcessor) fileRefOrResource(ctx context.Context, ref v1alpha1.Acti
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}
 	if ref.File != "" {
-		ref, err := templating.String(ctx, string(ref.File), bindings)
+		ref, err := expressions.String(ctx, string(ref.File), bindings)
 		if err != nil {
 			return nil, err
 		}

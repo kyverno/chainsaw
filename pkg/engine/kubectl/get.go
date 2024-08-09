@@ -7,26 +7,26 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/chainsaw/pkg/expressions"
 )
 
 func Get(ctx context.Context, client client.Client, tc binding.Bindings, collector *v1alpha1.Get) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := templating.String(ctx, collector.Name, tc)
+	name, err := expressions.String(ctx, collector.Name, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := templating.String(ctx, collector.Namespace, tc)
+	namespace, err := expressions.String(ctx, collector.Namespace, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := templating.String(ctx, collector.Selector, tc)
+	selector, err := expressions.String(ctx, collector.Selector, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	format, err := templating.String(ctx, string(collector.Format), tc)
+	format, err := expressions.String(ctx, string(collector.Format), tc)
 	if err != nil {
 		return "", nil, err
 	}

@@ -1,18 +1,23 @@
-package templating
+package expressions
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/engine/functions"
+	"github.com/kyverno/kyverno-json/pkg/engine/template"
 )
 
 func String(ctx context.Context, in string, bindings binding.Bindings) (string, error) {
 	if in == "" {
 		return "", nil
 	}
-	if converted, err := Template(ctx, v1alpha1.Any{Value: in}, nil, bindings); err != nil {
+	expression := Parse(ctx, in)
+	if expression == nil || expression.Engine == "" {
+		return in, nil
+	}
+	if converted, err := template.Execute(ctx, expression.Statement, nil, bindings, template.WithFunctionCaller(functions.Caller())); err != nil {
 		return "", err
 	} else {
 		if converted, ok := converted.(string); !ok {
