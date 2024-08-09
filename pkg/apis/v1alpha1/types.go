@@ -59,6 +59,9 @@ type Expectation struct {
 	Check Check `json:"check"`
 }
 
+// Expression defines an expression to be used in string fields.
+type Expression string
+
 // Format determines the output format (json or yaml).
 // +kubebuilder:validation:Pattern=`^(?:json|yaml|\(.+\))$`
 type Format string

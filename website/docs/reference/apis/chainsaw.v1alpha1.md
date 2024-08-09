@@ -492,7 +492,7 @@ If a resource already exists in the cluster it will fail.</p>
 | `ActionExpectations` | [`ActionExpectations`](#chainsaw-kyverno-io-v1alpha1-ActionExpectations) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
-| `file` | `string` |  |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
+| `file` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
 | `ref` | [`ObjectReference`](#chainsaw-kyverno-io-v1alpha1-ObjectReference) |  |  | <p>Ref determines objects to be deleted.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation. Overrides the deletion propagation policy set in the Configuration, the Test and the TestStep.</p> |
 
@@ -562,6 +562,18 @@ with a match filter to determine if the verification should be considered.</p>
 | `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
 | `check` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
 
+## Expression     {#chainsaw-kyverno-io-v1alpha1-Expression}
+
+(Alias of `string`)
+
+**Appears in:**
+    
+- [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
+- [FileRef](#chainsaw-kyverno-io-v1alpha1-FileRef)
+
+<p>Expression defines an expression to be used in string fields.</p>
+
+
 ## FileRef     {#chainsaw-kyverno-io-v1alpha1-FileRef}
 
 **Appears in:**
@@ -574,7 +586,7 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `file` | `string` | :white_check_mark: |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
+| `file` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>File is the path to the referenced file. This can be a direct path to a file or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML files within the "manifest" directory.</p> |
 
 ## Format     {#chainsaw-kyverno-io-v1alpha1-Format}
 

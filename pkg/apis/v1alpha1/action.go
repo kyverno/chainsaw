@@ -112,7 +112,7 @@ type FileRef struct {
 	// File is the path to the referenced file. This can be a direct path to a file
 	// or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
 	// files within the "manifest" directory.
-	File string `json:"file,omitempty"`
+	File Expression `json:"file,omitempty"`
 }
 
 // ActionResourceRef contains resource reference options for an action.
@@ -204,7 +204,7 @@ type Delete struct {
 	// or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
 	// files within the "manifest" directory.
 	// +optional
-	File string `json:"file,omitempty"`
+	File Expression `json:"file,omitempty"`
 
 	// Ref determines objects to be deleted.
 	// +optional
