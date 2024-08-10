@@ -1,4 +1,4 @@
-package templating
+package expressions
 
 import (
 	"context"
