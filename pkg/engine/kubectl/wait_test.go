@@ -81,7 +81,7 @@ func TestWait(t *testing.T) {
 			WaitFor: v1alpha1.WaitFor{
 				Condition: &v1alpha1.WaitForCondition{
 					Name:  "Ready",
-					Value: ptr.To("test"),
+					Value: ptr.To(v1alpha1.Expression("test")),
 				},
 			},
 		},
@@ -100,7 +100,7 @@ func TestWait(t *testing.T) {
 			WaitFor: v1alpha1.WaitFor{
 				Condition: &v1alpha1.WaitForCondition{
 					Name:  "Ready",
-					Value: ptr.To(""),
+					Value: ptr.To(v1alpha1.Expression("")),
 				},
 			},
 		},
