@@ -8,6 +8,7 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/chainsaw/pkg/expressions"
 )
 
 var identifier = regexp.MustCompile(`^\w+$`)
@@ -24,7 +25,7 @@ func RegisterBinding(ctx context.Context, bindings binding.Bindings, name string
 }
 
 func ResolveBinding(ctx context.Context, bindings binding.Bindings, input any, variable v1alpha1.Binding) (string, any, error) {
-	name, err := templating.String(ctx, variable.Name, bindings)
+	name, err := expressions.String(ctx, variable.Name, bindings)
 	if err != nil {
 		return "", nil, err
 	}

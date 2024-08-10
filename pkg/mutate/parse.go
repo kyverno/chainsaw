@@ -95,8 +95,8 @@ func (n *scalarNode) mutate(ctx context.Context, path *field.Path, value any, bi
 	expression := parseExpression(ctx, rhs)
 	// we only project if the expression uses the engine syntax
 	// this is to avoid the case where the value is a map and the RHS is a string
-	if expression != nil && expression.engine != "" {
-		projected, err := template.Execute(ctx, expression.statement, value, bindings, opts...)
+	if expression != nil && expression.Engine != "" {
+		projected, err := template.Execute(ctx, expression.Statement, value, bindings, opts...)
 		if err != nil {
 			return nil, field.InternalError(path, err)
 		}
