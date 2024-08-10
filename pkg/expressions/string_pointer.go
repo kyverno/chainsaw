@@ -1,11 +1,12 @@
-package templating
+package expressions
 
 import (
 	"context"
 	"fmt"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/engine/functions"
+	"github.com/kyverno/kyverno-json/pkg/engine/template"
 )
 
 func StringPointer(ctx context.Context, in *string, bindings binding.Bindings) (*string, error) {
@@ -15,7 +16,11 @@ func StringPointer(ctx context.Context, in *string, bindings binding.Bindings) (
 	if *in == "" {
 		return in, nil
 	}
-	if converted, err := Template(ctx, v1alpha1.Any{Value: *in}, nil, bindings); err != nil {
+	expression := Parse(ctx, *in)
+	if expression == nil || expression.Engine == "" {
+		return in, nil
+	}
+	if converted, err := template.Execute(ctx, expression.Statement, nil, bindings, template.WithFunctionCaller(functions.Caller())); err != nil {
 		return nil, err
 	} else if converted == nil {
 		return nil, nil
