@@ -8,26 +8,25 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/expressions"
 )
 
 func Wait(ctx context.Context, client client.Client, tc binding.Bindings, collector *v1alpha1.Wait) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := expressions.String(ctx, collector.Name, tc)
+	name, err := collector.Name.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := expressions.String(ctx, collector.Namespace, tc)
+	namespace, err := collector.Namespace.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := expressions.String(ctx, collector.Selector, tc)
+	selector, err := collector.Selector.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	format, err := expressions.String(ctx, string(collector.Format), tc)
+	format, err := v1alpha1.Expression(collector.Format).Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
@@ -42,7 +41,7 @@ func Wait(ctx context.Context, client client.Client, tc binding.Bindings, collec
 	if collector.WaitFor.Deletion != nil {
 		args = append(args, "--for=delete")
 	} else if collector.WaitFor.Condition != nil {
-		name, err := expressions.String(ctx, collector.WaitFor.Condition.Name, tc)
+		name, err := collector.WaitFor.Condition.Name.Value(ctx, tc)
 		if err != nil {
 			return "", nil, err
 		}
@@ -50,7 +49,7 @@ func Wait(ctx context.Context, client client.Client, tc binding.Bindings, collec
 			return "", nil, errors.New("a condition name must be specified for condition wait type")
 		}
 		if collector.WaitFor.Condition.Value != nil {
-			value, err := expressions.String(ctx, *collector.WaitFor.Condition.Value, tc)
+			value, err := collector.WaitFor.Condition.Value.Value(ctx, tc)
 			if err != nil {
 				return "", nil, err
 			}
@@ -59,14 +58,14 @@ func Wait(ctx context.Context, client client.Client, tc binding.Bindings, collec
 			args = append(args, fmt.Sprintf("--for=condition=%s", name))
 		}
 	} else if collector.WaitFor.JsonPath != nil {
-		path, err := expressions.String(ctx, collector.WaitFor.JsonPath.Path, tc)
+		path, err := collector.WaitFor.JsonPath.Path.Value(ctx, tc)
 		if err != nil {
 			return "", nil, err
 		}
 		if path == "" {
 			return "", nil, errors.New("a path must be specified for jsonpath wait type")
 		}
-		value, err := expressions.String(ctx, collector.WaitFor.JsonPath.Value, tc)
+		value, err := collector.WaitFor.JsonPath.Value.Value(ctx, tc)
 		if err != nil {
 			return "", nil, err
 		}

@@ -573,10 +573,10 @@ func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer
 	}
 	if op.Ref != nil {
 		var resource unstructured.Unstructured
-		resource.SetAPIVersion(op.Ref.APIVersion)
-		resource.SetKind(op.Ref.Kind)
-		resource.SetName(op.Ref.Name)
-		resource.SetNamespace(op.Ref.Namespace)
+		resource.SetAPIVersion(string(op.Ref.APIVersion))
+		resource.SetKind(string(op.Ref.Kind))
+		resource.SetName(string(op.Ref.Name))
+		resource.SetNamespace(string(op.Ref.Namespace))
 		resource.SetLabels(op.Ref.Labels)
 		ref.Resource = &resource
 	}

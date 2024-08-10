@@ -19,8 +19,9 @@ type Any = v1alpha1.Any
 // Binding represents a key/value set as a binding in an executing test.
 type Binding struct {
 	// Name the name of the binding.
-	// +kubebuilder:validation:Pattern=`^(?:\w+|\(.+\))$`
-	Name string `json:"name"`
+	// +kubebuilder:validation:Type:=string
+	// +kubebuilder:validation:Pattern:=`^(?:\w+|\(.+\))$`
+	Name Expression `json:"name"`
 
 	// Value value of the binding.
 	// +kubebuilder:validation:Schemaless
@@ -29,7 +30,7 @@ type Binding struct {
 }
 
 func (b Binding) CheckName() error {
-	if !identifier.MatchString(b.Name) {
+	if !identifier.MatchString(string(b.Name)) {
 		return fmt.Errorf("invalid name %s", b.Name)
 	}
 	return nil
@@ -70,8 +71,9 @@ func (e Expression) Value(ctx context.Context, bindings binding.Bindings) (strin
 }
 
 // Format determines the output format (json or yaml).
-// +kubebuilder:validation:Pattern=`^(?:json|yaml|\(.+\))$`
-type Format string
+// +kubebuilder:validation:Type:=string
+// +kubebuilder:validation:Pattern:=`^(?:json|yaml|\(.+\))$`
+type Format Expression
 
 // Match represents a match condition against an evaluated object.
 type Match = Any
@@ -81,12 +83,12 @@ type ObjectName struct {
 	// Namespace of the referent.
 	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
 	// +optional
-	Namespace string `json:"namespace,omitempty"`
+	Namespace Expression `json:"namespace,omitempty"`
 
 	// Name of the referent.
 	// More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names
 	// +optional
-	Name string `json:"name,omitempty"`
+	Name Expression `json:"name,omitempty"`
 }
 
 // ObjectReference represents one or more objects with a specific apiVersion and kind.
@@ -104,11 +106,11 @@ type ObjectReference struct {
 // ObjectType represents a specific apiVersion and kind.
 type ObjectType struct {
 	// API version of the referent.
-	APIVersion string `json:"apiVersion"`
+	APIVersion Expression `json:"apiVersion"`
 
 	// Kind of the referent.
 	// More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-	Kind string `json:"kind"`
+	Kind Expression `json:"kind"`
 }
 
 // Output represents an output binding with a match to determine if the binding must be considered or not.

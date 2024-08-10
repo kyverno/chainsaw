@@ -8,22 +8,21 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/expressions"
 )
 
 func Describe(ctx context.Context, client client.Client, tc binding.Bindings, collector *v1alpha1.Describe) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := expressions.String(ctx, collector.Name, tc)
+	name, err := collector.Name.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := expressions.String(ctx, collector.Namespace, tc)
+	namespace, err := collector.Namespace.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := expressions.String(ctx, collector.Selector, tc)
+	selector, err := collector.Selector.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
