@@ -1583,7 +1583,7 @@ func (in *WaitForCondition) DeepCopyInto(out *WaitForCondition) {
 	*out = *in
 	if in.Value != nil {
 		in, out := &in.Value, &out.Value
-		*out = new(string)
+		*out = new(Expression)
 		**out = **in
 	}
 	return

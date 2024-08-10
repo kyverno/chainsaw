@@ -8,26 +8,25 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/expressions"
 )
 
 func Proxy(ctx context.Context, client client.Client, tc binding.Bindings, collector *v1alpha1.Proxy) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := expressions.String(ctx, collector.Name, tc)
+	name, err := collector.Name.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := expressions.String(ctx, collector.Namespace, tc)
+	namespace, err := collector.Namespace.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	targetPath, err := expressions.String(ctx, collector.TargetPath, tc)
+	targetPath, err := collector.TargetPath.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	targetPort, err := expressions.String(ctx, collector.TargetPort, tc)
+	targetPort, err := collector.TargetPort.Value(ctx, tc)
 	if err != nil {
 		return "", nil, err
 	}

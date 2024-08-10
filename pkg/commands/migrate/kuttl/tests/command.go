@@ -455,12 +455,12 @@ func testStep(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			Delete: &v1alpha1.Delete{
 				Ref: &v1alpha1.ObjectReference{
 					ObjectType: v1alpha1.ObjectType{
-						APIVersion: operation.APIVersion,
-						Kind:       operation.Kind,
+						APIVersion: v1alpha1.Expression(operation.APIVersion),
+						Kind:       v1alpha1.Expression(operation.Kind),
 					},
 					ObjectName: v1alpha1.ObjectName{
-						Namespace: operation.Namespace,
-						Name:      operation.Name,
+						Namespace: v1alpha1.Expression(operation.Namespace),
+						Name:      v1alpha1.Expression(operation.Name),
 					},
 					Labels: operation.Labels,
 				},
@@ -506,12 +506,12 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 			op := &v1alpha1.PodLogs{
 				ActionObjectSelector: v1alpha1.ActionObjectSelector{
 					ObjectName: v1alpha1.ObjectName{
-						Name:      collector.Pod,
-						Namespace: collector.Namespace,
+						Name:      v1alpha1.Expression(collector.Pod),
+						Namespace: v1alpha1.Expression(collector.Namespace),
 					},
-					Selector: collector.Selector,
+					Selector: v1alpha1.Expression(collector.Selector),
 				},
-				Container: collector.Container,
+				Container: v1alpha1.Expression(collector.Container),
 			}
 			if collector.Tail != 0 {
 				op.Tail = ptr.To(collector.Tail)
@@ -531,10 +531,10 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 				Events: &v1alpha1.Events{
 					ActionObjectSelector: v1alpha1.ActionObjectSelector{
 						ObjectName: v1alpha1.ObjectName{
-							Name:      collector.Pod,
-							Namespace: collector.Namespace,
+							Name:      v1alpha1.Expression(collector.Pod),
+							Namespace: v1alpha1.Expression(collector.Namespace),
 						},
-						Selector: collector.Selector,
+						Selector: v1alpha1.Expression(collector.Selector),
 					},
 				},
 			})
