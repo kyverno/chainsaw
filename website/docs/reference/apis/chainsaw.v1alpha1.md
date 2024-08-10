@@ -222,7 +222,7 @@ auto_generated: true
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `ObjectName` | [`ObjectName`](#chainsaw-kyverno-io-v1alpha1-ObjectName) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-| `selector` | `string` |  |  | <p>Selector defines labels selector.</p> |
+| `selector` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Selector defines labels selector.</p> |
 
 ## ActionOutputs     {#chainsaw-kyverno-io-v1alpha1-ActionOutputs}
 
@@ -342,7 +342,7 @@ during the testing process.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `name` | `string` | :white_check_mark: |  | <p>Name the name of the binding.</p> |
+| `name` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Name the name of the binding.</p> |
 | `value` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Value value of the binding.</p> |
 
 ## CatchFinally     {#chainsaw-kyverno-io-v1alpha1-CatchFinally}
@@ -568,8 +568,16 @@ with a match filter to determine if the verification should be considered.</p>
 
 **Appears in:**
     
+- [ActionObjectSelector](#chainsaw-kyverno-io-v1alpha1-ActionObjectSelector)
+- [Binding](#chainsaw-kyverno-io-v1alpha1-Binding)
 - [Delete](#chainsaw-kyverno-io-v1alpha1-Delete)
 - [FileRef](#chainsaw-kyverno-io-v1alpha1-FileRef)
+- [ObjectName](#chainsaw-kyverno-io-v1alpha1-ObjectName)
+- [ObjectType](#chainsaw-kyverno-io-v1alpha1-ObjectType)
+- [PodLogs](#chainsaw-kyverno-io-v1alpha1-PodLogs)
+- [Proxy](#chainsaw-kyverno-io-v1alpha1-Proxy)
+- [WaitForCondition](#chainsaw-kyverno-io-v1alpha1-WaitForCondition)
+- [WaitForJsonPath](#chainsaw-kyverno-io-v1alpha1-WaitForJsonPath)
 
 <p>Expression defines an expression to be used in string fields.</p>
 
@@ -629,8 +637,8 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `namespace` | `string` |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
-| `name` | `string` |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
+| `namespace` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Namespace of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/</p> |
+| `name` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names</p> |
 
 ## ObjectReference     {#chainsaw-kyverno-io-v1alpha1-ObjectReference}
 
@@ -662,8 +670,8 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `apiVersion` | `string` | :white_check_mark: |  | <p>API version of the referent.</p> |
-| `kind` | `string` | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
+| `apiVersion` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>API version of the referent.</p> |
+| `kind` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds</p> |
 
 ## Operation     {#chainsaw-kyverno-io-v1alpha1-Operation}
 
@@ -758,7 +766,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionClusters` | [`ActionClusters`](#chainsaw-kyverno-io-v1alpha1-ActionClusters) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionObjectSelector` | [`ActionObjectSelector`](#chainsaw-kyverno-io-v1alpha1-ActionObjectSelector) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-| `container` | `string` |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
+| `container` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
 | `tail` | `int` |  |  | <p>Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.</p> |
 
 ## Proxy     {#chainsaw-kyverno-io-v1alpha1-Proxy}
@@ -777,8 +785,8 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ObjectName` | [`ObjectName`](#chainsaw-kyverno-io-v1alpha1-ObjectName) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ObjectType` | [`ObjectType`](#chainsaw-kyverno-io-v1alpha1-ObjectType) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-| `port` | `string` |  |  | <p>TargetPort defines the target port to proxy the request.</p> |
-| `path` | `string` |  |  | <p>TargetPath defines the target path to proxy the request.</p> |
+| `port` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>TargetPort defines the target port to proxy the request.</p> |
+| `path` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>TargetPath defines the target path to proxy the request.</p> |
 
 ## ReportFormatType     {#chainsaw-kyverno-io-v1alpha1-ReportFormatType}
 
@@ -1017,8 +1025,8 @@ If a resource does not exist in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `name` | `string` | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
-| `value` | `string` |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
+| `name` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
+| `value` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
 
 ## WaitForDeletion     {#chainsaw-kyverno-io-v1alpha1-WaitForDeletion}
 
@@ -1040,7 +1048,7 @@ If a resource does not exist in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `path` | `string` | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
-| `value` | `string` | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
+| `path` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
+| `value` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
 
   

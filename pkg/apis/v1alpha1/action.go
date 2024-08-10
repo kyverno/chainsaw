@@ -97,7 +97,7 @@ type ActionObjectSelector struct {
 
 	// Selector defines labels selector.
 	// +optional
-	Selector string `json:"selector,omitempty"`
+	Selector Expression `json:"selector,omitempty"`
 }
 
 // ActionOutputs contains outputs options for an action.
@@ -274,7 +274,7 @@ type PodLogs struct {
 
 	// Container in pod to get logs from else --all-containers is used.
 	// +optional
-	Container string `json:"container,omitempty"`
+	Container Expression `json:"container,omitempty"`
 
 	// Tail is the number of last lines to collect from pods. If omitted or zero,
 	// then the default is 10 if you use a selector, or -1 (all) if you use a pod name.
@@ -293,11 +293,11 @@ type Proxy struct {
 
 	// TargetPort defines the target port to proxy the request.
 	// +optional
-	TargetPort string `json:"port,omitempty"`
+	TargetPort Expression `json:"port,omitempty"`
 
 	// TargetPath defines the target path to proxy the request.
 	// +optional
-	TargetPath string `json:"path,omitempty"`
+	TargetPath Expression `json:"path,omitempty"`
 }
 
 // Script describes a script to run as a part of a test step.
@@ -361,11 +361,11 @@ type WaitFor struct {
 // WaitForCondition represents parameters for waiting on a specific condition of a resource.
 type WaitForCondition struct {
 	// Name defines the specific condition to wait for, e.g., "Available", "Ready".
-	Name string `json:"name"`
+	Name Expression `json:"name"`
 
 	// Value defines the specific condition status to wait for, e.g., "True", "False".
 	// +optional
-	Value *string `json:"value,omitempty"`
+	Value *Expression `json:"value,omitempty"`
 }
 
 // WaitForDeletion represents parameters for waiting on a resource's deletion.
@@ -374,8 +374,8 @@ type WaitForDeletion struct{}
 // WaitForJsonPath represents parameters for waiting on a json path of a resource.
 type WaitForJsonPath struct {
 	// Path defines the json path to wait for, e.g. '{.status.phase}'.
-	Path string `json:"path"`
+	Path Expression `json:"path"`
 
 	// Value defines the expected value to wait for, e.g., "Running".
-	Value string `json:"value"`
+	Value Expression `json:"value"`
 }
