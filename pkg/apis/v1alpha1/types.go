@@ -1,9 +1,12 @@
 package v1alpha1
 
 import (
+	"context"
 	"fmt"
 	"regexp"
 
+	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/expressions"
 	"github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -61,6 +64,10 @@ type Expectation struct {
 
 // Expression defines an expression to be used in string fields.
 type Expression string
+
+func (e Expression) Value(ctx context.Context, bindings binding.Bindings) (string, error) {
+	return expressions.String(ctx, string(e), bindings)
+}
 
 // Format determines the output format (json or yaml).
 // +kubebuilder:validation:Pattern=`^(?:json|yaml|\(.+\))$`
