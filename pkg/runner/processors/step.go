@@ -113,9 +113,9 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup, p.deletionPropagationPolicy)
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
-			logger.Log(logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
+			logger.Log(logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
 			defer func() {
-				logger.Log(logging.Cleanup, logging.DoneStatus, color.BoldFgCyan)
+				logger.Log(logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
 			}()
 			for _, err := range cleaner.Run(ctx) {
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -135,9 +135,9 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	})
 	if len(p.step.Finally) != 0 {
 		defer func() {
-			logger.Log(logging.Finally, logging.RunStatus, color.BoldFgCyan)
+			logger.Log(logging.Finally, logging.BeginStatus, color.BoldFgCyan)
 			defer func() {
-				logger.Log(logging.Finally, logging.DoneStatus, color.BoldFgCyan)
+				logger.Log(logging.Finally, logging.EndStatus, color.BoldFgCyan)
 			}()
 			for i, operation := range p.step.Finally {
 				operations, err := p.finallyOperation(i, namespacer, tc.Bindings(), operation)
@@ -154,9 +154,9 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	if len(p.catch) != 0 {
 		defer func() {
 			if t.Failed() {
-				logger.Log(logging.Catch, logging.RunStatus, color.BoldFgCyan)
+				logger.Log(logging.Catch, logging.BeginStatus, color.BoldFgCyan)
 				defer func() {
-					logger.Log(logging.Catch, logging.DoneStatus, color.BoldFgCyan)
+					logger.Log(logging.Catch, logging.EndStatus, color.BoldFgCyan)
 				}()
 				for i, operation := range p.catch {
 					operations, err := p.catchOperation(i, namespacer, tc.Bindings(), operation)
@@ -171,9 +171,9 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 			}
 		}()
 	}
-	logger.Log(logging.Try, logging.RunStatus, color.BoldFgCyan)
+	logger.Log(logging.Try, logging.BeginStatus, color.BoldFgCyan)
 	defer func() {
-		logger.Log(logging.Try, logging.DoneStatus, color.BoldFgCyan)
+		logger.Log(logging.Try, logging.EndStatus, color.BoldFgCyan)
 	}()
 	for i, operation := range p.step.Try {
 		operations, err := p.tryOperation(i, namespacer, tc.Bindings(), operation, cleaner)

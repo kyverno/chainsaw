@@ -77,7 +77,7 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 			err := os.Remove(path)
 			if err != nil {
 				logger := internal.GetLogger(ctx, nil)
-				logger.Log(logging.Script, logging.ErrorStatus, color.BoldYellow, logging.ErrSection(err))
+				logger.Log(logging.Script, logging.WarnStatus, color.BoldYellow, logging.ErrSection(err))
 			}
 		}
 		defer f.Close()

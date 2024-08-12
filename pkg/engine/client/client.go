@@ -103,6 +103,6 @@ func (c *runnerClient) ok(ctx context.Context, op logging.Operation, obj client.
 func (c *runnerClient) error(ctx context.Context, op logging.Operation, obj client.Object, err error) {
 	logger := logging.FromContext(ctx)
 	if logger != nil {
-		logger.WithResource(obj).Log(op, logging.ErrorStatus, color.BoldYellow, logging.ErrSection(err))
+		logger.WithResource(obj).Log(op, logging.WarnStatus, color.BoldYellow, logging.ErrSection(err))
 	}
 }
