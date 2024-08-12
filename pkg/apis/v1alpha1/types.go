@@ -2,10 +2,12 @@ package v1alpha1
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"regexp"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/jmespath-community/go-jmespath/pkg/parsing"
 	"github.com/kyverno/chainsaw/pkg/expressions"
 	"github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -65,6 +67,34 @@ type Expectation struct {
 
 // Expression defines an expression to be used in string fields.
 type Expression string
+
+func (e *Expression) MarshalJSON() ([]byte, error) {
+	if e == nil {
+		return nil, nil
+	}
+	return json.Marshal(string(*e))
+}
+
+func (e *Expression) UnmarshalJSON(data []byte) error {
+	var statement string
+	err := json.Unmarshal(data, &statement)
+	if err != nil {
+		return err
+	}
+	*e = Expression(statement)
+	expression := expressions.Parse(context.TODO(), statement)
+	if expression == nil {
+		return nil
+	}
+	if expression.Engine == "" {
+		return nil
+	}
+	parser := parsing.NewParser()
+	if _, err := parser.Parse(statement); err != nil {
+		return err
+	}
+	return nil
+}
 
 func (e Expression) Value(ctx context.Context, bindings binding.Bindings) (string, error) {
 	return expressions.String(ctx, string(e), bindings)
