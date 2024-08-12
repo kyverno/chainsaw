@@ -49,9 +49,9 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 	mainCleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil, p.config.Deletion.Propagation)
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
-			logging.Log(ctx, logging.Cleanup, logging.RunStatus, color.BoldFgCyan)
+			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
 			defer func() {
-				logging.Log(ctx, logging.Cleanup, logging.DoneStatus, color.BoldFgCyan)
+				logging.Log(ctx, logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
 			}()
 			for _, err := range mainCleaner.Run(ctx) {
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
