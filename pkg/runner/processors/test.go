@@ -156,6 +156,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			name = fmt.Sprintf("step-%d", i+1)
 		}
 		ctx := logging.IntoContext(ctx, logging.NewLogger(t, p.clock, p.test.Test.Name, fmt.Sprintf("%-*s", p.size, name)))
+		ctx = logging.WithCluster(ctx, tc.CurrentCluster().Name())
 		info := StepInfo{
 			Id: i + 1,
 		}

@@ -15,6 +15,7 @@ type logger struct {
 	clock    clock.PassiveClock
 	test     string
 	step     string
+	cluster  *string
 	resource client.Object
 }
 
@@ -31,18 +32,25 @@ func NewLogger(t TLogger, clock clock.PassiveClock, test string, step string) Lo
 func (l *logger) Log(operation Operation, status Status, color *color.Color, args ...fmt.Stringer) {
 	sprint := fmt.Sprint
 	opLen := 9
-	stLen := 5
+	stLen := 0
 	if color != nil {
 		sprint = color.Sprint
 		opLen += 14
-		stLen += 14
+		// stLen += 14
 	}
 	a := make([]any, 0, len(args)+2)
-	prefix := fmt.Sprintf("%s| %s | %s | %s | %-*s | %-*s |", eraser, l.clock.Now().Format("15:04:05"), sprint(l.test), sprint(l.step), opLen, sprint(operation), stLen, sprint(status))
+	prefix := fmt.Sprintf("%s| %s | %s | %s | %-*s | %-*s |", eraser, l.clock.Now().Format("15:04:05"), sprint(l.test), sprint(l.step), opLen, sprint(operation), stLen, status)
 	if l.resource != nil {
 		gvk := l.resource.GetObjectKind().GroupVersionKind()
 		key := client.Key(l.resource)
 		prefix = fmt.Sprintf("%s %s/%s @ %s", prefix, gvk.GroupVersion(), gvk.Kind, client.Name(key))
+	}
+	if l.cluster != nil {
+		cluster := *l.cluster
+		if cluster == "" {
+			cluster = "@default"
+		}
+		prefix = fmt.Sprintf("%s (%s)", prefix, cluster)
 	}
 	a = append(a, prefix)
 	for _, arg := range args {
@@ -52,12 +60,24 @@ func (l *logger) Log(operation Operation, status Status, color *color.Color, arg
 	l.t.Log(fmt.Sprint(a...))
 }
 
+func (l *logger) WithCluster(cluster *string) Logger {
+	return &logger{
+		t:        l.t,
+		clock:    l.clock,
+		test:     l.test,
+		step:     l.step,
+		cluster:  cluster,
+		resource: l.resource,
+	}
+}
+
 func (l *logger) WithResource(resource client.Object) Logger {
 	return &logger{
 		t:        l.t,
 		clock:    l.clock,
 		test:     l.test,
 		step:     l.step,
+		cluster:  l.cluster,
 		resource: resource,
 	}
 }

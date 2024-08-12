@@ -18,3 +18,11 @@ func FromContext(ctx context.Context) Logger {
 func IntoContext(ctx context.Context, logger Logger) context.Context {
 	return context.WithValue(ctx, contextKey{}, logger)
 }
+
+func WithCluster(ctx context.Context, cluster *string) context.Context {
+	logger := FromContext(ctx)
+	if logger != nil {
+		ctx = IntoContext(ctx, logger.WithCluster(cluster))
+	}
+	return ctx
+}
