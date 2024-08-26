@@ -29,7 +29,6 @@ KIND_IMAGE                         ?= kindest/node:v1.29.2
 
 TOOLS_DIR                          := $(PWD)/.tools
 CONTROLLER_GEN                     := $(TOOLS_DIR)/controller-gen
-CONTROLLER_GEN_VERSION             := v0.15.0
 REGISTER_GEN                       := $(TOOLS_DIR)/register-gen
 DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
 CONVERSION_GEN                     := $(TOOLS_DIR)/conversion-gen
@@ -51,7 +50,7 @@ COMMA                              := ,
 
 $(CONTROLLER_GEN):
 	@echo Install controller-gen... >&2
-	@GOBIN=$(TOOLS_DIR) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_GEN_VERSION)
+	@cd ./hack/controller-gen && GOBIN=$(TOOLS_DIR) go install
 
 $(REGISTER_GEN):
 	@echo Install register-gen... >&2
@@ -130,13 +129,14 @@ codegen-conversion: $(CONVERSION_GEN)
 
 .PHONY: codegen-crds
 codegen-crds: ## Generate CRDs
+codegen-crds: $(PACKAGE_SHIM)
 codegen-crds: $(CONTROLLER_GEN)
 codegen-crds: codegen-deepcopy
 codegen-crds: codegen-register
 codegen-crds: codegen-conversion
 	@echo Generate crds... >&2
-	@rm -rf $(CRDS_PATH)	
-	@go run ./hack/controller-gen -- paths=./pkg/apis/... crd:crdVersions=v1,ignoreUnexportedFields=true,generateEmbeddedObjectMeta=false output:dir=$(CRDS_PATH)
+	@rm -rf $(CRDS_PATH)
+	@GOPATH=$(GOPATH_SHIM) $(CONTROLLER_GEN) paths=./pkg/apis/... crd:crdVersions=v1,ignoreUnexportedFields=true,generateEmbeddedObjectMeta=false output:dir=$(CRDS_PATH)
 	@echo Copy generated CRDs to embed in the CLI... >&2
 	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
 	@cp $(CRDS_PATH)/* pkg/data/crds
