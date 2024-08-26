@@ -732,7 +732,6 @@ spec:
                                   type: string
                               required:
                               - path
-                              - value
                               type: object
                           type: object
                         format:
@@ -1587,7 +1586,6 @@ spec:
                                         type: string
                                     required:
                                     - path
-                                    - value
                                     type: object
                                 type: object
                               format:
@@ -2316,7 +2314,6 @@ spec:
                                         type: string
                                     required:
                                     - path
-                                    - value
                                     type: object
                                 type: object
                               format:
@@ -3080,7 +3077,6 @@ spec:
                                         type: string
                                     required:
                                     - path
-                                    - value
                                     type: object
                                 type: object
                               format:
@@ -4548,7 +4544,6 @@ spec:
                                         type: string
                                     required:
                                     - path
-                                    - value
                                     type: object
                                 type: object
                               format:
@@ -5408,7 +5403,6 @@ spec:
                                       type: string
                                   required:
                                   - path
-                                  - value
                                   type: object
                               type: object
                             format:
