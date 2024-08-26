@@ -1458,8 +1458,7 @@
                           "null"
                         ],
                         "required": [
-                          "path",
-                          "value"
+                          "path"
                         ],
                         "properties": {
                           "path": {
@@ -1468,7 +1467,10 @@
                           },
                           "value": {
                             "description": "Value defines the expected value to wait for, e.g., \"Running\".",
-                            "type": "string"
+                            "type": [
+                              "string",
+                              "null"
+                            ]
                           }
                         },
                         "additionalProperties": false

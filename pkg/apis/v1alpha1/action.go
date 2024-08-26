@@ -377,5 +377,6 @@ type WaitForJsonPath struct {
 	Path Expression `json:"path"`
 
 	// Value defines the expected value to wait for, e.g., "Running".
-	Value Expression `json:"value"`
+	// +optional
+	Value *Expression `json:"value,omitempty"`
 }

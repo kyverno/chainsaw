@@ -124,7 +124,25 @@ func TestWait(t *testing.T) {
 		wantArgs:       []string{"wait", "pods", "--for=delete", "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
 		wantErr:        false,
 	}, {
-		name: "valid resource and jsonpath",
+		name: "valid resource and jsonpath without value",
+		collector: &v1alpha1.Wait{
+			ActionObject: v1alpha1.ActionObject{
+				ObjectType: v1alpha1.ObjectType{
+					APIVersion: "v1",
+					Kind:       "Pod",
+				},
+			},
+			WaitFor: v1alpha1.WaitFor{
+				JsonPath: &v1alpha1.WaitForJsonPath{
+					Path: "{.status.phase}",
+				},
+			},
+		},
+		wantEntrypoint: "kubectl",
+		wantArgs:       []string{"wait", "pods", "--for=jsonpath={.status.phase}", "--all", "-n", "$NAMESPACE", "--timeout=-1s"},
+		wantErr:        false,
+	}, {
+		name: "valid resource and jsonpath with value",
 		collector: &v1alpha1.Wait{
 			ActionObject: v1alpha1.ActionObject{
 				ObjectType: v1alpha1.ObjectType{
@@ -135,7 +153,7 @@ func TestWait(t *testing.T) {
 			WaitFor: v1alpha1.WaitFor{
 				JsonPath: &v1alpha1.WaitForJsonPath{
 					Path:  "{.status.phase}",
-					Value: "Running",
+					Value: ptr.To(v1alpha1.Expression("Running")),
 				},
 			},
 		},

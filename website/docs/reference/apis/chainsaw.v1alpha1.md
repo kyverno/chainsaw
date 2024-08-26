@@ -1049,6 +1049,6 @@ If a resource does not exist in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `path` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
-| `value` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
+| `value` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
 
   
