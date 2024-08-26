@@ -70,3 +70,7 @@ func (*TestDeps) CheckCorpus([]any, []reflect.Type) error {
 func (*TestDeps) ResetCoverage() {}
 
 func (*TestDeps) SnapshotCoverage() {}
+
+func (*TestDeps) InitRuntimeCoverage() (mode string, tearDown func(string, string) (string, error), snapcov func() float64) {
+	return
+}
