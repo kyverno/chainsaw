@@ -65,14 +65,18 @@ func Wait(ctx context.Context, client client.Client, tc binding.Bindings, collec
 		if path == "" {
 			return "", nil, errors.New("a path must be specified for jsonpath wait type")
 		}
-		value, err := collector.WaitFor.JsonPath.Value.Value(ctx, tc)
-		if err != nil {
-			return "", nil, err
+		if collector.WaitFor.JsonPath.Value != nil {
+			value, err := collector.WaitFor.JsonPath.Value.Value(ctx, tc)
+			if err != nil {
+				return "", nil, err
+			}
+			if value == "" {
+				return "", nil, errors.New("a value must be specified for jsonpath wait type")
+			}
+			args = append(args, fmt.Sprintf(`--for=jsonpath=%s=%s`, path, value))
+		} else {
+			args = append(args, fmt.Sprintf(`--for=jsonpath=%s`, path))
 		}
-		if value == "" {
-			return "", nil, errors.New("a value must be specified for jsonpath wait type")
-		}
-		args = append(args, fmt.Sprintf(`--for=jsonpath=%s=%s`, path, value))
 	} else {
 		return "", nil, errors.New("either a deletion or a condition must be specified")
 	}
