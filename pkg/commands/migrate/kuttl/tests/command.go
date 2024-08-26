@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -18,7 +19,6 @@ import (
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/spf13/cobra"
-	"golang.org/x/exp/maps"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/ptr"
@@ -75,8 +75,6 @@ func processFolder(stdout io.Writer, stderr io.Writer, folder string, save, clea
 	}
 	if len(steps) != 0 {
 		fmt.Fprintf(stderr, "Converting test %s ...\n", folder)
-		keys := maps.Keys(steps)
-		slices.Sort(keys)
 		test := v1alpha1.Test{
 			TypeMeta: metav1.TypeMeta{
 				APIVersion: v1alpha1.SchemeGroupVersion.String(),
@@ -84,7 +82,7 @@ func processFolder(stdout io.Writer, stderr io.Writer, folder string, save, clea
 			},
 		}
 		test.SetName(strings.ToLower(strings.ReplaceAll(filepath.Base(folder), "_", "-")))
-		for _, key := range keys {
+		for _, key := range slices.Sorted(maps.Keys(steps)) {
 			step := v1alpha1.TestStep{
 				Name: fmt.Sprintf("step-%s", key),
 			}
