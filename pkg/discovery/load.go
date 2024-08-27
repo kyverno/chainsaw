@@ -3,6 +3,7 @@ package discovery
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -11,7 +12,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/loaders/steptemplate"
 	"github.com/kyverno/chainsaw/pkg/loaders/test"
-	"golang.org/x/exp/maps"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -93,8 +93,6 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 	if len(steps) == 0 {
 		return nil, nil
 	}
-	keys := maps.Keys(steps)
-	slices.Sort(keys)
 	test := &v1alpha1.Test{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: v1alpha1.SchemeGroupVersion.String(),
@@ -104,7 +102,7 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 			Name: strings.ToLower(strings.ReplaceAll(filepath.Base(path), "_", "-")),
 		},
 	}
-	for _, key := range keys {
+	for _, key := range slices.Sorted(maps.Keys(steps)) {
 		step := v1alpha1.TestStep{
 			Name: fmt.Sprintf("step-%s", key),
 		}
