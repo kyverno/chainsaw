@@ -1,0 +1,21 @@
+# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: field-validation
+spec:
+  steps:
+  - try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: chainsaw-quick-start
+          data:
+            foo: bar
+          bar: baz
+        expect:
+          - check:
+              ($error): |-
+                ConfigMap in version "v1" cannot be handled as a ConfigMap: strict decoding error: unknown field "bar"

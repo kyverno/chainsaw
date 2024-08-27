@@ -14,13 +14,3 @@ spec:
     - assert:
         # file is relative to the test folder
         file: configmap.yaml
-    # this make sure a non-existent field cannot be compared to an empty object
-    - error:
-        resource:
-          apiVersion: v1
-          kind: ConfigMap
-          metadata:
-            name: chainsaw-quick-start
-          status:
-            vulnerabilitySummary:
-              severityCount: {}
