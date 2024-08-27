@@ -12,8 +12,7 @@ import (
 
 func Decode(in string, ts model.Time) (model.Vector, error) {
 	dec := &expfmt.SampleDecoder{
-		Dec: expfmt.NewDecoder(strings.NewReader(in), expfmt.FmtText),
-		// Dec: expfmt.NewDecoder(strings.NewReader(in), expfmt.NewFormat(expfmt.TypeTextPlain)),
+		Dec: expfmt.NewDecoder(strings.NewReader(in), expfmt.NewFormat(expfmt.TypeTextPlain)),
 		Opts: &expfmt.DecodeOptions{
 			Timestamp: ts,
 		},
