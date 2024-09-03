@@ -91,6 +91,9 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 	cmd := exec.CommandContext(ctx, o.command.Entrypoint, args...) //nolint:gosec
 	cmd.Env = env
 	cmd.Dir = o.basePath
+	if o.command.WorkDir != nil {
+		cmd.Dir = *o.command.WorkDir
+	}
 	return cmd, cancel, nil
 }
 
