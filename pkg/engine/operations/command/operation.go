@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -73,7 +74,7 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 		if err != nil {
 			return nil, nil, err
 		}
-		path := f.Name()
+		path := filepath.Join(o.basePath, f.Name())
 		cancel = func() {
 			err := os.Remove(path)
 			if err != nil {
