@@ -404,6 +404,7 @@ during the testing process.</p>
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `entrypoint` | `string` | :white_check_mark: |  | <p>Entrypoint is the command entry point to run.</p> |
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
+| `workDir` | `string` |  |  | <p>WorkDir is the working directory for command.</p> |
 
 ## ConfigurationSpec     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
@@ -828,6 +829,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
+| `workDir` | `string` |  |  | <p>WorkDir is the working directory for script.</p> |
 
 ## Sleep     {#chainsaw-kyverno-io-v1alpha1-Sleep}
 

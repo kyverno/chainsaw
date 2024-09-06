@@ -174,6 +174,10 @@ type Command struct {
 	// Args is the command arguments.
 	// +optional
 	Args []string `json:"args,omitempty"`
+
+	// WorkDir is the working directory for command.
+	// +optional
+	WorkDir *string `json:"workDir,omitempty"`
 }
 
 // Create represents a set of resources that should be created.
@@ -312,6 +316,10 @@ type Script struct {
 	// Content defines a shell script (run with "sh -c ...").
 	// +optional
 	Content string `json:"content,omitempty"`
+
+	// WorkDir is the working directory for script.
+	// +optional
+	WorkDir *string `json:"workDir,omitempty"`
 }
 
 // Sleep represents a duration while nothing happens.

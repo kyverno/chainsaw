@@ -504,6 +504,11 @@ func (in *Command) DeepCopyInto(out *Command) {
 		*out = make([]string, len(*in))
 		copy(*out, *in)
 	}
+	if in.WorkDir != nil {
+		in, out := &in.WorkDir, &out.WorkDir
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 
@@ -1096,6 +1101,11 @@ func (in *Script) DeepCopyInto(out *Script) {
 	in.ActionEnv.DeepCopyInto(&out.ActionEnv)
 	in.ActionOutputs.DeepCopyInto(&out.ActionOutputs)
 	in.ActionTimeout.DeepCopyInto(&out.ActionTimeout)
+	if in.WorkDir != nil {
+		in, out := &in.WorkDir, &out.WorkDir
+		*out = new(string)
+		**out = **in
+	}
 	return
 }
 
