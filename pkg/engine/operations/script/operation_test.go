@@ -8,15 +8,17 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/utils/ptr"
 )
 
 func Test_operationScript(t *testing.T) {
 	tests := []struct {
-		name      string
-		script    v1alpha1.Script
-		basePath  string
-		namespace string
-		wantErr   bool
+		name       string
+		script     v1alpha1.Script
+		basePath   string
+		namespace  string
+		wantErr    bool
+		wantErrMsg string
 	}{{
 		name: "Test with valid Script",
 		script: v1alpha1.Script{
@@ -50,6 +52,28 @@ func Test_operationScript(t *testing.T) {
 		basePath:  "..",
 		namespace: "test-namespace",
 		wantErr:   false,
+	}, {
+		name: "Test with absolute workdir",
+		script: v1alpha1.Script{
+			Content:   "cat operation.go",
+			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
+			WorkDir:   ptr.To("/bar"),
+		},
+		basePath:   "..",
+		namespace:  "test-namespace",
+		wantErr:    true,
+		wantErrMsg: "/bar: no such file or directory",
+	}, {
+		name: "Test with relative workdir",
+		script: v1alpha1.Script{
+			Content:   "cat operation.go",
+			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
+			WorkDir:   ptr.To("./foo"),
+		},
+		basePath:   "..",
+		namespace:  "test-namespace",
+		wantErr:    true,
+		wantErrMsg: "../foo: no such file or directory",
 	}, {
 		name: "with check",
 		script: v1alpha1.Script{
@@ -111,6 +135,9 @@ func Test_operationScript(t *testing.T) {
 			_, err := operation.Exec(ctx, nil)
 			if tt.wantErr {
 				assert.Error(t, err)
+				if err != nil && tt.wantErrMsg != "" {
+					assert.Contains(t, err.Error(), tt.wantErrMsg)
+				}
 			} else {
 				assert.NoError(t, err)
 			}

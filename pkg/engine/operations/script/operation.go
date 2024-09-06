@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -88,10 +89,15 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 	}
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
 	cmd.Env = env
-	cmd.Dir = o.basePath
+	basePath := o.basePath
 	if o.script.WorkDir != nil {
-		cmd.Dir = *o.script.WorkDir
+		if filepath.IsAbs(*o.script.WorkDir) {
+			basePath = *o.script.WorkDir
+		} else {
+			basePath = filepath.Join(basePath, *o.script.WorkDir)
+		}
 	}
+	cmd.Dir = basePath
 	return cmd, cancel, nil
 }
 
