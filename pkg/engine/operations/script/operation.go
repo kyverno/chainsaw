@@ -89,6 +89,9 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
 	cmd.Env = env
 	cmd.Dir = o.basePath
+	if o.script.WorkDir != nil {
+		cmd.Dir = *o.script.WorkDir
+	}
 	return cmd, cancel, nil
 }
 

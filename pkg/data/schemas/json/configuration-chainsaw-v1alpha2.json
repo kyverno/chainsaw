@@ -693,6 +693,13 @@
                           "string",
                           "null"
                         ]
+                      },
+                      "workDir": {
+                        "description": "WorkDir is the working directory for command.",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
                       }
                     },
                     "additionalProperties": false
@@ -1459,6 +1466,13 @@
                       },
                       "timeout": {
                         "description": "Timeout for the operation. Overrides the global timeout set in the Configuration.",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "workDir": {
+                        "description": "WorkDir is the working directory for script.",
                         "type": [
                           "string",
                           "null"
