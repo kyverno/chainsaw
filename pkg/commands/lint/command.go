@@ -1,6 +1,7 @@
 package lint
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/xeipuuv/gojsonschema"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 func Command() *cobra.Command {
@@ -40,16 +42,16 @@ func Command() *cobra.Command {
 	return cmd
 }
 
-func lintInput(input []byte, schema string, format string, writer io.Writer) error {
+func lintInput(input []byte, kind string, format string, writer io.Writer) error {
 	fmt.Fprintln(writer, "Processing input...")
-	if err := lintSchema(input, schema, format, writer); err != nil {
+	if err := lintSchema(input, kind, format, writer); err != nil {
 		return err
 	}
 	fmt.Fprintln(writer, "The document is valid")
 	return nil
 }
 
-func lintSchema(input []byte, schema string, format string, writer io.Writer) error {
+func lintSchema(input []byte, kind string, format string, writer io.Writer) error {
 	processor, err := getProcessor(format, input)
 	if err != nil {
 		return err
@@ -58,7 +60,15 @@ func lintSchema(input []byte, schema string, format string, writer io.Writer) er
 	if err != nil {
 		return err
 	}
-	goschema, err := getScheme(schema)
+	var unstructured map[string]any
+	if err := json.Unmarshal(jsonInput, &unstructured); err != nil {
+		return err
+	}
+	gv, err := schema.ParseGroupVersion(unstructured["apiVersion"].(string))
+	if err != nil {
+		return err
+	}
+	goschema, err := getScheme(kind, gv.Version)
 	if err != nil {
 		return err
 	}
