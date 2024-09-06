@@ -106,7 +106,7 @@ sboms:
     artifacts: source
 
 snapshot:
-  name_template: '{{ incpatch .Version }}-next'
+  version_template: '{{ incpatch .Version }}-next'
 
 release:
   prerelease: auto
