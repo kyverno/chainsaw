@@ -11,11 +11,11 @@ require (
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/hashicorp/go-getter v1.7.6
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240627155901-bdbb290f571e
-	github.com/kudobuilder/kuttl v0.18.0
+	github.com/kudobuilder/kuttl v0.19.0
 	github.com/kyverno/kyverno-json v0.0.4-0.20240730143747-aade3d42fc0e
 	github.com/kyverno/pkg/ext v0.0.0-20240418121121-df8add26c55c
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
-	github.com/prometheus/common v0.57.0
+	github.com/prometheus/common v0.58.0
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.9.0
@@ -101,6 +101,7 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
+	github.com/onsi/gomega v1.34.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.20.2 // indirect
 	github.com/prometheus/client_model v0.6.1 // indirect

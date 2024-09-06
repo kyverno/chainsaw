@@ -15,6 +15,30 @@ builds:
       - -trimpath
     ldflags:
       - -s -w -X github.com/kyverno/chainsaw/pkg/version.BuildVersion={{ .Version }}
+  - id: s390x
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - s390x
+    binary: chainsaw
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X github.com/kyverno/chainsaw/pkg/version.BuildVersion={{ .Version }}
+  - id: ppc64le
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - ppc64le
+    binary: chainsaw
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -X github.com/kyverno/chainsaw/pkg/version.BuildVersion={{ .Version }}
 
 kos:
   - build: chainsaw
