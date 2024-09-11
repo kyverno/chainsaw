@@ -138,19 +138,28 @@ func Command() *cobra.Command {
 			}
 			if flagutils.IsSet(flags, "report-format") {
 				if configuration.Spec.Report == nil {
-					configuration.Spec.Report = &v1alpha2.ReportOptions{}
+					configuration.Spec.Report = &v1alpha2.ReportOptions{
+						Format: v1alpha2.JSONFormat,
+						Name:   "chainsaw-report",
+					}
 				}
 				configuration.Spec.Report.Format = v1alpha2.ReportFormatType(options.reportFormat)
 			}
 			if flagutils.IsSet(flags, "report-path") {
 				if configuration.Spec.Report == nil {
-					configuration.Spec.Report = &v1alpha2.ReportOptions{}
+					configuration.Spec.Report = &v1alpha2.ReportOptions{
+						Format: v1alpha2.JSONFormat,
+						Name:   "chainsaw-report",
+					}
 				}
 				configuration.Spec.Report.Path = options.reportPath
 			}
 			if flagutils.IsSet(flags, "report-name") {
 				if configuration.Spec.Report == nil {
-					configuration.Spec.Report = &v1alpha2.ReportOptions{}
+					configuration.Spec.Report = &v1alpha2.ReportOptions{
+						Format: v1alpha2.JSONFormat,
+						Name:   "chainsaw-report",
+					}
 				}
 				configuration.Spec.Report.Name = options.reportName
 			}
