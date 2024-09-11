@@ -65,8 +65,3 @@ Both `name` and `value` of a binding can use [templating](./templating.md).
 Chainsaw offers some built-in bindings you can directly use in your tests, steps and operations.
 
 Browse the [built-in bindings list](../reference/builtins.md) to find available bindings.
-
-## Binding objects with `x_k8s_get()` to refer/assert against
-
-See [this example usage](../examples/functions/experimental/x-k8s-get.md) of how to bind an existing resource using the
-`x_k8s_get()` experimental function.

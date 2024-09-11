@@ -117,7 +117,7 @@
 | Name | Signature |
 |---|---|
 | env | `env(string)` |
-| [x_k8s_get](../../examples/functions/experimental/x-k8s-get.md) | `x_k8s_get(any, string, string, string, string)` |
+| x_k8s_get | `x_k8s_get(any, string, string, string, string)` |
 | x_k8s_list | `x_k8s_list(any, string, string, string)` |
 | x_k8s_exists | `x_k8s_exists(any, string, string, string, string)` |
 | x_k8s_resource_exists | `x_k8s_resource_exists(any, string, string)` |
@@ -125,4 +125,8 @@
 | x_metrics_decode | `x_metrics_decode(string)` |
 | trim_space | `trim_space(string)` |
 | as_string | `as_string(any)` |
+
+## examples
+
+- [x_k8s_get](./examples/x_k8s_get.md)
 
