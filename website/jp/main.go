@@ -35,6 +35,10 @@ func main() {
 	fmt.Println()
 	printFunctions(chainsawfunctions.GetFunctions()...)
 	fmt.Println()
+	fmt.Println("## examples")
+	fmt.Println()
+	fmt.Println("- [x_k8s_get](./examples/x_k8s_get.md)")
+	fmt.Println()
 }
 
 func printFunctions(funcs ...jpfunctions.FunctionEntry) {

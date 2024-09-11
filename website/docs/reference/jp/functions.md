@@ -126,3 +126,7 @@
 | trim_space | `trim_space(string)` |
 | as_string | `as_string(any)` |
 
+## examples
+
+- [x_k8s_get](./examples/x_k8s_get.md)
+
