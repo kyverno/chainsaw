@@ -146,7 +146,6 @@ codegen-cli-docs: ## Generate CLI docs
 codegen-cli-docs: build
 	@echo Generate cli docs... >&2
 	@rm -rf website/docs/reference/commands && mkdir -p website/reference/docs/commands
-	@rm -rf docs/user/commands && mkdir -p docs/user/commands
 	@./$(CLI_BIN) docs -o website/docs/reference/commands --autogenTag=false
 
 .PHONY: codegen-api-docs
@@ -162,7 +161,7 @@ codegen-api-docs: codegen-conversion
 .PHONY: codegen-jp-docs
 codegen-jp-docs: ## Generate JP docs
 	@echo Generate jp docs... >&2
-	@rm -rf ./website/docs/reference/jp && mkdir -p ./website/docs/reference/jp
+	@mkdir -p ./website/docs/reference/jp
 	@go run ./website/jp/main.go > ./website/docs/reference/jp/functions.md
 
 .PHONY: codegen-mkdocs
