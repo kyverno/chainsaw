@@ -13,9 +13,11 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
-## 🔧 Fixes 🔧
-
 ## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
 -->
+
+## 🔧 Fixes 🔧
+
+- Fixed default report name not set correctly
