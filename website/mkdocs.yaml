@@ -86,6 +86,8 @@ nav:
     - v1alpha2: reference/apis/chainsaw.v1alpha2.md
   - JMESPath:
     - Functions: reference/jp/functions.md
+    - Examples:
+      - reference/jp/examples/x_k8s_get.md
   - Command Line:
     - chainsaw: reference/commands/chainsaw.md
     - chainsaw assert: reference/commands/chainsaw_assert.md
