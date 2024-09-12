@@ -36,19 +36,19 @@ func addTestSuite(testSuites *junit.Testsuites, report model.TestReport) {
 	}
 	suite.SetTimestamp(report.StartTime)
 	suite.AddProperty("namespace", report.Namespace)
-	suite.AddProperty("steps", fmt.Sprint(len(report.Steps)))
-	testCase := junit.Testcase{
-		Name:      report.Name,
-		Classname: suite.Name, // Associate the Testcase with the TestSuite
-		Time:      durationInSecondsString(report.StartTime, report.EndTime),
+	for _, report := range report.Steps {
+		testCase := junit.Testcase{
+			Name: report.Name,
+			Time: durationInSecondsString(report.StartTime, report.EndTime),
+		}
+		// if report.Skipped {
+		// 	testCase.Skipped = &junit.Result{}
+		// }
+		if report.Failed {
+			testCase.Failure = &junit.Result{}
+		}
+		suite.AddTestcase(testCase)
 	}
-	if report.Skipped {
-		testCase.Skipped = &junit.Result{}
-	}
-	if report.Failed {
-		testCase.Failure = &junit.Result{}
-	}
-	suite.AddTestcase(testCase)
 	testSuites.AddSuite(suite)
 }
 

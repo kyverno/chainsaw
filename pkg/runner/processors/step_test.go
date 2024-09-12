@@ -14,6 +14,7 @@ import (
 	fakeLogger "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
@@ -783,6 +784,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			}
 			stepProcessor := NewStepProcessor(
 				tc.stepSpec,
+				&model.TestReport{},
 				tc.basePath,
 				nil,
 				tc.terminationGracePeriod,

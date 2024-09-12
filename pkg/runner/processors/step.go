@@ -26,6 +26,7 @@ import (
 	opsleep "github.com/kyverno/chainsaw/pkg/engine/operations/sleep"
 	opupdate "github.com/kyverno/chainsaw/pkg/engine/operations/update"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -40,6 +41,7 @@ type StepProcessor interface {
 
 func NewStepProcessor(
 	step v1alpha1.TestStep,
+	report *model.TestReport,
 	basePath string,
 	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
@@ -64,6 +66,7 @@ func NewStepProcessor(
 	catch = append(catch, step.Catch...)
 	return &stepProcessor{
 		step:                      step,
+		report:                    report,
 		basePath:                  basePath,
 		delayBeforeCleanup:        delayBeforeCleanup,
 		terminationGracePeriod:    terminationGracePeriod,
@@ -76,8 +79,9 @@ func NewStepProcessor(
 }
 
 type stepProcessor struct {
-	basePath                  string
 	step                      v1alpha1.TestStep
+	report                    *model.TestReport
+	basePath                  string
 	delayBeforeCleanup        *time.Duration
 	terminationGracePeriod    *metav1.Duration
 	timeouts                  v1alpha1.DefaultTimeouts
@@ -89,6 +93,17 @@ type stepProcessor struct {
 
 func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
 	t := testing.FromContext(ctx)
+	report := model.StepReport{
+		Name:      p.step.Name,
+		StartTime: time.Now(),
+	}
+	defer func() {
+		report.EndTime = time.Now()
+		if t.Failed() {
+			report.Failed = true
+		}
+		p.report.Add(report)
+	}()
 	logger := logging.FromContext(ctx)
 	tc, _, err := setupContextData(ctx, tc, contextData{
 		basePath: p.basePath,

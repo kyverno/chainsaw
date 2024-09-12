@@ -98,9 +98,6 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 	t.Cleanup(func() {
 		report.EndTime = time.Now()
-		if t.Failed() {
-			report.Failed = true
-		}
 		if t.Skipped() {
 			report.Skipped = true
 		}
@@ -161,14 +158,15 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			Id: i + 1,
 		}
 		tc := tc.WithBinding(ctx, "step", info)
-		processor := p.createStepProcessor(step)
+		processor := p.createStepProcessor(step, &report)
 		processor.Run(ctx, nspacer, tc)
 	}
 }
 
-func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep) StepProcessor {
+func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep, report *model.TestReport) StepProcessor {
 	return NewStepProcessor(
 		step,
+		report,
 		p.test.BasePath,
 		p.delayBeforeCleanup,
 		p.terminationGracePeriod,
