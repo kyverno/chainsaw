@@ -18,11 +18,10 @@ import (
 
 func TestOperation_Execute(t *testing.T) {
 	tests := []struct {
-		name            string
-		continueOnError bool
-		expectedFail    bool
-		operation       operations.Operation
-		timeout         time.Duration
+		name         string
+		expectedFail bool
+		operation    operations.Operation
+		timeout      time.Duration
 	}{{
 		name: "operation fails but continues",
 		operation: mock.MockOperation{
@@ -30,9 +29,8 @@ func TestOperation_Execute(t *testing.T) {
 				return nil, errors.New("operation failed")
 			},
 		},
-		continueOnError: true,
-		expectedFail:    true,
-		timeout:         1 * time.Second,
+		expectedFail: true,
+		timeout:      1 * time.Second,
 	}, {
 		name: "operation fails and don't continues",
 		operation: mock.MockOperation{
@@ -40,8 +38,7 @@ func TestOperation_Execute(t *testing.T) {
 				return nil, errors.New("operation failed")
 			},
 		},
-		continueOnError: false,
-		expectedFail:    true,
+		expectedFail: true,
 	}, {
 		name: "operation succeeds",
 		operation: mock.MockOperation{
@@ -49,27 +46,24 @@ func TestOperation_Execute(t *testing.T) {
 				return nil, nil
 			},
 		},
-		expectedFail: false,
-		timeout:      1 * time.Second,
+		timeout: 1 * time.Second,
 	}}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
 			localTC := tc
 			op := newOperation(
 				OperationInfo{},
-				localTC.continueOnError,
 				func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 					return localTC.operation, &localTC.timeout, tc, nil
 				},
 			)
-			nt := testing.MockT{}
-			ctx := testing.IntoContext(context.Background(), &nt)
 			tcontext := enginecontext.EmptyContext()
-			op.execute(ctx, tcontext, &model.StepReport{})
+			ctx := context.Background()
+			_, err := op.execute(ctx, tcontext, &model.StepReport{})
 			if localTC.expectedFail {
-				assert.True(t, nt.FailedVar, "expected an error but got none")
+				assert.Error(t, err)
 			} else {
-				assert.False(t, nt.FailedVar, "expected no error but got one")
+				assert.NoError(t, err)
 			}
 		})
 	}

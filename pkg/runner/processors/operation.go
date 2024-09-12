@@ -9,31 +9,27 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/pkg/ext/output/color"
 )
 
 type operationFactory = func(context.Context, engine.Context) (operations.Operation, *time.Duration, engine.Context, error)
 
 type operation struct {
-	info            OperationInfo
-	continueOnError bool
-	operation       operationFactory
+	info      OperationInfo
+	operation operationFactory
 }
 
 func newOperation(
 	info OperationInfo,
-	continueOnError bool,
 	op operationFactory,
 ) operation {
 	return operation{
-		info:            info,
-		continueOnError: continueOnError,
-		operation:       op,
+		info:      info,
+		operation: op,
 	}
 }
 
-func (o operation) execute(ctx context.Context, tc engine.Context, stepReport *model.StepReport) outputs.Outputs {
+func (o operation) execute(ctx context.Context, tc engine.Context, stepReport *model.StepReport) (outputs.Outputs, error) {
 	report := model.OperationReport{
 		StartTime: time.Now(),
 	}
@@ -41,32 +37,17 @@ func (o operation) execute(ctx context.Context, tc engine.Context, stepReport *m
 		report.EndTime = time.Now()
 		stepReport.Add(report)
 	}()
-	handleError := func(err error) {
-		if err != nil {
-			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		}
-		if o.continueOnError {
-			failer.Fail(ctx)
-		} else {
-			failer.FailNow(ctx)
-		}
-	}
 	tc = tc.WithBinding(ctx, "operation", o.info)
 	operation, timeout, tc, err := o.operation(ctx, tc)
 	if err != nil {
-		handleError(err)
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		return nil, err
 	} else {
 		if timeout != nil {
 			toCtx, cancel := context.WithTimeout(ctx, *timeout)
 			ctx = toCtx
 			defer cancel()
 		}
-		outputs, err := operation.Exec(ctx, tc.Bindings())
-		if err != nil {
-			// we pass nil in the err argument so that it is not logged in the output
-			handleError(nil)
-		}
-		return outputs
+		return operation.Exec(ctx, tc.Bindings())
 	}
-	return nil
 }
