@@ -2,119 +2,71 @@ package report
 
 import (
 	"encoding/xml"
+	"fmt"
 	"os"
 	"time"
 
+	"github.com/jstemmer/go-junit-report/v2/junit"
 	"github.com/kyverno/chainsaw/pkg/model"
 )
 
-type failureNode struct {
-	XMLName struct{} `xml:"failure"`
+const (
+	FailureTypeAssertionError = "AssertionError"
+)
+
+// durationInSecondsString is a helper function to convert a start and end time into a string
+// representing the duration in seconds. This is needed by the junit package for generating
+// the JUnit XML report.
+func durationInSecondsString(start, end time.Time) string {
+	duration := end.Sub(start)
+	return fmt.Sprintf("%.6f", duration.Seconds())
 }
 
-type skippedNode struct {
-	XMLName struct{} `xml:"skipped"`
-}
-
-type propertyNode struct {
-	XMLName struct{} `xml:"property"`
-	Name    string   `xml:"name,attr"`
-	Value   string   `xml:"value,attr,omitempty"`
-}
-
-type propertiesNode struct {
-	XMLName struct{} `xml:"properties"`
-	Inner   []any
-}
-
-type testcaseNode struct {
-	XMLName   struct{} `xml:"testcase"`
-	Name      string   `xml:"name,attr,omitempty"`
-	Timestamp string   `xml:"timestamp,attr,omitempty"`
-	Time      float64  `xml:"time,attr,omitempty"`
-	File      string   `xml:"file,attr,omitempty"`
-	Inner     []any
-}
-
-type testsuiteNode struct {
-	XMLName   struct{} `xml:"testsuite"`
-	Name      string   `xml:"name,attr,omitempty"`
-	Timestamp string   `xml:"timestamp,attr,omitempty"`
-	File      string   `xml:"file,attr,omitempty"`
-	Inner     []any
-}
-
-type testsuitesNode struct {
-	XMLName   struct{} `xml:"testsuites"`
-	Name      string   `xml:"name,attr,omitempty"`
-	Timestamp string   `xml:"timestamp,attr,omitempty"`
-	Time      float64  `xml:"time,attr,omitempty"`
-	Inner     []any
-}
-
-func saveJUnit(report *model.Report, file string) error {
-	testsuites := testsuitesNode{
+// addTestSuite loops through all the operations reports for each directory that is
+// being tested and adds them to the JUnit XML report. This is done by looping through
+// all tests and then looping through all of their steps and all the reports for all steps.
+//
+// The end goal is to have each Test file represented as a TestSuite and each step as a TestCase.
+func addTestSuite(testSuites *junit.Testsuites, report model.TestReport) {
+	// Loop through all the Tests in the report
+	suite := junit.Testsuite{
+		Name:    report.Name,
+		Package: report.BasePath,
+		Time:    durationInSecondsString(report.StartTime, report.EndTime),
+	}
+	suite.SetTimestamp(report.StartTime)
+	suite.AddProperty("namespace", report.Namespace)
+	suite.AddProperty("steps", fmt.Sprint(len(report.Steps)))
+	testCase := junit.Testcase{
 		Name:      report.Name,
-		Timestamp: report.StartTime.UTC().Format(time.RFC3339),
-		Time:      report.EndTime.Sub(report.StartTime).Seconds(),
+		Classname: suite.Name, // Associate the Testcase with the TestSuite
+		Time:      durationInSecondsString(report.StartTime, report.EndTime),
 	}
-	perFolder := map[string][]model.TestReport{}
+	if report.Skipped {
+		testCase.Skipped = &junit.Result{}
+	}
+	if report.Failed {
+		testCase.Failure = &junit.Result{}
+	}
+	suite.AddTestcase(testCase)
+	testSuites.AddSuite(suite)
+}
+
+// saveJUnit writes the JUnit XML report to disk. The spec is defined here:
+// https://github.com/testmoapp/junitxml
+//
+// This method makes use of https://github.com/jstemmer/go-junit-report to generate the XML.
+func saveJUnit(report *model.Report, file string) error {
+	// Initialize the top-level TestSuites object
+	testSuites := &junit.Testsuites{
+		Name: report.Name,
+		Time: durationInSecondsString(report.StartTime, report.EndTime),
+	}
+	// Append the individual test suites to the parent
 	for _, test := range report.Tests {
-		perFolder[test.BasePath] = append(perFolder[test.BasePath], test)
+		addTestSuite(testSuites, test)
 	}
-	for folder, tests := range perFolder {
-		testsuite := testsuiteNode{
-			Name: folder,
-		}
-		for _, test := range tests {
-			var properties []any
-			if test.Namespace != "" {
-				properties = append(properties, propertyNode{
-					Name:  "namespace",
-					Value: test.Namespace,
-				})
-			}
-			// for i, step := range test.steps {
-			// 	if step.step.Name != "" {
-			// 		properties = append(properties, propertyNode{
-			// 			Name:  fmt.Sprintf("step%d", i),
-			// 			Value: step.step.Name,
-			// 		})
-			// 	}
-			// 	for j, op := range step.reports {
-			// 		if op.err != nil {
-			// 			properties = append(properties, propertyNode{
-			// 				Name:  fmt.Sprintf("step%d", i),
-			// 				Value: fmt.Sprintf("op %d - %s: %s", j, op.operationType, op.err),
-			// 			})
-			// 		} else {
-			// 			properties = append(properties, propertyNode{
-			// 				Name:  fmt.Sprintf("step%d", i),
-			// 				Value: fmt.Sprintf("op %d - %s", j, op.operationType),
-			// 			})
-			// 		}
-			// 	}
-			// }
-			testcase := testcaseNode{
-				Name:      test.Name,
-				Timestamp: test.StartTime.UTC().Format(time.RFC3339),
-				Time:      test.EndTime.Sub(test.StartTime).Seconds(),
-				File:      test.BasePath,
-			}
-			if len(properties) != 0 {
-				testcase.Inner = append(testcase.Inner, propertiesNode{Inner: properties})
-			}
-			if test.Skipped {
-				testcase.Inner = append(testcase.Inner, skippedNode{})
-			}
-			if test.Failed {
-				testcase.Inner = append(testcase.Inner, failureNode{})
-			}
-			testsuite.Inner = append(testsuite.Inner, testcase)
-		}
-		testsuites.Inner = append(testsuites.Inner, testsuite)
-	}
-	data, err := xml.MarshalIndent(testsuites, "", "  ")
+	data, err := xml.MarshalIndent(testSuites, "", "  ")
 	if err != nil {
 		return err
 	}
