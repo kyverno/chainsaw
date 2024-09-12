@@ -14,7 +14,6 @@ import (
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
@@ -34,7 +33,6 @@ func TestTestProcessor_Run(t *testing.T) {
 		name         string
 		client       client.Client
 		clock        clock.PassiveClock
-		testsReport  *report.TestReport
 		test         discovery.Test
 		namespacer   *fakeNamespacer.FakeNamespacer
 		expectedFail bool
@@ -46,8 +44,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
+		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -66,8 +63,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
+		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -90,8 +86,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
+		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -120,8 +115,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
+		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -149,8 +143,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
+		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -173,8 +166,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
+		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -201,8 +193,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
+		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -233,8 +224,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
+		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -265,8 +255,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				return kerror.NewInternalError(errors.New("internal error"))
 			},
 		},
-		clock:       tclock.NewFakePassiveClock(time.Now()),
-		testsReport: nil,
+		clock: tclock.NewFakePassiveClock(time.Now()),
 		test: discovery.Test{
 			Err: nil,
 			Test: &model.Test{
@@ -298,7 +287,6 @@ func TestTestProcessor_Run(t *testing.T) {
 				tc.test,
 				0,
 				tc.clock,
-				tc.testsReport,
 				config.Spec.Namespace.Template,
 				nil,
 				config.Spec.Execution.ForceTerminationGracePeriod,

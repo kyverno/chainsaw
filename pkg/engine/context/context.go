@@ -14,6 +14,7 @@ import (
 
 type TestContext struct {
 	*model.Summary
+	*model.Report
 	bindings binding.Bindings
 	cluster  clusters.Cluster
 	clusters clusters.Registry
@@ -23,6 +24,7 @@ type TestContext struct {
 func MakeContext(bindings binding.Bindings, registry clusters.Registry) TestContext {
 	return TestContext{
 		Summary:  &model.Summary{},
+		Report:   &model.Report{},
 		bindings: bindings,
 		clusters: registry,
 		cluster:  nil,

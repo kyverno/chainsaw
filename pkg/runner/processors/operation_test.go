@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	mock "github.com/kyverno/chainsaw/pkg/engine/operations/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
-	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 )
@@ -22,7 +21,6 @@ func TestOperation_Execute(t *testing.T) {
 		continueOnError bool
 		expectedFail    bool
 		operation       operations.Operation
-		operationReport *report.OperationReport
 		timeout         time.Duration
 	}{{
 		name: "operation fails but continues",
@@ -34,7 +32,6 @@ func TestOperation_Execute(t *testing.T) {
 		continueOnError: true,
 		expectedFail:    true,
 		timeout:         1 * time.Second,
-		operationReport: &report.OperationReport{},
 	}, {
 		name: "operation fails and don't continues",
 		operation: mock.MockOperation{
@@ -44,7 +41,6 @@ func TestOperation_Execute(t *testing.T) {
 		},
 		continueOnError: false,
 		expectedFail:    true,
-		operationReport: &report.OperationReport{},
 	}, {
 		name: "operation succeeds",
 		operation: mock.MockOperation{
@@ -52,9 +48,8 @@ func TestOperation_Execute(t *testing.T) {
 				return nil, nil
 			},
 		},
-		expectedFail:    false,
-		timeout:         1 * time.Second,
-		operationReport: &report.OperationReport{},
+		expectedFail: false,
+		timeout:      1 * time.Second,
 	}}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -65,7 +60,6 @@ func TestOperation_Execute(t *testing.T) {
 				func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 					return localTC.operation, &localTC.timeout, tc, nil
 				},
-				localTC.operationReport,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
