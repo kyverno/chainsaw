@@ -133,7 +133,10 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 					failer.Fail(ctx)
 				}
 				for _, operation := range operations {
-					operation.execute(ctx, tc, &report)
+					_, err := operation.execute(ctx, tc, &report)
+					if err != nil {
+						failer.Fail(ctx)
+					}
 				}
 			}
 		}
@@ -151,7 +154,10 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 					failer.Fail(ctx)
 				}
 				for _, operation := range operations {
-					operation.execute(ctx, tc, &report)
+					_, err := operation.execute(ctx, tc, &report)
+					if err != nil {
+						failer.Fail(ctx)
+					}
 				}
 			}
 		}()
@@ -170,7 +176,10 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 						failer.Fail(ctx)
 					}
 					for _, operation := range operations {
-						operation.execute(ctx, tc, &report)
+						_, err := operation.execute(ctx, tc, &report)
+						if err != nil {
+							failer.Fail(ctx)
+						}
 					}
 				}
 			}
@@ -181,13 +190,22 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		logger.Log(logging.Try, logging.EndStatus, color.BoldFgCyan)
 	}()
 	for i, operation := range p.step.Try {
+		continueOnError := operation.ContinueOnError != nil && *operation.ContinueOnError
 		operations, err := p.tryOperation(i, namespacer, tc.Bindings(), operation, cleaner)
 		if err != nil {
 			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
 		}
 		for _, operation := range operations {
-			for k, v := range operation.execute(ctx, tc, &report) {
+			outputs, err := operation.execute(ctx, tc, &report)
+			if err != nil {
+				if continueOnError {
+					failer.Fail(ctx)
+				} else {
+					failer.FailNow(ctx)
+				}
+			}
+			for k, v := range outputs {
 				tc = tc.WithBinding(ctx, k, v)
 			}
 		}
@@ -196,47 +214,40 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 
 func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
-	register := func(o ...operation) {
-		continueOnError := handler.ContinueOnError != nil && *handler.ContinueOnError
-		for _, o := range o {
-			o.continueOnError = continueOnError
-			ops = append(ops, o)
-		}
-	}
 	if handler.Apply != nil {
 		loaded, err := p.applyOperation(id+1, namespacer, cleaner, bindings, *handler.Apply)
 		if err != nil {
 			return nil, err
 		}
-		register(loaded...)
+		ops = append(ops, loaded...)
 	} else if handler.Assert != nil {
 		loaded, err := p.assertOperation(id+1, namespacer, bindings, *handler.Assert)
 		if err != nil {
 			return nil, err
 		}
-		register(loaded...)
+		ops = append(ops, loaded...)
 	} else if handler.Command != nil {
-		register(p.commandOperation(id+1, namespacer, *handler.Command))
+		ops = append(ops, p.commandOperation(id+1, namespacer, *handler.Command))
 	} else if handler.Create != nil {
 		loaded, err := p.createOperation(id+1, namespacer, cleaner, bindings, *handler.Create)
 		if err != nil {
 			return nil, err
 		}
-		register(loaded...)
+		ops = append(ops, loaded...)
 	} else if handler.Delete != nil {
 		loaded, err := p.deleteOperation(id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
-		register(loaded...)
+		ops = append(ops, loaded...)
 	} else if handler.Describe != nil {
-		register(p.describeOperation(id+1, namespacer, *handler.Describe))
+		ops = append(ops, p.describeOperation(id+1, namespacer, *handler.Describe))
 	} else if handler.Error != nil {
 		loaded, err := p.errorOperation(id+1, namespacer, bindings, *handler.Error)
 		if err != nil {
 			return nil, err
 		}
-		register(loaded...)
+		ops = append(ops, loaded...)
 	} else if handler.Events != nil {
 		get := v1alpha1.Get{
 			ActionClusters: handler.Events.ActionClusters,
@@ -250,31 +261,31 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, b
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		register(p.getOperation(id+1, namespacer, get))
+		ops = append(ops, p.getOperation(id+1, namespacer, get))
 	} else if handler.Get != nil {
-		register(p.getOperation(id+1, namespacer, *handler.Get))
+		ops = append(ops, p.getOperation(id+1, namespacer, *handler.Get))
 	} else if handler.Patch != nil {
 		loaded, err := p.patchOperation(id+1, namespacer, bindings, *handler.Patch)
 		if err != nil {
 			return nil, err
 		}
-		register(loaded...)
+		ops = append(ops, loaded...)
 	} else if handler.PodLogs != nil {
-		register(p.logsOperation(id+1, namespacer, *handler.PodLogs))
+		ops = append(ops, p.logsOperation(id+1, namespacer, *handler.PodLogs))
 	} else if handler.Proxy != nil {
-		register(p.proxyOperation(id+1, namespacer, *handler.Proxy))
+		ops = append(ops, p.proxyOperation(id+1, namespacer, *handler.Proxy))
 	} else if handler.Script != nil {
-		register(p.scriptOperation(id+1, namespacer, *handler.Script))
+		ops = append(ops, p.scriptOperation(id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
-		register(p.sleepOperation(id+1, *handler.Sleep))
+		ops = append(ops, p.sleepOperation(id+1, *handler.Sleep))
 	} else if handler.Update != nil {
 		loaded, err := p.updateOperation(id+1, namespacer, bindings, *handler.Update)
 		if err != nil {
 			return nil, err
 		}
-		register(loaded...)
+		ops = append(ops, loaded...)
 	} else if handler.Wait != nil {
-		register(p.waitOperation(id+1, namespacer, *handler.Wait))
+		ops = append(ops, p.waitOperation(id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
@@ -283,14 +294,8 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, b
 
 func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
-	register := func(o ...operation) {
-		for _, o := range o {
-			o.continueOnError = true
-			ops = append(ops, o)
-		}
-	}
 	if handler.PodLogs != nil {
-		register(p.logsOperation(id+1, namespacer, *handler.PodLogs))
+		ops = append(ops, p.logsOperation(id+1, namespacer, *handler.PodLogs))
 	} else if handler.Events != nil {
 		get := v1alpha1.Get{
 			ActionClusters: handler.Events.ActionClusters,
@@ -304,25 +309,25 @@ func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer,
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		register(p.getOperation(id+1, namespacer, get))
+		ops = append(ops, p.getOperation(id+1, namespacer, get))
 	} else if handler.Describe != nil {
-		register(p.describeOperation(id+1, namespacer, *handler.Describe))
+		ops = append(ops, p.describeOperation(id+1, namespacer, *handler.Describe))
 	} else if handler.Get != nil {
-		register(p.getOperation(id+1, namespacer, *handler.Get))
+		ops = append(ops, p.getOperation(id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
 		loaded, err := p.deleteOperation(id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
-		register(loaded...)
+		ops = append(ops, loaded...)
 	} else if handler.Command != nil {
-		register(p.commandOperation(id+1, namespacer, *handler.Command))
+		ops = append(ops, p.commandOperation(id+1, namespacer, *handler.Command))
 	} else if handler.Script != nil {
-		register(p.scriptOperation(id+1, namespacer, *handler.Script))
+		ops = append(ops, p.scriptOperation(id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
-		register(p.sleepOperation(id+1, *handler.Sleep))
+		ops = append(ops, p.sleepOperation(id+1, *handler.Sleep))
 	} else if handler.Wait != nil {
-		register(p.waitOperation(id+1, namespacer, *handler.Wait))
+		ops = append(ops, p.waitOperation(id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
@@ -331,14 +336,8 @@ func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer,
 
 func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
-	register := func(o ...operation) {
-		for _, o := range o {
-			o.continueOnError = true
-			ops = append(ops, o)
-		}
-	}
 	if handler.PodLogs != nil {
-		register(p.logsOperation(id+1, namespacer, *handler.PodLogs))
+		ops = append(ops, p.logsOperation(id+1, namespacer, *handler.PodLogs))
 	} else if handler.Events != nil {
 		get := v1alpha1.Get{
 			ActionClusters: handler.Events.ActionClusters,
@@ -352,25 +351,25 @@ func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespace
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		register(p.getOperation(id+1, namespacer, get))
+		ops = append(ops, p.getOperation(id+1, namespacer, get))
 	} else if handler.Describe != nil {
-		register(p.describeOperation(id+1, namespacer, *handler.Describe))
+		ops = append(ops, p.describeOperation(id+1, namespacer, *handler.Describe))
 	} else if handler.Get != nil {
-		register(p.getOperation(id+1, namespacer, *handler.Get))
+		ops = append(ops, p.getOperation(id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
 		loaded, err := p.deleteOperation(id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
-		register(loaded...)
+		ops = append(ops, loaded...)
 	} else if handler.Command != nil {
-		register(p.commandOperation(id+1, namespacer, *handler.Command))
+		ops = append(ops, p.commandOperation(id+1, namespacer, *handler.Command))
 	} else if handler.Script != nil {
-		register(p.scriptOperation(id+1, namespacer, *handler.Script))
+		ops = append(ops, p.scriptOperation(id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
-		register(p.sleepOperation(id+1, *handler.Sleep))
+		ops = append(ops, p.sleepOperation(id+1, *handler.Sleep))
 	} else if handler.Wait != nil {
-		register(p.waitOperation(id+1, namespacer, *handler.Wait))
+		ops = append(ops, p.waitOperation(id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
@@ -394,7 +393,6 @@ func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer,
 				Id:         id,
 				ResourceId: i + 1,
 			},
-			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -441,7 +439,6 @@ func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer
 				Id:         id,
 				ResourceId: i + 1,
 			},
-			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Assert.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -477,7 +474,6 @@ func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespace
 		OperationInfo{
 			Id: id,
 		},
-		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -519,7 +515,6 @@ func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer
 				Id:         id,
 				ResourceId: i + 1,
 			},
-			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -579,7 +574,6 @@ func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer
 				Id:         id,
 				ResourceId: i + 1,
 			},
-			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Delete.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -617,7 +611,6 @@ func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespac
 		OperationInfo{
 			Id: id,
 		},
-		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -665,7 +658,6 @@ func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer,
 				Id:         id,
 				ResourceId: i + 1,
 			},
-			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Error.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -701,7 +693,6 @@ func (p *stepProcessor) getOperation(id int, namespacer namespacer.Namespacer, o
 		OperationInfo{
 			Id: id,
 		},
-		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -744,7 +735,6 @@ func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, 
 		OperationInfo{
 			Id: id,
 		},
-		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -795,7 +785,6 @@ func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer,
 				Id:         id,
 				ResourceId: i + 1,
 			},
-			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -834,7 +823,6 @@ func (p *stepProcessor) proxyOperation(id int, namespacer namespacer.Namespacer,
 		OperationInfo{
 			Id: id,
 		},
-		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -877,7 +865,6 @@ func (p *stepProcessor) scriptOperation(id int, namespacer namespacer.Namespacer
 		OperationInfo{
 			Id: id,
 		},
-		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -907,7 +894,6 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 		OperationInfo{
 			Id: id,
 		},
-		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			return opsleep.New(op), nil, tc, nil
 		},
@@ -931,7 +917,6 @@ func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer
 				Id:         id,
 				ResourceId: i + 1,
 			},
-			false,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -970,7 +955,6 @@ func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, 
 		OperationInfo{
 			Id: id,
 		},
-		false,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			// make sure timeout is set to populate the command flag
 			op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.Exec.Duration)}
