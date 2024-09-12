@@ -99,9 +99,6 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	}
 	defer func() {
 		report.EndTime = time.Now()
-		if t.Failed() {
-			report.Failed = true
-		}
 		p.report.Add(report)
 	}()
 	logger := logging.FromContext(ctx)
