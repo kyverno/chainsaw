@@ -14,7 +14,6 @@ import (
 	fakeLogger "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
-	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
@@ -36,7 +35,6 @@ func TestStepProcessor_Run(t *testing.T) {
 		basePath               string
 		terminationGracePeriod *metav1.Duration
 		stepSpec               v1alpha1.TestStep
-		stepReport             *report.StepReport
 		expectedFail           bool
 		skipped                bool
 	}{{
@@ -56,7 +54,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally:  []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: nil,
 	}, {
 		name: "try operation with apply handler",
 		client: &fake.FakeClient{
@@ -91,7 +88,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with create handler",
 		client: &fake.FakeClient{
@@ -126,7 +122,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with assert handler",
 		client: &fake.FakeClient{
@@ -185,7 +180,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with error handler",
 		client: &fake.FakeClient{
@@ -244,7 +238,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: &report.StepReport{},
 	}, {
 		name:   "try operation with command handler",
 		client: &fake.FakeClient{},
@@ -272,7 +265,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: &report.StepReport{},
 	}, {
 		name:   "try operation with script handler",
 		client: &fake.FakeClient{},
@@ -299,7 +291,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: &report.StepReport{},
 	}, {
 		name:       "try operation with sleep handler",
 		client:     &fake.FakeClient{},
@@ -319,7 +310,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: &report.StepReport{},
 	}, {
 		name: "try operation with delete handler",
 		client: &fake.FakeClient{
@@ -356,7 +346,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: &report.StepReport{},
 	}, {
 		name: "dry run with create handler",
 		client: &fake.FakeClient{
@@ -394,7 +383,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: nil,
 	}, {
 		name: "skip delete with create handler",
 		client: &fake.FakeClient{
@@ -430,7 +418,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: nil,
 	}, {
 		name: "try-raw resource with create handler",
 		client: &fake.FakeClient{
@@ -472,7 +459,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: nil,
 	}, {
 		name: "try-url resource with create handler",
 		client: &fake.FakeClient{
@@ -508,7 +494,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: nil,
 	}, {
 		name: "raw resource with assert handler",
 		client: &fake.FakeClient{
@@ -590,7 +575,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: nil,
 	}, {
 		name: "try url-resource with assert handler",
 		client: &fake.FakeClient{
@@ -635,7 +619,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: nil,
 	}, {
 		name: "try, catch and finally operation with apply handler",
 		client: &fake.FakeClient{
@@ -747,7 +730,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				},
 			},
 		},
-		stepReport: &report.StepReport{},
 	}, {
 		name: "termination with create handler",
 		client: &fake.FakeClient{
@@ -792,7 +774,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				Finally: []v1alpha1.CatchFinally{},
 			},
 		},
-		stepReport: nil,
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -803,7 +784,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			stepProcessor := NewStepProcessor(
 				tc.stepSpec,
 				tc.basePath,
-				tc.stepReport,
 				nil,
 				tc.terminationGracePeriod,
 				config.Spec.Timeouts,

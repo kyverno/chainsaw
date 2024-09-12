@@ -12,7 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
-	"github.com/kyverno/chainsaw/pkg/report"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -28,7 +28,6 @@ func NewTestProcessor(
 	test discovery.Test,
 	size int,
 	clock clock.PassiveClock,
-	report *report.TestReport,
 	nsTemplate *v1alpha1.Any,
 	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
@@ -64,7 +63,6 @@ func NewTestProcessor(
 		test:                      test,
 		size:                      size,
 		clock:                     clock,
-		report:                    report,
 		nsTemplate:                nsTemplate,
 		delayBeforeCleanup:        delayBeforeCleanup,
 		terminationGracePeriod:    terminationGracePeriod,
@@ -80,7 +78,6 @@ type testProcessor struct {
 	test                      discovery.Test
 	size                      int
 	clock                     clock.PassiveClock
-	report                    *report.TestReport
 	nsTemplate                *v1alpha1.Any
 	delayBeforeCleanup        *time.Duration
 	terminationGracePeriod    *metav1.Duration
@@ -93,18 +90,22 @@ type testProcessor struct {
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc engine.Context) {
 	t := testing.FromContext(ctx)
-	if p.report != nil {
-		p.report.SetStartTime(time.Now())
-		t.Cleanup(func() {
-			p.report.SetEndTime(time.Now())
-			if t.Failed() {
-				p.report.Fail()
-			}
-			if t.Skipped() {
-				p.report.Skip()
-			}
-		})
+	report := model.TestReport{
+		BasePath:   p.test.BasePath,
+		Name:       p.test.Test.Name,
+		Concurrent: p.test.Test.Spec.Concurrent,
+		StartTime:  time.Now(),
 	}
+	t.Cleanup(func() {
+		report.EndTime = time.Now()
+		if t.Failed() {
+			report.Failed = true
+		}
+		if t.Skipped() {
+			report.Skipped = true
+		}
+		tc.Report.Add(report)
+	})
 	mainCleaner := cleaner.New(p.timeouts.Cleanup.Duration, nil, p.deletionPropagationPolicy)
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
@@ -147,8 +148,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	if namespace != nil {
 		nspacer = namespacer.New(namespace.GetName())
 	}
-	if p.report != nil && nspacer != nil {
-		p.report.SetNamespace(nspacer.GetNamespace())
+	if nspacer != nil {
+		report.Namespace = nspacer.GetNamespace()
 	}
 	for i, step := range p.test.Test.Spec.Steps {
 		name := step.Name
@@ -166,14 +167,9 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 }
 
 func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep) StepProcessor {
-	var report *report.StepReport
-	if p.report != nil {
-		report = p.report.ForStep(&step)
-	}
 	return NewStepProcessor(
 		step,
 		p.test.BasePath,
-		report,
 		p.delayBeforeCleanup,
 		p.terminationGracePeriod,
 		p.timeouts,
