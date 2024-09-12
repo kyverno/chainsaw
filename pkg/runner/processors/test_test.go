@@ -11,6 +11,7 @@ import (
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
@@ -34,7 +35,7 @@ func TestTestProcessor_Run(t *testing.T) {
 		client       client.Client
 		clock        clock.PassiveClock
 		test         discovery.Test
-		namespacer   *fakeNamespacer.FakeNamespacer
+		namespacer   namespacer.Namespacer
 		expectedFail bool
 		skipped      bool
 	}{{
