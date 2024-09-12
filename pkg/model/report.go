@@ -1,6 +1,7 @@
 package model
 
 import (
+	"fmt"
 	"sync"
 	"time"
 )
@@ -26,13 +27,20 @@ type TestReport struct {
 	StartTime  time.Time
 	EndTime    time.Time
 	Namespace  string
-	Failed     bool
 	Skipped    bool
 	Steps      []StepReport
+}
+
+func (r *TestReport) Add(report StepReport) {
+	if report.Name == "" {
+		report.Name = fmt.Sprintf("step %d", len(r.Steps)+1)
+	}
+	r.Steps = append(r.Steps, report)
 }
 
 type StepReport struct {
 	Name      string
 	StartTime time.Time
 	EndTime   time.Time
+	Failed    bool
 }
