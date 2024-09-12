@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine"
@@ -42,10 +43,6 @@ func run(
 	values map[string]any,
 	tests ...discovery.Test,
 ) (model.SummaryResult, error) {
-	var testsReport *report.Report
-	if config.Report != nil && config.Report.Format != "" {
-		testsReport = report.New(config.Report.Name)
-	}
 	tc, err := setupTestContext(ctx, values, cfg, config)
 	if err != nil {
 		return nil, err
@@ -80,8 +77,9 @@ func run(
 	if code := m.Run(); code > 1 {
 		return tc.Summary, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
-	if testsReport != nil && config.Report != nil && config.Report.Format != "" {
-		if err := testsReport.Save(config.Report.Format, config.Report.Path, config.Report.Name); err != nil {
+	if config.Report != nil && config.Report.Format != "" {
+		tc.Report.EndTime = time.Now()
+		if err := report.Save(tc.Report, config.Report.Format, config.Report.Path, config.Report.Name); err != nil {
 			return tc.Summary, err
 		}
 	}

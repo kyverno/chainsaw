@@ -6,8 +6,11 @@ import (
 )
 
 type Report struct {
-	Tests []TestReport
-	lock  sync.Mutex
+	Name      string
+	StartTime time.Time
+	EndTime   time.Time
+	Tests     []TestReport
+	lock      sync.Mutex
 }
 
 func (r *Report) Add(report TestReport) {
