@@ -29,17 +29,16 @@ func newOperation(
 	}
 }
 
-func (o operation) execute(ctx context.Context, tc engine.Context, stepReport *model.StepReport) (outputs.Outputs, error) {
+func (o operation) execute(ctx context.Context, tc engine.Context, stepReport *model.StepReport) (_ outputs.Outputs, err error) {
 	report := model.OperationReport{
 		StartTime: time.Now(),
 	}
 	defer func() {
 		report.EndTime = time.Now()
+		report.Err = err
 		stepReport.Add(report)
 	}()
-	tc = tc.WithBinding(ctx, "operation", o.info)
-	operation, timeout, tc, err := o.operation(ctx, tc)
-	if err != nil {
+	if operation, timeout, tc, err := o.operation(ctx, tc.WithBinding(ctx, "operation", o.info)); err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		return nil, err
 	} else {
