@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/pkg/ext/output/color"
 )
@@ -32,7 +33,14 @@ func newOperation(
 	}
 }
 
-func (o operation) execute(ctx context.Context, tc engine.Context) outputs.Outputs {
+func (o operation) execute(ctx context.Context, tc engine.Context, stepReport *model.StepReport) outputs.Outputs {
+	report := model.OperationReport{
+		StartTime: time.Now(),
+	}
+	defer func() {
+		report.EndTime = time.Now()
+		stepReport.Add(report)
+	}()
 	handleError := func(err error) {
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))

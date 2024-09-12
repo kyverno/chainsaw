@@ -11,6 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	mock "github.com/kyverno/chainsaw/pkg/engine/operations/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 )
@@ -64,7 +65,7 @@ func TestOperation_Execute(t *testing.T) {
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
 			tcontext := enginecontext.EmptyContext()
-			op.execute(ctx, tcontext)
+			op.execute(ctx, tcontext, &model.StepReport{})
 			if localTC.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {
