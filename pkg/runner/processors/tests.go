@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -23,29 +22,21 @@ type TestsProcessor interface {
 	Run(context.Context, engine.Context, ...discovery.Test)
 }
 
-func NewTestsProcessor(config model.Configuration, clock clock.PassiveClock, report *report.Report) TestsProcessor {
+func NewTestsProcessor(config model.Configuration, clock clock.PassiveClock) TestsProcessor {
 	return &testsProcessor{
 		config: config,
 		clock:  clock,
-		report: report,
 	}
 }
 
 type testsProcessor struct {
 	config model.Configuration
 	clock  clock.PassiveClock
-	report *report.Report
 }
 
 func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...discovery.Test) {
 	// 1. setup context
 	t := testing.FromContext(ctx)
-	if p.report != nil {
-		p.report.SetStartTime(time.Now())
-		t.Cleanup(func() {
-			p.report.SetEndTime(time.Now())
-		})
-	}
 	mainCleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil, p.config.Deletion.Propagation)
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
@@ -151,10 +142,6 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 }
 
 func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) TestProcessor {
-	var report *report.TestReport
-	if p.report != nil {
-		report = p.report.ForTest(&test)
-	}
 	var delayBeforeCleanup *time.Duration
 	if p.config.Cleanup.DelayBeforeCleanup != nil {
 		delayBeforeCleanup = &p.config.Cleanup.DelayBeforeCleanup.Duration
@@ -163,7 +150,6 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) Test
 		test,
 		size,
 		p.clock,
-		report,
 		p.config.Namespace.Template,
 		delayBeforeCleanup,
 		p.config.Execution.ForceTerminationGracePeriod,

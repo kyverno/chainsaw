@@ -2,6 +2,7 @@ package context
 
 import (
 	"context"
+	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -14,6 +15,7 @@ import (
 
 type TestContext struct {
 	*model.Summary
+	*model.Report
 	bindings binding.Bindings
 	cluster  clusters.Cluster
 	clusters clusters.Registry
@@ -22,7 +24,11 @@ type TestContext struct {
 
 func MakeContext(bindings binding.Bindings, registry clusters.Registry) TestContext {
 	return TestContext{
-		Summary:  &model.Summary{},
+		Summary: &model.Summary{},
+		Report: &model.Report{
+			Name:      "chainsaw-report",
+			StartTime: time.Now(),
+		},
 		bindings: bindings,
 		clusters: registry,
 		cluster:  nil,

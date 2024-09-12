@@ -2,9 +2,10 @@ package report
 
 import (
 	"encoding/xml"
-	"fmt"
 	"os"
 	"time"
+
+	"github.com/kyverno/chainsaw/pkg/model"
 )
 
 type failureNode struct {
@@ -51,15 +52,15 @@ type testsuitesNode struct {
 	Inner     []any
 }
 
-func saveJUnit(report *Report, file string) error {
+func saveJUnit(report *model.Report, file string) error {
 	testsuites := testsuitesNode{
-		Name:      report.name,
-		Timestamp: report.startTime.UTC().Format(time.RFC3339),
-		Time:      report.endTime.Sub(report.startTime).Seconds(),
+		Name:      report.Name,
+		Timestamp: report.StartTime.UTC().Format(time.RFC3339),
+		Time:      report.EndTime.Sub(report.StartTime).Seconds(),
 	}
-	perFolder := map[string][]*TestReport{}
-	for _, test := range report.tests {
-		perFolder[test.test.BasePath] = append(perFolder[test.test.BasePath], test)
+	perFolder := map[string][]model.TestReport{}
+	for _, test := range report.Tests {
+		perFolder[test.BasePath] = append(perFolder[test.BasePath], test)
 	}
 	for folder, tests := range perFolder {
 		testsuite := testsuiteNode{
@@ -67,46 +68,46 @@ func saveJUnit(report *Report, file string) error {
 		}
 		for _, test := range tests {
 			var properties []any
-			if test.namespace != "" {
+			if test.Namespace != "" {
 				properties = append(properties, propertyNode{
 					Name:  "namespace",
-					Value: test.namespace,
+					Value: test.Namespace,
 				})
 			}
-			for i, step := range test.steps {
-				if step.step.Name != "" {
-					properties = append(properties, propertyNode{
-						Name:  fmt.Sprintf("step%d", i),
-						Value: step.step.Name,
-					})
-				}
-				for j, op := range step.reports {
-					if op.err != nil {
-						properties = append(properties, propertyNode{
-							Name:  fmt.Sprintf("step%d", i),
-							Value: fmt.Sprintf("op %d - %s: %s", j, op.operationType, op.err),
-						})
-					} else {
-						properties = append(properties, propertyNode{
-							Name:  fmt.Sprintf("step%d", i),
-							Value: fmt.Sprintf("op %d - %s", j, op.operationType),
-						})
-					}
-				}
-			}
+			// for i, step := range test.steps {
+			// 	if step.step.Name != "" {
+			// 		properties = append(properties, propertyNode{
+			// 			Name:  fmt.Sprintf("step%d", i),
+			// 			Value: step.step.Name,
+			// 		})
+			// 	}
+			// 	for j, op := range step.reports {
+			// 		if op.err != nil {
+			// 			properties = append(properties, propertyNode{
+			// 				Name:  fmt.Sprintf("step%d", i),
+			// 				Value: fmt.Sprintf("op %d - %s: %s", j, op.operationType, op.err),
+			// 			})
+			// 		} else {
+			// 			properties = append(properties, propertyNode{
+			// 				Name:  fmt.Sprintf("step%d", i),
+			// 				Value: fmt.Sprintf("op %d - %s", j, op.operationType),
+			// 			})
+			// 		}
+			// 	}
+			// }
 			testcase := testcaseNode{
-				Name:      test.test.Test.Name,
-				Timestamp: test.startTime.UTC().Format(time.RFC3339),
-				Time:      test.endTime.Sub(test.startTime).Seconds(),
-				File:      test.test.BasePath,
+				Name:      test.Name,
+				Timestamp: test.StartTime.UTC().Format(time.RFC3339),
+				Time:      test.EndTime.Sub(test.StartTime).Seconds(),
+				File:      test.BasePath,
 			}
 			if len(properties) != 0 {
 				testcase.Inner = append(testcase.Inner, propertiesNode{Inner: properties})
 			}
-			if test.skipped {
+			if test.Skipped {
 				testcase.Inner = append(testcase.Inner, skippedNode{})
 			}
-			if test.failed {
+			if test.Failed {
 				testcase.Inner = append(testcase.Inner, failureNode{})
 			}
 			testsuite.Inner = append(testsuite.Inner, testcase)
