@@ -133,7 +133,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 					failer.Fail(ctx)
 				}
 				for _, operation := range operations {
-					operation.execute(ctx, tc)
+					operation.execute(ctx, tc, &report)
 				}
 			}
 		}
@@ -151,7 +151,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 					failer.Fail(ctx)
 				}
 				for _, operation := range operations {
-					operation.execute(ctx, tc)
+					operation.execute(ctx, tc, &report)
 				}
 			}
 		}()
@@ -170,7 +170,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 						failer.Fail(ctx)
 					}
 					for _, operation := range operations {
-						operation.execute(ctx, tc)
+						operation.execute(ctx, tc, &report)
 					}
 				}
 			}
@@ -187,7 +187,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 			failer.FailNow(ctx)
 		}
 		for _, operation := range operations {
-			for k, v := range operation.execute(ctx, tc) {
+			for k, v := range operation.execute(ctx, tc, &report) {
 				tc = tc.WithBinding(ctx, k, v)
 			}
 		}

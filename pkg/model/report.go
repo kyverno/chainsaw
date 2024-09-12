@@ -39,6 +39,21 @@ func (r *TestReport) Add(report StepReport) {
 }
 
 type StepReport struct {
+	Name       string
+	StartTime  time.Time
+	EndTime    time.Time
+	Failed     bool
+	Operations []OperationReport
+}
+
+func (r *StepReport) Add(report OperationReport) {
+	if report.Name == "" {
+		report.Name = fmt.Sprintf("operation %d", len(r.Operations)+1)
+	}
+	r.Operations = append(r.Operations, report)
+}
+
+type OperationReport struct {
 	Name      string
 	StartTime time.Time
 	EndTime   time.Time
