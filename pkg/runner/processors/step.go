@@ -26,7 +26,6 @@ import (
 	opsleep "github.com/kyverno/chainsaw/pkg/engine/operations/sleep"
 	opupdate "github.com/kyverno/chainsaw/pkg/engine/operations/update"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
-	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -42,7 +41,6 @@ type StepProcessor interface {
 func NewStepProcessor(
 	step v1alpha1.TestStep,
 	basePath string,
-	report *report.StepReport,
 	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
@@ -67,7 +65,6 @@ func NewStepProcessor(
 	return &stepProcessor{
 		step:                      step,
 		basePath:                  basePath,
-		report:                    report,
 		delayBeforeCleanup:        delayBeforeCleanup,
 		terminationGracePeriod:    terminationGracePeriod,
 		timeouts:                  timeouts,
@@ -81,7 +78,6 @@ func NewStepProcessor(
 type stepProcessor struct {
 	basePath                  string
 	step                      v1alpha1.TestStep
-	report                    *report.StepReport
 	delayBeforeCleanup        *time.Duration
 	terminationGracePeriod    *metav1.Duration
 	timeouts                  v1alpha1.DefaultTimeouts
@@ -93,12 +89,6 @@ type stepProcessor struct {
 
 func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
 	t := testing.FromContext(ctx)
-	if p.report != nil {
-		p.report.SetStartTime(time.Now())
-		t.Cleanup(func() {
-			p.report.SetEndTime(time.Now())
-		})
-	}
 	logger := logging.FromContext(ctx)
 	tc, _, err := setupContextData(ctx, tc, contextData{
 		basePath: p.basePath,
@@ -373,10 +363,6 @@ func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespace
 }
 
 func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings binding.Bindings, op v1alpha1.Apply) ([]operation, error) {
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Apply "+string(op.File), report.OperationTypeApply)
-	}
 	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
@@ -421,7 +407,6 @@ func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer,
 					}
 				}
 			},
-			operationReport,
 		))
 	}
 	return ops, nil
@@ -433,10 +418,6 @@ func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer
 		return nil, err
 	}
 	var ops []operation
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Assert ", report.OperationTypeAssert)
-	}
 	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
@@ -467,17 +448,12 @@ func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer
 					return op, timeout, tc, nil
 				}
 			},
-			operationReport,
 		))
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Command) operation {
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Command ", report.OperationTypeCommand)
-	}
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -508,7 +484,6 @@ func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespace
 				return op, timeout, tc, nil
 			}
 		},
-		operationReport,
 	)
 }
 
@@ -518,10 +493,6 @@ func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer
 		return nil, err
 	}
 	var ops []operation
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Create ", report.OperationTypeCreate)
-	}
 	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
@@ -559,7 +530,6 @@ func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer
 					return op, timeout, tc, nil
 				}
 			},
-			operationReport,
 		))
 	}
 	return ops, nil
@@ -585,10 +555,6 @@ func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer
 		return nil, err
 	}
 	var ops []operation
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Delete ", report.OperationTypeDelete)
-	}
 	deletionPropagationPolicy := p.getDeletionPropagationPolicy(op.DeletionPropagationPolicy)
 	template := p.getTemplating(op.Template)
 	for i := range resources {
@@ -622,17 +588,12 @@ func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer
 					return op, timeout, tc, nil
 				}
 			},
-			operationReport,
 		))
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Describe) operation {
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Describe ", report.OperationTypeCommand)
-	}
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -672,7 +633,6 @@ func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespac
 				return op, timeout, tc, nil
 			}
 		},
-		operationReport,
 	)
 }
 
@@ -682,10 +642,6 @@ func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer,
 		return nil, err
 	}
 	var ops []operation
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Error ", report.OperationTypeCommand)
-	}
 	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
@@ -716,17 +672,12 @@ func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer,
 					return op, timeout, tc, nil
 				}
 			},
-			operationReport,
 		))
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) getOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Get) operation {
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Get ", report.OperationTypeCommand)
-	}
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -766,15 +717,10 @@ func (p *stepProcessor) getOperation(id int, namespacer namespacer.Namespacer, o
 				return op, timeout, tc, nil
 			}
 		},
-		operationReport,
 	)
 }
 
 func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.PodLogs) operation {
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Logs ", report.OperationTypeCommand)
-	}
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -814,7 +760,6 @@ func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, 
 				return op, timeout, tc, nil
 			}
 		},
-		operationReport,
 	)
 }
 
@@ -824,10 +769,6 @@ func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer,
 		return nil, err
 	}
 	var ops []operation
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Patch ", report.OperationTypeCreate)
-	}
 	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
@@ -864,17 +805,12 @@ func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer,
 					return op, timeout, tc, nil
 				}
 			},
-			operationReport,
 		))
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) proxyOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Proxy) operation {
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Proxy ", report.OperationTypeCommand)
-	}
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -914,15 +850,10 @@ func (p *stepProcessor) proxyOperation(id int, namespacer namespacer.Namespacer,
 				return op, timeout, tc, nil
 			}
 		},
-		operationReport,
 	)
 }
 
 func (p *stepProcessor) scriptOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Script) operation {
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Script ", report.OperationTypeScript)
-	}
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -953,15 +884,10 @@ func (p *stepProcessor) scriptOperation(id int, namespacer namespacer.Namespacer
 				return op, timeout, tc, nil
 			}
 		},
-		operationReport,
 	)
 }
 
 func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Sleep ", report.OperationTypeSleep)
-	}
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -970,7 +896,6 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			return opsleep.New(op), nil, tc, nil
 		},
-		operationReport,
 	)
 }
 
@@ -980,10 +905,6 @@ func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer
 		return nil, err
 	}
 	var ops []operation
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Update ", report.OperationTypeCreate)
-	}
 	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
@@ -1020,17 +941,12 @@ func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer
 					return op, timeout, tc, nil
 				}
 			},
-			operationReport,
 		))
 	}
 	return ops, nil
 }
 
 func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Wait) operation {
-	var operationReport *report.OperationReport
-	if p.report != nil {
-		operationReport = p.report.ForOperation("Wait ", report.OperationTypeCommand)
-	}
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -1073,7 +989,6 @@ func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, 
 				return op, &timeout, tc, nil
 			}
 		},
-		operationReport,
 	)
 }
 

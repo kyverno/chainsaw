@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -25,7 +24,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 		config       model.Configuration
 		client       client.Client
 		clock        clock.PassiveClock
-		testsReport  *report.Report
 		bindings     binding.Bindings
 		tests        []discovery.Test
 		expectedFail bool
@@ -42,7 +40,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		testsReport:  &report.Report{},
 		bindings:     binding.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: false,
@@ -65,7 +62,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		testsReport:  &report.Report{},
 		bindings:     binding.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: false,
@@ -85,7 +81,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		testsReport:  &report.Report{},
 		bindings:     binding.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: true,
@@ -105,7 +100,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		testsReport:  &report.Report{},
 		bindings:     binding.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: true,
@@ -121,9 +115,8 @@ func TestTestsProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       nil,
-		testsReport: &report.Report{},
-		bindings:    binding.NewBindings(),
+		clock:    nil,
+		bindings: binding.NewBindings(),
 		tests: []discovery.Test{
 			{
 				Err:      nil,
@@ -144,9 +137,8 @@ func TestTestsProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:       nil,
-		testsReport: &report.Report{},
-		bindings:    binding.NewBindings(),
+		clock:    nil,
+		bindings: binding.NewBindings(),
 		tests: []discovery.Test{
 			{
 				Err:      errors.NewBadRequest("failed to get test"),
@@ -165,7 +157,6 @@ func TestTestsProcessor_Run(t *testing.T) {
 			processor := NewTestsProcessor(
 				tc.config,
 				tc.clock,
-				tc.testsReport,
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
