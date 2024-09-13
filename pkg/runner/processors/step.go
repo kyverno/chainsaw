@@ -123,6 +123,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 			if !cleaner.Empty() {
 				cleanupReport := &model.OperationReport{
 					Name:      "cleanup",
+					Type:      model.OperationTypeDelete,
 					StartTime: time.Now(),
 				}
 				if errs := cleaner.Run(ctx); len(errs) != 0 {
@@ -402,6 +403,7 @@ func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer,
 				Id:         id,
 				ResourceId: i + 1,
 			},
+			model.OperationTypeApply,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -448,6 +450,7 @@ func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer
 				Id:         id,
 				ResourceId: i + 1,
 			},
+			model.OperationTypeAssert,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Assert.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -483,6 +486,7 @@ func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespace
 		OperationInfo{
 			Id: id,
 		},
+		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -524,6 +528,7 @@ func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer
 				Id:         id,
 				ResourceId: i + 1,
 			},
+			model.OperationTypeCreate,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -583,6 +588,7 @@ func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer
 				Id:         id,
 				ResourceId: i + 1,
 			},
+			model.OperationTypeDelete,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Delete.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -620,6 +626,7 @@ func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespac
 		OperationInfo{
 			Id: id,
 		},
+		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -667,6 +674,7 @@ func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer,
 				Id:         id,
 				ResourceId: i + 1,
 			},
+			model.OperationTypeError,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Error.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -702,6 +710,7 @@ func (p *stepProcessor) getOperation(id int, namespacer namespacer.Namespacer, o
 		OperationInfo{
 			Id: id,
 		},
+		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -744,6 +753,7 @@ func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, 
 		OperationInfo{
 			Id: id,
 		},
+		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -794,6 +804,7 @@ func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer,
 				Id:         id,
 				ResourceId: i + 1,
 			},
+			model.OperationTypePatch,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -832,6 +843,7 @@ func (p *stepProcessor) proxyOperation(id int, namespacer namespacer.Namespacer,
 		OperationInfo{
 			Id: id,
 		},
+		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -874,6 +886,7 @@ func (p *stepProcessor) scriptOperation(id int, namespacer namespacer.Namespacer
 		OperationInfo{
 			Id: id,
 		},
+		model.OperationTypeScript,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -903,6 +916,7 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 		OperationInfo{
 			Id: id,
 		},
+		model.OperationTypeSleep,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			return opsleep.New(op), nil, tc, nil
 		},
@@ -926,6 +940,7 @@ func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer
 				Id:         id,
 				ResourceId: i + 1,
 			},
+			model.OperationTypeUpdate,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
@@ -964,6 +979,7 @@ func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, 
 		OperationInfo{
 			Id: id,
 		},
+		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			// make sure timeout is set to populate the command flag
 			op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.Exec.Duration)}

@@ -53,6 +53,7 @@ func TestOperation_Execute(t *testing.T) {
 			localTC := tc
 			op := newOperation(
 				OperationInfo{},
+				model.OperationTypeApply,
 				func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 					return localTC.operation, &localTC.timeout, tc, nil
 				},
