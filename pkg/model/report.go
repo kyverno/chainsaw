@@ -10,11 +10,11 @@ type Report struct {
 	Name      string
 	StartTime time.Time
 	EndTime   time.Time
-	Tests     []TestReport
+	Tests     []*TestReport
 	lock      sync.Mutex
 }
 
-func (r *Report) Add(report TestReport) {
+func (r *Report) Add(report *TestReport) {
 	r.lock.Lock()
 	defer r.lock.Unlock()
 	r.Tests = append(r.Tests, report)
@@ -29,10 +29,10 @@ type TestReport struct {
 	Namespace  string
 	Skipped    bool
 	Failed     bool
-	Steps      []StepReport
+	Steps      []*StepReport
 }
 
-func (r *TestReport) Add(report StepReport) {
+func (r *TestReport) Add(report *StepReport) {
 	if report.Name == "" {
 		report.Name = fmt.Sprintf("step %d", len(r.Steps)+1)
 	}
@@ -47,10 +47,10 @@ type StepReport struct {
 	StartTime  time.Time
 	EndTime    time.Time
 	Failed     bool
-	Operations []OperationReport
+	Operations []*OperationReport
 }
 
-func (r *StepReport) Add(report OperationReport) {
+func (r *StepReport) Add(report *OperationReport) {
 	if report.Name == "" {
 		report.Name = fmt.Sprintf("operation %d", len(r.Operations)+1)
 	}
