@@ -16,21 +16,25 @@ type operationFactory = func(context.Context, engine.Context) (operations.Operat
 
 type operation struct {
 	info      OperationInfo
+	opType    model.OperationType
 	operation operationFactory
 }
 
 func newOperation(
 	info OperationInfo,
+	opType model.OperationType,
 	op operationFactory,
 ) operation {
 	return operation{
 		info:      info,
+		opType:    opType,
 		operation: op,
 	}
 }
 
 func (o operation) execute(ctx context.Context, tc engine.Context, stepReport *model.StepReport) (_ outputs.Outputs, err error) {
 	report := &model.OperationReport{
+		Type:      o.opType,
 		StartTime: time.Now(),
 	}
 	defer func() {
