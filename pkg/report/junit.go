@@ -10,10 +10,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/model"
 )
 
-const (
-	FailureTypeAssertionError = "AssertionError"
-)
-
 // durationInSecondsString is a helper function to convert a start and end time into a string
 // representing the duration in seconds. This is needed by the junit package for generating
 // the JUnit XML report.

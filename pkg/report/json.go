@@ -13,10 +13,11 @@ func saveJson(report *model.Report, file string) error {
 		Err string `json:"error,omitempty"`
 	}
 	type OperationReport struct {
-		Name      string    `json:"name,omitempty"`
-		StartTime time.Time `json:"startTime"`
-		EndTime   time.Time `json:"endTime"`
-		Failure   *Failure  `json:"failure,omitempty"`
+		Name      string              `json:"name,omitempty"`
+		Type      model.OperationType `json:"type,omitempty"`
+		StartTime time.Time           `json:"startTime"`
+		EndTime   time.Time           `json:"endTime"`
+		Failure   *Failure            `json:"failure,omitempty"`
 	}
 	type StepReport struct {
 		Name       string            `json:"name,omitempty"`
@@ -64,6 +65,7 @@ func saveJson(report *model.Report, file string) error {
 			for _, operation := range step.Operations {
 				operationReport := OperationReport{
 					Name:      operation.Name,
+					Type:      operation.Type,
 					StartTime: operation.StartTime,
 					EndTime:   operation.EndTime,
 				}
