@@ -196,7 +196,7 @@ func Test_cleaner_Run(t *testing.T) {
 				timeout: 1 * time.Second,
 				entries: tt.entries,
 			}
-			got := c.Run(context.TODO())
+			got := c.Run(context.TODO(), nil)
 			assert.Equal(t, tt.want, got)
 		})
 	}

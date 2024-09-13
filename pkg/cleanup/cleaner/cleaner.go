@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/model"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -21,7 +22,7 @@ type CleanerCollector interface {
 
 type Cleaner interface {
 	CleanerCollector
-	Run(ctx context.Context) []error
+	Run(ctx context.Context, stepReport *model.StepReport) []error
 }
 
 func New(timeout time.Duration, delay *time.Duration, propagation metav1.DeletionPropagation) Cleaner {
@@ -50,14 +51,22 @@ func (c *cleaner) Empty() bool {
 	return len(c.entries) == 0
 }
 
-func (c *cleaner) Run(ctx context.Context) []error {
+func (c *cleaner) Run(ctx context.Context, stepReport *model.StepReport) []error {
 	if c.delay != nil {
 		time.Sleep(*c.delay)
 	}
 	var errs []error
 	for i := len(c.entries) - 1; i >= 0; i-- {
-		if err := c.delete(ctx, c.entries[i]); err != nil {
-			errs = append(errs, err)
+		report := model.OperationReport{
+			Type:      model.OperationTypeDelete,
+			StartTime: time.Now(),
+		}
+		if report.Err = c.delete(ctx, c.entries[i]); report.Err != nil {
+			errs = append(errs, report.Err)
+		}
+		report.EndTime = time.Now()
+		if stepReport != nil {
+			stepReport.Add(&report)
 		}
 	}
 	return errs
