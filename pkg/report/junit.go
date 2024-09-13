@@ -27,7 +27,7 @@ func durationInSecondsString(start, end time.Time) string {
 // all tests and then looping through all of their steps and all the reports for all steps.
 //
 // The end goal is to have each Test file represented as a TestSuite and each step as a TestCase.
-func addTestSuite(testSuites *junit.Testsuites, report model.TestReport) {
+func addTestSuite(testSuites *junit.Testsuites, report *model.TestReport) {
 	// Loop through all the Tests in the report
 	suite := junit.Testsuite{
 		Name:    report.Name,

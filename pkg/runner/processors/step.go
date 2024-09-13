@@ -31,6 +31,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
+	"go.uber.org/multierr"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
@@ -93,7 +94,7 @@ type stepProcessor struct {
 
 func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
 	t := testing.FromContext(ctx)
-	report := model.StepReport{
+	report := &model.StepReport{
 		Name:      p.step.Name,
 		StartTime: time.Now(),
 	}
@@ -119,9 +120,20 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 			defer func() {
 				logger.Log(logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
 			}()
-			for _, err := range cleaner.Run(ctx) {
-				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				failer.Fail(ctx)
+			if !cleaner.Empty() {
+				cleanupReport := &model.OperationReport{
+					Name:      "cleanup",
+					StartTime: time.Now(),
+				}
+				if errs := cleaner.Run(ctx); len(errs) != 0 {
+					for _, err := range errs {
+						logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+					}
+					failer.Fail(ctx)
+					cleanupReport.Err = multierr.Combine(errs...)
+				}
+				cleanupReport.EndTime = time.Now()
+				report.Add(cleanupReport)
 			}
 			for i, operation := range p.step.Cleanup {
 				operations, err := p.finallyOperation(i, namespacer, tc.Bindings(), operation)
@@ -130,7 +142,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 					failer.Fail(ctx)
 				}
 				for _, operation := range operations {
-					_, err := operation.execute(ctx, tc, &report)
+					_, err := operation.execute(ctx, tc, report)
 					if err != nil {
 						failer.Fail(ctx)
 					}
@@ -151,7 +163,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 					failer.Fail(ctx)
 				}
 				for _, operation := range operations {
-					_, err := operation.execute(ctx, tc, &report)
+					_, err := operation.execute(ctx, tc, report)
 					if err != nil {
 						failer.Fail(ctx)
 					}
@@ -173,7 +185,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 						failer.Fail(ctx)
 					}
 					for _, operation := range operations {
-						_, err := operation.execute(ctx, tc, &report)
+						_, err := operation.execute(ctx, tc, report)
 						if err != nil {
 							failer.Fail(ctx)
 						}
@@ -194,7 +206,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 			failer.FailNow(ctx)
 		}
 		for _, operation := range operations {
-			outputs, err := operation.execute(ctx, tc, &report)
+			outputs, err := operation.execute(ctx, tc, report)
 			if err != nil {
 				if continueOnError {
 					failer.Fail(ctx)

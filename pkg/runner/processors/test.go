@@ -90,7 +90,7 @@ type testProcessor struct {
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc engine.Context) {
 	t := testing.FromContext(ctx)
-	report := model.TestReport{
+	report := &model.TestReport{
 		BasePath:   p.test.BasePath,
 		Name:       p.test.Test.Name,
 		Concurrent: p.test.Test.Spec.Concurrent,
@@ -158,7 +158,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			Id: i + 1,
 		}
 		tc := tc.WithBinding(ctx, "step", info)
-		processor := p.createStepProcessor(step, &report)
+		processor := p.createStepProcessor(step, report)
 		processor.Run(ctx, nspacer, tc)
 	}
 }
