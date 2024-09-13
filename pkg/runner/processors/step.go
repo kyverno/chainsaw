@@ -3,6 +3,7 @@ package processors
 import (
 	"context"
 	"errors"
+	"fmt"
 	"net/url"
 	"path/filepath"
 	"time"
@@ -116,6 +117,14 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup, p.deletionPropagationPolicy)
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
+			report := &model.StepReport{
+				Name:      fmt.Sprintf("clenaup (%s)", report.Name),
+				StartTime: time.Now(),
+			}
+			defer func() {
+				report.EndTime = time.Now()
+				p.report.Add(report)
+			}()
 			logger.Log(logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
 			defer func() {
 				logger.Log(logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
