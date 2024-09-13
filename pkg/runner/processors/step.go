@@ -32,7 +32,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
-	"go.uber.org/multierr"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
@@ -118,7 +117,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
 			report := &model.StepReport{
-				Name:      fmt.Sprintf("clenaup (%s)", report.Name),
+				Name:      fmt.Sprintf("cleanup (%s)", report.Name),
 				StartTime: time.Now(),
 			}
 			defer func() {
@@ -130,20 +129,12 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 				logger.Log(logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
 			}()
 			if !cleaner.Empty() {
-				cleanupReport := &model.OperationReport{
-					Name:      "cleanup",
-					Type:      model.OperationTypeDelete,
-					StartTime: time.Now(),
-				}
-				if errs := cleaner.Run(ctx); len(errs) != 0 {
+				if errs := cleaner.Run(ctx, report); len(errs) != 0 {
 					for _, err := range errs {
 						logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					}
 					failer.Fail(ctx)
-					cleanupReport.Err = multierr.Combine(errs...)
 				}
-				cleanupReport.EndTime = time.Now()
-				report.Add(cleanupReport)
 			}
 			for i, operation := range p.step.Cleanup {
 				operations, err := p.finallyOperation(i, namespacer, tc.Bindings(), operation)
