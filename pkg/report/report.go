@@ -21,8 +21,8 @@ func Save(report *model.Report, format v1alpha2.ReportFormatType, path, name str
 	case v1alpha2.XMLFormat:
 		return saveJUnit(report, filePath)
 	case v1alpha2.JSONFormat:
+		return saveJson(report, filePath)
 	default:
 		return fmt.Errorf("unknown report format: %s", format)
 	}
-	return nil
 }
