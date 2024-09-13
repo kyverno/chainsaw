@@ -44,7 +44,7 @@ func addTestSuite(testSuites *junit.Testsuites, report *model.TestReport) {
 			Name: report.Name,
 			Time: durationInSecondsString(report.StartTime, report.EndTime),
 		}
-		if report.Failed {
+		if report.Failed() {
 			testCase.Failure = &junit.Result{}
 			for _, report := range report.Operations {
 				if report.Err != nil {

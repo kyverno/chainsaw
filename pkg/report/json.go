@@ -9,18 +9,19 @@ import (
 )
 
 func saveJson(report *model.Report, file string) error {
+	type Failure struct {
+		Err string `json:"error,omitempty"`
+	}
 	type OperationReport struct {
 		Name      string    `json:"name,omitempty"`
 		StartTime time.Time `json:"startTime"`
 		EndTime   time.Time `json:"endTime"`
-		Failed    bool      `json:"failed,omitempty"`
-		Err       string    `json:"error,omitempty"`
+		Failure   *Failure  `json:"failure,omitempty"`
 	}
 	type StepReport struct {
 		Name       string            `json:"name,omitempty"`
 		StartTime  time.Time         `json:"startTime"`
 		EndTime    time.Time         `json:"endTime"`
-		Failed     bool              `json:"failed,omitempty"`
 		Operations []OperationReport `json:"operations,omitempty"`
 	}
 	type TestReport struct {
@@ -31,7 +32,6 @@ func saveJson(report *model.Report, file string) error {
 		EndTime    time.Time    `json:"endTime"`
 		Namespace  string       `json:"namespace,omitempty"`
 		Skipped    bool         `json:"skipped,omitempty"`
-		Failed     bool         `json:"failed,omitempty"`
 		Steps      []StepReport `json:"steps,omitempty"`
 	}
 	type Report struct {
@@ -54,14 +54,12 @@ func saveJson(report *model.Report, file string) error {
 			EndTime:    test.EndTime,
 			Namespace:  test.Namespace,
 			Skipped:    test.Skipped,
-			Failed:     test.Failed,
 		}
 		for _, step := range test.Steps {
 			stepReport := StepReport{
 				Name:      step.Name,
 				StartTime: step.StartTime,
 				EndTime:   step.EndTime,
-				Failed:    step.Failed,
 			}
 			for _, operation := range step.Operations {
 				operationReport := OperationReport{
@@ -70,8 +68,9 @@ func saveJson(report *model.Report, file string) error {
 					EndTime:   operation.EndTime,
 				}
 				if operation.Err != nil {
-					operationReport.Failed = true
-					operationReport.Err = operation.Err.Error()
+					operationReport.Failure = &Failure{
+						Err: operation.Err.Error(),
+					}
 				}
 				stepReport.Operations = append(stepReport.Operations, operationReport)
 			}

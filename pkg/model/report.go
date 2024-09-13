@@ -28,16 +28,12 @@ type TestReport struct {
 	EndTime    time.Time
 	Namespace  string
 	Skipped    bool
-	Failed     bool
 	Steps      []*StepReport
 }
 
 func (r *TestReport) Add(report *StepReport) {
 	if report.Name == "" {
 		report.Name = fmt.Sprintf("step %d", len(r.Steps)+1)
-	}
-	if report.Failed {
-		r.Failed = true
 	}
 	r.Steps = append(r.Steps, report)
 }
@@ -46,7 +42,6 @@ type StepReport struct {
 	Name       string
 	StartTime  time.Time
 	EndTime    time.Time
-	Failed     bool
 	Operations []*OperationReport
 }
 
@@ -54,10 +49,16 @@ func (r *StepReport) Add(report *OperationReport) {
 	if report.Name == "" {
 		report.Name = fmt.Sprintf("operation %d", len(r.Operations)+1)
 	}
-	if report.Err != nil {
-		r.Failed = true
-	}
 	r.Operations = append(r.Operations, report)
+}
+
+func (r *StepReport) Failed() bool {
+	for _, operation := range r.Operations {
+		if operation.Err != nil {
+			return true
+		}
+	}
+	return false
 }
 
 type OperationReport struct {
