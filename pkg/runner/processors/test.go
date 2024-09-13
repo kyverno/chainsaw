@@ -96,6 +96,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		Concurrent: p.test.Test.Spec.Concurrent,
 		StartTime:  time.Now(),
 	}
+	stepReport := &model.StepReport{
+		Name:      "main",
+		StartTime: time.Now(),
+	}
 	t.Cleanup(func() {
 		report.EndTime = time.Now()
 		if t.Skipped() {
@@ -110,7 +114,15 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			defer func() {
 				logging.Log(ctx, logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
 			}()
-			for _, err := range mainCleaner.Run(ctx) {
+			stepReport := &model.StepReport{
+				Name:      fmt.Sprintf("cleanup (%s)", stepReport.Name),
+				StartTime: time.Now(),
+			}
+			defer func() {
+				stepReport.EndTime = time.Now()
+				report.Add(stepReport)
+			}()
+			for _, err := range mainCleaner.Run(ctx, stepReport) {
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 				failer.Fail(ctx)
 			}

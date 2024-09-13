@@ -44,7 +44,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 			defer func() {
 				logging.Log(ctx, logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
 			}()
-			for _, err := range mainCleaner.Run(ctx) {
+			for _, err := range mainCleaner.Run(ctx, nil) {
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 				failer.Fail(ctx)
 			}
