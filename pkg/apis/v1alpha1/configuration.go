@@ -54,10 +54,10 @@ type ConfigurationSpec struct {
 	// +kubebuilder:default:=Background
 	DeletionPropagationPolicy metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
 
-	// ReportFormat determines test report format (JSON|XML|nil) nil == no report.
+	// ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION|nil) nil == no report.
 	// maps to report.Type, however we don't want generated.deepcopy to have reference to it.
 	// +optional
-	// +kubebuilder:validation:Enum:=JSON;XML;
+	// +kubebuilder:validation:Enum:=JSON;XML;JUNIT-TEST;JUNIT-STEP;JUNIT-OPERATION;
 	ReportFormat ReportFormatType `json:"reportFormat,omitempty"`
 
 	// ReportPath defines the path.
@@ -124,7 +124,10 @@ type ConfigurationSpec struct {
 type ReportFormatType string
 
 const (
-	JSONFormat ReportFormatType = "JSON"
-	XMLFormat  ReportFormatType = "XML"
-	NoReport   ReportFormatType = ""
+	JSONFormat           ReportFormatType = "JSON"
+	XMLFormat            ReportFormatType = "XML"
+	JUnitTestFormat      ReportFormatType = "JUNIT-TEST"
+	JUnitStepFormat      ReportFormatType = "JUNIT-STEP"
+	JUnitOperationFormat ReportFormatType = "JUNIT-OPERATION"
+	NoReport             ReportFormatType = ""
 )
