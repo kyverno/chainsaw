@@ -10,18 +10,25 @@ import (
 )
 
 func Save(report *model.Report, format v1alpha2.ReportFormatType, path, name string) error {
-	if filepath.Ext(name) == "" {
-		name += "." + strings.ToLower(string(format))
-	}
-	filePath := name
-	if path != "" {
-		filePath = filepath.Join(path, name)
+	getFile := func(extension string) string {
+		if filepath.Ext(name) == "" {
+			name += "." + strings.ToLower(extension)
+		}
+		filePath := name
+		if path != "" {
+			filePath = filepath.Join(path, name)
+		}
+		return filePath
 	}
 	switch format {
-	case v1alpha2.XMLFormat:
-		return saveJUnit(report, filePath)
+	case v1alpha2.XMLFormat, v1alpha2.JUnitTestFormat:
+		return saveJUnitTest(report, getFile("xml"))
+	case v1alpha2.JUnitStepFormat:
+		return saveJUnitStep(report, getFile("xml"))
+	case v1alpha2.JUnitOperationFormat:
+		return saveJUnitOperation(report, getFile("xml"))
 	case v1alpha2.JSONFormat:
-		return saveJson(report, filePath)
+		return saveJson(report, getFile("json"))
 	default:
 		return fmt.Errorf("unknown report format: %s", format)
 	}

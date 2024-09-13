@@ -1747,7 +1747,7 @@
           ],
           "properties": {
             "format": {
-              "description": "ReportFormat determines test report format (JSON|XML).",
+              "description": "ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION).",
               "type": [
                 "string",
                 "null"
@@ -1755,7 +1755,10 @@
               "default": "JSON",
               "enum": [
                 "JSON",
-                "XML"
+                "XML",
+                "JUNIT-TEST",
+                "JUNIT-STEP",
+                "JUNIT-OPERATION"
               ]
             },
             "name": {

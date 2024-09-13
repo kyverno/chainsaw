@@ -95,15 +95,18 @@ type NamespaceOptions struct {
 type ReportFormatType string
 
 const (
-	JSONFormat ReportFormatType = "JSON"
-	XMLFormat  ReportFormatType = "XML"
+	JSONFormat           ReportFormatType = "JSON"
+	XMLFormat            ReportFormatType = "XML"
+	JUnitTestFormat      ReportFormatType = "JUNIT-TEST"
+	JUnitStepFormat      ReportFormatType = "JUNIT-STEP"
+	JUnitOperationFormat ReportFormatType = "JUNIT-OPERATION"
 )
 
 // ReportOptions contains the configuration used for reporting.
 type ReportOptions struct {
-	// ReportFormat determines test report format (JSON|XML).
+	// ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION).
 	// +optional
-	// +kubebuilder:validation:Enum:=JSON;XML
+	// +kubebuilder:validation:Enum:=JSON;XML;JUNIT-TEST;JUNIT-STEP;JUNIT-OPERATION
 	// +kubebuilder:default:="JSON"
 	Format ReportFormatType `json:"format,omitempty"`
 
