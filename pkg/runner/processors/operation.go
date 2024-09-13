@@ -30,7 +30,7 @@ func newOperation(
 }
 
 func (o operation) execute(ctx context.Context, tc engine.Context, stepReport *model.StepReport) (_ outputs.Outputs, err error) {
-	report := model.OperationReport{
+	report := &model.OperationReport{
 		StartTime: time.Now(),
 	}
 	defer func() {
