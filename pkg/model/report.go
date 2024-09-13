@@ -6,6 +6,21 @@ import (
 	"time"
 )
 
+type OperationType string
+
+const (
+	OperationTypeApply   OperationType = "apply"
+	OperationTypeAssert  OperationType = "assert"
+	OperationTypeCommand OperationType = "command"
+	OperationTypeCreate  OperationType = "create"
+	OperationTypeDelete  OperationType = "delete"
+	OperationTypeError   OperationType = "error"
+	OperationTypePatch   OperationType = "patch"
+	OperationTypeScript  OperationType = "script"
+	OperationTypeSleep   OperationType = "sleep"
+	OperationTypeUpdate  OperationType = "update"
+)
+
 type Report struct {
 	Name      string
 	StartTime time.Time
@@ -63,6 +78,7 @@ func (r *StepReport) Failed() bool {
 
 type OperationReport struct {
 	Name      string
+	Type      OperationType
 	StartTime time.Time
 	EndTime   time.Time
 	Err       error
