@@ -1,6 +1,7 @@
 package fs
 
 import (
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -34,4 +35,40 @@ func TestDiscoverFoldersWithError(t *testing.T) {
 	assert.NoError(t, os.Chmod(unreadableDir, 0o000))
 	_, err := DiscoverFolders(unreadableDir)
 	assert.Error(t, err)
+}
+
+func Test_discoverFolders(t *testing.T) {
+	tests := []struct {
+		name    string
+		stat    func(string) (os.FileInfo, error)
+		walk    func(string, filepath.WalkFunc) error
+		paths   []string
+		want    []string
+		wantErr bool
+	}{{
+		name:  "stat error",
+		paths: []string{"foo", "bar"},
+		stat: func(string) (os.FileInfo, error) {
+			return nil, errors.New("dummy")
+		},
+		wantErr: true,
+	}, {
+		name:  "walk error",
+		paths: []string{"foo", "bar"},
+		walk: func(s string, wf filepath.WalkFunc) error {
+			return errors.New("dummy")
+		},
+		wantErr: true,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := discoverFolders(tt.stat, tt.walk, tt.paths...)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }

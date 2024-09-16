@@ -6,13 +6,14 @@ import (
 	"io"
 	"time"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	ctrlClient "github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/client/simple"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/resource"
-	runnerclient "github.com/kyverno/chainsaw/pkg/runner/client"
-	nspacer "github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	opassert "github.com/kyverno/chainsaw/pkg/runner/operations/assert"
+	engineclient "github.com/kyverno/chainsaw/pkg/engine/client"
+	nspacer "github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	opassert "github.com/kyverno/chainsaw/pkg/engine/operations/assert"
+	"github.com/kyverno/chainsaw/pkg/loaders/config"
+	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/kyverno/pkg/ext/output/color"
 	"github.com/spf13/cobra"
@@ -46,9 +47,13 @@ func Command() *cobra.Command {
 			return runE(opts, cmd, nil, nil)
 		},
 	}
+	config, err := config.DefaultConfiguration()
+	if err != nil {
+		panic(err)
+	}
 	cmd.Flags().StringVarP(&opts.assertPath, "file", "f", "", "Path to the file to assert or '-' to read from stdin")
 	cmd.Flags().StringVarP(&opts.resourcePath, "resource", "r", "", "Path to the file containing the resource")
-	cmd.Flags().DurationVar(&opts.timeout.Duration, "timeout", v1alpha1.DefaultAssertTimeout, "The assert timeout to use")
+	cmd.Flags().DurationVar(&opts.timeout.Duration, "timeout", config.Spec.Timeouts.Assert.Duration, "The assert timeout to use")
 	cmd.Flags().StringVar(&opts.namespace, "namespace", "default", "Namespace to use")
 	cmd.Flags().BoolVar(&opts.noColor, "no-color", false, "Removes output colors")
 	cmd.Flags().BoolVar(&opts.noColor, "clustered", false, "Defines if the resource is clustered (only applies when resource is loaded from a file)")
@@ -65,7 +70,7 @@ func preRunE(opts *options, _ *cobra.Command, args []string) error {
 	return nil
 }
 
-func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer nspacer.Namespacer) error {
+func runE(opts options, cmd *cobra.Command, client client.Client, namespacer nspacer.Namespacer) error {
 	color.Init(opts.noColor, true)
 	out := cmd.OutOrStdout()
 	var assertions []unstructured.Unstructured
@@ -113,14 +118,14 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 		if err != nil {
 			return err
 		}
-		newClient, err := ctrlClient.New(cfg)
+		newClient, err := simple.New(cfg)
 		if err != nil {
 			return err
 		}
-		client = runnerclient.New(newClient)
+		client = engineclient.New(newClient)
 	}
 	if namespacer == nil {
-		namespacer = nspacer.New(client, opts.namespace)
+		namespacer = nspacer.New(opts.namespace)
 	}
 	for _, assertion := range assertions {
 		if err := assert(opts, client, assertion, namespacer); err != nil {
@@ -131,7 +136,7 @@ func runE(opts options, cmd *cobra.Command, client ctrlClient.Client, namespacer
 	return nil
 }
 
-func assert(opts options, client ctrlClient.Client, resource unstructured.Unstructured, namespacer nspacer.Namespacer) error {
+func assert(opts options, client client.Client, resource unstructured.Unstructured, namespacer nspacer.Namespacer) error {
 	ctx, cancel := context.WithTimeout(context.Background(), opts.timeout.Duration)
 	defer cancel()
 	op := opassert.New(client, resource, namespacer, false)

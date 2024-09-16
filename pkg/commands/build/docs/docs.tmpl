@@ -9,10 +9,20 @@ command
 create
 {{- else if .Delete -}}
 delete
+{{- else if .Describe -}}
+describe
 {{- else if .Error -}}
 error
+{{- else if .Events -}}
+events
+{{- else if .Get -}}
+get
 {{- else if .Patch -}}
 patch
+{{- else if .PodLogs -}}
+pod logs
+{{- else if .Proxy -}}
+proxy
 {{- else if .Script -}}
 script
 {{- else if .Sleep -}}
@@ -77,11 +87,11 @@ wait
 {{- range . }}
 {{- $test := . -}}
 
-# Test: `{{ .Name }}`
+# Test: `{{ .Test.Name }}`
 
-{{ default "*No description*" .Spec.Description }}
+{{ default "*No description*" .Test.Spec.Description }}
 
-{{- with .Spec.Bindings }}
+{{- with .Test.Spec.Bindings }}
 
 ## Bindings
 
@@ -95,17 +105,17 @@ wait
 
 ## Steps
 
-{{- with .Spec.Steps }}
+{{- with .Test.Spec.Steps }}
 
 | # | Name | Bindings | Try | Catch | Finally | Cleanup |
 |:-:|---|:-:|:-:|:-:|:-:|
 {{- range $i, $step := . }}
 {{- $name := default (print "step-" (add $i 1)) $step.Name }}
-| {{ add $i 1 }} | [{{ $name }}](#step-{{ $name }}) | {{ len $step.Bindings }} | {{ len $step.Try }} | {{ add (len $step.Catch) (len $test.Spec.Catch) }} | {{ len $step.Finally }} | {{ len $step.Cleanup }} |
+| {{ add $i 1 }} | [{{ $name }}](#step-{{ $name }}) | {{ len $step.Bindings }} | {{ len $step.Try }} | {{ add (len $step.Catch) (len $test.Test.Spec.Catch) }} | {{ len $step.Finally }} | {{ len $step.Cleanup }} |
 {{- end }}
 {{- end }}
 
-{{- range $i, $step := .Spec.Steps }}
+{{- range $i, $step := .Test.Spec.Steps }}
 {{- $name := default (print "step-" (add $i 1)) $step.Name }}
 
 ### Step: `{{ $name }}`
@@ -141,11 +151,11 @@ wait
 
 | # | Operation | Bindings | Outputs | Description |
 |:-:|---|:-:|:-:|---|
-{{- range $i, $op := $test.Spec.Catch }}
+{{- range $i, $op := $test.Test.Spec.Catch }}
 | {{ add $i 1 }} | `{{ template "CatchType" $op }}` | {{ len $op.Bindings }} | {{ len $op.Outputs }} | {{ default "*No description*" $op.Description }} |
 {{- end }}
 {{- range $i, $op := . }}
-| {{ add (len $test.Spec.Catch) $i 1 }} | `{{ template "CatchType" $op }}` | {{ len $op.Bindings }} | {{ len $op.Outputs }} | {{ default "*No description*" $op.Description }} |
+| {{ add (len $test.Test.Spec.Catch) $i 1 }} | `{{ template "CatchType" $op }}` | {{ len $op.Bindings }} | {{ len $op.Outputs }} | {{ default "*No description*" $op.Description }} |
 {{- end }}
 {{- end }}
 

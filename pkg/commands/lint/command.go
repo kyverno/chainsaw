@@ -1,16 +1,15 @@
 package lint
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
 	"path/filepath"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	testvalidation "github.com/kyverno/chainsaw/pkg/validation/test"
 	"github.com/spf13/cobra"
 	"github.com/xeipuuv/gojsonschema"
-	"k8s.io/apimachinery/pkg/util/yaml"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 func Command() *cobra.Command {
@@ -43,21 +42,16 @@ func Command() *cobra.Command {
 	return cmd
 }
 
-func lintInput(input []byte, schema string, format string, writer io.Writer) error {
+func lintInput(input []byte, kind string, format string, writer io.Writer) error {
 	fmt.Fprintln(writer, "Processing input...")
-	if err := lintSchema(input, schema, format, writer); err != nil {
+	if err := lintSchema(input, kind, format, writer); err != nil {
 		return err
-	}
-	if schema == "test" {
-		if err := lintBusinessLogic(input, writer); err != nil {
-			return err
-		}
 	}
 	fmt.Fprintln(writer, "The document is valid")
 	return nil
 }
 
-func lintSchema(input []byte, schema string, format string, writer io.Writer) error {
+func lintSchema(input []byte, kind string, format string, writer io.Writer) error {
 	processor, err := getProcessor(format, input)
 	if err != nil {
 		return err
@@ -66,7 +60,15 @@ func lintSchema(input []byte, schema string, format string, writer io.Writer) er
 	if err != nil {
 		return err
 	}
-	goschema, err := getScheme(schema)
+	var unstructured map[string]any
+	if err := json.Unmarshal(jsonInput, &unstructured); err != nil {
+		return err
+	}
+	gv, err := schema.ParseGroupVersion(unstructured["apiVersion"].(string))
+	if err != nil {
+		return err
+	}
+	goschema, err := getScheme(kind, gv.Version)
 	if err != nil {
 		return err
 	}
@@ -84,12 +86,4 @@ func lintSchema(input []byte, schema string, format string, writer io.Writer) er
 		return fmt.Errorf("document is not valid")
 	}
 	return nil
-}
-
-func lintBusinessLogic(input []byte, writer io.Writer) error {
-	test := &v1alpha1.Test{}
-	if err := yaml.UnmarshalStrict(input, test); err != nil {
-		return err
-	}
-	return testvalidation.ValidateTest(test).ToAggregate()
 }

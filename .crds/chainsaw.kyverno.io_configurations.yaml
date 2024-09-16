@@ -3,7 +3,7 @@ apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
   annotations:
-    controller-gen.kubebuilder.io/version: v0.15.0
+    controller-gen.kubebuilder.io/version: (devel)
   name: configurations.chainsaw.kyverno.io
 spec:
   group: chainsaw.kyverno.io
@@ -45,7 +45,27 @@ spec:
                   Catch defines what the tests steps will execute when an error happens.
                   This will be combined with catch handlers defined at the test and step levels.
                 items:
-                  description: Catch defines actions to be executed on failure.
+                  description: CatchFinally defines actions to be executed in catch,
+                    finally and cleanup blocks.
+                  oneOf:
+                  - required:
+                    - command
+                  - required:
+                    - delete
+                  - required:
+                    - describe
+                  - required:
+                    - events
+                  - required:
+                    - get
+                  - required:
+                    - podLogs
+                  - required:
+                    - script
+                  - required:
+                    - sleep
+                  - required:
+                    - wait
                   properties:
                     command:
                       description: Command defines a command to run.
@@ -79,8 +99,8 @@ spec:
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -152,11 +172,18 @@ spec:
                           description: Timeout for the operation. Overrides the global
                             timeout set in the Configuration.
                           type: string
+                        workDir:
+                          description: WorkDir is the working directory for command.
+                          type: string
                       required:
                       - entrypoint
                       type: object
                     delete:
                       description: Delete represents a deletion operation.
+                      not:
+                        required:
+                        - file
+                        - ref
                       properties:
                         bindings:
                           description: Bindings defines additional binding key/values.
@@ -177,8 +204,8 @@ spec:
                             type: object
                           type: array
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -276,13 +303,17 @@ spec:
                     describe:
                       description: Describe determines the resource describe collector
                         to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         apiVersion:
                           description: API version of the referent.
                           type: string
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -337,10 +368,14 @@ spec:
                       type: string
                     events:
                       description: Events determines the events collector to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -385,13 +420,17 @@ spec:
                       type: object
                     get:
                       description: Get determines the resource get collector to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         apiVersion:
                           description: API version of the referent.
                           type: string
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -444,10 +483,14 @@ spec:
                       type: object
                     podLogs:
                       description: PodLogs determines the pod logs collector to execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -522,8 +565,8 @@ spec:
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
                         cluster:
-                          description: Cluster defines the target cluster (default
-                            cluster will be used if not specified and/or overridden).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -596,6 +639,9 @@ spec:
                           description: Timeout for the operation. Overrides the global
                             timeout set in the Configuration.
                           type: string
+                        workDir:
+                          description: WorkDir is the working directory for script.
+                          type: string
                       type: object
                     sleep:
                       description: Sleep defines zzzz.
@@ -609,14 +655,17 @@ spec:
                     wait:
                       description: Wait determines the resource wait collector to
                         execute.
+                      not:
+                        required:
+                        - name
+                        - selector
                       properties:
                         apiVersion:
                           description: API version of the referent.
                           type: string
                         cluster:
-                          description: Cluster defines the target cluster where the
-                            wait operation will be performed (default cluster will
-                            be used if not specified).
+                          description: Cluster defines the target cluster (will be
+                            inherited if not specified).
                           type: string
                         clusters:
                           additionalProperties:
@@ -637,7 +686,7 @@ spec:
                             multi-cluster tests.
                           type: object
                         for:
-                          description: For specifies the condition to wait for.
+                          description: WaitFor specifies the condition to wait for.
                           properties:
                             condition:
                               description: Condition specifies the condition to wait
@@ -672,7 +721,6 @@ spec:
                                   type: string
                               required:
                               - path
-                              - value
                               type: object
                           type: object
                         format:
@@ -699,8 +747,8 @@ spec:
                           description: Selector defines labels selector.
                           type: string
                         timeout:
-                          description: Timeout for the operation. Specifies how long
-                            to wait for the condition to be met before timing out.
+                          description: Timeout for the operation. Overrides the global
+                            timeout set in the Configuration.
                           type: string
                       required:
                       - apiVersion
@@ -783,11 +831,14 @@ spec:
                 type: integer
               reportFormat:
                 description: |-
-                  ReportFormat determines test report format (JSON|XML|nil) nil == no report.
+                  ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION|nil) nil == no report.
                   maps to report.Type, however we don't want generated.deepcopy to have reference to it.
                 enum:
                 - JSON
                 - XML
+                - JUNIT-TEST
+                - JUNIT-STEP
+                - JUNIT-OPERATION
                 type: string
               reportName:
                 default: chainsaw-report
@@ -802,6 +853,7 @@ spec:
                   tests (implies SkipClusterDelete).
                 type: boolean
               template:
+                default: true
                 description: Template determines whether resources should be considered
                   for templating.
                 type: boolean
@@ -812,25 +864,32 @@ spec:
                   If no extension is provided, chainsaw will try with .yaml first and .yml if needed.
                 type: string
               timeouts:
+                default: {}
                 description: Global timeouts configuration. Applies to all tests/test
                   steps if not overridden.
                 properties:
                   apply:
+                    default: 5s
                     description: Apply defines the timeout for the apply operation
                     type: string
                   assert:
+                    default: 30s
                     description: Assert defines the timeout for the assert operation
                     type: string
                   cleanup:
+                    default: 30s
                     description: Cleanup defines the timeout for the cleanup operation
                     type: string
                   delete:
+                    default: 15s
                     description: Delete defines the timeout for the delete operation
                     type: string
                   error:
+                    default: 30s
                     description: Error defines the timeout for the error operation
                     type: string
                   exec:
+                    default: 5s
                     description: Exec defines the timeout for exec operations
                     type: string
                 type: object
@@ -839,7 +898,7 @@ spec:
         - spec
         type: object
     served: true
-    storage: true
+    storage: false
   - name: v1alpha2
     schema:
       openAPIV3Schema:
@@ -867,6 +926,7 @@ spec:
             description: Configuration spec.
             properties:
               cleanup:
+                default: {}
                 description: Cleanup contains cleanup configuration.
                 properties:
                   delayBeforeCleanup:
@@ -933,6 +993,7 @@ spec:
                     type: string
                 type: object
               error:
+                default: {}
                 description: Error contains the global error configuration.
                 properties:
                   catch:
@@ -940,7 +1001,27 @@ spec:
                       Catch defines what the tests steps will execute when an error happens.
                       This will be combined with catch handlers defined at the test and step levels.
                     items:
-                      description: Catch defines actions to be executed on failure.
+                      description: CatchFinally defines actions to be executed in
+                        catch, finally and cleanup blocks.
+                      oneOf:
+                      - required:
+                        - command
+                      - required:
+                        - delete
+                      - required:
+                        - describe
+                      - required:
+                        - events
+                      - required:
+                        - get
+                      - required:
+                        - podLogs
+                      - required:
+                        - script
+                      - required:
+                        - sleep
+                      - required:
+                        - wait
                       properties:
                         command:
                           description: Command defines a command to run.
@@ -974,8 +1055,8 @@ spec:
                               type: object
                               x-kubernetes-preserve-unknown-fields: true
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1048,11 +1129,18 @@ spec:
                               description: Timeout for the operation. Overrides the
                                 global timeout set in the Configuration.
                               type: string
+                            workDir:
+                              description: WorkDir is the working directory for command.
+                              type: string
                           required:
                           - entrypoint
                           type: object
                         delete:
                           description: Delete represents a deletion operation.
+                          not:
+                            required:
+                            - file
+                            - ref
                           properties:
                             bindings:
                               description: Bindings defines additional binding key/values.
@@ -1073,8 +1161,8 @@ spec:
                                 type: object
                               type: array
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1173,13 +1261,17 @@ spec:
                         describe:
                           description: Describe determines the resource describe collector
                             to execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             apiVersion:
                               description: API version of the referent.
                               type: string
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1234,10 +1326,14 @@ spec:
                           type: string
                         events:
                           description: Events determines the events collector to execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1283,13 +1379,17 @@ spec:
                         get:
                           description: Get determines the resource get collector to
                             execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             apiVersion:
                               description: API version of the referent.
                               type: string
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1343,10 +1443,14 @@ spec:
                         podLogs:
                           description: PodLogs determines the pod logs collector to
                             execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1421,8 +1525,8 @@ spec:
                               type: object
                               x-kubernetes-preserve-unknown-fields: true
                             cluster:
-                              description: Cluster defines the target cluster (default
-                                cluster will be used if not specified and/or overridden).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1495,6 +1599,9 @@ spec:
                               description: Timeout for the operation. Overrides the
                                 global timeout set in the Configuration.
                               type: string
+                            workDir:
+                              description: WorkDir is the working directory for script.
+                              type: string
                           type: object
                         sleep:
                           description: Sleep defines zzzz.
@@ -1508,14 +1615,17 @@ spec:
                         wait:
                           description: Wait determines the resource wait collector
                             to execute.
+                          not:
+                            required:
+                            - name
+                            - selector
                           properties:
                             apiVersion:
                               description: API version of the referent.
                               type: string
                             cluster:
-                              description: Cluster defines the target cluster where
-                                the wait operation will be performed (default cluster
-                                will be used if not specified).
+                              description: Cluster defines the target cluster (will
+                                be inherited if not specified).
                               type: string
                             clusters:
                               additionalProperties:
@@ -1536,7 +1646,8 @@ spec:
                                 support multi-cluster tests.
                               type: object
                             for:
-                              description: For specifies the condition to wait for.
+                              description: WaitFor specifies the condition to wait
+                                for.
                               properties:
                                 condition:
                                   description: Condition specifies the condition to
@@ -1571,7 +1682,6 @@ spec:
                                       type: string
                                   required:
                                   - path
-                                  - value
                                   type: object
                               type: object
                             format:
@@ -1598,9 +1708,8 @@ spec:
                               description: Selector defines labels selector.
                               type: string
                             timeout:
-                              description: Timeout for the operation. Specifies how
-                                long to wait for the condition to be met before timing
-                                out.
+                              description: Timeout for the operation. Overrides the
+                                global timeout set in the Configuration.
                               type: string
                           required:
                           - apiVersion
@@ -1611,6 +1720,7 @@ spec:
                     type: array
                 type: object
               execution:
+                default: {}
                 description: Execution contains tests execution configuration.
                 properties:
                   failFast:
@@ -1634,6 +1744,7 @@ spec:
                     type: integer
                 type: object
               namespace:
+                default: {}
                 description: Namespace contains properties for the namespace to use
                   for tests.
                 properties:
@@ -1653,10 +1764,13 @@ spec:
                 properties:
                   format:
                     default: JSON
-                    description: ReportFormat determines test report format (JSON|XML).
+                    description: ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION).
                     enum:
                     - JSON
                     - XML
+                    - JUNIT-TEST
+                    - JUNIT-STEP
+                    - JUNIT-OPERATION
                     type: string
                   name:
                     default: chainsaw-report
@@ -1668,33 +1782,42 @@ spec:
                     type: string
                 type: object
               templating:
+                default: {}
                 description: Templating contains the templating config.
                 properties:
                   enabled:
+                    default: true
                     description: Enabled determines whether resources should be considered
                       for templating.
                     type: boolean
                 type: object
               timeouts:
+                default: {}
                 description: Global timeouts configuration. Applies to all tests/test
                   steps if not overridden.
                 properties:
                   apply:
+                    default: 5s
                     description: Apply defines the timeout for the apply operation
                     type: string
                   assert:
+                    default: 30s
                     description: Assert defines the timeout for the assert operation
                     type: string
                   cleanup:
+                    default: 30s
                     description: Cleanup defines the timeout for the cleanup operation
                     type: string
                   delete:
+                    default: 15s
                     description: Delete defines the timeout for the delete operation
                     type: string
                   error:
+                    default: 30s
                     description: Error defines the timeout for the error operation
                     type: string
                   exec:
+                    default: 5s
                     description: Exec defines the timeout for exec operations
                     type: string
                 type: object
@@ -1703,4 +1826,4 @@ spec:
         - spec
         type: object
     served: true
-    storage: false
+    storage: true

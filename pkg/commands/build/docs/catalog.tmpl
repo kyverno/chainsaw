@@ -1,4 +1,4 @@
 # Tests catalog
 {{ range .Tests }}
-- [{{ .ObjectMeta.Name }}]({{ fpRel $.BasePath (fpJoin .BasePath $.Readme) }})
+- [{{ .Test.Name }}]({{ fpRel $.BasePath (fpJoin .BasePath $.Readme) }})
 {{- end }}

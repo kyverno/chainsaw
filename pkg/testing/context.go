@@ -15,7 +15,7 @@ type (
 
 type contextKey struct{}
 
-type tTest interface {
+type TTest interface {
 	Cleanup(func())
 	Deadline() (deadline time.Time, ok bool)
 	Error(args ...any)
@@ -39,14 +39,14 @@ type tTest interface {
 	TempDir() string
 }
 
-func FromContext(ctx context.Context) tTest {
-	if v, ok := ctx.Value(contextKey{}).(tTest); ok {
+func FromContext(ctx context.Context) TTest {
+	if v, ok := ctx.Value(contextKey{}).(TTest); ok {
 		return v
 	}
 	return nil
 }
 
-func IntoContext(ctx context.Context, t tTest) context.Context {
+func IntoContext(ctx context.Context, t TTest) context.Context {
 	t.Helper()
 	return context.WithValue(ctx, contextKey{}, t)
 }

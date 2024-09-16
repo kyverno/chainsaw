@@ -29,7 +29,6 @@ KIND_IMAGE                         ?= kindest/node:v1.29.2
 
 TOOLS_DIR                          := $(PWD)/.tools
 CONTROLLER_GEN                     := $(TOOLS_DIR)/controller-gen
-CONTROLLER_GEN_VERSION             := v0.15.0
 REGISTER_GEN                       := $(TOOLS_DIR)/register-gen
 DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
 CONVERSION_GEN                     := $(TOOLS_DIR)/conversion-gen
@@ -51,7 +50,7 @@ COMMA                              := ,
 
 $(CONTROLLER_GEN):
 	@echo Install controller-gen... >&2
-	@GOBIN=$(TOOLS_DIR) go install sigs.k8s.io/controller-tools/cmd/controller-gen@$(CONTROLLER_GEN_VERSION)
+	@cd ./hack/controller-gen && GOBIN=$(TOOLS_DIR) go install
 
 $(REGISTER_GEN):
 	@echo Install register-gen... >&2
@@ -105,7 +104,7 @@ codegen-register: $(PACKAGE_SHIM)
 codegen-register: $(REGISTER_GEN)
 	@echo Generate registration... >&2
 	@GOPATH=$(GOPATH_SHIM) $(REGISTER_GEN) \
-		--go-header-file=./.hack/boilerplate.go.txt \
+		--go-header-file=./hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS)
 
 .PHONY: codegen-deepcopy
@@ -114,7 +113,7 @@ codegen-deepcopy: $(PACKAGE_SHIM)
 codegen-deepcopy: $(DEEPCOPY_GEN)
 	@echo Generate deep copy functions... >&2
 	@GOPATH=$(GOPATH_SHIM) $(DEEPCOPY_GEN) \
-		--go-header-file=./.hack/boilerplate.go.txt \
+		--go-header-file=./hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS) \
 		--output-file-base=zz_generated.deepcopy
 
@@ -124,19 +123,20 @@ codegen-conversion: $(PACKAGE_SHIM)
 codegen-conversion: $(CONVERSION_GEN)
 	@echo Generate conversion functions... >&2
 	@GOPATH=$(GOPATH_SHIM) $(CONVERSION_GEN) \
-		--go-header-file=./.hack/boilerplate.go.txt \
+		--go-header-file=./hack/boilerplate.go.txt \
 		--input-dirs=$(INPUT_DIRS) \
 		--output-file-base=zz_generated.conversion
 
 .PHONY: codegen-crds
 codegen-crds: ## Generate CRDs
+codegen-crds: $(PACKAGE_SHIM)
 codegen-crds: $(CONTROLLER_GEN)
 codegen-crds: codegen-deepcopy
 codegen-crds: codegen-register
 codegen-crds: codegen-conversion
 	@echo Generate crds... >&2
 	@rm -rf $(CRDS_PATH)
-	@$(CONTROLLER_GEN) paths=./pkg/apis/... crd:crdVersions=v1 output:dir=$(CRDS_PATH)
+	@GOPATH=$(GOPATH_SHIM) $(CONTROLLER_GEN) paths=./pkg/apis/... crd:crdVersions=v1,ignoreUnexportedFields=true,generateEmbeddedObjectMeta=false output:dir=$(CRDS_PATH)
 	@echo Copy generated CRDs to embed in the CLI... >&2
 	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
 	@cp $(CRDS_PATH)/* pkg/data/crds
@@ -146,7 +146,6 @@ codegen-cli-docs: ## Generate CLI docs
 codegen-cli-docs: build
 	@echo Generate cli docs... >&2
 	@rm -rf website/docs/reference/commands && mkdir -p website/reference/docs/commands
-	@rm -rf docs/user/commands && mkdir -p docs/user/commands
 	@./$(CLI_BIN) docs -o website/docs/reference/commands --autogenTag=false
 
 .PHONY: codegen-api-docs
@@ -162,7 +161,7 @@ codegen-api-docs: codegen-conversion
 .PHONY: codegen-jp-docs
 codegen-jp-docs: ## Generate JP docs
 	@echo Generate jp docs... >&2
-	@rm -rf ./website/docs/reference/jp && mkdir -p ./website/docs/reference/jp
+	@mkdir -p ./website/docs/reference/jp
 	@go run ./website/jp/main.go > ./website/docs/reference/jp/functions.md
 
 .PHONY: codegen-mkdocs
@@ -171,9 +170,7 @@ codegen-mkdocs: codegen-cli-docs
 codegen-mkdocs: codegen-api-docs
 codegen-mkdocs: codegen-jp-docs
 	@echo Generate mkdocs website... >&2
-	@$(PIP) install mkdocs
-	@$(PIP) install --upgrade pip
-	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin mike Pillow cairosvg
+	@$(PIP) install -r requirements.txt
 	@mkdocs build -f ./website/mkdocs.yaml
 
 .PHONY: codegen-schemas-openapi
@@ -198,13 +195,15 @@ codegen-schemas-openapi: $(KIND)
 codegen-schemas-json: ## Generate json schemas
 codegen-schemas-json: codegen-schemas-openapi
 	@echo Generate json schema... >&2
-	@$(PIP) install openapi2jsonschema --no-build-isolation
+	@$(PIP) install -r requirements.txt
 	@rm -rf ./.temp/.schemas/json
 	@rm -rf ./.schemas/json
-	@openapi2jsonschema ./.temp/.schemas/openapi/v2/schema.json --kubernetes --stand-alone --expanded -o ./.temp/.schemas/json
+	@openapi2jsonschema .temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha1.json --kubernetes --strict --stand-alone --expanded -o ./.temp/.schemas/json
+	@openapi2jsonschema .temp/.schemas/openapi/v3/apis/chainsaw.kyverno.io/v1alpha2.json --kubernetes --strict --stand-alone --expanded -o ./.temp/.schemas/json
 	@mkdir -p ./.schemas/json
-	@cp ./.temp/.schemas/json/test-chainsaw-*.json ./.schemas/json
 	@cp ./.temp/.schemas/json/configuration-chainsaw-*.json ./.schemas/json
+	@cp ./.temp/.schemas/json/steptemplate-chainsaw-*.json ./.schemas/json
+	@cp ./.temp/.schemas/json/test-chainsaw-*.json ./.schemas/json
 	@echo Copy generated schemas to embed in the CLI... >&2
 	@rm -rf pkg/data/schemas/json && mkdir -p pkg/data/schemas/json
 	@cp ./.schemas/json/* pkg/data/schemas/json
@@ -243,9 +242,7 @@ verify-codegen: codegen
 .PHONY: mkdocs-serve
 mkdocs-serve: ## Generate and serve mkdocs website
 	@echo Generate and servemkdocs website... >&2
-	@$(PIP) install mkdocs
-	@$(PIP) install --upgrade pip
-	@$(PIP) install -U mkdocs-material mkdocs-redirects mkdocs-minify-plugin mkdocs-include-markdown-plugin lunr mkdocs-rss-plugin mike Pillow cairosvg
+	@$(PIP) install -r requirements.txt
 	@mkdocs serve -f ./website/mkdocs.yaml
 
 #########

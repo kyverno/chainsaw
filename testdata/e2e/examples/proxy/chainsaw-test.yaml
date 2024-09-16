@@ -1,0 +1,23 @@
+# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: proxy
+spec:
+  skip: true
+  steps:
+  - try:
+    - proxy:
+        apiVersion: v1
+        kind: Service
+        namespace: kyverno
+        name: kyverno-svc-metrics
+        port: metrics-port
+        path: /metrics
+        outputs:
+        - name: metrics
+          value: (x_metrics_decode($stdout))
+    - assert:
+        resource:
+          ($metrics[?as_string(metric.code) == '500' && as_string(metric.__name__) == 'promhttp_metric_handler_requests_total'].value):
+          - 0

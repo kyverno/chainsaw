@@ -1,6 +1,7 @@
 package data
 
 import (
+	"errors"
 	"io/fs"
 	"testing"
 
@@ -8,55 +9,63 @@ import (
 )
 
 func TestCrds(t *testing.T) {
-	data := Crds()
-	{
-		file, err := fs.Stat(data, "crds/chainsaw.kyverno.io_configurations.yaml")
+	data, err := Crds()
+	assert.NoError(t, err)
+	files := []string{
+		"chainsaw.kyverno.io_configurations.yaml",
+		"chainsaw.kyverno.io_steptemplates.yaml",
+		"chainsaw.kyverno.io_tests.yaml",
+	}
+	for _, file := range files {
+		file, err := fs.Stat(data, file)
 		assert.NoError(t, err)
 		assert.NotNil(t, file)
 		assert.False(t, file.IsDir())
-	}
-	{
-		file, err := fs.Stat(data, "crds")
-		assert.NoError(t, err)
-		assert.NotNil(t, file)
-		assert.True(t, file.IsDir())
 	}
 }
 
-func TestConfig(t *testing.T) {
-	data := Config()
-	{
-		file, err := fs.Stat(data, "config/default.yaml")
+func Test_config(t *testing.T) {
+	data, err := config()
+	assert.NoError(t, err)
+	files := []string{
+		"default.yaml",
+	}
+	for _, file := range files {
+		file, err := fs.Stat(data, file)
 		assert.NoError(t, err)
 		assert.NotNil(t, file)
 		assert.False(t, file.IsDir())
-	}
-	{
-		file, err := fs.Stat(data, "config")
-		assert.NoError(t, err)
-		assert.NotNil(t, file)
-		assert.True(t, file.IsDir())
 	}
 }
 
 func TestSchemas(t *testing.T) {
-	data := Schemas()
-	{
-		file, err := fs.Stat(data, "schemas/json/test-chainsaw-v1alpha1.json")
+	data, err := Schemas()
+	assert.NoError(t, err)
+	files := []string{
+		"configuration-chainsaw-v1alpha1.json",
+		"configuration-chainsaw-v1alpha2.json",
+		"steptemplate-chainsaw-v1alpha1.json",
+		"test-chainsaw-v1alpha1.json",
+		"test-chainsaw-v1alpha2.json",
+	}
+	for _, file := range files {
+		file, err := fs.Stat(data, file)
 		assert.NoError(t, err)
 		assert.NotNil(t, file)
 		assert.False(t, file.IsDir())
 	}
-	{
-		file, err := fs.Stat(data, "schemas/json")
-		assert.NoError(t, err)
-		assert.NotNil(t, file)
-		assert.True(t, file.IsDir())
-	}
-	{
-		file, err := fs.Stat(data, "schemas")
-		assert.NoError(t, err)
-		assert.NotNil(t, file)
-		assert.True(t, file.IsDir())
-	}
+}
+
+func TestConfigFile(t *testing.T) {
+	data, err := ConfigFile()
+	assert.NoError(t, err)
+	assert.NotNil(t, data)
+}
+
+func Test_configFile(t *testing.T) {
+	data, err := _configFile(func() (fs.FS, error) {
+		return nil, errors.New("dummy")
+	})
+	assert.Error(t, err)
+	assert.Nil(t, data)
 }

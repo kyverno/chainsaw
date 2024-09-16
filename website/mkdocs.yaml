@@ -86,6 +86,8 @@ nav:
     - v1alpha2: reference/apis/chainsaw.v1alpha2.md
   - JMESPath:
     - Functions: reference/jp/functions.md
+    - Examples:
+      - reference/jp/examples/x_k8s_get.md
   - Command Line:
     - chainsaw: reference/commands/chainsaw.md
     - chainsaw assert: reference/commands/chainsaw_assert.md
@@ -106,6 +108,8 @@ nav:
     - chainsaw migrate kuttl: reference/commands/chainsaw_migrate_kuttl.md
     - chainsaw migrate kuttl config: reference/commands/chainsaw_migrate_kuttl_config.md
     - chainsaw migrate kuttl tests: reference/commands/chainsaw_migrate_kuttl_tests.md
+    - chainsaw renovate: reference/commands/chainsaw_renovate.md
+    - chainsaw renovate config: reference/commands/chainsaw_renovate_config.md
     - chainsaw test: reference/commands/chainsaw_test.md
     - chainsaw version: reference/commands/chainsaw_version.md
 - Examples:
@@ -125,4 +129,10 @@ nav:
     - guides/lint.md
     - guides/kuttl-migration.md
     - guides/test-docs.md
-- Community: community/index.md
+- Community: 
+  - community/index.md
+  - Contributing: community/contribute.md
+  - Reporting a bug: community/reporting-a-bug.md
+  - Reporting a docs issue: community/reporting-a-docs-issue.md
+  - Requesting a change: community/requesting-a-change.md
+  - Making a pull request: community/making-a-pull-request.md

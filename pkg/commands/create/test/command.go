@@ -74,7 +74,7 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					Description: getDescription(description, "sample apply operation"),
 				},
 				Apply: &v1alpha1.Apply{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
+					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
 							File: "resources.yaml",
 						},
@@ -85,7 +85,7 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					Description: getDescription(description, "sample assert operation"),
 				},
 				Assert: &v1alpha1.Assert{
-					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
 							File: "assert.yaml",
 						},
@@ -96,7 +96,7 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					Description: getDescription(description, "sample error operation"),
 				},
 				Error: &v1alpha1.Error{
-					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
 							File: "error.yaml",
 						},
@@ -108,12 +108,12 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 				},
 				Delete: &v1alpha1.Delete{
 					Ref: &v1alpha1.ObjectReference{
-						ObjectSelector: v1alpha1.ObjectSelector{
-							Name: "foo",
-						},
 						ObjectType: v1alpha1.ObjectType{
 							APIVersion: "v1",
 							Kind:       "Pod",
+						},
+						ObjectName: v1alpha1.ObjectName{
+							Name: "foo",
 						},
 					},
 				},
@@ -125,22 +125,24 @@ func sampleSteps(description bool) []v1alpha1.TestStep {
 					Content: `echo "test namespace = $NAMESPACE"`,
 				},
 			}},
-			Catch: []v1alpha1.Catch{{
+			Catch: []v1alpha1.CatchFinally{{
 				Description: getDescription(description, "sample events collector"),
 				Events: &v1alpha1.Events{
-					ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
-						Name: "foo",
+					ActionObjectSelector: v1alpha1.ActionObjectSelector{
+						ObjectName: v1alpha1.ObjectName{
+							Name: "foo",
+						},
 					},
 				},
 			}, {
 				Description: getDescription(description, "sample pod logs collector"),
 				PodLogs: &v1alpha1.PodLogs{
-					ObjectLabelsSelector: v1alpha1.ObjectLabelsSelector{
+					ActionObjectSelector: v1alpha1.ActionObjectSelector{
 						Selector: "app=foo",
 					},
 				},
 			}},
-			Finally: []v1alpha1.Finally{{
+			Finally: []v1alpha1.CatchFinally{{
 				Description: getDescription(description, "sample sleep operation"),
 				Sleep: &v1alpha1.Sleep{
 					Duration: metav1.Duration{Duration: 5 * time.Second},

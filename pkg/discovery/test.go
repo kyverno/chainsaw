@@ -1,11 +1,11 @@
 package discovery
 
 import (
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/model"
 )
 
 type Test struct {
-	*v1alpha1.Test
+	Test     *model.Test
 	BasePath string
 	Err      error
 }

@@ -9,15 +9,15 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/commands/root"
-	fakeNamespacer "github.com/kyverno/chainsaw/pkg/runner/namespacer/testing"
+	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/spf13/cobra"
 	testify "github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func Test_Execute(t *testing.T) {
@@ -150,7 +150,7 @@ func Test_runE(t *testing.T) {
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "ConfigMap",
@@ -165,7 +165,7 @@ func Test_runE(t *testing.T) {
 			},
 		},
 		nspacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(call int, client client.Client, obj client.Object) error {
 				return nil
 			},
 			GetNamespaceFn: func(call int) string {
@@ -189,7 +189,7 @@ func Test_runE(t *testing.T) {
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "ConfigMap",
@@ -204,7 +204,7 @@ func Test_runE(t *testing.T) {
 			},
 		},
 		nspacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(call int, client client.Client, obj client.Object) error {
 				return nil
 			},
 			GetNamespaceFn: func(call int) string {
@@ -215,7 +215,7 @@ func Test_runE(t *testing.T) {
 			"------------------------\n" +
 			"v1/ConfigMap/quick-start\n" +
 			"------------------------\n" +
-			"* data.foo: Invalid value: \"null\": Expected value: \"bar\"\n\n" +
+			"* data.foo: Required value: field not found in the input object\n\n" +
 			"--- expected\n" +
 			"+++ actual\n" +
 			"@@ -1,6 +1,5 @@\n" +
@@ -243,7 +243,7 @@ func Test_runE(t *testing.T) {
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "ConfigMap",
@@ -258,7 +258,7 @@ func Test_runE(t *testing.T) {
 			},
 		},
 		nspacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(call int, client client.Client, obj client.Object) error {
 				return nil
 			},
 			GetNamespaceFn: func(call int) string {
@@ -290,7 +290,7 @@ data:
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "ConfigMap",
@@ -305,7 +305,7 @@ data:
 			},
 		},
 		nspacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(call int, client client.Client, obj client.Object) error {
 				return nil
 			},
 			GetNamespaceFn: func(call int) string {
@@ -330,7 +330,7 @@ data:
 			timeout:    metav1.Duration{Duration: 5 * time.Second},
 		},
 		client: &tclient.FakeClient{
-			GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
 					"apiVersion": "v1",
 					"kind":       "ConfigMap",
@@ -345,7 +345,7 @@ data:
 			},
 		},
 		nspacer: &fakeNamespacer.FakeNamespacer{
-			ApplyFn: func(obj ctrlclient.Object, call int) error {
+			ApplyFn: func(call int, client client.Client, obj client.Object) error {
 				return nil
 			},
 			GetNamespaceFn: func(call int) string {

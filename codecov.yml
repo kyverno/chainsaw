@@ -1,5 +1,6 @@
 ignore:
-- ^pkg/apis/v1alpha1/zz_generated\.deepcopy\.go$
-- ^pkg/apis/v1alpha1/zz_generated\.register\.go$
-- ^pkg/testing/.*\.go$
-- ^.*_test\.go$
+- 'hack/**/*.go'
+- 'website/**/*.go'
+- 'pkg/apis/**/zz_*.go'
+- 'pkg/testing/*.go'
+- '**/*_test.go'

@@ -5,115 +5,161 @@ import (
 	"fmt"
 	"os"
 	"time"
+
+	"github.com/jstemmer/go-junit-report/v2/junit"
+	"github.com/kyverno/chainsaw/pkg/model"
+	"go.uber.org/multierr"
 )
 
-type failureNode struct {
-	XMLName struct{} `xml:"failure"`
+func durationInSecondsString(start, end time.Time) string {
+	duration := end.Sub(start)
+	return fmt.Sprintf("%.6f", duration.Seconds())
 }
 
-type skippedNode struct {
-	XMLName struct{} `xml:"skipped"`
-}
-
-type propertyNode struct {
-	XMLName struct{} `xml:"property"`
-	Name    string   `xml:"name,attr"`
-	Value   string   `xml:"value,attr,omitempty"`
-}
-
-type propertiesNode struct {
-	XMLName struct{} `xml:"properties"`
-	Inner   []any
-}
-
-type testcaseNode struct {
-	XMLName   struct{} `xml:"testcase"`
-	Name      string   `xml:"name,attr,omitempty"`
-	Timestamp string   `xml:"timestamp,attr,omitempty"`
-	Time      float64  `xml:"time,attr,omitempty"`
-	File      string   `xml:"file,attr,omitempty"`
-	Inner     []any
-}
-
-type testsuiteNode struct {
-	XMLName   struct{} `xml:"testsuite"`
-	Name      string   `xml:"name,attr,omitempty"`
-	Timestamp string   `xml:"timestamp,attr,omitempty"`
-	File      string   `xml:"file,attr,omitempty"`
-	Inner     []any
-}
-
-type testsuitesNode struct {
-	XMLName   struct{} `xml:"testsuites"`
-	Name      string   `xml:"name,attr,omitempty"`
-	Timestamp string   `xml:"timestamp,attr,omitempty"`
-	Time      float64  `xml:"time,attr,omitempty"`
-	Inner     []any
-}
-
-func saveJUnit(report *Report, file string) error {
-	testsuites := testsuitesNode{
-		Name:      report.name,
-		Timestamp: report.startTime.UTC().Format(time.RFC3339),
-		Time:      report.endTime.Sub(report.startTime).Seconds(),
+func saveJUnitTest(report *model.Report, file string) error {
+	testSuites := &junit.Testsuites{
+		Name: report.Name,
+		Time: durationInSecondsString(report.StartTime, report.EndTime),
 	}
-	perFolder := map[string][]*TestReport{}
-	for _, test := range report.tests {
-		perFolder[test.test.BasePath] = append(perFolder[test.test.BasePath], test)
-	}
-	for folder, tests := range perFolder {
-		testsuite := testsuiteNode{
+	addTestSuite := func(folder string, tests ...*model.TestReport) {
+		testSuite := junit.Testsuite{
 			Name: folder,
 		}
 		for _, test := range tests {
-			var properties []any
-			if test.namespace != "" {
-				properties = append(properties, propertyNode{
-					Name:  "namespace",
-					Value: test.namespace,
-				})
+			testCase := junit.Testcase{
+				Name: test.Name,
+				Time: durationInSecondsString(test.StartTime, test.EndTime),
 			}
-			for i, step := range test.steps {
-				if step.step.Name != "" {
-					properties = append(properties, propertyNode{
-						Name:  fmt.Sprintf("step%d", i),
-						Value: step.step.Name,
-					})
+			if test.Skipped {
+				testCase.Skipped = &junit.Result{}
+			} else {
+				var errs []error
+				for _, step := range test.Steps {
+					for _, operation := range step.Operations {
+						if operation.Err != nil {
+							errs = append(errs, operation.Err)
+						}
+					}
 				}
-				for j, op := range step.reports {
-					if op.err != nil {
-						properties = append(properties, propertyNode{
-							Name:  fmt.Sprintf("step%d", i),
-							Value: fmt.Sprintf("op %d - %s: %s", j, op.operationType, op.err),
-						})
-					} else {
-						properties = append(properties, propertyNode{
-							Name:  fmt.Sprintf("step%d", i),
-							Value: fmt.Sprintf("op %d - %s", j, op.operationType),
-						})
+				if err := multierr.Combine(errs...); err != nil {
+					testCase.Failure = &junit.Result{
+						Message: err.Error(),
 					}
 				}
 			}
-			testcase := testcaseNode{
-				Name:      test.test.Name,
-				Timestamp: test.startTime.UTC().Format(time.RFC3339),
-				Time:      test.endTime.Sub(test.startTime).Seconds(),
-				File:      test.test.BasePath,
-			}
-			if len(properties) != 0 {
-				testcase.Inner = append(testcase.Inner, propertiesNode{Inner: properties})
-			}
-			if test.skipped {
-				testcase.Inner = append(testcase.Inner, skippedNode{})
-			}
-			if test.failed {
-				testcase.Inner = append(testcase.Inner, failureNode{})
-			}
-			testsuite.Inner = append(testsuite.Inner, testcase)
+			testSuite.AddTestcase(testCase)
 		}
-		testsuites.Inner = append(testsuites.Inner, testsuite)
+		testSuites.AddSuite(testSuite)
 	}
-	data, err := xml.MarshalIndent(testsuites, "", "  ")
+	perFolder := map[string][]*model.TestReport{}
+	for _, test := range report.Tests {
+		perFolder[test.BasePath] = append(perFolder[test.BasePath], test)
+	}
+	for folder, tests := range perFolder {
+		addTestSuite(folder, tests...)
+	}
+	data, err := xml.MarshalIndent(testSuites, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(file, data, 0o600)
+}
+
+func saveJUnitStep(report *model.Report, file string) error {
+	testSuites := &junit.Testsuites{
+		Name: report.Name,
+		Time: durationInSecondsString(report.StartTime, report.EndTime),
+	}
+	addTestSuite := func(test *model.TestReport) {
+		testSuite := junit.Testsuite{
+			Name:    test.Name,
+			Package: test.BasePath,
+			Time:    durationInSecondsString(test.StartTime, test.EndTime),
+		}
+		testSuite.SetTimestamp(report.StartTime)
+		testSuite.AddProperty("namespace", test.Namespace)
+		if test.Skipped {
+			testCase := junit.Testcase{
+				Name: test.Name,
+				Time: durationInSecondsString(test.StartTime, test.EndTime),
+			}
+			testCase.Skipped = &junit.Result{}
+			testSuite.AddTestcase(testCase)
+		} else {
+			for _, step := range test.Steps {
+				testCase := junit.Testcase{
+					Name: step.Name,
+					Time: durationInSecondsString(step.StartTime, step.EndTime),
+				}
+				var errs []error
+				for _, operation := range step.Operations {
+					if operation.Err != nil {
+						errs = append(errs, operation.Err)
+					}
+				}
+				if err := multierr.Combine(errs...); err != nil {
+					testCase.Failure = &junit.Result{
+						Message: err.Error(),
+					}
+				}
+				testSuite.AddTestcase(testCase)
+			}
+		}
+		testSuites.AddSuite(testSuite)
+	}
+	for _, test := range report.Tests {
+		addTestSuite(test)
+	}
+	data, err := xml.MarshalIndent(testSuites, "", "  ")
+	if err != nil {
+		return err
+	}
+	return os.WriteFile(file, data, 0o600)
+}
+
+func saveJUnitOperation(report *model.Report, file string) error {
+	testSuites := &junit.Testsuites{
+		Name: report.Name,
+		Time: durationInSecondsString(report.StartTime, report.EndTime),
+	}
+	addTestSuite := func(test *model.TestReport) {
+		testSuite := junit.Testsuite{
+			Name:    test.Name,
+			Package: test.BasePath,
+			Time:    durationInSecondsString(test.StartTime, test.EndTime),
+		}
+		testSuite.SetTimestamp(report.StartTime)
+		testSuite.AddProperty("namespace", test.Namespace)
+		if test.Skipped {
+			testCase := junit.Testcase{
+				Name: test.Name,
+				Time: durationInSecondsString(test.StartTime, test.EndTime),
+			}
+			testCase.Skipped = &junit.Result{}
+			testSuite.AddTestcase(testCase)
+		} else {
+			for _, step := range test.Steps {
+				for _, operation := range step.Operations {
+					testCase := junit.Testcase{
+						Name:      fmt.Sprintf("%s / %s", step.Name, operation.Name),
+						Classname: string(operation.Type),
+						Time:      durationInSecondsString(operation.StartTime, operation.EndTime),
+					}
+					if err := operation.Err; err != nil {
+						testCase.Failure = &junit.Result{
+							Message: err.Error(),
+						}
+					}
+					testSuite.AddTestcase(testCase)
+				}
+			}
+		}
+		testSuites.AddSuite(testSuite)
+	}
+	for _, test := range report.Tests {
+		addTestSuite(test)
+	}
+	data, err := xml.MarshalIndent(testSuites, "", "  ")
 	if err != nil {
 		return err
 	}

@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/configuration-chainsaw-v1alpha2.json
+apiVersion: chainsaw.kyverno.io/v1alpha2
+kind: Configuration
+metadata:
+  name: custom-config
+spec:
+  cleanup:
+    skipDelete: true
+  discovery:
+    excludeTestRegex: exclude-*
+    fullName: true
+    includeTestRegex: include-*
+    testFile: custom-test.yaml
+  execution:
+    failFast: true
+    forceTerminationGracePeriod: 10s
+    parallel: 4
+  report:
+    format: JSON
+    name: custom-report
+  timeouts:
+    assert: 10s
+    cleanup: 5s
+    delete: 5s
+    error: 10s
+    exec: 10s
+

@@ -2,166 +2,161 @@ package processors
 
 import (
 	"context"
-	"sync/atomic"
+	"fmt"
 	"time"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
-	"github.com/kyverno/chainsaw/pkg/report"
-	apibindings "github.com/kyverno/chainsaw/pkg/runner/bindings"
-	"github.com/kyverno/chainsaw/pkg/runner/cleanup"
-	"github.com/kyverno/chainsaw/pkg/runner/clusters"
+	"github.com/kyverno/chainsaw/pkg/engine"
+	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
-	"github.com/kyverno/chainsaw/pkg/runner/logging"
-	"github.com/kyverno/chainsaw/pkg/runner/mutate"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
-	"github.com/kyverno/chainsaw/pkg/runner/namespacer"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	opdelete "github.com/kyverno/chainsaw/pkg/runner/operations/delete"
-	"github.com/kyverno/chainsaw/pkg/runner/summary"
-	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
-	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/clock"
 )
 
 type TestsProcessor interface {
-	Run(context.Context, binding.Bindings)
-	CreateTestProcessor(discovery.Test) TestProcessor
+	Run(context.Context, engine.Context, ...discovery.Test)
 }
 
-func NewTestsProcessor(
-	config v1alpha1.ConfigurationSpec,
-	clusters clusters.Registry,
-	clock clock.PassiveClock,
-	summary *summary.Summary,
-	report *report.Report,
-	tests ...discovery.Test,
-) TestsProcessor {
+func NewTestsProcessor(config model.Configuration, clock clock.PassiveClock) TestsProcessor {
 	return &testsProcessor{
-		config:   config,
-		clusters: clusters,
-		clock:    clock,
-		summary:  summary,
-		report:   report,
-		tests:    tests,
+		config: config,
+		clock:  clock,
 	}
 }
 
 type testsProcessor struct {
-	config   v1alpha1.ConfigurationSpec
-	clusters clusters.Registry
-	clock    clock.PassiveClock
-	summary  *summary.Summary
-	report   *report.Report
-	tests    []discovery.Test
-	// state
-	shouldFailFast atomic.Bool
+	config model.Configuration
+	clock  clock.PassiveClock
 }
 
-func (p *testsProcessor) Run(ctx context.Context, bindings binding.Bindings) {
-	if bindings == nil {
-		bindings = binding.NewBindings()
-	}
+func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...discovery.Test) {
+	// 1. setup context
 	t := testing.FromContext(ctx)
-	if p.report != nil {
-		p.report.SetStartTime(time.Now())
-		t.Cleanup(func() {
-			p.report.SetEndTime(time.Now())
-		})
-	}
-	var nspacer namespacer.Namespacer
-	clusterConfig, clusterClient, err := p.clusters.Resolve(false)
-	if err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	}
-	bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
-	if clusterClient != nil {
-		if p.config.Namespace != "" {
-			namespace := client.Namespace(p.config.Namespace)
-			object := client.ToUnstructured(&namespace)
-			bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-			if p.config.NamespaceTemplate != nil && p.config.NamespaceTemplate.Value != nil {
-				template := v1alpha1.Any{
-					Value: p.config.NamespaceTemplate.Value,
-				}
-				if merged, err := mutate.Merge(ctx, object, bindings, template); err != nil {
-					failer.FailNow(ctx)
-				} else {
-					object = merged
-				}
-				bindings = apibindings.RegisterNamedBinding(ctx, bindings, "namespace", object.GetName())
-			}
-			nspacer = namespacer.New(clusterClient, object.GetName())
-			if err := clusterClient.Get(ctx, client.ObjectKey(&object), object.DeepCopy()); err != nil {
-				if !errors.IsNotFound(err) {
-					// Get doesn't log
-					logging.Log(ctx, logging.Get, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					failer.FailNow(ctx)
-				}
-				if !cleanup.Skip(p.config.SkipDelete, nil, nil) {
-					t.Cleanup(func() {
-						operation := newOperation(
-							OperationInfo{},
-							false,
-							timeout.Get(nil, p.config.Timeouts.CleanupDuration()),
-							func(ctx context.Context, bindings binding.Bindings) (operations.Operation, binding.Bindings, error) {
-								bindings = apibindings.RegisterClusterBindings(ctx, bindings, clusterConfig, clusterClient)
-								return opdelete.New(clusterClient, object, nspacer, false, metav1.DeletePropagationBackground), bindings, nil
-							},
-							nil,
-						)
-						operation.execute(ctx, bindings)
-					})
-				}
-				if err := clusterClient.Create(ctx, object.DeepCopy()); err != nil {
-					failer.FailNow(ctx)
-				}
+	mainCleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil, p.config.Deletion.Propagation)
+	t.Cleanup(func() {
+		if !mainCleaner.Empty() {
+			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
+			defer func() {
+				logging.Log(ctx, logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
+			}()
+			for _, err := range mainCleaner.Run(ctx, nil) {
+				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				failer.Fail(ctx)
 			}
 		}
+	})
+	contextData := contextData{
+		basePath: "",
+		clusters: p.config.Clusters,
 	}
-	bindings, err = apibindings.RegisterBindings(ctx, bindings)
+	if p.config.Namespace.Name != "" {
+		var nsCleaner cleaner.CleanerCollector
+		if !p.config.Cleanup.SkipDelete {
+			nsCleaner = mainCleaner
+		}
+		contextData.namespace = &namespaceData{
+			name:     p.config.Namespace.Name,
+			template: p.config.Namespace.Template,
+			cleaner:  nsCleaner,
+		}
+	}
+	tc, namespace, err := setupContextData(ctx, tc, contextData)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	for i := range p.tests {
-		test := p.tests[i]
-		name, err := names.Test(p.config, test)
+	var nspacer namespacer.Namespacer
+	if namespace != nil {
+		nspacer = namespacer.New(namespace.GetName())
+	}
+	// 2. loop through tests
+	for i := range tests {
+		test := tests[i]
+		name, err := names.Test(p.config.Discovery.FullName, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
 		}
-		t.Run(name, func(t *testing.T) {
-			t.Helper()
-			t.Cleanup(func() {
-				if t.Failed() {
-					p.shouldFailFast.Store(true)
+		// 3. compute test scenarios
+		scenarios := applyScenarios(test)
+		// 4. loop through test scenarios
+		for s := range scenarios {
+			test := scenarios[s]
+			// 5. run each test scenario in a separate T
+			t.Run(name, func(t *testing.T) {
+				t.Helper()
+				ctx := testing.IntoContext(ctx, t)
+				size := len("@chainsaw")
+				for i, step := range test.Test.Spec.Steps {
+					name := step.Name
+					if name == "" {
+						name = fmt.Sprintf("step-%d", i+1)
+					}
+					if size < len(name) {
+						size = len(name)
+					}
 				}
+				ctx = logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
+				info := TestInfo{
+					Id:         i + 1,
+					ScenarioId: s + 1,
+					Metadata:   test.Test.ObjectMeta,
+				}
+				tc := tc.WithBinding(ctx, "test", info)
+				t.Cleanup(func() {
+					if t.Skipped() {
+						tc.IncSkipped()
+					} else {
+						if t.Failed() {
+							tc.IncFailed()
+						} else {
+							tc.IncPassed()
+						}
+					}
+				})
+				if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
+					t.Parallel()
+				}
+				if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
+					t.SkipNow()
+				}
+				failFast := p.config.Execution.FailFast
+				if test.Test.Spec.FailFast != nil {
+					failFast = *test.Test.Spec.FailFast
+				}
+				if failFast {
+					if tc.Failed() > 0 {
+						t.SkipNow()
+					}
+				}
+				processor := p.createTestProcessor(test, size)
+				processor.Run(ctx, nspacer, tc)
 			})
-			processor := p.CreateTestProcessor(test)
-			info := TestInfo{
-				Id:       i + 1,
-				Metadata: test.ObjectMeta,
-			}
-			processor.Run(
-				testing.IntoContext(ctx, t),
-				apibindings.RegisterNamedBinding(ctx, bindings, "test", info),
-				nspacer,
-			)
-		})
+		}
 	}
 }
 
-func (p *testsProcessor) CreateTestProcessor(test discovery.Test) TestProcessor {
-	var report *report.TestReport
-	if p.report != nil {
-		report = p.report.ForTest(&test)
+func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) TestProcessor {
+	var delayBeforeCleanup *time.Duration
+	if p.config.Cleanup.DelayBeforeCleanup != nil {
+		delayBeforeCleanup = &p.config.Cleanup.DelayBeforeCleanup.Duration
 	}
-	return NewTestProcessor(p.config, p.clusters, p.clock, p.summary, report, test, &p.shouldFailFast)
+	return NewTestProcessor(
+		test,
+		size,
+		p.clock,
+		p.config.Namespace.Template,
+		delayBeforeCleanup,
+		p.config.Execution.ForceTerminationGracePeriod,
+		p.config.Timeouts,
+		p.config.Deletion.Propagation,
+		p.config.Templating.Enabled,
+		p.config.Cleanup.SkipDelete,
+		p.config.Error.Catch...,
+	)
 }

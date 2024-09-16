@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -22,7 +23,7 @@ func TestDiscoverTests(t *testing.T) {
 		paths:    []string{"../../testdata/discovery/test"},
 		want: []Test{{
 			BasePath: "../../testdata/discovery/test",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
@@ -36,7 +37,7 @@ func TestDiscoverTests(t *testing.T) {
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
 								Apply: &v1alpha1.Apply{
-									FileRefOrResource: v1alpha1.FileRefOrResource{
+									ActionResourceRef: v1alpha1.ActionResourceRef{
 										FileRef: v1alpha1.FileRef{
 											File: "configmap.yaml",
 										},
@@ -49,7 +50,7 @@ func TestDiscoverTests(t *testing.T) {
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
 								Assert: &v1alpha1.Assert{
-									FileRefOrCheck: v1alpha1.FileRefOrCheck{
+									ActionCheckRef: v1alpha1.ActionCheckRef{
 										FileRef: v1alpha1.FileRef{
 											File: "configmap.yaml",
 										},
@@ -68,7 +69,7 @@ func TestDiscoverTests(t *testing.T) {
 		paths:    []string{"../../testdata/discovery/manifests"},
 		want: []Test{{
 			BasePath: "../../testdata/discovery/manifests",
-			Test: &v1alpha1.Test{
+			Test: &model.Test{
 				TypeMeta: metav1.TypeMeta{
 					APIVersion: "chainsaw.kyverno.io/v1alpha1",
 					Kind:       "Test",
@@ -82,7 +83,7 @@ func TestDiscoverTests(t *testing.T) {
 						TestStepSpec: v1alpha1.TestStepSpec{
 							Try: []v1alpha1.Operation{{
 								Apply: &v1alpha1.Apply{
-									FileRefOrResource: v1alpha1.FileRefOrResource{
+									ActionResourceRef: v1alpha1.ActionResourceRef{
 										FileRef: v1alpha1.FileRef{
 											File: "01-configmap.yaml",
 										},
@@ -90,7 +91,7 @@ func TestDiscoverTests(t *testing.T) {
 								},
 							}, {
 								Assert: &v1alpha1.Assert{
-									FileRefOrCheck: v1alpha1.FileRefOrCheck{
+									ActionCheckRef: v1alpha1.ActionCheckRef{
 										FileRef: v1alpha1.FileRef{
 											File: "01-assert.yaml",
 										},
@@ -98,7 +99,7 @@ func TestDiscoverTests(t *testing.T) {
 								},
 							}, {
 								Error: &v1alpha1.Error{
-									FileRefOrCheck: v1alpha1.FileRefOrCheck{
+									ActionCheckRef: v1alpha1.ActionCheckRef{
 										FileRef: v1alpha1.FileRef{
 											File: "01-errors.yaml",
 										},

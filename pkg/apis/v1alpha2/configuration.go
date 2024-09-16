@@ -8,6 +8,7 @@ import (
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object
 // +kubebuilder:object:root=true
 // +kubebuilder:resource:scope=Cluster
+// +kubebuilder:storageversion
 
 // Configuration is the resource that contains the configuration used to run tests.
 type Configuration struct {
@@ -26,43 +27,49 @@ type Configuration struct {
 type ConfigurationSpec struct {
 	// Cleanup contains cleanup configuration.
 	// +optional
-	Cleanup *Cleanup `json:"cleanup,omitempty"`
+	// +kubebuilder:default:={}
+	Cleanup CleanupOptions `json:"cleanup"`
 
 	// Clusters holds a registry to clusters to support multi-cluster tests.
 	// +optional
-	Clusters Clusters `json:"clusters,omitempty"`
+	Clusters Clusters `json:"clusters"`
 
 	// Deletion contains the global deletion configuration.
 	// +optional
 	// +kubebuilder:default:={}
-	Deletion DeletionOptions `json:"deletion,omitempty"`
+	Deletion DeletionOptions `json:"deletion"`
 
 	// Discovery contains tests discovery configuration.
 	// +optional
 	// +kubebuilder:default:={}
-	Discovery Discovery `json:"discovery"`
+	Discovery DiscoveryOptions `json:"discovery"`
 
 	// Error contains the global error configuration.
 	// +optional
-	Error *ErrorOptions `json:"error,omitempty"`
+	// +kubebuilder:default:={}
+	Error ErrorOptions `json:"error,omitempty"`
 
 	// Execution contains tests execution configuration.
 	// +optional
-	Execution *Execution `json:"execution,omitempty"`
+	// +kubebuilder:default:={}
+	Execution ExecutionOptions `json:"execution"`
 
 	// Namespace contains properties for the namespace to use for tests.
 	// +optional
-	Namespace *Namespace `json:"namespace,omitempty"`
+	// +kubebuilder:default:={}
+	Namespace NamespaceOptions `json:"namespace"`
 
 	// Report contains properties for the report.
 	// +optional
-	Report *Report `json:"report,omitempty"`
+	Report *ReportOptions `json:"report,omitempty"`
 
 	// Templating contains the templating config.
 	// +optional
-	Templating *Templating `json:"templating,omitempty"`
+	// +kubebuilder:default:={}
+	Templating TemplatingOptions `json:"templating"`
 
 	// Global timeouts configuration. Applies to all tests/test steps if not overridden.
 	// +optional
-	Timeouts Timeouts `json:"timeouts"`
+	// +kubebuilder:default:={}
+	Timeouts DefaultTimeouts `json:"timeouts"`
 }

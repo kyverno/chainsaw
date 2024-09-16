@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	jpfunctions "github.com/jmespath-community/go-jmespath/pkg/functions"
-	chainsawfunctions "github.com/kyverno/chainsaw/pkg/runner/functions"
+	chainsawfunctions "github.com/kyverno/chainsaw/pkg/engine/functions"
 	"github.com/kyverno/kyverno-json/pkg/engine/template/functions"
 	kyvernofunctions "github.com/kyverno/kyverno-json/pkg/engine/template/kyverno"
 )
@@ -34,6 +34,10 @@ func main() {
 	fmt.Println("## chainsaw functions")
 	fmt.Println()
 	printFunctions(chainsawfunctions.GetFunctions()...)
+	fmt.Println()
+	fmt.Println("## examples")
+	fmt.Println()
+	fmt.Println("- [x_k8s_get](./examples/x_k8s_get.md)")
 	fmt.Println()
 }
 

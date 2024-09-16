@@ -1,0 +1,27 @@
+# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: metrics-decode
+spec:
+  bindings:
+  - name: metrics
+    value: |
+      # Only a quite simple scenario with two metric families.
+      # More complicated tests of the parser itself can be found in the text package.
+      # TYPE mf2 counter
+      mf2 3
+      mf1{label="value1"} -3.14 123456
+      mf1{label="value2"} 42
+      mf2 4
+  steps:
+  - try:
+    - script:
+        env:
+        - name: TT
+          value: (to_string(x_metrics_decode($metrics)))
+        content: echo $TT
+    - assert:
+        resource:
+          (x_metrics_decode($metrics)):
+            (length(@)): 4

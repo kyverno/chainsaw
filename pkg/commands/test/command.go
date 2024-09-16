@@ -4,22 +4,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/fs"
 	"os"
-	"path"
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/config"
-	"github.com/kyverno/chainsaw/pkg/data"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	"github.com/kyverno/chainsaw/pkg/loaders/config"
+	"github.com/kyverno/chainsaw/pkg/loaders/values"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
-	"github.com/kyverno/chainsaw/pkg/runner/template"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
-	"github.com/kyverno/chainsaw/pkg/values"
 	"github.com/kyverno/chainsaw/pkg/version"
 	"github.com/kyverno/pkg/ext/output/color"
 	"github.com/spf13/cobra"
@@ -77,7 +74,7 @@ func Command() *cobra.Command {
 			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
 			fmt.Fprintf(out, "Version: %s\n", version.Version())
-			var configuration v1alpha1.Configuration
+			var configuration v1alpha2.Configuration
 			// if no config file was provided, give a chance to the default config name
 			if options.config == "" {
 				if _, err := os.Stat(config.DefaultFileName); err == nil {
@@ -95,11 +92,7 @@ func Command() *cobra.Command {
 				configuration = *config
 			} else {
 				fmt.Fprintln(out, "Loading default configuration...")
-				bytes, err := fs.ReadFile(data.Config(), path.Join("config", "default.yaml"))
-				if err != nil {
-					return err
-				}
-				config, err := config.LoadBytes(bytes)
+				config, err := config.DefaultConfiguration()
 				if err != nil {
 					return err
 				}
@@ -108,70 +101,88 @@ func Command() *cobra.Command {
 			// flags take precedence over configuration file
 			flags := cmd.Flags()
 			if flagutils.IsSet(flags, "test-file") {
-				configuration.Spec.TestFile = options.testFile
+				configuration.Spec.Discovery.TestFile = options.testFile
 			}
 			if flagutils.IsSet(flags, "apply-timeout") {
-				configuration.Spec.Timeouts.Apply = &options.applyTimeout
+				configuration.Spec.Timeouts.Apply = options.applyTimeout
 			}
 			if flagutils.IsSet(flags, "assert-timeout") {
-				configuration.Spec.Timeouts.Assert = &options.assertTimeout
+				configuration.Spec.Timeouts.Assert = options.assertTimeout
 			}
 			if flagutils.IsSet(flags, "error-timeout") {
-				configuration.Spec.Timeouts.Error = &options.errorTimeout
+				configuration.Spec.Timeouts.Error = options.errorTimeout
 			}
 			if flagutils.IsSet(flags, "delete-timeout") {
-				configuration.Spec.Timeouts.Delete = &options.deleteTimeout
+				configuration.Spec.Timeouts.Delete = options.deleteTimeout
 			}
 			if flagutils.IsSet(flags, "cleanup-timeout") {
-				configuration.Spec.Timeouts.Cleanup = &options.cleanupTimeout
+				configuration.Spec.Timeouts.Cleanup = options.cleanupTimeout
 			}
 			if flagutils.IsSet(flags, "exec-timeout") {
-				configuration.Spec.Timeouts.Exec = &options.execTimeout
+				configuration.Spec.Timeouts.Exec = options.execTimeout
 			}
 			if flagutils.IsSet(flags, "skip-delete") {
-				configuration.Spec.SkipDelete = options.skipDelete
+				configuration.Spec.Cleanup.SkipDelete = options.skipDelete
 			}
 			if flagutils.IsSet(flags, "template") {
-				configuration.Spec.Template = &options.template
+				configuration.Spec.Templating.Enabled = options.template
 			}
 			if flagutils.IsSet(flags, "fail-fast") {
-				configuration.Spec.FailFast = options.failFast
+				configuration.Spec.Execution.FailFast = options.failFast
 			}
 			if flagutils.IsSet(flags, "parallel") {
-				configuration.Spec.Parallel = &options.parallel
+				configuration.Spec.Execution.Parallel = &options.parallel
 			}
 			if flagutils.IsSet(flags, "repeat-count") {
-				configuration.Spec.RepeatCount = &options.repeatCount
+				configuration.Spec.Execution.RepeatCount = &options.repeatCount
 			}
 			if flagutils.IsSet(flags, "report-format") {
-				configuration.Spec.ReportFormat = v1alpha1.ReportFormatType(options.reportFormat)
+				if configuration.Spec.Report == nil {
+					configuration.Spec.Report = &v1alpha2.ReportOptions{
+						Format: v1alpha2.JSONFormat,
+						Name:   "chainsaw-report",
+					}
+				}
+				configuration.Spec.Report.Format = v1alpha2.ReportFormatType(options.reportFormat)
 			}
 			if flagutils.IsSet(flags, "report-path") {
-				configuration.Spec.ReportPath = options.reportPath
+				if configuration.Spec.Report == nil {
+					configuration.Spec.Report = &v1alpha2.ReportOptions{
+						Format: v1alpha2.JSONFormat,
+						Name:   "chainsaw-report",
+					}
+				}
+				configuration.Spec.Report.Path = options.reportPath
 			}
 			if flagutils.IsSet(flags, "report-name") {
-				configuration.Spec.ReportName = options.reportName
+				if configuration.Spec.Report == nil {
+					configuration.Spec.Report = &v1alpha2.ReportOptions{
+						Format: v1alpha2.JSONFormat,
+						Name:   "chainsaw-report",
+					}
+				}
+				configuration.Spec.Report.Name = options.reportName
 			}
 			if flagutils.IsSet(flags, "namespace") {
-				configuration.Spec.Namespace = options.namespace
+				configuration.Spec.Namespace.Name = options.namespace
 			}
 			if flagutils.IsSet(flags, "deletion-propagation-policy") {
-				configuration.Spec.DeletionPropagationPolicy = metav1.DeletionPropagation(options.deletionPropagationPolicy)
+				configuration.Spec.Deletion.Propagation = metav1.DeletionPropagation(options.deletionPropagationPolicy)
 			}
 			if flagutils.IsSet(flags, "full-name") {
-				configuration.Spec.FullName = options.fullName
+				configuration.Spec.Discovery.FullName = options.fullName
 			}
 			if flagutils.IsSet(flags, "include-test-regex") {
-				configuration.Spec.IncludeTestRegex = options.includeTestRegex
+				configuration.Spec.Discovery.IncludeTestRegex = options.includeTestRegex
 			}
 			if flagutils.IsSet(flags, "exclude-test-regex") {
-				configuration.Spec.ExcludeTestRegex = options.excludeTestRegex
+				configuration.Spec.Discovery.ExcludeTestRegex = options.excludeTestRegex
 			}
 			if flagutils.IsSet(flags, "force-termination-grace-period") {
-				configuration.Spec.ForceTerminationGracePeriod = &options.forceTerminationGracePeriod
+				configuration.Spec.Execution.ForceTerminationGracePeriod = &options.forceTerminationGracePeriod
 			}
 			if flagutils.IsSet(flags, "cleanup-delay") {
-				configuration.Spec.DelayBeforeCleanup = &options.delayBeforeCleanup
+				configuration.Spec.Cleanup.DelayBeforeCleanup = &options.delayBeforeCleanup
 			}
 			if flagutils.IsSet(flags, "cluster") {
 				for _, cluster := range options.clusters {
@@ -206,39 +217,41 @@ func Command() *cobra.Command {
 			}
 			// if pause on failure is set, force non concurrency
 			if options.pauseOnFailure {
-				configuration.Spec.Parallel = ptr.To(1)
+				configuration.Spec.Execution.Parallel = ptr.To(1)
 			}
-			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.TestFile)
+			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.Discovery.TestFile)
 			fmt.Fprintf(out, "- TestDirs %v\n", options.testDirs)
-			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.SkipDelete)
-			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.FailFast)
-			fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.ReportFormat)
-			fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.ReportName)
-			if configuration.Spec.ReportPath != "" {
-				fmt.Fprintf(out, "- ReportPath '%v'\n", configuration.Spec.ReportPath)
+			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.Cleanup.SkipDelete)
+			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.Execution.FailFast)
+			if configuration.Spec.Report != nil {
+				fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
+				fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.Report.Name)
+				if configuration.Spec.Report.Path != "" {
+					fmt.Fprintf(out, "- ReportPath '%v'\n", configuration.Spec.Report.Path)
+				}
 			}
-			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace)
-			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.FullName)
-			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.IncludeTestRegex)
-			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.ExcludeTestRegex)
-			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.ApplyDuration())
-			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.AssertDuration())
-			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.CleanupDuration())
-			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.DeleteDuration())
-			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.ErrorDuration())
-			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.ExecDuration())
-			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.DeletionPropagationPolicy)
-			if configuration.Spec.Parallel != nil && *configuration.Spec.Parallel > 0 {
-				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Parallel)
+			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace.Name)
+			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.Discovery.FullName)
+			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.Discovery.IncludeTestRegex)
+			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.Discovery.ExcludeTestRegex)
+			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.Apply.Duration)
+			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.Assert.Duration)
+			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.Cleanup.Duration)
+			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.Delete.Duration)
+			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.Error.Duration)
+			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.Exec.Duration)
+			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.Deletion.Propagation)
+			if configuration.Spec.Execution.Parallel != nil && *configuration.Spec.Execution.Parallel > 0 {
+				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Execution.Parallel)
 			}
-			if configuration.Spec.RepeatCount != nil {
-				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.RepeatCount)
+			if configuration.Spec.Execution.RepeatCount != nil {
+				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.Execution.RepeatCount)
 			}
-			if configuration.Spec.ForceTerminationGracePeriod != nil {
-				fmt.Fprintf(out, "- ForceTerminationGracePeriod %v\n", configuration.Spec.ForceTerminationGracePeriod.Duration)
+			if configuration.Spec.Execution.ForceTerminationGracePeriod != nil {
+				fmt.Fprintf(out, "- ForceTerminationGracePeriod %v\n", configuration.Spec.Execution.ForceTerminationGracePeriod.Duration)
 			}
-			if configuration.Spec.DelayBeforeCleanup != nil {
-				fmt.Fprintf(out, "- DelayBeforeCleanup %v\n", configuration.Spec.DelayBeforeCleanup.Duration)
+			if configuration.Spec.Cleanup.DelayBeforeCleanup != nil {
+				fmt.Fprintf(out, "- DelayBeforeCleanup %v\n", configuration.Spec.Cleanup.DelayBeforeCleanup.Duration)
 			}
 			if len(options.selector) != 0 {
 				fmt.Fprintf(out, "- Selector %v\n", options.selector)
@@ -246,9 +259,7 @@ func Command() *cobra.Command {
 			if len(options.values) != 0 {
 				fmt.Fprintf(out, "- Values %v\n", options.values)
 			}
-			if configuration.Spec.Template != nil {
-				fmt.Fprintf(out, "- Template %v\n", configuration.Spec.Template)
-			}
+			fmt.Fprintf(out, "- Template %v\n", configuration.Spec.Templating.Enabled)
 			if len(configuration.Spec.Clusters) != 0 {
 				fmt.Fprintf(out, "- Clusters %v\n", configuration.Spec.Clusters)
 			}
@@ -270,16 +281,16 @@ func Command() *cobra.Command {
 				}
 				selector = parsed
 			}
-			tests, err := discovery.DiscoverTests(configuration.Spec.TestFile, selector, options.remarshal, options.testDirs...)
+			tests, err := discovery.DiscoverTests(configuration.Spec.Discovery.TestFile, selector, options.remarshal, options.testDirs...)
 			if err != nil {
 				return err
 			}
 			var testToRun []discovery.Test
 			for _, test := range tests {
 				if test.Err != nil {
-					fmt.Fprintf(out, "- %s (%s) - (%s)\n", test.Name, test.BasePath, test.Err)
+					fmt.Fprintf(out, "- %s (%s) - (%s)\n", test.Test.Name, test.BasePath, test.Err)
 				} else {
-					fmt.Fprintf(out, "- %s (%s)\n", test.Name, test.BasePath)
+					fmt.Fprintf(out, "- %s (%s)\n", test.Test.Name, test.BasePath)
 					testToRun = append(testToRun, test)
 				}
 			}
@@ -318,17 +329,21 @@ func Command() *cobra.Command {
 			return err
 		},
 	}
+	config, err := config.DefaultConfiguration()
+	if err != nil {
+		panic(err)
+	}
 	// config
 	cmd.Flags().StringVar(&options.config, "config", "", "Chainsaw configuration file")
 	cmd.Flags().StringSliceVar(&options.testDirs, "test-dir", nil, "Directories containing test cases to run")
 	clientcmd.BindOverrideFlags(&options.kubeConfigOverrides, cmd.Flags(), clientcmd.RecommendedConfigOverrideFlags("kube-"))
 	// timeouts options
-	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", v1alpha1.DefaultApplyTimeout, "The apply timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", v1alpha1.DefaultAssertTimeout, "The assert timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", v1alpha1.DefaultErrorTimeout, "The error timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", v1alpha1.DefaultDeleteTimeout, "The delete timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", v1alpha1.DefaultCleanupTimeout, "The cleanup timeout to use as default for configuration")
-	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", v1alpha1.DefaultExecTimeout, "The exec timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.applyTimeout.Duration, "apply-timeout", config.Spec.Timeouts.Apply.Duration, "The apply timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.assertTimeout.Duration, "assert-timeout", config.Spec.Timeouts.Assert.Duration, "The assert timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.cleanupTimeout.Duration, "cleanup-timeout", config.Spec.Timeouts.Cleanup.Duration, "The cleanup timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.deleteTimeout.Duration, "delete-timeout", config.Spec.Timeouts.Delete.Duration, "The delete timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.errorTimeout.Duration, "error-timeout", config.Spec.Timeouts.Error.Duration, "The error timeout to use as default for configuration")
+	cmd.Flags().DurationVar(&options.execTimeout.Duration, "exec-timeout", config.Spec.Timeouts.Exec.Duration, "The exec timeout to use as default for configuration")
 	// discovery options
 	cmd.Flags().StringVar(&options.testFile, "test-file", "chainsaw-test", "Name of the test file")
 	cmd.Flags().BoolVar(&options.fullName, "full-name", false, "Use full test case folder path instead of folder name")
@@ -342,7 +357,7 @@ func Command() *cobra.Command {
 	// namespace options
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests")
 	// templating options
-	cmd.Flags().BoolVar(&options.template, "template", template.DefaultTemplate, "If set, resources will be considered for templating")
+	cmd.Flags().BoolVar(&options.template, "template", config.Spec.Templating.Enabled, "If set, resources will be considered for templating")
 	// cleanup options
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests")
 	cmd.Flags().DurationVar(&options.delayBeforeCleanup.Duration, "cleanup-delay", 0, "Adds a delay between the time a test ends and the time cleanup starts")
@@ -350,7 +365,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.deletionPropagationPolicy, "deletion-propagation-policy", "Background", "The deletion propagation policy (Foreground|Background|Orphan)")
 	// error options
 	// reporting options
-	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|nil)")
+	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION)")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create")
 	cmd.Flags().StringVar(&options.reportPath, "report-path", "", "The path of the report to create")
 	// multi-cluster options

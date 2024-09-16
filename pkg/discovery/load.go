@@ -3,14 +3,15 @@ package discovery
 import (
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
 	"strings"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/test"
-	"golang.org/x/exp/maps"
+	"github.com/kyverno/chainsaw/pkg/loaders/steptemplate"
+	"github.com/kyverno/chainsaw/pkg/loaders/test"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -55,6 +56,26 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 		}
 		if len(apiTests) != 0 {
 			for _, apiTest := range apiTests {
+				for step := range apiTest.Spec.Steps {
+					step := &apiTest.Spec.Steps[step]
+					if step.Use != nil && step.Use.Template != "" {
+						steptpl, err := steptemplate.Load(filepath.Join(path, step.Use.Template), remarshal)
+						if err != nil {
+							return nil, err
+						}
+						if len(steptpl) != 1 {
+							return nil, errors.New("step template not found or multiple templates exist")
+						}
+						step.Use = nil
+						step.Bindings = append(step.Bindings, steptpl[0].Spec.Bindings...)
+						step.Try = append(step.Try, steptpl[0].Spec.Try...)
+						step.Catch = append(step.Catch, steptpl[0].Spec.Catch...)
+						step.Finally = append(step.Finally, steptpl[0].Spec.Finally...)
+						step.Cleanup = append(step.Cleanup, steptpl[0].Spec.Cleanup...)
+					}
+				}
+			}
+			for _, apiTest := range apiTests {
 				tests = append(tests, Test{
 					Test:     apiTest,
 					BasePath: path,
@@ -72,8 +93,6 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 	if len(steps) == 0 {
 		return nil, nil
 	}
-	keys := maps.Keys(steps)
-	slices.Sort(keys)
 	test := &v1alpha1.Test{
 		TypeMeta: metav1.TypeMeta{
 			APIVersion: v1alpha1.SchemeGroupVersion.String(),
@@ -83,16 +102,16 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 			Name: strings.ToLower(strings.ReplaceAll(filepath.Base(path), "_", "-")),
 		},
 	}
-	for _, key := range keys {
+	for _, key := range slices.Sorted(maps.Keys(steps)) {
 		step := v1alpha1.TestStep{
 			Name: fmt.Sprintf("step-%s", key),
 		}
 		for _, file := range steps[key].OtherFiles {
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Apply: &v1alpha1.Apply{
-					FileRefOrResource: v1alpha1.FileRefOrResource{
+					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -101,9 +120,9 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 		for _, file := range steps[key].AssertFiles {
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Assert: &v1alpha1.Assert{
-					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},
@@ -112,9 +131,9 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 		for _, file := range steps[key].ErrorFiles {
 			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
 				Error: &v1alpha1.Error{
-					FileRefOrCheck: v1alpha1.FileRefOrCheck{
+					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
-							File: file,
+							File: v1alpha1.Expression(file),
 						},
 					},
 				},

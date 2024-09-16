@@ -1,0 +1,8 @@
+Upgrade Chainsaw configuration to the latest version
+
+Usage:
+  chainsaw config [flags]
+
+Flags:
+  -h, --help   help for config
+      --save   If set, converted files will be saved

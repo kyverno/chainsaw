@@ -24,7 +24,7 @@ func discoverTests(fileName string, selector labels.Selector, remarshal bool, fo
 			return nil, err
 		}
 		for _, t := range t {
-			if selector.Matches(labels.Set(t.Labels)) {
+			if selector.Matches(labels.Set(t.Test.Labels)) {
 				tests = append(tests, t)
 			}
 		}

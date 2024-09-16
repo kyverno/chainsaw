@@ -1,0 +1,9 @@
+# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: quick-start
+spec:
+  steps:
+  - use:
+      template: step-template.yaml

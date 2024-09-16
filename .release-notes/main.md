@@ -3,24 +3,21 @@
 Release notes for `TODO`.
 
 <!--
+## ‼️ Breaking changes ‼️
+
+## 💫 New features 💫
+
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
 
 ## ⛵ Tutorials ⛵
 
+## 📚 Docs 📚
+
 ## 🎸 Misc 🎸
 -->
 
-## ‼️ Breaking changes ‼️
+## 🔧 Fixes 🔧
 
-- Directly specifying resource name was dropped, only `apiVersion` / `kind` is supported now
-
-## 💫 New features 💫
-
-- Added test metadata built-in binding
-- Added file support to `delete` operation
-
-## 📚 Docs 📚
-
-- Removed code markers on titles in API reference documentation
+- Fixed default report name not set correctly

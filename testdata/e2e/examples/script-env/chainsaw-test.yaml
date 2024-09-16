@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/test-chainsaw-v1alpha1.json
+# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
@@ -19,7 +19,7 @@ spec:
         content: echo $GREETINGS
         check:
           ($error): ~
-          ($stdout): hello chainsaw
+          (trim_space($stdout)): hello chainsaw
     - command:
         env:
         - name: GREETINGS
@@ -29,4 +29,4 @@ spec:
         - $GREETINGS
         check:
           ($error): ~
-          ($stdout): hello chainsaw
+          (trim_space($stdout)): hello chainsaw

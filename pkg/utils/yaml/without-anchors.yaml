@@ -1,0 +1,30 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+    name: yaml-anchors
+spec:
+    namespace: default
+    steps:
+        - name: yaml-anchors
+          try:
+            - apply:
+                resource:
+                    apiVersion: v1
+                    kind: Pod
+                    metadata:
+                        name: yaml-anchors
+                        namespace: default
+                    spec:
+                        containers:
+                            - image: alpine
+                              name: main
+            - assert:
+                resource:
+                    apiVersion: v1
+                    kind: Pod
+                    metadata:
+                        name: yaml-anchors
+                        namespace: default
+                    spec:
+                        restartPolicy: Always
+                timeout: 1s

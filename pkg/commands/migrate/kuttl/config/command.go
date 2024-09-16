@@ -10,8 +10,8 @@ import (
 
 	kuttlapi "github.com/kudobuilder/kuttl/pkg/apis/testharness/v1beta1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/config"
-	"github.com/kyverno/chainsaw/pkg/resource"
+	"github.com/kyverno/chainsaw/pkg/loaders/config"
+	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	"github.com/kyverno/pkg/ext/resource/convert"
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -118,16 +118,16 @@ func testSuite(in unstructured.Unstructured) (*v1alpha1.Configuration, error) {
 	if err != nil {
 		return nil, err
 	}
-	var timeouts v1alpha1.Timeouts
+	var timeouts v1alpha1.DefaultTimeouts
 	if from.Timeout != 0 {
 		d := metav1.Duration{Duration: time.Second * time.Duration(from.Timeout)}
-		timeouts = v1alpha1.Timeouts{
-			Apply:   &d,
-			Assert:  &d,
-			Error:   &d,
-			Delete:  &d,
-			Cleanup: &d,
-			Exec:    &d,
+		timeouts = v1alpha1.DefaultTimeouts{
+			Apply:   d,
+			Assert:  d,
+			Error:   d,
+			Delete:  d,
+			Cleanup: d,
+			Exec:    d,
 		}
 	}
 	to := &v1alpha1.Configuration{
