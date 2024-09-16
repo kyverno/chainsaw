@@ -62,7 +62,7 @@ type TestStep struct {
 // Use defines a reference to a step template.
 type Use struct {
 	// Template references a step template.
-	Template string `json:"template,omitempty"`
+	Template string `json:"template"`
 }
 
 // TestStepSpec defines the desired state and behavior for each test step.
