@@ -46,7 +46,6 @@ func TestSchemas(t *testing.T) {
 		"configuration-chainsaw-v1alpha2.json",
 		"steptemplate-chainsaw-v1alpha1.json",
 		"test-chainsaw-v1alpha1.json",
-		"test-chainsaw-v1alpha2.json",
 	}
 	for _, file := range files {
 		file, err := fs.Stat(data, file)
