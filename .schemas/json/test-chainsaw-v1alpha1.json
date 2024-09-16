@@ -9194,7 +9194,7 @@
                     "type": "string"
                   },
                   "with": {
-                    "description": "With defines arguments passed to step templates.",
+                    "description": "With defines arguments passed to the step template.",
                     "type": [
                       "object",
                       "null"

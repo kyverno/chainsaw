@@ -4627,7 +4627,7 @@ spec:
                           type: string
                         with:
                           default: {}
-                          description: With defines arguments passed to step templates.
+                          description: With defines arguments passed to the step template.
                           properties:
                             bindings:
                               description: Bindings defines additional binding key/values.

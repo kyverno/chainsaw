@@ -983,7 +983,7 @@ If a resource does not exist in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `template` | `string` | :white_check_mark: |  | <p>Template references a step template.</p> |
-| `with` | [`With`](#chainsaw-kyverno-io-v1alpha1-With) |  |  | *No description provided.* |
+| `with` | [`With`](#chainsaw-kyverno-io-v1alpha1-With) |  |  | <p>With defines arguments passed to the step template.</p> |
 
 ## Wait     {#chainsaw-kyverno-io-v1alpha1-Wait}
 

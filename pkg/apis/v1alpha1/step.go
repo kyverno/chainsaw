@@ -64,6 +64,7 @@ type Use struct {
 	// Template references a step template.
 	Template string `json:"template"`
 
+	// With defines arguments passed to the step template.
 	// +optional
 	// +kubebuilder:default:={}
 	With With `json:"with"`
