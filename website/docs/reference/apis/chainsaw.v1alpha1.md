@@ -336,6 +336,7 @@ during the testing process.</p>
 - [StepTemplateSpec](#chainsaw-kyverno-io-v1alpha1-StepTemplateSpec)
 - [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
 - [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+- [With](#chainsaw-kyverno-io-v1alpha1-With)
 
 <p>Binding represents a key/value set as a binding in an executing test.</p>
 
@@ -982,6 +983,7 @@ If a resource does not exist in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `template` | `string` | :white_check_mark: |  | <p>Template references a step template.</p> |
+| `with` | [`With`](#chainsaw-kyverno-io-v1alpha1-With) |  |  | *No description provided.* |
 
 ## Wait     {#chainsaw-kyverno-io-v1alpha1-Wait}
 
@@ -1052,5 +1054,18 @@ If a resource does not exist in the cluster it will fail.</p>
 |---|---|---|---|---|
 | `path` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Path defines the json path to wait for, e.g. '{.status.phase}'.</p> |
 | `value` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Value defines the expected value to wait for, e.g., "Running".</p> |
+
+## With     {#chainsaw-kyverno-io-v1alpha1-With}
+
+**Appears in:**
+    
+- [Use](#chainsaw-kyverno-io-v1alpha1-Use)
+
+<p>With defines arguments passed to step templates.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 
   

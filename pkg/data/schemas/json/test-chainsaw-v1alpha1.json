@@ -9185,13 +9185,54 @@
                   "object",
                   "null"
                 ],
+                "required": [
+                  "template"
+                ],
                 "properties": {
                   "template": {
                     "description": "Template references a step template.",
+                    "type": "string"
+                  },
+                  "with": {
+                    "description": "With defines arguments passed to step templates.",
                     "type": [
-                      "string",
+                      "object",
                       "null"
-                    ]
+                    ],
+                    "default": {},
+                    "properties": {
+                      "bindings": {
+                        "description": "Bindings defines additional binding key/values.",
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "description": "Binding represents a key/value set as a binding in an executing test.",
+                          "type": [
+                            "object",
+                            "null"
+                          ],
+                          "required": [
+                            "name",
+                            "value"
+                          ],
+                          "properties": {
+                            "name": {
+                              "description": "Name the name of the binding.",
+                              "type": "string",
+                              "pattern": "^(?:\\w+|\\(.+\\))$"
+                            },
+                            "value": {
+                              "description": "Value value of the binding.",
+                              "x-kubernetes-preserve-unknown-fields": true
+                            }
+                          },
+                          "additionalProperties": false
+                        }
+                      }
+                    },
+                    "additionalProperties": false
                   }
                 },
                 "additionalProperties": false

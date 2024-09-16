@@ -62,7 +62,18 @@ type TestStep struct {
 // Use defines a reference to a step template.
 type Use struct {
 	// Template references a step template.
-	Template string `json:"template,omitempty"`
+	Template string `json:"template"`
+
+	// +optional
+	// +kubebuilder:default:={}
+	With With `json:"with"`
+}
+
+// With defines arguments passed to step templates.
+type With struct {
+	// Bindings defines additional binding key/values.
+	// +optional
+	Bindings []Binding `json:"bindings,omitempty"`
 }
 
 // TestStepSpec defines the desired state and behavior for each test step.

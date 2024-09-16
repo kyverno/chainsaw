@@ -4625,6 +4625,31 @@ spec:
                         template:
                           description: Template references a step template.
                           type: string
+                        with:
+                          default: {}
+                          description: With defines arguments passed to step templates.
+                          properties:
+                            bindings:
+                              description: Bindings defines additional binding key/values.
+                              items:
+                                description: Binding represents a key/value set as
+                                  a binding in an executing test.
+                                properties:
+                                  name:
+                                    description: Name the name of the binding.
+                                    pattern: ^(?:\w+|\(.+\))$
+                                    type: string
+                                  value:
+                                    description: Value value of the binding.
+                                    x-kubernetes-preserve-unknown-fields: true
+                                required:
+                                - name
+                                - value
+                                type: object
+                              type: array
+                          type: object
+                      required:
+                      - template
                       type: object
                   type: object
                 type: array
