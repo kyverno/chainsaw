@@ -7,3 +7,7 @@ spec:
   steps:
   - use:
       template: step-template.yaml
+      with:
+        bindings:
+        - name: file
+          value: configmap.yaml
