@@ -8,8 +8,8 @@ spec:
   # first operation: create the config map
   - apply:
       # file is relative to the test folder
-      file: configmap.yaml
+      file: ($file)
   # second operation: verify the config map exists and contains the expected data
   - assert:
       # file is relative to the test folder
-      file: configmap.yaml
+      file: ($file)
