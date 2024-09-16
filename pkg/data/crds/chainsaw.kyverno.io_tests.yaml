@@ -4625,6 +4625,8 @@ spec:
                         template:
                           description: Template references a step template.
                           type: string
+                      required:
+                      - template
                       type: object
                   type: object
                 type: array
