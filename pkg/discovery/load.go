@@ -58,7 +58,7 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 			for _, apiTest := range apiTests {
 				for step := range apiTest.Spec.Steps {
 					step := &apiTest.Spec.Steps[step]
-					if step.Use != nil && step.Use.Template != "" {
+					if step.Use != nil {
 						steptpl, err := steptemplate.Load(filepath.Join(path, step.Use.Template), remarshal)
 						if err != nil {
 							return nil, err
