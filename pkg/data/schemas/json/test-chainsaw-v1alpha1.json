@@ -9185,13 +9185,13 @@
                   "object",
                   "null"
                 ],
+                "required": [
+                  "template"
+                ],
                 "properties": {
                   "template": {
                     "description": "Template references a step template.",
-                    "type": [
-                      "string",
-                      "null"
-                    ]
+                    "type": "string"
                   }
                 },
                 "additionalProperties": false
