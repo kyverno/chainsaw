@@ -33,12 +33,26 @@ func main() {
 	fmt.Println()
 	fmt.Println("## chainsaw functions")
 	fmt.Println()
-	printFunctions(chainsawfunctions.GetFunctions()...)
+	{
+		var functions []jpfunctions.FunctionEntry
+		for _, function := range chainsawfunctions.GetFunctions() {
+			functions = append(functions, function.FunctionEntry)
+		}
+		printFunctions(functions...)
+	}
 	fmt.Println()
 	fmt.Println("## examples")
 	fmt.Println()
 	fmt.Println("- [x_k8s_get](./examples/x_k8s_get.md)")
 	fmt.Println()
+	{
+		for _, function := range kyvernofunctions.GetFunctions() {
+			printFunctionExamples(chainsawfunctions.FunctionEntry{
+				FunctionEntry: function.FunctionEntry,
+				Note:          function.Note,
+			})
+		}
+	}
 }
 
 func printFunctions(funcs ...jpfunctions.FunctionEntry) {
@@ -63,4 +77,15 @@ func functionString(f jpfunctions.FunctionEntry) string {
 	}
 	output := fmt.Sprintf("%s(%s)", f.Name, strings.Join(args, ", "))
 	return output
+}
+
+func printFunctionExamples(funcs ...chainsawfunctions.FunctionEntry) {
+	for _, function := range funcs {
+		if function.Note != "" {
+			fmt.Println("###", function.Name)
+			fmt.Println()
+			fmt.Println(function.Note)
+			fmt.Println()
+		}
+	}
 }
