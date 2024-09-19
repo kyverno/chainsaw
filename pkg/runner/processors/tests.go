@@ -68,6 +68,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 	tc, namespace, err := setupContextData(ctx, tc, contextData)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		tc.IncFailed()
 		failer.FailNow(ctx)
 	}
 	var nspacer namespacer.Namespacer
@@ -80,6 +81,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 		name, err := names.Test(p.config.Discovery.FullName, test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			tc.IncFailed()
 			failer.FailNow(ctx)
 		}
 		// 3. compute test scenarios
