@@ -21,6 +21,7 @@ The list of organizations that have publicly shared the usage of Chainsaw:
 | [Provider-ceph](https://github.com/linode/provider-ceph) | Chainsaw replaced Kuttl and made our e2e tests much more readable and easier to debug |
 | [Linode CAPI provider](https://github.com/linode/cluster-api-provider-linode) | Chainsaw replaced Kuttl and made our e2e tests much more readable and easier to debug. 🙏 @eddycharly |
 | [Linode COSI driver](https://github.com/linode/linode-cosi-driver) | Running all end to end tests for object store driver |
+| [Odigos](https://github.com/odigos-io/odigos) | Chainsaw helps us run complex e2e tests confidently, ensuring project reliability. |
 
 
 <!-- append the line below to the table
