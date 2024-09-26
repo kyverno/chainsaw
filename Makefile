@@ -21,7 +21,7 @@ LD_FLAGS                           := "-s -w"
 endif
 KO_REGISTRY                        := ko.local
 KO_TAGS                            := $(GIT_SHA)
-KIND_IMAGE                         ?= kindest/node:v1.29.2
+KIND_IMAGE                         ?= kindest/node:v1.31.0
 
 #########
 # TOOLS #
