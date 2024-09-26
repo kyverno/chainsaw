@@ -1,7 +1,9 @@
 package main
 
 import (
+	"embed"
 	"fmt"
+	"os"
 	"strings"
 
 	jpfunctions "github.com/jmespath-community/go-jmespath/pkg/functions"
@@ -9,6 +11,9 @@ import (
 	"github.com/kyverno/kyverno-json/pkg/engine/template/functions"
 	kyvernofunctions "github.com/kyverno/kyverno-json/pkg/engine/template/kyverno"
 )
+
+//go:embed examples
+var examples embed.FS
 
 func main() {
 	fmt.Println("# Functions")
@@ -33,33 +38,25 @@ func main() {
 	fmt.Println()
 	fmt.Println("## chainsaw functions")
 	fmt.Println()
-	{
-		var functions []jpfunctions.FunctionEntry
-		for _, function := range chainsawfunctions.GetFunctions() {
-			functions = append(functions, function.FunctionEntry)
-		}
-		printFunctions(functions...)
-	}
+	printFunctions(chainsawfunctions.GetFunctions()...)
 	fmt.Println()
-	fmt.Println("## examples")
-	fmt.Println()
-	fmt.Println("- [x_k8s_get](./examples/x_k8s_get.md)")
-	fmt.Println()
-	{
-		for _, function := range kyvernofunctions.GetFunctions() {
-			printFunctionExamples(chainsawfunctions.FunctionEntry{
-				FunctionEntry: function.FunctionEntry,
-				Note:          function.Note,
-			})
-		}
-	}
 }
 
 func printFunctions(funcs ...jpfunctions.FunctionEntry) {
-	fmt.Println("| Name | Signature |")
-	fmt.Println("|---|---|")
+	fmt.Println("| Name | Signature | Description |")
+	fmt.Println("|---|---|---|")
 	for _, function := range funcs {
-		fmt.Println("|", function.Name, "|", "`"+functionString(function)+"`", "|")
+		sig := functionString(function)
+		fmt.Println("|", fmt.Sprintf("[%s](./examples/%s.md)", function.Name, function.Name), "|", "`"+sig+"`", "|", function.Description, "|")
+		data := fmt.Sprintf("# %s\n\n## Signature\n\n`%s`\n\n## Description\n\n%s\n\n## Examples\n\n", function.Name, sig, function.Description)
+		if e, err := examples.ReadFile(fmt.Sprintf("examples/%s.md", function.Name)); err != nil {
+			panic(err)
+		} else {
+			data += string(e)
+		}
+		if err := os.WriteFile(fmt.Sprintf("./website/docs/reference/jp/examples/%s.md", function.Name), []byte(data), 0o600); err != nil {
+			panic(err)
+		}
 	}
 }
 
@@ -77,15 +74,4 @@ func functionString(f jpfunctions.FunctionEntry) string {
 	}
 	output := fmt.Sprintf("%s(%s)", f.Name, strings.Join(args, ", "))
 	return output
-}
-
-func printFunctionExamples(funcs ...chainsawfunctions.FunctionEntry) {
-	for _, function := range funcs {
-		if function.Note != "" {
-			fmt.Println("###", function.Name)
-			fmt.Println()
-			fmt.Println(function.Note)
-			fmt.Println()
-		}
-	}
 }

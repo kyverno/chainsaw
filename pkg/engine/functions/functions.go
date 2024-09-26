@@ -21,110 +21,96 @@ var (
 	metricsDecode     = experimental("metrics_decode")
 )
 
-type FunctionEntry struct {
-	functions.FunctionEntry
-	Note string
-}
-
-func GetFunctions() []FunctionEntry {
-	return []FunctionEntry{{
-		FunctionEntry: functions.FunctionEntry{
-			Name: env,
-			Arguments: []functions.ArgSpec{
-				{Types: []functions.JpType{functions.JpString}},
-			},
-			Handler: jpEnv,
+func GetFunctions() []functions.FunctionEntry {
+	return []functions.FunctionEntry{{
+		Name: env,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpString}},
 		},
+		Handler:     jpEnv,
+		Description: "Returns the value of the environment variable passed in argument.",
 	}, {
-		FunctionEntry: functions.FunctionEntry{
-			Name: k8sGet,
-			Arguments: []functions.ArgSpec{
-				{Types: []functions.JpType{functions.JpAny}},
-				{Types: []functions.JpType{functions.JpString}},
-				{Types: []functions.JpType{functions.JpString}},
-				{Types: []functions.JpType{functions.JpString}},
-				{Types: []functions.JpType{functions.JpString}},
-			},
-			Handler: jpKubernetesGet,
+		Name: k8sGet,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpAny}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
 		},
+		Handler:     jpKubernetesGet,
+		Description: "Gets a resource from a Kubernetes cluster.",
 	}, {
-		FunctionEntry: functions.FunctionEntry{
-			Name: k8sList,
-			Arguments: []functions.ArgSpec{
-				{Types: []functions.JpType{functions.JpAny}},
-				{Types: []functions.JpType{functions.JpString}},
-				{Types: []functions.JpType{functions.JpString}},
-				{Types: []functions.JpType{functions.JpString}, Optional: true},
-			},
-			Handler: jpKubernetesList,
+		Name: k8sList,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpAny}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}, Optional: true},
 		},
+		Handler:     jpKubernetesList,
+		Description: "Lists resources from a Kubernetes cluster.",
 	}, {
-		FunctionEntry: functions.FunctionEntry{
-			Name: k8sExists,
-			Arguments: []functions.ArgSpec{
-				{Types: []functions.JpType{functions.JpAny}},
-				{Types: []functions.JpType{functions.JpString}},
-				{Types: []functions.JpType{functions.JpString}},
-				{Types: []functions.JpType{functions.JpString}},
-				{Types: []functions.JpType{functions.JpString}},
-			},
-			Handler: jpKubernetesExists,
+		Name: k8sExists,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpAny}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
 		},
+		Handler:     jpKubernetesExists,
+		Description: "Checks if a given resource exists in a Kubernetes cluster.",
 	}, {
-		FunctionEntry: functions.FunctionEntry{
-			Name: k8sResourceExists,
-			Arguments: []functions.ArgSpec{
-				{Types: []functions.JpType{functions.JpAny}},
-				{Types: []functions.JpType{functions.JpString}},
-				{Types: []functions.JpType{functions.JpString}},
-			},
-			Handler: jpKubernetesResourceExists,
+		Name: k8sResourceExists,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpAny}},
+			{Types: []functions.JpType{functions.JpString}},
+			{Types: []functions.JpType{functions.JpString}},
 		},
+		Handler:     jpKubernetesResourceExists,
+		Description: "Checks if a given resource type is available in a Kubernetes cluster.",
 	}, {
-		FunctionEntry: functions.FunctionEntry{
-			Name: k8sServerVersion,
-			Arguments: []functions.ArgSpec{
-				{Types: []functions.JpType{functions.JpAny}},
-			},
-			Handler: jpKubernetesServerVersion,
+		Name: k8sServerVersion,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpAny}},
 		},
+		Handler:     jpKubernetesServerVersion,
+		Description: "Returns the version of a Kubernetes cluster.",
 	}, {
-		FunctionEntry: functions.FunctionEntry{
-			Name: metricsDecode,
-			Arguments: []functions.ArgSpec{
-				{Types: []functions.JpType{functions.JpString}},
-			},
-			Handler: jpMetricsDecode,
+		Name: metricsDecode,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpString}},
 		},
+		Handler:     jpMetricsDecode,
+		Description: "Decodes metrics in the Prometheus text format.",
 	}, {
-		FunctionEntry: functions.FunctionEntry{
-			Name: trimSpace,
-			Arguments: []functions.ArgSpec{
-				{Types: []functions.JpType{functions.JpString}},
-			},
-			Handler: jpTrimSpace,
+		Name: trimSpace,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpString}},
 		},
+		Handler:     jpTrimSpace,
+		Description: "Trims leading and trailing spaces from the string passed in argument.",
 	}, {
-		FunctionEntry: functions.FunctionEntry{
-			Name: asString,
-			Arguments: []functions.ArgSpec{
-				{Types: []functions.JpType{functions.JpAny}},
-			},
-			Handler: func(arguments []any) (any, error) {
-				in, err := getArgAt(arguments, 0)
-				if err != nil {
-					return nil, err
+		Name: asString,
+		Arguments: []functions.ArgSpec{
+			{Types: []functions.JpType{functions.JpAny}},
+		},
+		Handler: func(arguments []any) (any, error) {
+			in, err := getArgAt(arguments, 0)
+			if err != nil {
+				return nil, err
+			}
+			if in != nil {
+				if in, ok := in.(string); ok {
+					return in, nil
 				}
-				if in != nil {
-					if in, ok := in.(string); ok {
-						return in, nil
-					}
-					if reflect.ValueOf(in).Kind() == reflect.String {
-						return fmt.Sprint(in), nil
-					}
+				if reflect.ValueOf(in).Kind() == reflect.String {
+					return fmt.Sprint(in), nil
 				}
-				return nil, nil
-			},
+			}
+			return nil, nil
 		},
+		Description: "Returns the passed in argument converted into a string.",
 	}}
 }
