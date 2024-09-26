@@ -1,1 +1,3 @@
-TODO
+```
+as_string('foobar') == 'foobar'
+```

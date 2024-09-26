@@ -6,8 +6,12 @@
 
 ## Description
 
-
+Returns the version of a Kubernetes cluster.
 
 ## Examples
 
-TODO
+```
+# `$client` is a binding pointing to a Kubernetes client
+
+x_k8s_server_version($client)
+```
