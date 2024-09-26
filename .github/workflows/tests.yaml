@@ -82,6 +82,21 @@ jobs:
         set -e
         make e2e-tests
 
+  e2e-tests-no-cluster:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
+    - name: Setup Go
+      uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32 # v5.0.2
+      with:
+        go-version-file: go.mod
+        cache-dependency-path: go.sum
+    - name: Run tests
+      run: |
+        set -e
+        make e2e-tests-no-cluster
+
   e2e-test-ko:
     runs-on: ubuntu-latest
     steps:

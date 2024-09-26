@@ -44,7 +44,7 @@ func setupContextData(ctx context.Context, tc engine.Context, data contextData) 
 			return tc, nil, err
 		} else if _, clusterClient, err := tc.CurrentClusterClient(); err != nil {
 			return tc, nil, err
-		} else {
+		} else if clusterClient != nil {
 			if err := clusterClient.Get(ctx, client.Key(namespace), namespace.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					return tc, nil, err
@@ -56,7 +56,9 @@ func setupContextData(ctx context.Context, tc engine.Context, data contextData) 
 			}
 			ns = namespace
 		}
-		tc = engine.WithNamespace(ctx, tc, ns.GetName())
+		if ns != nil {
+			tc = engine.WithNamespace(ctx, tc, ns.GetName())
+		}
 	}
 	if _tc, err := engine.WithBindings(ctx, tc, data.bindings...); err != nil {
 		return tc, ns, err
