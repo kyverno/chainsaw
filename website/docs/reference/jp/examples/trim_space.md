@@ -6,8 +6,10 @@
 
 ## Description
 
-
+Trims leading and trailing spaces from the string passed in argument.
 
 ## Examples
 
-TODO
+```
+trim_space('    foobar  ') == 'foobar'
+```

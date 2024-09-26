@@ -6,8 +6,10 @@
 
 ## Description
 
-
+Returns the passed in argument converted into a string.
 
 ## Examples
 
-TODO
+```
+as_string('foobar') == 'foobar'
+```

@@ -6,8 +6,10 @@
 
 ## Description
 
-
+Returns the value of the environment variable passed in argument.
 
 ## Examples
 
-TODO
+```
+env('MY_ENV_VAR') == 'foo'
+```
