@@ -1,1 +1,3 @@
-TODO
+```
+trim_space('    foobar  ') == 'foobar'
+```

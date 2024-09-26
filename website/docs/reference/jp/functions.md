@@ -116,13 +116,13 @@
 
 | Name | Signature | Description |
 |---|---|---|
-| [env](./examples/env.md) | `env(string)` |  |
-| [x_k8s_get](./examples/x_k8s_get.md) | `x_k8s_get(any, string, string, string, string)` |  |
-| [x_k8s_list](./examples/x_k8s_list.md) | `x_k8s_list(any, string, string, string)` |  |
-| [x_k8s_exists](./examples/x_k8s_exists.md) | `x_k8s_exists(any, string, string, string, string)` |  |
-| [x_k8s_resource_exists](./examples/x_k8s_resource_exists.md) | `x_k8s_resource_exists(any, string, string)` |  |
-| [x_k8s_server_version](./examples/x_k8s_server_version.md) | `x_k8s_server_version(any)` |  |
-| [x_metrics_decode](./examples/x_metrics_decode.md) | `x_metrics_decode(string)` |  |
-| [trim_space](./examples/trim_space.md) | `trim_space(string)` |  |
-| [as_string](./examples/as_string.md) | `as_string(any)` |  |
+| [env](./examples/env.md) | `env(string)` | Returns the value of the environment variable passed in argument. |
+| [x_k8s_get](./examples/x_k8s_get.md) | `x_k8s_get(any, string, string, string, string)` | Gets a resource from a Kubernetes cluster. |
+| [x_k8s_list](./examples/x_k8s_list.md) | `x_k8s_list(any, string, string, string)` | Lists resources from a Kubernetes cluster. |
+| [x_k8s_exists](./examples/x_k8s_exists.md) | `x_k8s_exists(any, string, string, string, string)` | Checks if a given resource exists in a Kubernetes cluster. |
+| [x_k8s_resource_exists](./examples/x_k8s_resource_exists.md) | `x_k8s_resource_exists(any, string, string)` | Checks if a given resource type is available in a Kubernetes cluster. |
+| [x_k8s_server_version](./examples/x_k8s_server_version.md) | `x_k8s_server_version(any)` | Returns the version of a Kubernetes cluster. |
+| [x_metrics_decode](./examples/x_metrics_decode.md) | `x_metrics_decode(string)` | Decodes metrics in the Prometheus text format. |
+| [trim_space](./examples/trim_space.md) | `trim_space(string)` | Trims leading and trailing spaces from the string passed in argument. |
+| [as_string](./examples/as_string.md) | `as_string(any)` | Returns the passed in argument converted into a string. |
 

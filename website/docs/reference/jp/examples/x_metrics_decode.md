@@ -6,7 +6,7 @@
 
 ## Description
 
-
+Decodes metrics in the Prometheus text format.
 
 ## Examples
 
