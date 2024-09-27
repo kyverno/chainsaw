@@ -13,10 +13,12 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var identifier = regexp.MustCompile(`^(?:\w+|\(.+\))$`)
-
-// Any represents any type.
-type Any = v1alpha1.Any
+var (
+	identifier = regexp.MustCompile(`^(?:\w+|\(.+\))$`)
+	NewAny     = v1alpha1.NewAny
+	NewCheck   = v1alpha1.NewAssertionTree
+	NewMatch   = v1alpha1.NewAssertionTree
+)
 
 // Binding represents a key/value set as a binding in an executing test.
 type Binding struct {
@@ -26,9 +28,7 @@ type Binding struct {
 	Name Expression `json:"name"`
 
 	// Value value of the binding.
-	// +kubebuilder:validation:Schemaless
-	// +kubebuilder:pruning:PreserveUnknownFields
-	Value Any `json:"value"`
+	Value Projection `json:"value"`
 }
 
 func (b Binding) CheckName() error {
@@ -39,7 +39,7 @@ func (b Binding) CheckName() error {
 }
 
 // Check represents a check to be applied on the result of an operation.
-type Check = Any
+type Check = v1alpha1.AssertionTree
 
 // Cluster defines cluster config and context.
 type Cluster struct {
@@ -106,7 +106,7 @@ func (e Expression) Value(ctx context.Context, bindings binding.Bindings) (strin
 type Format Expression
 
 // Match represents a match condition against an evaluated object.
-type Match = Any
+type Match = v1alpha1.AssertionTree
 
 // ObjectName represents an object namespace and name.
 type ObjectName struct {

@@ -131,7 +131,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 			_outputs = outputs
 		}
 	}(bindings)
-	if o.script.Check == nil || o.script.Check.Value == nil {
+	if o.script.Check == nil || o.script.Check.IsNil() {
 		return nil, err
 	}
 	if errs, err := checks.Check(ctx, nil, bindings, o.script.Check); err != nil {

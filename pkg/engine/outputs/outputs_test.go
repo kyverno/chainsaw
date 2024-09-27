@@ -7,6 +7,7 @@ import (
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/utils/ptr"
 )
 
 func TestProcess(t *testing.T) {
@@ -31,7 +32,7 @@ func TestProcess(t *testing.T) {
 		outputs: []v1alpha1.Output{{
 			Binding: v1alpha1.Binding{
 				Name:  "foo",
-				Value: v1alpha1.Any{Value: "bar"},
+				Value: v1alpha1.NewProjection("bar"),
 			},
 		}},
 		want: Outputs{
@@ -43,14 +44,16 @@ func TestProcess(t *testing.T) {
 		tc:    binding.NewBindings(),
 		input: map[string]any{},
 		outputs: []v1alpha1.Output{{
-			Match: &v1alpha1.Any{
-				Value: map[string]any{
-					"bar": "baz",
-				},
-			},
+			Match: ptr.To(
+				v1alpha1.NewMatch(
+					map[string]any{
+						"bar": "baz",
+					},
+				),
+			),
 			Binding: v1alpha1.Binding{
 				Name:  "foo",
-				Value: v1alpha1.Any{Value: "bar"},
+				Value: v1alpha1.NewProjection("bar"),
 			},
 		}},
 		want:    nil,
@@ -60,14 +63,16 @@ func TestProcess(t *testing.T) {
 		tc:    binding.NewBindings(),
 		input: nil,
 		outputs: []v1alpha1.Output{{
-			Match: &v1alpha1.Any{
-				Value: map[string]any{
-					"($bar)": "baz",
-				},
-			},
+			Match: ptr.To(
+				v1alpha1.NewMatch(
+					map[string]any{
+						"($bar)": "baz",
+					},
+				),
+			),
 			Binding: v1alpha1.Binding{
 				Name:  "foo",
-				Value: v1alpha1.Any{Value: "bar"},
+				Value: v1alpha1.NewProjection("bar"),
 			},
 		}},
 		want:    nil,
@@ -79,7 +84,7 @@ func TestProcess(t *testing.T) {
 		outputs: []v1alpha1.Output{{
 			Binding: v1alpha1.Binding{
 				Name:  "($foo)",
-				Value: v1alpha1.Any{Value: "bar"},
+				Value: v1alpha1.NewProjection("bar"),
 			},
 		}},
 		want:    nil,

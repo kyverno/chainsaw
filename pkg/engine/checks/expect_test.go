@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/utils/ptr"
 )
 
 func TestExpectations(t *testing.T) {
@@ -41,16 +42,16 @@ func TestExpectations(t *testing.T) {
 		},
 		bindings: nil,
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(
+				map[string]any{
 					"foo": "baz",
 				},
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			)),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"foo": "bar",
 				},
-			},
+			),
 		}},
 		want:    false,
 		wantErr: false,
@@ -63,16 +64,16 @@ func TestExpectations(t *testing.T) {
 		},
 		bindings: nil,
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(
+				map[string]any{
 					"foo": "bar",
 				},
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			)),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"foo": "bar",
 				},
-			},
+			),
 		}},
 		want:    true,
 		wantErr: false,
@@ -85,16 +86,16 @@ func TestExpectations(t *testing.T) {
 		},
 		bindings: nil,
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(
+				map[string]any{
 					"foo": "bar",
 				},
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			)),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"(foo())": "bar",
 				},
-			},
+			),
 		}},
 		want:    true,
 		wantErr: true,
@@ -107,16 +108,16 @@ func TestExpectations(t *testing.T) {
 		},
 		bindings: nil,
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(
+				map[string]any{
 					"(foo())": "bar",
 				},
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			)),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"foo": "bar",
 				},
-			},
+			),
 		}},
 		want:    true,
 		wantErr: true,

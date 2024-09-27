@@ -80,11 +80,11 @@ func Test_operationScript(t *testing.T) {
 			Content:   "foo",
 			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
 			ActionCheck: v1alpha1.ActionCheck{
-				Check: &v1alpha1.Check{
-					Value: map[string]any{
+				Check: ptr.To(v1alpha1.NewCheck(
+					map[string]any{
 						"($error != null)": true,
 					},
-				},
+				)),
 			},
 		},
 		basePath:  "..",
@@ -96,11 +96,11 @@ func Test_operationScript(t *testing.T) {
 			Content:   "foo",
 			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
 			ActionCheck: v1alpha1.ActionCheck{
-				Check: &v1alpha1.Check{
-					Value: map[string]any{
+				Check: ptr.To(v1alpha1.NewCheck(
+					map[string]any{
 						"(foo('bar'))": true,
 					},
-				},
+				)),
 			},
 		},
 		basePath:  "..",
@@ -112,11 +112,11 @@ func Test_operationScript(t *testing.T) {
 			Content:   "cat operation.go",
 			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
 			ActionCheck: v1alpha1.ActionCheck{
-				Check: &v1alpha1.Check{
-					Value: map[string]any{
+				Check: ptr.To(v1alpha1.NewCheck(
+					map[string]any{
 						"(foo('bar'))": true,
 					},
-				},
+				)),
 			},
 		},
 		basePath:  "..",

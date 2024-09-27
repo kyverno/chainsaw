@@ -61,9 +61,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outp
 		internal.LogEnd(logger, logging.Create, _err)
 	}()
 	if o.template {
-		template := v1alpha1.Any{
-			Value: obj.UnstructuredContent(),
-		}
+		template := v1alpha1.NewProjection(obj.UnstructuredContent())
 		if merged, err := templating.TemplateAndMerge(ctx, obj, bindings, template); err != nil {
 			return nil, err
 		} else {
