@@ -1017,8 +1017,8 @@ func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, 
 }
 
 func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionCheckRef, bindings binding.Bindings) ([]unstructured.Unstructured, error) {
-	if ref.Check != nil && ref.Check.Value != nil {
-		if object, ok := ref.Check.Value.(map[string]any); !ok {
+	if ref.Check != nil && ref.Check.Value() != nil {
+		if object, ok := ref.Check.Value().(map[string]any); !ok {
 			return nil, errors.New("resource must be an object")
 		} else {
 			return []unstructured.Unstructured{{Object: object}}, nil

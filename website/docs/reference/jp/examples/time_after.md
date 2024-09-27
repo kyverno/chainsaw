@@ -6,7 +6,7 @@
 
 ## Description
 
-
+checks if a time is after another time, both in RFC3339 format
 
 ## Examples
 

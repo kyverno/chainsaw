@@ -149,11 +149,11 @@ func Test_operationDelete(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error == 'dummy error')": true,
 				},
-			},
+			),
 		}},
 		expectedErr:  nil,
 		expectedLogs: []string{"DELETE: RUN - []", "DELETE: DONE - []"},

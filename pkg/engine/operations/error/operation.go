@@ -18,6 +18,7 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/utils/ptr"
 )
 
 type operation struct {
@@ -75,7 +76,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 			}
 		}()
 		if obj.GetAPIVersion() == "" || obj.GetKind() == "" {
-			_errs, err := checks.Check(ctx, nil, bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
+			_errs, err := checks.Check(ctx, nil, bindings, ptr.To(v1alpha1.NewCheck(obj.UnstructuredContent())))
 			if err != nil {
 				return false, err
 			}
@@ -94,7 +95,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 			} else {
 				for i := range candidates {
 					candidate := candidates[i]
-					_errs, err := checks.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
+					_errs, err := checks.Check(ctx, candidate.UnstructuredContent(), bindings, ptr.To(v1alpha1.NewCheck(obj.UnstructuredContent())))
 					if err != nil {
 						return false, err
 					}

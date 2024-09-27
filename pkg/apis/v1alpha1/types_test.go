@@ -12,7 +12,7 @@ func TestBinding_CheckName(t *testing.T) {
 	tests := []struct {
 		name         string
 		bindingName  Expression
-		bindingValue Any
+		bindingValue Projection
 		wantErr      bool
 	}{{
 		name:    "empty",

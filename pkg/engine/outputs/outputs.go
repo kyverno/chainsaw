@@ -14,7 +14,7 @@ type Outputs = map[string]any
 func Process(ctx context.Context, tc binding.Bindings, input any, outputs ...v1alpha1.Output) (Outputs, error) {
 	var results Outputs
 	for _, output := range outputs {
-		if output.Match != nil && output.Match.Value != nil {
+		if output.Match != nil && !output.Match.IsNil() {
 			if errs, err := checks.Check(ctx, input, tc, output.Match); err != nil {
 				return nil, err
 			} else if len(errs) != 0 {

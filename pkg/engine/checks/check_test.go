@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/util/validation/field"
+	"k8s.io/utils/ptr"
 )
 
 func TestCheck(t *testing.T) {
@@ -38,11 +39,11 @@ func TestCheck(t *testing.T) {
 			"foo": "bar",
 		},
 		bindings: nil,
-		check: &v1alpha1.Check{
-			Value: map[string]any{
+		check: ptr.To(v1alpha1.NewCheck(
+			map[string]any{
 				"foo": "bar",
 			},
-		},
+		)),
 		want:    nil,
 		wantErr: false,
 	}, {
@@ -51,11 +52,11 @@ func TestCheck(t *testing.T) {
 			"foo": "bar",
 		},
 		bindings: nil,
-		check: &v1alpha1.Check{
-			Value: map[string]any{
+		check: ptr.To(v1alpha1.NewCheck(
+			map[string]any{
 				"foo": "baz",
 			},
-		},
+		)),
 		want: []*field.Error{{
 			Type:     field.ErrorTypeInvalid,
 			Field:    "foo",

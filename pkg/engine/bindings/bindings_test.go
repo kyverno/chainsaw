@@ -83,7 +83,7 @@ func TestResolveBinding(t *testing.T) {
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "foo",
-			Value: v1alpha1.Any{Value: "bar"},
+			Value: v1alpha1.NewProjection("bar"),
 		},
 		wantName:  "foo",
 		wantValue: "bar",
@@ -94,7 +94,7 @@ func TestResolveBinding(t *testing.T) {
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "$foo",
-			Value: v1alpha1.Any{Value: "bar"},
+			Value: v1alpha1.NewProjection("bar"),
 		},
 		wantErr: true,
 	}, {
@@ -103,7 +103,7 @@ func TestResolveBinding(t *testing.T) {
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "foo",
-			Value: v1alpha1.Any{Value: "($bar)"},
+			Value: v1alpha1.NewProjection("($bar)"),
 		},
 		wantErr: true,
 	}, {
@@ -112,7 +112,7 @@ func TestResolveBinding(t *testing.T) {
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "($foo)",
-			Value: v1alpha1.Any{Value: "bar"},
+			Value: v1alpha1.NewProjection("bar"),
 		},
 		wantErr: true,
 	}, {
@@ -121,7 +121,7 @@ func TestResolveBinding(t *testing.T) {
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "($foo)",
-			Value: v1alpha1.Any{Value: "($bar)"},
+			Value: v1alpha1.NewProjection("($bar)"),
 		},
 		wantName:  "abc",
 		wantValue: "def",

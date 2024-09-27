@@ -6,7 +6,7 @@
 
 ## Description
 
-
+compares two strings lexicographically
 
 ## Examples
 

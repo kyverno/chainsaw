@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/utils/ptr"
 )
 
 func Test_apply(t *testing.T) {
@@ -161,11 +162,11 @@ func Test_apply(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error != null)": true,
 				},
-			},
+			),
 		}},
 		expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
 	}, {
@@ -180,11 +181,11 @@ func Test_apply(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error != null)": true,
 				},
-			},
+			),
 		}},
 		expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
 	}, {
@@ -200,11 +201,11 @@ func Test_apply(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error)": "expected patch failure",
 				},
-			},
+			),
 		}},
 		expectedErr: nil,
 	}, {
@@ -219,11 +220,11 @@ func Test_apply(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error)": "expected create failure",
 				},
-			},
+			),
 		}},
 		expectedErr: nil,
 	}, {
@@ -239,14 +240,12 @@ func Test_apply(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: podv2.UnstructuredContent(),
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(podv2.UnstructuredContent())),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"kind": "Service",
 				},
-			},
+			),
 		}},
 		expectedErr: nil,
 	}, {
@@ -262,14 +261,12 @@ func Test_apply(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: podv1.UnstructuredContent(),
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(podv1.UnstructuredContent())),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"kind": "Service",
 				},
-			},
+			),
 		}},
 		expectedErr: errors.New(`kind: Invalid value: "Pod": Expected value: "Service"`),
 	}, {

@@ -77,7 +77,7 @@ type ConfigurationSpec struct {
 
 	// NamespaceTemplate defines a template to create the test namespace.
 	// +optional
-	NamespaceTemplate *Any `json:"namespaceTemplate,omitempty"`
+	NamespaceTemplate *Projection `json:"namespaceTemplate,omitempty"`
 
 	// FullName makes use of the full test case folder path instead of the folder name.
 	// +optional

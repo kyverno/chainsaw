@@ -15,7 +15,7 @@ func Expect(ctx context.Context, obj unstructured.Unstructured, bindings binding
 	var results field.ErrorList
 	for _, expectation := range expect {
 		// if a match is specified, skip the check if the resource doesn't match
-		if expectation.Match != nil && expectation.Match.Value != nil {
+		if expectation.Match != nil && !expectation.Match.IsNil() {
 			if errs, err := Check(ctx, obj.UnstructuredContent(), nil, expectation.Match); err != nil {
 				return true, err
 			} else if len(errs) != 0 {

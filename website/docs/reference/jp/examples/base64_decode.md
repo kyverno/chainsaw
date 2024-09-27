@@ -6,7 +6,7 @@
 
 ## Description
 
-
+decodes a base 64 string
 
 ## Examples
 

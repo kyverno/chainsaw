@@ -65,52 +65,52 @@
 
 | Name | Signature | Description |
 |---|---|---|
-| [compare](./examples/compare.md) | `compare(string, string)` |  |
-| [equal_fold](./examples/equal_fold.md) | `equal_fold(string, string)` |  |
-| [replace](./examples/replace.md) | `replace(string, string, string, number)` |  |
-| [replace_all](./examples/replace_all.md) | `replace_all(string, string, string)` |  |
-| [to_upper](./examples/to_upper.md) | `to_upper(string)` |  |
-| [to_lower](./examples/to_lower.md) | `to_lower(string)` |  |
-| [trim](./examples/trim.md) | `trim(string, string)` |  |
-| [trim_prefix](./examples/trim_prefix.md) | `trim_prefix(string, string)` |  |
-| [split](./examples/split.md) | `split(string, string)` |  |
-| [regex_replace_all](./examples/regex_replace_all.md) | `regex_replace_all(string, string|number, string|number)` |  |
-| [regex_replace_all_literal](./examples/regex_replace_all_literal.md) | `regex_replace_all_literal(string, string|number, string|number)` |  |
-| [regex_match](./examples/regex_match.md) | `regex_match(string, string|number)` |  |
-| [pattern_match](./examples/pattern_match.md) | `pattern_match(string, string|number)` |  |
-| [label_match](./examples/label_match.md) | `label_match(object, object)` |  |
-| [to_boolean](./examples/to_boolean.md) | `to_boolean(string)` |  |
-| [add](./examples/add.md) | `add(any, any)` |  |
-| [sum](./examples/sum.md) | `sum(array)` |  |
-| [subtract](./examples/subtract.md) | `subtract(any, any)` |  |
-| [multiply](./examples/multiply.md) | `multiply(any, any)` |  |
-| [divide](./examples/divide.md) | `divide(any, any)` |  |
-| [modulo](./examples/modulo.md) | `modulo(any, any)` |  |
-| [round](./examples/round.md) | `round(number, number)` |  |
-| [base64_decode](./examples/base64_decode.md) | `base64_decode(string)` |  |
-| [base64_encode](./examples/base64_encode.md) | `base64_encode(string)` |  |
-| [time_since](./examples/time_since.md) | `time_since(string, string, string)` |  |
-| [time_now](./examples/time_now.md) | `time_now()` |  |
-| [time_now_utc](./examples/time_now_utc.md) | `time_now_utc()` |  |
-| [path_canonicalize](./examples/path_canonicalize.md) | `path_canonicalize(string)` |  |
-| [truncate](./examples/truncate.md) | `truncate(string, number)` |  |
-| [semver_compare](./examples/semver_compare.md) | `semver_compare(string, string)` |  |
-| [parse_json](./examples/parse_json.md) | `parse_json(string)` |  |
-| [parse_yaml](./examples/parse_yaml.md) | `parse_yaml(string)` |  |
-| [lookup](./examples/lookup.md) | `lookup(object|array, string|number)` |  |
-| [items](./examples/items.md) | `items(object|array, string, string)` |  |
-| [object_from_lists](./examples/object_from_lists.md) | `object_from_lists(array, array)` |  |
-| [random](./examples/random.md) | `random(string)` |  |
-| [x509_decode](./examples/x509_decode.md) | `x509_decode(string)` |  |
-| [time_to_cron](./examples/time_to_cron.md) | `time_to_cron(string)` |  |
-| [time_add](./examples/time_add.md) | `time_add(string, string)` |  |
-| [time_parse](./examples/time_parse.md) | `time_parse(string, string)` |  |
-| [time_utc](./examples/time_utc.md) | `time_utc(string)` |  |
-| [time_diff](./examples/time_diff.md) | `time_diff(string, string)` |  |
-| [time_before](./examples/time_before.md) | `time_before(string, string)` |  |
-| [time_after](./examples/time_after.md) | `time_after(string, string)` |  |
-| [time_between](./examples/time_between.md) | `time_between(string, string, string)` |  |
-| [time_truncate](./examples/time_truncate.md) | `time_truncate(string, string)` |  |
+| [compare](./examples/compare.md) | `compare(string, string)` | compares two strings lexicographically |
+| [equal_fold](./examples/equal_fold.md) | `equal_fold(string, string)` | allows comparing two strings for equivalency where the only differences are letter cases |
+| [replace](./examples/replace.md) | `replace(string, string, string, number)` | replaces a specified number of instances of the source string with the replacement string in a parent  |
+| [replace_all](./examples/replace_all.md) | `replace_all(string, string, string)` | replace all instances of one string with another in an overall parent string |
+| [to_upper](./examples/to_upper.md) | `to_upper(string)` | takes in a string and outputs the same string with all upper-case letters |
+| [to_lower](./examples/to_lower.md) | `to_lower(string)` | takes in a string and outputs the same string with all lower-case letters |
+| [trim](./examples/trim.md) | `trim(string, string)` | trims both ends of the source string by characters appearing in the second string |
+| [trim_prefix](./examples/trim_prefix.md) | `trim_prefix(string, string)` | trims the second string prefix from the first string if the first string starts with the prefix |
+| [split](./examples/split.md) | `split(string, string)` | splits the first string when the second string is found and converts it into an array  |
+| [regex_replace_all](./examples/regex_replace_all.md) | `regex_replace_all(string, string|number, string|number)` | converts all parameters to string |
+| [regex_replace_all_literal](./examples/regex_replace_all_literal.md) | `regex_replace_all_literal(string, string|number, string|number)` | converts all parameters to string |
+| [regex_match](./examples/regex_match.md) | `regex_match(string, string|number)` | first string is the regular exression which is compared with second input which can be a number or string |
+| [pattern_match](./examples/pattern_match.md) | `pattern_match(string, string|number)` | '*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character |
+| [label_match](./examples/label_match.md) | `label_match(object, object)` | object arguments must be enclosed in backticks; ex. `{{request.object.spec.template.metadata.labels}}` |
+| [to_boolean](./examples/to_boolean.md) | `to_boolean(string)` | It returns true or false for any string, such as 'True', 'TruE', 'False', 'FAlse', 'faLSE', etc. |
+| [add](./examples/add.md) | `add(any, any)` | does arithmetic addition of two specified values of numbers, quantities, and durations |
+| [sum](./examples/sum.md) | `sum(array)` | does arithmetic addition of specified array of values of numbers, quantities, and durations |
+| [subtract](./examples/subtract.md) | `subtract(any, any)` | does arithmetic subtraction of two specified values of numbers, quantities, and durations |
+| [multiply](./examples/multiply.md) | `multiply(any, any)` | does arithmetic multiplication of two specified values of numbers, quantities, and durations |
+| [divide](./examples/divide.md) | `divide(any, any)` | divisor must be non zero |
+| [modulo](./examples/modulo.md) | `modulo(any, any)` | divisor must be non-zero, arguments must be integers |
+| [round](./examples/round.md) | `round(number, number)` | does roundoff to upto the given decimal places |
+| [base64_decode](./examples/base64_decode.md) | `base64_decode(string)` | decodes a base 64 string |
+| [base64_encode](./examples/base64_encode.md) | `base64_encode(string)` | encodes a regular, plaintext and unencoded string to base64 |
+| [time_since](./examples/time_since.md) | `time_since(string, string, string)` | calculate the difference between a start and end period of time where the end may either be a static definition or the then-current time |
+| [time_now](./examples/time_now.md) | `time_now()` | returns current time in RFC 3339 format |
+| [time_now_utc](./examples/time_now_utc.md) | `time_now_utc()` | returns current UTC time in RFC 3339 format |
+| [path_canonicalize](./examples/path_canonicalize.md) | `path_canonicalize(string)` | normalizes or canonicalizes a given path by removing excess slashes |
+| [truncate](./examples/truncate.md) | `truncate(string, number)` | length argument must be enclosed in backticks; ex. "{{request.object.metadata.name | truncate(@, `9`)}}" |
+| [semver_compare](./examples/semver_compare.md) | `semver_compare(string, string)` | compares two strings which comply with the semantic versioning schema and outputs a boolean response as to the position of the second relative to the first |
+| [parse_json](./examples/parse_json.md) | `parse_json(string)` | decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function |
+| [parse_yaml](./examples/parse_yaml.md) | `parse_yaml(string)` | decodes a valid YAML encoded string to the appropriate type provided it can be represented as JSON |
+| [lookup](./examples/lookup.md) | `lookup(object|array, string|number)` | returns the value corresponding to the given key/index in the given object/array |
+| [items](./examples/items.md) | `items(object|array, string, string)` | converts a map or array to an array of objects where each key:value is an item in the array |
+| [object_from_lists](./examples/object_from_lists.md) | `object_from_lists(array, array)` | converts a pair of lists containing keys and values to an object |
+| [random](./examples/random.md) | `random(string)` | Generates a random sequence of characters |
+| [x509_decode](./examples/x509_decode.md) | `x509_decode(string)` | decodes an x.509 certificate to an object. you may also use this in conjunction with `base64_decode` jmespath function to decode a base64-encoded certificate |
+| [time_to_cron](./examples/time_to_cron.md) | `time_to_cron(string)` | converts a time (RFC 3339) to a cron expression (string). |
+| [time_add](./examples/time_add.md) | `time_add(string, string)` | adds duration (second string) to a time value (first string) |
+| [time_parse](./examples/time_parse.md) | `time_parse(string, string)` | changes a time value of a given layout to RFC 3339 |
+| [time_utc](./examples/time_utc.md) | `time_utc(string)` | calcutes time in UTC from a given time in RFC 3339 format |
+| [time_diff](./examples/time_diff.md) | `time_diff(string, string)` | calculate the difference between a start and end date in RFC3339 format |
+| [time_before](./examples/time_before.md) | `time_before(string, string)` | checks if a time is before another time, both in RFC3339 format |
+| [time_after](./examples/time_after.md) | `time_after(string, string)` | checks if a time is after another time, both in RFC3339 format |
+| [time_between](./examples/time_between.md) | `time_between(string, string, string)` | checks if a time is between a start and end time, all in RFC3339 format |
+| [time_truncate](./examples/time_truncate.md) | `time_truncate(string, string)` | returns the result of rounding time down to a multiple of duration |
 
 ## chainsaw functions
 

@@ -6,7 +6,7 @@
 
 ## Description
 
-
+decodes a valid YAML encoded string to the appropriate type provided it can be represented as JSON
 
 ## Examples
 

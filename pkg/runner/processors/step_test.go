@@ -542,8 +542,8 @@ func TestStepProcessor_Run(t *testing.T) {
 					{
 						Assert: &v1alpha1.Assert{
 							ActionCheckRef: v1alpha1.ActionCheckRef{
-								Check: &v1alpha1.Check{
-									Value: map[string]any{
+								Check: ptr.To(v1alpha1.NewProjection(
+									map[string]any{
 										"apiVersion": "v1",
 										"kind":       "Pod",
 										"metadata": map[string]any{
@@ -567,7 +567,7 @@ func TestStepProcessor_Run(t *testing.T) {
 											},
 										},
 									},
-								},
+								)),
 							},
 						},
 					},

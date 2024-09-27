@@ -8,8 +8,8 @@ import (
 
 	jpfunctions "github.com/jmespath-community/go-jmespath/pkg/functions"
 	chainsawfunctions "github.com/kyverno/chainsaw/pkg/engine/functions"
-	"github.com/kyverno/kyverno-json/pkg/engine/template/functions"
-	kyvernofunctions "github.com/kyverno/kyverno-json/pkg/engine/template/kyverno"
+	"github.com/kyverno/kyverno-json/pkg/jp/functions"
+	kyvernofunctions "github.com/kyverno/kyverno-json/pkg/jp/kyverno"
 )
 
 //go:embed examples
