@@ -55,6 +55,8 @@ chainsaw test [flags]... [test directories]...
       --report-name string                        The name of the report to create (default "chainsaw-report")
       --report-path string                        The path of the report to create
       --selector strings                          Selector (label query) to filter on
+      --shard-count int                           Number of shards
+      --shard-index --shard-count                 Current shard index (if --shard-count > 0)
       --skip-delete                               If set, do not delete the resources after running the tests
       --template                                  If set, resources will be considered for templating (default true)
       --test-dir strings                          Directories containing test cases to run

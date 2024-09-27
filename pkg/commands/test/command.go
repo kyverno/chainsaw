@@ -61,6 +61,8 @@ type options struct {
 	values                      []string
 	clusters                    []string
 	remarshal                   bool
+	shardIndex                  int
+	shardCount                  int
 }
 
 func Command() *cobra.Command {
@@ -268,7 +270,10 @@ func Command() *cobra.Command {
 			}
 			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
 			fmt.Fprintf(out, "- PauseOnFailure %v\n", options.pauseOnFailure)
-			// loading tests
+			if options.shardCount > 0 {
+				fmt.Fprintf(out, "- Shard %v / %v\n", options.shardIndex, options.shardCount)
+			}
+			// load tests
 			fmt.Fprintln(out, "Loading tests...")
 			if err := fsutils.CheckFolders(options.testDirs...); err != nil {
 				return err
@@ -285,6 +290,16 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			// TODO: we may want to find a sort key here ?
+			if options.shardCount > 0 && options.shardIndex < options.shardCount {
+				shardLen := float64(len(tests)) / float64(options.shardCount)
+				shardStart := int(shardLen * float64(options.shardIndex))
+				shardEnd := int(shardLen * float64(options.shardIndex+1))
+				if options.shardIndex == options.shardCount-1 {
+					shardEnd = len(tests)
+				}
+				tests = tests[shardStart:shardEnd]
+			}
 			var testToRun []discovery.Test
 			for _, test := range tests {
 				if test.Err != nil {
@@ -294,7 +309,7 @@ func Command() *cobra.Command {
 					testToRun = append(testToRun, test)
 				}
 			}
-			// loading tests
+			// load values
 			fmt.Fprintln(out, "Loading values...")
 			values, err := values.Load(options.values...)
 			if err != nil {
@@ -378,6 +393,9 @@ func Command() *cobra.Command {
 	cmd.Flags().StringSliceVar(&options.selector, "selector", nil, "Selector (label query) to filter on")
 	// external values
 	cmd.Flags().StringSliceVar(&options.values, "values", nil, "Values passed to the tests")
+	// sharding
+	cmd.Flags().IntVar(&options.shardIndex, "shard-index", 0, "Current shard index (if `--shard-count` > 0)")
+	cmd.Flags().IntVar(&options.shardCount, "shard-count", 0, "Number of shards")
 	// others
 	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
 	cmd.Flags().BoolVar(&options.remarshal, "remarshal", false, "Remarshals tests yaml to apply anchors before parsing")
