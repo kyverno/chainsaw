@@ -56,10 +56,10 @@
 
 | Name | Signature | Description |
 |---|---|---|
-| [at](./examples/at.md) | `at(array, any)` |  |
-| [concat](./examples/concat.md) | `concat(string, string)` |  |
-| [json_parse](./examples/json_parse.md) | `json_parse(string)` |  |
-| [wildcard](./examples/wildcard.md) | `wildcard(string, string)` |  |
+| [at](./examples/at.md) | `at(array, number)` | Returns the element in an array at the given index. |
+| [concat](./examples/concat.md) | `concat(string, string)` | Concatenates two strings together and returns the result. |
+| [json_parse](./examples/json_parse.md) | `json_parse(string)` | Parses a given JSON string into an object. |
+| [wildcard](./examples/wildcard.md) | `wildcard(string, string)` | Compares a wildcard pattern with a given string and returns if they match or not. |
 
 ## kyverno functions
 
