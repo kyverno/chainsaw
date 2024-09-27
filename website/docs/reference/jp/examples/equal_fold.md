@@ -6,7 +6,7 @@
 
 ## Description
 
-
+allows comparing two strings for equivalency where the only differences are letter cases
 
 ## Examples
 

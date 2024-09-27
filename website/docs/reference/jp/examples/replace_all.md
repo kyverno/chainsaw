@@ -6,7 +6,7 @@
 
 ## Description
 
-
+replace all instances of one string with another in an overall parent string
 
 ## Examples
 

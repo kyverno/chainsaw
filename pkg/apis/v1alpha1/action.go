@@ -26,7 +26,7 @@ type ActionCheckRef struct {
 
 	// Check provides a check used in assertions.
 	// +optional
-	Check *Check `json:"resource,omitempty"`
+	Check *Projection `json:"resource,omitempty"`
 
 	// Template determines whether resources should be considered for templating.
 	// +optional

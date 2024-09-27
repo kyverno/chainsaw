@@ -83,7 +83,7 @@ auto_generated: true
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `check` | `policy/v1alpha1.Any` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
+| `check` | `policy/v1alpha1.AssertionTree` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
 ## ActionCheckRef     {#chainsaw-kyverno-io-v1alpha1-ActionCheckRef}
 
@@ -98,7 +98,7 @@ auto_generated: true
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `FileRef` | [`FileRef`](#chainsaw-kyverno-io-v1alpha1-FileRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-| `resource` | `policy/v1alpha1.Any` |  |  | <p>Check provides a check used in assertions.</p> |
+| `resource` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>Check provides a check used in assertions.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 
 ## ActionClusters     {#chainsaw-kyverno-io-v1alpha1-ActionClusters}
@@ -344,7 +344,7 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Name the name of the binding.</p> |
-| `value` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Value value of the binding.</p> |
+| `value` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) | :white_check_mark: |  | <p>Value value of the binding.</p> |
 
 ## CatchFinally     {#chainsaw-kyverno-io-v1alpha1-CatchFinally}
 
@@ -428,7 +428,7 @@ during the testing process.</p>
 | `reportPath` | `string` |  |  | <p>ReportPath defines the path.</p> |
 | `reportName` | `string` |  |  | <p>ReportName defines the name of report to create. It defaults to "chainsaw-report".</p> |
 | `namespace` | `string` |  |  | <p>Namespace defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
-| `namespaceTemplate` | `policy/v1alpha1.Any` |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
+| `namespaceTemplate` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
 | `fullName` | `bool` |  |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
 | `excludeTestRegex` | `string` |  |  | <p>ExcludeTestRegex is used to exclude tests based on a regular expression.</p> |
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
@@ -561,8 +561,8 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
-| `check` | `policy/v1alpha1.Any` | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
+| `match` | `policy/v1alpha1.AssertionTree` |  |  | <p>Match defines the matching statement.</p> |
+| `check` | `policy/v1alpha1.AssertionTree` | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
 
 ## Expression     {#chainsaw-kyverno-io-v1alpha1-Expression}
 
@@ -731,7 +731,7 @@ For multiple objects use labels.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `Binding` | [`Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) | :white_check_mark: | :white_check_mark: | <p>Binding determines the binding to create when the match succeeds.</p> |
-| `match` | `policy/v1alpha1.Any` |  |  | <p>Match defines the matching statement.</p> |
+| `match` | `policy/v1alpha1.AssertionTree` |  |  | <p>Match defines the matching statement.</p> |
 
 ## Patch     {#chainsaw-kyverno-io-v1alpha1-Patch}
 
@@ -770,6 +770,21 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `container` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Container in pod to get logs from else --all-containers is used.</p> |
 | `tail` | `int` |  |  | <p>Tail is the number of last lines to collect from pods. If omitted or zero, then the default is 10 if you use a selector, or -1 (all) if you use a pod name. This matches default behavior of `kubectl logs`.</p> |
+
+## Projection     {#chainsaw-kyverno-io-v1alpha1-Projection}
+
+**Appears in:**
+    
+- [ActionCheckRef](#chainsaw-kyverno-io-v1alpha1-ActionCheckRef)
+- [Binding](#chainsaw-kyverno-io-v1alpha1-Binding)
+- [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
+- [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
+
+<p>Projection can be any type.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
 
 ## Proxy     {#chainsaw-kyverno-io-v1alpha1-Proxy}
 
@@ -884,7 +899,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the test should be deleted after the test is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `namespace` | `string` |  |  | <p>Namespace determines whether the test should run in a random ephemeral namespace or not.</p> |
-| `namespaceTemplate` | `policy/v1alpha1.Any` |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
+| `namespaceTemplate` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
 | `scenarios` | [`[]Scenario`](#chainsaw-kyverno-io-v1alpha1-Scenario) |  |  | <p>Scenarios defines test scenarios.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `steps` | [`[]TestStep`](#chainsaw-kyverno-io-v1alpha1-TestStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |

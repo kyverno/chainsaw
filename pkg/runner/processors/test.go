@@ -28,7 +28,7 @@ func NewTestProcessor(
 	test discovery.Test,
 	size int,
 	clock clock.PassiveClock,
-	nsTemplate *v1alpha1.Any,
+	nsTemplate *v1alpha1.Projection,
 	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
@@ -37,7 +37,7 @@ func NewTestProcessor(
 	skipDelete bool,
 	catch ...v1alpha1.CatchFinally,
 ) TestProcessor {
-	if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value != nil {
+	if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
 		nsTemplate = template
 	}
 	if test.Test.Spec.DelayBeforeCleanup != nil {
@@ -78,7 +78,7 @@ type testProcessor struct {
 	test                      discovery.Test
 	size                      int
 	clock                     clock.PassiveClock
-	nsTemplate                *v1alpha1.Any
+	nsTemplate                *v1alpha1.Projection
 	delayBeforeCleanup        *time.Duration
 	terminationGracePeriod    *metav1.Duration
 	timeouts                  v1alpha1.DefaultTimeouts

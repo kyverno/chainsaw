@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/utils/ptr"
 )
 
 func Test_update(t *testing.T) {
@@ -101,11 +102,11 @@ func Test_update(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error)": "some arbitrary error",
 				},
-			},
+			),
 		}},
 		expectedErr: nil,
 	}, {
@@ -121,11 +122,11 @@ func Test_update(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error != null)": true,
 				},
-			},
+			),
 		}},
 		expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
 	}, {
@@ -141,16 +142,16 @@ func Test_update(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(
+				map[string]any{
 					"foo": "bar",
 				},
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			)),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"kind": "Service",
 				},
-			},
+			),
 		}},
 		expectedErr: nil,
 	}, {
@@ -166,14 +167,12 @@ func Test_update(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: pod.UnstructuredContent(),
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(pod.UnstructuredContent())),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"kind": "Service",
 				},
-			},
+			),
 		}},
 		expectedErr: errors.New(`kind: Invalid value: "Pod": Expected value: "Service"`),
 	}}

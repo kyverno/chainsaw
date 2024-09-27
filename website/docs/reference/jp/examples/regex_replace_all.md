@@ -6,7 +6,7 @@
 
 ## Description
 
-
+converts all parameters to string
 
 ## Examples
 

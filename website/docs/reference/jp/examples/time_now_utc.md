@@ -6,7 +6,7 @@
 
 ## Description
 
-
+returns current UTC time in RFC 3339 format
 
 ## Examples
 
