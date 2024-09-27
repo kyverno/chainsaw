@@ -89,7 +89,7 @@ type NamespaceOptions struct {
 
 	// Template defines a template to create the test namespace.
 	// +optional
-	Template *Any `json:"template,omitempty"`
+	Template *Projection `json:"template,omitempty"`
 }
 
 type ReportFormatType string

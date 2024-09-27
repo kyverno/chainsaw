@@ -1,5 +1,6 @@
 hiddenMemberFields:
-  - "TypeMeta"
+- TypeMeta
+- _value
 
 externalPackages:
   - match: ^k8s\.io/apimachinery/pkg/apis/meta/v1\.Duration$

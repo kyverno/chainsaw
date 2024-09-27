@@ -12,12 +12,12 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func buildNamespace(ctx context.Context, name string, template *v1alpha1.Any, tc binding.Bindings) (*corev1.Namespace, error) {
+func buildNamespace(ctx context.Context, name string, template *v1alpha1.Projection, tc binding.Bindings) (*corev1.Namespace, error) {
 	namespace := kube.Namespace(name)
 	if template == nil {
 		return &namespace, nil
 	}
-	if template.Value == nil {
+	if template.Value() == nil {
 		return &namespace, nil
 	}
 	object := kube.ToUnstructured(&namespace)

@@ -133,7 +133,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 			_outputs = outputs
 		}
 	}(bindings)
-	if o.command.Check == nil || o.command.Check.Value == nil {
+	if o.command.Check == nil || o.command.Check.IsNil() {
 		return nil, err
 	}
 	if errs, err := checks.Check(ctx, nil, bindings, o.command.Check); err != nil {

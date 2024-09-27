@@ -13,7 +13,7 @@ import (
 
 type namespaceData struct {
 	name     string
-	template *v1alpha1.Any
+	template *v1alpha1.Projection
 	cleaner  cleaner.CleanerCollector
 }
 

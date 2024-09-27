@@ -25,14 +25,14 @@ func TestFinally_Bindings(t *testing.T) {
 	}{{
 		fields: fields{
 			Command: &Command{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
 			},
 		},
 		want: 1,
 	}, {
 		fields: fields{
 			Delete: &Delete{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
 			},
 		},
 		want: 1,
@@ -55,7 +55,7 @@ func TestFinally_Bindings(t *testing.T) {
 	}, {
 		fields: fields{
 			Script: &Script{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", Any{Value: "bar"}}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
 			},
 		},
 		want: 1,
@@ -107,7 +107,7 @@ func TestFinally_Outputs(t *testing.T) {
 	}{{
 		fields: fields{
 			Command: &Command{
-				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", NewProjection("bar")}}}},
 			},
 		},
 		want: 1,
@@ -134,7 +134,7 @@ func TestFinally_Outputs(t *testing.T) {
 	}, {
 		fields: fields{
 			Script: &Script{
-				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", Any{Value: "bar"}}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", NewProjection("bar")}}}},
 			},
 		},
 		want: 1,

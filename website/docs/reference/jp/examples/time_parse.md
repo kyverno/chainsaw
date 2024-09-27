@@ -6,7 +6,7 @@
 
 ## Description
 
-
+changes a time value of a given layout to RFC 3339
 
 ## Examples
 

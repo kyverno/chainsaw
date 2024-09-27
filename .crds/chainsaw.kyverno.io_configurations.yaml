@@ -96,7 +96,6 @@ spec:
                         check:
                           description: Check is an assertion tree to validate the
                             operation outcome.
-                          type: object
                           x-kubernetes-preserve-unknown-fields: true
                         cluster:
                           description: Cluster defines the target cluster (will be
@@ -150,7 +149,6 @@ spec:
                             properties:
                               match:
                                 description: Match defines the matching statement.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               name:
                                 description: Name the name of the binding.
@@ -245,11 +243,9 @@ spec:
                             properties:
                               check:
                                 description: Check defines the verification statement.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               match:
                                 description: Match defines the matching statement.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                             required:
                             - check
@@ -562,7 +558,6 @@ spec:
                         check:
                           description: Check is an assertion tree to validate the
                             operation outcome.
-                          type: object
                           x-kubernetes-preserve-unknown-fields: true
                         cluster:
                           description: Cluster defines the target cluster (will be
@@ -617,7 +612,6 @@ spec:
                             properties:
                               match:
                                 description: Match defines the matching statement.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               name:
                                 description: Name the name of the binding.
@@ -816,7 +810,6 @@ spec:
               namespaceTemplate:
                 description: NamespaceTemplate defines a template to create the test
                   namespace.
-                type: object
                 x-kubernetes-preserve-unknown-fields: true
               parallel:
                 description: The maximum number of tests to run at once.
@@ -1052,7 +1045,6 @@ spec:
                             check:
                               description: Check is an assertion tree to validate
                                 the operation outcome.
-                              type: object
                               x-kubernetes-preserve-unknown-fields: true
                             cluster:
                               description: Cluster defines the target cluster (will
@@ -1107,7 +1099,6 @@ spec:
                                 properties:
                                   match:
                                     description: Match defines the matching statement.
-                                    type: object
                                     x-kubernetes-preserve-unknown-fields: true
                                   name:
                                     description: Name the name of the binding.
@@ -1202,11 +1193,9 @@ spec:
                                 properties:
                                   check:
                                     description: Check defines the verification statement.
-                                    type: object
                                     x-kubernetes-preserve-unknown-fields: true
                                   match:
                                     description: Match defines the matching statement.
-                                    type: object
                                     x-kubernetes-preserve-unknown-fields: true
                                 required:
                                 - check
@@ -1522,7 +1511,6 @@ spec:
                             check:
                               description: Check is an assertion tree to validate
                                 the operation outcome.
-                              type: object
                               x-kubernetes-preserve-unknown-fields: true
                             cluster:
                               description: Cluster defines the target cluster (will
@@ -1577,7 +1565,6 @@ spec:
                                 properties:
                                   match:
                                     description: Match defines the matching statement.
-                                    type: object
                                     x-kubernetes-preserve-unknown-fields: true
                                   name:
                                     description: Name the name of the binding.
@@ -1756,7 +1743,6 @@ spec:
                     type: string
                   template:
                     description: Template defines a template to create the test namespace.
-                    type: object
                     x-kubernetes-preserve-unknown-fields: true
                 type: object
               report:

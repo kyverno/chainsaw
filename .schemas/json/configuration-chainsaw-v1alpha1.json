@@ -442,10 +442,6 @@
                   },
                   "check": {
                     "description": "Check is an assertion tree to validate the operation outcome.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
                     "x-kubernetes-preserve-unknown-fields": true
                   },
                   "cluster": {
@@ -539,10 +535,6 @@
                       "properties": {
                         "match": {
                           "description": "Match defines the matching statement.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "name": {
@@ -693,15 +685,10 @@
                       "properties": {
                         "check": {
                           "description": "Check defines the verification statement.",
-                          "type": "object",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "match": {
                           "description": "Match defines the matching statement.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
                       },
@@ -1216,10 +1203,6 @@
                   },
                   "check": {
                     "description": "Check is an assertion tree to validate the operation outcome.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
                     "x-kubernetes-preserve-unknown-fields": true
                   },
                   "cluster": {
@@ -1316,10 +1299,6 @@
                       "properties": {
                         "match": {
                           "description": "Match defines the matching statement.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "name": {
@@ -1640,10 +1619,6 @@
         },
         "namespaceTemplate": {
           "description": "NamespaceTemplate defines a template to create the test namespace.",
-          "type": [
-            "object",
-            "null"
-          ],
           "x-kubernetes-preserve-unknown-fields": true
         },
         "parallel": {

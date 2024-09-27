@@ -6,7 +6,7 @@
 
 ## Description
 
-
+encodes a regular, plaintext and unencoded string to base64
 
 ## Examples
 

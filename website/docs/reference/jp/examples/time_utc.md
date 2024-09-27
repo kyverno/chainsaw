@@ -6,7 +6,7 @@
 
 ## Description
 
-
+calcutes time in UTC from a given time in RFC 3339 format
 
 ## Examples
 

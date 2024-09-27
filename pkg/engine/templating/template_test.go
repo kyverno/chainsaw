@@ -19,7 +19,7 @@ func TestTemplateAndMerge(t *testing.T) {
 		name      string
 		in        unstructured.Unstructured
 		out       unstructured.Unstructured
-		templates []v1alpha1.Any
+		templates []v1alpha1.Projection
 		wantErr   bool
 	}{{
 		name: "nil",
@@ -28,16 +28,18 @@ func TestTemplateAndMerge(t *testing.T) {
 	}, {
 		name:      "empty",
 		in:        in,
-		templates: []v1alpha1.Any{},
+		templates: []v1alpha1.Projection{},
 		out:       in,
 	}, {
 		name: "merge",
 		in:   in,
-		templates: []v1alpha1.Any{{
-			Value: map[string]any{
-				"foo": "baz",
-			},
-		}},
+		templates: []v1alpha1.Projection{
+			v1alpha1.NewProjection(
+				map[string]any{
+					"foo": "baz",
+				},
+			),
+		},
 		out: unstructured.Unstructured{
 			Object: map[string]any{
 				"foo": "baz",

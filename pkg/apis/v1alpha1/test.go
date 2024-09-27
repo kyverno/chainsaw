@@ -66,7 +66,7 @@ type TestSpec struct {
 
 	// NamespaceTemplate defines a template to create the test namespace.
 	// +optional
-	NamespaceTemplate *Any `json:"namespaceTemplate,omitempty"`
+	NamespaceTemplate *Projection `json:"namespaceTemplate,omitempty"`
 
 	// Scenarios defines test scenarios.
 	// +optional
