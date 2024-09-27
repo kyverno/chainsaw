@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -24,7 +25,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 		config       model.Configuration
 		client       client.Client
 		clock        clock.PassiveClock
-		bindings     binding.Bindings
+		bindings     apis.Bindings
 		tests        []discovery.Test
 		expectedFail bool
 	}{{

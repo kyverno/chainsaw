@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/jmespath-community/go-jmespath/pkg/parsing"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/expressions"
 	"github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -96,7 +96,7 @@ func (e *Expression) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e Expression) Value(ctx context.Context, bindings binding.Bindings) (string, error) {
+func (e Expression) Value(ctx context.Context, bindings apis.Bindings) (string, error) {
 	return expressions.String(ctx, string(e), bindings)
 }
 

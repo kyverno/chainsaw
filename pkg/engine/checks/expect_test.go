@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -15,7 +15,7 @@ func TestExpectations(t *testing.T) {
 	tests := []struct {
 		name     string
 		obj      unstructured.Unstructured
-		bindings binding.Bindings
+		bindings apis.Bindings
 		expect   []v1alpha1.Expectation
 		want     bool
 		wantErr  bool

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/client/dryrun"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
@@ -16,13 +17,13 @@ import (
 type TestContext struct {
 	*model.Summary
 	*model.Report
-	bindings binding.Bindings
+	bindings apis.Bindings
 	cluster  clusters.Cluster
 	clusters clusters.Registry
 	dryRun   bool
 }
 
-func MakeContext(bindings binding.Bindings, registry clusters.Registry) TestContext {
+func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext {
 	return TestContext{
 		Summary: &model.Summary{},
 		Report: &model.Report{
@@ -39,7 +40,7 @@ func EmptyContext() TestContext {
 	return MakeContext(binding.NewBindings(), clusters.NewRegistry(nil))
 }
 
-func (tc *TestContext) Bindings() binding.Bindings {
+func (tc *TestContext) Bindings() apis.Bindings {
 	return tc.bindings
 }
 

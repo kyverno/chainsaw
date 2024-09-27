@@ -3,7 +3,7 @@ package processors
 import (
 	"context"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
@@ -12,7 +12,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func buildNamespace(ctx context.Context, name string, template *v1alpha1.Projection, tc binding.Bindings) (*corev1.Namespace, error) {
+func buildNamespace(ctx context.Context, name string, template *v1alpha1.Projection, tc apis.Bindings) (*corev1.Namespace, error) {
 	namespace := kube.Namespace(name)
 	if template == nil {
 		return &namespace, nil
