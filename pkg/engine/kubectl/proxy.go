@@ -5,12 +5,12 @@ import (
 	"errors"
 	"path"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 )
 
-func Proxy(ctx context.Context, client client.Client, tc binding.Bindings, collector *v1alpha1.Proxy) (string, []string, error) {
+func Proxy(ctx context.Context, client client.Client, tc apis.Bindings, collector *v1alpha1.Proxy) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}

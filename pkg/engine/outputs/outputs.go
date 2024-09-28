@@ -3,7 +3,7 @@ package outputs
 import (
 	"context"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
@@ -11,7 +11,7 @@ import (
 
 type Outputs = map[string]any
 
-func Process(ctx context.Context, tc binding.Bindings, input any, outputs ...v1alpha1.Output) (Outputs, error) {
+func Process(ctx context.Context, tc apis.Bindings, input any, outputs ...v1alpha1.Output) (Outputs, error) {
 	var results Outputs
 	for _, output := range outputs {
 		if output.Match != nil && !output.Match.IsNil() {

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
@@ -36,7 +37,7 @@ func TestResourceRef(t *testing.T) {
 	tests := []struct {
 		name     string
 		obj      *unstructured.Unstructured
-		bindings binding.Bindings
+		bindings apis.Bindings
 		wantErr  bool
 		want     *unstructured.Unstructured
 	}{{

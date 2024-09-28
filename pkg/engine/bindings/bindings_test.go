@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 )
@@ -46,7 +47,7 @@ func Test_checkBindingName(t *testing.T) {
 func TestRegisterBinding(t *testing.T) {
 	tests := []struct {
 		name        string
-		bindings    binding.Bindings
+		bindings    apis.Bindings
 		bindingName string
 		value       any
 	}{{
@@ -71,7 +72,7 @@ func TestRegisterBinding(t *testing.T) {
 func TestResolveBinding(t *testing.T) {
 	tests := []struct {
 		name      string
-		bindings  binding.Bindings
+		bindings  apis.Bindings
 		input     any
 		variable  v1alpha1.Binding
 		wantName  string

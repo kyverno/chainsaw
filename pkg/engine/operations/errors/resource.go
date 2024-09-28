@@ -6,7 +6,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
@@ -19,7 +19,7 @@ type resourceError struct {
 	expected unstructured.Unstructured
 	actual   unstructured.Unstructured
 	template bool
-	bindings binding.Bindings
+	bindings apis.Bindings
 	errs     field.ErrorList
 }
 
@@ -27,7 +27,7 @@ func ResourceError(
 	expected unstructured.Unstructured,
 	actual unstructured.Unstructured,
 	template bool,
-	bindings binding.Bindings,
+	bindings apis.Bindings,
 	errs field.ErrorList,
 ) error {
 	return resourceError{
