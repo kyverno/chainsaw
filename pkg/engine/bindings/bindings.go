@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
@@ -21,7 +20,7 @@ func checkBindingName(name string) error {
 }
 
 func RegisterBinding(ctx context.Context, bindings apis.Bindings, name string, value any) apis.Bindings {
-	return bindings.Register("$"+name, binding.NewBinding(value))
+	return bindings.Register("$"+name, apis.NewBinding(value))
 }
 
 func ResolveBinding(ctx context.Context, bindings apis.Bindings, input any, variable v1alpha1.Binding) (string, any, error) {

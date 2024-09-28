@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
@@ -21,14 +20,14 @@ func TestProcess(t *testing.T) {
 		wantErr bool
 	}{{
 		name:    "empty",
-		tc:      binding.NewBindings(),
+		tc:      apis.NewBindings(),
 		input:   nil,
 		outputs: nil,
 		want:    nil,
 		wantErr: false,
 	}, {
 		name:  "simple",
-		tc:    binding.NewBindings(),
+		tc:    apis.NewBindings(),
 		input: nil,
 		outputs: []v1alpha1.Output{{
 			Binding: v1alpha1.Binding{
@@ -42,7 +41,7 @@ func TestProcess(t *testing.T) {
 		wantErr: false,
 	}, {
 		name:  "match",
-		tc:    binding.NewBindings(),
+		tc:    apis.NewBindings(),
 		input: map[string]any{},
 		outputs: []v1alpha1.Output{{
 			Match: ptr.To(
@@ -61,7 +60,7 @@ func TestProcess(t *testing.T) {
 		wantErr: false,
 	}, {
 		name:  "match error",
-		tc:    binding.NewBindings(),
+		tc:    apis.NewBindings(),
 		input: nil,
 		outputs: []v1alpha1.Output{{
 			Match: ptr.To(
@@ -80,7 +79,7 @@ func TestProcess(t *testing.T) {
 		wantErr: true,
 	}, {
 		name:  "error",
-		tc:    binding.NewBindings(),
+		tc:    apis.NewBindings(),
 		input: nil,
 		outputs: []v1alpha1.Output{{
 			Binding: v1alpha1.Binding{

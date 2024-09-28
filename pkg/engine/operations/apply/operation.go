@@ -3,7 +3,6 @@ package apply
 import (
 	"context"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
@@ -55,7 +54,7 @@ func New(
 
 func (o *operation) Exec(ctx context.Context, tc apis.Bindings) (_ outputs.Outputs, _err error) {
 	if tc == nil {
-		tc = binding.NewBindings()
+		tc = apis.NewBindings()
 	}
 	obj := o.base
 	logger := internal.GetLogger(ctx, &obj)
