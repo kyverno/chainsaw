@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/utils/ptr"
@@ -13,7 +14,7 @@ import (
 func TestProcess(t *testing.T) {
 	tests := []struct {
 		name    string
-		tc      binding.Bindings
+		tc      apis.Bindings
 		input   any
 		outputs []v1alpha1.Output
 		want    Outputs

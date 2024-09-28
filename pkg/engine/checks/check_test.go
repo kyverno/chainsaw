@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/util/validation/field"
@@ -15,7 +15,7 @@ func TestCheck(t *testing.T) {
 	tests := []struct {
 		name     string
 		obj      any
-		bindings binding.Bindings
+		bindings apis.Bindings
 		check    *v1alpha1.Check
 		want     field.ErrorList
 		wantErr  bool

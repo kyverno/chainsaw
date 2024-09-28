@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/utils/ptr"
 )
@@ -13,7 +14,7 @@ func TestStringPointer(t *testing.T) {
 	tests := []struct {
 		name     string
 		in       *string
-		bindings binding.Bindings
+		bindings apis.Bindings
 		want     *string
 		wantErr  bool
 	}{{

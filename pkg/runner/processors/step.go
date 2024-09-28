@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/engine"
@@ -222,7 +222,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	}
 }
 
-func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
+func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
 	if handler.Apply != nil {
 		loaded, err := p.applyOperation(id+1, namespacer, cleaner, bindings, *handler.Apply)
@@ -302,7 +302,7 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, b
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	if handler.PodLogs != nil {
 		ops = append(ops, p.logsOperation(id+1, namespacer, *handler.PodLogs))
@@ -344,7 +344,7 @@ func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer,
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	if handler.PodLogs != nil {
 		ops = append(ops, p.logsOperation(id+1, namespacer, *handler.PodLogs))
@@ -386,7 +386,7 @@ func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespace
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings binding.Bindings, op v1alpha1.Apply) ([]operation, error) {
+func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Apply) ([]operation, error) {
 	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
@@ -436,7 +436,7 @@ func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer,
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Assert) ([]operation, error) {
+func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Assert) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(context.TODO(), op.ActionCheckRef, bindings)
 	if err != nil {
 		return nil, err
@@ -511,7 +511,7 @@ func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespace
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings binding.Bindings, op v1alpha1.Create) ([]operation, error) {
+func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Create) ([]operation, error) {
 	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
@@ -559,7 +559,7 @@ func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Delete) ([]operation, error) {
+func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Delete) ([]operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -660,7 +660,7 @@ func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespac
 	)
 }
 
-func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Error) ([]operation, error) {
+func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Error) ([]operation, error) {
 	resources, err := p.fileRefOrCheck(context.TODO(), op.ActionCheckRef, bindings)
 	if err != nil {
 		return nil, err
@@ -787,7 +787,7 @@ func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, 
 	)
 }
 
-func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Patch) ([]operation, error) {
+func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Patch) ([]operation, error) {
 	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
@@ -923,7 +923,7 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 	)
 }
 
-func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer, bindings binding.Bindings, op v1alpha1.Update) ([]operation, error) {
+func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Update) ([]operation, error) {
 	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
@@ -1016,7 +1016,7 @@ func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, 
 	)
 }
 
-func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionCheckRef, bindings binding.Bindings) ([]unstructured.Unstructured, error) {
+func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionCheckRef, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
 	if ref.Check != nil && ref.Check.Value() != nil {
 		if object, ok := ref.Check.Value().(map[string]any); !ok {
 			return nil, errors.New("resource must be an object")
@@ -1039,7 +1039,7 @@ func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionC
 	return nil, errors.New("file or resource must be set")
 }
 
-func (p *stepProcessor) fileRefOrResource(ctx context.Context, ref v1alpha1.ActionResourceRef, bindings binding.Bindings) ([]unstructured.Unstructured, error) {
+func (p *stepProcessor) fileRefOrResource(ctx context.Context, ref v1alpha1.ActionResourceRef, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
 	if ref.Resource != nil {
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}

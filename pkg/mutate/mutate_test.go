@@ -5,16 +5,16 @@ import (
 	"testing"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/stretchr/testify/assert"
 )
 
-// ctx, nil, mutation.Parse(ctx, variable.Value.Value), input, bindings, template.WithFunctionCaller(functions.Caller))
 func TestMutate(t *testing.T) {
 	tests := []struct {
 		name     string
 		mutation Mutation
 		value    any
-		bindings binding.Bindings
+		bindings apis.Bindings
 		want     any
 		wantErr  bool
 	}{{
