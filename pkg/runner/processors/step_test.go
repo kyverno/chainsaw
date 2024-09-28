@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
@@ -797,7 +797,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
-			tcontext := enginecontext.MakeContext(binding.NewBindings(), registry)
+			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
 			stepProcessor.Run(ctx, tc.namespacer, tcontext)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")

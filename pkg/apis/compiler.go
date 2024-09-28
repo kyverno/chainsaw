@@ -17,3 +17,8 @@ var (
 )
 
 type Bindings = binding.Bindings
+
+var (
+	NewBinding  = binding.NewBinding
+	NewBindings = binding.NewBindings
+)

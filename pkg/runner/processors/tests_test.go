@@ -3,7 +3,6 @@ package processors
 import (
 	"context"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
@@ -41,7 +40,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		bindings:     binding.NewBindings(),
+		bindings:     apis.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: false,
 	}, {
@@ -63,7 +62,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		bindings:     binding.NewBindings(),
+		bindings:     apis.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: false,
 	}, {
@@ -82,7 +81,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		bindings:     binding.NewBindings(),
+		bindings:     apis.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: true,
 	}, {
@@ -101,7 +100,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:        nil,
-		bindings:     binding.NewBindings(),
+		bindings:     apis.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: true,
 	}, {
@@ -117,7 +116,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:    nil,
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		tests: []discovery.Test{
 			{
 				Err:      nil,
@@ -139,7 +138,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			},
 		},
 		clock:    nil,
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		tests: []discovery.Test{
 			{
 				Err:      errors.NewBadRequest("failed to get test"),
@@ -161,7 +160,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
-			tcontext := enginecontext.MakeContext(binding.NewBindings(), registry)
+			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
 			processor.Run(ctx, tcontext, tc.tests...)
 			nt.Cleanup(func() {
 			})

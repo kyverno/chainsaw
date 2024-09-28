@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"k8s.io/apimachinery/pkg/util/validation/field"
@@ -21,7 +20,7 @@ func Check(ctx context.Context, obj any, bindings apis.Bindings, check *v1alpha1
 		return nil, err
 	} else {
 		if bindings == nil {
-			bindings = binding.NewBindings()
+			bindings = apis.NewBindings()
 		}
 		return assertion.Assert(nil, obj, bindings)
 	}

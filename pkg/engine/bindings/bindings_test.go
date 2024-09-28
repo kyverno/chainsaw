@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
@@ -51,7 +50,7 @@ func TestRegisterBinding(t *testing.T) {
 		bindingName string
 		value       any
 	}{{
-		bindings:    binding.NewBindings(),
+		bindings:    apis.NewBindings(),
 		bindingName: "foo",
 		value:       "bar",
 	}}
@@ -80,7 +79,7 @@ func TestResolveBinding(t *testing.T) {
 		wantErr   bool
 	}{{
 		name:     "ok",
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "foo",
@@ -91,7 +90,7 @@ func TestResolveBinding(t *testing.T) {
 		wantErr:   false,
 	}, {
 		name:     "error",
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "$foo",
@@ -100,7 +99,7 @@ func TestResolveBinding(t *testing.T) {
 		wantErr: true,
 	}, {
 		name:     "error",
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "foo",
@@ -109,7 +108,7 @@ func TestResolveBinding(t *testing.T) {
 		wantErr: true,
 	}, {
 		name:     "error",
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "($foo)",
@@ -118,7 +117,7 @@ func TestResolveBinding(t *testing.T) {
 		wantErr: true,
 	}, {
 		name:     "error",
-		bindings: binding.NewBindings().Register("$foo", binding.NewBinding("abc")).Register("$bar", binding.NewBinding("def")),
+		bindings: apis.NewBindings().Register("$foo", apis.NewBinding("abc")).Register("$bar", apis.NewBinding("def")),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "($foo)",
