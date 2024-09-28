@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 )
 
-func Logs(ctx context.Context, tc binding.Bindings, collector *v1alpha1.PodLogs) (string, []string, error) {
+func Logs(ctx context.Context, tc apis.Bindings, collector *v1alpha1.PodLogs) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}

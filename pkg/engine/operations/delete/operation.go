@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
@@ -48,7 +49,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outputs.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
@@ -72,7 +73,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outp
 	return nil, o.execute(ctx, bindings, obj)
 }
 
-func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
+func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj unstructured.Unstructured) error {
 	resources, err := o.getResourcesToDelete(ctx, obj)
 	if err != nil {
 		return err
@@ -91,7 +92,7 @@ func (o *operation) getResourcesToDelete(ctx context.Context, obj unstructured.U
 	return resources, nil
 }
 
-func (o *operation) deleteResources(ctx context.Context, bindings binding.Bindings, resources ...unstructured.Unstructured) error {
+func (o *operation) deleteResources(ctx context.Context, bindings apis.Bindings, resources ...unstructured.Unstructured) error {
 	var errs []error
 	var deleted []unstructured.Unstructured
 	for _, resource := range resources {
@@ -139,7 +140,7 @@ func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.U
 	})
 }
 
-func (o *operation) handleCheck(ctx context.Context, bindings binding.Bindings, resource unstructured.Unstructured, err error) error {
+func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, resource unstructured.Unstructured, err error) error {
 	if err == nil {
 		bindings = apibindings.RegisterBinding(ctx, bindings, "error", nil)
 	} else {

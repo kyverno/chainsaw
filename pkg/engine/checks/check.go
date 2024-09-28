@@ -10,7 +10,7 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func Check(ctx context.Context, obj any, bindings binding.Bindings, check *v1alpha1.Check) (field.ErrorList, error) {
+func Check(ctx context.Context, obj any, bindings apis.Bindings, check *v1alpha1.Check) (field.ErrorList, error) {
 	if check == nil {
 		return nil, errors.New("check is null")
 	}

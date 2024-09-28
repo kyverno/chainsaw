@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
@@ -52,7 +53,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, tc binding.Bindings) (_ outputs.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, tc apis.Bindings) (_ outputs.Outputs, _err error) {
 	if tc == nil {
 		tc = binding.NewBindings()
 	}
@@ -76,7 +77,7 @@ func (o *operation) Exec(ctx context.Context, tc binding.Bindings) (_ outputs.Ou
 	return o.execute(ctx, tc, obj)
 }
 
-func (o *operation) execute(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
+func (o *operation) execute(ctx context.Context, tc apis.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	var lastErr error
 	var outputs outputs.Outputs
 	err := wait.PollUntilContextCancel(ctx, client.PollInterval, false, func(ctx context.Context) (bool, error) {
@@ -93,7 +94,7 @@ func (o *operation) execute(ctx context.Context, tc binding.Bindings, obj unstru
 	return outputs, err
 }
 
-func (o *operation) tryApplyResource(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
+func (o *operation) tryApplyResource(ctx context.Context, tc apis.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 	err := o.client.Get(ctx, client.Key(&obj), &actual)
@@ -106,7 +107,7 @@ func (o *operation) tryApplyResource(ctx context.Context, tc binding.Bindings, o
 	return nil, err
 }
 
-func (o *operation) updateResource(ctx context.Context, tc binding.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (outputs.Outputs, error) {
+func (o *operation) updateResource(ctx context.Context, tc apis.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	patched, err := client.PatchObject(actual, &obj)
 	if err != nil {
 		return nil, err
@@ -118,7 +119,7 @@ func (o *operation) updateResource(ctx context.Context, tc binding.Bindings, act
 	return o.handleCheck(ctx, tc, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 }
 
-func (o *operation) createResource(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
+func (o *operation) createResource(ctx context.Context, tc apis.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
 	err := o.client.Create(ctx, &obj)
 	if err == nil && o.cleaner != nil {
 		o.cleaner.Add(o.client, &obj)
@@ -126,13 +127,13 @@ func (o *operation) createResource(ctx context.Context, tc binding.Bindings, obj
 	return o.handleCheck(ctx, tc, obj, err)
 }
 
-func (o *operation) handleCheck(ctx context.Context, tc binding.Bindings, obj unstructured.Unstructured, err error) (_outputs outputs.Outputs, _err error) {
+func (o *operation) handleCheck(ctx context.Context, tc apis.Bindings, obj unstructured.Unstructured, err error) (_outputs outputs.Outputs, _err error) {
 	if err == nil {
 		tc = bindings.RegisterBinding(ctx, tc, "error", nil)
 	} else {
 		tc = bindings.RegisterBinding(ctx, tc, "error", err.Error())
 	}
-	defer func(tc binding.Bindings) {
+	defer func(tc apis.Bindings) {
 		if _err == nil {
 			outputs, err := outputs.Process(ctx, tc, obj.UnstructuredContent(), o.outputs...)
 			if err != nil {

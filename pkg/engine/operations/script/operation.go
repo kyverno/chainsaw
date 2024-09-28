@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 
 	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
@@ -41,7 +42,7 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outputs.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs.Outputs, _err error) {
 	if bindings == nil {
 		bindings = binding.NewBindings()
 	}
@@ -60,7 +61,7 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outp
 	return o.execute(ctx, bindings, cmd)
 }
 
-func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings) (*exec.Cmd, context.CancelFunc, error) {
+func (o *operation) createCommand(ctx context.Context, bindings apis.Bindings) (*exec.Cmd, context.CancelFunc, error) {
 	_, envs, err := internal.RegisterEnvs(ctx, o.namespace, bindings, o.script.Env...)
 	if err != nil {
 		return nil, nil, err
@@ -101,7 +102,7 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 	return cmd, cancel, nil
 }
 
-func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd *exec.Cmd) (_outputs outputs.Outputs, _err error) {
+func (o *operation) execute(ctx context.Context, bindings apis.Bindings, cmd *exec.Cmd) (_outputs outputs.Outputs, _err error) {
 	logger := internal.GetLogger(ctx, nil)
 	var output internal.CommandOutput
 	if !o.script.SkipLogOutput {
@@ -121,7 +122,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 	} else {
 		bindings = apibindings.RegisterBinding(ctx, bindings, "error", err.Error())
 	}
-	defer func(bindings binding.Bindings) {
+	defer func(bindings apis.Bindings) {
 		if _err == nil {
 			outputs, err := outputs.Process(ctx, bindings, nil, o.script.Outputs...)
 			if err != nil {
