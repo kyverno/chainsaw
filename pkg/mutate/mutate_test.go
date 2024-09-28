@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/stretchr/testify/assert"
 )
@@ -118,7 +117,7 @@ func TestMutate(t *testing.T) {
 			"c": []any{"($foo)"},
 		}),
 		value:    map[string]any{},
-		bindings: binding.NewBindings().Register("$foo", binding.NewBinding("bar")),
+		bindings: apis.NewBindings().Register("$foo", apis.NewBinding("bar")),
 		want: map[any]any{
 			"c": []any{"bar"},
 		},

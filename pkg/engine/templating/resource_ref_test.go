@@ -4,7 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -43,37 +42,37 @@ func TestResourceRef(t *testing.T) {
 	}{{
 		name:     "nil",
 		obj:      nil,
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  false,
 		want:     nil,
 	}, {
 		name:     "empty",
 		obj:      &unstructured.Unstructured{},
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  false,
 		want:     &unstructured.Unstructured{},
 	}, {
 		name:     "meta",
 		obj:      noMeta.DeepCopy(),
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  false,
 		want:     &noMeta,
 	}, {
 		name:     "no meta",
 		obj:      meta.DeepCopy(),
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  false,
 		want:     &meta,
 	}, {
 		name:     "bindings",
 		obj:      binds.DeepCopy(),
-		bindings: binding.NewBindings().Register("$foo", binding.NewBinding("foo")).Register("$bar", binding.NewBinding("bar")),
+		bindings: apis.NewBindings().Register("$foo", apis.NewBinding("foo")).Register("$bar", apis.NewBinding("bar")),
 		wantErr:  false,
 		want:     &meta,
 	}, {
 		name:     "error",
 		obj:      binds.DeepCopy(),
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  true,
 		want:     &binds,
 	}}

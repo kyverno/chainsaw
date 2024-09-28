@@ -7,7 +7,6 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
@@ -45,7 +44,7 @@ func New(
 
 func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs.Outputs, _err error) {
 	if bindings == nil {
-		bindings = binding.NewBindings()
+		bindings = apis.NewBindings()
 	}
 	logger := internal.GetLogger(ctx, nil)
 	defer func() {

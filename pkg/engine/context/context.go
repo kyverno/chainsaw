@@ -4,7 +4,6 @@ import (
 	"context"
 	"time"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/client/dryrun"
@@ -37,7 +36,7 @@ func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext
 }
 
 func EmptyContext() TestContext {
-	return MakeContext(binding.NewBindings(), clusters.NewRegistry(nil))
+	return MakeContext(apis.NewBindings(), clusters.NewRegistry(nil))
 }
 
 func (tc *TestContext) Bindings() apis.Bindings {
