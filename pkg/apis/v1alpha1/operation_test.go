@@ -14,35 +14,35 @@ func TestOperation_Bindings(t *testing.T) {
 	}{{
 		operation: Operation{
 			Apply: &Apply{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{Name: "foo", Value: NewProjection("bar")}}},
 			},
 		},
 		want: 1,
 	}, {
 		operation: Operation{
 			Assert: &Assert{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{Name: "foo", Value: NewProjection("bar")}}},
 			},
 		},
 		want: 1,
 	}, {
 		operation: Operation{
 			Command: &Command{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{Name: "foo", Value: NewProjection("bar")}}},
 			},
 		},
 		want: 1,
 	}, {
 		operation: Operation{
 			Create: &Create{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{Name: "foo", Value: NewProjection("bar")}}},
 			},
 		},
 		want: 1,
 	}, {
 		operation: Operation{
 			Delete: &Delete{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{Name: "foo", Value: NewProjection("bar")}}},
 			},
 		},
 		want: 1,
@@ -54,7 +54,7 @@ func TestOperation_Bindings(t *testing.T) {
 	}, {
 		operation: Operation{
 			Error: &Error{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{Name: "foo", Value: NewProjection("bar")}}},
 			},
 		},
 		want: 1,
@@ -71,7 +71,7 @@ func TestOperation_Bindings(t *testing.T) {
 	}, {
 		operation: Operation{
 			Patch: &Patch{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{Name: "foo", Value: NewProjection("bar")}}},
 			},
 		},
 		want: 1,
@@ -88,7 +88,7 @@ func TestOperation_Bindings(t *testing.T) {
 	}, {
 		operation: Operation{
 			Script: &Script{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{Name: "foo", Value: NewProjection("bar")}}},
 			},
 		},
 		want: 1,
@@ -99,7 +99,7 @@ func TestOperation_Bindings(t *testing.T) {
 	}, {
 		operation: Operation{
 			Update: &Update{
-				ActionBindings: ActionBindings{Bindings: []Binding{{"foo", NewProjection("bar")}}},
+				ActionBindings: ActionBindings{Bindings: []Binding{{Name: "foo", Value: NewProjection("bar")}}},
 			},
 		},
 		want: 1,
@@ -125,7 +125,7 @@ func TestOperation_Outputs(t *testing.T) {
 	}{{
 		operation: Operation{
 			Apply: &Apply{
-				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", NewProjection("bar")}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{Name: "foo", Value: NewProjection("bar")}}}},
 			},
 		},
 		want: 1,
@@ -136,14 +136,14 @@ func TestOperation_Outputs(t *testing.T) {
 	}, {
 		operation: Operation{
 			Command: &Command{
-				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", NewProjection("bar")}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{Name: "foo", Value: NewProjection("bar")}}}},
 			},
 		},
 		want: 1,
 	}, {
 		operation: Operation{
 			Create: &Create{
-				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", NewProjection("bar")}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{Name: "foo", Value: NewProjection("bar")}}}},
 			},
 		},
 		want: 1,
@@ -170,7 +170,7 @@ func TestOperation_Outputs(t *testing.T) {
 	}, {
 		operation: Operation{
 			Patch: &Patch{
-				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", NewProjection("bar")}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{Name: "foo", Value: NewProjection("bar")}}}},
 			},
 		},
 		want: 1,
@@ -185,7 +185,7 @@ func TestOperation_Outputs(t *testing.T) {
 	}, {
 		operation: Operation{
 			Script: &Script{
-				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", NewProjection("bar")}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{Name: "foo", Value: NewProjection("bar")}}}},
 			},
 		},
 		want: 1,
@@ -196,7 +196,7 @@ func TestOperation_Outputs(t *testing.T) {
 	}, {
 		operation: Operation{
 			Update: &Update{
-				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{"foo", NewProjection("bar")}}}},
+				ActionOutputs: ActionOutputs{Outputs: []Output{{Binding: Binding{Name: "foo", Value: NewProjection("bar")}}}},
 			},
 		},
 		want: 1,

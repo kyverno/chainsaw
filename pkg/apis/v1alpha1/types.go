@@ -27,6 +27,10 @@ type Binding struct {
 	// +kubebuilder:validation:Pattern:=`^(?:\w+|\(.+\))$`
 	Name Expression `json:"name"`
 
+	// Compiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	Compiler *v1alpha1.Compiler `json:"compiler,omitempty"`
+
 	// Value value of the binding.
 	Value Projection `json:"value"`
 }

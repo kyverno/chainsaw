@@ -25,7 +25,7 @@ func ResourceRef(ctx context.Context, obj *unstructured.Unstructured, bindings a
 	temp.SetNamespace(obj.GetNamespace())
 	temp.SetLabels(obj.GetLabels())
 	template := v1alpha1.NewProjection(temp.UnstructuredContent())
-	if merged, err := TemplateAndMerge(ctx, temp, bindings, template); err != nil {
+	if merged, err := TemplateAndMerge(ctx, apis.DefaultCompilers, temp, bindings, template); err != nil {
 		return err
 	} else {
 		temp = merged

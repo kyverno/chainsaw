@@ -56,7 +56,7 @@ func (e resourceError) Error() string {
 	var templateErr error
 	if e.template {
 		template := v1alpha1.NewProjection(expected.UnstructuredContent())
-		if merged, err := templating.TemplateAndMerge(context.TODO(), expected, e.bindings, template); err != nil {
+		if merged, err := templating.TemplateAndMerge(context.TODO(), apis.DefaultCompilers, expected, e.bindings, template); err != nil {
 			templateErr = err
 		} else {
 			expected = merged
