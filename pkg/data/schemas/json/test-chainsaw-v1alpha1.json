@@ -1741,6 +1741,17 @@
           "description": "NamespaceTemplate defines a template to create the test namespace.",
           "x-kubernetes-preserve-unknown-fields": true
         },
+        "namespaceTemplateCompiler": {
+          "description": "NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "jp",
+            "cel"
+          ]
+        },
         "scenarios": {
           "description": "Scenarios defines test scenarios.",
           "type": [

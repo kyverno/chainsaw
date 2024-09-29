@@ -860,6 +860,13 @@ spec:
                 description: NamespaceTemplate defines a template to create the test
                   namespace.
                 x-kubernetes-preserve-unknown-fields: true
+              namespaceTemplateCompiler:
+                description: NamespaceTemplateCompiler defines the default compiler
+                  to use when evaluating expressions.
+                enum:
+                - jp
+                - cel
+                type: string
               parallel:
                 description: The maximum number of tests to run at once.
                 format: int
@@ -1833,6 +1840,13 @@ spec:
                 description: Namespace contains properties for the namespace to use
                   for tests.
                 properties:
+                  compiler:
+                    description: Compiler defines the default compiler to use when
+                      evaluating expressions.
+                    enum:
+                    - jp
+                    - cel
+                    type: string
                   name:
                     description: |-
                       Name defines the namespace to use for tests.
