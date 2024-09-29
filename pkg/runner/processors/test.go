@@ -6,6 +6,7 @@ import (
 	"time"
 
 	petname "github.com/dustinkirkland/golang-petname"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -29,6 +30,7 @@ func NewTestProcessor(
 	size int,
 	clock clock.PassiveClock,
 	nsTemplate *v1alpha1.Projection,
+	nsTemplateCompiler *v1alpha1.Compiler,
 	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
@@ -39,6 +41,7 @@ func NewTestProcessor(
 ) TestProcessor {
 	if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
 		nsTemplate = template
+		nsTemplateCompiler = test.Test.Spec.NamespaceTemplateCompiler
 	}
 	if test.Test.Spec.DelayBeforeCleanup != nil {
 		delayBeforeCleanup = &test.Test.Spec.DelayBeforeCleanup.Duration
@@ -64,6 +67,7 @@ func NewTestProcessor(
 		size:                      size,
 		clock:                     clock,
 		nsTemplate:                nsTemplate,
+		nsTemplateCompiler:        nsTemplateCompiler,
 		delayBeforeCleanup:        delayBeforeCleanup,
 		terminationGracePeriod:    terminationGracePeriod,
 		timeouts:                  timeouts,
@@ -79,6 +83,7 @@ type testProcessor struct {
 	size                      int
 	clock                     clock.PassiveClock
 	nsTemplate                *v1alpha1.Projection
+	nsTemplateCompiler        *v1alpha1.Compiler
 	delayBeforeCleanup        *time.Duration
 	terminationGracePeriod    *metav1.Duration
 	timeouts                  v1alpha1.DefaultTimeouts
@@ -143,10 +148,15 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		if !p.skipDelete {
 			nsCleaner = mainCleaner
 		}
+		compilers := apis.DefaultCompilers
+		if p.nsTemplateCompiler != nil {
+			compilers = compilers.WithDefaultCompiler(string(*p.nsTemplateCompiler))
+		}
 		contextData.namespace = &namespaceData{
-			name:     nsName,
-			template: p.nsTemplate,
-			cleaner:  nsCleaner,
+			name:      nsName,
+			template:  p.nsTemplate,
+			compilers: compilers,
+			cleaner:   nsCleaner,
 		}
 	}
 	tc, namespace, err := setupContextData(ctx, tc, contextData)

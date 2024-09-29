@@ -1783,6 +1783,17 @@
           ],
           "default": {},
           "properties": {
+            "compiler": {
+              "description": "Compiler defines the default compiler to use when evaluating expressions.",
+              "type": [
+                "string",
+                "null"
+              ],
+              "enum": [
+                "jp",
+                "cel"
+              ]
+            },
             "name": {
               "description": "Name defines the namespace to use for tests.\nIf not specified, every test will execute in a random ephemeral namespace\nunless the namespace is overridden in a the test spec.",
               "type": [

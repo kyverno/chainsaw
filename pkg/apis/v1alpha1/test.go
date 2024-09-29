@@ -68,6 +68,10 @@ type TestSpec struct {
 	// +optional
 	NamespaceTemplate *Projection `json:"namespaceTemplate,omitempty"`
 
+	// NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	NamespaceTemplateCompiler *Compiler `json:"namespaceTemplateCompiler,omitempty"`
+
 	// Scenarios defines test scenarios.
 	// +optional
 	Scenarios []Scenario `json:"scenarios,omitempty"`

@@ -881,6 +881,13 @@ spec:
                 description: NamespaceTemplate defines a template to create the test
                   namespace.
                 x-kubernetes-preserve-unknown-fields: true
+              namespaceTemplateCompiler:
+                description: NamespaceTemplateCompiler defines the default compiler
+                  to use when evaluating expressions.
+                enum:
+                - jp
+                - cel
+                type: string
               scenarios:
                 description: Scenarios defines test scenarios.
                 items:

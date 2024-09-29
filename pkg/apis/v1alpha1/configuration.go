@@ -75,6 +75,10 @@ type ConfigurationSpec struct {
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 
+	// NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	NamespaceTemplateCompiler *Compiler `json:"namespaceTemplateCompiler,omitempty"`
+
 	// NamespaceTemplate defines a template to create the test namespace.
 	// +optional
 	NamespaceTemplate *Projection `json:"namespaceTemplate,omitempty"`
