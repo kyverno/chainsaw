@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -48,7 +49,7 @@ func TestTemplateAndMerge(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := TemplateAndMerge(context.TODO(), tt.in, nil, tt.templates...)
+			got, err := TemplateAndMerge(context.TODO(), apis.DefaultCompilers, tt.in, nil, tt.templates...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

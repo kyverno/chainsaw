@@ -81,6 +81,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -128,6 +135,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -147,6 +161,13 @@ spec:
                               a match to determine if the binding must be considered
                               or not.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               match:
                                 description: Match defines the matching statement.
                                 x-kubernetes-preserve-unknown-fields: true
@@ -189,6 +210,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -543,6 +571,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -591,6 +626,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -610,6 +652,13 @@ spec:
                               a match to determine if the binding must be considered
                               or not.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               match:
                                 description: Match defines the matching statement.
                                 x-kubernetes-preserve-unknown-fields: true
@@ -1030,6 +1079,13 @@ spec:
                                 description: Binding represents a key/value set as
                                   a binding in an executing test.
                                 properties:
+                                  compiler:
+                                    description: Compiler defines the default compiler
+                                      to use when evaluating expressions.
+                                    enum:
+                                    - jp
+                                    - cel
+                                    type: string
                                   name:
                                     description: Name the name of the binding.
                                     pattern: ^(?:\w+|\(.+\))$
@@ -1078,6 +1134,13 @@ spec:
                                 description: Binding represents a key/value set as
                                   a binding in an executing test.
                                 properties:
+                                  compiler:
+                                    description: Compiler defines the default compiler
+                                      to use when evaluating expressions.
+                                    enum:
+                                    - jp
+                                    - cel
+                                    type: string
                                   name:
                                     description: Name the name of the binding.
                                     pattern: ^(?:\w+|\(.+\))$
@@ -1097,6 +1160,13 @@ spec:
                                   a match to determine if the binding must be considered
                                   or not.
                                 properties:
+                                  compiler:
+                                    description: Compiler defines the default compiler
+                                      to use when evaluating expressions.
+                                    enum:
+                                    - jp
+                                    - cel
+                                    type: string
                                   match:
                                     description: Match defines the matching statement.
                                     x-kubernetes-preserve-unknown-fields: true
@@ -1139,6 +1209,13 @@ spec:
                                 description: Binding represents a key/value set as
                                   a binding in an executing test.
                                 properties:
+                                  compiler:
+                                    description: Compiler defines the default compiler
+                                      to use when evaluating expressions.
+                                    enum:
+                                    - jp
+                                    - cel
+                                    type: string
                                   name:
                                     description: Name the name of the binding.
                                     pattern: ^(?:\w+|\(.+\))$
@@ -1496,6 +1573,13 @@ spec:
                                 description: Binding represents a key/value set as
                                   a binding in an executing test.
                                 properties:
+                                  compiler:
+                                    description: Compiler defines the default compiler
+                                      to use when evaluating expressions.
+                                    enum:
+                                    - jp
+                                    - cel
+                                    type: string
                                   name:
                                     description: Name the name of the binding.
                                     pattern: ^(?:\w+|\(.+\))$
@@ -1544,6 +1628,13 @@ spec:
                                 description: Binding represents a key/value set as
                                   a binding in an executing test.
                                 properties:
+                                  compiler:
+                                    description: Compiler defines the default compiler
+                                      to use when evaluating expressions.
+                                    enum:
+                                    - jp
+                                    - cel
+                                    type: string
                                   name:
                                     description: Name the name of the binding.
                                     pattern: ^(?:\w+|\(.+\))$
@@ -1563,6 +1654,13 @@ spec:
                                   a match to determine if the binding must be considered
                                   or not.
                                 properties:
+                                  compiler:
+                                    description: Compiler defines the default compiler
+                                      to use when evaluating expressions.
+                                    enum:
+                                    - jp
+                                    - cel
+                                    type: string
                                   match:
                                     description: Match defines the matching statement.
                                     x-kubernetes-preserve-unknown-fields: true
