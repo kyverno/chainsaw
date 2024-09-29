@@ -63,7 +63,7 @@ func (o *operation) Exec(ctx context.Context, tc apis.Bindings) (_ outputs.Outpu
 	}()
 	if o.template {
 		template := v1alpha1.NewProjection(obj.UnstructuredContent())
-		if merged, err := templating.TemplateAndMerge(ctx, obj, tc, template); err != nil {
+		if merged, err := templating.TemplateAndMerge(ctx, apis.DefaultCompilers, obj, tc, template); err != nil {
 			return nil, err
 		} else {
 			obj = merged

@@ -31,7 +31,11 @@ func ResolveBinding(ctx context.Context, bindings apis.Bindings, input any, vari
 	if err := checkBindingName(name); err != nil {
 		return "", nil, err
 	}
-	value, err := templating.Template(ctx, variable.Value, input, bindings)
+	compilers := apis.DefaultCompilers
+	if variable.Compiler != nil {
+		compilers = compilers.WithDefaultCompiler(string(*variable.Compiler))
+	}
+	value, err := templating.Template(ctx, compilers, variable.Value, input, bindings)
 	if err != nil {
 		return "", nil, err
 	}
