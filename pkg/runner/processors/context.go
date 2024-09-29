@@ -7,14 +7,16 @@ import (
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 )
 
 type namespaceData struct {
-	name     string
-	template *v1alpha1.Projection
-	cleaner  cleaner.CleanerCollector
+	name      string
+	compilers compilers.Compilers
+	template  *v1alpha1.Projection
+	cleaner   cleaner.CleanerCollector
 }
 
 type contextData struct {
@@ -40,7 +42,7 @@ func setupContextData(ctx context.Context, tc engine.Context, data contextData) 
 	}
 	var ns *corev1.Namespace
 	if data.namespace != nil {
-		if namespace, err := buildNamespace(ctx, data.namespace.name, data.namespace.template, tc.Bindings()); err != nil {
+		if namespace, err := buildNamespace(ctx, data.namespace.compilers, data.namespace.name, data.namespace.template, tc.Bindings()); err != nil {
 			return tc, nil, err
 		} else if _, clusterClient, err := tc.CurrentClusterClient(); err != nil {
 			return tc, nil, err

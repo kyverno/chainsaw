@@ -20,6 +20,8 @@ var (
 	NewMatch   = v1alpha1.NewAssertionTree
 )
 
+type Compiler = v1alpha1.Compiler
+
 // Binding represents a key/value set as a binding in an executing test.
 type Binding struct {
 	// Name the name of the binding.
@@ -29,7 +31,7 @@ type Binding struct {
 
 	// Compiler defines the default compiler to use when evaluating expressions.
 	// +optional
-	Compiler *v1alpha1.Compiler `json:"compiler,omitempty"`
+	Compiler *Compiler `json:"compiler,omitempty"`
 
 	// Value value of the binding.
 	Value Projection `json:"value"`

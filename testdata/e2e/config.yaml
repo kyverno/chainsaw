@@ -11,7 +11,8 @@ spec:
     forceTerminationGracePeriod: 5s
     parallel: 1
   namespace:
+    compiler: cel
     template:
       metadata:
         annotations:
-          from-config-file: hello
+          from-config-file: ("hello")
