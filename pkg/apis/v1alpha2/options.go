@@ -2,7 +2,6 @@ package v1alpha2
 
 import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	kjson "github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -89,7 +88,7 @@ type NamespaceOptions struct {
 
 	// Compiler defines the default compiler to use when evaluating expressions.
 	// +optional
-	Compiler *kjson.Compiler `json:"compiler,omitempty"`
+	Compiler *Compiler `json:"compiler,omitempty"`
 
 	// Template defines a template to create the test namespace.
 	// +optional
@@ -130,4 +129,8 @@ type TemplatingOptions struct {
 	// +optional
 	// +kubebuilder:default:=true
 	Enabled bool `json:"enabled"`
+
+	// Compiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	Compiler *Compiler `json:"compiler,omitempty"`
 }

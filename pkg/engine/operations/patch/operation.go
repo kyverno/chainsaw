@@ -14,6 +14,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
@@ -21,6 +22,7 @@ import (
 )
 
 type operation struct {
+	compilers  compilers.Compilers
 	client     client.Client
 	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
@@ -30,6 +32,7 @@ type operation struct {
 }
 
 func New(
+	compilers compilers.Compilers,
 	client client.Client,
 	obj unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
@@ -38,6 +41,7 @@ func New(
 	outputs []v1alpha1.Output,
 ) operations.Operation {
 	return &operation{
+		compilers:  compilers,
 		client:     client,
 		base:       obj,
 		namespacer: namespacer,
@@ -58,7 +62,7 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 	}()
 	if o.template {
 		template := v1alpha1.NewProjection(obj.UnstructuredContent())
-		if merged, err := templating.TemplateAndMerge(ctx, apis.DefaultCompilers, obj, bindings, template); err != nil {
+		if merged, err := templating.TemplateAndMerge(ctx, o.compilers, obj, bindings, template); err != nil {
 			return nil, err
 		} else {
 			obj = merged
@@ -118,7 +122,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, obj
 	}
 	defer func(bindings apis.Bindings) {
 		if _err == nil {
-			outputs, err := outputs.Process(ctx, bindings, obj.UnstructuredContent(), o.outputs...)
+			outputs, err := outputs.Process(ctx, o.compilers, bindings, obj.UnstructuredContent(), o.outputs...)
 			if err != nil {
 				_err = err
 				return
@@ -126,7 +130,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, obj
 			_outputs = outputs
 		}
 	}(bindings)
-	if matched, err := checks.Expect(ctx, obj, bindings, o.expect...); matched {
+	if matched, err := checks.Expect(ctx, o.compilers, obj, bindings, o.expect...); matched {
 		return nil, err
 	}
 	return nil, err

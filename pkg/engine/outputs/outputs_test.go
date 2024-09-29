@@ -92,7 +92,7 @@ func TestProcess(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Process(context.TODO(), tt.tc, tt.input, tt.outputs...)
+			got, err := Process(context.TODO(), apis.XDefaultCompilers, tt.tc, tt.input, tt.outputs...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

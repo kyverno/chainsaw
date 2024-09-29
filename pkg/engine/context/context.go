@@ -10,16 +10,18 @@ import (
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	"github.com/kyverno/chainsaw/pkg/model"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"k8s.io/client-go/rest"
 )
 
 type TestContext struct {
 	*model.Summary
 	*model.Report
-	bindings apis.Bindings
-	cluster  clusters.Cluster
-	clusters clusters.Registry
-	dryRun   bool
+	bindings  apis.Bindings
+	compilers compilers.Compilers
+	cluster   clusters.Cluster
+	clusters  clusters.Registry
+	dryRun    bool
 }
 
 func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext {
@@ -29,9 +31,10 @@ func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext
 			Name:      "chainsaw-report",
 			StartTime: time.Now(),
 		},
-		bindings: bindings,
-		clusters: registry,
-		cluster:  nil,
+		bindings:  bindings,
+		compilers: apis.XDefaultCompilers,
+		clusters:  registry,
+		cluster:   nil,
 	}
 }
 
@@ -41,6 +44,10 @@ func EmptyContext() TestContext {
 
 func (tc *TestContext) Bindings() apis.Bindings {
 	return tc.bindings
+}
+
+func (tc *TestContext) Compilers() compilers.Compilers {
+	return tc.compilers
 }
 
 func (tc *TestContext) Cluster(name string) clusters.Cluster {
@@ -69,6 +76,11 @@ func (tc *TestContext) DryRun() bool {
 
 func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
 	tc.bindings = apibindings.RegisterBinding(ctx, tc.bindings, name, value)
+	return tc
+}
+
+func (tc TestContext) WithDefaultCompiler(name string) TestContext {
+	tc.compilers = tc.compilers.WithDefaultCompiler(name)
 	return tc
 }
 

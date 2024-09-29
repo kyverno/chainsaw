@@ -14,6 +14,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -22,6 +23,7 @@ import (
 )
 
 type operation struct {
+	compilers  compilers.Compilers
 	client     client.Client
 	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
@@ -29,12 +31,14 @@ type operation struct {
 }
 
 func New(
+	compilers compilers.Compilers,
 	client client.Client,
 	expected unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
 	template bool,
 ) operations.Operation {
 	return &operation{
+		compilers:  compilers,
 		client:     client,
 		base:       expected,
 		namespacer: namespacer,
@@ -52,7 +56,7 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 		internal.LogEnd(logger, logging.Error, _err)
 	}()
 	if o.template {
-		if err := templating.ResourceRef(ctx, &obj, bindings); err != nil {
+		if err := templating.ResourceRef(ctx, o.compilers, &obj, bindings); err != nil {
 			return nil, err
 		}
 	}
@@ -76,7 +80,7 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 			}
 		}()
 		if obj.GetAPIVersion() == "" || obj.GetKind() == "" {
-			_errs, err := checks.Check(ctx, nil, bindings, ptr.To(v1alpha1.NewCheck(obj.UnstructuredContent())))
+			_errs, err := checks.Check(ctx, o.compilers, nil, bindings, ptr.To(v1alpha1.NewCheck(obj.UnstructuredContent())))
 			if err != nil {
 				return false, err
 			}
@@ -95,7 +99,7 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 			} else {
 				for i := range candidates {
 					candidate := candidates[i]
-					_errs, err := checks.Check(ctx, candidate.UnstructuredContent(), bindings, ptr.To(v1alpha1.NewCheck(obj.UnstructuredContent())))
+					_errs, err := checks.Check(ctx, o.compilers, candidate.UnstructuredContent(), bindings, ptr.To(v1alpha1.NewCheck(obj.UnstructuredContent())))
 					if err != nil {
 						return false, err
 					}

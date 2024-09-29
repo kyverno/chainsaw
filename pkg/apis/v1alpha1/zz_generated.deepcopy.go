@@ -559,6 +559,11 @@ func (in *Configuration) DeepCopyObject() runtime.Object {
 func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 	*out = *in
 	out.Timeouts = in.Timeouts
+	if in.Compiler != nil {
+		in, out := &in.Compiler, &out.Compiler
+		*out = new(policyv1alpha1.Compiler)
+		**out = **in
+	}
 	if in.Parallel != nil {
 		in, out := &in.Parallel, &out.Parallel
 		*out = new(int)

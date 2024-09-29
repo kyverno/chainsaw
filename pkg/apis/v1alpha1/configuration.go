@@ -37,6 +37,10 @@ type ConfigurationSpec struct {
 	// +kubebuilder:default:=true
 	Template bool `json:"template"`
 
+	// Compiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	Compiler *Compiler `json:"compiler,omitempty"`
+
 	// FailFast determines whether the test should stop upon encountering the first failure.
 	// +optional
 	FailFast bool `json:"failFast,omitempty"`

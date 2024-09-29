@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
@@ -127,6 +128,7 @@ func Test_operationScript(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
 			operation := New(
+				apis.XDefaultCompilers,
 				tt.script,
 				tt.basePath,
 				tt.namespace,

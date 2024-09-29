@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/expressions"
 	"github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -102,8 +103,8 @@ func (e *Expression) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e Expression) Value(ctx context.Context, bindings apis.Bindings) (string, error) {
-	return expressions.String(ctx, string(e), bindings)
+func (e Expression) Value(ctx context.Context, compilers compilers.Compilers, bindings apis.Bindings) (string, error) {
+	return expressions.String(ctx, compilers, string(e), bindings)
 }
 
 // Format determines the output format (json or yaml).
