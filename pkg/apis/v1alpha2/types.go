@@ -7,6 +7,7 @@ import (
 
 type (
 	Clusters        = v1alpha1.Clusters
+	Compiler        = v1alpha1.Compiler
 	DefaultTimeouts = v1alpha1.DefaultTimeouts
 	Projection      = v1alpha1.Projection
 )

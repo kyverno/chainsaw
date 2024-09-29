@@ -17,11 +17,13 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	environment "github.com/kyverno/chainsaw/pkg/utils/env"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/client-go/rest"
 )
 
 type operation struct {
+	compilers compilers.Compilers
 	command   v1alpha1.Command
 	basePath  string
 	namespace string
@@ -29,12 +31,14 @@ type operation struct {
 }
 
 func New(
+	compilers compilers.Compilers,
 	command v1alpha1.Command,
 	basePath string,
 	namespace string,
 	cfg *rest.Config,
 ) operations.Operation {
 	return &operation{
+		compilers: compilers,
 		command:   command,
 		basePath:  basePath,
 		namespace: namespace,
@@ -62,7 +66,7 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 }
 
 func (o *operation) createCommand(ctx context.Context, bindings apis.Bindings) (*exec.Cmd, context.CancelFunc, error) {
-	maps, envs, err := internal.RegisterEnvs(ctx, o.namespace, bindings, o.command.Env...)
+	maps, envs, err := internal.RegisterEnvs(ctx, o.compilers, o.namespace, bindings, o.command.Env...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -125,7 +129,7 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, cmd *ex
 	}
 	defer func(bindings apis.Bindings) {
 		if _err == nil {
-			outputs, err := outputs.Process(ctx, bindings, nil, o.command.Outputs...)
+			outputs, err := outputs.Process(ctx, o.compilers, bindings, nil, o.command.Outputs...)
 			if err != nil {
 				_err = err
 				return
@@ -136,7 +140,7 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, cmd *ex
 	if o.command.Check == nil || o.command.Check.IsNil() {
 		return nil, err
 	}
-	if errs, err := checks.Check(ctx, nil, bindings, o.command.Check); err != nil {
+	if errs, err := checks.Check(ctx, o.compilers, nil, bindings, o.command.Check); err != nil {
 		return nil, err
 	} else {
 		return nil, errs.ToAggregate()

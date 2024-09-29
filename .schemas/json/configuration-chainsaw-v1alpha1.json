@@ -1632,6 +1632,17 @@
             "additionalProperties": false
           }
         },
+        "compiler": {
+          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "jp",
+            "cel"
+          ]
+        },
         "delayBeforeCleanup": {
           "description": "DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.",
           "type": [

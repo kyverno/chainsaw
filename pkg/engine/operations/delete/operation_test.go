@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
@@ -167,6 +168,7 @@ func Test_operationDelete(t *testing.T) {
 				nspacer = tt.namespacer(tt.client)
 			}
 			operation := New(
+				apis.XDefaultCompilers,
 				tt.client,
 				tt.object,
 				nspacer,

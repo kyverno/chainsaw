@@ -125,7 +125,7 @@ func TestMutate(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Mutate(context.TODO(), nil, tt.mutation, tt.value, tt.bindings, apis.DefaultCompilers)
+			got, err := Mutate(context.TODO(), apis.XDefaultCompilers, nil, tt.mutation, tt.value, tt.bindings)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

@@ -168,5 +168,6 @@ auto_generated: true
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `enabled` | `bool` |  |  | <p>Enabled determines whether resources should be considered for templating.</p> |
+| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 
   

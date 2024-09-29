@@ -12,7 +12,7 @@ import (
 )
 
 func Template(ctx context.Context, compilers compilers.Compilers, tpl v1alpha1.Projection, value any, bindings apis.Bindings) (any, error) {
-	return mutate.Mutate(ctx, nil, mutate.Parse(ctx, tpl.Value()), value, bindings, compilers)
+	return mutate.Mutate(ctx, compilers, nil, mutate.Parse(ctx, tpl.Value()), value, bindings)
 }
 
 func TemplateAndMerge(ctx context.Context, compilers compilers.Compilers, obj unstructured.Unstructured, bindings apis.Bindings, templates ...v1alpha1.Projection) (unstructured.Unstructured, error) {

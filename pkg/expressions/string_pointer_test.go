@@ -73,7 +73,7 @@ func TestStringPointer(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := StringPointer(context.TODO(), tt.in, tt.bindings)
+			got, err := StringPointer(context.TODO(), apis.XDefaultCompilers, tt.in, tt.bindings)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

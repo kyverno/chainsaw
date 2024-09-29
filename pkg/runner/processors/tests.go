@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine"
@@ -60,7 +59,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 		if !p.config.Cleanup.SkipDelete {
 			nsCleaner = mainCleaner
 		}
-		compilers := apis.DefaultCompilers
+		compilers := tc.Compilers()
 		if p.config.Namespace.Compiler != nil {
 			compilers = compilers.WithDefaultCompiler(string(*p.config.Namespace.Compiler))
 		}

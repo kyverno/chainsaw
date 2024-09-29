@@ -7,32 +7,33 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 )
 
-func Get(ctx context.Context, client client.Client, tc apis.Bindings, collector *v1alpha1.Get) (string, []string, error) {
+func Get(ctx context.Context, compilers compilers.Compilers, client client.Client, tc apis.Bindings, collector *v1alpha1.Get) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := collector.Name.Value(ctx, tc)
+	name, err := collector.Name.Value(ctx, compilers, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := collector.Namespace.Value(ctx, tc)
+	namespace, err := collector.Namespace.Value(ctx, compilers, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := collector.Selector.Value(ctx, tc)
+	selector, err := collector.Selector.Value(ctx, compilers, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	format, err := v1alpha1.Expression(collector.Format).Value(ctx, tc)
+	format, err := v1alpha1.Expression(collector.Format).Value(ctx, compilers, tc)
 	if err != nil {
 		return "", nil, err
 	}
 	if name != "" && selector != "" {
 		return "", nil, errors.New("name cannot be provided when a selector is specified")
 	}
-	resource, clustered, err := mapResource(ctx, client, tc, collector.ObjectType)
+	resource, clustered, err := mapResource(ctx, compilers, client, tc, collector.ObjectType)
 	if err != nil {
 		return "", nil, err
 	}
