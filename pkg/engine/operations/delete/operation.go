@@ -14,6 +14,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -22,6 +23,7 @@ import (
 )
 
 type operation struct {
+	compilers         compilers.Compilers
 	client            client.Client
 	base              unstructured.Unstructured
 	namespacer        namespacer.Namespacer
@@ -31,6 +33,7 @@ type operation struct {
 }
 
 func New(
+	compilers compilers.Compilers,
 	client client.Client,
 	obj unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
@@ -39,6 +42,7 @@ func New(
 	expect ...v1alpha1.Expectation,
 ) operations.Operation {
 	return &operation{
+		compilers:         compilers,
 		client:            client,
 		base:              obj,
 		namespacer:        namespacer,
@@ -59,7 +63,7 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 	}()
 	if o.template {
 		template := v1alpha1.NewProjection(obj.UnstructuredContent())
-		if merged, err := templating.TemplateAndMerge(ctx, apis.DefaultCompilers, obj, bindings, template); err != nil {
+		if merged, err := templating.TemplateAndMerge(ctx, o.compilers, obj, bindings, template); err != nil {
 			return nil, err
 		} else {
 			obj = merged
@@ -145,7 +149,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, res
 	} else {
 		bindings = apibindings.RegisterBinding(ctx, bindings, "error", err.Error())
 	}
-	if matched, err := checks.Expect(ctx, resource, bindings, o.expect...); matched {
+	if matched, err := checks.Expect(ctx, o.compilers, resource, bindings, o.expect...); matched {
 		return err
 	}
 	return err

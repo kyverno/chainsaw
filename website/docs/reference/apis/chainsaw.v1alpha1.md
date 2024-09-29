@@ -422,6 +422,7 @@ during the testing process.</p>
 | `timeouts` | [`DefaultTimeouts`](#chainsaw-kyverno-io-v1alpha1-DefaultTimeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running the tests (implies SkipClusterDelete).</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
 | `parallel` | `int` |  |  | <p>The maximum number of tests to run at once.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation.</p> |

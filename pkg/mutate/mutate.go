@@ -8,6 +8,6 @@ import (
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func Mutate(ctx context.Context, path *field.Path, mutation Mutation, value any, bindings apis.Bindings, compilers compilers.Compilers) (any, error) {
-	return mutation.mutate(ctx, path, value, bindings, compilers)
+func Mutate(ctx context.Context, compilers compilers.Compilers, path *field.Path, mutation Mutation, value any, bindings apis.Bindings) (any, error) {
+	return mutation.mutate(ctx, compilers, path, value, bindings)
 }

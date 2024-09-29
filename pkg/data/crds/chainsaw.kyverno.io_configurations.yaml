@@ -816,6 +816,13 @@ spec:
                 description: Clusters holds a registry to clusters to support multi-cluster
                   tests.
                 type: object
+              compiler:
+                description: Compiler defines the default compiler to use when evaluating
+                  expressions.
+                enum:
+                - jp
+                - cel
+                type: string
               delayBeforeCleanup:
                 description: DelayBeforeCleanup adds a delay between the time a test
                   ends and the time cleanup starts.
@@ -1883,6 +1890,13 @@ spec:
                 default: {}
                 description: Templating contains the templating config.
                 properties:
+                  compiler:
+                    description: Compiler defines the default compiler to use when
+                      evaluating expressions.
+                    enum:
+                    - jp
+                    - cel
+                    type: string
                   enabled:
                     default: true
                     description: Enabled determines whether resources should be considered

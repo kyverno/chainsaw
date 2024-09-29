@@ -11,19 +11,22 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
 	diffutils "github.com/kyverno/chainsaw/pkg/utils/diff"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
 type resourceError struct {
-	expected unstructured.Unstructured
-	actual   unstructured.Unstructured
-	template bool
-	bindings apis.Bindings
-	errs     field.ErrorList
+	compilers compilers.Compilers
+	expected  unstructured.Unstructured
+	actual    unstructured.Unstructured
+	template  bool
+	bindings  apis.Bindings
+	errs      field.ErrorList
 }
 
 func ResourceError(
+	compilers compilers.Compilers,
 	expected unstructured.Unstructured,
 	actual unstructured.Unstructured,
 	template bool,
@@ -31,11 +34,12 @@ func ResourceError(
 	errs field.ErrorList,
 ) error {
 	return resourceError{
-		expected: expected,
-		actual:   actual,
-		template: template,
-		bindings: bindings,
-		errs:     errs,
+		compilers: compilers,
+		expected:  expected,
+		actual:    actual,
+		template:  template,
+		bindings:  bindings,
+		errs:      errs,
 	}
 }
 
@@ -56,7 +60,7 @@ func (e resourceError) Error() string {
 	var templateErr error
 	if e.template {
 		template := v1alpha1.NewProjection(expected.UnstructuredContent())
-		if merged, err := templating.TemplateAndMerge(context.TODO(), apis.DefaultCompilers, expected, e.bindings, template); err != nil {
+		if merged, err := templating.TemplateAndMerge(context.TODO(), e.compilers, expected, e.bindings, template); err != nil {
 			templateErr = err
 		} else {
 			expected = merged

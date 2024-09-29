@@ -8,7 +8,7 @@ import (
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 )
 
-func StringPointer(ctx context.Context, in *string, bindings apis.Bindings) (*string, error) {
+func StringPointer(ctx context.Context, c compilers.Compilers, in *string, bindings apis.Bindings) (*string, error) {
 	if in == nil {
 		return nil, nil
 	}
@@ -19,7 +19,7 @@ func StringPointer(ctx context.Context, in *string, bindings apis.Bindings) (*st
 	if expression == nil {
 		return in, nil
 	}
-	if compiler := apis.DefaultCompilers.Compiler(expression.Engine); compiler == nil {
+	if compiler := c.Compiler(expression.Engine); compiler == nil {
 		return &expression.Statement, nil
 	} else if converted, err := compilers.Execute(expression.Statement, nil, bindings, compiler); err != nil {
 		return nil, err

@@ -13,7 +13,7 @@ var (
 		Jp:  jp.NewCompiler(jp.WithFunctionCaller(functions.Caller())),
 		Cel: cel.NewCompiler(),
 	}
-	DefaultCompilers = defaultCompilers.WithDefaultCompiler(compilers.CompilerJP)
+	XDefaultCompilers = defaultCompilers.WithDefaultCompiler(compilers.CompilerJP)
 )
 
 type Bindings = binding.Bindings

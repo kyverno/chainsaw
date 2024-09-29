@@ -31,6 +31,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"github.com/kyverno/pkg/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -137,7 +138,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 				}
 			}
 			for i, operation := range p.step.Cleanup {
-				operations, err := p.finallyOperation(i, namespacer, tc.Bindings(), operation)
+				operations, err := p.finallyOperation(tc.Compilers(), i, namespacer, tc.Bindings(), operation)
 				if err != nil {
 					logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.Fail(ctx)
@@ -158,7 +159,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 				logger.Log(logging.Finally, logging.EndStatus, color.BoldFgCyan)
 			}()
 			for i, operation := range p.step.Finally {
-				operations, err := p.finallyOperation(i, namespacer, tc.Bindings(), operation)
+				operations, err := p.finallyOperation(tc.Compilers(), i, namespacer, tc.Bindings(), operation)
 				if err != nil {
 					logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.Fail(ctx)
@@ -180,7 +181,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 					logger.Log(logging.Catch, logging.EndStatus, color.BoldFgCyan)
 				}()
 				for i, operation := range p.catch {
-					operations, err := p.catchOperation(i, namespacer, tc.Bindings(), operation)
+					operations, err := p.catchOperation(tc.Compilers(), i, namespacer, tc.Bindings(), operation)
 					if err != nil {
 						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 						failer.Fail(ctx)
@@ -201,7 +202,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	}()
 	for i, operation := range p.step.Try {
 		continueOnError := operation.ContinueOnError != nil && *operation.ContinueOnError
-		operations, err := p.tryOperation(i, namespacer, tc.Bindings(), operation, cleaner)
+		operations, err := p.tryOperation(tc.Compilers(), i, namespacer, tc.Bindings(), operation, cleaner)
 		if err != nil {
 			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
@@ -222,38 +223,38 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	}
 }
 
-func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
+func (p *stepProcessor) tryOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
 	if handler.Apply != nil {
-		loaded, err := p.applyOperation(id+1, namespacer, cleaner, bindings, *handler.Apply)
+		loaded, err := p.applyOperation(compilers, id+1, namespacer, cleaner, bindings, *handler.Apply)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Assert != nil {
-		loaded, err := p.assertOperation(id+1, namespacer, bindings, *handler.Assert)
+		loaded, err := p.assertOperation(compilers, id+1, namespacer, bindings, *handler.Assert)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Command != nil {
-		ops = append(ops, p.commandOperation(id+1, namespacer, *handler.Command))
+		ops = append(ops, p.commandOperation(compilers, id+1, namespacer, *handler.Command))
 	} else if handler.Create != nil {
-		loaded, err := p.createOperation(id+1, namespacer, cleaner, bindings, *handler.Create)
+		loaded, err := p.createOperation(compilers, id+1, namespacer, cleaner, bindings, *handler.Create)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(id+1, namespacer, bindings, *handler.Delete)
+		loaded, err := p.deleteOperation(compilers, id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Describe != nil {
-		ops = append(ops, p.describeOperation(id+1, namespacer, *handler.Describe))
+		ops = append(ops, p.describeOperation(compilers, id+1, namespacer, *handler.Describe))
 	} else if handler.Error != nil {
-		loaded, err := p.errorOperation(id+1, namespacer, bindings, *handler.Error)
+		loaded, err := p.errorOperation(compilers, id+1, namespacer, bindings, *handler.Error)
 		if err != nil {
 			return nil, err
 		}
@@ -271,41 +272,41 @@ func (p *stepProcessor) tryOperation(id int, namespacer namespacer.Namespacer, b
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		ops = append(ops, p.getOperation(id+1, namespacer, get))
+		ops = append(ops, p.getOperation(compilers, id+1, namespacer, get))
 	} else if handler.Get != nil {
-		ops = append(ops, p.getOperation(id+1, namespacer, *handler.Get))
+		ops = append(ops, p.getOperation(compilers, id+1, namespacer, *handler.Get))
 	} else if handler.Patch != nil {
-		loaded, err := p.patchOperation(id+1, namespacer, bindings, *handler.Patch)
+		loaded, err := p.patchOperation(compilers, id+1, namespacer, bindings, *handler.Patch)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.PodLogs != nil {
-		ops = append(ops, p.logsOperation(id+1, namespacer, *handler.PodLogs))
+		ops = append(ops, p.logsOperation(compilers, id+1, namespacer, *handler.PodLogs))
 	} else if handler.Proxy != nil {
-		ops = append(ops, p.proxyOperation(id+1, namespacer, *handler.Proxy))
+		ops = append(ops, p.proxyOperation(compilers, id+1, namespacer, *handler.Proxy))
 	} else if handler.Script != nil {
-		ops = append(ops, p.scriptOperation(id+1, namespacer, *handler.Script))
+		ops = append(ops, p.scriptOperation(compilers, id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
-		ops = append(ops, p.sleepOperation(id+1, *handler.Sleep))
+		ops = append(ops, p.sleepOperation(compilers, id+1, *handler.Sleep))
 	} else if handler.Update != nil {
-		loaded, err := p.updateOperation(id+1, namespacer, bindings, *handler.Update)
+		loaded, err := p.updateOperation(compilers, id+1, namespacer, bindings, *handler.Update)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Wait != nil {
-		ops = append(ops, p.waitOperation(id+1, namespacer, *handler.Wait))
+		ops = append(ops, p.waitOperation(compilers, id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) catchOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	if handler.PodLogs != nil {
-		ops = append(ops, p.logsOperation(id+1, namespacer, *handler.PodLogs))
+		ops = append(ops, p.logsOperation(compilers, id+1, namespacer, *handler.PodLogs))
 	} else if handler.Events != nil {
 		get := v1alpha1.Get{
 			ActionClusters: handler.Events.ActionClusters,
@@ -319,35 +320,35 @@ func (p *stepProcessor) catchOperation(id int, namespacer namespacer.Namespacer,
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		ops = append(ops, p.getOperation(id+1, namespacer, get))
+		ops = append(ops, p.getOperation(compilers, id+1, namespacer, get))
 	} else if handler.Describe != nil {
-		ops = append(ops, p.describeOperation(id+1, namespacer, *handler.Describe))
+		ops = append(ops, p.describeOperation(compilers, id+1, namespacer, *handler.Describe))
 	} else if handler.Get != nil {
-		ops = append(ops, p.getOperation(id+1, namespacer, *handler.Get))
+		ops = append(ops, p.getOperation(compilers, id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(id+1, namespacer, bindings, *handler.Delete)
+		loaded, err := p.deleteOperation(compilers, id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Command != nil {
-		ops = append(ops, p.commandOperation(id+1, namespacer, *handler.Command))
+		ops = append(ops, p.commandOperation(compilers, id+1, namespacer, *handler.Command))
 	} else if handler.Script != nil {
-		ops = append(ops, p.scriptOperation(id+1, namespacer, *handler.Script))
+		ops = append(ops, p.scriptOperation(compilers, id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
-		ops = append(ops, p.sleepOperation(id+1, *handler.Sleep))
+		ops = append(ops, p.sleepOperation(compilers, id+1, *handler.Sleep))
 	} else if handler.Wait != nil {
-		ops = append(ops, p.waitOperation(id+1, namespacer, *handler.Wait))
+		ops = append(ops, p.waitOperation(compilers, id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
+func (p *stepProcessor) finallyOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	if handler.PodLogs != nil {
-		ops = append(ops, p.logsOperation(id+1, namespacer, *handler.PodLogs))
+		ops = append(ops, p.logsOperation(compilers, id+1, namespacer, *handler.PodLogs))
 	} else if handler.Events != nil {
 		get := v1alpha1.Get{
 			ActionClusters: handler.Events.ActionClusters,
@@ -361,33 +362,33 @@ func (p *stepProcessor) finallyOperation(id int, namespacer namespacer.Namespace
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		ops = append(ops, p.getOperation(id+1, namespacer, get))
+		ops = append(ops, p.getOperation(compilers, id+1, namespacer, get))
 	} else if handler.Describe != nil {
-		ops = append(ops, p.describeOperation(id+1, namespacer, *handler.Describe))
+		ops = append(ops, p.describeOperation(compilers, id+1, namespacer, *handler.Describe))
 	} else if handler.Get != nil {
-		ops = append(ops, p.getOperation(id+1, namespacer, *handler.Get))
+		ops = append(ops, p.getOperation(compilers, id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(id+1, namespacer, bindings, *handler.Delete)
+		loaded, err := p.deleteOperation(compilers, id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Command != nil {
-		ops = append(ops, p.commandOperation(id+1, namespacer, *handler.Command))
+		ops = append(ops, p.commandOperation(compilers, id+1, namespacer, *handler.Command))
 	} else if handler.Script != nil {
-		ops = append(ops, p.scriptOperation(id+1, namespacer, *handler.Script))
+		ops = append(ops, p.scriptOperation(compilers, id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
-		ops = append(ops, p.sleepOperation(id+1, *handler.Sleep))
+		ops = append(ops, p.sleepOperation(compilers, id+1, *handler.Sleep))
 	} else if handler.Wait != nil {
-		ops = append(ops, p.waitOperation(id+1, namespacer, *handler.Wait))
+		ops = append(ops, p.waitOperation(compilers, id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Apply) ([]operation, error) {
-	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
+func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Apply) ([]operation, error) {
+	resources, err := p.fileRefOrResource(context.TODO(), compilers, op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -419,6 +420,7 @@ func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer,
 						return nil, nil, tc, err
 					} else {
 						op := opapply.New(
+							tc.Compilers(),
 							client,
 							resource,
 							namespacer,
@@ -436,8 +438,8 @@ func (p *stepProcessor) applyOperation(id int, namespacer namespacer.Namespacer,
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Assert) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(context.TODO(), op.ActionCheckRef, bindings)
+func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Assert) ([]operation, error) {
+	resources, err := p.fileRefOrCheck(context.TODO(), compilers, op.ActionCheckRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -464,6 +466,7 @@ func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer
 					return nil, nil, tc, err
 				} else {
 					op := opassert.New(
+						tc.Compilers(),
 						client,
 						resource,
 						namespacer,
@@ -477,7 +480,7 @@ func (p *stepProcessor) assertOperation(id int, namespacer namespacer.Namespacer
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Command) operation {
+func (p *stepProcessor) commandOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Command) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -500,6 +503,7 @@ func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespace
 				return nil, nil, tc, err
 			} else {
 				op := opcommand.New(
+					tc.Compilers(),
 					op,
 					p.basePath,
 					ns,
@@ -511,8 +515,8 @@ func (p *stepProcessor) commandOperation(id int, namespacer namespacer.Namespace
 	)
 }
 
-func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Create) ([]operation, error) {
-	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
+func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Create) ([]operation, error) {
+	resources, err := p.fileRefOrResource(context.TODO(), compilers, op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -543,6 +547,7 @@ func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer
 					return nil, nil, tc, err
 				} else {
 					op := opcreate.New(
+						tc.Compilers(),
 						client,
 						resource,
 						namespacer,
@@ -559,7 +564,7 @@ func (p *stepProcessor) createOperation(id int, namespacer namespacer.Namespacer
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Delete) ([]operation, error) {
+func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Delete) ([]operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -574,7 +579,7 @@ func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer
 		resource.SetLabels(op.Ref.Labels)
 		ref.Resource = &resource
 	}
-	resources, err := p.fileRefOrResource(context.TODO(), ref, bindings)
+	resources, err := p.fileRefOrResource(context.TODO(), compilers, ref, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -602,6 +607,7 @@ func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer
 					return nil, nil, tc, err
 				} else {
 					op := opdelete.New(
+						tc.Compilers(),
 						client,
 						resource,
 						namespacer,
@@ -617,7 +623,7 @@ func (p *stepProcessor) deleteOperation(id int, namespacer namespacer.Namespacer
 	return ops, nil
 }
 
-func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Describe) operation {
+func (p *stepProcessor) describeOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Describe) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -639,11 +645,12 @@ func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespac
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Describe(ctx, client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Describe(ctx, tc.Compilers(), client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
 				op := opcommand.New(
+					tc.Compilers(),
 					v1alpha1.Command{
 						ActionClusters: op.ActionClusters,
 						ActionTimeout:  op.ActionTimeout,
@@ -660,8 +667,8 @@ func (p *stepProcessor) describeOperation(id int, namespacer namespacer.Namespac
 	)
 }
 
-func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Error) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(context.TODO(), op.ActionCheckRef, bindings)
+func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Error) ([]operation, error) {
+	resources, err := p.fileRefOrCheck(context.TODO(), compilers, op.ActionCheckRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -688,6 +695,7 @@ func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer,
 					return nil, nil, tc, err
 				} else {
 					op := operror.New(
+						tc.Compilers(),
 						client,
 						resource,
 						namespacer,
@@ -701,7 +709,7 @@ func (p *stepProcessor) errorOperation(id int, namespacer namespacer.Namespacer,
 	return ops, nil
 }
 
-func (p *stepProcessor) getOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Get) operation {
+func (p *stepProcessor) getOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Get) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -723,11 +731,12 @@ func (p *stepProcessor) getOperation(id int, namespacer namespacer.Namespacer, o
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Get(ctx, client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Get(ctx, tc.Compilers(), client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
 				op := opcommand.New(
+					tc.Compilers(),
 					v1alpha1.Command{
 						ActionClusters: op.ActionClusters,
 						ActionTimeout:  op.ActionTimeout,
@@ -744,7 +753,7 @@ func (p *stepProcessor) getOperation(id int, namespacer namespacer.Namespacer, o
 	)
 }
 
-func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.PodLogs) operation {
+func (p *stepProcessor) logsOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.PodLogs) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -766,11 +775,12 @@ func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, 
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Logs(ctx, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Logs(ctx, tc.Compilers(), tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
 				op := opcommand.New(
+					tc.Compilers(),
 					v1alpha1.Command{
 						ActionClusters: op.ActionClusters,
 						ActionTimeout:  op.ActionTimeout,
@@ -787,8 +797,8 @@ func (p *stepProcessor) logsOperation(id int, namespacer namespacer.Namespacer, 
 	)
 }
 
-func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Patch) ([]operation, error) {
-	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
+func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Patch) ([]operation, error) {
+	resources, err := p.fileRefOrResource(context.TODO(), compilers, op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -819,6 +829,7 @@ func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer,
 					return nil, nil, tc, err
 				} else {
 					op := oppatch.New(
+						tc.Compilers(),
 						client,
 						resource,
 						namespacer,
@@ -834,7 +845,7 @@ func (p *stepProcessor) patchOperation(id int, namespacer namespacer.Namespacer,
 	return ops, nil
 }
 
-func (p *stepProcessor) proxyOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Proxy) operation {
+func (p *stepProcessor) proxyOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Proxy) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -856,11 +867,12 @@ func (p *stepProcessor) proxyOperation(id int, namespacer namespacer.Namespacer,
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Proxy(ctx, client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Proxy(ctx, tc.Compilers(), client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
 				op := opcommand.New(
+					tc.Compilers(),
 					v1alpha1.Command{
 						ActionClusters: op.ActionClusters,
 						ActionTimeout:  op.ActionTimeout,
@@ -877,7 +889,7 @@ func (p *stepProcessor) proxyOperation(id int, namespacer namespacer.Namespacer,
 	)
 }
 
-func (p *stepProcessor) scriptOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Script) operation {
+func (p *stepProcessor) scriptOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Script) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -900,6 +912,7 @@ func (p *stepProcessor) scriptOperation(id int, namespacer namespacer.Namespacer
 				return nil, nil, tc, err
 			} else {
 				op := opscript.New(
+					tc.Compilers(),
 					op,
 					p.basePath,
 					ns,
@@ -911,7 +924,7 @@ func (p *stepProcessor) scriptOperation(id int, namespacer namespacer.Namespacer
 	)
 }
 
-func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
+func (p *stepProcessor) sleepOperation(compilers compilers.Compilers, id int, op v1alpha1.Sleep) operation {
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -923,8 +936,8 @@ func (p *stepProcessor) sleepOperation(id int, op v1alpha1.Sleep) operation {
 	)
 }
 
-func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Update) ([]operation, error) {
-	resources, err := p.fileRefOrResource(context.TODO(), op.ActionResourceRef, bindings)
+func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Update) ([]operation, error) {
+	resources, err := p.fileRefOrResource(context.TODO(), compilers, op.ActionResourceRef, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -955,6 +968,7 @@ func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer
 					return nil, nil, tc, err
 				} else {
 					op := opupdate.New(
+						tc.Compilers(),
 						client,
 						resource,
 						namespacer,
@@ -970,7 +984,7 @@ func (p *stepProcessor) updateOperation(id int, namespacer namespacer.Namespacer
 	return ops, nil
 }
 
-func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, op v1alpha1.Wait) operation {
+func (p *stepProcessor) waitOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Wait) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -995,11 +1009,12 @@ func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, 
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
-				entrypoint, args, err := kubectl.Wait(ctx, client, tc.Bindings(), &op)
+				entrypoint, args, err := kubectl.Wait(ctx, tc.Compilers(), client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
 				}
 				op := opcommand.New(
+					tc.Compilers(),
 					v1alpha1.Command{
 						ActionClusters: op.ActionClusters,
 						ActionTimeout:  op.ActionTimeout,
@@ -1016,7 +1031,7 @@ func (p *stepProcessor) waitOperation(id int, namespacer namespacer.Namespacer, 
 	)
 }
 
-func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionCheckRef, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
+func (p *stepProcessor) fileRefOrCheck(ctx context.Context, compilers compilers.Compilers, ref v1alpha1.ActionCheckRef, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
 	if ref.Check != nil && ref.Check.Value() != nil {
 		if object, ok := ref.Check.Value().(map[string]any); !ok {
 			return nil, errors.New("resource must be an object")
@@ -1025,7 +1040,7 @@ func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionC
 		}
 	}
 	if ref.File != "" {
-		ref, err := ref.File.Value(ctx, bindings)
+		ref, err := ref.File.Value(ctx, compilers, bindings)
 		if err != nil {
 			return nil, err
 		}
@@ -1039,12 +1054,12 @@ func (p *stepProcessor) fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionC
 	return nil, errors.New("file or resource must be set")
 }
 
-func (p *stepProcessor) fileRefOrResource(ctx context.Context, ref v1alpha1.ActionResourceRef, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
+func (p *stepProcessor) fileRefOrResource(ctx context.Context, compilers compilers.Compilers, ref v1alpha1.ActionResourceRef, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
 	if ref.Resource != nil {
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}
 	if ref.File != "" {
-		ref, err := ref.File.Value(ctx, bindings)
+		ref, err := ref.File.Value(ctx, compilers, bindings)
 		if err != nil {
 			return nil, err
 		}
