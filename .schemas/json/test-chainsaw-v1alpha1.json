@@ -347,6 +347,17 @@
               "value"
             ],
             "properties": {
+              "compiler": {
+                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "jp",
+                  "cel"
+                ]
+              },
               "name": {
                 "description": "Name the name of the binding.",
                 "type": "string",
@@ -460,6 +471,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -536,6 +558,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -566,6 +599,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "match": {
                           "description": "Match defines the matching statement.",
                           "x-kubernetes-preserve-unknown-fields": true
@@ -637,6 +681,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -1221,6 +1276,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -1300,6 +1366,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -1330,6 +1407,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "match": {
                           "description": "Match defines the matching statement.",
                           "x-kubernetes-preserve-unknown-fields": true
@@ -1683,6 +1771,17 @@
                     "value"
                   ],
                   "properties": {
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
+                    },
                     "name": {
                       "description": "Name the name of the binding.",
                       "type": "string",
@@ -1768,6 +1867,17 @@
                     "value"
                   ],
                   "properties": {
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
+                    },
                     "name": {
                       "description": "Name the name of the binding.",
                       "type": "string",
@@ -1881,6 +1991,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -1957,6 +2078,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -1987,6 +2119,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -2058,6 +2201,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -2642,6 +2796,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -2721,6 +2886,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -2751,6 +2927,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -3078,6 +3265,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -3154,6 +3352,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -3184,6 +3393,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -3255,6 +3475,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -3839,6 +4070,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -3918,6 +4160,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -3948,6 +4201,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -4332,6 +4596,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -4408,6 +4683,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -4438,6 +4724,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -4509,6 +4806,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -5093,6 +5401,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -5172,6 +5491,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -5202,6 +5532,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -5623,6 +5964,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -5733,6 +6085,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -6115,6 +6478,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -6234,6 +6608,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -6310,6 +6695,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -6340,6 +6736,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -6418,6 +6825,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -6528,6 +6946,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -6910,6 +7339,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -7212,6 +7652,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -7513,6 +7964,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -7623,6 +8085,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -8159,6 +8632,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -8224,6 +8708,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -8303,6 +8798,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -8333,6 +8839,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -8421,6 +8938,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -8531,6 +9059,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "match": {
                                 "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
@@ -9091,6 +9630,17 @@
                             "value"
                           ],
                           "properties": {
+                            "compiler": {
+                              "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                "jp",
+                                "cel"
+                              ]
+                            },
                             "name": {
                               "description": "Name the name of the binding.",
                               "type": "string",

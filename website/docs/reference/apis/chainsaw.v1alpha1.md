@@ -344,6 +344,7 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Name the name of the binding.</p> |
+| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `value` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) | :white_check_mark: |  | <p>Value value of the binding.</p> |
 
 ## CatchFinally     {#chainsaw-kyverno-io-v1alpha1-CatchFinally}

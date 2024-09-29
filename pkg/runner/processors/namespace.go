@@ -22,7 +22,7 @@ func buildNamespace(ctx context.Context, name string, template *v1alpha1.Project
 	}
 	object := kube.ToUnstructured(&namespace)
 	tc = bindings.RegisterBinding(ctx, tc, "namespace", object.GetName())
-	merged, err := templating.TemplateAndMerge(ctx, object, tc, *template)
+	merged, err := templating.TemplateAndMerge(ctx, apis.DefaultCompilers, object, tc, *template)
 	if err != nil {
 		return nil, err
 	}
