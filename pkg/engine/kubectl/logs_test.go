@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/utils/ptr"
@@ -180,7 +181,7 @@ func TestLogs(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entrypoint, args, err := Logs(context.TODO(), nil, tt.collector)
+			entrypoint, args, err := Logs(context.TODO(), apis.XDefaultCompilers, nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

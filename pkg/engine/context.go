@@ -11,7 +11,7 @@ import (
 
 func WithBindings(ctx context.Context, tc Context, variables ...v1alpha1.Binding) (Context, error) {
 	for _, variable := range variables {
-		name, value, err := bindings.ResolveBinding(ctx, tc.Bindings(), nil, variable)
+		name, value, err := bindings.ResolveBinding(ctx, tc.Compilers(), tc.Bindings(), nil, variable)
 		if err != nil {
 			return tc, err
 		}

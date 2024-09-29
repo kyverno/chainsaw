@@ -9,5 +9,5 @@ import (
 )
 
 type Mutation interface {
-	mutate(context.Context, *field.Path, any, apis.Bindings, compilers.Compilers) (any, error)
+	mutate(context.Context, compilers.Compilers, *field.Path, any, apis.Bindings) (any, error)
 }

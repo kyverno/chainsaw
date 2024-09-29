@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
@@ -184,6 +185,7 @@ func Test_update(t *testing.T) {
 			defer cancel()
 			ctx = toCtx
 			operation := New(
+				apis.XDefaultCompilers,
 				tt.client,
 				tt.object,
 				nil,

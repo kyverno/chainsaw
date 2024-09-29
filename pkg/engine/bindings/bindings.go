@@ -8,6 +8,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 )
 
 var identifier = regexp.MustCompile(`^\w+$`)
@@ -23,15 +24,14 @@ func RegisterBinding(ctx context.Context, bindings apis.Bindings, name string, v
 	return bindings.Register("$"+name, apis.NewBinding(value))
 }
 
-func ResolveBinding(ctx context.Context, bindings apis.Bindings, input any, variable v1alpha1.Binding) (string, any, error) {
-	name, err := variable.Name.Value(ctx, bindings)
+func ResolveBinding(ctx context.Context, compilers compilers.Compilers, bindings apis.Bindings, input any, variable v1alpha1.Binding) (string, any, error) {
+	name, err := variable.Name.Value(ctx, compilers, bindings)
 	if err != nil {
 		return "", nil, err
 	}
 	if err := checkBindingName(name); err != nil {
 		return "", nil, err
 	}
-	compilers := apis.DefaultCompilers
 	if variable.Compiler != nil {
 		compilers = compilers.WithDefaultCompiler(string(*variable.Compiler))
 	}
