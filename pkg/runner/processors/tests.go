@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine"
@@ -59,10 +60,15 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 		if !p.config.Cleanup.SkipDelete {
 			nsCleaner = mainCleaner
 		}
+		compilers := apis.DefaultCompilers
+		if p.config.Namespace.Compiler != nil {
+			compilers = compilers.WithDefaultCompiler(string(*p.config.Namespace.Compiler))
+		}
 		contextData.namespace = &namespaceData{
-			name:     p.config.Namespace.Name,
-			template: p.config.Namespace.Template,
-			cleaner:  nsCleaner,
+			name:      p.config.Namespace.Name,
+			template:  p.config.Namespace.Template,
+			compilers: compilers,
+			cleaner:   nsCleaner,
 		}
 	}
 	tc, namespace, err := setupContextData(ctx, tc, contextData)
@@ -153,6 +159,7 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) Test
 		size,
 		p.clock,
 		p.config.Namespace.Template,
+		p.config.Namespace.Compiler,
 		delayBeforeCleanup,
 		p.config.Execution.ForceTerminationGracePeriod,
 		p.config.Timeouts,

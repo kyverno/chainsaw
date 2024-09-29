@@ -564,6 +564,11 @@ func (in *ConfigurationSpec) DeepCopyInto(out *ConfigurationSpec) {
 		*out = new(int)
 		**out = **in
 	}
+	if in.NamespaceTemplateCompiler != nil {
+		in, out := &in.NamespaceTemplateCompiler, &out.NamespaceTemplateCompiler
+		*out = new(policyv1alpha1.Compiler)
+		**out = **in
+	}
 	if in.NamespaceTemplate != nil {
 		in, out := &in.NamespaceTemplate, &out.NamespaceTemplate
 		*out = (*in).DeepCopy()
@@ -1295,6 +1300,11 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 	if in.NamespaceTemplate != nil {
 		in, out := &in.NamespaceTemplate, &out.NamespaceTemplate
 		*out = (*in).DeepCopy()
+	}
+	if in.NamespaceTemplateCompiler != nil {
+		in, out := &in.NamespaceTemplateCompiler, &out.NamespaceTemplateCompiler
+		*out = new(policyv1alpha1.Compiler)
+		**out = **in
 	}
 	if in.Scenarios != nil {
 		in, out := &in.Scenarios, &out.Scenarios
