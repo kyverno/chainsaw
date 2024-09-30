@@ -5,20 +5,20 @@
 class Chainsaw < Formula
   desc "Declarative Kubernetes end-to-end testing."
   homepage "https://kyverno.github.io/chainsaw"
-  version "0.2.10"
+  version "0.2.11-beta.1"
 
   on_macos do
     on_intel do
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.10/chainsaw_darwin_amd64.tar.gz"
-      sha256 "2f36fdefa5b820afc2d0ad7b5697ec87dac6bf728a44fedbb9c2070827a22e3c"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.11-beta.1/chainsaw_darwin_amd64.tar.gz"
+      sha256 "d0dd2a00a994e752894edd1e1763260b69370a638aadb3c77afd2b827481d73e"
 
       def install
         bin.install "chainsaw"
       end
     end
     on_arm do
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.10/chainsaw_darwin_arm64.tar.gz"
-      sha256 "226ef75a1cdf686f90a94be336fc6280bd52ffd932e2892738d3283e9c5258b2"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.11-beta.1/chainsaw_darwin_arm64.tar.gz"
+      sha256 "628736da7d7c4252169b29efae92ca19420371fc35ee9f57075f539e1e89b56e"
 
       def install
         bin.install "chainsaw"
@@ -29,8 +29,8 @@ class Chainsaw < Formula
   on_linux do
     on_intel do
       if Hardware::CPU.is_64_bit?
-        url "https://github.com/kyverno/chainsaw/releases/download/v0.2.10/chainsaw_linux_amd64.tar.gz"
-        sha256 "4f41387d780d8e61f67b622acb659dcaf55a24adcfb5b018b54395eab6b3f97f"
+        url "https://github.com/kyverno/chainsaw/releases/download/v0.2.11-beta.1/chainsaw_linux_amd64.tar.gz"
+        sha256 "1742f45fe97c7d2eec5e70eee7301d4aad4afb300e277ae0002220922d3884cb"
 
         def install
           bin.install "chainsaw"
@@ -39,8 +39,8 @@ class Chainsaw < Formula
     end
     on_arm do
       if Hardware::CPU.is_64_bit?
-        url "https://github.com/kyverno/chainsaw/releases/download/v0.2.10/chainsaw_linux_arm64.tar.gz"
-        sha256 "62591b31b62ecfd656b4c7c9643b32461853122c4730252ac638728ed2020c84"
+        url "https://github.com/kyverno/chainsaw/releases/download/v0.2.11-beta.1/chainsaw_linux_arm64.tar.gz"
+        sha256 "8fa527524d14ff60d945ef011c4414a9c8eeb11937367bd4d6f23afb44a64a03"
 
         def install
           bin.install "chainsaw"
