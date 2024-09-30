@@ -6,7 +6,7 @@
 
 ## Description
 
-divisor must be non zero
+Divisor must be non zero.
 
 ## Examples
 

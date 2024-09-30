@@ -6,7 +6,7 @@
 
 ## Description
 
-returns the value corresponding to the given key/index in the given object/array
+Returns the value corresponding to the given key/index in the given object/array.
 
 ## Examples
 

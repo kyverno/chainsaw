@@ -6,7 +6,7 @@
 
 ## Description
 
-does arithmetic multiplication of two specified values of numbers, quantities, and durations
+Does arithmetic multiplication of two specified values of numbers, quantities, and durations.
 
 ## Examples
 
