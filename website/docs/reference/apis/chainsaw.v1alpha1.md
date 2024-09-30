@@ -901,6 +901,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `concurrent` | `bool` |  |  | <p>Concurrent determines whether the test should run concurrently with other tests.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the test should be deleted after the test is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `namespace` | `string` |  |  | <p>Namespace determines whether the test should run in a random ephemeral namespace or not.</p> |
 | `namespaceTemplate` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
 | `namespaceTemplateCompiler` | `policy/v1alpha1.Compiler` |  |  | <p>NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.</p> |
