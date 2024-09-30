@@ -6,7 +6,7 @@
 
 ## Description
 
-adds duration (second string) to a time value (first string)
+Adds duration (second string) to a time value (first string).
 
 ## Examples
 

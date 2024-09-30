@@ -6,7 +6,7 @@
 
 ## Description
 
-normalizes or canonicalizes a given path by removing excess slashes
+Normalizes or canonicalizes a given path by removing excess slashes.
 
 ## Examples
 

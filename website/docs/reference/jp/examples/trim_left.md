@@ -6,7 +6,7 @@
 
 ## Description
 
-
+Removes the leading characters found in the passed in string argument.
 
 ## Examples
 

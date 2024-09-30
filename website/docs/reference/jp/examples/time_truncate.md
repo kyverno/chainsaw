@@ -6,7 +6,7 @@
 
 ## Description
 
-returns the result of rounding time down to a multiple of duration
+Returns the result of rounding time down to a multiple of duration.
 
 ## Examples
 
