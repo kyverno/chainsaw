@@ -607,6 +607,17 @@
                 },
                 "additionalProperties": false
               },
+              "compiler": {
+                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "jp",
+                  "cel"
+                ]
+              },
               "delete": {
                 "description": "Delete represents a deletion operation.",
                 "type": [
