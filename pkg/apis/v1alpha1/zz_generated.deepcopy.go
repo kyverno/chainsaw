@@ -1429,6 +1429,11 @@ func (in *TestStepSpec) DeepCopyInto(out *TestStepSpec) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.Compiler != nil {
+		in, out := &in.Compiler, &out.Compiler
+		*out = new(policyv1alpha1.Compiler)
+		**out = **in
+	}
 	if in.Bindings != nil {
 		in, out := &in.Bindings, &out.Bindings
 		*out = make([]Binding, len(*in))
