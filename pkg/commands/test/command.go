@@ -40,6 +40,7 @@ type options struct {
 	testDirs                    []string
 	skipDelete                  bool
 	template                    bool
+	defaultCompiler             string
 	failFast                    bool
 	parallel                    int
 	repeatCount                 int
@@ -128,6 +129,9 @@ func Command() *cobra.Command {
 			}
 			if flagutils.IsSet(flags, "template") {
 				configuration.Spec.Templating.Enabled = options.template
+			}
+			if flagutils.IsSet(flags, "default-compiler") {
+				configuration.Spec.Templating.Compiler = ptr.To(v1alpha1.Compiler(options.defaultCompiler))
 			}
 			if flagutils.IsSet(flags, "fail-fast") {
 				configuration.Spec.Execution.FailFast = options.failFast
@@ -262,6 +266,9 @@ func Command() *cobra.Command {
 				fmt.Fprintf(out, "- Values %v\n", options.values)
 			}
 			fmt.Fprintf(out, "- Template %v\n", configuration.Spec.Templating.Enabled)
+			if configuration.Spec.Templating.Compiler != nil {
+				fmt.Fprintf(out, "- Default compiler %v\n", *configuration.Spec.Templating.Compiler)
+			}
 			if len(configuration.Spec.Clusters) != 0 {
 				fmt.Fprintf(out, "- Clusters %v\n", configuration.Spec.Clusters)
 			}
@@ -373,6 +380,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests")
 	// templating options
 	cmd.Flags().BoolVar(&options.template, "template", config.Spec.Templating.Enabled, "If set, resources will be considered for templating")
+	cmd.Flags().StringVar(&options.defaultCompiler, "default-compiler", "", "If set, configures the default compiler (jp or cel)")
 	// cleanup options
 	cmd.Flags().BoolVar(&options.skipDelete, "skip-delete", false, "If set, do not delete the resources after running the tests")
 	cmd.Flags().DurationVar(&options.delayBeforeCleanup.Duration, "cleanup-delay", 0, "Adds a delay between the time a test ends and the time cleanup starts")

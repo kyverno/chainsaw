@@ -292,7 +292,7 @@ func Test_apply(t *testing.T) {
 			defer cancel()
 			ctx = toCtx
 			operation := New(
-				apis.XDefaultCompilers,
+				apis.DefaultCompilers,
 				tt.client,
 				tt.object,
 				nil,

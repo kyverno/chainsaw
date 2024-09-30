@@ -129,7 +129,7 @@ func TestResolveBinding(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			name, value, err := ResolveBinding(context.TODO(), apis.XDefaultCompilers, tt.bindings, tt.input, tt.variable)
+			name, value, err := ResolveBinding(context.TODO(), apis.DefaultCompilers, tt.bindings, tt.input, tt.variable)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

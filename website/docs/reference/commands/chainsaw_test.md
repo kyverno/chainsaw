@@ -15,6 +15,7 @@ chainsaw test [flags]... [test directories]...
       --cleanup-timeout duration                  The cleanup timeout to use as default for configuration (default 30s)
       --cluster strings                           Register cluster (format <cluster name>=<kubeconfig path>:[context name])
       --config string                             Chainsaw configuration file
+      --default-compiler string                   If set, configures the default compiler (jp or cel)
       --delete-timeout duration                   The delete timeout to use as default for configuration (default 15s)
       --deletion-propagation-policy string        The deletion propagation policy (Foreground|Background|Orphan) (default "Background")
       --error-timeout duration                    The error timeout to use as default for configuration (default 30s)
