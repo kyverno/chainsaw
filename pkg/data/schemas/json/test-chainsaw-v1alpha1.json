@@ -651,6 +651,17 @@
                 },
                 "additionalProperties": false
               },
+              "compiler": {
+                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "jp",
+                  "cel"
+                ]
+              },
               "delete": {
                 "description": "Delete represents a deletion operation.",
                 "type": [
@@ -2193,6 +2204,17 @@
                       },
                       "additionalProperties": false
                     },
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
+                    },
                     "delete": {
                       "description": "Delete represents a deletion operation.",
                       "type": [
@@ -3466,6 +3488,17 @@
                         }
                       },
                       "additionalProperties": false
+                    },
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
                     },
                     "delete": {
                       "description": "Delete represents a deletion operation.",
@@ -4808,6 +4841,17 @@
                         }
                       },
                       "additionalProperties": false
+                    },
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
                     },
                     "delete": {
                       "description": "Delete represents a deletion operation.",
@@ -6820,6 +6864,17 @@
                         }
                       },
                       "additionalProperties": false
+                    },
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
                     },
                     "continueOnError": {
                       "description": "ContinueOnError determines whether a test should continue or not in case the operation was not successful.\nEven if the test continues executing, it will still be reported as failed.",
