@@ -4499,6 +4499,17 @@
                   "additionalProperties": false
                 }
               },
+              "compiler": {
+                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "jp",
+                  "cel"
+                ]
+              },
               "deletionPropagationPolicy": {
                 "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in both the Configuration and the Test.",
                 "type": [

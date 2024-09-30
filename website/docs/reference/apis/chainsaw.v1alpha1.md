@@ -946,6 +946,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
+| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) |  |  | <p>Try defines what the step will try to execute.</p> |
 | `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |
