@@ -344,7 +344,7 @@ func Test_operationAssert(t *testing.T) {
 				nspacer = tt.namespacer(tt.client)
 			}
 			operation := New(
-				apis.XDefaultCompilers,
+				apis.DefaultCompilers,
 				tt.client,
 				tt.expected,
 				nspacer,

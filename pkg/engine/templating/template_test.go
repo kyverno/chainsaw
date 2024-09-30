@@ -49,7 +49,7 @@ func TestTemplateAndMerge(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := TemplateAndMerge(context.TODO(), apis.XDefaultCompilers, tt.in, nil, tt.templates...)
+			got, err := TemplateAndMerge(context.TODO(), apis.DefaultCompilers, tt.in, nil, tt.templates...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

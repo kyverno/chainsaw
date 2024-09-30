@@ -32,7 +32,7 @@ func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext
 			StartTime: time.Now(),
 		},
 		bindings:  bindings,
-		compilers: apis.XDefaultCompilers,
+		compilers: apis.DefaultCompilers,
 		clusters:  registry,
 		cluster:   nil,
 	}
