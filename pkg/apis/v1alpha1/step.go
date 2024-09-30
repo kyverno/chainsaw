@@ -110,6 +110,10 @@ type TestStepSpec struct {
 	// +optional
 	Template *bool `json:"template,omitempty"`
 
+	// Compiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	Compiler *Compiler `json:"compiler,omitempty"`
+
 	// Bindings defines additional binding key/values.
 	// +optional
 	Bindings []Binding `json:"bindings,omitempty"`
