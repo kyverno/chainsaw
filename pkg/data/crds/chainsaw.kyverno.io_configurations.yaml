@@ -197,6 +197,13 @@ spec:
                       required:
                       - entrypoint
                       type: object
+                    compiler:
+                      description: Compiler defines the default compiler to use when
+                        evaluating expressions.
+                      enum:
+                      - jp
+                      - cel
+                      type: string
                     delete:
                       description: Delete represents a deletion operation.
                       not:
@@ -1210,6 +1217,13 @@ spec:
                           required:
                           - entrypoint
                           type: object
+                        compiler:
+                          description: Compiler defines the default compiler to use
+                            when evaluating expressions.
+                          enum:
+                          - jp
+                          - cel
+                          type: string
                         delete:
                           description: Delete represents a deletion operation.
                           not:

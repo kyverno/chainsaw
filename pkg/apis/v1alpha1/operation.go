@@ -10,6 +10,10 @@ type OperationBase struct {
 	// Even if the test continues executing, it will still be reported as failed.
 	// +optional
 	ContinueOnError *bool `json:"continueOnError,omitempty"`
+
+	// Compiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	Compiler *Compiler `json:"compiler,omitempty"`
 }
 
 // Operation defines a single operation, only one action is permitted for a given operation.
