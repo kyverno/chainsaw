@@ -1302,6 +1302,11 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		*out = new(bool)
 		**out = **in
 	}
+	if in.Compiler != nil {
+		in, out := &in.Compiler, &out.Compiler
+		*out = new(policyv1alpha1.Compiler)
+		**out = **in
+	}
 	if in.NamespaceTemplate != nil {
 		in, out := &in.NamespaceTemplate, &out.NamespaceTemplate
 		*out = (*in).DeepCopy()

@@ -844,6 +844,13 @@ spec:
                 description: Clusters holds a registry to clusters to support multi-cluster
                   tests.
                 type: object
+              compiler:
+                description: Compiler defines the default compiler to use when evaluating
+                  expressions.
+                enum:
+                - jp
+                - cel
+                type: string
               concurrent:
                 description: Concurrent determines whether the test should run concurrently
                   with other tests.
