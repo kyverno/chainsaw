@@ -6,7 +6,7 @@
 
 ## Description
 
-first string is the regular exression which is compared with second input which can be a number or string
+First string is the regular exression which is compared with second input which can be a number or string.
 
 ## Examples
 

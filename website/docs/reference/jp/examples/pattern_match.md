@@ -6,7 +6,7 @@
 
 ## Description
 
-'*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character
+'*' matches zero or more alphanumeric characters, '?' matches a single alphanumeric character.
 
 ## Examples
 

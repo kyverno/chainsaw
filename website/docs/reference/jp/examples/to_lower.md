@@ -6,7 +6,7 @@
 
 ## Description
 
-takes in a string and outputs the same string with all lower-case letters
+Takes in a string and outputs the same string with all lower-case letters.
 
 ## Examples
 

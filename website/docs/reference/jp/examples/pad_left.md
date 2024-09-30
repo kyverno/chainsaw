@@ -6,7 +6,7 @@
 
 ## Description
 
-
+Adds characters to the beginning of a string.
 
 ## Examples
 

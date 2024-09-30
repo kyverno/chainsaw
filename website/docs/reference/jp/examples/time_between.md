@@ -6,7 +6,7 @@
 
 ## Description
 
-checks if a time is between a start and end time, all in RFC3339 format
+Checks if a time is between a start and end time, all in RFC3339 format.
 
 ## Examples
 

@@ -6,7 +6,7 @@
 
 ## Description
 
-trims both ends of the source string by characters appearing in the second string
+Trims both ends of the source string by characters appearing in the second string.
 
 ## Examples
 
