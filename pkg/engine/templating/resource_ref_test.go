@@ -78,7 +78,7 @@ func TestResourceRef(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ResourceRef(context.TODO(), apis.XDefaultCompilers, tt.obj, tt.bindings)
+			err := ResourceRef(context.TODO(), apis.DefaultCompilers, tt.obj, tt.bindings)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

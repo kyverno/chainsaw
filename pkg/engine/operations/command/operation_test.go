@@ -136,7 +136,7 @@ func Test_operationCommand(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
 			operation := New(
-				apis.XDefaultCompilers,
+				apis.DefaultCompilers,
 				tt.command,
 				tt.basePath,
 				tt.namespace,

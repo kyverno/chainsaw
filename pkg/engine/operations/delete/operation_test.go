@@ -168,7 +168,7 @@ func Test_operationDelete(t *testing.T) {
 				nspacer = tt.namespacer(tt.client)
 			}
 			operation := New(
-				apis.XDefaultCompilers,
+				apis.DefaultCompilers,
 				tt.client,
 				tt.object,
 				nspacer,
