@@ -6,7 +6,7 @@
 
 ## Description
 
-decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function
+Decodes a valid JSON encoded string to the appropriate type. Opposite of `to_string` function.
 
 ## Examples
 

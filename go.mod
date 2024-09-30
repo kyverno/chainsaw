@@ -10,10 +10,10 @@ require (
 	github.com/go-logr/logr v1.4.2
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/hashicorp/go-getter v1.7.6
-	github.com/jmespath-community/go-jmespath v1.1.2-0.20240919193755-5e4e8ae73c8a
+	github.com/jmespath-community/go-jmespath v1.1.2-0.20240930152130-6eb5a346873f
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	github.com/kudobuilder/kuttl v0.19.0
-	github.com/kyverno/kyverno-json v0.0.4-0.20240927170902-0e22204b6718
+	github.com/kyverno/kyverno-json v0.0.4-0.20240930153201-bab63edcc39f
 	github.com/kyverno/pkg/ext v0.0.0-20240418121121-df8add26c55c
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
 	github.com/prometheus/common v0.59.1

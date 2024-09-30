@@ -6,7 +6,7 @@
 
 ## Description
 
-
+Returns the zero-based index of the first occurence where the substring appears in a string or null if it does not appear.
 
 ## Examples
 

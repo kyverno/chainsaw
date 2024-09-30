@@ -145,7 +145,7 @@ codegen-crds: codegen-conversion
 codegen-cli-docs: ## Generate CLI docs
 codegen-cli-docs: build
 	@echo Generate cli docs... >&2
-	@rm -rf website/docs/reference/commands && mkdir -p website/reference/docs/commands
+	@rm -rf website/docs/reference/commands && mkdir -p website/docs/reference/commands
 	@./$(CLI_BIN) docs -o website/docs/reference/commands --autogenTag=false
 
 .PHONY: codegen-api-docs

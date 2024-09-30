@@ -6,7 +6,7 @@
 
 ## Description
 
-does roundoff to upto the given decimal places
+Does roundoff to upto the given decimal places.
 
 ## Examples
 

@@ -6,7 +6,7 @@
 
 ## Description
 
-
+Adds characters to the end of a string.
 
 ## Examples
 

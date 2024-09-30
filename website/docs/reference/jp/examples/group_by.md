@@ -6,7 +6,7 @@
 
 ## Description
 
-
+Groups an array of objects using an expression as the group key.
 
 ## Examples
 

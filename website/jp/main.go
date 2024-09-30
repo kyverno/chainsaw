@@ -43,12 +43,19 @@ func main() {
 }
 
 func printFunctions(funcs ...jpfunctions.FunctionEntry) {
-	fmt.Println("| Name | Signature | Description |")
-	fmt.Println("|---|---|---|")
+	fmt.Println("| Name | Description |")
+	fmt.Println("|---|---|")
 	for _, function := range funcs {
 		sig := functionString(function)
-		fmt.Println("|", fmt.Sprintf("[%s](./examples/%s.md)", function.Name, function.Name), "|", "`"+sig+"`", "|", function.Description, "|")
-		data := fmt.Sprintf("# %s\n\n## Signature\n\n`%s`\n\n## Description\n\n%s\n\n## Examples\n\n", function.Name, sig, function.Description)
+		desc := function.Description
+		desc = strings.TrimSpace(desc)
+		if desc != "" {
+			desc = strings.ToUpper(desc[:1]) + desc[1:]
+			desc = strings.TrimSuffix(desc, ".")
+			desc = desc + "."
+		}
+		fmt.Println("|", fmt.Sprintf("[%s](./examples/%s.md)", function.Name, function.Name), "|", desc, "|")
+		data := fmt.Sprintf("# %s\n\n## Signature\n\n`%s`\n\n## Description\n\n%s\n\n## Examples\n\n", function.Name, sig, desc)
 		if e, err := examples.ReadFile(fmt.Sprintf("examples/%s.md", function.Name)); err != nil {
 			panic(err)
 		} else {

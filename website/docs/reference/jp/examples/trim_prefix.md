@@ -6,7 +6,7 @@
 
 ## Description
 
-trims the second string prefix from the first string if the first string starts with the prefix
+Trims the second string prefix from the first string if the first string starts with the prefix.
 
 ## Examples
 
