@@ -1683,6 +1683,17 @@
             "additionalProperties": false
           }
         },
+        "compiler": {
+          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "jp",
+            "cel"
+          ]
+        },
         "concurrent": {
           "description": "Concurrent determines whether the test should run concurrently with other tests.",
           "type": [

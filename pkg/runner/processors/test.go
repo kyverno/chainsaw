@@ -132,6 +132,9 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			}
 		}
 	})
+	if p.test.Test.Spec.Compiler != nil {
+		tc = tc.WithDefaultCompiler(string(*p.test.Test.Spec.Compiler))
+	}
 	contextData := contextData{
 		basePath: p.test.BasePath,
 		clusters: p.test.Test.Spec.Clusters,
@@ -147,6 +150,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		if !p.skipDelete {
 			nsCleaner = mainCleaner
 		}
+		// TODO this may not use the right default compiler if the template is coming from the config
+		// but the default compiler is specified at the test level
 		compilers := tc.Compilers()
 		if p.nsTemplateCompiler != nil {
 			compilers = compilers.WithDefaultCompiler(string(*p.nsTemplateCompiler))
