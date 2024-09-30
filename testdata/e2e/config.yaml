@@ -15,4 +15,4 @@ spec:
     template:
       metadata:
         annotations:
-          from-config-file: ("hello")
+          from-config-file: (string("hello"))

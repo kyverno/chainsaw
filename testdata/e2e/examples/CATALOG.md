@@ -7,6 +7,7 @@
 - [basic](basic/README.md)
 - [bindings](bindings/README.md)
 - [catch](catch/README.md)
+- [cel](cel/README.md)
 - [command-output](command-output/README.md)
 - [delete](delete/README.md)
 - [delete](delete/README.md)
