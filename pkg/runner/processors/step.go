@@ -141,13 +141,17 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 				}
 			}
 			for i, operation := range p.step.Cleanup {
-				operations, err := p.finallyOperation(tc.Compilers(), i, namespacer, tc.Bindings(), operation)
+				operationTc := tc
+				if operation.Compiler != nil {
+					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+				}
+				operations, err := p.finallyOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation)
 				if err != nil {
 					logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.Fail(ctx)
 				}
 				for _, operation := range operations {
-					_, err := operation.execute(ctx, tc, report)
+					_, err := operation.execute(ctx, operationTc, report)
 					if err != nil {
 						failer.Fail(ctx)
 					}
@@ -162,13 +166,17 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 				logger.Log(logging.Finally, logging.EndStatus, color.BoldFgCyan)
 			}()
 			for i, operation := range p.step.Finally {
-				operations, err := p.finallyOperation(tc.Compilers(), i, namespacer, tc.Bindings(), operation)
+				operationTc := tc
+				if operation.Compiler != nil {
+					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+				}
+				operations, err := p.finallyOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation)
 				if err != nil {
 					logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					failer.Fail(ctx)
 				}
 				for _, operation := range operations {
-					_, err := operation.execute(ctx, tc, report)
+					_, err := operation.execute(ctx, operationTc, report)
 					if err != nil {
 						failer.Fail(ctx)
 					}
@@ -184,13 +192,17 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 					logger.Log(logging.Catch, logging.EndStatus, color.BoldFgCyan)
 				}()
 				for i, operation := range p.catch {
-					operations, err := p.catchOperation(tc.Compilers(), i, namespacer, tc.Bindings(), operation)
+					operationTc := tc
+					if operation.Compiler != nil {
+						operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+					}
+					operations, err := p.catchOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation)
 					if err != nil {
 						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 						failer.Fail(ctx)
 					}
 					for _, operation := range operations {
-						_, err := operation.execute(ctx, tc, report)
+						_, err := operation.execute(ctx, operationTc, report)
 						if err != nil {
 							failer.Fail(ctx)
 						}
@@ -204,14 +216,18 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		logger.Log(logging.Try, logging.EndStatus, color.BoldFgCyan)
 	}()
 	for i, operation := range p.step.Try {
+		operationTc := tc
+		if operation.Compiler != nil {
+			operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+		}
 		continueOnError := operation.ContinueOnError != nil && *operation.ContinueOnError
-		operations, err := p.tryOperation(tc.Compilers(), i, namespacer, tc.Bindings(), operation, cleaner)
+		operations, err := p.tryOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation, cleaner)
 		if err != nil {
 			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			failer.FailNow(ctx)
 		}
 		for _, operation := range operations {
-			outputs, err := operation.execute(ctx, tc, report)
+			outputs, err := operation.execute(ctx, operationTc, report)
 			if err != nil {
 				if continueOnError {
 					failer.Fail(ctx)
@@ -483,7 +499,7 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Command) operation {
+func (p *stepProcessor) commandOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Command) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -626,7 +642,7 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 	return ops, nil
 }
 
-func (p *stepProcessor) describeOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Describe) operation {
+func (p *stepProcessor) describeOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Describe) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -712,7 +728,7 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 	return ops, nil
 }
 
-func (p *stepProcessor) getOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Get) operation {
+func (p *stepProcessor) getOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Get) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -756,7 +772,7 @@ func (p *stepProcessor) getOperation(compilers compilers.Compilers, id int, name
 	)
 }
 
-func (p *stepProcessor) logsOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.PodLogs) operation {
+func (p *stepProcessor) logsOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.PodLogs) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -848,7 +864,7 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 	return ops, nil
 }
 
-func (p *stepProcessor) proxyOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Proxy) operation {
+func (p *stepProcessor) proxyOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Proxy) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -892,7 +908,7 @@ func (p *stepProcessor) proxyOperation(compilers compilers.Compilers, id int, na
 	)
 }
 
-func (p *stepProcessor) scriptOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Script) operation {
+func (p *stepProcessor) scriptOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Script) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -927,7 +943,7 @@ func (p *stepProcessor) scriptOperation(compilers compilers.Compilers, id int, n
 	)
 }
 
-func (p *stepProcessor) sleepOperation(compilers compilers.Compilers, id int, op v1alpha1.Sleep) operation {
+func (p *stepProcessor) sleepOperation(_ compilers.Compilers, id int, op v1alpha1.Sleep) operation {
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -987,7 +1003,7 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 	return ops, nil
 }
 
-func (p *stepProcessor) waitOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Wait) operation {
+func (p *stepProcessor) waitOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Wait) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
