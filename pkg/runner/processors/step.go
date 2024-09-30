@@ -104,6 +104,9 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		p.report.Add(report)
 	}()
 	logger := logging.FromContext(ctx)
+	if p.step.Compiler != nil {
+		tc = tc.WithDefaultCompiler(string(*p.step.Compiler))
+	}
 	tc, _, err := setupContextData(ctx, tc, contextData{
 		basePath: p.basePath,
 		bindings: p.step.Bindings,
