@@ -349,7 +349,7 @@ func TestWait(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entrypoint, args, err := Wait(context.TODO(), apis.XDefaultCompilers, client, nil, tt.collector)
+			entrypoint, args, err := Wait(context.TODO(), apis.DefaultCompilers, client, nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
