@@ -1,1 +1,3 @@
-TODO
+```
+upper('foobar') == 'FOOBAR'
+```

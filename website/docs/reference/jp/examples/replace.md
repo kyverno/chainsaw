@@ -10,4 +10,10 @@ Replaces a specified number of instances of the source string with the replaceme
 
 ## Examples
 
-TODO
+```
+replace('foobar', 'oo', 'ii') == 'fiibar'
+```
+
+```
+replace('foobar', 'o', 'i', `1`) == 'fiobar'
+```

@@ -10,4 +10,10 @@ Does arithmetic addition of specified array of values of numbers, quantities, an
 
 ## Examples
 
-TODO
+```
+sum(`[]`) == `0`
+```
+
+```
+sum([`10`, `15`]) == `25`
+```
