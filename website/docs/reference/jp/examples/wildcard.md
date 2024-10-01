@@ -10,4 +10,10 @@ Compares a wildcard pattern with a given string and returns if they match or not
 
 ## Examples
 
-TODO
+```
+wildcard('foo*', 'foobar') == true
+```
+
+```
+wildcard('fooba?', 'foobar') == true
+```
