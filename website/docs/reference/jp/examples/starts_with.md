@@ -10,4 +10,10 @@ Reports whether the input string begins with the provided string prefix argument
 
 ## Examples
 
-TODO
+```
+starts_with('foobar', 'foo') == `true`
+```
+
+```
+starts_with('foobar', 'bar') == `false`
+```

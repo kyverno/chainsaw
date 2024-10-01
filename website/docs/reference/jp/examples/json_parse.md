@@ -10,4 +10,6 @@ Parses a given JSON string into an object.
 
 ## Examples
 
-TODO
+```
+json_parse('{"foo":"bar"}') == { foo: 'bar' }
+```

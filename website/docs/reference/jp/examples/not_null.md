@@ -10,4 +10,10 @@ Returns the first non null element in the input array.
 
 ## Examples
 
-TODO
+```
+not_null(null, null, 'foo') == 'foo'
+```
+
+```
+not_null(null, null) == null
+```

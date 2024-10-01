@@ -10,4 +10,6 @@ Splits the first string when the second string is found and converts it into an 
 
 ## Examples
 
-TODO
+```
+split('average|-|min|-|max|-|mean|-|median', '|-|', `3`) == ['average', 'min', 'max', 'mean|-|median']
+```

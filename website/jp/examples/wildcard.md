@@ -1,7 +1,7 @@
 ```
-wildcard('foo*', 'foobar') == true
+wildcard('foo*', 'foobar') == `true`
 ```
 
 ```
-wildcard('fooba?', 'foobar') == true
+wildcard('fooba?', 'foobar') == `true`
 ```

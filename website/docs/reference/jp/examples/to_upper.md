@@ -10,4 +10,6 @@ Takes in a string and outputs the same string with all upper-case letters.
 
 ## Examples
 
-TODO
+```
+upper('foobar') == 'FOOBAR'
+```
