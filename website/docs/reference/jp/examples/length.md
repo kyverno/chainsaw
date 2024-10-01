@@ -10,4 +10,14 @@ Returns the length of the given argument. If the argument is a string this funct
 
 ## Examples
 
-TODO
+```
+length([`10`,`15`,`20`]) == `3`
+```
+
+```
+length([]) == `0`
+```
+
+```
+length(null) -> error
+```

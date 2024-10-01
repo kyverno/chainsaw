@@ -10,4 +10,6 @@ Returns the given string with all Unicode letters mapped to their upper case.
 
 ## Examples
 
-TODO
+```
+upper('foobar') == 'FOOBAR'
+```

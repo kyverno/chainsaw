@@ -10,4 +10,14 @@ Returns the JavaScript type of the given argument as a string value.
 
 ## Examples
 
-TODO
+```
+type(`false`) == 'boolean'
+```
+
+```
+type(null) == 'null'
+```
+
+```
+type('foobar') == 'string'
+```
