@@ -22,7 +22,6 @@ contains('foobar', 'not') == `false`
 
 ### With arrays
 
-
 ```
 contains(['foo', 'bar'], 'bar') == `true`
 ```
