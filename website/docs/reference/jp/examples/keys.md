@@ -10,4 +10,6 @@ Returns an array containing the keys of the provided object.
 
 ## Examples
 
-TODO
+```
+keys({bar:'bam',foo:'baz'}) == ['bar','foo']
+```

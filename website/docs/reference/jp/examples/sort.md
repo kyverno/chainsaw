@@ -10,4 +10,6 @@ This function accepts an array argument and returns the sorted elements as an ar
 
 ## Examples
 
-TODO
+```
+sort(['b', 'a', 'c']) == ['a', 'b', 'c']
+```

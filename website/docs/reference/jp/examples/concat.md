@@ -10,4 +10,6 @@ Concatenates two strings together and returns the result.
 
 ## Examples
 
-TODO
+```
+concat('foo', 'bar') == 'foobar'
+```

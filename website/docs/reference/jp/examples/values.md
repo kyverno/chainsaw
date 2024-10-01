@@ -10,4 +10,6 @@ Returns the values of the provided object.
 
 ## Examples
 
-TODO
+```
+values({bar:'bam',foo:'baz'}) == ['bam','baz']
+```

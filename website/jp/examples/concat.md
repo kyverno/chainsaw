@@ -1,1 +1,3 @@
-TODO
+```
+concat('foo', 'bar') == 'foobar'
+```

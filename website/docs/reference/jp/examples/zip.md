@@ -10,4 +10,6 @@ Accepts one or more arrays as arguments and returns an array of arrays in which 
 
 ## Examples
 
-TODO
+```
+zip(['a', 'b'], [`1`, `2`]) == [['a', `1`], ['b', `2`]]
+```

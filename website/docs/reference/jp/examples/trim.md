@@ -10,4 +10,10 @@ Trims both ends of the source string by characters appearing in the second strin
 
 ## Examples
 
-TODO
+```
+trim(' foobar ', 'fbr ') == 'ooba'
+```
+
+```
+trim(' foobar ', 'fbr') == ' foobar '
+```
