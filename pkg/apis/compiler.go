@@ -11,7 +11,7 @@ import (
 var (
 	defaultCompilers = compilers.Compilers{
 		Jp:  jp.NewCompiler(jp.WithFunctionCaller(functions.Caller())),
-		Cel: cel.NewCompiler(),
+		Cel: cel.NewCompiler(cel.DefaultEnv),
 	}
 	DefaultCompilers = defaultCompilers.WithDefaultCompiler(compilers.CompilerJP)
 )
