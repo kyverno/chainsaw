@@ -10,6 +10,7 @@ import (
 
 	"github.com/Masterminds/sprig"
 	"github.com/kyverno/chainsaw/pkg/discovery"
+	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +41,7 @@ func Command() *cobra.Command {
 		Args:         cobra.NoArgs,
 		SilenceUsage: true,
 		RunE: func(cmd *cobra.Command, _ []string) error {
-			tests, err := discovery.DiscoverTests(options.testFile, nil, true, options.testDirs...)
+			tests, err := discovery.DiscoverTests(fsutils.NewLocal(), options.testFile, nil, true, options.testDirs...)
 			if err != nil {
 				return err
 			}

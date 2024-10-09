@@ -19,7 +19,7 @@ func TestDiscoverFolders(t *testing.T) {
 	for _, file := range files {
 		assert.NoError(t, os.WriteFile(filepath.Join(root, file), []byte("test"), 0o600))
 	}
-	discovered, err := DiscoverFolders(root)
+	discovered, err := DiscoverFolders(NewLocal(), root)
 	assert.NoError(t, err)
 	expectedDirs := []string{root}
 	for _, dir := range dirs {
@@ -33,7 +33,7 @@ func TestDiscoverFoldersWithError(t *testing.T) {
 	unreadableDir := filepath.Join(root, "unreadable")
 	assert.NoError(t, os.MkdirAll(unreadableDir, os.ModePerm))
 	assert.NoError(t, os.Chmod(unreadableDir, 0o000))
-	_, err := DiscoverFolders(unreadableDir)
+	_, err := DiscoverFolders(NewLocal(), unreadableDir)
 	assert.Error(t, err)
 }
 
@@ -62,7 +62,7 @@ func Test_discoverFolders(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := discoverFolders(tt.stat, tt.walk, tt.paths...)
+			got, err := discoverFolders(NewLocal(), tt.stat, tt.walk, tt.paths...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
