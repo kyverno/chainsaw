@@ -9,6 +9,7 @@ import (
 	jsonpatch "github.com/evanphx/json-patch"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
+	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	"github.com/spf13/cobra"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"sigs.k8s.io/yaml"
@@ -70,7 +71,7 @@ func execute(stdout io.Writer, stderr io.Writer, save bool, file string) error {
 }
 
 func loadConfig(file string) (*v1alpha2.Configuration, error) {
-	return config.Load(file)
+	return config.Load(fsutils.NewLocal(), file)
 }
 
 func loadDefaultConfig() (*v1alpha2.Configuration, error) {

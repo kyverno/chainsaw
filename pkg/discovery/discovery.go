@@ -5,8 +5,8 @@ import (
 	"k8s.io/apimachinery/pkg/labels"
 )
 
-func DiscoverTests(fileName string, selector labels.Selector, remarshal bool, paths ...string) ([]Test, error) {
-	folders, err := fsutils.DiscoverFolders(paths...)
+func DiscoverTests(getter fsutils.Getter, fileName string, selector labels.Selector, remarshal bool, paths ...string) ([]Test, error) {
+	folders, err := fsutils.DiscoverFolders(getter, paths...)
 	if err != nil {
 		return nil, err
 	}
