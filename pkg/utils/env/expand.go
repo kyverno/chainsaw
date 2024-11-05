@@ -9,7 +9,9 @@ func Expand(env map[string]string, in ...string) []string {
 	for _, arg := range in {
 		expanded := os.Expand(arg, func(key string) string {
 			expanded := env[key]
-			if expanded == "" {
+			if key == "$" {
+				expanded = "$"
+			} else if expanded == "" {
 				expanded = os.Getenv(key)
 			}
 			return expanded
