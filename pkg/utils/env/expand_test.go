@@ -30,6 +30,11 @@ func TestExpand(t *testing.T) {
 	}, {
 		name: "escape",
 		env:  map[string]string{"NAMESPACE": "foo"},
+		in:   []string{"echo", "$$NAMESPACE"},
+		want: []string{"echo", "$NAMESPACE"},
+	}, {
+		name: "escape",
+		env:  map[string]string{"NAMESPACE": "foo"},
 		in:   []string{"echo", "DO $$ END", "$$$$", "$$literal"},
 		want: []string{"echo", "DO $ END", "$$", "$literal"},
 	}, {
