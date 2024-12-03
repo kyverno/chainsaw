@@ -159,6 +159,7 @@ auto_generated: true
 |---|---|---|---|---|
 | `env` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Env defines additional environment variables.</p> |
 | `skipLogOutput` | `bool` |  |  | <p>SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.</p> |
+| `skipCommandOutput` | `bool` |  |  | <p>SkipCommandOutput removes the command from the output logs.</p> |
 
 ## ActionExpectations     {#chainsaw-kyverno-io-v1alpha1-ActionExpectations}
 

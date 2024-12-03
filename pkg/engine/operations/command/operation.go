@@ -61,7 +61,11 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 	if err != nil {
 		return nil, err
 	}
-	internal.LogStart(logger, logging.Command, logging.Section("COMMAND", cmd.String()))
+	var logOpts []fmt.Stringer
+	if !o.command.SkipCommandOutput {
+		logOpts = append(logOpts, logging.Section("COMMAND", cmd.String()))
+	}
+	internal.LogStart(logger, logging.Command, logOpts...)
 	return o.execute(ctx, bindings, cmd)
 }
 
