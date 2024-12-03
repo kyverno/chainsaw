@@ -711,6 +711,13 @@
                           "additionalProperties": false
                         }
                       },
+                      "skipCommandOutput": {
+                        "description": "SkipCommandOutput removes the command from the output logs.",
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
+                      },
                       "skipLogOutput": {
                         "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
                         "type": [
@@ -1529,6 +1536,13 @@
                           },
                           "additionalProperties": false
                         }
+                      },
+                      "skipCommandOutput": {
+                        "description": "SkipCommandOutput removes the command from the output logs.",
+                        "type": [
+                          "boolean",
+                          "null"
+                        ]
                       },
                       "skipLogOutput": {
                         "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",

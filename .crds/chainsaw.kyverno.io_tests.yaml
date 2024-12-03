@@ -207,6 +207,10 @@ spec:
                             - value
                             type: object
                           type: array
+                        skipCommandOutput:
+                          description: SkipCommandOutput removes the command from
+                            the output logs.
+                          type: boolean
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
@@ -705,6 +709,10 @@ spec:
                             - value
                             type: object
                           type: array
+                        skipCommandOutput:
+                          description: SkipCommandOutput removes the command from
+                            the output logs.
+                          type: boolean
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
@@ -1128,6 +1136,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -1640,6 +1652,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -1914,6 +1930,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -2426,6 +2446,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -2742,6 +2766,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -3254,6 +3282,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -3779,6 +3811,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -4714,6 +4750,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
