@@ -241,7 +241,7 @@ verify-codegen: codegen
 
 .PHONY: mkdocs-serve
 mkdocs-serve: ## Generate and serve mkdocs website
-	@echo Generate and servemkdocs website... >&2
+	@echo Generate and serve mkdocs website... >&2
 	@$(PIP) install -r requirements.txt
 	@mkdocs serve -f ./website/mkdocs.yaml
 
