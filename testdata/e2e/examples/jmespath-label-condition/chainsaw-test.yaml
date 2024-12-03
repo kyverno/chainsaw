@@ -1,0 +1,24 @@
+# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: jmespath-label-condition
+spec:
+  steps:
+  - try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: jmespath-label-condition
+            labels:
+              type: my-first-configmap
+    - assert:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            labels:
+              type:
+                (starts_with(@, 'my-first-')): true

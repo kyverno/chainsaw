@@ -33,6 +33,40 @@ func TestResourceRef(t *testing.T) {
 			"($foo)": "($bar)",
 		},
 	)
+
+	withNonStringValues := unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"apiVersion": "v1",
+			"kind":       "namespace",
+			"metadata": map[string]interface{}{
+				"name":      map[string]interface{}{"k": "v"},
+				"namespace": map[string]interface{}{"k": "v"},
+				"labels": map[string]interface{}{
+					"plain":           "value",
+					"templated":       "($foo)",
+					"templated-empty": "($empty)",
+					"nested":          map[string]interface{}{"k": "v"},
+				},
+			},
+		},
+	}
+	expectedForNonStringValues := unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"apiVersion": "v1",
+			"kind":       "namespace",
+			"metadata": map[string]interface{}{
+				"name":      map[string]interface{}{"k": "v"},
+				"namespace": map[string]interface{}{"k": "v"},
+				"labels": map[string]interface{}{
+					"plain":           "value",
+					"templated":       "foo",
+					"templated-empty": "",
+					"nested":          map[string]interface{}{"k": "v"},
+				},
+			},
+		},
+	}
+
 	tests := []struct {
 		name     string
 		obj      *unstructured.Unstructured
@@ -75,6 +109,12 @@ func TestResourceRef(t *testing.T) {
 		bindings: apis.NewBindings(),
 		wantErr:  true,
 		want:     &binds,
+	}, {
+		name:     "retain non-string values",
+		obj:      withNonStringValues.DeepCopy(),
+		bindings: apis.NewBindings().Register("$foo", apis.NewBinding("foo")).Register("$empty", apis.NewBinding("")),
+		wantErr:  false,
+		want:     &expectedForNonStringValues,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
