@@ -108,7 +108,7 @@ wait
 {{- with .Test.Spec.Steps }}
 
 | # | Name | Bindings | Try | Catch | Finally | Cleanup |
-|:-:|---|:-:|:-:|:-:|:-:|
+|:-:|---|:-:|:-:|:-:|:-:|:-:|
 {{- range $i, $step := . }}
 {{- $name := default (print "step-" (add $i 1)) $step.Name }}
 | {{ add $i 1 }} | [{{ $name }}](#step-{{ $name }}) | {{ len $step.Bindings }} | {{ len $step.Try }} | {{ add (len $step.Catch) (len $test.Test.Spec.Catch) }} | {{ len $step.Finally }} | {{ len $step.Cleanup }} |

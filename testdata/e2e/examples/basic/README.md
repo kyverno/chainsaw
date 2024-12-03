@@ -5,7 +5,7 @@ This is a very simple test that creates a configmap and checks the content is as
 ## Steps
 
 | # | Name | Bindings | Try | Catch | Finally | Cleanup |
-|:-:|---|:-:|:-:|:-:|:-:|
+|:-:|---|:-:|:-:|:-:|:-:|:-:|
 | 1 | [step-1](#step-step-1) | 0 | 3 | 0 | 0 | 0 |
 
 ### Step: `step-1`
