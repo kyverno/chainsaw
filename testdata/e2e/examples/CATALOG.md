@@ -16,6 +16,7 @@
 - [field-validation](field-validation/README.md)
 - [finally](finally/README.md)
 - [inline](inline/README.md)
+- [jmespath-label-condition](jmespath-label-condition/README.md)
 - [k8s-server-version](k8s-server-version/README.md)
 - [list](list/README.md)
 - [metrics-decode](metrics-decode/README.md)
