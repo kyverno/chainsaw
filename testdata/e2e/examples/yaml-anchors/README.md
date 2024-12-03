@@ -5,7 +5,7 @@
 ## Steps
 
 | # | Name | Bindings | Try | Catch | Finally | Cleanup |
-|:-:|---|:-:|:-:|:-:|:-:|
+|:-:|---|:-:|:-:|:-:|:-:|:-:|
 | 1 | [yaml-anchors](#step-yaml-anchors) | 0 | 2 | 0 | 0 | 0 |
 
 ### Step: `yaml-anchors`
