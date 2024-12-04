@@ -13,14 +13,14 @@ require (
 	github.com/hashicorp/go-getter v1.7.6
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240930152130-6eb5a346873f
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
-	github.com/kudobuilder/kuttl v0.19.0
+	github.com/kudobuilder/kuttl v0.20.0
 	github.com/kyverno/kyverno-json v0.0.4-0.20241008103124-b294ee72a2bf
 	github.com/kyverno/pkg/ext v0.0.0-20240418121121-df8add26c55c
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
 	github.com/prometheus/common v0.60.1
 	github.com/spf13/cobra v1.8.1
 	github.com/spf13/pflag v1.0.5
-	github.com/stretchr/testify v1.9.0
+	github.com/stretchr/testify v1.10.0
 	github.com/xeipuuv/gojsonschema v1.2.0
 	go.uber.org/multierr v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
@@ -29,7 +29,7 @@ require (
 	k8s.io/apiserver v0.31.3
 	k8s.io/client-go v0.31.3
 	k8s.io/utils v0.0.0-20240921022957-49e7df575cb6
-	sigs.k8s.io/controller-runtime v0.19.1
+	sigs.k8s.io/controller-runtime v0.19.3
 	sigs.k8s.io/kubectl-validate v0.0.5-0.20240827210056-ce13d95db263
 	sigs.k8s.io/yaml v1.4.0
 )
@@ -160,7 +160,7 @@ require (
 	gopkg.in/evanphx/json-patch.v4 v4.12.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/apiextensions-apiserver v0.31.1 // indirect
+	k8s.io/apiextensions-apiserver v0.31.3 // indirect
 	k8s.io/component-base v0.31.3 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20240903163716-9e1beecbcb38 // indirect
