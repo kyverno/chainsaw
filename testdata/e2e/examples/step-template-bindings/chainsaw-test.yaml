@@ -1,0 +1,20 @@
+# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: step-template-bindings
+spec:
+  steps:
+  - use:
+      template: template.yaml
+      with:
+        bindings:
+        - name: input
+          value: from-test
+  - try:
+    - assert:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: from-test
