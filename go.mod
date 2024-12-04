@@ -29,7 +29,7 @@ require (
 	k8s.io/apiserver v0.31.3
 	k8s.io/client-go v0.31.3
 	k8s.io/utils v0.0.0-20240921022957-49e7df575cb6
-	sigs.k8s.io/controller-runtime v0.19.1
+	sigs.k8s.io/controller-runtime v0.19.3
 	sigs.k8s.io/kubectl-validate v0.0.5-0.20240827210056-ce13d95db263
 	sigs.k8s.io/yaml v1.4.0
 )
