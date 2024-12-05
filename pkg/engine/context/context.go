@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/client/dryrun"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
@@ -19,6 +20,7 @@ type TestContext struct {
 	*model.Summary
 	*model.Report
 	bindings            apis.Bindings
+	catch               []v1alpha1.CatchFinally
 	compilers           compilers.Compilers
 	cluster             clusters.Cluster
 	clusters            clusters.Registry
@@ -50,6 +52,10 @@ func EmptyContext() TestContext {
 
 func (tc *TestContext) Bindings() apis.Bindings {
 	return tc.bindings
+}
+
+func (tc *TestContext) Catch() []v1alpha1.CatchFinally {
+	return tc.catch
 }
 
 func (tc *TestContext) Compilers() compilers.Compilers {
@@ -102,6 +108,11 @@ func (tc *TestContext) TerminationGrace() *time.Duration {
 
 func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
 	tc.bindings = apibindings.RegisterBinding(ctx, tc.bindings, name, value)
+	return tc
+}
+
+func (tc TestContext) WithCatch(ctx context.Context, catch ...v1alpha1.CatchFinally) TestContext {
+	tc.catch = append(tc.catch, catch...)
 	return tc
 }
 

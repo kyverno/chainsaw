@@ -155,6 +155,5 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) Test
 		p.config.Namespace.Template,
 		p.config.Namespace.Compiler,
 		p.config.Timeouts,
-		p.config.Error.Catch...,
 	)
 }

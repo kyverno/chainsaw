@@ -291,7 +291,6 @@ func TestTestProcessor_Run(t *testing.T) {
 				config.Spec.Namespace.Template,
 				nil,
 				config.Spec.Timeouts,
-				config.Spec.Error.Catch...,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
