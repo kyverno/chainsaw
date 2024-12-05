@@ -27,6 +27,7 @@ type TestContext struct {
 	dryRun              bool
 	skipDelete          bool
 	templating          bool
+	terminationGrace    *time.Duration
 }
 
 func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext {
@@ -95,6 +96,10 @@ func (tc *TestContext) Templating() bool {
 	return tc.templating
 }
 
+func (tc *TestContext) TerminationGrace() *time.Duration {
+	return tc.terminationGrace
+}
+
 func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
 	tc.bindings = apibindings.RegisterBinding(ctx, tc.bindings, name, value)
 	return tc
@@ -137,5 +142,10 @@ func (tc TestContext) WithSkipDelete(ctx context.Context, skipDelete bool) TestC
 
 func (tc TestContext) WithTemplating(ctx context.Context, templating bool) TestContext {
 	tc.templating = templating
+	return tc
+}
+
+func (tc TestContext) WithTerminationGrace(ctx context.Context, terminationGrace *time.Duration) TestContext {
+	tc.terminationGrace = terminationGrace
 	return tc
 }
