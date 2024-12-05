@@ -290,7 +290,6 @@ func TestTestProcessor_Run(t *testing.T) {
 				tc.clock,
 				config.Spec.Namespace.Template,
 				nil,
-				config.Spec.Execution.ForceTerminationGracePeriod,
 				config.Spec.Timeouts,
 				config.Spec.Error.Catch...,
 			)

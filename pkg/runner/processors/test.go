@@ -16,7 +16,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/clock"
 )
 
@@ -30,7 +29,6 @@ func NewTestProcessor(
 	clock clock.PassiveClock,
 	nsTemplate *v1alpha1.Projection,
 	nsTemplateCompiler *v1alpha1.Compiler,
-	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
 	catch ...v1alpha1.CatchFinally,
 ) TestProcessor {
@@ -38,34 +36,29 @@ func NewTestProcessor(
 		nsTemplate = template
 		nsTemplateCompiler = test.Test.Spec.NamespaceTemplateCompiler
 	}
-	if test.Test.Spec.ForceTerminationGracePeriod != nil {
-		terminationGracePeriod = test.Test.Spec.ForceTerminationGracePeriod
-	}
 	if test.Test.Spec.Timeouts != nil {
 		timeouts = withTimeouts(timeouts, *test.Test.Spec.Timeouts)
 	}
 	catch = append(catch, test.Test.Spec.Catch...)
 	return &testProcessor{
-		test:                   test,
-		size:                   size,
-		clock:                  clock,
-		nsTemplate:             nsTemplate,
-		nsTemplateCompiler:     nsTemplateCompiler,
-		terminationGracePeriod: terminationGracePeriod,
-		timeouts:               timeouts,
-		catch:                  catch,
+		test:               test,
+		size:               size,
+		clock:              clock,
+		nsTemplate:         nsTemplate,
+		nsTemplateCompiler: nsTemplateCompiler,
+		timeouts:           timeouts,
+		catch:              catch,
 	}
 }
 
 type testProcessor struct {
-	test                   discovery.Test
-	size                   int
-	clock                  clock.PassiveClock
-	nsTemplate             *v1alpha1.Projection
-	nsTemplateCompiler     *v1alpha1.Compiler
-	terminationGracePeriod *metav1.Duration
-	timeouts               v1alpha1.DefaultTimeouts
-	catch                  []v1alpha1.CatchFinally
+	test               discovery.Test
+	size               int
+	clock              clock.PassiveClock
+	nsTemplate         *v1alpha1.Projection
+	nsTemplateCompiler *v1alpha1.Compiler
+	timeouts           v1alpha1.DefaultTimeouts
+	catch              []v1alpha1.CatchFinally
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc engine.Context) {
@@ -117,10 +110,11 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		bindings:            p.test.Test.Spec.Bindings,
 		cluster:             p.test.Test.Spec.Cluster,
 		clusters:            p.test.Test.Spec.Clusters,
-		deletionPropagation: p.test.Test.Spec.DeletionPropagationPolicy,
 		delayBeforeCleanup:  p.test.Test.Spec.DelayBeforeCleanup,
+		deletionPropagation: p.test.Test.Spec.DeletionPropagationPolicy,
 		skipDelete:          p.test.Test.Spec.SkipDelete,
 		templating:          p.test.Test.Spec.Template,
+		terminationGrace:    p.test.Test.Spec.ForceTerminationGracePeriod,
 	}
 	nsName := p.test.Test.Spec.Namespace
 	if nspacer == nil && nsName == "" {
@@ -175,7 +169,6 @@ func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep, report *mode
 		step,
 		report,
 		p.test.BasePath,
-		p.terminationGracePeriod,
 		p.timeouts,
 		p.catch...,
 	)

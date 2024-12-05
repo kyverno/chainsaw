@@ -98,6 +98,10 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 	if config.Templating.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*config.Templating.Compiler))
 	}
+	// execution options
+	if config.Execution.ForceTerminationGracePeriod != nil {
+		tc = tc.WithTerminationGrace(ctx, &config.Execution.ForceTerminationGracePeriod.Duration)
+	}
 	// deletion options
 	tc = tc.WithDeletionPropagation(ctx, config.Deletion.Propagation)
 	// values

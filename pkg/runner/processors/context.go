@@ -30,6 +30,7 @@ type contextData struct {
 	dryRun              *bool
 	skipDelete          *bool
 	templating          *bool
+	terminationGrace    *metav1.Duration
 	namespace           *namespaceData
 }
 
@@ -44,11 +45,14 @@ func setupContextData(ctx context.Context, tc engine.Context, data contextData) 
 	if data.deletionPropagation != nil {
 		tc = tc.WithDeletionPropagation(ctx, *data.deletionPropagation)
 	}
+	if data.skipDelete != nil {
+		tc = tc.WithSkipDelete(ctx, *data.skipDelete)
+	}
 	if data.templating != nil {
 		tc = tc.WithTemplating(ctx, *data.templating)
 	}
-	if data.skipDelete != nil {
-		tc = tc.WithSkipDelete(ctx, *data.skipDelete)
+	if data.terminationGrace != nil {
+		tc = tc.WithTerminationGrace(ctx, &data.terminationGrace.Duration)
 	}
 	if data.cluster != nil {
 		if _tc, err := engine.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {

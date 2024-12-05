@@ -45,7 +45,6 @@ func NewStepProcessor(
 	step v1alpha1.TestStep,
 	report *model.TestReport,
 	basePath string,
-	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
 	catch ...v1alpha1.CatchFinally,
 ) StepProcessor {
@@ -54,22 +53,20 @@ func NewStepProcessor(
 	}
 	catch = append(catch, step.Catch...)
 	return &stepProcessor{
-		step:                   step,
-		report:                 report,
-		basePath:               basePath,
-		terminationGracePeriod: terminationGracePeriod,
-		timeouts:               timeouts,
-		catch:                  catch,
+		step:     step,
+		report:   report,
+		basePath: basePath,
+		timeouts: timeouts,
+		catch:    catch,
 	}
 }
 
 type stepProcessor struct {
-	step                   v1alpha1.TestStep
-	report                 *model.TestReport
-	basePath               string
-	terminationGracePeriod *metav1.Duration
-	timeouts               v1alpha1.DefaultTimeouts
-	catch                  []v1alpha1.CatchFinally
+	step     v1alpha1.TestStep
+	report   *model.TestReport
+	basePath string
+	timeouts v1alpha1.DefaultTimeouts
+	catch    []v1alpha1.CatchFinally
 }
 
 func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
@@ -396,9 +393,6 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 	var ops []operation
 	for i := range resources {
 		resource := resources[i]
-		if err := p.prepareResource(resource); err != nil {
-			return nil, err
-		}
 		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
@@ -416,22 +410,22 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 					templating: op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
+				} else if err := prepareResource(resource, tc); err != nil {
+					return nil, nil, tc, err
+				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
+					return nil, nil, tc, err
 				} else {
-					if _, client, err := tc.CurrentClusterClient(); err != nil {
-						return nil, nil, tc, err
-					} else {
-						op := opapply.New(
-							tc.Compilers(),
-							client,
-							resource,
-							namespacer,
-							p.getCleanerOrNil(cleaner, tc),
-							tc.Templating(),
-							op.Expect,
-							op.Outputs,
-						)
-						return op, timeout, tc, nil
-					}
+					op := opapply.New(
+						tc.Compilers(),
+						client,
+						resource,
+						namespacer,
+						getCleanerOrNil(cleaner, tc),
+						tc.Templating(),
+						op.Expect,
+						op.Outputs,
+					)
+					return op, timeout, tc, nil
 				}
 			},
 		))
@@ -524,9 +518,6 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 	var ops []operation
 	for i := range resources {
 		resource := resources[i]
-		if err := p.prepareResource(resource); err != nil {
-			return nil, err
-		}
 		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
@@ -544,6 +535,8 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 					templating: op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
+				} else if err := prepareResource(resource, tc); err != nil {
+					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, nil, tc, err
 				} else {
@@ -552,7 +545,7 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 						client,
 						resource,
 						namespacer,
-						p.getCleanerOrNil(cleaner, tc),
+						getCleanerOrNil(cleaner, tc),
 						tc.Templating(),
 						op.Expect,
 						op.Outputs,
@@ -806,9 +799,6 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 	var ops []operation
 	for i := range resources {
 		resource := resources[i]
-		if err := p.prepareResource(resource); err != nil {
-			return nil, err
-		}
 		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
@@ -825,6 +815,8 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 					dryRun:     op.DryRun,
 					templating: op.Template,
 				}); err != nil {
+					return nil, nil, tc, err
+				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, nil, tc, err
@@ -945,9 +937,6 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 	var ops []operation
 	for i := range resources {
 		resource := resources[i]
-		if err := p.prepareResource(resource); err != nil {
-			return nil, err
-		}
 		ops = append(ops, newOperation(
 			OperationInfo{
 				Id:         id,
@@ -964,6 +953,8 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 					dryRun:     op.DryRun,
 					templating: op.Template,
 				}); err != nil {
+					return nil, nil, tc, err
+				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, nil, tc, err
@@ -1074,9 +1065,9 @@ func (p *stepProcessor) fileRefOrResource(ctx context.Context, compilers compile
 	return nil, errors.New("file or resource must be set")
 }
 
-func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) error {
-	if p.terminationGracePeriod != nil {
-		seconds := int64(p.terminationGracePeriod.Seconds())
+func prepareResource(resource unstructured.Unstructured, tc engine.Context) error {
+	if terminationGrace := tc.TerminationGrace(); terminationGrace != nil {
+		seconds := int64(terminationGrace.Seconds())
 		if seconds != 0 {
 			switch resource.GetKind() {
 			case "Pod":
@@ -1097,7 +1088,7 @@ func (p *stepProcessor) prepareResource(resource unstructured.Unstructured) erro
 	return nil
 }
 
-func (p *stepProcessor) getCleanerOrNil(cleaner cleaner.CleanerCollector, tc engine.Context) cleaner.CleanerCollector {
+func getCleanerOrNil(cleaner cleaner.CleanerCollector, tc engine.Context) cleaner.CleanerCollector {
 	if tc.DryRun() {
 		return nil
 	}
