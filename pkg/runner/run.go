@@ -99,6 +99,7 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 		tc = tc.WithDefaultCompiler(string(*config.Templating.Compiler))
 	}
 	// execution options
+	tc = tc.WithFailFast(ctx, config.Execution.FailFast)
 	if config.Execution.ForceTerminationGracePeriod != nil {
 		tc = tc.WithTerminationGrace(ctx, &config.Execution.ForceTerminationGracePeriod.Duration)
 	}
