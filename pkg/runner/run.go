@@ -104,6 +104,8 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 	}
 	// deletion options
 	tc = tc.WithDeletionPropagation(ctx, config.Deletion.Propagation)
+	// error options
+	tc = tc.WithCatch(ctx, config.Error.Catch...)
 	// values
 	tc = engine.WithValues(ctx, tc, values)
 	// default cluster

@@ -30,7 +30,6 @@ func NewTestProcessor(
 	nsTemplate *v1alpha1.Projection,
 	nsTemplateCompiler *v1alpha1.Compiler,
 	timeouts v1alpha1.DefaultTimeouts,
-	catch ...v1alpha1.CatchFinally,
 ) TestProcessor {
 	if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
 		nsTemplate = template
@@ -39,7 +38,6 @@ func NewTestProcessor(
 	if test.Test.Spec.Timeouts != nil {
 		timeouts = withTimeouts(timeouts, *test.Test.Spec.Timeouts)
 	}
-	catch = append(catch, test.Test.Spec.Catch...)
 	return &testProcessor{
 		test:               test,
 		size:               size,
@@ -47,7 +45,6 @@ func NewTestProcessor(
 		nsTemplate:         nsTemplate,
 		nsTemplateCompiler: nsTemplateCompiler,
 		timeouts:           timeouts,
-		catch:              catch,
 	}
 }
 
@@ -58,7 +55,6 @@ type testProcessor struct {
 	nsTemplate         *v1alpha1.Projection
 	nsTemplateCompiler *v1alpha1.Compiler
 	timeouts           v1alpha1.DefaultTimeouts
-	catch              []v1alpha1.CatchFinally
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc engine.Context) {
@@ -109,6 +105,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		basePath:            p.test.BasePath,
 		bindings:            p.test.Test.Spec.Bindings,
 		cluster:             p.test.Test.Spec.Cluster,
+		catch:               p.test.Test.Spec.Catch,
 		clusters:            p.test.Test.Spec.Clusters,
 		delayBeforeCleanup:  p.test.Test.Spec.DelayBeforeCleanup,
 		deletionPropagation: p.test.Test.Spec.DeletionPropagationPolicy,
@@ -170,6 +167,5 @@ func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep, report *mode
 		report,
 		p.test.BasePath,
 		p.timeouts,
-		p.catch...,
 	)
 }
