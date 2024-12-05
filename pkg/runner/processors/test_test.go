@@ -295,7 +295,6 @@ func TestTestProcessor_Run(t *testing.T) {
 				config.Spec.Timeouts,
 				config.Spec.Deletion.Propagation,
 				config.Spec.Templating.Enabled,
-				config.Spec.Cleanup.SkipDelete,
 				config.Spec.Error.Catch...,
 			)
 			nt := &testing.MockT{}

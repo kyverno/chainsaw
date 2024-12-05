@@ -35,7 +35,6 @@ func NewTestProcessor(
 	timeouts v1alpha1.DefaultTimeouts,
 	deletionPropagationPolicy metav1.DeletionPropagation,
 	templating bool,
-	skipDelete bool,
 	catch ...v1alpha1.CatchFinally,
 ) TestProcessor {
 	if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
@@ -57,9 +56,6 @@ func NewTestProcessor(
 	if test.Test.Spec.Template != nil {
 		templating = *test.Test.Spec.Template
 	}
-	if test.Test.Spec.SkipDelete != nil {
-		skipDelete = *test.Test.Spec.SkipDelete
-	}
 	catch = append(catch, test.Test.Spec.Catch...)
 	return &testProcessor{
 		test:                      test,
@@ -72,7 +68,6 @@ func NewTestProcessor(
 		timeouts:                  timeouts,
 		deletionPropagationPolicy: deletionPropagationPolicy,
 		templating:                templating,
-		skipDelete:                skipDelete,
 		catch:                     catch,
 	}
 }
@@ -88,7 +83,6 @@ type testProcessor struct {
 	timeouts                  v1alpha1.DefaultTimeouts
 	deletionPropagationPolicy metav1.DeletionPropagation
 	templating                bool
-	skipDelete                bool
 	catch                     []v1alpha1.CatchFinally
 }
 
@@ -136,10 +130,11 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		tc = tc.WithDefaultCompiler(string(*p.test.Test.Spec.Compiler))
 	}
 	contextData := contextData{
-		basePath: p.test.BasePath,
-		clusters: p.test.Test.Spec.Clusters,
-		cluster:  p.test.Test.Spec.Cluster,
-		bindings: p.test.Test.Spec.Bindings,
+		basePath:   p.test.BasePath,
+		bindings:   p.test.Test.Spec.Bindings,
+		cluster:    p.test.Test.Spec.Cluster,
+		clusters:   p.test.Test.Spec.Clusters,
+		skipDelete: p.test.Test.Spec.SkipDelete,
 	}
 	nsName := p.test.Test.Spec.Namespace
 	if nspacer == nil && nsName == "" {
@@ -147,7 +142,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 	}
 	if nsName != "" {
 		var nsCleaner cleaner.CleanerCollector
-		if !p.skipDelete {
+		if !tc.SkipDelete() {
 			nsCleaner = mainCleaner
 		}
 		// TODO this may not use the right default compiler if the template is coming from the config
@@ -199,7 +194,6 @@ func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep, report *mode
 		p.timeouts,
 		p.deletionPropagationPolicy,
 		p.templating,
-		p.skipDelete,
 		p.catch...,
 	)
 }
