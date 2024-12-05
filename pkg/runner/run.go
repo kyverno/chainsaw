@@ -95,6 +95,8 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 	if config.Templating.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*config.Templating.Compiler))
 	}
+	// deletion options
+	tc = tc.WithDeletionPropagation(ctx, config.Deletion.Propagation)
 	// values
 	tc = engine.WithValues(ctx, tc, values)
 	// default cluster

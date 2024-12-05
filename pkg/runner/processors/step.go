@@ -48,37 +48,31 @@ func NewStepProcessor(
 	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
-	deletionPropagationPolicy metav1.DeletionPropagation,
 	catch ...v1alpha1.CatchFinally,
 ) StepProcessor {
 	if step.Timeouts != nil {
 		timeouts = withTimeouts(timeouts, *step.Timeouts)
 	}
-	if step.DeletionPropagationPolicy != nil {
-		deletionPropagationPolicy = *step.DeletionPropagationPolicy
-	}
 	catch = append(catch, step.Catch...)
 	return &stepProcessor{
-		step:                      step,
-		report:                    report,
-		basePath:                  basePath,
-		delayBeforeCleanup:        delayBeforeCleanup,
-		terminationGracePeriod:    terminationGracePeriod,
-		timeouts:                  timeouts,
-		deletionPropagationPolicy: deletionPropagationPolicy,
-		catch:                     catch,
+		step:                   step,
+		report:                 report,
+		basePath:               basePath,
+		delayBeforeCleanup:     delayBeforeCleanup,
+		terminationGracePeriod: terminationGracePeriod,
+		timeouts:               timeouts,
+		catch:                  catch,
 	}
 }
 
 type stepProcessor struct {
-	step                      v1alpha1.TestStep
-	report                    *model.TestReport
-	basePath                  string
-	delayBeforeCleanup        *time.Duration
-	terminationGracePeriod    *metav1.Duration
-	timeouts                  v1alpha1.DefaultTimeouts
-	deletionPropagationPolicy metav1.DeletionPropagation
-	catch                     []v1alpha1.CatchFinally
+	step                   v1alpha1.TestStep
+	report                 *model.TestReport
+	basePath               string
+	delayBeforeCleanup     *time.Duration
+	terminationGracePeriod *metav1.Duration
+	timeouts               v1alpha1.DefaultTimeouts
+	catch                  []v1alpha1.CatchFinally
 }
 
 func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
@@ -96,18 +90,19 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		tc = tc.WithDefaultCompiler(string(*p.step.Compiler))
 	}
 	tc, _, err := setupContextData(ctx, tc, contextData{
-		basePath:   p.basePath,
-		bindings:   p.step.Bindings,
-		cluster:    p.step.Cluster,
-		clusters:   p.step.Clusters,
-		skipDelete: p.step.SkipDelete,
-		templating: p.step.Template,
+		basePath:            p.basePath,
+		bindings:            p.step.Bindings,
+		cluster:             p.step.Cluster,
+		clusters:            p.step.Clusters,
+		deletionPropagation: p.step.DeletionPropagationPolicy,
+		skipDelete:          p.step.SkipDelete,
+		templating:          p.step.Template,
 	})
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup, p.deletionPropagationPolicy)
+	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
 			report := &model.StepReport{
@@ -593,7 +588,6 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 		return nil, err
 	}
 	var ops []operation
-	deletionPropagationPolicy := p.getDeletionPropagationPolicy(op.DeletionPropagationPolicy)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -605,11 +599,12 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Delete.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
-					basePath:   p.basePath,
-					bindings:   op.Bindings,
-					cluster:    op.Cluster,
-					clusters:   op.Clusters,
-					templating: op.Template,
+					basePath:            p.basePath,
+					bindings:            op.Bindings,
+					cluster:             op.Cluster,
+					clusters:            op.Clusters,
+					deletionPropagation: op.DeletionPropagationPolicy,
+					templating:          op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -621,7 +616,7 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 						resource,
 						namespacer,
 						tc.Templating(),
-						deletionPropagationPolicy,
+						tc.DeletionPropagation(),
 						op.Expect...,
 					)
 					return op, timeout, tc, nil
@@ -1113,11 +1108,4 @@ func (p *stepProcessor) getCleanerOrNil(cleaner cleaner.CleanerCollector, tc eng
 		return nil
 	}
 	return cleaner
-}
-
-func (p *stepProcessor) getDeletionPropagationPolicy(op *metav1.DeletionPropagation) metav1.DeletionPropagation {
-	if op != nil {
-		return *op
-	}
-	return p.deletionPropagationPolicy
 }
