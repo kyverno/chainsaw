@@ -10,4 +10,6 @@ Encodes a regular, plaintext and unencoded string to base64.
 
 ## Examples
 
-TODO
+```
+base64_encode('foo') == 'Zm9vCg=='
+```

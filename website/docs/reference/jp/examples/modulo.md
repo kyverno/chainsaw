@@ -10,4 +10,6 @@ Divisor must be non-zero, arguments must be integers.
 
 ## Examples
 
-TODO
+```
+modulo(`10`, `3`) == `1`
+```
