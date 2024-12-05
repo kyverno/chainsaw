@@ -14,15 +14,14 @@ import (
 )
 
 type namespaceData struct {
-	name      string
-	compilers compilers.Compilers
-	template  *v1alpha1.Projection
 	cleaner   cleaner.CleanerCollector
+	compilers compilers.Compilers
+	name      string
+	template  *v1alpha1.Projection
 }
 
 type contextData struct {
 	basePath            string
-	bindings            []v1alpha1.Binding
 	catch               []v1alpha1.CatchFinally
 	cluster             *string
 	clusters            v1alpha1.Clusters
@@ -32,11 +31,9 @@ type contextData struct {
 	skipDelete          *bool
 	templating          *bool
 	terminationGrace    *metav1.Duration
-	namespace           *namespaceData
 }
 
-func setupContextData(ctx context.Context, tc engine.Context, data contextData) (engine.Context, *corev1.Namespace, error) {
-	tc = engine.WithClusters(ctx, tc, data.basePath, data.clusters)
+func setupContext(ctx context.Context, tc engine.Context, data contextData) (engine.Context, error) {
 	if len(data.catch) > 0 {
 		tc = tc.WithCatch(ctx, data.catch...)
 	}
@@ -58,39 +55,54 @@ func setupContextData(ctx context.Context, tc engine.Context, data contextData) 
 	if data.terminationGrace != nil {
 		tc = tc.WithTerminationGrace(ctx, &data.terminationGrace.Duration)
 	}
+	tc = engine.WithClusters(ctx, tc, data.basePath, data.clusters)
 	if data.cluster != nil {
 		if _tc, err := engine.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {
-			return tc, nil, err
+			return tc, err
 		} else {
 			tc = _tc
 		}
 	}
+	return tc, nil
+}
+
+func setupNamespace(ctx context.Context, tc engine.Context, data namespaceData) (engine.Context, *corev1.Namespace, error) {
 	var ns *corev1.Namespace
-	if data.namespace != nil {
-		if namespace, err := buildNamespace(ctx, data.namespace.compilers, data.namespace.name, data.namespace.template, tc.Bindings()); err != nil {
-			return tc, nil, err
-		} else if _, clusterClient, err := tc.CurrentClusterClient(); err != nil {
-			return tc, nil, err
-		} else if clusterClient != nil {
-			if err := clusterClient.Get(ctx, client.Key(namespace), namespace.DeepCopy()); err != nil {
-				if !errors.IsNotFound(err) {
-					return tc, nil, err
-				} else if err := clusterClient.Create(ctx, namespace.DeepCopy()); err != nil {
-					return tc, nil, err
-				} else if data.namespace.cleaner != nil {
-					data.namespace.cleaner.Add(clusterClient, namespace)
-				}
+	if namespace, err := buildNamespace(ctx, data.compilers, data.name, data.template, tc.Bindings()); err != nil {
+		return tc, nil, err
+	} else if _, clusterClient, err := tc.CurrentClusterClient(); err != nil {
+		return tc, nil, err
+	} else if clusterClient != nil {
+		if err := clusterClient.Get(ctx, client.Key(namespace), namespace.DeepCopy()); err != nil {
+			if !errors.IsNotFound(err) {
+				return tc, nil, err
+			} else if err := clusterClient.Create(ctx, namespace.DeepCopy()); err != nil {
+				return tc, nil, err
+			} else if data.cleaner != nil {
+				data.cleaner.Add(clusterClient, namespace)
 			}
-			ns = namespace
 		}
-		if ns != nil {
-			tc = engine.WithNamespace(ctx, tc, ns.GetName())
-		}
+		ns = namespace
 	}
-	if _tc, err := engine.WithBindings(ctx, tc, data.bindings...); err != nil {
-		return tc, ns, err
+	if ns != nil {
+		tc = engine.WithNamespace(ctx, tc, ns.GetName())
+	}
+	return tc, ns, nil
+}
+
+func setupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.Binding) (engine.Context, error) {
+	if _tc, err := engine.WithBindings(ctx, tc, bindings...); err != nil {
+		return tc, err
 	} else {
 		tc = _tc
 	}
-	return tc, ns, nil
+	return tc, nil
+}
+
+func setupContextAndBindings(ctx context.Context, tc engine.Context, data contextData, bindings ...v1alpha1.Binding) (engine.Context, error) {
+	if tc, err := setupContext(ctx, tc, data); err != nil {
+		return tc, err
+	} else {
+		return setupBindings(ctx, tc, bindings...)
+	}
 }

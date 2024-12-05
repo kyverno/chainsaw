@@ -79,16 +79,16 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	if p.step.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*p.step.Compiler))
 	}
-	tc, _, err := setupContextData(ctx, tc, contextData{
+	contextData := contextData{
 		basePath:            p.basePath,
-		bindings:            p.step.Bindings,
 		catch:               p.step.Catch,
 		cluster:             p.step.Cluster,
 		clusters:            p.step.Clusters,
 		deletionPropagation: p.step.DeletionPropagationPolicy,
 		skipDelete:          p.step.SkipDelete,
 		templating:          p.step.Template,
-	})
+	}
+	tc, err := setupContextAndBindings(ctx, tc, contextData, p.step.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
@@ -398,14 +398,14 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 			model.OperationTypeApply,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
-				if tc, _, err := setupContextData(ctx, tc, contextData{
+				contextData := contextData{
 					basePath:   p.basePath,
-					bindings:   op.Bindings,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					dryRun:     op.DryRun,
 					templating: op.Template,
-				}); err != nil {
+				}
+				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
@@ -446,13 +446,13 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 			model.OperationTypeAssert,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Assert.Duration)
-				if tc, _, err := setupContextData(ctx, tc, contextData{
+				contextData := contextData{
 					basePath:   p.basePath,
-					bindings:   op.Bindings,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					templating: op.Template,
-				}); err != nil {
+				}
+				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, nil, tc, err
@@ -484,12 +484,12 @@ func (p *stepProcessor) commandOperation(_ compilers.Compilers, id int, namespac
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, _, err := setupContextData(ctx, tc, contextData{
+			contextData := contextData{
 				basePath: p.basePath,
-				bindings: op.Bindings,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
-			}); err != nil {
+			}
+			if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 				return nil, nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -523,14 +523,14 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 			model.OperationTypeCreate,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
-				if tc, _, err := setupContextData(ctx, tc, contextData{
+				contextData := contextData{
 					basePath:   p.basePath,
-					bindings:   op.Bindings,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					dryRun:     op.DryRun,
 					templating: op.Template,
-				}); err != nil {
+				}
+				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
@@ -585,14 +585,14 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 			model.OperationTypeDelete,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Delete.Duration)
-				if tc, _, err := setupContextData(ctx, tc, contextData{
+				contextData := contextData{
 					basePath:            p.basePath,
-					bindings:            op.Bindings,
 					cluster:             op.Cluster,
 					clusters:            op.Clusters,
 					deletionPropagation: op.DeletionPropagationPolicy,
 					templating:          op.Template,
-				}); err != nil {
+				}
+				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, nil, tc, err
@@ -626,12 +626,12 @@ func (p *stepProcessor) describeOperation(_ compilers.Compilers, id int, namespa
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, _, err := setupContextData(ctx, tc, contextData{
+			contextData := contextData{
 				basePath: p.basePath,
-				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
-			}); err != nil {
+			}
+			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -674,13 +674,13 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 			model.OperationTypeError,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Error.Duration)
-				if tc, _, err := setupContextData(ctx, tc, contextData{
+				contextData := contextData{
 					basePath:   p.basePath,
-					bindings:   op.Bindings,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					templating: op.Template,
-				}); err != nil {
+				}
+				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, nil, tc, err
@@ -712,12 +712,12 @@ func (p *stepProcessor) getOperation(_ compilers.Compilers, id int, namespacer n
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, _, err := setupContextData(ctx, tc, contextData{
+			contextData := contextData{
 				basePath: p.basePath,
-				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
-			}); err != nil {
+			}
+			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -756,12 +756,12 @@ func (p *stepProcessor) logsOperation(_ compilers.Compilers, id int, namespacer 
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, _, err := setupContextData(ctx, tc, contextData{
+			contextData := contextData{
 				basePath: p.basePath,
-				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
-			}); err != nil {
+			}
+			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -804,14 +804,14 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 			model.OperationTypePatch,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
-				if tc, _, err := setupContextData(ctx, tc, contextData{
+				contextData := contextData{
 					basePath:   p.basePath,
-					bindings:   op.Bindings,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					dryRun:     op.DryRun,
 					templating: op.Template,
-				}); err != nil {
+				}
+				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
@@ -847,12 +847,12 @@ func (p *stepProcessor) proxyOperation(_ compilers.Compilers, id int, namespacer
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, _, err := setupContextData(ctx, tc, contextData{
+			contextData := contextData{
 				basePath: p.basePath,
-				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
-			}); err != nil {
+			}
+			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -891,12 +891,12 @@ func (p *stepProcessor) scriptOperation(_ compilers.Compilers, id int, namespace
 		model.OperationTypeScript,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
-			if tc, _, err := setupContextData(ctx, tc, contextData{
+			contextData := contextData{
 				basePath: p.basePath,
-				bindings: op.Bindings,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
-			}); err != nil {
+			}
+			if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 				return nil, nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -942,14 +942,14 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 			model.OperationTypeUpdate,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
-				if tc, _, err := setupContextData(ctx, tc, contextData{
+				contextData := contextData{
 					basePath:   p.basePath,
-					bindings:   op.Bindings,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					dryRun:     op.DryRun,
 					templating: op.Template,
-				}); err != nil {
+				}
+				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
@@ -988,12 +988,12 @@ func (p *stepProcessor) waitOperation(_ compilers.Compilers, id int, namespacer 
 			op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.Exec.Duration)}
 			// shift operation timeout
 			timeout := op.Timeout.Duration + 30*time.Second
-			if tc, _, err := setupContextData(ctx, tc, contextData{
+			contextData := contextData{
 				basePath: p.basePath,
-				bindings: nil,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
-			}); err != nil {
+			}
+			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err

@@ -75,15 +75,15 @@ func run(
 	// In our case, we consider an error only when running the tests was not possible.
 	// For now, the case where some of the tests failed will be covered by the summary.
 	if code := m.Run(); code > 1 {
-		return tc.Summary, fmt.Errorf("testing framework exited with non zero code %d", code)
+		return tc, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
 	if config.Report != nil && config.Report.Format != "" {
 		tc.Report.EndTime = time.Now()
 		if err := report.Save(tc.Report, config.Report.Format, config.Report.Path, config.Report.Name); err != nil {
-			return tc.Summary, err
+			return tc, err
 		}
 	}
-	return tc.Summary, nil
+	return tc, nil
 }
 
 func setupTestContext(ctx context.Context, values any, cluster *rest.Config, config model.Configuration) (engine.Context, error) {

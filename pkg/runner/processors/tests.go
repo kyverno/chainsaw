@@ -34,8 +34,17 @@ type testsProcessor struct {
 }
 
 func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...discovery.Test) {
-	// 1. setup context
+	// setup context
 	t := testing.FromContext(ctx)
+	contextData := contextData{
+		clusters: p.config.Clusters,
+	}
+	tc, err := setupContext(ctx, tc, contextData)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		tc.IncFailed()
+		failer.FailNow(ctx)
+	}
 	mainCleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
@@ -49,10 +58,8 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 			}
 		}
 	})
-	contextData := contextData{
-		basePath: "",
-		clusters: p.config.Clusters,
-	}
+	// setup namespace
+	var nspacer namespacer.Namespacer
 	if p.config.Namespace.Name != "" {
 		var nsCleaner cleaner.CleanerCollector
 		if !tc.SkipDelete() {
@@ -62,24 +69,24 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 		if p.config.Namespace.Compiler != nil {
 			compilers = compilers.WithDefaultCompiler(string(*p.config.Namespace.Compiler))
 		}
-		contextData.namespace = &namespaceData{
+		namespaceData := namespaceData{
+			cleaner:   nsCleaner,
+			compilers: compilers,
 			name:      p.config.Namespace.Name,
 			template:  p.config.Namespace.Template,
-			compilers: compilers,
-			cleaner:   nsCleaner,
+		}
+		nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
+		if err != nil {
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			tc.IncFailed()
+			failer.FailNow(ctx)
+		}
+		tc = nsTc
+		if namespace != nil {
+			nspacer = namespacer.New(namespace.GetName())
 		}
 	}
-	tc, namespace, err := setupContextData(ctx, tc, contextData)
-	if err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		tc.IncFailed()
-		failer.FailNow(ctx)
-	}
-	var nspacer namespacer.Namespacer
-	if namespace != nil {
-		nspacer = namespacer.New(namespace.GetName())
-	}
-	// 2. loop through tests
+	// loop through tests
 	for i := range tests {
 		test := tests[i]
 		name, err := names.Test(tc.FullName(), test)
@@ -88,12 +95,12 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 			tc.IncFailed()
 			failer.FailNow(ctx)
 		}
-		// 3. compute test scenarios
+		// compute test scenarios
 		scenarios := applyScenarios(test)
-		// 4. loop through test scenarios
+		// loop through test scenarios
 		for s := range scenarios {
 			test := scenarios[s]
-			// 5. run each test scenario in a separate T
+			// run each test scenario in a separate T
 			t.Run(name, func(t *testing.T) {
 				t.Helper()
 				ctx := testing.IntoContext(ctx, t)
