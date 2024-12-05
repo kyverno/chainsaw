@@ -88,11 +88,16 @@ func run(
 
 func setupTestContext(ctx context.Context, values any, cluster *rest.Config, config model.Configuration) (engine.Context, error) {
 	tc := enginecontext.EmptyContext()
+	// cleanup options
 	tc = tc.WithSkipDelete(ctx, config.Cleanup.SkipDelete)
+	// templating options
+	tc = tc.WithTemplating(ctx, config.Templating.Enabled)
 	if config.Templating.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*config.Templating.Compiler))
 	}
+	// values
 	tc = engine.WithValues(ctx, tc, values)
+	// default cluster
 	if cluster != nil {
 		cluster, err := clusters.NewClusterFromConfig(cluster)
 		if err != nil {

@@ -34,7 +34,6 @@ func NewTestProcessor(
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
 	deletionPropagationPolicy metav1.DeletionPropagation,
-	templating bool,
 	catch ...v1alpha1.CatchFinally,
 ) TestProcessor {
 	if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
@@ -53,9 +52,6 @@ func NewTestProcessor(
 	if test.Test.Spec.DeletionPropagationPolicy != nil {
 		deletionPropagationPolicy = *test.Test.Spec.DeletionPropagationPolicy
 	}
-	if test.Test.Spec.Template != nil {
-		templating = *test.Test.Spec.Template
-	}
 	catch = append(catch, test.Test.Spec.Catch...)
 	return &testProcessor{
 		test:                      test,
@@ -67,7 +63,6 @@ func NewTestProcessor(
 		terminationGracePeriod:    terminationGracePeriod,
 		timeouts:                  timeouts,
 		deletionPropagationPolicy: deletionPropagationPolicy,
-		templating:                templating,
 		catch:                     catch,
 	}
 }
@@ -82,7 +77,6 @@ type testProcessor struct {
 	terminationGracePeriod    *metav1.Duration
 	timeouts                  v1alpha1.DefaultTimeouts
 	deletionPropagationPolicy metav1.DeletionPropagation
-	templating                bool
 	catch                     []v1alpha1.CatchFinally
 }
 
@@ -135,6 +129,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		cluster:    p.test.Test.Spec.Cluster,
 		clusters:   p.test.Test.Spec.Clusters,
 		skipDelete: p.test.Test.Spec.SkipDelete,
+		templating: p.test.Test.Spec.Template,
 	}
 	nsName := p.test.Test.Spec.Namespace
 	if nspacer == nil && nsName == "" {
@@ -193,7 +188,6 @@ func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep, report *mode
 		p.terminationGracePeriod,
 		p.timeouts,
 		p.deletionPropagationPolicy,
-		p.templating,
 		p.catch...,
 	)
 }

@@ -26,6 +26,7 @@ type contextData struct {
 	clusters   v1alpha1.Clusters
 	dryRun     *bool
 	skipDelete *bool
+	templating *bool
 	namespace  *namespaceData
 }
 
@@ -36,6 +37,9 @@ func setupContextData(ctx context.Context, tc engine.Context, data contextData) 
 	}
 	if data.skipDelete != nil {
 		tc = tc.WithSkipDelete(ctx, *data.skipDelete)
+	}
+	if data.templating != nil {
+		tc = tc.WithTemplating(ctx, *data.templating)
 	}
 	if data.cluster != nil {
 		if _tc, err := engine.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {
