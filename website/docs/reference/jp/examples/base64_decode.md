@@ -10,4 +10,6 @@ Decodes a base 64 string.
 
 ## Examples
 
-TODO
+```
+base64_decode('Zm9vCg==') == 'foo'
+```

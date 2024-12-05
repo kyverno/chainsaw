@@ -10,4 +10,6 @@ Returns all of the elements from the provided array joined together using the gl
 
 ## Examples
 
-TODO
+```
+join('/', ['a', 'b', 'c']) == 'a/b/c'
+```
