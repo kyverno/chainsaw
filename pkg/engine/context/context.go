@@ -21,13 +21,14 @@ type TestContext struct {
 	*model.Report
 	bindings            apis.Bindings
 	catch               []v1alpha1.CatchFinally
-	compilers           compilers.Compilers
 	cluster             clusters.Cluster
 	clusters            clusters.Registry
+	compilers           compilers.Compilers
 	delayBeforeCleanup  *time.Duration
 	deletionPropagation metav1.DeletionPropagation
 	dryRun              bool
 	failFast            bool
+	fullName            bool
 	skipDelete          bool
 	templating          bool
 	terminationGrace    *time.Duration
@@ -99,6 +100,10 @@ func (tc *TestContext) FailFast() bool {
 	return tc.failFast
 }
 
+func (tc *TestContext) FullName() bool {
+	return tc.fullName
+}
+
 func (tc *TestContext) SkipDelete() bool {
 	return tc.skipDelete
 }
@@ -153,6 +158,11 @@ func (tc TestContext) WithDryRun(ctx context.Context, dryRun bool) TestContext {
 
 func (tc TestContext) WithFailFast(ctx context.Context, failFast bool) TestContext {
 	tc.failFast = failFast
+	return tc
+}
+
+func (tc TestContext) WithFullName(ctx context.Context, fullName bool) TestContext {
+	tc.fullName = fullName
 	return tc
 }
 
