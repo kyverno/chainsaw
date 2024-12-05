@@ -77,6 +77,12 @@ func Command() *cobra.Command {
 			clock := clock.RealClock{}
 			out := cmd.OutOrStdout()
 			fmt.Fprintf(out, "Version: %s\n", version.Version())
+			tmp, err := os.MkdirTemp("", "*")
+			if err != nil {
+				return err
+			}
+			defer os.RemoveAll(tmp)
+			getter := fsutils.NewGoGetter(tmp)
 			var configuration v1alpha2.Configuration
 			// if no config file was provided, give a chance to the default config name
 			if options.config == "" {
@@ -88,7 +94,7 @@ func Command() *cobra.Command {
 			// try to load configuration file
 			if options.config != "" {
 				fmt.Fprintf(out, "Loading config (%s)...\n", options.config)
-				config, err := config.Load(options.config)
+				config, err := config.Load(getter, options.config)
 				if err != nil {
 					return err
 				}
@@ -293,7 +299,7 @@ func Command() *cobra.Command {
 				}
 				selector = parsed
 			}
-			tests, err := discovery.DiscoverTests(configuration.Spec.Discovery.TestFile, selector, options.remarshal, options.testDirs...)
+			tests, err := discovery.DiscoverTests(getter, configuration.Spec.Discovery.TestFile, selector, options.remarshal, options.testDirs...)
 			if err != nil {
 				return err
 			}

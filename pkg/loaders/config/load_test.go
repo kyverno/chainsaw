@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	tloader "github.com/kyverno/chainsaw/pkg/loaders/testing"
+	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -128,7 +129,7 @@ func TestLoad(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Load(tt.path)
+			got, err := Load(fsutils.NewLocal(), tt.path)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

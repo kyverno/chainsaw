@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/loaders"
+	"github.com/kyverno/chainsaw/pkg/utils/fs"
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -32,7 +33,11 @@ var (
 	configuration_v1alpha2 = v1alpha2.SchemeGroupVersion.WithKind("Configuration")
 )
 
-func Load(path string) (*v1alpha2.Configuration, error) {
+func Load(getter fs.Getter, path string) (*v1alpha2.Configuration, error) {
+	path, err := getter.GetFile(path)
+	if err != nil {
+		return nil, err
+	}
 	content, err := os.ReadFile(filepath.Clean(path))
 	if err != nil {
 		return nil, err
