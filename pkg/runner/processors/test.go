@@ -59,6 +59,7 @@ type testProcessor struct {
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc engine.Context) {
 	t := testing.FromContext(ctx)
+	// setup reporting
 	report := &model.TestReport{
 		BasePath:   p.test.BasePath,
 		Name:       p.test.Test.Name,
@@ -76,7 +77,23 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		}
 		tc.Report.Add(report)
 	})
-	// TODO: not the expected deletion propagation
+	// setup context
+	contextData := contextData{
+		basePath:            p.test.BasePath,
+		catch:               p.test.Test.Spec.Catch,
+		cluster:             p.test.Test.Spec.Cluster,
+		clusters:            p.test.Test.Spec.Clusters,
+		delayBeforeCleanup:  p.test.Test.Spec.DelayBeforeCleanup,
+		deletionPropagation: p.test.Test.Spec.DeletionPropagationPolicy,
+		skipDelete:          p.test.Test.Spec.SkipDelete,
+		templating:          p.test.Test.Spec.Template,
+		terminationGrace:    p.test.Test.Spec.ForceTerminationGracePeriod,
+	}
+	tc, err := setupContext(ctx, tc, contextData)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		failer.FailNow(ctx)
+	}
 	mainCleaner := cleaner.New(p.timeouts.Cleanup.Duration, nil, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
@@ -98,20 +115,10 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 			}
 		}
 	})
+	// setup namespace
+	// TODO: should be part of setupContext ?
 	if p.test.Test.Spec.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*p.test.Test.Spec.Compiler))
-	}
-	contextData := contextData{
-		basePath:            p.test.BasePath,
-		bindings:            p.test.Test.Spec.Bindings,
-		cluster:             p.test.Test.Spec.Cluster,
-		catch:               p.test.Test.Spec.Catch,
-		clusters:            p.test.Test.Spec.Clusters,
-		delayBeforeCleanup:  p.test.Test.Spec.DelayBeforeCleanup,
-		deletionPropagation: p.test.Test.Spec.DeletionPropagationPolicy,
-		skipDelete:          p.test.Test.Spec.SkipDelete,
-		templating:          p.test.Test.Spec.Template,
-		terminationGrace:    p.test.Test.Spec.ForceTerminationGracePeriod,
 	}
 	nsName := p.test.Test.Spec.Namespace
 	if nspacer == nil && nsName == "" {
@@ -122,30 +129,38 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		if !tc.SkipDelete() {
 			nsCleaner = mainCleaner
 		}
-		// TODO this may not use the right default compiler if the template is coming from the config
+		// TODO: this may not use the right default compiler if the template is coming from the config
 		// but the default compiler is specified at the test level
 		compilers := tc.Compilers()
 		if p.nsTemplateCompiler != nil {
 			compilers = compilers.WithDefaultCompiler(string(*p.nsTemplateCompiler))
 		}
-		contextData.namespace = &namespaceData{
+		namespaceData := namespaceData{
+			cleaner:   nsCleaner,
+			compilers: compilers,
 			name:      nsName,
 			template:  p.nsTemplate,
-			compilers: compilers,
-			cleaner:   nsCleaner,
 		}
-	}
-	tc, namespace, err := setupContextData(ctx, tc, contextData)
-	if err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
-	}
-	if namespace != nil {
-		nspacer = namespacer.New(namespace.GetName())
+		nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
+		if err != nil {
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			failer.FailNow(ctx)
+		}
+		tc = nsTc
+		if namespace != nil {
+			nspacer = namespacer.New(namespace.GetName())
+		}
 	}
 	if nspacer != nil {
 		report.Namespace = nspacer.GetNamespace()
 	}
+	// setup bindings
+	tc, err = setupBindings(ctx, tc, p.test.Test.Spec.Bindings...)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		failer.FailNow(ctx)
+	}
+	// run steps
 	for i, step := range p.test.Test.Spec.Steps {
 		name := step.Name
 		if name == "" {
