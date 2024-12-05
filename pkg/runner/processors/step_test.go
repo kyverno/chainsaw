@@ -787,7 +787,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				&model.TestReport{},
 				tc.basePath,
 				config.Spec.Timeouts,
-				config.Spec.Error.Catch...,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)

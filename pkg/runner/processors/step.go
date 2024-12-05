@@ -46,18 +46,15 @@ func NewStepProcessor(
 	report *model.TestReport,
 	basePath string,
 	timeouts v1alpha1.DefaultTimeouts,
-	catch ...v1alpha1.CatchFinally,
 ) StepProcessor {
 	if step.Timeouts != nil {
 		timeouts = withTimeouts(timeouts, *step.Timeouts)
 	}
-	catch = append(catch, step.Catch...)
 	return &stepProcessor{
 		step:     step,
 		report:   report,
 		basePath: basePath,
 		timeouts: timeouts,
-		catch:    catch,
 	}
 }
 
@@ -66,7 +63,6 @@ type stepProcessor struct {
 	report   *model.TestReport
 	basePath string
 	timeouts v1alpha1.DefaultTimeouts
-	catch    []v1alpha1.CatchFinally
 }
 
 func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
@@ -86,6 +82,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	tc, _, err := setupContextData(ctx, tc, contextData{
 		basePath:            p.basePath,
 		bindings:            p.step.Bindings,
+		catch:               p.step.Catch,
 		cluster:             p.step.Cluster,
 		clusters:            p.step.Clusters,
 		deletionPropagation: p.step.DeletionPropagationPolicy,
@@ -163,14 +160,14 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 			}
 		}()
 	}
-	if len(p.catch) != 0 {
+	if catch := tc.Catch(); len(catch) != 0 {
 		defer func() {
 			if t.Failed() {
 				logger.Log(logging.Catch, logging.BeginStatus, color.BoldFgCyan)
 				defer func() {
 					logger.Log(logging.Catch, logging.EndStatus, color.BoldFgCyan)
 				}()
-				for i, operation := range p.catch {
+				for i, operation := range catch {
 					operationTc := tc
 					if operation.Compiler != nil {
 						operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))

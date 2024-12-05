@@ -23,6 +23,7 @@ type namespaceData struct {
 type contextData struct {
 	basePath            string
 	bindings            []v1alpha1.Binding
+	catch               []v1alpha1.CatchFinally
 	cluster             *string
 	clusters            v1alpha1.Clusters
 	delayBeforeCleanup  *metav1.Duration
@@ -36,6 +37,9 @@ type contextData struct {
 
 func setupContextData(ctx context.Context, tc engine.Context, data contextData) (engine.Context, *corev1.Namespace, error) {
 	tc = engine.WithClusters(ctx, tc, data.basePath, data.clusters)
+	if len(data.catch) > 0 {
+		tc = tc.WithCatch(ctx, data.catch...)
+	}
 	if data.dryRun != nil {
 		tc = tc.WithDryRun(ctx, *data.dryRun)
 	}
