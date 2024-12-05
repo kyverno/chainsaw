@@ -3,7 +3,6 @@ package processors
 import (
 	"context"
 	"fmt"
-	"time"
 
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -149,17 +148,12 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 }
 
 func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) TestProcessor {
-	var delayBeforeCleanup *time.Duration
-	if p.config.Cleanup.DelayBeforeCleanup != nil {
-		delayBeforeCleanup = &p.config.Cleanup.DelayBeforeCleanup.Duration
-	}
 	return NewTestProcessor(
 		test,
 		size,
 		p.clock,
 		p.config.Namespace.Template,
 		p.config.Namespace.Compiler,
-		delayBeforeCleanup,
 		p.config.Execution.ForceTerminationGracePeriod,
 		p.config.Timeouts,
 		p.config.Error.Catch...,

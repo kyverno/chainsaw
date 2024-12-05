@@ -45,7 +45,6 @@ func NewStepProcessor(
 	step v1alpha1.TestStep,
 	report *model.TestReport,
 	basePath string,
-	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
 	catch ...v1alpha1.CatchFinally,
@@ -58,7 +57,6 @@ func NewStepProcessor(
 		step:                   step,
 		report:                 report,
 		basePath:               basePath,
-		delayBeforeCleanup:     delayBeforeCleanup,
 		terminationGracePeriod: terminationGracePeriod,
 		timeouts:               timeouts,
 		catch:                  catch,
@@ -69,7 +67,6 @@ type stepProcessor struct {
 	step                   v1alpha1.TestStep
 	report                 *model.TestReport
 	basePath               string
-	delayBeforeCleanup     *time.Duration
 	terminationGracePeriod *metav1.Duration
 	timeouts               v1alpha1.DefaultTimeouts
 	catch                  []v1alpha1.CatchFinally
@@ -102,7 +99,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, p.delayBeforeCleanup, tc.DeletionPropagation())
+	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
 			report := &model.StepReport{

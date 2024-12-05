@@ -22,6 +22,7 @@ type TestContext struct {
 	compilers           compilers.Compilers
 	cluster             clusters.Cluster
 	clusters            clusters.Registry
+	delayBeforeCleanup  *time.Duration
 	deletionPropagation metav1.DeletionPropagation
 	dryRun              bool
 	skipDelete          bool
@@ -82,6 +83,10 @@ func (tc *TestContext) DeletionPropagation() metav1.DeletionPropagation {
 	return tc.deletionPropagation
 }
 
+func (tc *TestContext) DelayBeforeCleanup() *time.Duration {
+	return tc.delayBeforeCleanup
+}
+
 func (tc *TestContext) SkipDelete() bool {
 	return tc.skipDelete
 }
@@ -112,6 +117,11 @@ func (tc TestContext) WithCurrentCluster(ctx context.Context, name string) TestC
 
 func (tc TestContext) WithDryRun(ctx context.Context, dryRun bool) TestContext {
 	tc.dryRun = dryRun
+	return tc
+}
+
+func (tc TestContext) WithDelayBeforeCleanup(ctx context.Context, delayBeforeCleanup *time.Duration) TestContext {
+	tc.delayBeforeCleanup = delayBeforeCleanup
 	return tc
 }
 

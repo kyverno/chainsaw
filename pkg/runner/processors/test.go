@@ -30,7 +30,6 @@ func NewTestProcessor(
 	clock clock.PassiveClock,
 	nsTemplate *v1alpha1.Projection,
 	nsTemplateCompiler *v1alpha1.Compiler,
-	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
 	catch ...v1alpha1.CatchFinally,
@@ -38,9 +37,6 @@ func NewTestProcessor(
 	if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
 		nsTemplate = template
 		nsTemplateCompiler = test.Test.Spec.NamespaceTemplateCompiler
-	}
-	if test.Test.Spec.DelayBeforeCleanup != nil {
-		delayBeforeCleanup = &test.Test.Spec.DelayBeforeCleanup.Duration
 	}
 	if test.Test.Spec.ForceTerminationGracePeriod != nil {
 		terminationGracePeriod = test.Test.Spec.ForceTerminationGracePeriod
@@ -55,7 +51,6 @@ func NewTestProcessor(
 		clock:                  clock,
 		nsTemplate:             nsTemplate,
 		nsTemplateCompiler:     nsTemplateCompiler,
-		delayBeforeCleanup:     delayBeforeCleanup,
 		terminationGracePeriod: terminationGracePeriod,
 		timeouts:               timeouts,
 		catch:                  catch,
@@ -68,7 +63,6 @@ type testProcessor struct {
 	clock                  clock.PassiveClock
 	nsTemplate             *v1alpha1.Projection
 	nsTemplateCompiler     *v1alpha1.Compiler
-	delayBeforeCleanup     *time.Duration
 	terminationGracePeriod *metav1.Duration
 	timeouts               v1alpha1.DefaultTimeouts
 	catch                  []v1alpha1.CatchFinally
@@ -124,6 +118,7 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		cluster:             p.test.Test.Spec.Cluster,
 		clusters:            p.test.Test.Spec.Clusters,
 		deletionPropagation: p.test.Test.Spec.DeletionPropagationPolicy,
+		delayBeforeCleanup:  p.test.Test.Spec.DelayBeforeCleanup,
 		skipDelete:          p.test.Test.Spec.SkipDelete,
 		templating:          p.test.Test.Spec.Template,
 	}
@@ -180,7 +175,6 @@ func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep, report *mode
 		step,
 		report,
 		p.test.BasePath,
-		p.delayBeforeCleanup,
 		p.terminationGracePeriod,
 		p.timeouts,
 		p.catch...,

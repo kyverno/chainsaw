@@ -90,6 +90,9 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 	tc := enginecontext.EmptyContext()
 	// cleanup options
 	tc = tc.WithSkipDelete(ctx, config.Cleanup.SkipDelete)
+	if config.Cleanup.DelayBeforeCleanup != nil {
+		tc = tc.WithDelayBeforeCleanup(ctx, &config.Cleanup.DelayBeforeCleanup.Duration)
+	}
 	// templating options
 	tc = tc.WithTemplating(ctx, config.Templating.Enabled)
 	if config.Templating.Compiler != nil {
