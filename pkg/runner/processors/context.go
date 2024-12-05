@@ -10,6 +10,7 @@ import (
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type namespaceData struct {
@@ -20,14 +21,15 @@ type namespaceData struct {
 }
 
 type contextData struct {
-	basePath   string
-	bindings   []v1alpha1.Binding
-	cluster    *string
-	clusters   v1alpha1.Clusters
-	dryRun     *bool
-	skipDelete *bool
-	templating *bool
-	namespace  *namespaceData
+	basePath            string
+	bindings            []v1alpha1.Binding
+	cluster             *string
+	clusters            v1alpha1.Clusters
+	deletionPropagation *metav1.DeletionPropagation
+	dryRun              *bool
+	skipDelete          *bool
+	templating          *bool
+	namespace           *namespaceData
 }
 
 func setupContextData(ctx context.Context, tc engine.Context, data contextData) (engine.Context, *corev1.Namespace, error) {
@@ -40,6 +42,9 @@ func setupContextData(ctx context.Context, tc engine.Context, data contextData) 
 	}
 	if data.templating != nil {
 		tc = tc.WithTemplating(ctx, *data.templating)
+	}
+	if data.deletionPropagation != nil {
+		tc = tc.WithDeletionPropagation(ctx, *data.deletionPropagation)
 	}
 	if data.cluster != nil {
 		if _tc, err := engine.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {

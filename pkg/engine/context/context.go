@@ -11,19 +11,21 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
 )
 
 type TestContext struct {
 	*model.Summary
 	*model.Report
-	bindings   apis.Bindings
-	compilers  compilers.Compilers
-	cluster    clusters.Cluster
-	clusters   clusters.Registry
-	dryRun     bool
-	skipDelete bool
-	templating bool
+	bindings            apis.Bindings
+	compilers           compilers.Compilers
+	cluster             clusters.Cluster
+	clusters            clusters.Registry
+	deletionPropagation metav1.DeletionPropagation
+	dryRun              bool
+	skipDelete          bool
+	templating          bool
 }
 
 func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext {
@@ -76,6 +78,10 @@ func (tc *TestContext) DryRun() bool {
 	return tc.dryRun
 }
 
+func (tc *TestContext) DeletionPropagation() metav1.DeletionPropagation {
+	return tc.deletionPropagation
+}
+
 func (tc *TestContext) SkipDelete() bool {
 	return tc.skipDelete
 }
@@ -106,6 +112,11 @@ func (tc TestContext) WithCurrentCluster(ctx context.Context, name string) TestC
 
 func (tc TestContext) WithDryRun(ctx context.Context, dryRun bool) TestContext {
 	tc.dryRun = dryRun
+	return tc
+}
+
+func (tc TestContext) WithDeletionPropagation(ctx context.Context, deletionPropagation metav1.DeletionPropagation) TestContext {
+	tc.deletionPropagation = deletionPropagation
 	return tc
 }
 

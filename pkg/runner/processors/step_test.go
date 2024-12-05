@@ -789,7 +789,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				nil,
 				tc.terminationGracePeriod,
 				config.Spec.Timeouts,
-				config.Spec.Deletion.Propagation,
 				config.Spec.Error.Catch...,
 			)
 			nt := &testing.MockT{}

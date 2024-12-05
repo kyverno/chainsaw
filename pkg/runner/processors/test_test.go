@@ -293,7 +293,6 @@ func TestTestProcessor_Run(t *testing.T) {
 				nil,
 				config.Spec.Execution.ForceTerminationGracePeriod,
 				config.Spec.Timeouts,
-				config.Spec.Deletion.Propagation,
 				config.Spec.Error.Catch...,
 			)
 			nt := &testing.MockT{}

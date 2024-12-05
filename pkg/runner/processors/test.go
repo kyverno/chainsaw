@@ -33,7 +33,6 @@ func NewTestProcessor(
 	delayBeforeCleanup *time.Duration,
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
-	deletionPropagationPolicy metav1.DeletionPropagation,
 	catch ...v1alpha1.CatchFinally,
 ) TestProcessor {
 	if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
@@ -49,35 +48,30 @@ func NewTestProcessor(
 	if test.Test.Spec.Timeouts != nil {
 		timeouts = withTimeouts(timeouts, *test.Test.Spec.Timeouts)
 	}
-	if test.Test.Spec.DeletionPropagationPolicy != nil {
-		deletionPropagationPolicy = *test.Test.Spec.DeletionPropagationPolicy
-	}
 	catch = append(catch, test.Test.Spec.Catch...)
 	return &testProcessor{
-		test:                      test,
-		size:                      size,
-		clock:                     clock,
-		nsTemplate:                nsTemplate,
-		nsTemplateCompiler:        nsTemplateCompiler,
-		delayBeforeCleanup:        delayBeforeCleanup,
-		terminationGracePeriod:    terminationGracePeriod,
-		timeouts:                  timeouts,
-		deletionPropagationPolicy: deletionPropagationPolicy,
-		catch:                     catch,
+		test:                   test,
+		size:                   size,
+		clock:                  clock,
+		nsTemplate:             nsTemplate,
+		nsTemplateCompiler:     nsTemplateCompiler,
+		delayBeforeCleanup:     delayBeforeCleanup,
+		terminationGracePeriod: terminationGracePeriod,
+		timeouts:               timeouts,
+		catch:                  catch,
 	}
 }
 
 type testProcessor struct {
-	test                      discovery.Test
-	size                      int
-	clock                     clock.PassiveClock
-	nsTemplate                *v1alpha1.Projection
-	nsTemplateCompiler        *v1alpha1.Compiler
-	delayBeforeCleanup        *time.Duration
-	terminationGracePeriod    *metav1.Duration
-	timeouts                  v1alpha1.DefaultTimeouts
-	deletionPropagationPolicy metav1.DeletionPropagation
-	catch                     []v1alpha1.CatchFinally
+	test                   discovery.Test
+	size                   int
+	clock                  clock.PassiveClock
+	nsTemplate             *v1alpha1.Projection
+	nsTemplateCompiler     *v1alpha1.Compiler
+	delayBeforeCleanup     *time.Duration
+	terminationGracePeriod *metav1.Duration
+	timeouts               v1alpha1.DefaultTimeouts
+	catch                  []v1alpha1.CatchFinally
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc engine.Context) {
@@ -99,7 +93,8 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		}
 		tc.Report.Add(report)
 	})
-	mainCleaner := cleaner.New(p.timeouts.Cleanup.Duration, nil, p.deletionPropagationPolicy)
+	// TODO: not the expected deletion propagation
+	mainCleaner := cleaner.New(p.timeouts.Cleanup.Duration, nil, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
@@ -124,12 +119,13 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		tc = tc.WithDefaultCompiler(string(*p.test.Test.Spec.Compiler))
 	}
 	contextData := contextData{
-		basePath:   p.test.BasePath,
-		bindings:   p.test.Test.Spec.Bindings,
-		cluster:    p.test.Test.Spec.Cluster,
-		clusters:   p.test.Test.Spec.Clusters,
-		skipDelete: p.test.Test.Spec.SkipDelete,
-		templating: p.test.Test.Spec.Template,
+		basePath:            p.test.BasePath,
+		bindings:            p.test.Test.Spec.Bindings,
+		cluster:             p.test.Test.Spec.Cluster,
+		clusters:            p.test.Test.Spec.Clusters,
+		deletionPropagation: p.test.Test.Spec.DeletionPropagationPolicy,
+		skipDelete:          p.test.Test.Spec.SkipDelete,
+		templating:          p.test.Test.Spec.Template,
 	}
 	nsName := p.test.Test.Spec.Namespace
 	if nspacer == nil && nsName == "" {
@@ -187,7 +183,6 @@ func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep, report *mode
 		p.delayBeforeCleanup,
 		p.terminationGracePeriod,
 		p.timeouts,
-		p.deletionPropagationPolicy,
 		p.catch...,
 	)
 }
