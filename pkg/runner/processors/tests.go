@@ -82,7 +82,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 	// 2. loop through tests
 	for i := range tests {
 		test := tests[i]
-		name, err := names.Test(p.config.Discovery.FullName, test)
+		name, err := names.Test(tc.FullName(), test)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			tc.IncFailed()

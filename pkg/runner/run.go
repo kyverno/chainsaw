@@ -98,6 +98,8 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 	if config.Templating.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*config.Templating.Compiler))
 	}
+	// discovery options
+	tc = tc.WithFullName(ctx, config.Discovery.FullName)
 	// execution options
 	tc = tc.WithFailFast(ctx, config.Execution.FailFast)
 	if config.Execution.ForceTerminationGracePeriod != nil {
