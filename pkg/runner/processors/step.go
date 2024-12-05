@@ -50,7 +50,6 @@ func NewStepProcessor(
 	timeouts v1alpha1.DefaultTimeouts,
 	deletionPropagationPolicy metav1.DeletionPropagation,
 	templating bool,
-	skipDelete bool,
 	catch ...v1alpha1.CatchFinally,
 ) StepProcessor {
 	if step.Timeouts != nil {
@@ -62,9 +61,6 @@ func NewStepProcessor(
 	if step.Template != nil {
 		templating = *step.Template
 	}
-	if step.SkipDelete != nil {
-		skipDelete = *step.SkipDelete
-	}
 	catch = append(catch, step.Catch...)
 	return &stepProcessor{
 		step:                      step,
@@ -75,7 +71,6 @@ func NewStepProcessor(
 		timeouts:                  timeouts,
 		deletionPropagationPolicy: deletionPropagationPolicy,
 		templating:                templating,
-		skipDelete:                skipDelete,
 		catch:                     catch,
 	}
 }
@@ -89,8 +84,8 @@ type stepProcessor struct {
 	timeouts                  v1alpha1.DefaultTimeouts
 	deletionPropagationPolicy metav1.DeletionPropagation
 	templating                bool
-	skipDelete                bool
-	catch                     []v1alpha1.CatchFinally
+	// skipDelete                bool
+	catch []v1alpha1.CatchFinally
 }
 
 func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
@@ -108,10 +103,11 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		tc = tc.WithDefaultCompiler(string(*p.step.Compiler))
 	}
 	tc, _, err := setupContextData(ctx, tc, contextData{
-		basePath: p.basePath,
-		bindings: p.step.Bindings,
-		cluster:  p.step.Cluster,
-		clusters: p.step.Clusters,
+		basePath:   p.basePath,
+		bindings:   p.step.Bindings,
+		cluster:    p.step.Cluster,
+		clusters:   p.step.Clusters,
+		skipDelete: p.step.SkipDelete,
 	})
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -1119,7 +1115,7 @@ func (p *stepProcessor) getCleanerOrNil(cleaner cleaner.CleanerCollector, tc eng
 	if tc.DryRun() {
 		return nil
 	}
-	if p.skipDelete {
+	if tc.SkipDelete() {
 		return nil
 	}
 	return cleaner

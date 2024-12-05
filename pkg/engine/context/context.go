@@ -17,11 +17,12 @@ import (
 type TestContext struct {
 	*model.Summary
 	*model.Report
-	bindings  apis.Bindings
-	compilers compilers.Compilers
-	cluster   clusters.Cluster
-	clusters  clusters.Registry
-	dryRun    bool
+	bindings   apis.Bindings
+	compilers  compilers.Compilers
+	cluster    clusters.Cluster
+	clusters   clusters.Registry
+	dryRun     bool
+	skipDelete bool
 }
 
 func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext {
@@ -74,6 +75,10 @@ func (tc *TestContext) DryRun() bool {
 	return tc.dryRun
 }
 
+func (tc *TestContext) SkipDelete() bool {
+	return tc.skipDelete
+}
+
 func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
 	tc.bindings = apibindings.RegisterBinding(ctx, tc.bindings, name, value)
 	return tc
@@ -96,5 +101,10 @@ func (tc TestContext) WithCurrentCluster(ctx context.Context, name string) TestC
 
 func (tc TestContext) WithDryRun(ctx context.Context, dryRun bool) TestContext {
 	tc.dryRun = dryRun
+	return tc
+}
+
+func (tc TestContext) WithSkipDelete(ctx context.Context, skipDelete bool) TestContext {
+	tc.skipDelete = skipDelete
 	return tc
 }

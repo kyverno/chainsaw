@@ -88,6 +88,7 @@ func run(
 
 func setupTestContext(ctx context.Context, values any, cluster *rest.Config, config model.Configuration) (engine.Context, error) {
 	tc := enginecontext.EmptyContext()
+	tc = tc.WithSkipDelete(ctx, config.Cleanup.SkipDelete)
 	if config.Templating.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*config.Templating.Compiler))
 	}

@@ -56,7 +56,7 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 	}
 	if p.config.Namespace.Name != "" {
 		var nsCleaner cleaner.CleanerCollector
-		if !p.config.Cleanup.SkipDelete {
+		if !tc.SkipDelete() {
 			nsCleaner = mainCleaner
 		}
 		compilers := tc.Compilers()
@@ -164,7 +164,6 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) Test
 		p.config.Timeouts,
 		p.config.Deletion.Propagation,
 		p.config.Templating.Enabled,
-		p.config.Cleanup.SkipDelete,
 		p.config.Error.Catch...,
 	)
 }
