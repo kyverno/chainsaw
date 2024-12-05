@@ -163,7 +163,6 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) Test
 		p.config.Execution.ForceTerminationGracePeriod,
 		p.config.Timeouts,
 		p.config.Deletion.Propagation,
-		p.config.Templating.Enabled,
 		p.config.Error.Catch...,
 	)
 }

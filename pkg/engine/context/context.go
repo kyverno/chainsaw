@@ -23,6 +23,7 @@ type TestContext struct {
 	clusters   clusters.Registry
 	dryRun     bool
 	skipDelete bool
+	templating bool
 }
 
 func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext {
@@ -79,6 +80,10 @@ func (tc *TestContext) SkipDelete() bool {
 	return tc.skipDelete
 }
 
+func (tc *TestContext) Templating() bool {
+	return tc.templating
+}
+
 func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
 	tc.bindings = apibindings.RegisterBinding(ctx, tc.bindings, name, value)
 	return tc
@@ -106,5 +111,10 @@ func (tc TestContext) WithDryRun(ctx context.Context, dryRun bool) TestContext {
 
 func (tc TestContext) WithSkipDelete(ctx context.Context, skipDelete bool) TestContext {
 	tc.skipDelete = skipDelete
+	return tc
+}
+
+func (tc TestContext) WithTemplating(ctx context.Context, templating bool) TestContext {
+	tc.templating = templating
 	return tc
 }

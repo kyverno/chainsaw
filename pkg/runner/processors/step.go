@@ -49,7 +49,6 @@ func NewStepProcessor(
 	terminationGracePeriod *metav1.Duration,
 	timeouts v1alpha1.DefaultTimeouts,
 	deletionPropagationPolicy metav1.DeletionPropagation,
-	templating bool,
 	catch ...v1alpha1.CatchFinally,
 ) StepProcessor {
 	if step.Timeouts != nil {
@@ -57,9 +56,6 @@ func NewStepProcessor(
 	}
 	if step.DeletionPropagationPolicy != nil {
 		deletionPropagationPolicy = *step.DeletionPropagationPolicy
-	}
-	if step.Template != nil {
-		templating = *step.Template
 	}
 	catch = append(catch, step.Catch...)
 	return &stepProcessor{
@@ -70,7 +66,6 @@ func NewStepProcessor(
 		terminationGracePeriod:    terminationGracePeriod,
 		timeouts:                  timeouts,
 		deletionPropagationPolicy: deletionPropagationPolicy,
-		templating:                templating,
 		catch:                     catch,
 	}
 }
@@ -83,9 +78,7 @@ type stepProcessor struct {
 	terminationGracePeriod    *metav1.Duration
 	timeouts                  v1alpha1.DefaultTimeouts
 	deletionPropagationPolicy metav1.DeletionPropagation
-	templating                bool
-	// skipDelete                bool
-	catch []v1alpha1.CatchFinally
+	catch                     []v1alpha1.CatchFinally
 }
 
 func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
@@ -108,6 +101,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		cluster:    p.step.Cluster,
 		clusters:   p.step.Clusters,
 		skipDelete: p.step.SkipDelete,
+		templating: p.step.Template,
 	})
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -408,7 +402,6 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 		return nil, err
 	}
 	var ops []operation
-	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -423,11 +416,12 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
-					basePath: p.basePath,
-					bindings: op.Bindings,
-					cluster:  op.Cluster,
-					clusters: op.Clusters,
-					dryRun:   op.DryRun,
+					basePath:   p.basePath,
+					bindings:   op.Bindings,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					dryRun:     op.DryRun,
+					templating: op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
 				} else {
@@ -440,7 +434,7 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 							resource,
 							namespacer,
 							p.getCleanerOrNil(cleaner, tc),
-							template,
+							tc.Templating(),
 							op.Expect,
 							op.Outputs,
 						)
@@ -459,7 +453,6 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 		return nil, err
 	}
 	var ops []operation
-	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -471,10 +464,11 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Assert.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
-					basePath: p.basePath,
-					bindings: op.Bindings,
-					cluster:  op.Cluster,
-					clusters: op.Clusters,
+					basePath:   p.basePath,
+					bindings:   op.Bindings,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					templating: op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -485,7 +479,7 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 						client,
 						resource,
 						namespacer,
-						template,
+						tc.Templating(),
 					)
 					return op, timeout, tc, nil
 				}
@@ -536,7 +530,6 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 		return nil, err
 	}
 	var ops []operation
-	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -551,11 +544,12 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
-					basePath: p.basePath,
-					bindings: op.Bindings,
-					cluster:  op.Cluster,
-					clusters: op.Clusters,
-					dryRun:   op.DryRun,
+					basePath:   p.basePath,
+					bindings:   op.Bindings,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					dryRun:     op.DryRun,
+					templating: op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -567,7 +561,7 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 						resource,
 						namespacer,
 						p.getCleanerOrNil(cleaner, tc),
-						template,
+						tc.Templating(),
 						op.Expect,
 						op.Outputs,
 					)
@@ -600,7 +594,6 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 	}
 	var ops []operation
 	deletionPropagationPolicy := p.getDeletionPropagationPolicy(op.DeletionPropagationPolicy)
-	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -612,10 +605,11 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Delete.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
-					basePath: p.basePath,
-					bindings: op.Bindings,
-					cluster:  op.Cluster,
-					clusters: op.Clusters,
+					basePath:   p.basePath,
+					bindings:   op.Bindings,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					templating: op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -626,7 +620,7 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 						client,
 						resource,
 						namespacer,
-						template,
+						tc.Templating(),
 						deletionPropagationPolicy,
 						op.Expect...,
 					)
@@ -688,7 +682,6 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 		return nil, err
 	}
 	var ops []operation
-	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, newOperation(
@@ -700,10 +693,11 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Error.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
-					basePath: p.basePath,
-					bindings: op.Bindings,
-					cluster:  op.Cluster,
-					clusters: op.Clusters,
+					basePath:   p.basePath,
+					bindings:   op.Bindings,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					templating: op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -714,7 +708,7 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 						client,
 						resource,
 						namespacer,
-						template,
+						tc.Templating(),
 					)
 					return op, timeout, tc, nil
 				}
@@ -818,7 +812,6 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 		return nil, err
 	}
 	var ops []operation
-	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -833,11 +826,12 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
-					basePath: p.basePath,
-					bindings: op.Bindings,
-					cluster:  op.Cluster,
-					clusters: op.Clusters,
-					dryRun:   op.DryRun,
+					basePath:   p.basePath,
+					bindings:   op.Bindings,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					dryRun:     op.DryRun,
+					templating: op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -848,7 +842,7 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 						client,
 						resource,
 						namespacer,
-						template,
+						tc.Templating(),
 						op.Expect,
 						op.Outputs,
 					)
@@ -957,7 +951,6 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 		return nil, err
 	}
 	var ops []operation
-	template := p.getTemplating(op.Template)
 	for i := range resources {
 		resource := resources[i]
 		if err := p.prepareResource(resource); err != nil {
@@ -972,11 +965,12 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
 				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				if tc, _, err := setupContextData(ctx, tc, contextData{
-					basePath: p.basePath,
-					bindings: op.Bindings,
-					cluster:  op.Cluster,
-					clusters: op.Clusters,
-					dryRun:   op.DryRun,
+					basePath:   p.basePath,
+					bindings:   op.Bindings,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					dryRun:     op.DryRun,
+					templating: op.Template,
 				}); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
@@ -987,7 +981,7 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 						client,
 						resource,
 						namespacer,
-						template,
+						tc.Templating(),
 						op.Expect,
 						op.Outputs,
 					)
@@ -1119,13 +1113,6 @@ func (p *stepProcessor) getCleanerOrNil(cleaner cleaner.CleanerCollector, tc eng
 		return nil
 	}
 	return cleaner
-}
-
-func (p *stepProcessor) getTemplating(op *bool) bool {
-	if op != nil {
-		return *op
-	}
-	return p.templating
 }
 
 func (p *stepProcessor) getDeletionPropagationPolicy(op *metav1.DeletionPropagation) metav1.DeletionPropagation {
