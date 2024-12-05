@@ -25,6 +25,7 @@ type contextData struct {
 	bindings            []v1alpha1.Binding
 	cluster             *string
 	clusters            v1alpha1.Clusters
+	delayBeforeCleanup  *metav1.Duration
 	deletionPropagation *metav1.DeletionPropagation
 	dryRun              *bool
 	skipDelete          *bool
@@ -37,14 +38,17 @@ func setupContextData(ctx context.Context, tc engine.Context, data contextData) 
 	if data.dryRun != nil {
 		tc = tc.WithDryRun(ctx, *data.dryRun)
 	}
-	if data.skipDelete != nil {
-		tc = tc.WithSkipDelete(ctx, *data.skipDelete)
+	if data.delayBeforeCleanup != nil {
+		tc = tc.WithDelayBeforeCleanup(ctx, &data.delayBeforeCleanup.Duration)
+	}
+	if data.deletionPropagation != nil {
+		tc = tc.WithDeletionPropagation(ctx, *data.deletionPropagation)
 	}
 	if data.templating != nil {
 		tc = tc.WithTemplating(ctx, *data.templating)
 	}
-	if data.deletionPropagation != nil {
-		tc = tc.WithDeletionPropagation(ctx, *data.deletionPropagation)
+	if data.skipDelete != nil {
+		tc = tc.WithSkipDelete(ctx, *data.skipDelete)
 	}
 	if data.cluster != nil {
 		if _tc, err := engine.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {

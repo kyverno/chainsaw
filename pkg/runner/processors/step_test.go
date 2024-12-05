@@ -786,7 +786,6 @@ func TestStepProcessor_Run(t *testing.T) {
 				tc.stepSpec,
 				&model.TestReport{},
 				tc.basePath,
-				nil,
 				tc.terminationGracePeriod,
 				config.Spec.Timeouts,
 				config.Spec.Error.Catch...,
