@@ -21,14 +21,15 @@ metadata:
   name: example
 spec:
   steps:
-  - assert:
-      resource:
-        apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          name: ($namespace)
-        data:
-          foo: ($namespace)
+  - try:
+    - assert:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: ($namespace)
+          data:
+            foo: ($namespace)
 ```
 
 ## Leverage JMESPath
@@ -42,14 +43,15 @@ metadata:
   name: example
 spec:
   steps:
-  - apply:
-      resource:
-        apiVersion: v1
-        kind: ConfigMap
-        metadata:
-          name: (join('-', [$namespace, 'cm']))
-        data:
-          foo: bar
+  - try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: (join('-', [$namespace, 'cm']))
+          data:
+            foo: bar
 ```
 
 ## Next step
