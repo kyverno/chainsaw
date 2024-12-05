@@ -27,6 +27,7 @@ type TestContext struct {
 	delayBeforeCleanup  *time.Duration
 	deletionPropagation metav1.DeletionPropagation
 	dryRun              bool
+	failFast            bool
 	skipDelete          bool
 	templating          bool
 	terminationGrace    *time.Duration
@@ -82,16 +83,20 @@ func (tc *TestContext) CurrentClusterClient() (*rest.Config, client.Client, erro
 	return config, client, err
 }
 
-func (tc *TestContext) DryRun() bool {
-	return tc.dryRun
+func (tc *TestContext) DelayBeforeCleanup() *time.Duration {
+	return tc.delayBeforeCleanup
 }
 
 func (tc *TestContext) DeletionPropagation() metav1.DeletionPropagation {
 	return tc.deletionPropagation
 }
 
-func (tc *TestContext) DelayBeforeCleanup() *time.Duration {
-	return tc.delayBeforeCleanup
+func (tc *TestContext) DryRun() bool {
+	return tc.dryRun
+}
+
+func (tc *TestContext) FailFast() bool {
+	return tc.failFast
 }
 
 func (tc *TestContext) SkipDelete() bool {
@@ -131,11 +136,6 @@ func (tc TestContext) WithCurrentCluster(ctx context.Context, name string) TestC
 	return tc
 }
 
-func (tc TestContext) WithDryRun(ctx context.Context, dryRun bool) TestContext {
-	tc.dryRun = dryRun
-	return tc
-}
-
 func (tc TestContext) WithDelayBeforeCleanup(ctx context.Context, delayBeforeCleanup *time.Duration) TestContext {
 	tc.delayBeforeCleanup = delayBeforeCleanup
 	return tc
@@ -143,6 +143,16 @@ func (tc TestContext) WithDelayBeforeCleanup(ctx context.Context, delayBeforeCle
 
 func (tc TestContext) WithDeletionPropagation(ctx context.Context, deletionPropagation metav1.DeletionPropagation) TestContext {
 	tc.deletionPropagation = deletionPropagation
+	return tc
+}
+
+func (tc TestContext) WithDryRun(ctx context.Context, dryRun bool) TestContext {
+	tc.dryRun = dryRun
+	return tc
+}
+
+func (tc TestContext) WithFailFast(ctx context.Context, failFast bool) TestContext {
+	tc.failFast = failFast
 	return tc
 }
 

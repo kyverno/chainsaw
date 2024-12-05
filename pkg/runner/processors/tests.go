@@ -36,7 +36,7 @@ type testsProcessor struct {
 func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...discovery.Test) {
 	// 1. setup context
 	t := testing.FromContext(ctx)
-	mainCleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil, p.config.Deletion.Propagation)
+	mainCleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
@@ -125,20 +125,18 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 						}
 					}
 				})
+				// TODO: move into each test processor
 				if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
 					t.Parallel()
 				}
 				if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
 					t.SkipNow()
 				}
-				failFast := p.config.Execution.FailFast
 				if test.Test.Spec.FailFast != nil {
-					failFast = *test.Test.Spec.FailFast
+					tc = tc.WithFailFast(ctx, *test.Test.Spec.FailFast)
 				}
-				if failFast {
-					if tc.Failed() > 0 {
-						t.SkipNow()
-					}
+				if tc.FailFast() && tc.Failed() > 0 {
+					t.SkipNow()
 				}
 				processor := p.createTestProcessor(test, size)
 				processor.Run(ctx, nspacer, tc)
