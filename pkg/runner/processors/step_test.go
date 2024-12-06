@@ -15,6 +15,7 @@ import (
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
+	"github.com/kyverno/chainsaw/pkg/runner/mocks"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
@@ -778,9 +779,9 @@ func TestStepProcessor_Run(t *testing.T) {
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			registry := registryMock{}
+			registry := mocks.Registry{}
 			if tc.client != nil {
-				registry.client = tc.client
+				registry.Client = tc.client
 			}
 			stepProcessor := NewStepProcessor(
 				tc.stepSpec,

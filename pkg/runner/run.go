@@ -10,11 +10,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
-	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
@@ -64,11 +62,8 @@ func run(
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			// configure golang context
-			ctx := testing.IntoContext(ctx, t)
-			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@chainsaw"))
 			// run tests
-			processors.RunTests(ctx, clock, config.Namespace, tc, tests...)
+			runTests(ctx, t, clock, config.Namespace, tc, tests...)
 		},
 	}}
 	deps := &internal.TestDeps{}

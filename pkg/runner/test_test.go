@@ -1,4 +1,4 @@
-package processors
+package runner
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/discovery"
@@ -15,6 +16,7 @@ import (
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
+	"github.com/kyverno/chainsaw/pkg/runner/mocks"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
@@ -280,21 +282,15 @@ func TestTestProcessor_Run(t *testing.T) {
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			registry := registryMock{}
+			registry := mocks.Registry{}
 			if tc.client != nil {
-				registry.client = tc.client
+				registry.Client = tc.client
 			}
-			processor := NewTestProcessor(
-				tc.test,
-				0,
-				tc.clock,
-				config.Spec.Namespace.Template,
-				nil,
-			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
 			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
-			processor.Run(ctx, tc.namespacer, tcontext)
+			nsOptions := v1alpha2.NamespaceOptions{Template: config.Spec.Namespace.Template}
+			runTest(ctx, nt, tc.clock, nsOptions, tc.namespacer, tcontext, tc.test, 0, 0)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {
