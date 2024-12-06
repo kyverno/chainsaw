@@ -32,6 +32,7 @@ type TestContext struct {
 	skipDelete          bool
 	templating          bool
 	terminationGrace    *time.Duration
+	timeouts            v1alpha1.DefaultTimeouts
 }
 
 func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext {
@@ -42,9 +43,8 @@ func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext
 			StartTime: time.Now(),
 		},
 		bindings:  bindings,
-		compilers: apis.DefaultCompilers,
 		clusters:  registry,
-		cluster:   nil,
+		compilers: apis.DefaultCompilers,
 	}
 }
 
@@ -116,6 +116,10 @@ func (tc *TestContext) TerminationGrace() *time.Duration {
 	return tc.terminationGrace
 }
 
+func (tc *TestContext) Timeouts() v1alpha1.DefaultTimeouts {
+	return tc.timeouts
+}
+
 func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
 	tc.bindings = apibindings.RegisterBinding(ctx, tc.bindings, name, value)
 	return tc
@@ -178,5 +182,27 @@ func (tc TestContext) WithTemplating(ctx context.Context, templating bool) TestC
 
 func (tc TestContext) WithTerminationGrace(ctx context.Context, terminationGrace *time.Duration) TestContext {
 	tc.terminationGrace = terminationGrace
+	return tc
+}
+
+func (tc TestContext) WithTimeouts(ctx context.Context, timeouts v1alpha1.Timeouts) TestContext {
+	if new := timeouts.Apply; new != nil {
+		tc.timeouts.Apply = *new
+	}
+	if new := timeouts.Assert; new != nil {
+		tc.timeouts.Assert = *new
+	}
+	if new := timeouts.Cleanup; new != nil {
+		tc.timeouts.Cleanup = *new
+	}
+	if new := timeouts.Delete; new != nil {
+		tc.timeouts.Delete = *new
+	}
+	if new := timeouts.Error; new != nil {
+		tc.timeouts.Error = *new
+	}
+	if new := timeouts.Exec; new != nil {
+		tc.timeouts.Exec = *new
+	}
 	return tc
 }

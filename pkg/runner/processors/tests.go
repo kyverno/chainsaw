@@ -34,18 +34,10 @@ type testsProcessor struct {
 }
 
 func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...discovery.Test) {
-	// setup context
 	t := testing.FromContext(ctx)
-	contextData := contextData{
-		clusters: p.config.Clusters,
-	}
-	tc, err := setupContext(ctx, tc, contextData)
-	if err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		tc.IncFailed()
-		failer.FailNow(ctx)
-	}
-	mainCleaner := cleaner.New(p.config.Timeouts.Cleanup.Duration, nil, tc.DeletionPropagation())
+	// setup namespace
+	timeouts := tc.Timeouts()
+	mainCleaner := cleaner.New(timeouts.Cleanup.Duration, nil, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
@@ -58,7 +50,6 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 			}
 		}
 	})
-	// setup namespace
 	var nspacer namespacer.Namespacer
 	if p.config.Namespace.Name != "" {
 		var nsCleaner cleaner.CleanerCollector
@@ -159,6 +150,5 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) Test
 		p.clock,
 		p.config.Namespace.Template,
 		p.config.Namespace.Compiler,
-		p.config.Timeouts,
 	)
 }

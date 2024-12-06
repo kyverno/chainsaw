@@ -29,12 +29,12 @@ import (
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
-	"github.com/kyverno/chainsaw/pkg/runner/timeout"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"github.com/kyverno/pkg/ext/output/color"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/utils/ptr"
 )
 
 type StepProcessor interface {
@@ -45,16 +45,11 @@ func NewStepProcessor(
 	step v1alpha1.TestStep,
 	report *model.TestReport,
 	basePath string,
-	timeouts v1alpha1.DefaultTimeouts,
 ) StepProcessor {
-	if step.Timeouts != nil {
-		timeouts = withTimeouts(timeouts, *step.Timeouts)
-	}
 	return &stepProcessor{
 		step:     step,
 		report:   report,
 		basePath: basePath,
-		timeouts: timeouts,
 	}
 }
 
@@ -62,7 +57,6 @@ type stepProcessor struct {
 	step     v1alpha1.TestStep
 	report   *model.TestReport
 	basePath string
-	timeouts v1alpha1.DefaultTimeouts
 }
 
 func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
@@ -87,13 +81,14 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		deletionPropagation: p.step.DeletionPropagationPolicy,
 		skipDelete:          p.step.SkipDelete,
 		templating:          p.step.Template,
+		timeouts:            p.step.Timeouts,
 	}
 	tc, err := setupContextAndBindings(ctx, tc, contextData, p.step.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	cleaner := cleaner.New(p.timeouts.Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
+	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
 			report := &model.StepReport{
@@ -397,13 +392,13 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 			},
 			model.OperationTypeApply,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				contextData := contextData{
 					basePath:   p.basePath,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					dryRun:     op.DryRun,
 					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -422,7 +417,7 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 						op.Expect,
 						op.Outputs,
 					)
-					return op, timeout, tc, nil
+					return op, ptr.To(tc.Timeouts().Apply.Duration), tc, nil
 				}
 			},
 		))
@@ -445,12 +440,12 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 			},
 			model.OperationTypeAssert,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-				timeout := timeout.Get(op.Timeout, p.timeouts.Assert.Duration)
 				contextData := contextData{
 					basePath:   p.basePath,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Assert: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -464,7 +459,7 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 						namespacer,
 						tc.Templating(),
 					)
-					return op, timeout, tc, nil
+					return op, ptr.To(tc.Timeouts().Assert.Duration), tc, nil
 				}
 			},
 		))
@@ -483,11 +478,11 @@ func (p *stepProcessor) commandOperation(_ compilers.Compilers, id int, namespac
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			contextData := contextData{
 				basePath: p.basePath,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 				return nil, nil, tc, err
@@ -501,7 +496,7 @@ func (p *stepProcessor) commandOperation(_ compilers.Compilers, id int, namespac
 					ns,
 					config,
 				)
-				return op, timeout, tc, nil
+				return op, ptr.To(tc.Timeouts().Exec.Duration), tc, nil
 			}
 		},
 	)
@@ -522,13 +517,13 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 			},
 			model.OperationTypeCreate,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				contextData := contextData{
 					basePath:   p.basePath,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					dryRun:     op.DryRun,
 					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -547,7 +542,7 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 						op.Expect,
 						op.Outputs,
 					)
-					return op, timeout, tc, nil
+					return op, ptr.To(tc.Timeouts().Apply.Duration), tc, nil
 				}
 			},
 		))
@@ -584,13 +579,13 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 			},
 			model.OperationTypeDelete,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-				timeout := timeout.Get(op.Timeout, p.timeouts.Delete.Duration)
 				contextData := contextData{
 					basePath:            p.basePath,
 					cluster:             op.Cluster,
 					clusters:            op.Clusters,
 					deletionPropagation: op.DeletionPropagationPolicy,
 					templating:          op.Template,
+					timeouts:            &v1alpha1.Timeouts{Delete: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -606,7 +601,7 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 						tc.DeletionPropagation(),
 						op.Expect...,
 					)
-					return op, timeout, tc, nil
+					return op, ptr.To(tc.Timeouts().Delete.Duration), tc, nil
 				}
 			},
 		))
@@ -625,11 +620,11 @@ func (p *stepProcessor) describeOperation(_ compilers.Compilers, id int, namespa
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			contextData := contextData{
 				basePath: p.basePath,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
@@ -652,7 +647,7 @@ func (p *stepProcessor) describeOperation(_ compilers.Compilers, id int, namespa
 					ns,
 					config,
 				)
-				return op, timeout, tc, nil
+				return op, ptr.To(tc.Timeouts().Exec.Duration), tc, nil
 			}
 		},
 	)
@@ -673,12 +668,12 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 			},
 			model.OperationTypeError,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-				timeout := timeout.Get(op.Timeout, p.timeouts.Error.Duration)
 				contextData := contextData{
 					basePath:   p.basePath,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Error: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -692,7 +687,7 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 						namespacer,
 						tc.Templating(),
 					)
-					return op, timeout, tc, nil
+					return op, ptr.To(tc.Timeouts().Error.Duration), tc, nil
 				}
 			},
 		))
@@ -711,11 +706,11 @@ func (p *stepProcessor) getOperation(_ compilers.Compilers, id int, namespacer n
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			contextData := contextData{
 				basePath: p.basePath,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
@@ -738,7 +733,7 @@ func (p *stepProcessor) getOperation(_ compilers.Compilers, id int, namespacer n
 					ns,
 					config,
 				)
-				return op, timeout, tc, nil
+				return op, ptr.To(tc.Timeouts().Exec.Duration), tc, nil
 			}
 		},
 	)
@@ -755,11 +750,11 @@ func (p *stepProcessor) logsOperation(_ compilers.Compilers, id int, namespacer 
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			contextData := contextData{
 				basePath: p.basePath,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
@@ -782,7 +777,7 @@ func (p *stepProcessor) logsOperation(_ compilers.Compilers, id int, namespacer 
 					ns,
 					config,
 				)
-				return op, timeout, tc, nil
+				return op, ptr.To(tc.Timeouts().Exec.Duration), tc, nil
 			}
 		},
 	)
@@ -803,13 +798,13 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 			},
 			model.OperationTypePatch,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				contextData := contextData{
 					basePath:   p.basePath,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					dryRun:     op.DryRun,
 					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -827,7 +822,7 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 						op.Expect,
 						op.Outputs,
 					)
-					return op, timeout, tc, nil
+					return op, ptr.To(tc.Timeouts().Apply.Duration), tc, nil
 				}
 			},
 		))
@@ -846,11 +841,11 @@ func (p *stepProcessor) proxyOperation(_ compilers.Compilers, id int, namespacer
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			contextData := contextData{
 				basePath: p.basePath,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
@@ -873,7 +868,7 @@ func (p *stepProcessor) proxyOperation(_ compilers.Compilers, id int, namespacer
 					ns,
 					config,
 				)
-				return op, timeout, tc, nil
+				return op, ptr.To(tc.Timeouts().Exec.Duration), tc, nil
 			}
 		},
 	)
@@ -890,11 +885,11 @@ func (p *stepProcessor) scriptOperation(_ compilers.Compilers, id int, namespace
 		},
 		model.OperationTypeScript,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-			timeout := timeout.Get(op.Timeout, p.timeouts.Exec.Duration)
 			contextData := contextData{
 				basePath: p.basePath,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 				return nil, nil, tc, err
@@ -908,7 +903,7 @@ func (p *stepProcessor) scriptOperation(_ compilers.Compilers, id int, namespace
 					ns,
 					config,
 				)
-				return op, timeout, tc, nil
+				return op, ptr.To(tc.Timeouts().Exec.Duration), tc, nil
 			}
 		},
 	)
@@ -941,13 +936,13 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 			},
 			model.OperationTypeUpdate,
 			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-				timeout := timeout.Get(op.Timeout, p.timeouts.Apply.Duration)
 				contextData := contextData{
 					basePath:   p.basePath,
 					cluster:    op.Cluster,
 					clusters:   op.Clusters,
 					dryRun:     op.DryRun,
 					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -965,7 +960,7 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 						op.Expect,
 						op.Outputs,
 					)
-					return op, timeout, tc, nil
+					return op, ptr.To(tc.Timeouts().Apply.Duration), tc, nil
 				}
 			},
 		))
@@ -984,20 +979,20 @@ func (p *stepProcessor) waitOperation(_ compilers.Compilers, id int, namespacer 
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
-			// make sure timeout is set to populate the command flag
-			op.Timeout = &metav1.Duration{Duration: *timeout.Get(op.Timeout, p.timeouts.Exec.Duration)}
-			// shift operation timeout
-			timeout := op.Timeout.Duration + 30*time.Second
 			contextData := contextData{
 				basePath: p.basePath,
 				cluster:  op.Cluster,
 				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
 			} else {
+				// make sure timeout is set to populate the command flag
+				timeout := tc.Timeouts().Exec.Duration
+				op.Timeout = &metav1.Duration{Duration: timeout}
 				entrypoint, args, err := kubectl.Wait(ctx, tc.Compilers(), client, tc.Bindings(), &op)
 				if err != nil {
 					return nil, nil, tc, err
@@ -1014,6 +1009,8 @@ func (p *stepProcessor) waitOperation(_ compilers.Compilers, id int, namespacer 
 					ns,
 					config,
 				)
+				// shift operation timeout
+				timeout += 30 * time.Second
 				return op, &timeout, tc, nil
 			}
 		},
