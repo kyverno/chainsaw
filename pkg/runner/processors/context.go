@@ -7,7 +7,11 @@ import (
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine"
+	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/runner/failer"
+	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
+	"github.com/kyverno/pkg/ext/output/color"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -101,6 +105,27 @@ func setupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.
 		tc = _tc
 	}
 	return tc, nil
+}
+
+func setupCleanup(ctx context.Context, tc engine.Context) cleaner.CleanerCollector {
+	if !tc.SkipDelete() {
+		return nil
+	}
+	t := testing.FromContext(ctx)
+	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
+	t.Cleanup(func() {
+		if !cleaner.Empty() {
+			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
+			defer func() {
+				logging.Log(ctx, logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
+			}()
+			for _, err := range cleaner.Run(ctx, nil) {
+				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				failer.Fail(ctx)
+			}
+		}
+	})
+	return cleaner
 }
 
 func setupContextAndBindings(ctx context.Context, tc engine.Context, data contextData, bindings ...v1alpha1.Binding) (engine.Context, error) {

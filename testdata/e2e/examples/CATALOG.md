@@ -31,6 +31,7 @@
 - [proxy](proxy/README.md)
 - [quick-start](quick-start/README.md)
 - [scenarios](scenarios/README.md)
+- [scenarios-bindings](scenarios/README.md)
 - [script-env](script-env/README.md)
 - [sleep](sleep/README.md)
 - [quick-start](step-template/README.md)

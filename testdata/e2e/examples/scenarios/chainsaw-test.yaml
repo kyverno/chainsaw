@@ -20,3 +20,36 @@ spec:
         content: echo $message
         check:
          (trim_space($stdout)): ((to_number($test.scenarioId) == `1` && 'hello') || 'goodbye')
+---
+# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: scenarios-bindings
+spec:
+  scenarios:
+  - bindings:
+    - name: cluster
+      value: ''
+  - bindings:
+    - name: cluster
+      value: ''
+  cluster: ($cluster)
+  steps:
+  - try:
+    - apply:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            foo: bar
+    - assert:
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            foo: bar

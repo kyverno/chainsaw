@@ -154,16 +154,10 @@ func TestTestsProcessor_Run(t *testing.T) {
 			if tc.client != nil {
 				registry.client = tc.client
 			}
-			processor := NewTestsProcessor(
-				tc.config.Namespace,
-				tc.clock,
-			)
 			nt := testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), &nt)
 			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
-			processor.Run(ctx, tcontext, tc.tests...)
-			nt.Cleanup(func() {
-			})
+			RunTests(ctx, tc.clock, tc.config.Namespace, tcontext, tc.tests...)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {

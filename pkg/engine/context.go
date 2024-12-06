@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
+	"github.com/kyverno/chainsaw/pkg/expressions"
 )
 
 func WithBindings(ctx context.Context, tc Context, variables ...v1alpha1.Binding) (Context, error) {
@@ -30,6 +31,10 @@ func WithClusters(ctx context.Context, tc Context, basePath string, c map[string
 }
 
 func WithCurrentCluster(ctx context.Context, tc Context, name string) (Context, error) {
+	name, err := expressions.String(ctx, tc.Compilers(), name, tc.Bindings())
+	if err != nil {
+		return tc, err
+	}
 	tc = tc.WithCurrentCluster(ctx, name)
 	config, client, err := tc.CurrentClusterClient()
 	if err != nil {
