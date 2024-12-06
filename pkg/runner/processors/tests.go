@@ -56,7 +56,9 @@ func RunTests(ctx context.Context, clock clock.PassiveClock, nsOptions v1alpha2.
 		}
 		// compute test scenarios
 		scenarios := []v1alpha1.Scenario{{}}
-		if len(test.Test.Spec.Scenarios) != 0 {
+		if test.Test == nil {
+			scenarios = nil
+		} else if len(test.Test.Spec.Scenarios) != 0 {
 			scenarios = test.Test.Spec.Scenarios
 		}
 		// loop through test scenarios
