@@ -155,7 +155,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				registry.client = tc.client
 			}
 			processor := NewTestsProcessor(
-				tc.config,
+				tc.config.Namespace,
 				tc.clock,
 			)
 			nt := testing.MockT{}
