@@ -786,12 +786,18 @@ func TestStepProcessor_Run(t *testing.T) {
 				tc.stepSpec,
 				&model.TestReport{},
 				tc.basePath,
-				config.Spec.Timeouts,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
-			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
+			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry).WithTimeouts(ctx, v1alpha1.Timeouts{
+				Apply:   &config.Spec.Timeouts.Apply,
+				Assert:  &config.Spec.Timeouts.Assert,
+				Cleanup: &config.Spec.Timeouts.Cleanup,
+				Delete:  &config.Spec.Timeouts.Delete,
+				Error:   &config.Spec.Timeouts.Error,
+				Exec:    &config.Spec.Timeouts.Exec,
+			})
 			stepProcessor.Run(ctx, tc.namespacer, tcontext)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")

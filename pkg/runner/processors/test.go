@@ -29,14 +29,10 @@ func NewTestProcessor(
 	clock clock.PassiveClock,
 	nsTemplate *v1alpha1.Projection,
 	nsTemplateCompiler *v1alpha1.Compiler,
-	timeouts v1alpha1.DefaultTimeouts,
 ) TestProcessor {
 	if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
 		nsTemplate = template
 		nsTemplateCompiler = test.Test.Spec.NamespaceTemplateCompiler
-	}
-	if test.Test.Spec.Timeouts != nil {
-		timeouts = withTimeouts(timeouts, *test.Test.Spec.Timeouts)
 	}
 	return &testProcessor{
 		test:               test,
@@ -44,7 +40,6 @@ func NewTestProcessor(
 		clock:              clock,
 		nsTemplate:         nsTemplate,
 		nsTemplateCompiler: nsTemplateCompiler,
-		timeouts:           timeouts,
 	}
 }
 
@@ -54,7 +49,6 @@ type testProcessor struct {
 	clock              clock.PassiveClock
 	nsTemplate         *v1alpha1.Projection
 	nsTemplateCompiler *v1alpha1.Compiler
-	timeouts           v1alpha1.DefaultTimeouts
 }
 
 func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, tc engine.Context) {
@@ -88,13 +82,15 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 		skipDelete:          p.test.Test.Spec.SkipDelete,
 		templating:          p.test.Test.Spec.Template,
 		terminationGrace:    p.test.Test.Spec.ForceTerminationGracePeriod,
+		timeouts:            p.test.Test.Spec.Timeouts,
 	}
 	tc, err := setupContext(ctx, tc, contextData)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		failer.FailNow(ctx)
 	}
-	mainCleaner := cleaner.New(p.timeouts.Cleanup.Duration, nil, tc.DeletionPropagation())
+	timeouts := tc.Timeouts()
+	mainCleaner := cleaner.New(timeouts.Cleanup.Duration, nil, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
 			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
@@ -177,10 +173,5 @@ func (p *testProcessor) Run(ctx context.Context, nspacer namespacer.Namespacer, 
 }
 
 func (p *testProcessor) createStepProcessor(step v1alpha1.TestStep, report *model.TestReport) StepProcessor {
-	return NewStepProcessor(
-		step,
-		report,
-		p.test.BasePath,
-		p.timeouts,
-	)
+	return NewStepProcessor(step, report, p.test.BasePath)
 }

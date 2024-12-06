@@ -193,31 +193,6 @@ type DefaultTimeouts struct {
 	Exec metav1.Duration `json:"exec"`
 }
 
-func (t DefaultTimeouts) Combine(override *Timeouts) DefaultTimeouts {
-	if override == nil {
-		return t
-	}
-	if override.Apply != nil {
-		t.Apply = *override.Apply
-	}
-	if override.Assert != nil {
-		t.Assert = *override.Assert
-	}
-	if override.Error != nil {
-		t.Error = *override.Error
-	}
-	if override.Delete != nil {
-		t.Delete = *override.Delete
-	}
-	if override.Cleanup != nil {
-		t.Cleanup = *override.Cleanup
-	}
-	if override.Exec != nil {
-		t.Exec = *override.Exec
-	}
-	return t
-}
-
 // Timeouts contains timeouts per operation.
 type Timeouts struct {
 	// Apply defines the timeout for the apply operation

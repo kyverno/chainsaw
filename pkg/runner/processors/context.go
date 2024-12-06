@@ -31,6 +31,7 @@ type contextData struct {
 	skipDelete          *bool
 	templating          *bool
 	terminationGrace    *metav1.Duration
+	timeouts            *v1alpha1.Timeouts
 }
 
 func setupContext(ctx context.Context, tc engine.Context, data contextData) (engine.Context, error) {
@@ -54,6 +55,9 @@ func setupContext(ctx context.Context, tc engine.Context, data contextData) (eng
 	}
 	if data.terminationGrace != nil {
 		tc = tc.WithTerminationGrace(ctx, &data.terminationGrace.Duration)
+	}
+	if data.timeouts != nil {
+		tc = tc.WithTimeouts(ctx, *data.timeouts)
 	}
 	tc = engine.WithClusters(ctx, tc, data.basePath, data.clusters)
 	if data.cluster != nil {

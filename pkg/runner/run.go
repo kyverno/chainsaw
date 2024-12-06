@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
@@ -109,9 +110,19 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 	tc = tc.WithDeletionPropagation(ctx, config.Deletion.Propagation)
 	// error options
 	tc = tc.WithCatch(ctx, config.Error.Catch...)
+	// timeouts
+	tc = tc.WithTimeouts(ctx, v1alpha1.Timeouts{
+		Apply:   &config.Timeouts.Apply,
+		Assert:  &config.Timeouts.Assert,
+		Cleanup: &config.Timeouts.Cleanup,
+		Delete:  &config.Timeouts.Delete,
+		Error:   &config.Timeouts.Error,
+		Exec:    &config.Timeouts.Exec,
+	})
 	// values
 	tc = engine.WithValues(ctx, tc, values)
-	// default cluster
+	// clusters
+	tc = engine.WithClusters(ctx, tc, "", config.Clusters)
 	if cluster != nil {
 		cluster, err := clusters.NewClusterFromConfig(cluster)
 		if err != nil {

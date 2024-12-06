@@ -290,7 +290,6 @@ func TestTestProcessor_Run(t *testing.T) {
 				tc.clock,
 				config.Spec.Namespace.Template,
 				nil,
-				config.Spec.Timeouts,
 			)
 			nt := &testing.MockT{}
 			ctx := testing.IntoContext(context.Background(), nt)
