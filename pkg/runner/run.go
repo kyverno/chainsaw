@@ -44,14 +44,19 @@ func run(
 	values map[string]any,
 	tests ...discovery.Test,
 ) (model.SummaryResult, error) {
-	tc, err := setupTestContext(ctx, values, cfg, config)
-	if err != nil {
+	// sanity check
+	if len(tests) == 0 {
+		return nil, nil
+	}
+	// setup flags
+	// TODO: should be done externally ?
+	if err := internal.SetupFlags(config); err != nil {
 		return nil, err
 	}
-	if len(tests) == 0 {
-		return tc, nil
-	}
-	if err := internal.SetupFlags(config); err != nil {
+	// setup context
+	// TODO: should be done externally ?
+	tc, err := setupTestContext(ctx, values, cfg, config)
+	if err != nil {
 		return nil, err
 	}
 	internalTests := []testing.InternalTest{{
@@ -59,10 +64,11 @@ func run(
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
+			// configure golang context
 			ctx := testing.IntoContext(ctx, t)
 			ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@chainsaw"))
-			processor := processors.NewTestsProcessor(config.Namespace, clock)
-			processor.Run(ctx, tc, tests...)
+			// run tests
+			processors.RunTests(ctx, clock, config.Namespace, tc, tests...)
 		},
 	}}
 	deps := &internal.TestDeps{}
@@ -76,10 +82,10 @@ func run(
 	// In our case, we consider an error only when running the tests was not possible.
 	// For now, the case where some of the tests failed will be covered by the summary.
 	if code := m.Run(); code > 1 {
-		return tc, fmt.Errorf("testing framework exited with non zero code %d", code)
+		return nil, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
+	tc.Report.EndTime = time.Now()
 	if config.Report != nil && config.Report.Format != "" {
-		tc.Report.EndTime = time.Now()
 		if err := report.Save(tc.Report, config.Report.Format, config.Report.Path, config.Report.Name); err != nil {
 			return tc, err
 		}
@@ -87,7 +93,7 @@ func run(
 	return tc, nil
 }
 
-func setupTestContext(ctx context.Context, values any, cluster *rest.Config, config model.Configuration) (engine.Context, error) {
+func setupTestContext(ctx context.Context, values any, restConfig *rest.Config, config model.Configuration) (engine.Context, error) {
 	tc := enginecontext.EmptyContext()
 	// cleanup options
 	tc = tc.WithSkipDelete(ctx, config.Cleanup.SkipDelete)
@@ -123,8 +129,8 @@ func setupTestContext(ctx context.Context, values any, cluster *rest.Config, con
 	tc = engine.WithValues(ctx, tc, values)
 	// clusters
 	tc = engine.WithClusters(ctx, tc, "", config.Clusters)
-	if cluster != nil {
-		cluster, err := clusters.NewClusterFromConfig(cluster)
+	if restConfig != nil {
+		cluster, err := clusters.NewClusterFromConfig(restConfig)
 		if err != nil {
 			return tc, err
 		}

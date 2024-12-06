@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
-	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
@@ -17,54 +17,22 @@ import (
 	"k8s.io/utils/clock"
 )
 
-type TestsProcessor interface {
-	Run(context.Context, engine.Context, ...discovery.Test)
-}
-
-func NewTestsProcessor(namespaceOptions v1alpha2.NamespaceOptions, clock clock.PassiveClock) TestsProcessor {
-	return &testsProcessor{
-		namespaceOptions: namespaceOptions,
-		clock:            clock,
-	}
-}
-
-type testsProcessor struct {
-	namespaceOptions v1alpha2.NamespaceOptions
-	clock            clock.PassiveClock
-}
-
-func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...discovery.Test) {
+func RunTests(ctx context.Context, clock clock.PassiveClock, nsOptions v1alpha2.NamespaceOptions, tc engine.Context, tests ...discovery.Test) {
 	t := testing.FromContext(ctx)
+	// setup cleaner
+	cleaner := setupCleanup(ctx, tc)
 	// setup namespace
-	timeouts := tc.Timeouts()
-	mainCleaner := cleaner.New(timeouts.Cleanup.Duration, nil, tc.DeletionPropagation())
-	t.Cleanup(func() {
-		if !mainCleaner.Empty() {
-			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
-			defer func() {
-				logging.Log(ctx, logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
-			}()
-			for _, err := range mainCleaner.Run(ctx, nil) {
-				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				failer.Fail(ctx)
-			}
-		}
-	})
 	var nspacer namespacer.Namespacer
-	if p.namespaceOptions.Name != "" {
-		var nsCleaner cleaner.CleanerCollector
-		if !tc.SkipDelete() {
-			nsCleaner = mainCleaner
-		}
+	if nsOptions.Name != "" {
 		compilers := tc.Compilers()
-		if p.namespaceOptions.Compiler != nil {
-			compilers = compilers.WithDefaultCompiler(string(*p.namespaceOptions.Compiler))
+		if nsOptions.Compiler != nil {
+			compilers = compilers.WithDefaultCompiler(string(*nsOptions.Compiler))
 		}
 		namespaceData := namespaceData{
-			cleaner:   nsCleaner,
+			cleaner:   cleaner,
 			compilers: compilers,
-			name:      p.namespaceOptions.Name,
-			template:  p.namespaceOptions.Template,
+			name:      nsOptions.Name,
+			template:  nsOptions.Template,
 		}
 		nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
 		if err != nil {
@@ -87,13 +55,23 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 			failer.FailNow(ctx)
 		}
 		// compute test scenarios
-		scenarios := applyScenarios(test)
+		scenarios := []v1alpha1.Scenario{{}}
+		if test.Test == nil {
+			scenarios = nil
+		} else if len(test.Test.Spec.Scenarios) != 0 {
+			scenarios = test.Test.Spec.Scenarios
+		}
 		// loop through test scenarios
 		for s := range scenarios {
-			test := scenarios[s]
 			// run each test scenario in a separate T
 			t.Run(name, func(t *testing.T) {
 				t.Helper()
+				tc, err := engine.WithBindings(ctx, tc, scenarios[s].Bindings...)
+				if err != nil {
+					logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+					tc.IncFailed()
+					failer.FailNow(ctx)
+				}
 				ctx := testing.IntoContext(ctx, t)
 				size := len("@chainsaw")
 				for i, step := range test.Test.Spec.Steps {
@@ -105,13 +83,13 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 						size = len(name)
 					}
 				}
-				ctx = logging.IntoContext(ctx, logging.NewLogger(t, p.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
+				ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
 				info := TestInfo{
 					Id:         i + 1,
 					ScenarioId: s + 1,
 					Metadata:   test.Test.ObjectMeta,
 				}
-				tc := tc.WithBinding(ctx, "test", info)
+				tc = tc.WithBinding(ctx, "test", info)
 				t.Cleanup(func() {
 					if t.Skipped() {
 						tc.IncSkipped()
@@ -136,19 +114,19 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 				if tc.FailFast() && tc.Failed() > 0 {
 					t.SkipNow()
 				}
-				processor := p.createTestProcessor(test, size)
+				processor := createTestProcessor(clock, nsOptions, test, size)
 				processor.Run(ctx, nspacer, tc)
 			})
 		}
 	}
 }
 
-func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) TestProcessor {
+func createTestProcessor(clock clock.PassiveClock, nsOptions v1alpha2.NamespaceOptions, test discovery.Test, size int) TestProcessor {
 	return NewTestProcessor(
 		test,
 		size,
-		p.clock,
-		p.namespaceOptions.Template,
-		p.namespaceOptions.Compiler,
+		clock,
+		nsOptions.Template,
+		nsOptions.Compiler,
 	)
 }
