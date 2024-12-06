@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
-	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -21,16 +21,16 @@ type TestsProcessor interface {
 	Run(context.Context, engine.Context, ...discovery.Test)
 }
 
-func NewTestsProcessor(config model.Configuration, clock clock.PassiveClock) TestsProcessor {
+func NewTestsProcessor(namespaceOptions v1alpha2.NamespaceOptions, clock clock.PassiveClock) TestsProcessor {
 	return &testsProcessor{
-		config: config,
-		clock:  clock,
+		namespaceOptions: namespaceOptions,
+		clock:            clock,
 	}
 }
 
 type testsProcessor struct {
-	config model.Configuration
-	clock  clock.PassiveClock
+	namespaceOptions v1alpha2.NamespaceOptions
+	clock            clock.PassiveClock
 }
 
 func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...discovery.Test) {
@@ -51,20 +51,20 @@ func (p *testsProcessor) Run(ctx context.Context, tc engine.Context, tests ...di
 		}
 	})
 	var nspacer namespacer.Namespacer
-	if p.config.Namespace.Name != "" {
+	if p.namespaceOptions.Name != "" {
 		var nsCleaner cleaner.CleanerCollector
 		if !tc.SkipDelete() {
 			nsCleaner = mainCleaner
 		}
 		compilers := tc.Compilers()
-		if p.config.Namespace.Compiler != nil {
-			compilers = compilers.WithDefaultCompiler(string(*p.config.Namespace.Compiler))
+		if p.namespaceOptions.Compiler != nil {
+			compilers = compilers.WithDefaultCompiler(string(*p.namespaceOptions.Compiler))
 		}
 		namespaceData := namespaceData{
 			cleaner:   nsCleaner,
 			compilers: compilers,
-			name:      p.config.Namespace.Name,
-			template:  p.config.Namespace.Template,
+			name:      p.namespaceOptions.Name,
+			template:  p.namespaceOptions.Template,
 		}
 		nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
 		if err != nil {
@@ -148,7 +148,7 @@ func (p *testsProcessor) createTestProcessor(test discovery.Test, size int) Test
 		test,
 		size,
 		p.clock,
-		p.config.Namespace.Template,
-		p.config.Namespace.Compiler,
+		p.namespaceOptions.Template,
+		p.namespaceOptions.Compiler,
 	)
 }
