@@ -1,4 +1,4 @@
-package processors
+package runner
 
 import (
 	"context"
@@ -11,6 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/model"
+	"github.com/kyverno/chainsaw/pkg/runner/mocks"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -39,7 +40,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:        nil,
+		clock:        clock.RealClock{},
 		bindings:     apis.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: false,
@@ -61,7 +62,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:        nil,
+		clock:        clock.RealClock{},
 		bindings:     apis.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: false,
@@ -80,7 +81,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:        nil,
+		clock:        clock.RealClock{},
 		bindings:     apis.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: true,
@@ -99,7 +100,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				return errors.NewBadRequest("failed to create namespace")
 			},
 		},
-		clock:        nil,
+		clock:        clock.RealClock{},
 		bindings:     apis.NewBindings(),
 		tests:        []discovery.Test{},
 		expectedFail: true,
@@ -115,7 +116,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:    nil,
+		clock:    clock.RealClock{},
 		bindings: apis.NewBindings(),
 		tests: []discovery.Test{
 			{
@@ -137,7 +138,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				return nil
 			},
 		},
-		clock:    nil,
+		clock:    clock.RealClock{},
 		bindings: apis.NewBindings(),
 		tests: []discovery.Test{
 			{
@@ -150,14 +151,14 @@ func TestTestsProcessor_Run(t *testing.T) {
 	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			registry := registryMock{}
+			registry := mocks.Registry{}
 			if tc.client != nil {
-				registry.client = tc.client
+				registry.Client = tc.client
 			}
-			nt := testing.MockT{}
-			ctx := testing.IntoContext(context.Background(), &nt)
+			nt := &testing.MockT{}
+			ctx := testing.IntoContext(context.Background(), nt)
 			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
-			RunTests(ctx, tc.clock, tc.config.Namespace, tcontext, tc.tests...)
+			runTests(ctx, nt, tc.clock, tc.config.Namespace, tcontext, tc.tests...)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {

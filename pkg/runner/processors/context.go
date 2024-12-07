@@ -17,55 +17,55 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-type namespaceData struct {
-	cleaner   cleaner.CleanerCollector
-	compilers compilers.Compilers
-	name      string
-	template  *v1alpha1.Projection
+type NamespaceData struct {
+	Cleaner   cleaner.CleanerCollector
+	Compilers compilers.Compilers
+	Name      string
+	Template  *v1alpha1.Projection
 }
 
-type contextData struct {
-	basePath            string
-	catch               []v1alpha1.CatchFinally
-	cluster             *string
-	clusters            v1alpha1.Clusters
-	delayBeforeCleanup  *metav1.Duration
-	deletionPropagation *metav1.DeletionPropagation
-	dryRun              *bool
-	skipDelete          *bool
-	templating          *bool
-	terminationGrace    *metav1.Duration
-	timeouts            *v1alpha1.Timeouts
+type ContextData struct {
+	BasePath            string
+	Catch               []v1alpha1.CatchFinally
+	Cluster             *string
+	Clusters            v1alpha1.Clusters
+	DelayBeforeCleanup  *metav1.Duration
+	DeletionPropagation *metav1.DeletionPropagation
+	DryRun              *bool
+	SkipDelete          *bool
+	Templating          *bool
+	TerminationGrace    *metav1.Duration
+	Timeouts            *v1alpha1.Timeouts
 }
 
-func setupContext(ctx context.Context, tc engine.Context, data contextData) (engine.Context, error) {
-	if len(data.catch) > 0 {
-		tc = tc.WithCatch(ctx, data.catch...)
+func SetupContext(ctx context.Context, tc engine.Context, data ContextData) (engine.Context, error) {
+	if len(data.Catch) > 0 {
+		tc = tc.WithCatch(ctx, data.Catch...)
 	}
-	if data.dryRun != nil {
-		tc = tc.WithDryRun(ctx, *data.dryRun)
+	if data.DryRun != nil {
+		tc = tc.WithDryRun(ctx, *data.DryRun)
 	}
-	if data.delayBeforeCleanup != nil {
-		tc = tc.WithDelayBeforeCleanup(ctx, &data.delayBeforeCleanup.Duration)
+	if data.DelayBeforeCleanup != nil {
+		tc = tc.WithDelayBeforeCleanup(ctx, &data.DelayBeforeCleanup.Duration)
 	}
-	if data.deletionPropagation != nil {
-		tc = tc.WithDeletionPropagation(ctx, *data.deletionPropagation)
+	if data.DeletionPropagation != nil {
+		tc = tc.WithDeletionPropagation(ctx, *data.DeletionPropagation)
 	}
-	if data.skipDelete != nil {
-		tc = tc.WithSkipDelete(ctx, *data.skipDelete)
+	if data.SkipDelete != nil {
+		tc = tc.WithSkipDelete(ctx, *data.SkipDelete)
 	}
-	if data.templating != nil {
-		tc = tc.WithTemplating(ctx, *data.templating)
+	if data.Templating != nil {
+		tc = tc.WithTemplating(ctx, *data.Templating)
 	}
-	if data.terminationGrace != nil {
-		tc = tc.WithTerminationGrace(ctx, &data.terminationGrace.Duration)
+	if data.TerminationGrace != nil {
+		tc = tc.WithTerminationGrace(ctx, &data.TerminationGrace.Duration)
 	}
-	if data.timeouts != nil {
-		tc = tc.WithTimeouts(ctx, *data.timeouts)
+	if data.Timeouts != nil {
+		tc = tc.WithTimeouts(ctx, *data.Timeouts)
 	}
-	tc = engine.WithClusters(ctx, tc, data.basePath, data.clusters)
-	if data.cluster != nil {
-		if _tc, err := engine.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {
+	tc = engine.WithClusters(ctx, tc, data.BasePath, data.Clusters)
+	if data.Cluster != nil {
+		if _tc, err := engine.WithCurrentCluster(ctx, tc, *data.Cluster); err != nil {
 			return tc, err
 		} else {
 			tc = _tc
@@ -74,9 +74,9 @@ func setupContext(ctx context.Context, tc engine.Context, data contextData) (eng
 	return tc, nil
 }
 
-func setupNamespace(ctx context.Context, tc engine.Context, data namespaceData) (engine.Context, *corev1.Namespace, error) {
+func SetupNamespace(ctx context.Context, tc engine.Context, data NamespaceData) (engine.Context, *corev1.Namespace, error) {
 	var ns *corev1.Namespace
-	if namespace, err := buildNamespace(ctx, data.compilers, data.name, data.template, tc.Bindings()); err != nil {
+	if namespace, err := buildNamespace(ctx, data.Compilers, data.Name, data.Template, tc.Bindings()); err != nil {
 		return tc, nil, err
 	} else if _, clusterClient, err := tc.CurrentClusterClient(); err != nil {
 		return tc, nil, err
@@ -86,8 +86,8 @@ func setupNamespace(ctx context.Context, tc engine.Context, data namespaceData) 
 				return tc, nil, err
 			} else if err := clusterClient.Create(ctx, namespace.DeepCopy()); err != nil {
 				return tc, nil, err
-			} else if data.cleaner != nil {
-				data.cleaner.Add(clusterClient, namespace)
+			} else if data.Cleaner != nil {
+				data.Cleaner.Add(clusterClient, namespace)
 			}
 		}
 		ns = namespace
@@ -98,7 +98,7 @@ func setupNamespace(ctx context.Context, tc engine.Context, data namespaceData) 
 	return tc, ns, nil
 }
 
-func setupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.Binding) (engine.Context, error) {
+func SetupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.Binding) (engine.Context, error) {
 	if _tc, err := engine.WithBindings(ctx, tc, bindings...); err != nil {
 		return tc, err
 	} else {
@@ -107,8 +107,8 @@ func setupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.
 	return tc, nil
 }
 
-func setupCleanup(ctx context.Context, tc engine.Context) cleaner.CleanerCollector {
-	if !tc.SkipDelete() {
+func SetupCleanup(ctx context.Context, tc engine.Context) cleaner.CleanerCollector {
+	if tc.SkipDelete() {
 		return nil
 	}
 	t := testing.FromContext(ctx)
@@ -128,10 +128,10 @@ func setupCleanup(ctx context.Context, tc engine.Context) cleaner.CleanerCollect
 	return cleaner
 }
 
-func setupContextAndBindings(ctx context.Context, tc engine.Context, data contextData, bindings ...v1alpha1.Binding) (engine.Context, error) {
-	if tc, err := setupContext(ctx, tc, data); err != nil {
+func setupContextAndBindings(ctx context.Context, tc engine.Context, data ContextData, bindings ...v1alpha1.Binding) (engine.Context, error) {
+	if tc, err := SetupContext(ctx, tc, data); err != nil {
 		return tc, err
 	} else {
-		return setupBindings(ctx, tc, bindings...)
+		return SetupBindings(ctx, tc, bindings...)
 	}
 }
