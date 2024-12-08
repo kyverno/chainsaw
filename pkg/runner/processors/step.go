@@ -38,7 +38,7 @@ import (
 )
 
 type StepProcessor interface {
-	Run(context.Context, namespacer.Namespacer, engine.Context)
+	Run(context.Context, namespacer.Namespacer, engine.Context) bool
 }
 
 func NewStepProcessor(
@@ -59,7 +59,7 @@ type stepProcessor struct {
 	basePath string
 }
 
-func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) {
+func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespacer, tc engine.Context) bool {
 	t := testing.FromContext(ctx)
 	report := &model.StepReport{
 		Name:      p.step.Name,
@@ -86,7 +86,8 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 	tc, err := setupContextAndBindings(ctx, tc, contextData, p.step.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
+		failer.Fail(ctx)
+		return true
 	}
 	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
 	t.Cleanup(func() {
@@ -195,7 +196,8 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 		operations, err := p.tryOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation, cleaner)
 		if err != nil {
 			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			failer.FailNow(ctx)
+			failer.Fail(ctx)
+			return true
 		}
 		for _, operation := range operations {
 			outputs, err := operation.execute(ctx, operationTc, report)
@@ -203,7 +205,8 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 				if continueOnError {
 					failer.Fail(ctx)
 				} else {
-					failer.FailNow(ctx)
+					failer.Fail(ctx)
+					return true
 				}
 			}
 			for k, v := range outputs {
@@ -211,6 +214,7 @@ func (p *stepProcessor) Run(ctx context.Context, namespacer namespacer.Namespace
 			}
 		}
 	}
+	return false
 }
 
 func (p *stepProcessor) tryOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {

@@ -11,7 +11,6 @@ var defaultFailer = New(false)
 
 type Failer interface {
 	Fail(context.Context)
-	FailNow(context.Context)
 }
 
 type failer struct {
@@ -28,12 +27,6 @@ func (f failer) Fail(ctx context.Context) {
 	f.wait()
 	t := testing.FromContext(ctx)
 	t.Fail()
-}
-
-func (f failer) FailNow(ctx context.Context) {
-	f.wait()
-	t := testing.FromContext(ctx)
-	t.FailNow()
 }
 
 func (f failer) wait() {
@@ -54,9 +47,4 @@ func getFailerOrDefault(ctx context.Context) Failer {
 func Fail(ctx context.Context) {
 	f := getFailerOrDefault(ctx)
 	f.Fail(ctx)
-}
-
-func FailNow(ctx context.Context) {
-	f := getFailerOrDefault(ctx)
-	f.FailNow(ctx)
 }

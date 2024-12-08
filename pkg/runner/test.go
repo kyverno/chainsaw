@@ -88,7 +88,8 @@ func runTest(
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		tc.IncFailed()
-		failer.FailNow(ctx)
+		failer.Fail(ctx)
+		return
 	}
 	contextData := processors.ContextData{
 		BasePath:            test.BasePath,
@@ -105,14 +106,17 @@ func runTest(
 	tc, err = processors.SetupContext(ctx, tc, contextData)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
+		failer.Fail(ctx)
+		return
 	}
 	// skip checks
 	if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
-		t.SkipNow()
+		t.Skip()
+		return
 	}
 	if tc.FailFast() && tc.Failed() > 0 {
-		t.SkipNow()
+		t.Skip()
+		return
 	}
 	// setup cleaner
 	mainCleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
@@ -169,7 +173,8 @@ func runTest(
 		nsTc, namespace, err := processors.SetupNamespace(ctx, tc, namespaceData)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			failer.FailNow(ctx)
+			failer.Fail(ctx)
+			return
 		}
 		tc = nsTc
 		if namespace != nil {
@@ -183,7 +188,8 @@ func runTest(
 	tc, err = processors.SetupBindings(ctx, tc, test.Test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.FailNow(ctx)
+		failer.Fail(ctx)
+		return
 	}
 	// run steps
 	for i, step := range test.Test.Spec.Steps {
@@ -197,6 +203,8 @@ func runTest(
 		}
 		tc := tc.WithBinding(ctx, "step", info)
 		processor := processors.NewStepProcessor(step, report, test.BasePath)
-		processor.Run(ctx, nspacer, tc)
+		if stop := processor.Run(ctx, nspacer, tc); stop {
+			return
+		}
 	}
 }
