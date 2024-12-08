@@ -39,7 +39,8 @@ func runTests(ctx context.Context, t testing.TTest, clock clock.PassiveClock, ns
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			tc.IncFailed()
-			failer.FailNow(ctx)
+			failer.Fail(ctx)
+			return
 		}
 		tc = nsTc
 		if namespace != nil {
@@ -53,7 +54,7 @@ func runTests(ctx context.Context, t testing.TTest, clock clock.PassiveClock, ns
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			tc.IncFailed()
-			failer.FailNow(ctx)
+			failer.Fail(ctx)
 		} else {
 			testId := i + 1
 			if len(test.Test.Spec.Scenarios) == 0 {

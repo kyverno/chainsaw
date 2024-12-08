@@ -21,7 +21,6 @@ type TTest interface {
 	Error(args ...any)
 	Errorf(format string, args ...any)
 	Fail()
-	FailNow()
 	Failed() bool
 	Fatal(args ...any)
 	Fatalf(format string, args ...any)
@@ -33,7 +32,6 @@ type TTest interface {
 	Run(name string, f func(t *T)) bool
 	Setenv(key, value string)
 	Skip(args ...any)
-	SkipNow()
 	Skipf(format string, args ...any)
 	Skipped() bool
 	TempDir() string

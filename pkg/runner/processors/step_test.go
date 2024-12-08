@@ -37,8 +37,8 @@ func TestStepProcessor_Run(t *testing.T) {
 		basePath               string
 		terminationGracePeriod *metav1.Duration
 		stepSpec               v1alpha1.TestStep
+		want                   bool
 		expectedFail           bool
-		skipped                bool
 	}{{
 		name:   "test with no handler",
 		client: &fake.FakeClient{},
@@ -799,7 +799,8 @@ func TestStepProcessor_Run(t *testing.T) {
 				Error:   &config.Spec.Timeouts.Error,
 				Exec:    &config.Spec.Timeouts.Exec,
 			})
-			stepProcessor.Run(ctx, tc.namespacer, tcontext)
+			got := stepProcessor.Run(ctx, tc.namespacer, tcontext)
+			assert.Equal(t, tc.want, got)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
 			} else {
