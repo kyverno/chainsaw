@@ -38,7 +38,7 @@ import (
 )
 
 type StepProcessor interface {
-	Run(context.Context, testing.TTest, namespacer.Namespacer, engine.Context) bool
+	Run(context.Context, testing.TTest, failer.Failer, namespacer.Namespacer, engine.Context) bool
 }
 
 func NewStepProcessor(
@@ -59,7 +59,7 @@ type stepProcessor struct {
 	basePath string
 }
 
-func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, namespacer namespacer.Namespacer, tc engine.Context) bool {
+func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.Failer, namespacer namespacer.Namespacer, tc engine.Context) bool {
 	report := &model.StepReport{
 		Name:      p.step.Name,
 		StartTime: time.Now(),

@@ -8,19 +8,17 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
-	"k8s.io/utils/clock"
 )
 
-func runTests(ctx context.Context, t testing.TTest, clock clock.PassiveClock, nsOptions v1alpha2.NamespaceOptions, tc engine.Context, tests ...discovery.Test) {
+func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alpha2.NamespaceOptions, tc engine.Context, tests ...discovery.Test) {
 	// configure golang context
-	ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@chainsaw"))
+	ctx = logging.IntoContext(ctx, logging.NewLogger(t, r.clock, t.Name(), "@chainsaw"))
 	// setup cleaner
-	cleaner := processors.SetupCleanup(ctx, t, tc)
+	cleaner := processors.SetupCleanup(ctx, t, r.failer, tc)
 	// setup namespace
 	var nspacer namespacer.Namespacer
 	if nsOptions.Name != "" {
@@ -38,7 +36,7 @@ func runTests(ctx context.Context, t testing.TTest, clock clock.PassiveClock, ns
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			tc.IncFailed()
-			failer.Fail(ctx, t)
+			r.failer.Fail(ctx, t)
 			return
 		}
 		tc = nsTc
@@ -53,20 +51,20 @@ func runTests(ctx context.Context, t testing.TTest, clock clock.PassiveClock, ns
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			tc.IncFailed()
-			failer.Fail(ctx, t)
+			r.failer.Fail(ctx, t)
 		} else {
 			testId := i + 1
 			if len(test.Test.Spec.Scenarios) == 0 {
 				t.Run(name, func(t *testing.T) {
 					t.Helper()
-					runTest(ctx, t, clock, nsOptions, nspacer, tc, test, testId, 0)
+					r.runTest(ctx, t, nsOptions, nspacer, tc, test, testId, 0)
 				})
 			} else {
 				for s := range test.Test.Spec.Scenarios {
 					scenarioId := s + 1
 					t.Run(name, func(t *testing.T) {
 						t.Helper()
-						runTest(ctx, t, clock, nsOptions, nspacer, tc, test, testId, scenarioId, test.Test.Spec.Scenarios[s].Bindings...)
+						r.runTest(ctx, t, nsOptions, nspacer, tc, test, testId, scenarioId, test.Test.Spec.Scenarios[s].Bindings...)
 					})
 				}
 			}

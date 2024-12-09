@@ -7,7 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/testing"
 )
 
-var defaultFailer = New(false)
+var Default = New(false)
 
 type Failer interface {
 	Fail(context.Context, testing.TTest)
@@ -33,17 +33,4 @@ func (f failer) wait() {
 		fmt.Println("Failure detected, press ENTER to continue...")
 		fmt.Scanln() //nolint:errcheck
 	}
-}
-
-func getFailerOrDefault(ctx context.Context) Failer {
-	f := FromContext(ctx)
-	if f == nil {
-		return defaultFailer
-	}
-	return f
-}
-
-func Fail(ctx context.Context, t testing.TTest) {
-	f := getFailerOrDefault(ctx)
-	f.Fail(ctx, t)
 }
