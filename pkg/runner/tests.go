@@ -5,16 +5,16 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
-	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
 )
 
-func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alpha2.NamespaceOptions, tc engine.Context, tests ...discovery.Test) {
+func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alpha2.NamespaceOptions, tc enginecontext.TestContext, tests ...discovery.Test) {
 	// configure golang context
 	ctx = logging.IntoContext(ctx, logging.NewLogger(t, r.clock, t.Name(), "@chainsaw"))
 	// setup cleaner

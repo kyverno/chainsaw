@@ -6,8 +6,8 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -37,7 +37,7 @@ type ContextData struct {
 	Timeouts            *v1alpha1.Timeouts
 }
 
-func SetupContext(ctx context.Context, tc engine.Context, data ContextData) (engine.Context, error) {
+func SetupContext(ctx context.Context, tc enginecontext.TestContext, data ContextData) (enginecontext.TestContext, error) {
 	if len(data.Catch) > 0 {
 		tc = tc.WithCatch(ctx, data.Catch...)
 	}
@@ -62,9 +62,9 @@ func SetupContext(ctx context.Context, tc engine.Context, data ContextData) (eng
 	if data.Timeouts != nil {
 		tc = tc.WithTimeouts(ctx, *data.Timeouts)
 	}
-	tc = engine.WithClusters(ctx, tc, data.BasePath, data.Clusters)
+	tc = enginecontext.WithClusters(ctx, tc, data.BasePath, data.Clusters)
 	if data.Cluster != nil {
-		if _tc, err := engine.WithCurrentCluster(ctx, tc, *data.Cluster); err != nil {
+		if _tc, err := enginecontext.WithCurrentCluster(ctx, tc, *data.Cluster); err != nil {
 			return tc, err
 		} else {
 			tc = _tc
@@ -73,7 +73,7 @@ func SetupContext(ctx context.Context, tc engine.Context, data ContextData) (eng
 	return tc, nil
 }
 
-func SetupNamespace(ctx context.Context, tc engine.Context, data NamespaceData) (engine.Context, *corev1.Namespace, error) {
+func SetupNamespace(ctx context.Context, tc enginecontext.TestContext, data NamespaceData) (enginecontext.TestContext, *corev1.Namespace, error) {
 	var ns *corev1.Namespace
 	if namespace, err := buildNamespace(ctx, data.Compilers, data.Name, data.Template, tc.Bindings()); err != nil {
 		return tc, nil, err
@@ -92,13 +92,13 @@ func SetupNamespace(ctx context.Context, tc engine.Context, data NamespaceData) 
 		ns = namespace
 	}
 	if ns != nil {
-		tc = engine.WithNamespace(ctx, tc, ns.GetName())
+		tc = enginecontext.WithNamespace(ctx, tc, ns.GetName())
 	}
 	return tc, ns, nil
 }
 
-func SetupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.Binding) (engine.Context, error) {
-	if _tc, err := engine.WithBindings(ctx, tc, bindings...); err != nil {
+func SetupBindings(ctx context.Context, tc enginecontext.TestContext, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {
+	if _tc, err := enginecontext.WithBindings(ctx, tc, bindings...); err != nil {
 		return tc, err
 	} else {
 		tc = _tc
@@ -106,7 +106,7 @@ func SetupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.
 	return tc, nil
 }
 
-func SetupCleanup(ctx context.Context, t testing.TTest, onFailure func(), tc engine.Context) cleaner.CleanerCollector {
+func SetupCleanup(ctx context.Context, t testing.TTest, onFailure func(), tc enginecontext.TestContext) cleaner.CleanerCollector {
 	if tc.SkipDelete() {
 		return nil
 	}
@@ -127,7 +127,7 @@ func SetupCleanup(ctx context.Context, t testing.TTest, onFailure func(), tc eng
 	return cleaner
 }
 
-func setupContextAndBindings(ctx context.Context, tc engine.Context, data ContextData, bindings ...v1alpha1.Binding) (engine.Context, error) {
+func setupContextAndBindings(ctx context.Context, tc enginecontext.TestContext, data ContextData, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {
 	if tc, err := SetupContext(ctx, tc, data); err != nil {
 		return tc, err
 	} else {

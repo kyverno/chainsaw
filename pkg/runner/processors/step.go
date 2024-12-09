@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
-	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
@@ -28,6 +27,7 @@ import (
 	opupdate "github.com/kyverno/chainsaw/pkg/engine/operations/update"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	"github.com/kyverno/chainsaw/pkg/model"
+	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -37,7 +37,7 @@ import (
 )
 
 type StepProcessor interface {
-	Run(context.Context, testing.TTest, func(), namespacer.Namespacer, engine.Context) bool
+	Run(context.Context, testing.TTest, func(), namespacer.Namespacer, enginecontext.TestContext) bool
 }
 
 func NewStepProcessor(
@@ -58,7 +58,7 @@ type stepProcessor struct {
 	basePath string
 }
 
-func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, onFailure func(), namespacer namespacer.Namespacer, tc engine.Context) bool {
+func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, onFailure func(), namespacer namespacer.Namespacer, tc enginecontext.TestContext) bool {
 	report := &model.StepReport{
 		Name:      p.step.Name,
 		StartTime: time.Now(),
@@ -401,7 +401,7 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 				ResourceId: i + 1,
 			},
 			model.OperationTypeApply,
-			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 				contextData := ContextData{
 					BasePath:   p.basePath,
 					Cluster:    op.Cluster,
@@ -449,7 +449,7 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 				ResourceId: i + 1,
 			},
 			model.OperationTypeAssert,
-			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 				contextData := ContextData{
 					BasePath:   p.basePath,
 					Cluster:    op.Cluster,
@@ -487,7 +487,7 @@ func (p *stepProcessor) commandOperation(_ compilers.Compilers, id int, namespac
 			Id: id,
 		},
 		model.OperationTypeCommand,
-		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 			contextData := ContextData{
 				BasePath: p.basePath,
 				Cluster:  op.Cluster,
@@ -526,7 +526,7 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 				ResourceId: i + 1,
 			},
 			model.OperationTypeCreate,
-			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 				contextData := ContextData{
 					BasePath:   p.basePath,
 					Cluster:    op.Cluster,
@@ -588,7 +588,7 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 				ResourceId: i + 1,
 			},
 			model.OperationTypeDelete,
-			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 				contextData := ContextData{
 					BasePath:            p.basePath,
 					Cluster:             op.Cluster,
@@ -629,7 +629,7 @@ func (p *stepProcessor) describeOperation(_ compilers.Compilers, id int, namespa
 			Id: id,
 		},
 		model.OperationTypeCommand,
-		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 			contextData := ContextData{
 				BasePath: p.basePath,
 				Cluster:  op.Cluster,
@@ -677,7 +677,7 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 				ResourceId: i + 1,
 			},
 			model.OperationTypeError,
-			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 				contextData := ContextData{
 					BasePath:   p.basePath,
 					Cluster:    op.Cluster,
@@ -715,7 +715,7 @@ func (p *stepProcessor) getOperation(_ compilers.Compilers, id int, namespacer n
 			Id: id,
 		},
 		model.OperationTypeCommand,
-		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 			contextData := ContextData{
 				BasePath: p.basePath,
 				Cluster:  op.Cluster,
@@ -759,7 +759,7 @@ func (p *stepProcessor) logsOperation(_ compilers.Compilers, id int, namespacer 
 			Id: id,
 		},
 		model.OperationTypeCommand,
-		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 			contextData := ContextData{
 				BasePath: p.basePath,
 				Cluster:  op.Cluster,
@@ -807,7 +807,7 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 				ResourceId: i + 1,
 			},
 			model.OperationTypePatch,
-			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 				contextData := ContextData{
 					BasePath:   p.basePath,
 					Cluster:    op.Cluster,
@@ -850,7 +850,7 @@ func (p *stepProcessor) proxyOperation(_ compilers.Compilers, id int, namespacer
 			Id: id,
 		},
 		model.OperationTypeCommand,
-		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 			contextData := ContextData{
 				BasePath: p.basePath,
 				Cluster:  op.Cluster,
@@ -894,7 +894,7 @@ func (p *stepProcessor) scriptOperation(_ compilers.Compilers, id int, namespace
 			Id: id,
 		},
 		model.OperationTypeScript,
-		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 			contextData := ContextData{
 				BasePath: p.basePath,
 				Cluster:  op.Cluster,
@@ -925,7 +925,7 @@ func (p *stepProcessor) sleepOperation(_ compilers.Compilers, id int, op v1alpha
 			Id: id,
 		},
 		model.OperationTypeSleep,
-		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 			return opsleep.New(op), nil, tc, nil
 		},
 	)
@@ -945,7 +945,7 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 				ResourceId: i + 1,
 			},
 			model.OperationTypeUpdate,
-			func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 				contextData := ContextData{
 					BasePath:   p.basePath,
 					Cluster:    op.Cluster,
@@ -988,7 +988,7 @@ func (p *stepProcessor) waitOperation(_ compilers.Compilers, id int, namespacer 
 			Id: id,
 		},
 		model.OperationTypeCommand,
-		func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 			contextData := ContextData{
 				BasePath: p.basePath,
 				Cluster:  op.Cluster,
@@ -1069,7 +1069,7 @@ func (p *stepProcessor) fileRefOrResource(ctx context.Context, compilers compile
 	return nil, errors.New("file or resource must be set")
 }
 
-func prepareResource(resource unstructured.Unstructured, tc engine.Context) error {
+func prepareResource(resource unstructured.Unstructured, tc enginecontext.TestContext) error {
 	if terminationGrace := tc.TerminationGrace(); terminationGrace != nil {
 		seconds := int64(terminationGrace.Seconds())
 		if seconds != 0 {
@@ -1092,7 +1092,7 @@ func prepareResource(resource unstructured.Unstructured, tc engine.Context) erro
 	return nil
 }
 
-func getCleanerOrNil(cleaner cleaner.CleanerCollector, tc engine.Context) cleaner.CleanerCollector {
+func getCleanerOrNil(cleaner cleaner.CleanerCollector, tc enginecontext.TestContext) cleaner.CleanerCollector {
 	if tc.DryRun() {
 		return nil
 	}

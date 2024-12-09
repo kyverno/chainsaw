@@ -4,15 +4,15 @@ import (
 	"context"
 	"time"
 
-	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/model"
+	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/pkg/ext/output/color"
 )
 
-type operationFactory = func(context.Context, engine.Context) (operations.Operation, *time.Duration, engine.Context, error)
+type operationFactory = func(context.Context, enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error)
 
 type operation struct {
 	info      OperationInfo
@@ -32,7 +32,7 @@ func newOperation(
 	}
 }
 
-func (o operation) execute(ctx context.Context, tc engine.Context, stepReport *model.StepReport) (_ outputs.Outputs, err error) {
+func (o operation) execute(ctx context.Context, tc enginecontext.TestContext, stepReport *model.StepReport) (_ outputs.Outputs, err error) {
 	report := &model.OperationReport{
 		Type:      o.opType,
 		StartTime: time.Now(),

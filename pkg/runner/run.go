@@ -7,11 +7,10 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/discovery"
-	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
-	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
+	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"k8s.io/client-go/rest"
@@ -111,7 +110,7 @@ func (r *runner) onFail() {
 	}
 }
 
-func setupTestContext(ctx context.Context, values any, restConfig *rest.Config, config model.Configuration) (engine.Context, error) {
+func setupTestContext(ctx context.Context, values any, restConfig *rest.Config, config model.Configuration) (enginecontext.TestContext, error) {
 	tc := enginecontext.EmptyContext()
 	// cleanup options
 	tc = tc.WithSkipDelete(ctx, config.Cleanup.SkipDelete)
@@ -144,16 +143,16 @@ func setupTestContext(ctx context.Context, values any, restConfig *rest.Config, 
 		Exec:    &config.Timeouts.Exec,
 	})
 	// values
-	tc = engine.WithValues(ctx, tc, values)
+	tc = enginecontext.WithValues(ctx, tc, values)
 	// clusters
-	tc = engine.WithClusters(ctx, tc, "", config.Clusters)
+	tc = enginecontext.WithClusters(ctx, tc, "", config.Clusters)
 	if restConfig != nil {
 		cluster, err := clusters.NewClusterFromConfig(restConfig)
 		if err != nil {
 			return tc, err
 		}
 		tc = tc.WithCluster(ctx, clusters.DefaultClient, cluster)
-		return engine.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
+		return enginecontext.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
 	}
 	return tc, nil
 }

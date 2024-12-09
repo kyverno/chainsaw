@@ -6,12 +6,11 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
-	"github.com/kyverno/chainsaw/pkg/engine"
-	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	mock "github.com/kyverno/chainsaw/pkg/engine/operations/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/model"
+	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 )
@@ -54,7 +53,7 @@ func TestOperation_Execute(t *testing.T) {
 			op := newOperation(
 				OperationInfo{},
 				model.OperationTypeApply,
-				func(ctx context.Context, tc engine.Context) (operations.Operation, *time.Duration, engine.Context, error) {
+				func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
 					return localTC.operation, &localTC.timeout, tc, nil
 				},
 			)
