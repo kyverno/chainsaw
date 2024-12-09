@@ -1,4 +1,4 @@
-package engine
+package context
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/expressions"
 )
 
-func WithBindings(ctx context.Context, tc Context, variables ...v1alpha1.Binding) (Context, error) {
+func WithBindings(ctx context.Context, tc TestContext, variables ...v1alpha1.Binding) (TestContext, error) {
 	for _, variable := range variables {
 		name, value, err := bindings.ResolveBinding(ctx, tc.Compilers(), tc.Bindings(), nil, variable)
 		if err != nil {
@@ -21,7 +21,7 @@ func WithBindings(ctx context.Context, tc Context, variables ...v1alpha1.Binding
 	return tc, nil
 }
 
-func WithClusters(ctx context.Context, tc Context, basePath string, c map[string]v1alpha1.Cluster) Context {
+func WithClusters(ctx context.Context, tc TestContext, basePath string, c map[string]v1alpha1.Cluster) TestContext {
 	for name, cluster := range c {
 		kubeconfig := filepath.Join(basePath, cluster.Kubeconfig)
 		cluster := clusters.NewClusterFromKubeconfig(kubeconfig, cluster.Context)
@@ -30,7 +30,7 @@ func WithClusters(ctx context.Context, tc Context, basePath string, c map[string
 	return tc
 }
 
-func WithCurrentCluster(ctx context.Context, tc Context, name string) (Context, error) {
+func WithCurrentCluster(ctx context.Context, tc TestContext, name string) (TestContext, error) {
 	name, err := expressions.String(ctx, tc.Compilers(), name, tc.Bindings())
 	if err != nil {
 		return tc, err
@@ -45,10 +45,10 @@ func WithCurrentCluster(ctx context.Context, tc Context, name string) (Context, 
 	return tc, nil
 }
 
-func WithNamespace(ctx context.Context, tc Context, namespace string) Context {
+func WithNamespace(ctx context.Context, tc TestContext, namespace string) TestContext {
 	return tc.WithBinding(ctx, "namespace", namespace)
 }
 
-func WithValues(ctx context.Context, tc Context, values any) Context {
+func WithValues(ctx context.Context, tc TestContext, values any) TestContext {
 	return tc.WithBinding(ctx, "values", values)
 }

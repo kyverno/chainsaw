@@ -10,10 +10,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
-	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/model"
+	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -24,7 +24,7 @@ func (r *runner) runTest(
 	t testing.TTest,
 	nsOptions v1alpha2.NamespaceOptions,
 	nspacer namespacer.Namespacer,
-	tc engine.Context,
+	tc enginecontext.TestContext,
 	test discovery.Test,
 	testId int,
 	scenarioId int,
@@ -80,7 +80,7 @@ func (r *runner) runTest(
 		ScenarioId: scenarioId,
 		Metadata:   test.Test.ObjectMeta,
 	})
-	tc, err := engine.WithBindings(ctx, tc, bindings...)
+	tc, err := enginecontext.WithBindings(ctx, tc, bindings...)
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
