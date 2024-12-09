@@ -8,7 +8,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine"
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -107,7 +106,7 @@ func SetupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.
 	return tc, nil
 }
 
-func SetupCleanup(ctx context.Context, t testing.TTest, failer failer.Failer, tc engine.Context) cleaner.CleanerCollector {
+func SetupCleanup(ctx context.Context, t testing.TTest, onFailure func(), tc engine.Context) cleaner.CleanerCollector {
 	if tc.SkipDelete() {
 		return nil
 	}
@@ -121,7 +120,7 @@ func SetupCleanup(ctx context.Context, t testing.TTest, failer failer.Failer, tc
 			for _, err := range cleaner.Run(ctx, nil) {
 				t.Fail()
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				failer.Fail()
+				onFailure()
 			}
 		}
 	})

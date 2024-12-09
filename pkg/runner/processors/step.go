@@ -28,7 +28,6 @@ import (
 	opupdate "github.com/kyverno/chainsaw/pkg/engine/operations/update"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -38,7 +37,7 @@ import (
 )
 
 type StepProcessor interface {
-	Run(context.Context, testing.TTest, failer.Failer, namespacer.Namespacer, engine.Context) bool
+	Run(context.Context, testing.TTest, func(), namespacer.Namespacer, engine.Context) bool
 }
 
 func NewStepProcessor(
@@ -59,7 +58,7 @@ type stepProcessor struct {
 	basePath string
 }
 
-func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.Failer, namespacer namespacer.Namespacer, tc engine.Context) bool {
+func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, onFailure func(), namespacer namespacer.Namespacer, tc engine.Context) bool {
 	report := &model.StepReport{
 		Name:      p.step.Name,
 		StartTime: time.Now(),
@@ -86,7 +85,7 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.Fail()
+		onFailure()
 		return true
 	}
 	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
@@ -110,7 +109,7 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 					for _, err := range errs {
 						logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					}
-					failer.Fail()
+					onFailure()
 				}
 			}
 			for i, operation := range p.step.Cleanup {
@@ -122,13 +121,13 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 				if err != nil {
 					t.Fail()
 					logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					failer.Fail()
+					onFailure()
 				}
 				for _, operation := range operations {
 					_, err := operation.execute(ctx, operationTc, report)
 					if err != nil {
 						t.Fail()
-						failer.Fail()
+						onFailure()
 					}
 				}
 			}
@@ -149,13 +148,13 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 				if err != nil {
 					t.Fail()
 					logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					failer.Fail()
+					onFailure()
 				}
 				for _, operation := range operations {
 					_, err := operation.execute(ctx, operationTc, report)
 					if err != nil {
 						t.Fail()
-						failer.Fail()
+						onFailure()
 					}
 				}
 			}
@@ -177,13 +176,13 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 					if err != nil {
 						t.Fail()
 						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-						failer.Fail()
+						onFailure()
 					}
 					for _, operation := range operations {
 						_, err := operation.execute(ctx, operationTc, report)
 						if err != nil {
 							t.Fail()
-							failer.Fail()
+							onFailure()
 						}
 					}
 				}
@@ -204,14 +203,14 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 		if err != nil {
 			t.Fail()
 			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			failer.Fail()
+			onFailure()
 			return true
 		}
 		for _, operation := range operations {
 			outputs, err := operation.execute(ctx, operationTc, report)
 			if err != nil {
 				t.Fail()
-				failer.Fail()
+				onFailure()
 				if !continueOnError {
 					return true
 				}

@@ -13,7 +13,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/loaders/values"
 	"github.com/kyverno/chainsaw/pkg/runner"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
@@ -75,26 +74,28 @@ func Command() *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			color.Init(options.noColor, true)
 			clock := clock.RealClock{}
-			out := cmd.OutOrStdout()
-			fmt.Fprintf(out, "Version: %s\n", version.Version())
+			stdOut := cmd.OutOrStdout()
+			stdErr := cmd.ErrOrStderr()
+			stdIn := cmd.InOrStdin()
+			fmt.Fprintf(stdOut, "Version: %s\n", version.Version())
 			var configuration v1alpha2.Configuration
 			// if no config file was provided, give a chance to the default config name
 			if options.config == "" {
 				if _, err := os.Stat(config.DefaultFileName); err == nil {
 					options.config = config.DefaultFileName
-					fmt.Fprintf(out, "No configuration provided but found default file: %s\n", options.config)
+					fmt.Fprintf(stdOut, "No configuration provided but found default file: %s\n", options.config)
 				}
 			}
 			// try to load configuration file
 			if options.config != "" {
-				fmt.Fprintf(out, "Loading config (%s)...\n", options.config)
+				fmt.Fprintf(stdOut, "Loading config (%s)...\n", options.config)
 				config, err := config.Load(options.config)
 				if err != nil {
 					return err
 				}
 				configuration = *config
 			} else {
-				fmt.Fprintln(out, "Loading default configuration...")
+				fmt.Fprintln(stdOut, "Loading default configuration...")
 				config, err := config.DefaultConfiguration()
 				if err != nil {
 					return err
@@ -225,63 +226,63 @@ func Command() *cobra.Command {
 			if options.pauseOnFailure {
 				configuration.Spec.Execution.Parallel = ptr.To(1)
 			}
-			fmt.Fprintf(out, "- Using test file: %s\n", configuration.Spec.Discovery.TestFile)
-			fmt.Fprintf(out, "- TestDirs %v\n", options.testDirs)
-			fmt.Fprintf(out, "- SkipDelete %v\n", configuration.Spec.Cleanup.SkipDelete)
-			fmt.Fprintf(out, "- FailFast %v\n", configuration.Spec.Execution.FailFast)
+			fmt.Fprintf(stdOut, "- Using test file: %s\n", configuration.Spec.Discovery.TestFile)
+			fmt.Fprintf(stdOut, "- TestDirs %v\n", options.testDirs)
+			fmt.Fprintf(stdOut, "- SkipDelete %v\n", configuration.Spec.Cleanup.SkipDelete)
+			fmt.Fprintf(stdOut, "- FailFast %v\n", configuration.Spec.Execution.FailFast)
 			if configuration.Spec.Report != nil {
-				fmt.Fprintf(out, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
-				fmt.Fprintf(out, "- ReportName '%v'\n", configuration.Spec.Report.Name)
+				fmt.Fprintf(stdOut, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
+				fmt.Fprintf(stdOut, "- ReportName '%v'\n", configuration.Spec.Report.Name)
 				if configuration.Spec.Report.Path != "" {
-					fmt.Fprintf(out, "- ReportPath '%v'\n", configuration.Spec.Report.Path)
+					fmt.Fprintf(stdOut, "- ReportPath '%v'\n", configuration.Spec.Report.Path)
 				}
 			}
-			fmt.Fprintf(out, "- Namespace '%v'\n", configuration.Spec.Namespace.Name)
-			fmt.Fprintf(out, "- FullName %v\n", configuration.Spec.Discovery.FullName)
-			fmt.Fprintf(out, "- IncludeTestRegex '%v'\n", configuration.Spec.Discovery.IncludeTestRegex)
-			fmt.Fprintf(out, "- ExcludeTestRegex '%v'\n", configuration.Spec.Discovery.ExcludeTestRegex)
-			fmt.Fprintf(out, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.Apply.Duration)
-			fmt.Fprintf(out, "- AssertTimeout %v\n", configuration.Spec.Timeouts.Assert.Duration)
-			fmt.Fprintf(out, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.Cleanup.Duration)
-			fmt.Fprintf(out, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.Delete.Duration)
-			fmt.Fprintf(out, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.Error.Duration)
-			fmt.Fprintf(out, "- ExecTimeout %v\n", configuration.Spec.Timeouts.Exec.Duration)
-			fmt.Fprintf(out, "- DeletionPropagationPolicy %v\n", configuration.Spec.Deletion.Propagation)
+			fmt.Fprintf(stdOut, "- Namespace '%v'\n", configuration.Spec.Namespace.Name)
+			fmt.Fprintf(stdOut, "- FullName %v\n", configuration.Spec.Discovery.FullName)
+			fmt.Fprintf(stdOut, "- IncludeTestRegex '%v'\n", configuration.Spec.Discovery.IncludeTestRegex)
+			fmt.Fprintf(stdOut, "- ExcludeTestRegex '%v'\n", configuration.Spec.Discovery.ExcludeTestRegex)
+			fmt.Fprintf(stdOut, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.Apply.Duration)
+			fmt.Fprintf(stdOut, "- AssertTimeout %v\n", configuration.Spec.Timeouts.Assert.Duration)
+			fmt.Fprintf(stdOut, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.Cleanup.Duration)
+			fmt.Fprintf(stdOut, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.Delete.Duration)
+			fmt.Fprintf(stdOut, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.Error.Duration)
+			fmt.Fprintf(stdOut, "- ExecTimeout %v\n", configuration.Spec.Timeouts.Exec.Duration)
+			fmt.Fprintf(stdOut, "- DeletionPropagationPolicy %v\n", configuration.Spec.Deletion.Propagation)
 			if configuration.Spec.Execution.Parallel != nil && *configuration.Spec.Execution.Parallel > 0 {
-				fmt.Fprintf(out, "- Parallel %d\n", *configuration.Spec.Execution.Parallel)
+				fmt.Fprintf(stdOut, "- Parallel %d\n", *configuration.Spec.Execution.Parallel)
 			}
 			if configuration.Spec.Execution.RepeatCount != nil {
-				fmt.Fprintf(out, "- RepeatCount %v\n", *configuration.Spec.Execution.RepeatCount)
+				fmt.Fprintf(stdOut, "- RepeatCount %v\n", *configuration.Spec.Execution.RepeatCount)
 			}
 			if configuration.Spec.Execution.ForceTerminationGracePeriod != nil {
-				fmt.Fprintf(out, "- ForceTerminationGracePeriod %v\n", configuration.Spec.Execution.ForceTerminationGracePeriod.Duration)
+				fmt.Fprintf(stdOut, "- ForceTerminationGracePeriod %v\n", configuration.Spec.Execution.ForceTerminationGracePeriod.Duration)
 			}
 			if configuration.Spec.Cleanup.DelayBeforeCleanup != nil {
-				fmt.Fprintf(out, "- DelayBeforeCleanup %v\n", configuration.Spec.Cleanup.DelayBeforeCleanup.Duration)
+				fmt.Fprintf(stdOut, "- DelayBeforeCleanup %v\n", configuration.Spec.Cleanup.DelayBeforeCleanup.Duration)
 			}
 			if len(options.selector) != 0 {
-				fmt.Fprintf(out, "- Selector %v\n", options.selector)
+				fmt.Fprintf(stdOut, "- Selector %v\n", options.selector)
 			}
 			if len(options.values) != 0 {
-				fmt.Fprintf(out, "- Values %v\n", options.values)
+				fmt.Fprintf(stdOut, "- Values %v\n", options.values)
 			}
-			fmt.Fprintf(out, "- Template %v\n", configuration.Spec.Templating.Enabled)
+			fmt.Fprintf(stdOut, "- Template %v\n", configuration.Spec.Templating.Enabled)
 			if configuration.Spec.Templating.Compiler != nil {
-				fmt.Fprintf(out, "- Default compiler %v\n", *configuration.Spec.Templating.Compiler)
+				fmt.Fprintf(stdOut, "- Default compiler %v\n", *configuration.Spec.Templating.Compiler)
 			}
 			if len(configuration.Spec.Clusters) != 0 {
-				fmt.Fprintf(out, "- Clusters %v\n", configuration.Spec.Clusters)
+				fmt.Fprintf(stdOut, "- Clusters %v\n", configuration.Spec.Clusters)
 			}
 			if options.remarshal {
-				fmt.Fprintf(out, "- Remarshal %v\n", options.remarshal)
+				fmt.Fprintf(stdOut, "- Remarshal %v\n", options.remarshal)
 			}
-			fmt.Fprintf(out, "- NoCluster %v\n", options.noCluster)
-			fmt.Fprintf(out, "- PauseOnFailure %v\n", options.pauseOnFailure)
+			fmt.Fprintf(stdOut, "- NoCluster %v\n", options.noCluster)
+			fmt.Fprintf(stdOut, "- PauseOnFailure %v\n", options.pauseOnFailure)
 			if options.shardCount > 0 {
-				fmt.Fprintf(out, "- Shard %v / %v\n", options.shardIndex, options.shardCount)
+				fmt.Fprintf(stdOut, "- Shard %v / %v\n", options.shardIndex, options.shardCount)
 			}
 			// load tests
-			fmt.Fprintln(out, "Loading tests...")
+			fmt.Fprintln(stdOut, "Loading tests...")
 			if err := fsutils.CheckFolders(options.testDirs...); err != nil {
 				return err
 			}
@@ -310,20 +311,20 @@ func Command() *cobra.Command {
 			var testToRun []discovery.Test
 			for _, test := range tests {
 				if test.Err != nil {
-					fmt.Fprintf(out, "- %s (%s) - (%s)\n", test.Test.Name, test.BasePath, test.Err)
+					fmt.Fprintf(stdOut, "- %s (%s) - (%s)\n", test.Test.Name, test.BasePath, test.Err)
 				} else {
-					fmt.Fprintf(out, "- %s (%s)\n", test.Test.Name, test.BasePath)
+					fmt.Fprintf(stdOut, "- %s (%s)\n", test.Test.Name, test.BasePath)
 					testToRun = append(testToRun, test)
 				}
 			}
 			// load values
-			fmt.Fprintln(out, "Loading values...")
+			fmt.Fprintln(stdOut, "Loading values...")
 			values, err := values.Load(options.values...)
 			if err != nil {
 				return err
 			}
 			// run tests
-			fmt.Fprintln(out, "Running tests...")
+			fmt.Fprintln(stdOut, "Running tests...")
 			var restConfig *rest.Config
 			if !options.noCluster {
 				cfg, err := restutils.DefaultConfig(options.kubeConfigOverrides)
@@ -332,21 +333,28 @@ func Command() *cobra.Command {
 				}
 				restConfig = cfg
 			}
-			runner := runner.New(clock, failer.New(options.pauseOnFailure))
+			var onFailure func()
+			if options.pauseOnFailure {
+				onFailure = func() {
+					fmt.Fprintln(stdErr, "Failure detected, press ENTER to continue...")
+					fmt.Fscanln(stdIn) //nolint:errcheck
+				}
+			}
+			runner := runner.New(clock, onFailure)
 			summary, err := runner.Run(context.Background(), restConfig, configuration.Spec, values, testToRun...)
 			if summary != nil {
-				fmt.Fprintln(out, "Tests Summary...")
-				fmt.Fprintln(out, "- Passed  tests", summary.Passed())
-				fmt.Fprintln(out, "- Failed  tests", summary.Failed())
-				fmt.Fprintln(out, "- Skipped tests", summary.Skipped())
+				fmt.Fprintln(stdOut, "Tests Summary...")
+				fmt.Fprintln(stdOut, "- Passed  tests", summary.Passed())
+				fmt.Fprintln(stdOut, "- Failed  tests", summary.Failed())
+				fmt.Fprintln(stdOut, "- Skipped tests", summary.Skipped())
 			}
 			if err != nil {
-				fmt.Fprintln(out, "Done with error.")
+				fmt.Fprintln(stdOut, "Done with error.")
 			} else if summary != nil && summary.Failed() > 0 {
-				fmt.Fprintln(out, "Done with failures.")
+				fmt.Fprintln(stdOut, "Done with failures.")
 				err = errors.New("some tests failed")
 			} else {
-				fmt.Fprintln(out, "Done.")
+				fmt.Fprintln(stdOut, "Done.")
 			}
 			return err
 		},

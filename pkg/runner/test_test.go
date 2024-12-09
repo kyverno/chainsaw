@@ -16,7 +16,6 @@ import (
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/mocks"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
@@ -292,8 +291,7 @@ func TestTestProcessor_Run(t *testing.T) {
 			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
 			nsOptions := v1alpha2.NamespaceOptions{Template: config.Spec.Namespace.Template}
 			runner := runner{
-				clock:  tc.clock,
-				failer: failer.Default,
+				clock: tc.clock,
 			}
 			runner.runTest(ctx, nt, nsOptions, tc.namespacer, tcontext, tc.test, 0, 0)
 			if tc.expectedFail {

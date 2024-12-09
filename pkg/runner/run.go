@@ -12,7 +12,6 @@ import (
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"k8s.io/client-go/rest"
@@ -30,16 +29,16 @@ type Runner interface {
 	) (model.SummaryResult, error)
 }
 
-func New(clock clock.PassiveClock, failer failer.Failer) Runner {
+func New(clock clock.PassiveClock, onFailure func()) Runner {
 	return &runner{
-		clock:  clock,
-		failer: failer,
+		clock:     clock,
+		onFailure: onFailure,
 	}
 }
 
 type runner struct {
-	clock  clock.PassiveClock
-	failer failer.Failer
+	clock     clock.PassiveClock
+	onFailure func()
 }
 
 func (r *runner) Run(
@@ -104,6 +103,12 @@ func (r *runner) run(
 		}
 	}
 	return tc, nil
+}
+
+func (r *runner) onFail() {
+	if r.onFailure != nil {
+		r.onFailure()
+	}
 }
 
 func setupTestContext(ctx context.Context, values any, restConfig *rest.Config, config model.Configuration) (engine.Context, error) {
