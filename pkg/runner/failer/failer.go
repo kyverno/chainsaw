@@ -1,16 +1,13 @@
 package failer
 
 import (
-	"context"
 	"fmt"
-
-	"github.com/kyverno/chainsaw/pkg/testing"
 )
 
 var Default = New(false)
 
 type Failer interface {
-	Fail(context.Context, testing.TTest)
+	Fail()
 }
 
 type failer struct {
@@ -23,9 +20,8 @@ func New(pause bool) Failer {
 	}
 }
 
-func (f failer) Fail(ctx context.Context, t testing.TTest) {
+func (f failer) Fail() {
 	f.wait()
-	t.Fail()
 }
 
 func (f failer) wait() {
