@@ -332,8 +332,8 @@ func Command() *cobra.Command {
 				}
 				restConfig = cfg
 			}
-			ctx := failer.IntoContext(context.Background(), failer.New(options.pauseOnFailure))
-			summary, err := runner.Run(ctx, restConfig, clock, configuration.Spec, values, testToRun...)
+			runner := runner.New(clock, failer.New(options.pauseOnFailure))
+			summary, err := runner.Run(context.Background(), restConfig, configuration.Spec, values, testToRun...)
 			if summary != nil {
 				fmt.Fprintln(out, "Tests Summary...")
 				fmt.Fprintln(out, "- Passed  tests", summary.Passed())

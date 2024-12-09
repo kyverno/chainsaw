@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
+	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
@@ -154,7 +155,11 @@ func TestRun(t *testing.T) {
 			mockMainStart := &MockMainStart{
 				code: tt.mockReturn,
 			}
-			_, err := run(context.TODO(), tt.restConfig, fakeClock, tt.config, mockMainStart, nil, tt.tests...)
+			runner := runner{
+				clock:  fakeClock,
+				failer: failer.Default,
+			}
+			_, err := runner.run(context.TODO(), tt.restConfig, tt.config, mockMainStart, nil, tt.tests...)
 			if tt.wantErr {
 				assert.Error(t, err, "Run() should return an error")
 			} else {

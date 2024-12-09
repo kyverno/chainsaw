@@ -12,31 +12,49 @@ import (
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/chainsaw/pkg/report"
+	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 )
 
-type mainstart interface {
-	Run() int
+type Runner interface {
+	Run(context.Context,
+		// In test context
+		*rest.Config,
+		model.Configuration,
+		map[string]any,
+		//
+		...discovery.Test,
+	) (model.SummaryResult, error)
 }
 
-func Run(
+func New(clock clock.PassiveClock, failer failer.Failer) Runner {
+	return &runner{
+		clock:  clock,
+		failer: failer,
+	}
+}
+
+type runner struct {
+	clock  clock.PassiveClock
+	failer failer.Failer
+}
+
+func (r *runner) Run(
 	ctx context.Context,
 	cfg *rest.Config,
-	clock clock.PassiveClock,
 	config model.Configuration,
 	values map[string]any,
 	tests ...discovery.Test,
 ) (model.SummaryResult, error) {
-	return run(ctx, cfg, clock, config, nil, values, tests...)
+	return r.run(ctx, cfg, config, nil, values, tests...)
 }
 
-func run(
+func (r *runner) run(
 	ctx context.Context,
 	cfg *rest.Config,
-	clock clock.PassiveClock,
 	config model.Configuration,
 	m mainstart,
 	values map[string]any,
@@ -63,7 +81,7 @@ func run(
 			t.Helper()
 			t.Parallel()
 			// run tests
-			runTests(ctx, t, clock, config.Namespace, tc, tests...)
+			r.runTests(ctx, t, config.Namespace, tc, tests...)
 		},
 	}}
 	deps := &internal.TestDeps{}

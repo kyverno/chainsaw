@@ -107,7 +107,7 @@ func SetupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.
 	return tc, nil
 }
 
-func SetupCleanup(ctx context.Context, t testing.TTest, tc engine.Context) cleaner.CleanerCollector {
+func SetupCleanup(ctx context.Context, t testing.TTest, failer failer.Failer, tc engine.Context) cleaner.CleanerCollector {
 	if tc.SkipDelete() {
 		return nil
 	}

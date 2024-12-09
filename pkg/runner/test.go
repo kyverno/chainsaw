@@ -14,17 +14,14 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
-	"k8s.io/utils/clock"
 )
 
-func runTest(
+func (r *runner) runTest(
 	ctx context.Context,
 	t testing.TTest,
-	clock clock.PassiveClock,
 	nsOptions v1alpha2.NamespaceOptions,
 	nspacer namespacer.Namespacer,
 	tc engine.Context,
@@ -44,7 +41,7 @@ func runTest(
 			size = len(name)
 		}
 	}
-	ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
+	ctx = logging.IntoContext(ctx, logging.NewLogger(t, r.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
 	// setup summary
 	t.Cleanup(func() {
 		if t.Skipped() {
@@ -87,7 +84,7 @@ func runTest(
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		tc.IncFailed()
-		failer.Fail(ctx, t)
+		r.failer.Fail(ctx, t)
 		return
 	}
 	contextData := processors.ContextData{
@@ -105,7 +102,7 @@ func runTest(
 	tc, err = processors.SetupContext(ctx, tc, contextData)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.Fail(ctx, t)
+		r.failer.Fail(ctx, t)
 		return
 	}
 	// skip checks
@@ -135,7 +132,7 @@ func runTest(
 			}()
 			for _, err := range mainCleaner.Run(ctx, stepReport) {
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				failer.Fail(ctx, t)
+				r.failer.Fail(ctx, t)
 			}
 		}
 	})
@@ -172,7 +169,7 @@ func runTest(
 		nsTc, namespace, err := processors.SetupNamespace(ctx, tc, namespaceData)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			failer.Fail(ctx, t)
+			r.failer.Fail(ctx, t)
 			return
 		}
 		tc = nsTc
@@ -187,7 +184,7 @@ func runTest(
 	tc, err = processors.SetupBindings(ctx, tc, test.Test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.Fail(ctx, t)
+		r.failer.Fail(ctx, t)
 		return
 	}
 	// run steps
@@ -196,13 +193,13 @@ func runTest(
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		ctx := logging.IntoContext(ctx, logging.NewLogger(t, clock, test.Test.Name, fmt.Sprintf("%-*s", size, name)))
+		ctx := logging.IntoContext(ctx, logging.NewLogger(t, r.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name)))
 		info := processors.StepInfo{
 			Id: i + 1,
 		}
 		tc := tc.WithBinding(ctx, "step", info)
 		processor := processors.NewStepProcessor(step, report, test.BasePath)
-		if stop := processor.Run(ctx, t, nspacer, tc); stop {
+		if stop := processor.Run(ctx, t, r.failer, nspacer, tc); stop {
 			return
 		}
 	}
