@@ -1,4 +1,4 @@
-package processors
+package runner
 
 import (
 	"context"

@@ -9,7 +9,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
-	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
 )
@@ -18,7 +17,7 @@ func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alph
 	// configure golang context
 	ctx = logging.IntoContext(ctx, logging.NewLogger(t, r.clock, t.Name(), "@chainsaw"))
 	// setup cleaner
-	cleaner := processors.SetupCleanup(ctx, t, r.onFail, tc)
+	cleaner := setupCleanup(ctx, t, r.onFail, tc)
 	// setup namespace
 	var nspacer namespacer.Namespacer
 	if nsOptions.Name != "" {
@@ -26,13 +25,13 @@ func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alph
 		if nsOptions.Compiler != nil {
 			compilers = compilers.WithDefaultCompiler(string(*nsOptions.Compiler))
 		}
-		namespaceData := processors.NamespaceData{
-			Cleaner:   cleaner,
-			Compilers: compilers,
-			Name:      nsOptions.Name,
-			Template:  nsOptions.Template,
+		namespaceData := namespaceData{
+			cleaner:   cleaner,
+			compilers: compilers,
+			name:      nsOptions.Name,
+			template:  nsOptions.Template,
 		}
-		nsTc, namespace, err := processors.SetupNamespace(ctx, tc, namespaceData)
+		nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
 		if err != nil {
 			t.Fail()
 			tc.IncFailed()
