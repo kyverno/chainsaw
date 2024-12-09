@@ -82,9 +82,9 @@ func (r *runner) runTest(
 	})
 	tc, err := engine.WithBindings(ctx, tc, bindings...)
 	if err != nil {
+		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		tc.IncFailed()
-		r.failer.Fail(ctx, t)
+		r.failer.Fail()
 		return
 	}
 	contextData := processors.ContextData{
@@ -101,8 +101,9 @@ func (r *runner) runTest(
 	}
 	tc, err = processors.SetupContext(ctx, tc, contextData)
 	if err != nil {
+		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		r.failer.Fail(ctx, t)
+		r.failer.Fail()
 		return
 	}
 	// skip checks
@@ -131,8 +132,9 @@ func (r *runner) runTest(
 				report.Add(stepReport)
 			}()
 			for _, err := range mainCleaner.Run(ctx, stepReport) {
+				t.Fail()
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				r.failer.Fail(ctx, t)
+				r.failer.Fail()
 			}
 		}
 	})
@@ -168,8 +170,9 @@ func (r *runner) runTest(
 		}
 		nsTc, namespace, err := processors.SetupNamespace(ctx, tc, namespaceData)
 		if err != nil {
+			t.Fail()
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			r.failer.Fail(ctx, t)
+			r.failer.Fail()
 			return
 		}
 		tc = nsTc
@@ -183,8 +186,9 @@ func (r *runner) runTest(
 	// setup bindings
 	tc, err = processors.SetupBindings(ctx, tc, test.Test.Spec.Bindings...)
 	if err != nil {
+		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		r.failer.Fail(ctx, t)
+		r.failer.Fail()
 		return
 	}
 	// run steps

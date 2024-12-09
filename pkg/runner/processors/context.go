@@ -119,8 +119,9 @@ func SetupCleanup(ctx context.Context, t testing.TTest, failer failer.Failer, tc
 				logging.Log(ctx, logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
 			}()
 			for _, err := range cleaner.Run(ctx, nil) {
+				t.Fail()
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				failer.Fail(ctx, t)
+				failer.Fail()
 			}
 		}
 	})

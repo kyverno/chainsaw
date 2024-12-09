@@ -84,8 +84,9 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 	}
 	tc, err := setupContextAndBindings(ctx, tc, contextData, p.step.Bindings...)
 	if err != nil {
+		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.Fail(ctx, t)
+		failer.Fail()
 		return true
 	}
 	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
@@ -105,10 +106,11 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 			}()
 			if !cleaner.Empty() {
 				if errs := cleaner.Run(ctx, report); len(errs) != 0 {
+					t.Fail()
 					for _, err := range errs {
 						logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					}
-					failer.Fail(ctx, t)
+					failer.Fail()
 				}
 			}
 			for i, operation := range p.step.Cleanup {
@@ -118,13 +120,15 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 				}
 				operations, err := p.finallyOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation)
 				if err != nil {
+					t.Fail()
 					logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					failer.Fail(ctx, t)
+					failer.Fail()
 				}
 				for _, operation := range operations {
 					_, err := operation.execute(ctx, operationTc, report)
 					if err != nil {
-						failer.Fail(ctx, t)
+						t.Fail()
+						failer.Fail()
 					}
 				}
 			}
@@ -143,13 +147,15 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 				}
 				operations, err := p.finallyOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation)
 				if err != nil {
+					t.Fail()
 					logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					failer.Fail(ctx, t)
+					failer.Fail()
 				}
 				for _, operation := range operations {
 					_, err := operation.execute(ctx, operationTc, report)
 					if err != nil {
-						failer.Fail(ctx, t)
+						t.Fail()
+						failer.Fail()
 					}
 				}
 			}
@@ -169,13 +175,15 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 					}
 					operations, err := p.catchOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation)
 					if err != nil {
+						t.Fail()
 						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-						failer.Fail(ctx, t)
+						failer.Fail()
 					}
 					for _, operation := range operations {
 						_, err := operation.execute(ctx, operationTc, report)
 						if err != nil {
-							failer.Fail(ctx, t)
+							t.Fail()
+							failer.Fail()
 						}
 					}
 				}
@@ -194,17 +202,17 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, failer failer.
 		continueOnError := operation.ContinueOnError != nil && *operation.ContinueOnError
 		operations, err := p.tryOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation, cleaner)
 		if err != nil {
+			t.Fail()
 			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			failer.Fail(ctx, t)
+			failer.Fail()
 			return true
 		}
 		for _, operation := range operations {
 			outputs, err := operation.execute(ctx, operationTc, report)
 			if err != nil {
-				if continueOnError {
-					failer.Fail(ctx, t)
-				} else {
-					failer.Fail(ctx, t)
+				t.Fail()
+				failer.Fail()
+				if !continueOnError {
 					return true
 				}
 			}

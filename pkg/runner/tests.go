@@ -34,9 +34,10 @@ func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alph
 		}
 		nsTc, namespace, err := processors.SetupNamespace(ctx, tc, namespaceData)
 		if err != nil {
-			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			t.Fail()
 			tc.IncFailed()
-			r.failer.Fail(ctx, t)
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			r.failer.Fail()
 			return
 		}
 		tc = nsTc
@@ -49,9 +50,10 @@ func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alph
 		test := tests[i]
 		name, err := names.Test(tc.FullName(), test)
 		if err != nil {
-			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			t.Fail()
 			tc.IncFailed()
-			r.failer.Fail(ctx, t)
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			r.failer.Fail()
 		} else {
 			testId := i + 1
 			if len(test.Test.Spec.Scenarios) == 0 {
