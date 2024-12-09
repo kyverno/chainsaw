@@ -14,7 +14,6 @@ import (
 	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	tnamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
-	ttesting "github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -160,7 +159,6 @@ func Test_operationError(t *testing.T) {
 		},
 		client: &tclient.FakeClient{
 			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
-				t := ttesting.FromContext(ctx)
 				assert.Contains(t, opts, client.InNamespace("bar"))
 				uList := list.(*unstructured.UnstructuredList)
 				uList.Items = nil
@@ -218,7 +216,7 @@ func Test_operationError(t *testing.T) {
 				false,
 			)
 			logger := &tlogging.FakeLogger{}
-			outputs, err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t), nil)
+			outputs, err := operation.Exec(logging.IntoContext(ctx, logger), nil)
 			assert.Nil(t, outputs)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())

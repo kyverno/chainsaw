@@ -789,7 +789,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				tc.basePath,
 			)
 			nt := &testing.MockT{}
-			ctx := testing.IntoContext(context.Background(), nt)
+			ctx := context.Background()
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
 			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry).WithTimeouts(ctx, v1alpha1.Timeouts{
 				Apply:   &config.Spec.Timeouts.Apply,
@@ -799,7 +799,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Error:   &config.Spec.Timeouts.Error,
 				Exec:    &config.Spec.Timeouts.Exec,
 			})
-			got := stepProcessor.Run(ctx, tc.namespacer, tcontext)
+			got := stepProcessor.Run(ctx, nt, tc.namespacer, tcontext)
 			assert.Equal(t, tc.want, got)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")

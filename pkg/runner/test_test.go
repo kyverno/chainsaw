@@ -287,7 +287,7 @@ func TestTestProcessor_Run(t *testing.T) {
 				registry.Client = tc.client
 			}
 			nt := &testing.MockT{}
-			ctx := testing.IntoContext(context.Background(), nt)
+			ctx := context.Background()
 			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
 			nsOptions := v1alpha2.NamespaceOptions{Template: config.Spec.Namespace.Template}
 			runTest(ctx, nt, tc.clock, nsOptions, tc.namespacer, tcontext, tc.test, 0, 0)

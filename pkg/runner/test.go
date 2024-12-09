@@ -34,7 +34,6 @@ func runTest(
 	bindings ...v1alpha1.Binding,
 ) {
 	// configure golang context
-	ctx = testing.IntoContext(ctx, t)
 	size := len("@chainsaw")
 	for i, step := range test.Test.Spec.Steps {
 		name := step.Name
@@ -88,7 +87,7 @@ func runTest(
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 		tc.IncFailed()
-		failer.Fail(ctx)
+		failer.Fail(ctx, t)
 		return
 	}
 	contextData := processors.ContextData{
@@ -106,7 +105,7 @@ func runTest(
 	tc, err = processors.SetupContext(ctx, tc, contextData)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.Fail(ctx)
+		failer.Fail(ctx, t)
 		return
 	}
 	// skip checks
@@ -136,7 +135,7 @@ func runTest(
 			}()
 			for _, err := range mainCleaner.Run(ctx, stepReport) {
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				failer.Fail(ctx)
+				failer.Fail(ctx, t)
 			}
 		}
 	})
@@ -173,7 +172,7 @@ func runTest(
 		nsTc, namespace, err := processors.SetupNamespace(ctx, tc, namespaceData)
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			failer.Fail(ctx)
+			failer.Fail(ctx, t)
 			return
 		}
 		tc = nsTc
@@ -188,7 +187,7 @@ func runTest(
 	tc, err = processors.SetupBindings(ctx, tc, test.Test.Spec.Bindings...)
 	if err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		failer.Fail(ctx)
+		failer.Fail(ctx, t)
 		return
 	}
 	// run steps
@@ -203,7 +202,7 @@ func runTest(
 		}
 		tc := tc.WithBinding(ctx, "step", info)
 		processor := processors.NewStepProcessor(step, report, test.BasePath)
-		if stop := processor.Run(ctx, nspacer, tc); stop {
+		if stop := processor.Run(ctx, t, nspacer, tc); stop {
 			return
 		}
 	}

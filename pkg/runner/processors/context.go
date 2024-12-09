@@ -107,11 +107,10 @@ func SetupBindings(ctx context.Context, tc engine.Context, bindings ...v1alpha1.
 	return tc, nil
 }
 
-func SetupCleanup(ctx context.Context, tc engine.Context) cleaner.CleanerCollector {
+func SetupCleanup(ctx context.Context, t testing.TTest, tc engine.Context) cleaner.CleanerCollector {
 	if tc.SkipDelete() {
 		return nil
 	}
-	t := testing.FromContext(ctx)
 	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !cleaner.Empty() {
@@ -121,7 +120,7 @@ func SetupCleanup(ctx context.Context, tc engine.Context) cleaner.CleanerCollect
 			}()
 			for _, err := range cleaner.Run(ctx, nil) {
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				failer.Fail(ctx)
+				failer.Fail(ctx, t)
 			}
 		}
 	})
