@@ -84,7 +84,7 @@ func (r *runner) runTest(
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		r.failer.Fail()
+		r.onFail()
 		return
 	}
 	contextData := processors.ContextData{
@@ -103,7 +103,7 @@ func (r *runner) runTest(
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		r.failer.Fail()
+		r.onFail()
 		return
 	}
 	// skip checks
@@ -134,7 +134,7 @@ func (r *runner) runTest(
 			for _, err := range mainCleaner.Run(ctx, stepReport) {
 				t.Fail()
 				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-				r.failer.Fail()
+				r.onFail()
 			}
 		}
 	})
@@ -172,7 +172,7 @@ func (r *runner) runTest(
 		if err != nil {
 			t.Fail()
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			r.failer.Fail()
+			r.onFail()
 			return
 		}
 		tc = nsTc
@@ -188,7 +188,7 @@ func (r *runner) runTest(
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		r.failer.Fail()
+		r.onFail()
 		return
 	}
 	// run steps
@@ -203,7 +203,7 @@ func (r *runner) runTest(
 		}
 		tc := tc.WithBinding(ctx, "step", info)
 		processor := processors.NewStepProcessor(step, report, test.BasePath)
-		if stop := processor.Run(ctx, t, r.failer, nspacer, tc); stop {
+		if stop := processor.Run(ctx, t, r.onFail, nspacer, tc); stop {
 			return
 		}
 	}

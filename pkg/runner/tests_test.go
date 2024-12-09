@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	enginecontext "github.com/kyverno/chainsaw/pkg/engine/context"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/mocks"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
@@ -160,8 +159,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 			ctx := context.Background()
 			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
 			runner := runner{
-				clock:  tc.clock,
-				failer: failer.Default,
+				clock: tc.clock,
 			}
 			runner.runTests(ctx, nt, tc.config.Namespace, tcontext, tc.tests...)
 			if tc.expectedFail {

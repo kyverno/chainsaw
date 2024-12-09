@@ -18,7 +18,7 @@ func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alph
 	// configure golang context
 	ctx = logging.IntoContext(ctx, logging.NewLogger(t, r.clock, t.Name(), "@chainsaw"))
 	// setup cleaner
-	cleaner := processors.SetupCleanup(ctx, t, r.failer, tc)
+	cleaner := processors.SetupCleanup(ctx, t, r.onFail, tc)
 	// setup namespace
 	var nspacer namespacer.Namespacer
 	if nsOptions.Name != "" {
@@ -37,7 +37,7 @@ func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alph
 			t.Fail()
 			tc.IncFailed()
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			r.failer.Fail()
+			r.onFail()
 			return
 		}
 		tc = nsTc
@@ -53,7 +53,7 @@ func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alph
 			t.Fail()
 			tc.IncFailed()
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			r.failer.Fail()
+			r.onFail()
 		} else {
 			testId := i + 1
 			if len(test.Test.Spec.Scenarios) == 0 {
