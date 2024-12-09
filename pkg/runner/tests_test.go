@@ -156,7 +156,7 @@ func TestTestsProcessor_Run(t *testing.T) {
 				registry.Client = tc.client
 			}
 			nt := &testing.MockT{}
-			ctx := testing.IntoContext(context.Background(), nt)
+			ctx := context.Background()
 			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry)
 			runTests(ctx, nt, tc.clock, tc.config.Namespace, tcontext, tc.tests...)
 			if tc.expectedFail {

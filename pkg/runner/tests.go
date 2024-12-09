@@ -18,10 +18,9 @@ import (
 
 func runTests(ctx context.Context, t testing.TTest, clock clock.PassiveClock, nsOptions v1alpha2.NamespaceOptions, tc engine.Context, tests ...discovery.Test) {
 	// configure golang context
-	ctx = testing.IntoContext(ctx, t)
 	ctx = logging.IntoContext(ctx, logging.NewLogger(t, clock, t.Name(), "@chainsaw"))
 	// setup cleaner
-	cleaner := processors.SetupCleanup(ctx, tc)
+	cleaner := processors.SetupCleanup(ctx, t, tc)
 	// setup namespace
 	var nspacer namespacer.Namespacer
 	if nsOptions.Name != "" {
@@ -39,7 +38,7 @@ func runTests(ctx context.Context, t testing.TTest, clock clock.PassiveClock, ns
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			tc.IncFailed()
-			failer.Fail(ctx)
+			failer.Fail(ctx, t)
 			return
 		}
 		tc = nsTc
@@ -54,7 +53,7 @@ func runTests(ctx context.Context, t testing.TTest, clock clock.PassiveClock, ns
 		if err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 			tc.IncFailed()
-			failer.Fail(ctx)
+			failer.Fail(ctx, t)
 		} else {
 			testId := i + 1
 			if len(test.Test.Spec.Scenarios) == 0 {

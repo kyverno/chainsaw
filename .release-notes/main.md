@@ -19,3 +19,7 @@ Release notes for `TODO`.
 
 ## 🎸 Misc 🎸
 -->
+
+## 💫 New features 💫
+
+- Continue tests when an error happens when computing the test name

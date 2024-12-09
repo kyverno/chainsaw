@@ -10,7 +10,7 @@ import (
 var defaultFailer = New(false)
 
 type Failer interface {
-	Fail(context.Context)
+	Fail(context.Context, testing.TTest)
 }
 
 type failer struct {
@@ -23,9 +23,8 @@ func New(pause bool) Failer {
 	}
 }
 
-func (f failer) Fail(ctx context.Context) {
+func (f failer) Fail(ctx context.Context, t testing.TTest) {
 	f.wait()
-	t := testing.FromContext(ctx)
 	t.Fail()
 }
 
@@ -44,7 +43,7 @@ func getFailerOrDefault(ctx context.Context) Failer {
 	return f
 }
 
-func Fail(ctx context.Context) {
+func Fail(ctx context.Context, t testing.TTest) {
 	f := getFailerOrDefault(ctx)
-	f.Fail(ctx)
+	f.Fail(ctx, t)
 }

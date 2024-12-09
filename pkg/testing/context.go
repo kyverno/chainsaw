@@ -1,7 +1,6 @@
 package testing
 
 import (
-	"context"
 	"testing"
 	"time"
 )
@@ -12,8 +11,6 @@ type (
 	InternalTest = testing.InternalTest
 	T            = testing.T
 )
-
-type contextKey struct{}
 
 type TTest interface {
 	Cleanup(func())
@@ -35,16 +32,4 @@ type TTest interface {
 	Skipf(format string, args ...any)
 	Skipped() bool
 	TempDir() string
-}
-
-func FromContext(ctx context.Context) TTest {
-	if v, ok := ctx.Value(contextKey{}).(TTest); ok {
-		return v
-	}
-	return nil
-}
-
-func IntoContext(ctx context.Context, t TTest) context.Context {
-	t.Helper()
-	return context.WithValue(ctx, contextKey{}, t)
 }
