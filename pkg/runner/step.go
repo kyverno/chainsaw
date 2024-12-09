@@ -1,4 +1,4 @@
-package processors
+package runner
 
 import (
 	"context"
@@ -36,68 +36,46 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-type StepProcessor interface {
-	Run(context.Context, testing.TTest, func(), namespacer.Namespacer, enginecontext.TestContext) bool
-}
-
-func NewStepProcessor(
-	step v1alpha1.TestStep,
-	report *model.TestReport,
-	basePath string,
-) StepProcessor {
-	return &stepProcessor{
-		step:     step,
-		report:   report,
-		basePath: basePath,
-	}
-}
-
-type stepProcessor struct {
-	step     v1alpha1.TestStep
-	report   *model.TestReport
-	basePath string
-}
-
-func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, onFailure func(), namespacer namespacer.Namespacer, tc enginecontext.TestContext) bool {
+func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, namespacer namespacer.Namespacer, tc enginecontext.TestContext, step v1alpha1.TestStep, testReport *model.TestReport) bool {
 	report := &model.StepReport{
-		Name:      p.step.Name,
+		Name:      step.Name,
 		StartTime: time.Now(),
 	}
 	defer func() {
 		report.EndTime = time.Now()
-		p.report.Add(report)
+		testReport.Add(report)
 	}()
 	logger := logging.FromContext(ctx)
-	if p.step.Compiler != nil {
-		tc = tc.WithDefaultCompiler(string(*p.step.Compiler))
+	if step.Compiler != nil {
+		tc = tc.WithDefaultCompiler(string(*step.Compiler))
 	}
-	contextData := ContextData{
-		BasePath:            p.basePath,
-		Catch:               p.step.Catch,
-		Cluster:             p.step.Cluster,
-		Clusters:            p.step.Clusters,
-		DeletionPropagation: p.step.DeletionPropagationPolicy,
-		SkipDelete:          p.step.SkipDelete,
-		Templating:          p.step.Template,
-		Timeouts:            p.step.Timeouts,
+	contextData := contextData{
+		basePath:            basePath,
+		catch:               step.Catch,
+		cluster:             step.Cluster,
+		clusters:            step.Clusters,
+		deletionPropagation: step.DeletionPropagationPolicy,
+		skipDelete:          step.SkipDelete,
+		templating:          step.Template,
+		timeouts:            step.Timeouts,
 	}
-	tc, err := setupContextAndBindings(ctx, tc, contextData, p.step.Bindings...)
+	tc, err := setupContextAndBindings(ctx, tc, contextData, step.Bindings...)
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-		onFailure()
+		r.onFail()
 		return true
 	}
 	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
 	t.Cleanup(func() {
-		if !cleaner.Empty() || len(p.step.Cleanup) != 0 {
+		if !cleaner.Empty() || len(step.Cleanup) != 0 {
 			report := &model.StepReport{
 				Name:      fmt.Sprintf("cleanup (%s)", report.Name),
 				StartTime: time.Now(),
 			}
 			defer func() {
 				report.EndTime = time.Now()
-				p.report.Add(report)
+				testReport.Add(report)
 			}()
 			logger.Log(logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
 			defer func() {
@@ -109,52 +87,52 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, onFailure func
 					for _, err := range errs {
 						logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
 					}
-					onFailure()
+					r.onFail()
 				}
 			}
-			for i, operation := range p.step.Cleanup {
+			for i, operation := range step.Cleanup {
 				operationTc := tc
 				if operation.Compiler != nil {
 					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				operations, err := p.finallyOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation)
+				operations, err := finallyOperation(operationTc.Compilers(), basePath, i, namespacer, operationTc.Bindings(), operation)
 				if err != nil {
 					t.Fail()
 					logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					onFailure()
+					r.onFail()
 				}
 				for _, operation := range operations {
 					_, err := operation.execute(ctx, operationTc, report)
 					if err != nil {
 						t.Fail()
-						onFailure()
+						r.onFail()
 					}
 				}
 			}
 		}
 	})
-	if len(p.step.Finally) != 0 {
+	if len(step.Finally) != 0 {
 		defer func() {
 			logger.Log(logging.Finally, logging.BeginStatus, color.BoldFgCyan)
 			defer func() {
 				logger.Log(logging.Finally, logging.EndStatus, color.BoldFgCyan)
 			}()
-			for i, operation := range p.step.Finally {
+			for i, operation := range step.Finally {
 				operationTc := tc
 				if operation.Compiler != nil {
 					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				operations, err := p.finallyOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation)
+				operations, err := finallyOperation(operationTc.Compilers(), basePath, i, namespacer, operationTc.Bindings(), operation)
 				if err != nil {
 					t.Fail()
 					logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-					onFailure()
+					r.onFail()
 				}
 				for _, operation := range operations {
 					_, err := operation.execute(ctx, operationTc, report)
 					if err != nil {
 						t.Fail()
-						onFailure()
+						r.onFail()
 					}
 				}
 			}
@@ -172,17 +150,17 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, onFailure func
 					if operation.Compiler != nil {
 						operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
 					}
-					operations, err := p.catchOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation)
+					operations, err := catchOperation(operationTc.Compilers(), basePath, i, namespacer, operationTc.Bindings(), operation)
 					if err != nil {
 						t.Fail()
 						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-						onFailure()
+						r.onFail()
 					}
 					for _, operation := range operations {
 						_, err := operation.execute(ctx, operationTc, report)
 						if err != nil {
 							t.Fail()
-							onFailure()
+							r.onFail()
 						}
 					}
 				}
@@ -193,24 +171,24 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, onFailure func
 	defer func() {
 		logger.Log(logging.Try, logging.EndStatus, color.BoldFgCyan)
 	}()
-	for i, operation := range p.step.Try {
+	for i, operation := range step.Try {
 		operationTc := tc
 		if operation.Compiler != nil {
 			operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
 		}
 		continueOnError := operation.ContinueOnError != nil && *operation.ContinueOnError
-		operations, err := p.tryOperation(operationTc.Compilers(), i, namespacer, operationTc.Bindings(), operation, cleaner)
+		operations, err := tryOperation(operationTc.Compilers(), basePath, i, namespacer, operationTc.Bindings(), operation, cleaner)
 		if err != nil {
 			t.Fail()
 			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
-			onFailure()
+			r.onFail()
 			return true
 		}
 		for _, operation := range operations {
 			outputs, err := operation.execute(ctx, operationTc, report)
 			if err != nil {
 				t.Fail()
-				onFailure()
+				r.onFail()
 				if !continueOnError {
 					return true
 				}
@@ -223,38 +201,38 @@ func (p *stepProcessor) Run(ctx context.Context, t testing.TTest, onFailure func
 	return false
 }
 
-func (p *stepProcessor) tryOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
+func tryOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.Operation, cleaner cleaner.CleanerCollector) ([]operation, error) {
 	var ops []operation
 	if handler.Apply != nil {
-		loaded, err := p.applyOperation(compilers, id+1, namespacer, cleaner, bindings, *handler.Apply)
+		loaded, err := applyOperation(compilers, basePath, id+1, namespacer, cleaner, bindings, *handler.Apply)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Assert != nil {
-		loaded, err := p.assertOperation(compilers, id+1, namespacer, bindings, *handler.Assert)
+		loaded, err := assertOperation(compilers, basePath, id+1, namespacer, bindings, *handler.Assert)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Command != nil {
-		ops = append(ops, p.commandOperation(compilers, id+1, namespacer, *handler.Command))
+		ops = append(ops, commandOperation(compilers, basePath, id+1, namespacer, *handler.Command))
 	} else if handler.Create != nil {
-		loaded, err := p.createOperation(compilers, id+1, namespacer, cleaner, bindings, *handler.Create)
+		loaded, err := createOperation(compilers, basePath, id+1, namespacer, cleaner, bindings, *handler.Create)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(compilers, id+1, namespacer, bindings, *handler.Delete)
+		loaded, err := deleteOperation(compilers, basePath, id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Describe != nil {
-		ops = append(ops, p.describeOperation(compilers, id+1, namespacer, *handler.Describe))
+		ops = append(ops, describeOperation(compilers, basePath, id+1, namespacer, *handler.Describe))
 	} else if handler.Error != nil {
-		loaded, err := p.errorOperation(compilers, id+1, namespacer, bindings, *handler.Error)
+		loaded, err := errorOperation(compilers, basePath, id+1, namespacer, bindings, *handler.Error)
 		if err != nil {
 			return nil, err
 		}
@@ -272,41 +250,41 @@ func (p *stepProcessor) tryOperation(compilers compilers.Compilers, id int, name
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		ops = append(ops, p.getOperation(compilers, id+1, namespacer, get))
+		ops = append(ops, getOperation(compilers, basePath, id+1, namespacer, get))
 	} else if handler.Get != nil {
-		ops = append(ops, p.getOperation(compilers, id+1, namespacer, *handler.Get))
+		ops = append(ops, getOperation(compilers, basePath, id+1, namespacer, *handler.Get))
 	} else if handler.Patch != nil {
-		loaded, err := p.patchOperation(compilers, id+1, namespacer, bindings, *handler.Patch)
+		loaded, err := patchOperation(compilers, basePath, id+1, namespacer, bindings, *handler.Patch)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.PodLogs != nil {
-		ops = append(ops, p.logsOperation(compilers, id+1, namespacer, *handler.PodLogs))
+		ops = append(ops, logsOperation(compilers, basePath, id+1, namespacer, *handler.PodLogs))
 	} else if handler.Proxy != nil {
-		ops = append(ops, p.proxyOperation(compilers, id+1, namespacer, *handler.Proxy))
+		ops = append(ops, proxyOperation(compilers, basePath, id+1, namespacer, *handler.Proxy))
 	} else if handler.Script != nil {
-		ops = append(ops, p.scriptOperation(compilers, id+1, namespacer, *handler.Script))
+		ops = append(ops, scriptOperation(compilers, basePath, id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
-		ops = append(ops, p.sleepOperation(compilers, id+1, *handler.Sleep))
+		ops = append(ops, sleepOperation(compilers, id+1, *handler.Sleep))
 	} else if handler.Update != nil {
-		loaded, err := p.updateOperation(compilers, id+1, namespacer, bindings, *handler.Update)
+		loaded, err := updateOperation(compilers, basePath, id+1, namespacer, bindings, *handler.Update)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Wait != nil {
-		ops = append(ops, p.waitOperation(compilers, id+1, namespacer, *handler.Wait))
+		ops = append(ops, waitOperation(compilers, basePath, id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) catchOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
+func catchOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	if handler.PodLogs != nil {
-		ops = append(ops, p.logsOperation(compilers, id+1, namespacer, *handler.PodLogs))
+		ops = append(ops, logsOperation(compilers, basePath, id+1, namespacer, *handler.PodLogs))
 	} else if handler.Events != nil {
 		get := v1alpha1.Get{
 			ActionClusters: handler.Events.ActionClusters,
@@ -320,35 +298,35 @@ func (p *stepProcessor) catchOperation(compilers compilers.Compilers, id int, na
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		ops = append(ops, p.getOperation(compilers, id+1, namespacer, get))
+		ops = append(ops, getOperation(compilers, basePath, id+1, namespacer, get))
 	} else if handler.Describe != nil {
-		ops = append(ops, p.describeOperation(compilers, id+1, namespacer, *handler.Describe))
+		ops = append(ops, describeOperation(compilers, basePath, id+1, namespacer, *handler.Describe))
 	} else if handler.Get != nil {
-		ops = append(ops, p.getOperation(compilers, id+1, namespacer, *handler.Get))
+		ops = append(ops, getOperation(compilers, basePath, id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(compilers, id+1, namespacer, bindings, *handler.Delete)
+		loaded, err := deleteOperation(compilers, basePath, id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Command != nil {
-		ops = append(ops, p.commandOperation(compilers, id+1, namespacer, *handler.Command))
+		ops = append(ops, commandOperation(compilers, basePath, id+1, namespacer, *handler.Command))
 	} else if handler.Script != nil {
-		ops = append(ops, p.scriptOperation(compilers, id+1, namespacer, *handler.Script))
+		ops = append(ops, scriptOperation(compilers, basePath, id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
-		ops = append(ops, p.sleepOperation(compilers, id+1, *handler.Sleep))
+		ops = append(ops, sleepOperation(compilers, id+1, *handler.Sleep))
 	} else if handler.Wait != nil {
-		ops = append(ops, p.waitOperation(compilers, id+1, namespacer, *handler.Wait))
+		ops = append(ops, waitOperation(compilers, basePath, id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) finallyOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
+func finallyOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, handler v1alpha1.CatchFinally) ([]operation, error) {
 	var ops []operation
 	if handler.PodLogs != nil {
-		ops = append(ops, p.logsOperation(compilers, id+1, namespacer, *handler.PodLogs))
+		ops = append(ops, logsOperation(compilers, basePath, id+1, namespacer, *handler.PodLogs))
 	} else if handler.Events != nil {
 		get := v1alpha1.Get{
 			ActionClusters: handler.Events.ActionClusters,
@@ -362,33 +340,33 @@ func (p *stepProcessor) finallyOperation(compilers compilers.Compilers, id int, 
 				ActionObjectSelector: handler.Events.ActionObjectSelector,
 			},
 		}
-		ops = append(ops, p.getOperation(compilers, id+1, namespacer, get))
+		ops = append(ops, getOperation(compilers, basePath, id+1, namespacer, get))
 	} else if handler.Describe != nil {
-		ops = append(ops, p.describeOperation(compilers, id+1, namespacer, *handler.Describe))
+		ops = append(ops, describeOperation(compilers, basePath, id+1, namespacer, *handler.Describe))
 	} else if handler.Get != nil {
-		ops = append(ops, p.getOperation(compilers, id+1, namespacer, *handler.Get))
+		ops = append(ops, getOperation(compilers, basePath, id+1, namespacer, *handler.Get))
 	} else if handler.Delete != nil {
-		loaded, err := p.deleteOperation(compilers, id+1, namespacer, bindings, *handler.Delete)
+		loaded, err := deleteOperation(compilers, basePath, id+1, namespacer, bindings, *handler.Delete)
 		if err != nil {
 			return nil, err
 		}
 		ops = append(ops, loaded...)
 	} else if handler.Command != nil {
-		ops = append(ops, p.commandOperation(compilers, id+1, namespacer, *handler.Command))
+		ops = append(ops, commandOperation(compilers, basePath, id+1, namespacer, *handler.Command))
 	} else if handler.Script != nil {
-		ops = append(ops, p.scriptOperation(compilers, id+1, namespacer, *handler.Script))
+		ops = append(ops, scriptOperation(compilers, basePath, id+1, namespacer, *handler.Script))
 	} else if handler.Sleep != nil {
-		ops = append(ops, p.sleepOperation(compilers, id+1, *handler.Sleep))
+		ops = append(ops, sleepOperation(compilers, id+1, *handler.Sleep))
 	} else if handler.Wait != nil {
-		ops = append(ops, p.waitOperation(compilers, id+1, namespacer, *handler.Wait))
+		ops = append(ops, waitOperation(compilers, basePath, id+1, namespacer, *handler.Wait))
 	} else {
 		return nil, errors.New("no operation found")
 	}
 	return ops, nil
 }
 
-func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Apply) ([]operation, error) {
-	resources, err := p.fileRefOrResource(context.TODO(), compilers, op.ActionResourceRef, bindings)
+func applyOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Apply) ([]operation, error) {
+	resources, err := fileRefOrResource(context.TODO(), op.ActionResourceRef, basePath, compilers, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -402,13 +380,13 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 			},
 			model.OperationTypeApply,
 			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-				contextData := ContextData{
-					BasePath:   p.basePath,
-					Cluster:    op.Cluster,
-					Clusters:   op.Clusters,
-					DryRun:     op.DryRun,
-					Templating: op.Template,
-					Timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
+				contextData := contextData{
+					basePath:   basePath,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					dryRun:     op.DryRun,
+					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -435,8 +413,8 @@ func (p *stepProcessor) applyOperation(compilers compilers.Compilers, id int, na
 	return ops, nil
 }
 
-func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Assert) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(context.TODO(), compilers, op.ActionCheckRef, bindings)
+func assertOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Assert) ([]operation, error) {
+	resources, err := fileRefOrCheck(context.TODO(), op.ActionCheckRef, basePath, compilers, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -450,12 +428,12 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 			},
 			model.OperationTypeAssert,
 			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-				contextData := ContextData{
-					BasePath:   p.basePath,
-					Cluster:    op.Cluster,
-					Clusters:   op.Clusters,
-					Templating: op.Template,
-					Timeouts:   &v1alpha1.Timeouts{Assert: op.Timeout},
+				contextData := contextData{
+					basePath:   basePath,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Assert: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -477,7 +455,7 @@ func (p *stepProcessor) assertOperation(compilers compilers.Compilers, id int, n
 	return ops, nil
 }
 
-func (p *stepProcessor) commandOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Command) operation {
+func commandOperation(_ compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, op v1alpha1.Command) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -488,11 +466,11 @@ func (p *stepProcessor) commandOperation(_ compilers.Compilers, id int, namespac
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-			contextData := ContextData{
-				BasePath: p.basePath,
-				Cluster:  op.Cluster,
-				Clusters: op.Clusters,
-				Timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
+			contextData := contextData{
+				basePath: basePath,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 				return nil, nil, tc, err
@@ -502,7 +480,7 @@ func (p *stepProcessor) commandOperation(_ compilers.Compilers, id int, namespac
 				op := opcommand.New(
 					tc.Compilers(),
 					op,
-					p.basePath,
+					basePath,
 					ns,
 					config,
 				)
@@ -512,8 +490,8 @@ func (p *stepProcessor) commandOperation(_ compilers.Compilers, id int, namespac
 	)
 }
 
-func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Create) ([]operation, error) {
-	resources, err := p.fileRefOrResource(context.TODO(), compilers, op.ActionResourceRef, bindings)
+func createOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, bindings apis.Bindings, op v1alpha1.Create) ([]operation, error) {
+	resources, err := fileRefOrResource(context.TODO(), op.ActionResourceRef, basePath, compilers, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -527,13 +505,13 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 			},
 			model.OperationTypeCreate,
 			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-				contextData := ContextData{
-					BasePath:   p.basePath,
-					Cluster:    op.Cluster,
-					Clusters:   op.Clusters,
-					DryRun:     op.DryRun,
-					Templating: op.Template,
-					Timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
+				contextData := contextData{
+					basePath:   basePath,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					dryRun:     op.DryRun,
+					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -560,7 +538,7 @@ func (p *stepProcessor) createOperation(compilers compilers.Compilers, id int, n
 	return ops, nil
 }
 
-func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Delete) ([]operation, error) {
+func deleteOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Delete) ([]operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -575,7 +553,7 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 		resource.SetLabels(op.Ref.Labels)
 		ref.Resource = &resource
 	}
-	resources, err := p.fileRefOrResource(context.TODO(), compilers, ref, bindings)
+	resources, err := fileRefOrResource(context.TODO(), ref, basePath, compilers, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -589,13 +567,13 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 			},
 			model.OperationTypeDelete,
 			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-				contextData := ContextData{
-					BasePath:            p.basePath,
-					Cluster:             op.Cluster,
-					Clusters:            op.Clusters,
-					DeletionPropagation: op.DeletionPropagationPolicy,
-					Templating:          op.Template,
-					Timeouts:            &v1alpha1.Timeouts{Delete: op.Timeout},
+				contextData := contextData{
+					basePath:            basePath,
+					cluster:             op.Cluster,
+					clusters:            op.Clusters,
+					deletionPropagation: op.DeletionPropagationPolicy,
+					templating:          op.Template,
+					timeouts:            &v1alpha1.Timeouts{Delete: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -619,7 +597,7 @@ func (p *stepProcessor) deleteOperation(compilers compilers.Compilers, id int, n
 	return ops, nil
 }
 
-func (p *stepProcessor) describeOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Describe) operation {
+func describeOperation(_ compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, op v1alpha1.Describe) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -630,11 +608,11 @@ func (p *stepProcessor) describeOperation(_ compilers.Compilers, id int, namespa
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-			contextData := ContextData{
-				BasePath: p.basePath,
-				Cluster:  op.Cluster,
-				Clusters: op.Clusters,
-				Timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
+			contextData := contextData{
+				basePath: basePath,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
@@ -653,7 +631,7 @@ func (p *stepProcessor) describeOperation(_ compilers.Compilers, id int, namespa
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.basePath,
+					basePath,
 					ns,
 					config,
 				)
@@ -663,8 +641,8 @@ func (p *stepProcessor) describeOperation(_ compilers.Compilers, id int, namespa
 	)
 }
 
-func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Error) ([]operation, error) {
-	resources, err := p.fileRefOrCheck(context.TODO(), compilers, op.ActionCheckRef, bindings)
+func errorOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Error) ([]operation, error) {
+	resources, err := fileRefOrCheck(context.TODO(), op.ActionCheckRef, basePath, compilers, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -678,12 +656,12 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 			},
 			model.OperationTypeError,
 			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-				contextData := ContextData{
-					BasePath:   p.basePath,
-					Cluster:    op.Cluster,
-					Clusters:   op.Clusters,
-					Templating: op.Template,
-					Timeouts:   &v1alpha1.Timeouts{Error: op.Timeout},
+				contextData := contextData{
+					basePath:   basePath,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Error: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -705,7 +683,7 @@ func (p *stepProcessor) errorOperation(compilers compilers.Compilers, id int, na
 	return ops, nil
 }
 
-func (p *stepProcessor) getOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Get) operation {
+func getOperation(_ compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, op v1alpha1.Get) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -716,11 +694,11 @@ func (p *stepProcessor) getOperation(_ compilers.Compilers, id int, namespacer n
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-			contextData := ContextData{
-				BasePath: p.basePath,
-				Cluster:  op.Cluster,
-				Clusters: op.Clusters,
-				Timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
+			contextData := contextData{
+				basePath: basePath,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
@@ -739,7 +717,7 @@ func (p *stepProcessor) getOperation(_ compilers.Compilers, id int, namespacer n
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.basePath,
+					basePath,
 					ns,
 					config,
 				)
@@ -749,7 +727,7 @@ func (p *stepProcessor) getOperation(_ compilers.Compilers, id int, namespacer n
 	)
 }
 
-func (p *stepProcessor) logsOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.PodLogs) operation {
+func logsOperation(_ compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, op v1alpha1.PodLogs) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -760,11 +738,11 @@ func (p *stepProcessor) logsOperation(_ compilers.Compilers, id int, namespacer 
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-			contextData := ContextData{
-				BasePath: p.basePath,
-				Cluster:  op.Cluster,
-				Clusters: op.Clusters,
-				Timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
+			contextData := contextData{
+				basePath: basePath,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
@@ -783,7 +761,7 @@ func (p *stepProcessor) logsOperation(_ compilers.Compilers, id int, namespacer 
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.basePath,
+					basePath,
 					ns,
 					config,
 				)
@@ -793,8 +771,8 @@ func (p *stepProcessor) logsOperation(_ compilers.Compilers, id int, namespacer 
 	)
 }
 
-func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Patch) ([]operation, error) {
-	resources, err := p.fileRefOrResource(context.TODO(), compilers, op.ActionResourceRef, bindings)
+func patchOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Patch) ([]operation, error) {
+	resources, err := fileRefOrResource(context.TODO(), op.ActionResourceRef, basePath, compilers, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -808,13 +786,13 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 			},
 			model.OperationTypePatch,
 			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-				contextData := ContextData{
-					BasePath:   p.basePath,
-					Cluster:    op.Cluster,
-					Clusters:   op.Clusters,
-					DryRun:     op.DryRun,
-					Templating: op.Template,
-					Timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
+				contextData := contextData{
+					basePath:   basePath,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					dryRun:     op.DryRun,
+					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -840,7 +818,7 @@ func (p *stepProcessor) patchOperation(compilers compilers.Compilers, id int, na
 	return ops, nil
 }
 
-func (p *stepProcessor) proxyOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Proxy) operation {
+func proxyOperation(_ compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, op v1alpha1.Proxy) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -851,11 +829,11 @@ func (p *stepProcessor) proxyOperation(_ compilers.Compilers, id int, namespacer
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-			contextData := ContextData{
-				BasePath: p.basePath,
-				Cluster:  op.Cluster,
-				Clusters: op.Clusters,
-				Timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
+			contextData := contextData{
+				basePath: basePath,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
@@ -874,7 +852,7 @@ func (p *stepProcessor) proxyOperation(_ compilers.Compilers, id int, namespacer
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.basePath,
+					basePath,
 					ns,
 					config,
 				)
@@ -884,7 +862,7 @@ func (p *stepProcessor) proxyOperation(_ compilers.Compilers, id int, namespacer
 	)
 }
 
-func (p *stepProcessor) scriptOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Script) operation {
+func scriptOperation(_ compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, op v1alpha1.Script) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -895,11 +873,11 @@ func (p *stepProcessor) scriptOperation(_ compilers.Compilers, id int, namespace
 		},
 		model.OperationTypeScript,
 		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-			contextData := ContextData{
-				BasePath: p.basePath,
-				Cluster:  op.Cluster,
-				Clusters: op.Clusters,
-				Timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
+			contextData := contextData{
+				basePath: basePath,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 				return nil, nil, tc, err
@@ -909,7 +887,7 @@ func (p *stepProcessor) scriptOperation(_ compilers.Compilers, id int, namespace
 				op := opscript.New(
 					tc.Compilers(),
 					op,
-					p.basePath,
+					basePath,
 					ns,
 					config,
 				)
@@ -919,7 +897,7 @@ func (p *stepProcessor) scriptOperation(_ compilers.Compilers, id int, namespace
 	)
 }
 
-func (p *stepProcessor) sleepOperation(_ compilers.Compilers, id int, op v1alpha1.Sleep) operation {
+func sleepOperation(_ compilers.Compilers, id int, op v1alpha1.Sleep) operation {
 	return newOperation(
 		OperationInfo{
 			Id: id,
@@ -931,8 +909,8 @@ func (p *stepProcessor) sleepOperation(_ compilers.Compilers, id int, op v1alpha
 	)
 }
 
-func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Update) ([]operation, error) {
-	resources, err := p.fileRefOrResource(context.TODO(), compilers, op.ActionResourceRef, bindings)
+func updateOperation(compilers compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Update) ([]operation, error) {
+	resources, err := fileRefOrResource(context.TODO(), op.ActionResourceRef, basePath, compilers, bindings)
 	if err != nil {
 		return nil, err
 	}
@@ -946,13 +924,13 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 			},
 			model.OperationTypeUpdate,
 			func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-				contextData := ContextData{
-					BasePath:   p.basePath,
-					Cluster:    op.Cluster,
-					Clusters:   op.Clusters,
-					DryRun:     op.DryRun,
-					Templating: op.Template,
-					Timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
+				contextData := contextData{
+					basePath:   basePath,
+					cluster:    op.Cluster,
+					clusters:   op.Clusters,
+					dryRun:     op.DryRun,
+					templating: op.Template,
+					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
 				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
@@ -978,7 +956,7 @@ func (p *stepProcessor) updateOperation(compilers compilers.Compilers, id int, n
 	return ops, nil
 }
 
-func (p *stepProcessor) waitOperation(_ compilers.Compilers, id int, namespacer namespacer.Namespacer, op v1alpha1.Wait) operation {
+func waitOperation(_ compilers.Compilers, basePath string, id int, namespacer namespacer.Namespacer, op v1alpha1.Wait) operation {
 	ns := ""
 	if namespacer != nil {
 		ns = namespacer.GetNamespace()
@@ -989,11 +967,11 @@ func (p *stepProcessor) waitOperation(_ compilers.Compilers, id int, namespacer 
 		},
 		model.OperationTypeCommand,
 		func(ctx context.Context, tc enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error) {
-			contextData := ContextData{
-				BasePath: p.basePath,
-				Cluster:  op.Cluster,
-				Clusters: op.Clusters,
-				Timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
+			contextData := contextData{
+				basePath: basePath,
+				cluster:  op.Cluster,
+				clusters: op.Clusters,
+				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
 			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
 				return nil, nil, tc, err
@@ -1015,7 +993,7 @@ func (p *stepProcessor) waitOperation(_ compilers.Compilers, id int, namespacer 
 						Entrypoint:     entrypoint,
 						Args:           args,
 					},
-					p.basePath,
+					basePath,
 					ns,
 					config,
 				)
@@ -1027,7 +1005,7 @@ func (p *stepProcessor) waitOperation(_ compilers.Compilers, id int, namespacer 
 	)
 }
 
-func (p *stepProcessor) fileRefOrCheck(ctx context.Context, compilers compilers.Compilers, ref v1alpha1.ActionCheckRef, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
+func fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionCheckRef, basePath string, compilers compilers.Compilers, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
 	if ref.Check != nil && ref.Check.Value() != nil {
 		if object, ok := ref.Check.Value().(map[string]any); !ok {
 			return nil, errors.New("resource must be an object")
@@ -1042,7 +1020,7 @@ func (p *stepProcessor) fileRefOrCheck(ctx context.Context, compilers compilers.
 		}
 		url, err := url.ParseRequestURI(ref)
 		if err != nil {
-			return resource.Load(filepath.Join(p.basePath, ref), false)
+			return resource.Load(filepath.Join(basePath, ref), false)
 		} else {
 			return resource.LoadFromURI(url, false)
 		}
@@ -1050,7 +1028,7 @@ func (p *stepProcessor) fileRefOrCheck(ctx context.Context, compilers compilers.
 	return nil, errors.New("file or resource must be set")
 }
 
-func (p *stepProcessor) fileRefOrResource(ctx context.Context, compilers compilers.Compilers, ref v1alpha1.ActionResourceRef, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
+func fileRefOrResource(ctx context.Context, ref v1alpha1.ActionResourceRef, basePath string, compilers compilers.Compilers, bindings apis.Bindings) ([]unstructured.Unstructured, error) {
 	if ref.Resource != nil {
 		return []unstructured.Unstructured{*ref.Resource}, nil
 	}
@@ -1061,7 +1039,7 @@ func (p *stepProcessor) fileRefOrResource(ctx context.Context, compilers compile
 		}
 		url, err := url.ParseRequestURI(ref)
 		if err != nil {
-			return resource.Load(filepath.Join(p.basePath, ref), true)
+			return resource.Load(filepath.Join(basePath, ref), true)
 		} else {
 			return resource.LoadFromURI(url, true)
 		}

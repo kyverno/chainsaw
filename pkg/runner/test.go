@@ -14,7 +14,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
-	"github.com/kyverno/chainsaw/pkg/runner/processors"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
 )
@@ -75,7 +74,7 @@ func (r *runner) runTest(
 		tc.Report.Add(report)
 	})
 	// setup context
-	tc = tc.WithBinding(ctx, "test", processors.TestInfo{
+	tc = tc.WithBinding(ctx, "test", TestInfo{
 		Id:         testId,
 		ScenarioId: scenarioId,
 		Metadata:   test.Test.ObjectMeta,
@@ -87,19 +86,19 @@ func (r *runner) runTest(
 		r.onFail()
 		return
 	}
-	contextData := processors.ContextData{
-		BasePath:            test.BasePath,
-		Catch:               test.Test.Spec.Catch,
-		Cluster:             test.Test.Spec.Cluster,
-		Clusters:            test.Test.Spec.Clusters,
-		DelayBeforeCleanup:  test.Test.Spec.DelayBeforeCleanup,
-		DeletionPropagation: test.Test.Spec.DeletionPropagationPolicy,
-		SkipDelete:          test.Test.Spec.SkipDelete,
-		Templating:          test.Test.Spec.Template,
-		TerminationGrace:    test.Test.Spec.ForceTerminationGracePeriod,
-		Timeouts:            test.Test.Spec.Timeouts,
+	contextData := contextData{
+		basePath:            test.BasePath,
+		catch:               test.Test.Spec.Catch,
+		cluster:             test.Test.Spec.Cluster,
+		clusters:            test.Test.Spec.Clusters,
+		delayBeforeCleanup:  test.Test.Spec.DelayBeforeCleanup,
+		deletionPropagation: test.Test.Spec.DeletionPropagationPolicy,
+		skipDelete:          test.Test.Spec.SkipDelete,
+		templating:          test.Test.Spec.Template,
+		terminationGrace:    test.Test.Spec.ForceTerminationGracePeriod,
+		timeouts:            test.Test.Spec.Timeouts,
 	}
-	tc, err = processors.SetupContext(ctx, tc, contextData)
+	tc, err = setupContext(ctx, tc, contextData)
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -162,13 +161,13 @@ func (r *runner) runTest(
 		if nsOptions.Compiler != nil {
 			compilers = compilers.WithDefaultCompiler(string(*nsOptions.Compiler))
 		}
-		namespaceData := processors.NamespaceData{
-			Cleaner:   nsCleaner,
-			Compilers: compilers,
-			Name:      nsName,
-			Template:  nsOptions.Template,
+		namespaceData := namespaceData{
+			cleaner:   nsCleaner,
+			compilers: compilers,
+			name:      nsName,
+			template:  nsOptions.Template,
 		}
-		nsTc, namespace, err := processors.SetupNamespace(ctx, tc, namespaceData)
+		nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
 		if err != nil {
 			t.Fail()
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -184,7 +183,7 @@ func (r *runner) runTest(
 		report.Namespace = nspacer.GetNamespace()
 	}
 	// setup bindings
-	tc, err = processors.SetupBindings(ctx, tc, test.Test.Spec.Bindings...)
+	tc, err = setupBindings(ctx, tc, test.Test.Spec.Bindings...)
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
@@ -198,12 +197,11 @@ func (r *runner) runTest(
 			name = fmt.Sprintf("step-%d", i+1)
 		}
 		ctx := logging.IntoContext(ctx, logging.NewLogger(t, r.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name)))
-		info := processors.StepInfo{
+		info := StepInfo{
 			Id: i + 1,
 		}
 		tc := tc.WithBinding(ctx, "step", info)
-		processor := processors.NewStepProcessor(step, report, test.BasePath)
-		if stop := processor.Run(ctx, t, r.onFail, nspacer, tc); stop {
+		if stop := r.runStep(ctx, t, test.BasePath, nspacer, tc, step, report); stop {
 			return
 		}
 	}

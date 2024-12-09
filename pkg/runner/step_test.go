@@ -1,4 +1,4 @@
-package processors
+package runner
 
 import (
 	"context"
@@ -29,7 +29,7 @@ func TestStepProcessor_Run(t *testing.T) {
 	if err != nil {
 		assert.NoError(t, err)
 	}
-	testData := filepath.Join("..", "..", "..", "testdata", "runner", "processors")
+	testData := filepath.Join("..", "..", "testdata", "runner", "processors")
 	testCases := []struct {
 		name                   string
 		client                 client.Client
@@ -783,11 +783,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			if tc.client != nil {
 				registry.Client = tc.client
 			}
-			stepProcessor := NewStepProcessor(
-				tc.stepSpec,
-				&model.TestReport{},
-				tc.basePath,
-			)
 			nt := &testing.MockT{}
 			ctx := context.Background()
 			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
@@ -799,7 +794,8 @@ func TestStepProcessor_Run(t *testing.T) {
 				Error:   &config.Spec.Timeouts.Error,
 				Exec:    &config.Spec.Timeouts.Exec,
 			})
-			got := stepProcessor.Run(ctx, nt, func() {}, tc.namespacer, tcontext)
+			runner := runner{}
+			got := runner.runStep(ctx, nt, tc.basePath, tc.namespacer, tcontext, tc.stepSpec, &model.TestReport{})
 			assert.Equal(t, tc.want, got)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
