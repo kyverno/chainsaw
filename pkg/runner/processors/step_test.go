@@ -15,7 +15,6 @@ import (
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/runner/failer"
 	"github.com/kyverno/chainsaw/pkg/runner/mocks"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
@@ -800,7 +799,7 @@ func TestStepProcessor_Run(t *testing.T) {
 				Error:   &config.Spec.Timeouts.Error,
 				Exec:    &config.Spec.Timeouts.Exec,
 			})
-			got := stepProcessor.Run(ctx, nt, failer.Default, tc.namespacer, tcontext)
+			got := stepProcessor.Run(ctx, nt, func() {}, tc.namespacer, tcontext)
 			assert.Equal(t, tc.want, got)
 			if tc.expectedFail {
 				assert.True(t, nt.FailedVar, "expected an error but got none")
