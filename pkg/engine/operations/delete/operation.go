@@ -144,9 +144,9 @@ func (o *operation) waitForDeletion(ctx context.Context, resource unstructured.U
 
 func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, resource unstructured.Unstructured, err error) error {
 	if err == nil {
-		bindings = apibindings.RegisterBinding(ctx, bindings, "error", nil)
+		bindings = apibindings.RegisterBinding(bindings, "error", nil)
 	} else {
-		bindings = apibindings.RegisterBinding(ctx, bindings, "error", err.Error())
+		bindings = apibindings.RegisterBinding(bindings, "error", err.Error())
 	}
 	if matched, err := checks.Expect(ctx, o.compilers, resource, bindings, o.expect...); matched {
 		return err

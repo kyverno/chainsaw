@@ -786,7 +786,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			nt := &testing.MockT{}
 			ctx := context.Background()
 			ctx = logging.WithLogger(ctx, &fakeLogger.Logger{})
-			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry).WithTimeouts(ctx, v1alpha1.Timeouts{
+			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry).WithTimeouts(v1alpha1.Timeouts{
 				Apply:   &config.Spec.Timeouts.Apply,
 				Assert:  &config.Spec.Timeouts.Assert,
 				Cleanup: &config.Spec.Timeouts.Cleanup,

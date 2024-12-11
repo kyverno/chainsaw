@@ -37,34 +37,34 @@ type contextData struct {
 	timeouts            *v1alpha1.Timeouts
 }
 
-func setupContext(ctx context.Context, tc enginecontext.TestContext, data contextData) (enginecontext.TestContext, error) {
+func setupContext(tc enginecontext.TestContext, data contextData) (enginecontext.TestContext, error) {
 	if len(data.catch) > 0 {
-		tc = tc.WithCatch(ctx, data.catch...)
+		tc = tc.WithCatch(data.catch...)
 	}
 	if data.dryRun != nil {
-		tc = tc.WithDryRun(ctx, *data.dryRun)
+		tc = tc.WithDryRun(*data.dryRun)
 	}
 	if data.delayBeforeCleanup != nil {
-		tc = tc.WithDelayBeforeCleanup(ctx, &data.delayBeforeCleanup.Duration)
+		tc = tc.WithDelayBeforeCleanup(&data.delayBeforeCleanup.Duration)
 	}
 	if data.deletionPropagation != nil {
-		tc = tc.WithDeletionPropagation(ctx, *data.deletionPropagation)
+		tc = tc.WithDeletionPropagation(*data.deletionPropagation)
 	}
 	if data.skipDelete != nil {
-		tc = tc.WithSkipDelete(ctx, *data.skipDelete)
+		tc = tc.WithSkipDelete(*data.skipDelete)
 	}
 	if data.templating != nil {
-		tc = tc.WithTemplating(ctx, *data.templating)
+		tc = tc.WithTemplating(*data.templating)
 	}
 	if data.terminationGrace != nil {
-		tc = tc.WithTerminationGrace(ctx, &data.terminationGrace.Duration)
+		tc = tc.WithTerminationGrace(&data.terminationGrace.Duration)
 	}
 	if data.timeouts != nil {
-		tc = tc.WithTimeouts(ctx, *data.timeouts)
+		tc = tc.WithTimeouts(*data.timeouts)
 	}
-	tc = enginecontext.WithClusters(ctx, tc, data.basePath, data.clusters)
+	tc = enginecontext.WithClusters(tc, data.basePath, data.clusters)
 	if data.cluster != nil {
-		if _tc, err := enginecontext.WithCurrentCluster(ctx, tc, *data.cluster); err != nil {
+		if _tc, err := enginecontext.WithCurrentCluster(tc, *data.cluster); err != nil {
 			return tc, err
 		} else {
 			tc = _tc
@@ -92,13 +92,13 @@ func setupNamespace(ctx context.Context, tc enginecontext.TestContext, data name
 		ns = namespace
 	}
 	if ns != nil {
-		tc = enginecontext.WithNamespace(ctx, tc, ns.GetName())
+		tc = enginecontext.WithNamespace(tc, ns.GetName())
 	}
 	return tc, ns, nil
 }
 
-func setupBindings(ctx context.Context, tc enginecontext.TestContext, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {
-	if _tc, err := enginecontext.WithBindings(ctx, tc, bindings...); err != nil {
+func setupBindings(tc enginecontext.TestContext, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {
+	if _tc, err := enginecontext.WithBindings(tc, bindings...); err != nil {
 		return tc, err
 	} else {
 		tc = _tc
@@ -127,10 +127,10 @@ func setupCleanup(ctx context.Context, t testing.TTest, onFailure func(), tc eng
 	return cleaner
 }
 
-func setupContextAndBindings(ctx context.Context, tc enginecontext.TestContext, data contextData, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {
-	if tc, err := setupContext(ctx, tc, data); err != nil {
+func setupContextAndBindings(tc enginecontext.TestContext, data contextData, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {
+	if tc, err := setupContext(tc, data); err != nil {
 		return tc, err
 	} else {
-		return setupBindings(ctx, tc, bindings...)
+		return setupBindings(tc, bindings...)
 	}
 }

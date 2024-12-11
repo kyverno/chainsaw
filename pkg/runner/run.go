@@ -18,14 +18,7 @@ import (
 )
 
 type Runner interface {
-	Run(context.Context,
-		// In test context
-		*rest.Config,
-		model.Configuration,
-		map[string]any,
-		//
-		...discovery.Test,
-	) (model.SummaryResult, error)
+	Run(context.Context, model.Configuration, enginecontext.TestContext, ...discovery.Test) (model.SummaryResult, error)
 }
 
 func New(clock clock.PassiveClock, onFailure func()) Runner {
@@ -40,24 +33,11 @@ type runner struct {
 	onFailure func()
 }
 
-func (r *runner) Run(
-	ctx context.Context,
-	cfg *rest.Config,
-	config model.Configuration,
-	values map[string]any,
-	tests ...discovery.Test,
-) (model.SummaryResult, error) {
-	return r.run(ctx, cfg, config, nil, values, tests...)
+func (r *runner) Run(ctx context.Context, config model.Configuration, tc enginecontext.TestContext, tests ...discovery.Test) (model.SummaryResult, error) {
+	return r.run(ctx, nil, config, tc, tests...)
 }
 
-func (r *runner) run(
-	ctx context.Context,
-	cfg *rest.Config,
-	config model.Configuration,
-	m mainstart,
-	values map[string]any,
-	tests ...discovery.Test,
-) (model.SummaryResult, error) {
+func (r *runner) run(ctx context.Context, m mainstart, config model.Configuration, tc enginecontext.TestContext, tests ...discovery.Test) (model.SummaryResult, error) {
 	// sanity check
 	if len(tests) == 0 {
 		return nil, nil
@@ -65,12 +45,6 @@ func (r *runner) run(
 	// setup flags
 	// TODO: should be done externally ?
 	if err := internal.SetupFlags(config); err != nil {
-		return nil, err
-	}
-	// setup context
-	// TODO: should be done externally ?
-	tc, err := setupTestContext(ctx, values, cfg, config)
-	if err != nil {
 		return nil, err
 	}
 	internalTests := []testing.InternalTest{{
@@ -110,31 +84,31 @@ func (r *runner) onFail() {
 	}
 }
 
-func setupTestContext(ctx context.Context, values any, restConfig *rest.Config, config model.Configuration) (enginecontext.TestContext, error) {
+func InitContext(config model.Configuration, defaultCluster *rest.Config, values any) (enginecontext.TestContext, error) {
 	tc := enginecontext.EmptyContext()
 	// cleanup options
-	tc = tc.WithSkipDelete(ctx, config.Cleanup.SkipDelete)
+	tc = tc.WithSkipDelete(config.Cleanup.SkipDelete)
 	if config.Cleanup.DelayBeforeCleanup != nil {
-		tc = tc.WithDelayBeforeCleanup(ctx, &config.Cleanup.DelayBeforeCleanup.Duration)
+		tc = tc.WithDelayBeforeCleanup(&config.Cleanup.DelayBeforeCleanup.Duration)
 	}
 	// templating options
-	tc = tc.WithTemplating(ctx, config.Templating.Enabled)
+	tc = tc.WithTemplating(config.Templating.Enabled)
 	if config.Templating.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*config.Templating.Compiler))
 	}
 	// discovery options
-	tc = tc.WithFullName(ctx, config.Discovery.FullName)
+	tc = tc.WithFullName(config.Discovery.FullName)
 	// execution options
-	tc = tc.WithFailFast(ctx, config.Execution.FailFast)
+	tc = tc.WithFailFast(config.Execution.FailFast)
 	if config.Execution.ForceTerminationGracePeriod != nil {
-		tc = tc.WithTerminationGrace(ctx, &config.Execution.ForceTerminationGracePeriod.Duration)
+		tc = tc.WithTerminationGrace(&config.Execution.ForceTerminationGracePeriod.Duration)
 	}
 	// deletion options
-	tc = tc.WithDeletionPropagation(ctx, config.Deletion.Propagation)
+	tc = tc.WithDeletionPropagation(config.Deletion.Propagation)
 	// error options
-	tc = tc.WithCatch(ctx, config.Error.Catch...)
+	tc = tc.WithCatch(config.Error.Catch...)
 	// timeouts
-	tc = tc.WithTimeouts(ctx, v1alpha1.Timeouts{
+	tc = tc.WithTimeouts(v1alpha1.Timeouts{
 		Apply:   &config.Timeouts.Apply,
 		Assert:  &config.Timeouts.Assert,
 		Cleanup: &config.Timeouts.Cleanup,
@@ -143,16 +117,16 @@ func setupTestContext(ctx context.Context, values any, restConfig *rest.Config, 
 		Exec:    &config.Timeouts.Exec,
 	})
 	// values
-	tc = enginecontext.WithValues(ctx, tc, values)
+	tc = enginecontext.WithValues(tc, values)
 	// clusters
-	tc = enginecontext.WithClusters(ctx, tc, "", config.Clusters)
-	if restConfig != nil {
-		cluster, err := clusters.NewClusterFromConfig(restConfig)
+	tc = enginecontext.WithClusters(tc, "", config.Clusters)
+	if defaultCluster != nil {
+		cluster, err := clusters.NewClusterFromConfig(defaultCluster)
 		if err != nil {
 			return tc, err
 		}
-		tc = tc.WithCluster(ctx, clusters.DefaultClient, cluster)
-		return enginecontext.WithCurrentCluster(ctx, tc, clusters.DefaultClient)
+		tc = tc.WithCluster(clusters.DefaultClient, cluster)
+		return enginecontext.WithCurrentCluster(tc, clusters.DefaultClient)
 	}
 	return tc, nil
 }

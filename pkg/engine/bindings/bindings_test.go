@@ -56,7 +56,7 @@ func TestRegisterBinding(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bindings := RegisterBinding(context.TODO(), tt.bindings, tt.bindingName, tt.value)
+			bindings := RegisterBinding(tt.bindings, tt.bindingName, tt.value)
 			assert.NotNil(t, bindings)
 			got, err := bindings.Get("$" + tt.bindingName)
 			assert.NoError(t, err)

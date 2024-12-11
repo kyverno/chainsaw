@@ -10,45 +10,45 @@ import (
 	"github.com/kyverno/chainsaw/pkg/expressions"
 )
 
-func WithBindings(ctx context.Context, tc TestContext, variables ...v1alpha1.Binding) (TestContext, error) {
+func WithBindings(tc TestContext, variables ...v1alpha1.Binding) (TestContext, error) {
 	for _, variable := range variables {
-		name, value, err := bindings.ResolveBinding(ctx, tc.Compilers(), tc.Bindings(), nil, variable)
+		name, value, err := bindings.ResolveBinding(context.TODO(), tc.Compilers(), tc.Bindings(), nil, variable)
 		if err != nil {
 			return tc, err
 		}
-		tc = tc.WithBinding(ctx, name, value)
+		tc = tc.WithBinding(name, value)
 	}
 	return tc, nil
 }
 
-func WithClusters(ctx context.Context, tc TestContext, basePath string, c map[string]v1alpha1.Cluster) TestContext {
+func WithClusters(tc TestContext, basePath string, c map[string]v1alpha1.Cluster) TestContext {
 	for name, cluster := range c {
 		kubeconfig := filepath.Join(basePath, cluster.Kubeconfig)
 		cluster := clusters.NewClusterFromKubeconfig(kubeconfig, cluster.Context)
-		tc = tc.WithCluster(ctx, name, cluster)
+		tc = tc.WithCluster(name, cluster)
 	}
 	return tc
 }
 
-func WithCurrentCluster(ctx context.Context, tc TestContext, name string) (TestContext, error) {
-	name, err := expressions.String(ctx, tc.Compilers(), name, tc.Bindings())
+func WithCurrentCluster(tc TestContext, name string) (TestContext, error) {
+	name, err := expressions.String(context.TODO(), tc.Compilers(), name, tc.Bindings())
 	if err != nil {
 		return tc, err
 	}
-	tc = tc.WithCurrentCluster(ctx, name)
+	tc = tc.WithCurrentCluster(name)
 	config, client, err := tc.CurrentClusterClient()
 	if err != nil {
 		return tc, err
 	}
-	tc = tc.WithBinding(ctx, "client", client)
-	tc = tc.WithBinding(ctx, "config", config)
+	tc = tc.WithBinding("client", client)
+	tc = tc.WithBinding("config", config)
 	return tc, nil
 }
 
-func WithNamespace(ctx context.Context, tc TestContext, namespace string) TestContext {
-	return tc.WithBinding(ctx, "namespace", namespace)
+func WithNamespace(tc TestContext, namespace string) TestContext {
+	return tc.WithBinding("namespace", namespace)
 }
 
-func WithValues(ctx context.Context, tc TestContext, values any) TestContext {
-	return tc.WithBinding(ctx, "values", values)
+func WithValues(tc TestContext, values any) TestContext {
+	return tc.WithBinding("values", values)
 }
