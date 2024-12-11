@@ -157,7 +157,18 @@ func TestSave(t *testing.T) {
 		wantW   string
 		wantErr bool
 	}{{
-		name: "empty",
+		name: "ok",
+		cfg: &rest.Config{
+			Host:  "https://127.0.0.1:53742",
+			QPS:   300,
+			Burst: 300,
+			TLSClientConfig: rest.TLSClientConfig{
+				CAFile: "foo",
+			},
+		},
+		wantErr: true,
+	}, {
+		name: "ok",
 		cfg: &rest.Config{
 			Host:  "https://127.0.0.1:53742",
 			QPS:   300,
@@ -170,6 +181,10 @@ func TestSave(t *testing.T) {
 			},
 			ExecProvider: &api.ExecConfig{
 				Command: "foo",
+				Env: []api.ExecEnvVar{{
+					Name:  "foo",
+					Value: "bar",
+				}},
 			},
 		},
 		wantW: `
@@ -194,7 +209,9 @@ users:
     exec:
       args: null
       command: foo
-      env: []
+      env:
+      - name: foo
+        value: bar
       provideClusterInfo: false
 `,
 	}}

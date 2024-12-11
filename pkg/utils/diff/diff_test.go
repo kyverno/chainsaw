@@ -25,6 +25,27 @@ func TestPrettyDiff(t *testing.T) {
 	}{{
 		name: "empty",
 	}, {
+		name: "error",
+		expected: unstructured.Unstructured{
+			Object: map[string]interface{}{
+				"": func() {},
+			},
+		},
+		wantErr: true,
+	}, {
+		name: "error",
+		expected: unstructured.Unstructured{
+			Object: map[string]interface{}{
+				"": "",
+			},
+		},
+		actual: unstructured.Unstructured{
+			Object: map[string]interface{}{
+				"": func() {},
+			},
+		},
+		wantErr: true,
+	}, {
 		name:     "same",
 		expected: pod,
 		actual:   pod,
