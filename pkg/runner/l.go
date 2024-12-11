@@ -12,7 +12,7 @@ import (
 
 const eraser = "\b\b\b\b\b\b\b\b\b"
 
-func newSync(clock clock.PassiveClock, t testing.TTest) logging.SinkFunc {
+func newSink(clock clock.PassiveClock, t testing.TTest) logging.SinkFunc {
 	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
 		sprint := fmt.Sprint
 		opLen := 9
