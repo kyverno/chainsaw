@@ -7,8 +7,8 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -48,7 +48,6 @@ func Test_runnerClient_Get(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		logger      func(t *testing.T) *tlogging.FakeLogger
 		inner       func(t *testing.T) *tclient.FakeClient
 		args        args
 		wantErr     bool
@@ -56,10 +55,6 @@ func Test_runnerClient_Get(t *testing.T) {
 		loggerCalls int
 	}{{
 		name: "with error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -77,10 +72,6 @@ func Test_runnerClient_Get(t *testing.T) {
 		innerCalls: 1,
 	}, {
 		name: "no error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -98,10 +89,6 @@ func Test_runnerClient_Get(t *testing.T) {
 		innerCalls: 1,
 	}, {
 		name: "inner was called",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -122,10 +109,6 @@ func Test_runnerClient_Get(t *testing.T) {
 		innerCalls: 1,
 	}, {
 		name: "logger was not called",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -147,12 +130,12 @@ func Test_runnerClient_Get(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockLogger := tt.logger(t)
+			logger := &mocks.Logger{}
 			mockClient := tt.inner(t)
 			c := &runnerClient{
 				inner: mockClient,
 			}
-			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			ctx := logging.WithLogger(context.TODO(), logger)
 			err := c.Get(ctx, tt.args.key, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -160,7 +143,7 @@ func Test_runnerClient_Get(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tt.innerCalls, mockClient.NumCalls())
-			assert.Equal(t, tt.loggerCalls, mockLogger.NumCalls())
+			assert.Equal(t, tt.loggerCalls, logger.NumCalls())
 		})
 	}
 }
@@ -172,7 +155,6 @@ func Test_runnerClient_Create(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		logger      func(t *testing.T) *tlogging.FakeLogger
 		inner       func(t *testing.T) *tclient.FakeClient
 		args        args
 		wantErr     bool
@@ -180,10 +162,6 @@ func Test_runnerClient_Create(t *testing.T) {
 		loggerCalls int
 	}{{
 		name: "with error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -201,10 +179,6 @@ func Test_runnerClient_Create(t *testing.T) {
 		innerCalls:  1,
 	}, {
 		name: "no error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -223,12 +197,12 @@ func Test_runnerClient_Create(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockLogger := tt.logger(t)
+			logger := &mocks.Logger{}
 			mockClient := tt.inner(t)
 			c := &runnerClient{
 				inner: mockClient,
 			}
-			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			ctx := logging.WithLogger(context.TODO(), logger)
 			err := c.Create(ctx, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -236,7 +210,7 @@ func Test_runnerClient_Create(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tt.innerCalls, mockClient.NumCalls())
-			assert.Equal(t, tt.loggerCalls, mockLogger.NumCalls())
+			assert.Equal(t, tt.loggerCalls, logger.NumCalls())
 		})
 	}
 }
@@ -248,7 +222,6 @@ func Test_runnerClient_Update(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		logger      func(t *testing.T) *tlogging.FakeLogger
 		inner       func(t *testing.T) *tclient.FakeClient
 		args        args
 		wantErr     bool
@@ -256,10 +229,6 @@ func Test_runnerClient_Update(t *testing.T) {
 		loggerCalls int
 	}{{
 		name: "with error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -277,10 +246,6 @@ func Test_runnerClient_Update(t *testing.T) {
 		innerCalls:  1,
 	}, {
 		name: "no error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -299,12 +264,12 @@ func Test_runnerClient_Update(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockLogger := tt.logger(t)
+			logger := &mocks.Logger{}
 			mockClient := tt.inner(t)
 			c := &runnerClient{
 				inner: mockClient,
 			}
-			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			ctx := logging.WithLogger(context.TODO(), logger)
 			err := c.Update(ctx, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -312,7 +277,7 @@ func Test_runnerClient_Update(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tt.innerCalls, mockClient.NumCalls())
-			assert.Equal(t, tt.loggerCalls, mockLogger.NumCalls())
+			assert.Equal(t, tt.loggerCalls, logger.NumCalls())
 		})
 	}
 }
@@ -324,7 +289,6 @@ func Test_runnerClient_Delete(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		logger      func(t *testing.T) *tlogging.FakeLogger
 		inner       func(t *testing.T) *tclient.FakeClient
 		args        args
 		wantErr     bool
@@ -332,10 +296,6 @@ func Test_runnerClient_Delete(t *testing.T) {
 		loggerCalls int
 	}{{
 		name: "with error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -353,10 +313,6 @@ func Test_runnerClient_Delete(t *testing.T) {
 		innerCalls:  1,
 	}, {
 		name: "no error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -375,12 +331,12 @@ func Test_runnerClient_Delete(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockLogger := tt.logger(t)
+			logger := &mocks.Logger{}
 			mockClient := tt.inner(t)
 			c := &runnerClient{
 				inner: mockClient,
 			}
-			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			ctx := logging.WithLogger(context.TODO(), logger)
 			err := c.Delete(ctx, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -388,7 +344,7 @@ func Test_runnerClient_Delete(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tt.innerCalls, mockClient.NumCalls())
-			assert.Equal(t, tt.loggerCalls, mockLogger.NumCalls())
+			assert.Equal(t, tt.loggerCalls, logger.NumCalls())
 		})
 	}
 }
@@ -400,7 +356,6 @@ func Test_runnerClient_List(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		logger      func(t *testing.T) *tlogging.FakeLogger
 		inner       func(t *testing.T) *tclient.FakeClient
 		args        args
 		wantErr     bool
@@ -408,10 +363,6 @@ func Test_runnerClient_List(t *testing.T) {
 		loggerCalls int
 	}{{
 		name: "with error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -429,10 +380,6 @@ func Test_runnerClient_List(t *testing.T) {
 		innerCalls:  1,
 	}, {
 		name: "no error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -451,12 +398,12 @@ func Test_runnerClient_List(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockLogger := tt.logger(t)
+			logger := &mocks.Logger{}
 			mockClient := tt.inner(t)
 			c := &runnerClient{
 				inner: mockClient,
 			}
-			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			ctx := logging.WithLogger(context.TODO(), logger)
 			err := c.List(ctx, tt.args.obj, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -464,7 +411,7 @@ func Test_runnerClient_List(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tt.innerCalls, mockClient.NumCalls())
-			assert.Equal(t, tt.loggerCalls, mockLogger.NumCalls())
+			assert.Equal(t, tt.loggerCalls, logger.NumCalls())
 		})
 	}
 }
@@ -477,7 +424,6 @@ func Test_runnerClient_Patch(t *testing.T) {
 	}
 	tests := []struct {
 		name        string
-		logger      func(t *testing.T) *tlogging.FakeLogger
 		inner       func(t *testing.T) *tclient.FakeClient
 		args        args
 		wantErr     bool
@@ -485,10 +431,6 @@ func Test_runnerClient_Patch(t *testing.T) {
 		loggerCalls int
 	}{{
 		name: "with error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -506,10 +448,6 @@ func Test_runnerClient_Patch(t *testing.T) {
 		innerCalls:  1,
 	}, {
 		name: "no error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -528,12 +466,12 @@ func Test_runnerClient_Patch(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockLogger := tt.logger(t)
+			logger := &mocks.Logger{}
 			mockClient := tt.inner(t)
 			c := &runnerClient{
 				inner: mockClient,
 			}
-			ctx := logging.IntoContext(context.TODO(), mockLogger)
+			ctx := logging.WithLogger(context.TODO(), logger)
 			err := c.Patch(ctx, tt.args.obj, tt.args.patch, tt.args.opts...)
 			if tt.wantErr {
 				assert.Error(t, err)
@@ -541,7 +479,7 @@ func Test_runnerClient_Patch(t *testing.T) {
 				assert.NoError(t, err)
 			}
 			assert.Equal(t, tt.innerCalls, mockClient.NumCalls())
-			assert.Equal(t, tt.loggerCalls, mockLogger.NumCalls())
+			assert.Equal(t, tt.loggerCalls, logger.NumCalls())
 		})
 	}
 }
@@ -552,7 +490,6 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 	}
 	tests := []struct {
 		name       string
-		logger     func(t *testing.T) *tlogging.FakeLogger
 		inner      func(t *testing.T) *tclient.FakeClient
 		args       args
 		want       bool
@@ -560,10 +497,6 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		innerCalls int
 	}{{
 		name: "with error",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -579,10 +512,6 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		innerCalls: 1,
 	}, {
 		name: "no error - false",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{
@@ -599,10 +528,6 @@ func Test_runnerClient_IsObjectNamespaced(t *testing.T) {
 		innerCalls: 1,
 	}, {
 		name: "no error - true",
-		logger: func(t *testing.T) *tlogging.FakeLogger {
-			t.Helper()
-			return &tlogging.FakeLogger{}
-		},
 		inner: func(t *testing.T) *tclient.FakeClient {
 			t.Helper()
 			return &tclient.FakeClient{

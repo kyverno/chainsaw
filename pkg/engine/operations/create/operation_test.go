@@ -11,8 +11,8 @@ import (
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -213,8 +213,8 @@ func Test_create(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			logger := &tlogging.FakeLogger{}
-			ctx := logging.IntoContext(context.TODO(), logger)
+			logger := &mocks.Logger{}
+			ctx := logging.WithLogger(context.TODO(), logger)
 			toCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 			defer cancel()
 			ctx = toCtx

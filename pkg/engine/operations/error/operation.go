@@ -8,12 +8,12 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
@@ -51,9 +51,8 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 		bindings = apis.NewBindings()
 	}
 	obj := o.base
-	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
-		internal.LogEnd(logger, logging.Error, _err)
+		internal.LogEnd(ctx, logging.Error, &obj, _err)
 	}()
 	if o.template {
 		if err := templating.ResourceRef(ctx, o.compilers, &obj, bindings); err != nil {
@@ -65,7 +64,7 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 			return nil, err
 		}
 	}
-	internal.LogStart(logger, logging.Error)
+	internal.LogStart(ctx, logging.Error, &obj)
 	return nil, o.execute(ctx, bindings, obj)
 }
 

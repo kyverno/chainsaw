@@ -9,10 +9,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	fake "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	fakeLogger "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	fakeLogger "github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/runner/mocks"
@@ -785,7 +785,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			}
 			nt := &testing.MockT{}
 			ctx := context.Background()
-			ctx = logging.IntoContext(ctx, &fakeLogger.FakeLogger{})
+			ctx = logging.WithLogger(ctx, &fakeLogger.Logger{})
 			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry).WithTimeouts(ctx, v1alpha1.Timeouts{
 				Apply:   &config.Spec.Timeouts.Apply,
 				Assert:  &config.Spec.Timeouts.Assert,

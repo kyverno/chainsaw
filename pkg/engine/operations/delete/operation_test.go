@@ -10,9 +10,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -172,8 +172,8 @@ func Test_operationDelete(t *testing.T) {
 				metav1.DeletePropagationForeground,
 				tt.expect...,
 			)
-			logger := &tlogging.FakeLogger{}
-			outputs, err := operation.Exec(logging.IntoContext(ctx, logger), nil)
+			logger := &mocks.Logger{}
+			outputs, err := operation.Exec(logging.WithLogger(ctx, logger), nil)
 			assert.Nil(t, outputs)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())

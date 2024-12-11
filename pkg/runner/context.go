@@ -6,7 +6,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
@@ -113,13 +113,13 @@ func setupCleanup(ctx context.Context, t testing.TTest, onFailure func(), tc eng
 	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !cleaner.Empty() {
-			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
+			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, nil, color.BoldFgCyan)
 			defer func() {
-				logging.Log(ctx, logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
+				logging.Log(ctx, logging.Cleanup, logging.EndStatus, nil, color.BoldFgCyan)
 			}()
 			for _, err := range cleaner.Run(ctx, nil) {
 				t.Fail()
-				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 				onFailure()
 			}
 		}

@@ -6,10 +6,10 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
+	"github.com/kyverno/chainsaw/pkg/logging"
 )
 
 type operation struct {
@@ -23,11 +23,10 @@ func New(duration v1alpha1.Sleep) operations.Operation {
 }
 
 func (o *operation) Exec(ctx context.Context, _ apis.Bindings) (_ outputs.Outputs, _err error) {
-	logger := internal.GetLogger(ctx, nil)
 	defer func() {
-		internal.LogEnd(logger, logging.Sleep, _err)
+		internal.LogEnd(ctx, logging.Sleep, nil, _err)
 	}()
-	internal.LogStart(logger, logging.Sleep)
+	internal.LogStart(ctx, logging.Sleep, nil)
 	return nil, o.execute()
 }
 

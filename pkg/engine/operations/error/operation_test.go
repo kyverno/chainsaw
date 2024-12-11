@@ -10,10 +10,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	tnamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -215,8 +215,8 @@ func Test_operationError(t *testing.T) {
 				nspacer,
 				false,
 			)
-			logger := &tlogging.FakeLogger{}
-			outputs, err := operation.Exec(logging.IntoContext(ctx, logger), nil)
+			logger := &mocks.Logger{}
+			outputs, err := operation.Exec(logging.WithLogger(ctx, logger), nil)
 			assert.Nil(t, outputs)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())

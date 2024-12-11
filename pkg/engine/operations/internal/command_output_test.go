@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/stretchr/testify/assert"
 )
 

@@ -11,10 +11,10 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -49,9 +49,8 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 	if bindings == nil {
 		bindings = apis.NewBindings()
 	}
-	logger := internal.GetLogger(ctx, nil)
 	defer func() {
-		internal.LogEnd(logger, logging.Script, _err)
+		internal.LogEnd(ctx, logging.Script, nil, _err)
 	}()
 	cmd, cancel, _err := o.createCommand(ctx, bindings)
 	if cancel != nil {
@@ -64,7 +63,7 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 	if !o.script.SkipCommandOutput {
 		logOpts = append(logOpts, logging.Section("COMMAND", cmd.String()))
 	}
-	internal.LogStart(logger, logging.Command, logOpts...)
+	internal.LogStart(ctx, logging.Command, nil, logOpts...)
 	return o.execute(ctx, bindings, cmd)
 }
 
@@ -85,8 +84,7 @@ func (o *operation) createCommand(ctx context.Context, bindings apis.Bindings) (
 		cancel = func() {
 			err := os.Remove(path)
 			if err != nil {
-				logger := internal.GetLogger(ctx, nil)
-				logger.Log(logging.Script, logging.WarnStatus, color.BoldYellow, logging.ErrSection(err))
+				logging.Log(ctx, logging.Script, logging.WarnStatus, nil, color.BoldYellow, logging.ErrSection(err))
 			}
 		}
 		defer f.Close()
@@ -110,12 +108,11 @@ func (o *operation) createCommand(ctx context.Context, bindings apis.Bindings) (
 }
 
 func (o *operation) execute(ctx context.Context, bindings apis.Bindings, cmd *exec.Cmd) (_outputs outputs.Outputs, _err error) {
-	logger := internal.GetLogger(ctx, nil)
 	var output internal.CommandOutput
 	if !o.script.SkipLogOutput {
 		defer func() {
 			if sections := output.Sections(); len(sections) != 0 {
-				logger.Log(logging.Script, logging.LogStatus, color.BoldFgCyan, sections...)
+				logging.Log(ctx, logging.Script, logging.LogStatus, nil, color.BoldFgCyan, sections...)
 			}
 		}()
 	}
