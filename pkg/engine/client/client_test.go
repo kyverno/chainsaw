@@ -175,7 +175,7 @@ func Test_runnerClient_Create(t *testing.T) {
 			opts: nil,
 		},
 		wantErr:     true,
-		loggerCalls: 2,
+		loggerCalls: 1,
 		innerCalls:  1,
 	}, {
 		name: "no error",
@@ -192,7 +192,7 @@ func Test_runnerClient_Create(t *testing.T) {
 			opts: nil,
 		},
 		wantErr:     false,
-		loggerCalls: 2,
+		loggerCalls: 1,
 		innerCalls:  1,
 	}}
 	for _, tt := range tests {
@@ -242,7 +242,7 @@ func Test_runnerClient_Update(t *testing.T) {
 			opts: nil,
 		},
 		wantErr:     true,
-		loggerCalls: 2,
+		loggerCalls: 1,
 		innerCalls:  1,
 	}, {
 		name: "no error",
@@ -259,7 +259,7 @@ func Test_runnerClient_Update(t *testing.T) {
 			opts: nil,
 		},
 		wantErr:     false,
-		loggerCalls: 2,
+		loggerCalls: 1,
 		innerCalls:  1,
 	}}
 	for _, tt := range tests {
@@ -309,7 +309,7 @@ func Test_runnerClient_Delete(t *testing.T) {
 			opts: nil,
 		},
 		wantErr:     true,
-		loggerCalls: 2,
+		loggerCalls: 1,
 		innerCalls:  1,
 	}, {
 		name: "no error",
@@ -326,7 +326,7 @@ func Test_runnerClient_Delete(t *testing.T) {
 			opts: nil,
 		},
 		wantErr:     false,
-		loggerCalls: 2,
+		loggerCalls: 1,
 		innerCalls:  1,
 	}}
 	for _, tt := range tests {
@@ -444,7 +444,7 @@ func Test_runnerClient_Patch(t *testing.T) {
 			opts: nil,
 		},
 		wantErr:     true,
-		loggerCalls: 2,
+		loggerCalls: 1,
 		innerCalls:  1,
 	}, {
 		name: "no error",
@@ -461,7 +461,7 @@ func Test_runnerClient_Patch(t *testing.T) {
 			opts: nil,
 		},
 		wantErr:     false,
-		loggerCalls: 2,
+		loggerCalls: 1,
 		innerCalls:  1,
 	}}
 	for _, tt := range tests {
