@@ -10,8 +10,8 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/discovery"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -40,7 +40,7 @@ func (r *runner) runTest(
 			size = len(name)
 		}
 	}
-	ctx = logging.IntoContext(ctx, logging.NewLogger(t, r.clock, test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
+	ctx = logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
 	// setup summary
 	t.Cleanup(func() {
 		if t.Skipped() {
@@ -82,7 +82,7 @@ func (r *runner) runTest(
 	tc, err := enginecontext.WithBindings(ctx, tc, bindings...)
 	if err != nil {
 		t.Fail()
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		r.onFail()
 		return
 	}
@@ -101,7 +101,7 @@ func (r *runner) runTest(
 	tc, err = setupContext(ctx, tc, contextData)
 	if err != nil {
 		t.Fail()
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		r.onFail()
 		return
 	}
@@ -118,9 +118,9 @@ func (r *runner) runTest(
 	mainCleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
 	t.Cleanup(func() {
 		if !mainCleaner.Empty() {
-			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
+			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, nil, color.BoldFgCyan)
 			defer func() {
-				logging.Log(ctx, logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
+				logging.Log(ctx, logging.Cleanup, logging.EndStatus, nil, color.BoldFgCyan)
 			}()
 			stepReport := &model.StepReport{
 				Name:      fmt.Sprintf("cleanup (%s)", stepReport.Name),
@@ -132,7 +132,7 @@ func (r *runner) runTest(
 			}()
 			for _, err := range mainCleaner.Run(ctx, stepReport) {
 				t.Fail()
-				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 				r.onFail()
 			}
 		}
@@ -170,7 +170,7 @@ func (r *runner) runTest(
 		nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
 		if err != nil {
 			t.Fail()
-			logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 			r.onFail()
 			return
 		}
@@ -186,7 +186,7 @@ func (r *runner) runTest(
 	tc, err = setupBindings(ctx, tc, test.Test.Spec.Bindings...)
 	if err != nil {
 		t.Fail()
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		r.onFail()
 		return
 	}
@@ -196,7 +196,7 @@ func (r *runner) runTest(
 		if name == "" {
 			name = fmt.Sprintf("step-%d", i+1)
 		}
-		ctx := logging.IntoContext(ctx, logging.NewLogger(t, r.clock, test.Test.Name, fmt.Sprintf("%-*s", size, name)))
+		ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, fmt.Sprintf("%-*s", size, name)))
 		info := StepInfo{
 			Id: i + 1,
 		}

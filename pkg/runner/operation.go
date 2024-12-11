@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/pkg/ext/output/color"
@@ -43,7 +43,7 @@ func (o operation) execute(ctx context.Context, tc enginecontext.TestContext, st
 		stepReport.Add(report)
 	}()
 	if operation, timeout, tc, err := o.operation(ctx, tc.WithBinding(ctx, "operation", o.info)); err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		return nil, err
 	} else {
 		if timeout != nil {

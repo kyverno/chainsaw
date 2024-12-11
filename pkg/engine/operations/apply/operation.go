@@ -9,12 +9,12 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client"
 	bindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -61,9 +61,8 @@ func (o *operation) Exec(ctx context.Context, tc apis.Bindings) (_ outputs.Outpu
 		tc = apis.NewBindings()
 	}
 	obj := o.base
-	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
-		internal.LogEnd(logger, logging.Apply, _err)
+		internal.LogEnd(ctx, logging.Apply, &obj, _err)
 	}()
 	if o.template {
 		template := v1alpha1.NewProjection(obj.UnstructuredContent())
@@ -76,7 +75,7 @@ func (o *operation) Exec(ctx context.Context, tc apis.Bindings) (_ outputs.Outpu
 	if err := internal.ApplyNamespacer(o.namespacer, o.client, &obj); err != nil {
 		return nil, err
 	}
-	internal.LogStart(logger, logging.Apply)
+	internal.LogStart(ctx, logging.Apply, &obj)
 	return o.execute(ctx, tc, obj)
 }
 

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/client"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -94,15 +94,9 @@ func (c *runnerClient) RESTMapper() meta.RESTMapper {
 }
 
 func (c *runnerClient) ok(ctx context.Context, op logging.Operation, obj client.Object) {
-	logger := logging.FromContext(ctx)
-	if logger != nil {
-		logger.WithResource(obj).Log(op, logging.OkStatus, color.BoldGreen)
-	}
+	logging.Log(ctx, op, logging.OkStatus, obj, color.BoldGreen)
 }
 
 func (c *runnerClient) error(ctx context.Context, op logging.Operation, obj client.Object, err error) {
-	logger := logging.FromContext(ctx)
-	if logger != nil {
-		logger.WithResource(obj).Log(op, logging.WarnStatus, color.BoldYellow, logging.ErrSection(err))
-	}
+	logging.Log(ctx, op, logging.OkStatus, obj, color.BoldYellow, logging.ErrSection(err))
 }

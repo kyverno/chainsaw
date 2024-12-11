@@ -12,7 +12,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	opapply "github.com/kyverno/chainsaw/pkg/engine/operations/apply"
@@ -26,6 +25,7 @@ import (
 	opsleep "github.com/kyverno/chainsaw/pkg/engine/operations/sleep"
 	opupdate "github.com/kyverno/chainsaw/pkg/engine/operations/update"
 	"github.com/kyverno/chainsaw/pkg/loaders/resource"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -45,7 +45,6 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 		report.EndTime = time.Now()
 		testReport.Add(report)
 	}()
-	logger := logging.FromContext(ctx)
 	if step.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*step.Compiler))
 	}
@@ -62,7 +61,7 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 	tc, err := setupContextAndBindings(ctx, tc, contextData, step.Bindings...)
 	if err != nil {
 		t.Fail()
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		r.onFail()
 		return true
 	}
@@ -77,15 +76,15 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 				report.EndTime = time.Now()
 				testReport.Add(report)
 			}()
-			logger.Log(logging.Cleanup, logging.BeginStatus, color.BoldFgCyan)
+			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, nil, color.BoldFgCyan)
 			defer func() {
-				logger.Log(logging.Cleanup, logging.EndStatus, color.BoldFgCyan)
+				logging.Log(ctx, logging.Cleanup, logging.EndStatus, nil, color.BoldFgCyan)
 			}()
 			if !cleaner.Empty() {
 				if errs := cleaner.Run(ctx, report); len(errs) != 0 {
 					t.Fail()
 					for _, err := range errs {
-						logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+						logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 					}
 					r.onFail()
 				}
@@ -98,7 +97,7 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 				operations, err := finallyOperation(operationTc.Compilers(), basePath, i, namespacer, operationTc.Bindings(), operation)
 				if err != nil {
 					t.Fail()
-					logger.Log(logging.Cleanup, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+					logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 					r.onFail()
 				}
 				for _, operation := range operations {
@@ -113,9 +112,9 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 	})
 	if len(step.Finally) != 0 {
 		defer func() {
-			logger.Log(logging.Finally, logging.BeginStatus, color.BoldFgCyan)
+			logging.Log(ctx, logging.Finally, logging.BeginStatus, nil, color.BoldFgCyan)
 			defer func() {
-				logger.Log(logging.Finally, logging.EndStatus, color.BoldFgCyan)
+				logging.Log(ctx, logging.Finally, logging.EndStatus, nil, color.BoldFgCyan)
 			}()
 			for i, operation := range step.Finally {
 				operationTc := tc
@@ -125,7 +124,7 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 				operations, err := finallyOperation(operationTc.Compilers(), basePath, i, namespacer, operationTc.Bindings(), operation)
 				if err != nil {
 					t.Fail()
-					logger.Log(logging.Finally, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+					logging.Log(ctx, logging.Finally, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 					r.onFail()
 				}
 				for _, operation := range operations {
@@ -141,9 +140,9 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 	if catch := tc.Catch(); len(catch) != 0 {
 		defer func() {
 			if t.Failed() {
-				logger.Log(logging.Catch, logging.BeginStatus, color.BoldFgCyan)
+				logging.Log(ctx, logging.Catch, logging.BeginStatus, nil, color.BoldFgCyan)
 				defer func() {
-					logger.Log(logging.Catch, logging.EndStatus, color.BoldFgCyan)
+					logging.Log(ctx, logging.Catch, logging.EndStatus, nil, color.BoldFgCyan)
 				}()
 				for i, operation := range catch {
 					operationTc := tc
@@ -153,7 +152,7 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 					operations, err := catchOperation(operationTc.Compilers(), basePath, i, namespacer, operationTc.Bindings(), operation)
 					if err != nil {
 						t.Fail()
-						logger.Log(logging.Catch, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+						logging.Log(ctx, logging.Catch, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 						r.onFail()
 					}
 					for _, operation := range operations {
@@ -167,9 +166,9 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 			}
 		}()
 	}
-	logger.Log(logging.Try, logging.BeginStatus, color.BoldFgCyan)
+	logging.Log(ctx, logging.Try, logging.BeginStatus, nil, color.BoldFgCyan)
 	defer func() {
-		logger.Log(logging.Try, logging.EndStatus, color.BoldFgCyan)
+		logging.Log(ctx, logging.Try, logging.EndStatus, nil, color.BoldFgCyan)
 	}()
 	for i, operation := range step.Try {
 		operationTc := tc
@@ -180,7 +179,7 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 		operations, err := tryOperation(operationTc.Compilers(), basePath, i, namespacer, operationTc.Bindings(), operation, cleaner)
 		if err != nil {
 			t.Fail()
-			logger.Log(logging.Try, logging.ErrorStatus, color.BoldRed, logging.ErrSection(err))
+			logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 			r.onFail()
 			return true
 		}
