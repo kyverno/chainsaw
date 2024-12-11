@@ -23,11 +23,7 @@ func Expand(env map[string]string, in ...string) []string {
 			// return the given key
 			return "$" + key
 		})
-		if expanded != "" {
-			args = append(args, expanded)
-		} else {
-			args = append(args, arg)
-		}
+		args = append(args, expanded)
 	}
 	return args
 }
