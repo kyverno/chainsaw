@@ -131,9 +131,9 @@ func (o *operation) createResource(ctx context.Context, tc apis.Bindings, obj un
 
 func (o *operation) handleCheck(ctx context.Context, tc apis.Bindings, obj unstructured.Unstructured, err error) (_outputs outputs.Outputs, _err error) {
 	if err == nil {
-		tc = bindings.RegisterBinding(ctx, tc, "error", nil)
+		tc = bindings.RegisterBinding(tc, "error", nil)
 	} else {
-		tc = bindings.RegisterBinding(ctx, tc, "error", err.Error())
+		tc = bindings.RegisterBinding(tc, "error", err.Error())
 	}
 	defer func(tc apis.Bindings) {
 		if _err == nil {

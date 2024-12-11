@@ -340,8 +340,13 @@ func Command() *cobra.Command {
 					fmt.Fscanln(stdIn) //nolint:errcheck
 				}
 			}
+			ctx := context.Background()
+			tc, err := runner.InitContext(configuration.Spec, restConfig, values)
+			if err != nil {
+				return err
+			}
 			runner := runner.New(clock, onFailure)
-			summary, err := runner.Run(context.Background(), restConfig, configuration.Spec, values, testToRun...)
+			summary, err := runner.Run(ctx, configuration.Spec, tc, testToRun...)
 			if summary != nil {
 				fmt.Fprintln(stdOut, "Tests Summary...")
 				fmt.Fprintln(stdOut, "- Passed  tests", summary.Passed())

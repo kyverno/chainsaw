@@ -113,9 +113,9 @@ func (o *operation) updateResource(ctx context.Context, bindings apis.Bindings, 
 
 func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, obj unstructured.Unstructured, err error) (_outputs outputs.Outputs, _err error) {
 	if err == nil {
-		bindings = apibindings.RegisterBinding(ctx, bindings, "error", nil)
+		bindings = apibindings.RegisterBinding(bindings, "error", nil)
 	} else {
-		bindings = apibindings.RegisterBinding(ctx, bindings, "error", err.Error())
+		bindings = apibindings.RegisterBinding(bindings, "error", err.Error())
 	}
 	defer func(bindings apis.Bindings) {
 		if _err == nil {

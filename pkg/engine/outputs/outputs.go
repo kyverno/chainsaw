@@ -26,7 +26,7 @@ func Process(ctx context.Context, compilers compilers.Compilers, tc apis.Binding
 		if err != nil {
 			return nil, err
 		}
-		tc = bindings.RegisterBinding(ctx, tc, name, value)
+		tc = bindings.RegisterBinding(tc, name, value)
 		if results == nil {
 			results = Outputs{}
 		}

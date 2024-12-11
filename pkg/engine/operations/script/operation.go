@@ -119,12 +119,12 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, cmd *ex
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	err := cmd.Run()
-	bindings = apibindings.RegisterBinding(ctx, bindings, "stdout", output.Out())
-	bindings = apibindings.RegisterBinding(ctx, bindings, "stderr", output.Err())
+	bindings = apibindings.RegisterBinding(bindings, "stdout", output.Out())
+	bindings = apibindings.RegisterBinding(bindings, "stderr", output.Err())
 	if err == nil {
-		bindings = apibindings.RegisterBinding(ctx, bindings, "error", nil)
+		bindings = apibindings.RegisterBinding(bindings, "error", nil)
 	} else {
-		bindings = apibindings.RegisterBinding(ctx, bindings, "error", err.Error())
+		bindings = apibindings.RegisterBinding(bindings, "error", err.Error())
 	}
 	defer func(bindings apis.Bindings) {
 		if _err == nil {

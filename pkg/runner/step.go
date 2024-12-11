@@ -58,7 +58,7 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 		templating:          step.Template,
 		timeouts:            step.Timeouts,
 	}
-	tc, err := setupContextAndBindings(ctx, tc, contextData, step.Bindings...)
+	tc, err := setupContextAndBindings(tc, contextData, step.Bindings...)
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
@@ -193,7 +193,7 @@ func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, 
 				}
 			}
 			for k, v := range outputs {
-				tc = tc.WithBinding(ctx, k, v)
+				tc = tc.WithBinding(k, v)
 			}
 		}
 	}
@@ -387,7 +387,7 @@ func applyOperation(compilers compilers.Compilers, basePath string, id int, name
 					templating: op.Template,
 					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
-				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
+				if tc, err := setupContextAndBindings(tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
@@ -434,7 +434,7 @@ func assertOperation(compilers compilers.Compilers, basePath string, id int, nam
 					templating: op.Template,
 					timeouts:   &v1alpha1.Timeouts{Assert: op.Timeout},
 				}
-				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
+				if tc, err := setupContextAndBindings(tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, nil, tc, err
@@ -471,7 +471,7 @@ func commandOperation(_ compilers.Compilers, basePath string, id int, namespacer
 				clusters: op.Clusters,
 				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
-			if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
+			if tc, err := setupContextAndBindings(tc, contextData, op.Bindings...); err != nil {
 				return nil, nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -512,7 +512,7 @@ func createOperation(compilers compilers.Compilers, basePath string, id int, nam
 					templating: op.Template,
 					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
-				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
+				if tc, err := setupContextAndBindings(tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
@@ -574,7 +574,7 @@ func deleteOperation(compilers compilers.Compilers, basePath string, id int, nam
 					templating:          op.Template,
 					timeouts:            &v1alpha1.Timeouts{Delete: op.Timeout},
 				}
-				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
+				if tc, err := setupContextAndBindings(tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, nil, tc, err
@@ -613,7 +613,7 @@ func describeOperation(_ compilers.Compilers, basePath string, id int, namespace
 				clusters: op.Clusters,
 				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
-			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
+			if tc, err := setupContextAndBindings(tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -662,7 +662,7 @@ func errorOperation(compilers compilers.Compilers, basePath string, id int, name
 					templating: op.Template,
 					timeouts:   &v1alpha1.Timeouts{Error: op.Timeout},
 				}
-				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
+				if tc, err := setupContextAndBindings(tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if _, client, err := tc.CurrentClusterClient(); err != nil {
 					return nil, nil, tc, err
@@ -699,7 +699,7 @@ func getOperation(_ compilers.Compilers, basePath string, id int, namespacer nam
 				clusters: op.Clusters,
 				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
-			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
+			if tc, err := setupContextAndBindings(tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -743,7 +743,7 @@ func logsOperation(_ compilers.Compilers, basePath string, id int, namespacer na
 				clusters: op.Clusters,
 				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
-			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
+			if tc, err := setupContextAndBindings(tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -793,7 +793,7 @@ func patchOperation(compilers compilers.Compilers, basePath string, id int, name
 					templating: op.Template,
 					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
-				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
+				if tc, err := setupContextAndBindings(tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
@@ -834,7 +834,7 @@ func proxyOperation(_ compilers.Compilers, basePath string, id int, namespacer n
 				clusters: op.Clusters,
 				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
-			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
+			if tc, err := setupContextAndBindings(tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -878,7 +878,7 @@ func scriptOperation(_ compilers.Compilers, basePath string, id int, namespacer 
 				clusters: op.Clusters,
 				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
-			if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
+			if tc, err := setupContextAndBindings(tc, contextData, op.Bindings...); err != nil {
 				return nil, nil, tc, err
 			} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err
@@ -931,7 +931,7 @@ func updateOperation(compilers compilers.Compilers, basePath string, id int, nam
 					templating: op.Template,
 					timeouts:   &v1alpha1.Timeouts{Apply: op.Timeout},
 				}
-				if tc, err := setupContextAndBindings(ctx, tc, contextData, op.Bindings...); err != nil {
+				if tc, err := setupContextAndBindings(tc, contextData, op.Bindings...); err != nil {
 					return nil, nil, tc, err
 				} else if err := prepareResource(resource, tc); err != nil {
 					return nil, nil, tc, err
@@ -972,7 +972,7 @@ func waitOperation(_ compilers.Compilers, basePath string, id int, namespacer na
 				clusters: op.Clusters,
 				timeouts: &v1alpha1.Timeouts{Exec: op.Timeout},
 			}
-			if tc, err := setupContextAndBindings(ctx, tc, contextData); err != nil {
+			if tc, err := setupContextAndBindings(tc, contextData); err != nil {
 				return nil, nil, tc, err
 			} else if config, client, err := tc.CurrentClusterClient(); err != nil {
 				return nil, nil, tc, err

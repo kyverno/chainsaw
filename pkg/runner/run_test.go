@@ -157,11 +157,14 @@ func TestRun(t *testing.T) {
 			runner := runner{
 				clock: fakeClock,
 			}
-			_, err := runner.run(context.TODO(), tt.restConfig, tt.config, mockMainStart, nil, tt.tests...)
+			ctx := context.TODO()
+			tc, err := InitContext(tt.config, tt.restConfig, nil)
+			assert.NoError(t, err)
+			_, err = runner.run(ctx, mockMainStart, tt.config, tc, tt.tests...)
 			if tt.wantErr {
-				assert.Error(t, err, "Run() should return an error")
+				assert.Error(t, err)
 			} else {
-				assert.NoError(t, err, "Run() should not return an error")
+				assert.NoError(t, err)
 			}
 		})
 	}

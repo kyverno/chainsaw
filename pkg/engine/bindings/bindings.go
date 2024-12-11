@@ -20,7 +20,7 @@ func checkBindingName(name string) error {
 	return nil
 }
 
-func RegisterBinding(ctx context.Context, bindings apis.Bindings, name string, value any) apis.Bindings {
+func RegisterBinding(bindings apis.Bindings, name string, value any) apis.Bindings {
 	return bindings.Register("$"+name, apis.NewBinding(value))
 }
 

@@ -74,12 +74,12 @@ func (r *runner) runTest(
 		tc.Report.Add(report)
 	})
 	// setup context
-	tc = tc.WithBinding(ctx, "test", TestInfo{
+	tc = tc.WithBinding("test", TestInfo{
 		Id:         testId,
 		ScenarioId: scenarioId,
 		Metadata:   test.Test.ObjectMeta,
 	})
-	tc, err := enginecontext.WithBindings(ctx, tc, bindings...)
+	tc, err := enginecontext.WithBindings(tc, bindings...)
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
@@ -98,7 +98,7 @@ func (r *runner) runTest(
 		terminationGrace:    test.Test.Spec.ForceTerminationGracePeriod,
 		timeouts:            test.Test.Spec.Timeouts,
 	}
-	tc, err = setupContext(ctx, tc, contextData)
+	tc, err = setupContext(tc, contextData)
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
@@ -183,7 +183,7 @@ func (r *runner) runTest(
 		report.Namespace = nspacer.GetNamespace()
 	}
 	// setup bindings
-	tc, err = setupBindings(ctx, tc, test.Test.Spec.Bindings...)
+	tc, err = setupBindings(tc, test.Test.Spec.Bindings...)
 	if err != nil {
 		t.Fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
@@ -200,7 +200,7 @@ func (r *runner) runTest(
 		info := StepInfo{
 			Id: i + 1,
 		}
-		tc := tc.WithBinding(ctx, "step", info)
+		tc := tc.WithBinding("step", info)
 		if stop := r.runStep(ctx, t, test.BasePath, nspacer, tc, step, report); stop {
 			return
 		}

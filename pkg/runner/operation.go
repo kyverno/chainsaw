@@ -42,7 +42,7 @@ func (o operation) execute(ctx context.Context, tc enginecontext.TestContext, st
 		report.Err = err
 		stepReport.Add(report)
 	}()
-	if operation, timeout, tc, err := o.operation(ctx, tc.WithBinding(ctx, "operation", o.info)); err != nil {
+	if operation, timeout, tc, err := o.operation(ctx, tc.WithBinding("operation", o.info)); err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		return nil, err
 	} else {

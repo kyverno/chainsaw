@@ -1,7 +1,6 @@
 package context
 
 import (
-	"context"
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
@@ -120,12 +119,12 @@ func (tc *TestContext) Timeouts() v1alpha1.DefaultTimeouts {
 	return tc.timeouts
 }
 
-func (tc TestContext) WithBinding(ctx context.Context, name string, value any) TestContext {
-	tc.bindings = apibindings.RegisterBinding(ctx, tc.bindings, name, value)
+func (tc TestContext) WithBinding(name string, value any) TestContext {
+	tc.bindings = apibindings.RegisterBinding(tc.bindings, name, value)
 	return tc
 }
 
-func (tc TestContext) WithCatch(ctx context.Context, catch ...v1alpha1.CatchFinally) TestContext {
+func (tc TestContext) WithCatch(catch ...v1alpha1.CatchFinally) TestContext {
 	tc.catch = append(tc.catch, catch...)
 	return tc
 }
@@ -135,57 +134,57 @@ func (tc TestContext) WithDefaultCompiler(name string) TestContext {
 	return tc
 }
 
-func (tc TestContext) WithCluster(ctx context.Context, name string, cluster clusters.Cluster) TestContext {
+func (tc TestContext) WithCluster(name string, cluster clusters.Cluster) TestContext {
 	tc.clusters = tc.clusters.Register(name, cluster)
 	return tc
 }
 
-func (tc TestContext) WithCurrentCluster(ctx context.Context, name string) TestContext {
+func (tc TestContext) WithCurrentCluster(name string) TestContext {
 	tc.cluster = tc.Cluster(name)
 	return tc
 }
 
-func (tc TestContext) WithDelayBeforeCleanup(ctx context.Context, delayBeforeCleanup *time.Duration) TestContext {
+func (tc TestContext) WithDelayBeforeCleanup(delayBeforeCleanup *time.Duration) TestContext {
 	tc.delayBeforeCleanup = delayBeforeCleanup
 	return tc
 }
 
-func (tc TestContext) WithDeletionPropagation(ctx context.Context, deletionPropagation metav1.DeletionPropagation) TestContext {
+func (tc TestContext) WithDeletionPropagation(deletionPropagation metav1.DeletionPropagation) TestContext {
 	tc.deletionPropagation = deletionPropagation
 	return tc
 }
 
-func (tc TestContext) WithDryRun(ctx context.Context, dryRun bool) TestContext {
+func (tc TestContext) WithDryRun(dryRun bool) TestContext {
 	tc.dryRun = dryRun
 	return tc
 }
 
-func (tc TestContext) WithFailFast(ctx context.Context, failFast bool) TestContext {
+func (tc TestContext) WithFailFast(failFast bool) TestContext {
 	tc.failFast = failFast
 	return tc
 }
 
-func (tc TestContext) WithFullName(ctx context.Context, fullName bool) TestContext {
+func (tc TestContext) WithFullName(fullName bool) TestContext {
 	tc.fullName = fullName
 	return tc
 }
 
-func (tc TestContext) WithSkipDelete(ctx context.Context, skipDelete bool) TestContext {
+func (tc TestContext) WithSkipDelete(skipDelete bool) TestContext {
 	tc.skipDelete = skipDelete
 	return tc
 }
 
-func (tc TestContext) WithTemplating(ctx context.Context, templating bool) TestContext {
+func (tc TestContext) WithTemplating(templating bool) TestContext {
 	tc.templating = templating
 	return tc
 }
 
-func (tc TestContext) WithTerminationGrace(ctx context.Context, terminationGrace *time.Duration) TestContext {
+func (tc TestContext) WithTerminationGrace(terminationGrace *time.Duration) TestContext {
 	tc.terminationGrace = terminationGrace
 	return tc
 }
 
-func (tc TestContext) WithTimeouts(ctx context.Context, timeouts v1alpha1.Timeouts) TestContext {
+func (tc TestContext) WithTimeouts(timeouts v1alpha1.Timeouts) TestContext {
 	if new := timeouts.Apply; new != nil {
 		tc.timeouts.Apply = *new
 	}
