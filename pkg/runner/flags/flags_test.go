@@ -9,7 +9,7 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-func TestGetFlags(t *testing.T) {
+func Test_getFlags(t *testing.T) {
 	tests := []struct {
 		name   string
 		config model.Configuration
@@ -85,7 +85,7 @@ func TestGetFlags(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetFlags(tt.config)
+			got := getFlags(tt.config)
 			assert.Equal(t, tt.want, got)
 		})
 	}

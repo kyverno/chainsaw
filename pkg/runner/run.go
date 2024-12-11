@@ -31,6 +31,7 @@ func New(clock clock.PassiveClock, onFailure func()) Runner {
 type runner struct {
 	clock     clock.PassiveClock
 	onFailure func()
+	deps      *internal.TestDeps
 }
 
 func (r *runner) Run(ctx context.Context, config model.Configuration, tc enginecontext.TestContext, tests ...discovery.Test) (model.SummaryResult, error) {
@@ -42,11 +43,6 @@ func (r *runner) run(ctx context.Context, m mainstart, config model.Configuratio
 	if len(tests) == 0 {
 		return nil, nil
 	}
-	// setup flags
-	// TODO: should be done externally ?
-	if err := internal.SetupFlags(config); err != nil {
-		return nil, err
-	}
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
 		F: func(t *testing.T) {
@@ -56,7 +52,10 @@ func (r *runner) run(ctx context.Context, m mainstart, config model.Configuratio
 			r.runTests(ctx, t, config.Namespace, tc, tests...)
 		},
 	}}
-	deps := &internal.TestDeps{}
+	deps := r.deps
+	if deps == nil {
+		deps = &internal.TestDeps{}
+	}
 	if m == nil {
 		m = testing.MainStart(deps, internalTests, nil, nil, nil)
 	}

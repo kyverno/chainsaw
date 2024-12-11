@@ -15,7 +15,7 @@ import (
 
 func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alpha2.NamespaceOptions, tc enginecontext.TestContext, tests ...discovery.Test) {
 	// configure golang context
-	ctx = logging.WithSink(ctx, newSync(r.clock, t))
+	ctx = logging.WithSink(ctx, newSink(r.clock, t))
 	ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "@chainsaw"))
 	// setup cleaner
 	cleaner := setupCleanup(ctx, t, r.onFail, tc)
@@ -59,7 +59,7 @@ func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alph
 			if len(test.Test.Spec.Scenarios) == 0 {
 				t.Run(name, func(t *testing.T) {
 					t.Helper()
-					ctx = logging.WithSink(ctx, newSync(r.clock, t))
+					ctx = logging.WithSink(ctx, newSink(r.clock, t))
 					r.runTest(ctx, t, nsOptions, nspacer, tc, test, testId, 0)
 				})
 			} else {
@@ -67,7 +67,7 @@ func (r *runner) runTests(ctx context.Context, t testing.TTest, nsOptions v1alph
 					scenarioId := s + 1
 					t.Run(name, func(t *testing.T) {
 						t.Helper()
-						ctx = logging.WithSink(ctx, newSync(r.clock, t))
+						ctx = logging.WithSink(ctx, newSink(r.clock, t))
 						r.runTest(ctx, t, nsOptions, nspacer, tc, test, testId, scenarioId, test.Test.Spec.Scenarios[s].Bindings...)
 					})
 				}

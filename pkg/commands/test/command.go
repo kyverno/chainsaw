@@ -13,6 +13,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/loaders/values"
 	"github.com/kyverno/chainsaw/pkg/runner"
+	runnerflags "github.com/kyverno/chainsaw/pkg/runner/flags"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
@@ -346,6 +347,10 @@ func Command() *cobra.Command {
 				return err
 			}
 			runner := runner.New(clock, onFailure)
+			// setup flags
+			if err := runnerflags.SetupFlags(configuration.Spec); err != nil {
+				return err
+			}
 			summary, err := runner.Run(ctx, configuration.Spec, tc, testToRun...)
 			if summary != nil {
 				fmt.Fprintln(stdOut, "Tests Summary...")
