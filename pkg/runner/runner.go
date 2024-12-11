@@ -69,6 +69,7 @@ func (r *runner) run(ctx context.Context, m mainstart, config model.Configuratio
 		return nil, fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
 	tc.Report.EndTime = time.Now()
+	// TODO: move to the caller
 	if config.Report != nil && config.Report.Format != "" {
 		if err := report.Save(tc.Report, config.Report.Format, config.Report.Path, config.Report.Name); err != nil {
 			return tc, err
