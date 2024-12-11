@@ -36,7 +36,15 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-func (r *runner) runStep(ctx context.Context, t testing.TTest, basePath string, namespacer namespacer.Namespacer, tc enginecontext.TestContext, step v1alpha1.TestStep, testReport *model.TestReport) bool {
+func (r *runner) runStep(
+	ctx context.Context,
+	t testing.TTest,
+	basePath string,
+	namespacer namespacer.Namespacer,
+	tc enginecontext.TestContext,
+	step v1alpha1.TestStep,
+	testReport *model.TestReport,
+) bool {
 	report := &model.StepReport{
 		Name:      step.Name,
 		StartTime: time.Now(),
