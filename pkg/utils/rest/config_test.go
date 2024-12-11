@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
+	"k8s.io/client-go/tools/clientcmd/api"
 )
 
 func TestRestConfig(t *testing.T) {
@@ -161,6 +162,15 @@ func TestSave(t *testing.T) {
 			Host:  "https://127.0.0.1:53742",
 			QPS:   300,
 			Burst: 300,
+			AuthProvider: &api.AuthProviderConfig{
+				Name: "foo",
+				Config: map[string]string{
+					"foo": "bar",
+				},
+			},
+			ExecProvider: &api.ExecConfig{
+				Command: "foo",
+			},
 		},
 		wantW: `
 clusters:
@@ -176,7 +186,16 @@ current-context: chainsaw
 preferences: {}
 users:
 - name: chainsaw
-  user: {}
+  user:
+    auth-provider:
+      config:
+        foo: bar
+      name: foo
+    exec:
+      args: null
+      command: foo
+      env: []
+      provideClusterInfo: false
 `,
 	}}
 	for _, tt := range tests {
