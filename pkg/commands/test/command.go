@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/loaders/values"
+	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	runnerflags "github.com/kyverno/chainsaw/pkg/runner/flags"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
@@ -351,16 +352,21 @@ func Command() *cobra.Command {
 			if err := runnerflags.SetupFlags(configuration.Spec); err != nil {
 				return err
 			}
-			summary, err := runner.Run(ctx, configuration.Spec, tc, testToRun...)
-			if summary != nil {
-				fmt.Fprintln(stdOut, "Tests Summary...")
-				fmt.Fprintln(stdOut, "- Passed  tests", summary.Passed())
-				fmt.Fprintln(stdOut, "- Failed  tests", summary.Failed())
-				fmt.Fprintln(stdOut, "- Skipped tests", summary.Skipped())
+			err = runner.Run(ctx, configuration.Spec, tc, testToRun...)
+			fmt.Fprintln(stdOut, "Tests Summary...")
+			fmt.Fprintln(stdOut, "- Passed  tests", tc.Passed())
+			fmt.Fprintln(stdOut, "- Failed  tests", tc.Failed())
+			fmt.Fprintln(stdOut, "- Skipped tests", tc.Skipped())
+			// process report
+			if configuration.Spec.Report != nil && configuration.Spec.Report.Format != "" {
+				fmt.Fprintln(stdOut, "Saving report...")
+				if err := report.Save(tc.Report, configuration.Spec.Report.Format, configuration.Spec.Report.Path, configuration.Spec.Report.Name); err != nil {
+					return err
+				}
 			}
 			if err != nil {
 				fmt.Fprintln(stdOut, "Done with error.")
-			} else if summary != nil && summary.Failed() > 0 {
+			} else if tc.Failed() > 0 {
 				fmt.Fprintln(stdOut, "Done with failures.")
 				err = errors.New("some tests failed")
 			} else {

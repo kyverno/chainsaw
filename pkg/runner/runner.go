@@ -9,7 +9,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	"github.com/kyverno/chainsaw/pkg/model"
-	"github.com/kyverno/chainsaw/pkg/report"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/testing"
@@ -18,7 +17,7 @@ import (
 )
 
 type Runner interface {
-	Run(context.Context, model.Configuration, enginecontext.TestContext, ...discovery.Test) (model.SummaryResult, error)
+	Run(context.Context, model.Configuration, enginecontext.TestContext, ...discovery.Test) error
 }
 
 func New(clock clock.PassiveClock, onFailure func()) Runner {
@@ -34,14 +33,14 @@ type runner struct {
 	deps      *internal.TestDeps
 }
 
-func (r *runner) Run(ctx context.Context, config model.Configuration, tc enginecontext.TestContext, tests ...discovery.Test) (model.SummaryResult, error) {
+func (r *runner) Run(ctx context.Context, config model.Configuration, tc enginecontext.TestContext, tests ...discovery.Test) error {
 	return r.run(ctx, nil, config, tc, tests...)
 }
 
-func (r *runner) run(ctx context.Context, m mainstart, config model.Configuration, tc enginecontext.TestContext, tests ...discovery.Test) (model.SummaryResult, error) {
+func (r *runner) run(ctx context.Context, m mainstart, config model.Configuration, tc enginecontext.TestContext, tests ...discovery.Test) error {
 	// sanity check
 	if len(tests) == 0 {
-		return nil, nil
+		return nil
 	}
 	internalTests := []testing.InternalTest{{
 		Name: "chainsaw",
@@ -66,16 +65,10 @@ func (r *runner) run(ctx context.Context, m mainstart, config model.Configuratio
 	// In our case, we consider an error only when running the tests was not possible.
 	// For now, the case where some of the tests failed will be covered by the summary.
 	if code := m.Run(); code > 1 {
-		return nil, fmt.Errorf("testing framework exited with non zero code %d", code)
+		return fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
 	tc.Report.EndTime = time.Now()
-	// TODO: move to the caller
-	if config.Report != nil && config.Report.Format != "" {
-		if err := report.Save(tc.Report, config.Report.Format, config.Report.Path, config.Report.Name); err != nil {
-			return tc, err
-		}
-	}
-	return tc, nil
+	return nil
 }
 
 func (r *runner) onFail() {

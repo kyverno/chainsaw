@@ -80,6 +80,11 @@ func TestTestDeps_MatchString(t *testing.T) {
 	}
 }
 
+func TestTestDeps_SetPanicOnExit0(t *testing.T) {
+	d := &TestDeps{}
+	d.SetPanicOnExit0(true)
+}
+
 func TestTestDeps_StartCPUProfile(t *testing.T) {
 	d := &TestDeps{}
 	assert.NoError(t, d.StartCPUProfile(nil))
