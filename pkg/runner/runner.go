@@ -5,19 +5,20 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/discovery"
-	"github.com/kyverno/chainsaw/pkg/engine/clusters"
-	"github.com/kyverno/chainsaw/pkg/model"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
+	"github.com/kyverno/chainsaw/pkg/runner/names"
 	"github.com/kyverno/chainsaw/pkg/testing"
-	"k8s.io/client-go/rest"
+	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/utils/clock"
 )
 
 type Runner interface {
-	Run(context.Context, model.Configuration, enginecontext.TestContext, ...discovery.Test) error
+	Run(context.Context, v1alpha2.NamespaceOptions, enginecontext.TestContext, ...discovery.Test) error
 }
 
 func New(clock clock.PassiveClock, onFailure func()) Runner {
@@ -33,11 +34,14 @@ type runner struct {
 	deps      *internal.TestDeps
 }
 
-func (r *runner) Run(ctx context.Context, config model.Configuration, tc enginecontext.TestContext, tests ...discovery.Test) error {
-	return r.run(ctx, nil, config, tc, tests...)
+func (r *runner) Run(ctx context.Context, nsOptions v1alpha2.NamespaceOptions, tc enginecontext.TestContext, tests ...discovery.Test) error {
+	return r.run(ctx, nil, nsOptions, tc, tests...)
 }
 
-func (r *runner) run(ctx context.Context, m mainstart, config model.Configuration, tc enginecontext.TestContext, tests ...discovery.Test) error {
+func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.NamespaceOptions, tc enginecontext.TestContext, tests ...discovery.Test) error {
+	defer func() {
+		tc.Report.EndTime = time.Now()
+	}()
 	// sanity check
 	if len(tests) == 0 {
 		return nil
@@ -47,8 +51,66 @@ func (r *runner) run(ctx context.Context, m mainstart, config model.Configuratio
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
-			// run tests
-			r.runTests(ctx, t, config.Namespace, tc, tests...)
+			// configure golang context
+			ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
+			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "@chainsaw"))
+			// setup cleaner
+			cleaner := setupCleanup(ctx, t, r.onFail, tc)
+			// setup namespace
+			var nspacer namespacer.Namespacer
+			if nsOptions.Name != "" {
+				compilers := tc.Compilers()
+				if nsOptions.Compiler != nil {
+					compilers = compilers.WithDefaultCompiler(string(*nsOptions.Compiler))
+				}
+				namespaceData := namespaceData{
+					cleaner:   cleaner,
+					compilers: compilers,
+					name:      nsOptions.Name,
+					template:  nsOptions.Template,
+				}
+				nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
+				if err != nil {
+					t.Fail()
+					tc.IncFailed()
+					logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+					r.onFail()
+					return
+				}
+				tc = nsTc
+				if namespace != nil {
+					nspacer = namespacer.New(namespace.GetName())
+				}
+			}
+			// loop through tests
+			for i := range tests {
+				test := tests[i]
+				name, err := names.Test(tc.FullName(), test)
+				if err != nil {
+					t.Fail()
+					tc.IncFailed()
+					logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+					r.onFail()
+				} else {
+					testId := i + 1
+					if len(test.Test.Spec.Scenarios) == 0 {
+						t.Run(name, func(t *testing.T) {
+							t.Helper()
+							ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
+							r.runTest(ctx, t, nsOptions, nspacer, tc, test, testId, 0)
+						})
+					} else {
+						for s := range test.Test.Spec.Scenarios {
+							scenarioId := s + 1
+							t.Run(name, func(t *testing.T) {
+								t.Helper()
+								ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
+								r.runTest(ctx, t, nsOptions, nspacer, tc, test, testId, scenarioId, test.Test.Spec.Scenarios[s].Bindings...)
+							})
+						}
+					}
+				}
+			}
 		},
 	}}
 	deps := r.deps
@@ -67,7 +129,6 @@ func (r *runner) run(ctx context.Context, m mainstart, config model.Configuratio
 	if code := m.Run(); code > 1 {
 		return fmt.Errorf("testing framework exited with non zero code %d", code)
 	}
-	tc.Report.EndTime = time.Now()
 	return nil
 }
 
@@ -75,51 +136,4 @@ func (r *runner) onFail() {
 	if r.onFailure != nil {
 		r.onFailure()
 	}
-}
-
-func InitContext(config model.Configuration, defaultCluster *rest.Config, values any) (enginecontext.TestContext, error) {
-	tc := enginecontext.EmptyContext()
-	// cleanup options
-	tc = tc.WithSkipDelete(config.Cleanup.SkipDelete)
-	if config.Cleanup.DelayBeforeCleanup != nil {
-		tc = tc.WithDelayBeforeCleanup(&config.Cleanup.DelayBeforeCleanup.Duration)
-	}
-	// templating options
-	tc = tc.WithTemplating(config.Templating.Enabled)
-	if config.Templating.Compiler != nil {
-		tc = tc.WithDefaultCompiler(string(*config.Templating.Compiler))
-	}
-	// discovery options
-	tc = tc.WithFullName(config.Discovery.FullName)
-	// execution options
-	tc = tc.WithFailFast(config.Execution.FailFast)
-	if config.Execution.ForceTerminationGracePeriod != nil {
-		tc = tc.WithTerminationGrace(&config.Execution.ForceTerminationGracePeriod.Duration)
-	}
-	// deletion options
-	tc = tc.WithDeletionPropagation(config.Deletion.Propagation)
-	// error options
-	tc = tc.WithCatch(config.Error.Catch...)
-	// timeouts
-	tc = tc.WithTimeouts(v1alpha1.Timeouts{
-		Apply:   &config.Timeouts.Apply,
-		Assert:  &config.Timeouts.Assert,
-		Cleanup: &config.Timeouts.Cleanup,
-		Delete:  &config.Timeouts.Delete,
-		Error:   &config.Timeouts.Error,
-		Exec:    &config.Timeouts.Exec,
-	})
-	// values
-	tc = enginecontext.WithValues(tc, values)
-	// clusters
-	tc = enginecontext.WithClusters(tc, "", config.Clusters)
-	if defaultCluster != nil {
-		cluster, err := clusters.NewClusterFromConfig(defaultCluster)
-		if err != nil {
-			return tc, err
-		}
-		tc = tc.WithCluster(clusters.DefaultClient, cluster)
-		return enginecontext.WithCurrentCluster(tc, clusters.DefaultClient)
-	}
-	return tc, nil
 }

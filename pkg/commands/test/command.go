@@ -352,7 +352,7 @@ func Command() *cobra.Command {
 			if err := runnerflags.SetupFlags(configuration.Spec); err != nil {
 				return err
 			}
-			err = runner.Run(ctx, configuration.Spec, tc, testToRun...)
+			err = runner.Run(ctx, configuration.Spec.Namespace, tc, testToRun...)
 			fmt.Fprintln(stdOut, "Tests Summary...")
 			fmt.Fprintln(stdOut, "- Passed  tests", tc.Passed())
 			fmt.Fprintln(stdOut, "- Failed  tests", tc.Failed())

@@ -6,7 +6,9 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
@@ -14,7 +16,55 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/rest"
 )
+
+func InitContext(config model.Configuration, defaultCluster *rest.Config, values any) (enginecontext.TestContext, error) {
+	tc := enginecontext.EmptyContext()
+	// cleanup options
+	tc = tc.WithSkipDelete(config.Cleanup.SkipDelete)
+	if config.Cleanup.DelayBeforeCleanup != nil {
+		tc = tc.WithDelayBeforeCleanup(&config.Cleanup.DelayBeforeCleanup.Duration)
+	}
+	// templating options
+	tc = tc.WithTemplating(config.Templating.Enabled)
+	if config.Templating.Compiler != nil {
+		tc = tc.WithDefaultCompiler(string(*config.Templating.Compiler))
+	}
+	// discovery options
+	tc = tc.WithFullName(config.Discovery.FullName)
+	// execution options
+	tc = tc.WithFailFast(config.Execution.FailFast)
+	if config.Execution.ForceTerminationGracePeriod != nil {
+		tc = tc.WithTerminationGrace(&config.Execution.ForceTerminationGracePeriod.Duration)
+	}
+	// deletion options
+	tc = tc.WithDeletionPropagation(config.Deletion.Propagation)
+	// error options
+	tc = tc.WithCatch(config.Error.Catch...)
+	// timeouts
+	tc = tc.WithTimeouts(v1alpha1.Timeouts{
+		Apply:   &config.Timeouts.Apply,
+		Assert:  &config.Timeouts.Assert,
+		Cleanup: &config.Timeouts.Cleanup,
+		Delete:  &config.Timeouts.Delete,
+		Error:   &config.Timeouts.Error,
+		Exec:    &config.Timeouts.Exec,
+	})
+	// values
+	tc = enginecontext.WithValues(tc, values)
+	// clusters
+	tc = enginecontext.WithClusters(tc, "", config.Clusters)
+	if defaultCluster != nil {
+		cluster, err := clusters.NewClusterFromConfig(defaultCluster)
+		if err != nil {
+			return tc, err
+		}
+		tc = tc.WithCluster(clusters.DefaultClient, cluster)
+		return enginecontext.WithCurrentCluster(tc, clusters.DefaultClient)
+	}
+	return tc, nil
+}
 
 type namespaceData struct {
 	cleaner   cleaner.CleanerCollector
