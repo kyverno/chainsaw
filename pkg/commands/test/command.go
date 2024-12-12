@@ -358,10 +358,12 @@ func Command() *cobra.Command {
 			fmt.Fprintln(stdOut, "- Failed  tests", tc.Failed())
 			fmt.Fprintln(stdOut, "- Skipped tests", tc.Skipped())
 			// process report
-			if configuration.Spec.Report != nil && configuration.Spec.Report.Format != "" {
-				fmt.Fprintln(stdOut, "Saving report...")
-				if err := report.Save(tc.Report, configuration.Spec.Report.Format, configuration.Spec.Report.Path, configuration.Spec.Report.Name); err != nil {
-					return err
+			if err == nil {
+				if configuration.Spec.Report != nil && configuration.Spec.Report.Format != "" {
+					fmt.Fprintln(stdOut, "Saving report...")
+					if err := report.Save(tc.Report, configuration.Spec.Report.Format, configuration.Spec.Report.Path, configuration.Spec.Report.Name); err != nil {
+						return err
+					}
 				}
 			}
 			if err != nil {

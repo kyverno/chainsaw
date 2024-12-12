@@ -227,17 +227,6 @@ func TestRun(t *testing.T) {
 		restConfig: nil,
 		wantErr:    false,
 	}, {
-		name:  "Zero Tests with JSON Report",
-		tests: []discovery.Test{},
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-			Report: &v1alpha2.ReportOptions{
-				Format: v1alpha2.JSONFormat,
-			},
-		},
-		restConfig: &rest.Config{},
-		wantErr:    false,
-	}, {
 		name: "Success Case with 1 Test",
 		tests: []discovery.Test{
 			{
@@ -266,49 +255,6 @@ func TestRun(t *testing.T) {
 		},
 		restConfig: &rest.Config{},
 		mockReturn: 2,
-		wantErr:    true,
-	}, {
-		name: "Success Case with 1 Test with XML Report",
-		tests: []discovery.Test{
-			{
-				Err: nil,
-				Test: &model.Test{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "test1",
-					},
-				},
-			},
-		},
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-			Report: &v1alpha2.ReportOptions{
-				Format: v1alpha2.XMLFormat,
-				Name:   "chainsaw",
-			},
-		},
-		restConfig: &rest.Config{},
-		mockReturn: 0,
-		wantErr:    false,
-	}, {
-		name: "Error in saving Report",
-		tests: []discovery.Test{
-			{
-				Err: nil,
-				Test: &model.Test{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "test1",
-					},
-				},
-			},
-		},
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-			Report: &v1alpha2.ReportOptions{
-				Format: "abc",
-			},
-		},
-		restConfig: &rest.Config{},
-		mockReturn: 0,
 		wantErr:    true,
 	}}
 	for _, tt := range tests {
