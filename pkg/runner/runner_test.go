@@ -94,19 +94,16 @@ func Test_runner_Run(t *testing.T) {
 			// to allow unit tests to work
 			assert.NoError(t, flags.SetupFlags(tt.config))
 			assert.NoError(t, flag.Set("test.testlogfile", ""))
-			got, err := r.Run(context.TODO(), tt.config, tt.tc, tt.tests...)
+			err := r.Run(context.TODO(), tt.config, tt.tc, tt.tests...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
 				assert.NoError(t, err)
 			}
-			if tt.want == nil {
-				assert.Nil(t, got)
-			} else {
-				assert.NotNil(t, got)
-				assert.Equal(t, tt.want.failed, got.Failed())
-				assert.Equal(t, tt.want.passed, got.Passed())
-				assert.Equal(t, tt.want.skipped, got.Skipped())
+			if tt.want != nil {
+				assert.Equal(t, tt.want.failed, tc.Failed())
+				assert.Equal(t, tt.want.passed, tc.Passed())
+				assert.Equal(t, tt.want.skipped, tc.Skipped())
 			}
 		})
 	}
@@ -158,7 +155,7 @@ func Test_runner_run(t *testing.T) {
 			r := &runner{
 				clock: clock.RealClock{},
 			}
-			_, err := r.run(context.TODO(), tt.m, model.Configuration{}, enginecontext.EmptyContext(), tt.tests...)
+			err := r.run(context.TODO(), tt.m, model.Configuration{}, enginecontext.EmptyContext(), tt.tests...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -230,17 +227,6 @@ func TestRun(t *testing.T) {
 		restConfig: nil,
 		wantErr:    false,
 	}, {
-		name:  "Zero Tests with JSON Report",
-		tests: []discovery.Test{},
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-			Report: &v1alpha2.ReportOptions{
-				Format: v1alpha2.JSONFormat,
-			},
-		},
-		restConfig: &rest.Config{},
-		wantErr:    false,
-	}, {
 		name: "Success Case with 1 Test",
 		tests: []discovery.Test{
 			{
@@ -270,49 +256,6 @@ func TestRun(t *testing.T) {
 		restConfig: &rest.Config{},
 		mockReturn: 2,
 		wantErr:    true,
-	}, {
-		name: "Success Case with 1 Test with XML Report",
-		tests: []discovery.Test{
-			{
-				Err: nil,
-				Test: &model.Test{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "test1",
-					},
-				},
-			},
-		},
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-			Report: &v1alpha2.ReportOptions{
-				Format: v1alpha2.XMLFormat,
-				Name:   "chainsaw",
-			},
-		},
-		restConfig: &rest.Config{},
-		mockReturn: 0,
-		wantErr:    false,
-	}, {
-		name: "Error in saving Report",
-		tests: []discovery.Test{
-			{
-				Err: nil,
-				Test: &model.Test{
-					ObjectMeta: metav1.ObjectMeta{
-						Name: "test1",
-					},
-				},
-			},
-		},
-		config: model.Configuration{
-			Timeouts: config.Spec.Timeouts,
-			Report: &v1alpha2.ReportOptions{
-				Format: "abc",
-			},
-		},
-		restConfig: &rest.Config{},
-		mockReturn: 0,
-		wantErr:    true,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -325,7 +268,7 @@ func TestRun(t *testing.T) {
 			ctx := context.TODO()
 			tc, err := InitContext(tt.config, tt.restConfig, nil)
 			assert.NoError(t, err)
-			_, err = runner.run(ctx, mockMainStart, tt.config, tc, tt.tests...)
+			err = runner.run(ctx, mockMainStart, tt.config, tc, tt.tests...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

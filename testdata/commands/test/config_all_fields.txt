@@ -6,6 +6,7 @@ Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)..
 - FailFast true
 - ReportFormat 'JSON'
 - ReportName 'custom-chainsaw-report'
+- ReportPath '../../../.temp'
 - Namespace 'test-namespace'
 - FullName true
 - IncludeTestRegex '^include-.*'
@@ -24,4 +25,9 @@ Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)..
 Loading tests...
 Loading values...
 Running tests...
+Tests Summary...
+- Passed  tests 0
+- Failed  tests 0
+- Skipped tests 0
+Saving report...
 Done.

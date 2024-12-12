@@ -11,6 +11,7 @@ import (
 )
 
 func TestChainsawCommand(t *testing.T) {
+	path := "../../../.temp"
 	basePath := "../../../testdata/commands/test"
 	tests := []struct {
 		name    string
@@ -116,6 +117,8 @@ func TestChainsawCommand(t *testing.T) {
 		args: []string{
 			"--config",
 			filepath.Join(basePath, "config/config_all_fields.yaml"),
+			"--report-path",
+			path,
 		},
 		wantErr: false,
 		out:     filepath.Join(basePath, "config_all_fields.txt"),
@@ -135,6 +138,8 @@ func TestChainsawCommand(t *testing.T) {
 			"--parallel=24",
 			"--repeat-count=12",
 			"--report-format=XML",
+			"--report-path",
+			path,
 			"--report-name=foo",
 			"--namespace=bar",
 			"--full-name=true",
