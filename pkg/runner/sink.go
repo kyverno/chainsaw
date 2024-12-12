@@ -6,13 +6,12 @@ import (
 	"github.com/fatih/color"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/logging"
-	"github.com/kyverno/chainsaw/pkg/testing"
 	"k8s.io/utils/clock"
 )
 
 const eraser = "\b\b\b\b\b\b\b\b\b\b\b\b"
 
-func newSink(clock clock.PassiveClock, t testing.TTest) logging.SinkFunc {
+func newSink(clock clock.PassiveClock, log func(args ...any)) logging.SinkFunc {
 	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
 		sprint := fmt.Sprint
 		opLen := 9
@@ -34,6 +33,6 @@ func newSink(clock clock.PassiveClock, t testing.TTest) logging.SinkFunc {
 			a = append(a, "\n")
 			a = append(a, arg)
 		}
-		t.Log(fmt.Sprint(a...))
+		log(fmt.Sprint(a...))
 	}
 }
