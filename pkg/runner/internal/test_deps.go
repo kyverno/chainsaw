@@ -4,7 +4,6 @@ import (
 	"io"
 	"reflect"
 	"regexp"
-	"runtime/pprof"
 	"time"
 )
 
@@ -33,15 +32,14 @@ func (d *TestDeps) MatchString(pat, str string) (bool, error) {
 func (*TestDeps) SetPanicOnExit0(bool) {}
 
 func (*TestDeps) StartCPUProfile(w io.Writer) error {
-	return pprof.StartCPUProfile(w)
+	return nil
 }
 
 func (*TestDeps) StopCPUProfile() {
-	pprof.StopCPUProfile()
 }
 
 func (*TestDeps) WriteProfileTo(name string, w io.Writer, debug int) error {
-	return pprof.Lookup(name).WriteTo(w, debug)
+	return nil
 }
 
 func (*TestDeps) ImportPath() string {

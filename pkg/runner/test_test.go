@@ -29,9 +29,7 @@ import (
 
 func TestTestProcessor_Run(t *testing.T) {
 	config, err := config.DefaultConfiguration()
-	if err != nil {
-		assert.NoError(t, err)
-	}
+	assert.NoError(t, err)
 	testCases := []struct {
 		name         string
 		client       client.Client
