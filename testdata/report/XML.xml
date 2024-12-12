@@ -1,0 +1,10 @@
+<testsuites name="report" time="600.000000" tests="2" failures="1" skipped="1">
+  <testsuite name="base-path" tests="2" failures="1" errors="0" id="0" skipped="1" time="">
+    <testcase name="test-report" classname="" time="180.000000">
+      <failure message="dummy"></failure>
+    </testcase>
+    <testcase name="test-report-skipped" classname="" time="180.000000">
+      <skipped message=""></skipped>
+    </testcase>
+  </testsuite>
+</testsuites>
