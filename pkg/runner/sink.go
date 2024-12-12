@@ -10,7 +10,7 @@ import (
 	"k8s.io/utils/clock"
 )
 
-const eraser = "\b\b\b\b\b\b\b\b\b"
+const eraser = "\b\b\b\b\b\b\b\b\b\b\b\b"
 
 func newSink(clock clock.PassiveClock, t testing.TTest) logging.SinkFunc {
 	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {

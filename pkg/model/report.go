@@ -30,9 +30,11 @@ type Report struct {
 }
 
 func (r *Report) Add(report *TestReport) {
-	r.lock.Lock()
-	defer r.lock.Unlock()
-	r.Tests = append(r.Tests, report)
+	if report != nil {
+		r.lock.Lock()
+		defer r.lock.Unlock()
+		r.Tests = append(r.Tests, report)
+	}
 }
 
 type TestReport struct {
@@ -47,10 +49,12 @@ type TestReport struct {
 }
 
 func (r *TestReport) Add(report *StepReport) {
-	if report.Name == "" {
-		report.Name = fmt.Sprintf("step %d", len(r.Steps)+1)
+	if report != nil {
+		if report.Name == "" {
+			report.Name = fmt.Sprintf("step %d", len(r.Steps)+1)
+		}
+		r.Steps = append(r.Steps, report)
 	}
-	r.Steps = append(r.Steps, report)
 }
 
 type StepReport struct {
@@ -61,10 +65,12 @@ type StepReport struct {
 }
 
 func (r *StepReport) Add(report *OperationReport) {
-	if report.Name == "" {
-		report.Name = fmt.Sprintf("operation %d", len(r.Operations)+1)
+	if report != nil {
+		if report.Name == "" {
+			report.Name = fmt.Sprintf("operation %d", len(r.Operations)+1)
+		}
+		r.Operations = append(r.Operations, report)
 	}
-	r.Operations = append(r.Operations, report)
 }
 
 func (r *StepReport) Failed() bool {
