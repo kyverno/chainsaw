@@ -46,7 +46,7 @@ func (o operation) execute(ctx context.Context, tc enginecontext.TestContext, st
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		return nil, err
 	} else {
-		if timeout != nil {
+		if timeout != nil && *timeout != 0 {
 			toCtx, cancel := context.WithTimeout(ctx, *timeout)
 			ctx = toCtx
 			defer cancel()

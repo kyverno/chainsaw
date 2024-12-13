@@ -5,6 +5,11 @@ import (
 	_ "github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
 )
 
+const (
+	EngineJP  = v1alpha1.EngineJP
+	EngineCEL = v1alpha1.EngineCEL
+)
+
 type (
 	Clusters        = v1alpha1.Clusters
 	Compiler        = v1alpha1.Compiler

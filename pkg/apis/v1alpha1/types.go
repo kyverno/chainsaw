@@ -14,6 +14,11 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
+const (
+	EngineJP  = v1alpha1.EngineJP
+	EngineCEL = v1alpha1.EngineCEL
+)
+
 var (
 	identifier = regexp.MustCompile(`^(?:\w+|\(.+\))$`)
 	NewAny     = v1alpha1.NewAny
