@@ -158,6 +158,46 @@ func Test_runner_Run(t *testing.T) {
 			failed: 1,
 		},
 	}, {
+		name:   "test with no steps",
+		config: config.Spec,
+		tc: func() enginecontext.TestContext {
+			client := &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return nil
+				},
+			}
+			return mockTC(client)
+		}(),
+		tests: []discovery.Test{{
+			Test: &model.Test{
+				Spec: v1alpha1.TestSpec{},
+			},
+		}},
+		want: &summaryResult{
+			passed: 1,
+		},
+	}, {
+		name:   "skipped test",
+		config: config.Spec,
+		tc: func() enginecontext.TestContext {
+			client := &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return nil
+				},
+			}
+			return mockTC(client)
+		}(),
+		tests: []discovery.Test{{
+			Test: &model.Test{
+				Spec: v1alpha1.TestSpec{
+					Skip: ptr.To(true),
+				},
+			},
+		}},
+		want: &summaryResult{
+			skipped: 1,
+		},
+	}, {
 		name: "Namesapce exists - success",
 		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{

@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 )
 
@@ -15,7 +16,7 @@ type (
 	relativePathInterface = func(string, string) (string, error)
 )
 
-func Test(full bool, test discovery.Test) (string, error) {
+func Test(test discovery.Test, full bool) (string, error) {
 	if test.Test == nil {
 		return "", errors.New("test must not be nil")
 	}
@@ -23,6 +24,13 @@ func Test(full bool, test discovery.Test) (string, error) {
 		return test.Test.GetName(), nil
 	}
 	return helpTest(test, nil, nil, nil)
+}
+
+func Step(step v1alpha1.TestStep, i int) string {
+	if step.Name != "" {
+		return step.Name
+	}
+	return fmt.Sprintf("step-%d", i+1)
 }
 
 func helpTest(test discovery.Test, workingDir workignDirInterface, absolutePath absolutePathInterface, relativePath relativePathInterface) (string, error) {
