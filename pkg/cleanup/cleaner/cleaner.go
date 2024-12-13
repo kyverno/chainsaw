@@ -73,8 +73,11 @@ func (c *cleaner) Run(ctx context.Context, stepReport *model.StepReport) []error
 }
 
 func (c *cleaner) delete(ctx context.Context, entry cleanupEntry) error {
-	ctx, cancel := context.WithTimeout(ctx, c.timeout)
-	defer cancel()
+	if c.timeout != 0 {
+		_ctx, cancel := context.WithTimeout(ctx, c.timeout)
+		defer cancel()
+		ctx = _ctx
+	}
 	if err := entry.client.Delete(ctx, entry.object, client.PropagationPolicy(c.propagation)); err != nil {
 		if !kerrors.IsNotFound(err) {
 			return err

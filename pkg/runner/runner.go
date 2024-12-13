@@ -56,6 +56,14 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 		F: func(t *testing.T) {
 			t.Helper()
 			t.Parallel()
+			fail := func(t *testing.T, err error) bool {
+				t.Helper()
+				if err != nil {
+					t.Fail()
+					return true
+				}
+				return false
+			}
 			// setup logger sink
 			ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
 			// setup logger
@@ -63,41 +71,17 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 			// setup cleanup
 			cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
 			t.Cleanup(func() {
-				if err := r.cleanup(ctx, tc, cleanup); err != nil {
-					t.Fail()
-				}
+				fail(t, r.cleanup(ctx, tc, cleanup))
 			})
 			// setup namespace
-			var nspacer namespacer.Namespacer
-			if nsOptions.Name != "" {
-				compilers := tc.Compilers()
-				if nsOptions.Compiler != nil {
-					compilers = compilers.WithDefaultCompiler(string(*nsOptions.Compiler))
-				}
-				namespaceData := namespaceData{
-					cleaner:   cleanup,
-					compilers: compilers,
-					name:      nsOptions.Name,
-					template:  nsOptions.Template,
-				}
-				nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
-				if err != nil {
-					t.Fail()
-					tc.IncFailed()
-					logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-					r.onFail()
-					return
-				}
-				tc = nsTc
-				if namespace != nil {
-					nspacer = namespacer.New(namespace.GetName())
-				}
+			tc, nspacer, err := r.setupNamespace(ctx, nsOptions, tc, cleanup)
+			if fail(t, err) {
+				return
 			}
-			fmt.Println(nspacer)
 			// loop through tests
 			for i := range tests {
 				test := tests[i]
-				name, err := names.Test(tc.FullName(), test)
+				name, err := names.Test(test, tc.FullName())
 				if err != nil {
 					t.Fail()
 					tc.IncFailed()
@@ -116,12 +100,11 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}
 					}
 					ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
-					// run test scenarios
-					testId := i + 1
-					runTest := func(t *testing.T, scenarioId int, bindings ...v1alpha1.Binding) {
+					// helper to run test
+					runTest := func(ctx context.Context, t *testing.T, testId int, scenarioId int, bindings ...v1alpha1.Binding) {
 						t.Helper()
 						// setup logger sink
-						ctx := logging.WithSink(ctx, newSink(r.clock, t.Log))
+						ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
 						// setup concurrency
 						if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
 							t.Parallel()
@@ -143,10 +126,6 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							Concurrent: test.Test.Spec.Concurrent,
 							StartTime:  time.Now(),
 						}
-						stepReport := &model.StepReport{
-							Name:      "main",
-							StartTime: time.Now(),
-						}
 						defer func() {
 							report.EndTime = time.Now()
 							report.Skipped = t.Skipped()
@@ -158,35 +137,8 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							return
 						}
 						// setup context
-						tc = tc.WithBinding("test", TestInfo{
-							Id:         testId,
-							ScenarioId: scenarioId,
-							Metadata:   test.Test.ObjectMeta,
-						})
-						tc, err := enginecontext.WithBindings(tc, bindings...)
-						if err != nil {
-							t.Fail()
-							logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-							r.onFail()
-							return
-						}
-						contextData := contextData{
-							basePath:            test.BasePath,
-							catch:               test.Test.Spec.Catch,
-							cluster:             test.Test.Spec.Cluster,
-							clusters:            test.Test.Spec.Clusters,
-							delayBeforeCleanup:  test.Test.Spec.DelayBeforeCleanup,
-							deletionPropagation: test.Test.Spec.DeletionPropagationPolicy,
-							skipDelete:          test.Test.Spec.SkipDelete,
-							templating:          test.Test.Spec.Template,
-							terminationGrace:    test.Test.Spec.ForceTerminationGracePeriod,
-							timeouts:            test.Test.Spec.Timeouts,
-						}
-						tc, err = setupContext(tc, contextData)
-						if err != nil {
-							t.Fail()
-							logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-							r.onFail()
+						tc, err := r.setupTestContext(ctx, testId, scenarioId, tc, test, bindings...)
+						if fail(t, err) {
 							return
 						}
 						// fail fast check
@@ -195,73 +147,29 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							return
 						}
 						// setup cleaner
-						var cleanup cleaner.CleanerCollector
-						if !tc.SkipDelete() {
-							_cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
-							defer func() {
-								if !_cleanup.Empty() {
-									logging.Log(ctx, logging.Cleanup, logging.BeginStatus, nil, color.BoldFgCyan)
-									defer func() {
-										logging.Log(ctx, logging.Cleanup, logging.EndStatus, nil, color.BoldFgCyan)
-									}()
-									stepReport := &model.StepReport{
-										Name:      fmt.Sprintf("cleanup (%s)", stepReport.Name),
-										StartTime: time.Now(),
-									}
-									defer func() {
-										stepReport.EndTime = time.Now()
-										report.Add(stepReport)
-									}()
-									for _, err := range _cleanup.Run(ctx, stepReport) {
-										t.Fail()
-										logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-										r.onFail()
-									}
-								}
-							}()
-							cleanup = _cleanup
-						}
+						cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
+						defer func() {
+							fail(t, r.testCleanup(ctx, tc, cleanup, report))
+						}()
 						// setup namespace
 						// TODO: should be part of setupContext ?
 						if test.Test.Spec.Compiler != nil {
 							tc = tc.WithDefaultCompiler(string(*test.Test.Spec.Compiler))
 						}
-						nsName := test.Test.Spec.Namespace
-						if nspacer == nil && nsName == "" {
-							nsName = fmt.Sprintf("chainsaw-%s", petname.Generate(2, "-"))
+						nsOptions := nsOptions
+						nsOptions.Name = test.Test.Spec.Namespace
+						if nspacer == nil && nsOptions.Name == "" {
+							nsOptions.Name = fmt.Sprintf("chainsaw-%s", petname.Generate(2, "-"))
 						}
-						if nsName != "" {
-							// TODO: this may not use the right default compiler if the template is coming from the config
-							// but the default compiler is specified at the test level
-							if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
-								nsOptions.Template = template
-								nsOptions.Compiler = test.Test.Spec.NamespaceTemplateCompiler
-							}
-							compilers := tc.Compilers()
-							if nsOptions.Compiler != nil {
-								compilers = compilers.WithDefaultCompiler(string(*nsOptions.Compiler))
-							}
-							namespaceData := namespaceData{
-								cleaner:   cleanup,
-								compilers: compilers,
-								name:      nsName,
-								template:  nsOptions.Template,
-							}
-							nsTc, namespace, err := setupNamespace(ctx, tc, namespaceData)
-							if err != nil {
-								t.Fail()
-								logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-								r.onFail()
-								return
-							}
-							tc = nsTc
-							if namespace != nil {
-								nspacer = namespacer.New(namespace.GetName())
-							}
+						if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
+							nsOptions.Template = template
+							nsOptions.Compiler = test.Test.Spec.NamespaceTemplateCompiler
 						}
-						if nspacer != nil {
-							report.Namespace = nspacer.GetNamespace()
-						} // setup bindings
+						tc, nspacer, err := r.setupNamespace(ctx, nsOptions, tc, cleanup)
+						if fail(t, err) {
+							return
+						}
+						// setup bindings
 						tc, err = setupBindings(tc, test.Test.Spec.Bindings...)
 						if err != nil {
 							t.Fail()
@@ -271,11 +179,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}
 						// loop through steps
 						for i, step := range test.Test.Spec.Steps {
-							name := step.Name
-							if name == "" {
-								name = fmt.Sprintf("step-%d", i+1)
-							}
-							ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, fmt.Sprintf("%-*s", size, name)))
+							ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, fmt.Sprintf("%-*s", size, names.Step(step, i))))
 							info := StepInfo{
 								Id: i + 1,
 							}
@@ -285,17 +189,19 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							}
 						}
 					}
+					// run test scenarios
+					testId := i + 1
 					if len(test.Test.Spec.Scenarios) == 0 {
 						t.Run(name, func(t *testing.T) {
 							t.Helper()
-							runTest(t, 0)
+							runTest(ctx, t, testId, 0)
 						})
 					} else {
 						for s := range test.Test.Spec.Scenarios {
 							scenarioId := s + 1
 							t.Run(name, func(t *testing.T) {
 								t.Helper()
-								runTest(t, scenarioId, test.Test.Spec.Scenarios[s].Bindings...)
+								runTest(ctx, t, testId, scenarioId, test.Test.Spec.Scenarios[s].Bindings...)
 							})
 						}
 					}
@@ -329,18 +235,106 @@ func (r *runner) onFail() {
 }
 
 func (r *runner) cleanup(ctx context.Context, tc enginecontext.TestContext, cleaner cleaner.Cleaner) error {
+	if tc.SkipDelete() {
+		logging.Log(ctx, logging.Cleanup, logging.SkippedStatus, nil, color.BoldYellow)
+		return nil
+	}
 	var errs []error
-	if !tc.SkipDelete() {
-		if !cleaner.Empty() {
-			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, nil, color.BoldFgCyan)
-			defer func() {
-				logging.Log(ctx, logging.Cleanup, logging.EndStatus, nil, color.BoldFgCyan)
-			}()
-			for _, err := range cleaner.Run(ctx, nil) {
-				errs = append(errs, err)
-				logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-				r.onFail()
-			}
+	if !cleaner.Empty() {
+		logging.Log(ctx, logging.Cleanup, logging.BeginStatus, nil, color.BoldFgCyan)
+		defer func() {
+			logging.Log(ctx, logging.Cleanup, logging.EndStatus, nil, color.BoldFgCyan)
+		}()
+		for _, err := range cleaner.Run(ctx, nil) {
+			errs = append(errs, err)
+			logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+			r.onFail()
+		}
+	}
+	return multierr.Combine(errs...)
+}
+
+func (r *runner) setupNamespace(ctx context.Context, nsOptions v1alpha2.NamespaceOptions, tc enginecontext.TestContext, cleanup cleaner.Cleaner) (enginecontext.TestContext, namespacer.Namespacer, error) {
+	if nsOptions.Name != "" {
+		compilers := tc.Compilers()
+		if nsOptions.Compiler != nil {
+			compilers = compilers.WithDefaultCompiler(string(*nsOptions.Compiler))
+		}
+		namespaceData := namespaceData{
+			cleaner:   cleanup,
+			compilers: compilers,
+			name:      nsOptions.Name,
+			template:  nsOptions.Template,
+		}
+		tc, namespace, err := setupNamespace(ctx, tc, namespaceData)
+		if err != nil {
+			tc.IncFailed()
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+			r.onFail()
+			return tc, nil, err
+		}
+		if namespace != nil {
+			return tc, namespacer.New(namespace.GetName()), nil
+		}
+	}
+	return tc, nil, nil
+}
+
+func (r *runner) setupTestContext(ctx context.Context, testId int, scenarioId int, tc enginecontext.TestContext, test discovery.Test, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {
+	tc = tc.WithBinding("test", TestInfo{
+		Id:         testId,
+		ScenarioId: scenarioId,
+		Metadata:   test.Test.ObjectMeta,
+	})
+	tc, err := enginecontext.WithBindings(tc, bindings...)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+		r.onFail()
+		return tc, err
+	}
+	contextData := contextData{
+		basePath:            test.BasePath,
+		catch:               test.Test.Spec.Catch,
+		cluster:             test.Test.Spec.Cluster,
+		clusters:            test.Test.Spec.Clusters,
+		delayBeforeCleanup:  test.Test.Spec.DelayBeforeCleanup,
+		deletionPropagation: test.Test.Spec.DeletionPropagationPolicy,
+		skipDelete:          test.Test.Spec.SkipDelete,
+		templating:          test.Test.Spec.Template,
+		terminationGrace:    test.Test.Spec.ForceTerminationGracePeriod,
+		timeouts:            test.Test.Spec.Timeouts,
+	}
+	tc, err = setupContext(tc, contextData)
+	if err != nil {
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+		r.onFail()
+	}
+	return tc, err
+}
+
+func (r *runner) testCleanup(ctx context.Context, tc enginecontext.TestContext, cleaner cleaner.Cleaner, report *model.TestReport) error {
+	if tc.SkipDelete() {
+		logging.Log(ctx, logging.Cleanup, logging.SkippedStatus, nil, color.BoldYellow)
+		return nil
+	}
+	var errs []error
+	if !cleaner.Empty() {
+		logging.Log(ctx, logging.Cleanup, logging.BeginStatus, nil, color.BoldFgCyan)
+		defer func() {
+			logging.Log(ctx, logging.Cleanup, logging.EndStatus, nil, color.BoldFgCyan)
+		}()
+		stepReport := &model.StepReport{
+			Name:      "@cleanup",
+			StartTime: time.Now(),
+		}
+		defer func() {
+			stepReport.EndTime = time.Now()
+			report.Add(stepReport)
+		}()
+		for _, err := range cleaner.Run(ctx, stepReport) {
+			errs = append(errs, err)
+			logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+			r.onFail()
 		}
 	}
 	return multierr.Combine(errs...)
