@@ -22,6 +22,7 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/clock"
+	"k8s.io/utils/ptr"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -76,6 +77,40 @@ func Test_runner_Run(t *testing.T) {
 						Try: []v1alpha1.Operation{{
 							Script: &v1alpha1.Script{
 								Content: "echo hello",
+							},
+						}},
+					},
+				}},
+			},
+		},
+	}
+	scenarioTest := discovery.Test{
+		Test: &model.Test{
+			TypeMeta: metav1.TypeMeta{
+				APIVersion: "chainsaw.kyverno.io/v1alpha1",
+				Kind:       "Test",
+			},
+			ObjectMeta: metav1.ObjectMeta{
+				Name: "test",
+			},
+			Spec: v1alpha1.TestSpec{
+				Scenarios: []v1alpha1.Scenario{{
+					Bindings: []v1alpha1.Binding{{
+						Name:  "foo",
+						Value: v1alpha1.NewProjection("bar"),
+					}},
+				}},
+				Steps: []v1alpha1.TestStep{{
+					TestStepSpec: v1alpha1.TestStepSpec{
+						Try: []v1alpha1.Operation{{
+							Script: &v1alpha1.Script{
+								ActionEnv: v1alpha1.ActionEnv{
+									Env: []v1alpha1.Binding{{
+										Name:  "FOO",
+										Value: v1alpha1.NewProjection("($foo)"),
+									}},
+								},
+								Content: "echo $FOO",
 							},
 						}},
 					},
@@ -209,6 +244,58 @@ func Test_runner_Run(t *testing.T) {
 		tests: []discovery.Test{echoTest},
 		want: &summaryResult{
 			failed: 1,
+		},
+	}, {
+		name: "With namespace compiler",
+		config: model.Configuration{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name:     "chain-saw",
+				Compiler: ptr.To(v1alpha2.EngineCEL),
+			},
+		},
+		tc: func() enginecontext.TestContext {
+			client := &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(v1alpha1.Resource("Namespace"), "chain-saw")
+				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
+				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+					return nil
+				},
+			}
+			return mockTC(client)
+		}(),
+		tests: []discovery.Test{echoTest},
+		want: &summaryResult{
+			passed: 1,
+		},
+	}, {
+		name: "With scanrio",
+		config: model.Configuration{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name:     "chain-saw",
+				Compiler: ptr.To(v1alpha2.EngineCEL),
+			},
+		},
+		tc: func() enginecontext.TestContext {
+			client := &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(v1alpha1.Resource("Namespace"), "chain-saw")
+				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
+				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+					return nil
+				},
+			}
+			return mockTC(client)
+		}(),
+		tests: []discovery.Test{scenarioTest},
+		want: &summaryResult{
+			passed: 1,
 		},
 	}}
 	for _, tt := range tests {
