@@ -14,6 +14,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/loaders/values"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner"
+	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	runnerflags "github.com/kyverno/chainsaw/pkg/runner/flags"
 	flagutils "github.com/kyverno/chainsaw/pkg/utils/flag"
 	fsutils "github.com/kyverno/chainsaw/pkg/utils/fs"
@@ -343,7 +344,7 @@ func Command() *cobra.Command {
 				}
 			}
 			ctx := context.Background()
-			tc, err := runner.InitContext(configuration.Spec, restConfig, values)
+			tc, err := enginecontext.InitContext(configuration.Spec, restConfig, values)
 			if err != nil {
 				return err
 			}

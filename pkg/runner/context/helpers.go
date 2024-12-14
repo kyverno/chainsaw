@@ -45,10 +45,6 @@ func WithCurrentCluster(tc TestContext, name string) (TestContext, error) {
 	return tc, nil
 }
 
-func WithNamespace(tc TestContext, namespace string) TestContext {
-	return tc.WithBinding("namespace", namespace)
-}
-
-func WithValues(tc TestContext, values any) TestContext {
+func withValues(tc TestContext, values any) TestContext {
 	return tc.WithBinding("values", values)
 }
