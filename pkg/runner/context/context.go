@@ -13,6 +13,7 @@ import (
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
+	"k8s.io/utils/clock"
 )
 
 type TestContext struct {
@@ -34,21 +35,22 @@ type TestContext struct {
 	timeouts            v1alpha1.DefaultTimeouts
 }
 
-func MakeContext(bindings apis.Bindings, registry clusters.Registry) TestContext {
+func MakeContext(clock clock.PassiveClock, bindings apis.Bindings, registry clusters.Registry) TestContext {
 	return TestContext{
 		Summary: &model.Summary{},
 		Report: &model.Report{
 			Name:      "chainsaw-report",
-			StartTime: time.Now(),
+			StartTime: clock.Now(),
 		},
-		bindings:  bindings,
-		clusters:  registry,
-		compilers: apis.DefaultCompilers,
+		bindings:            bindings,
+		clusters:            registry,
+		compilers:           apis.DefaultCompilers,
+		deletionPropagation: metav1.DeletePropagationBackground,
 	}
 }
 
-func EmptyContext() TestContext {
-	return MakeContext(apis.NewBindings(), clusters.NewRegistry(nil))
+func EmptyContext(clock clock.PassiveClock) TestContext {
+	return MakeContext(clock, apis.NewBindings(), clusters.NewRegistry(nil))
 }
 
 func (tc *TestContext) Bindings() apis.Bindings {
@@ -59,16 +61,16 @@ func (tc *TestContext) Catch() []v1alpha1.CatchFinally {
 	return tc.catch
 }
 
-func (tc *TestContext) Compilers() compilers.Compilers {
-	return tc.compilers
-}
-
 func (tc *TestContext) Cluster(name string) clusters.Cluster {
 	return tc.clusters.Lookup(name)
 }
 
 func (tc *TestContext) Clusters() clusters.Registry {
 	return tc.clusters
+}
+
+func (tc *TestContext) Compilers() compilers.Compilers {
+	return tc.compilers
 }
 
 func (tc *TestContext) CurrentCluster() clusters.Cluster {
@@ -129,11 +131,6 @@ func (tc TestContext) WithCatch(catch ...v1alpha1.CatchFinally) TestContext {
 	return tc
 }
 
-func (tc TestContext) WithDefaultCompiler(name string) TestContext {
-	tc.compilers = tc.compilers.WithDefaultCompiler(name)
-	return tc
-}
-
 func (tc TestContext) WithCluster(name string, cluster clusters.Cluster) TestContext {
 	tc.clusters = tc.clusters.Register(name, cluster)
 	return tc
@@ -141,6 +138,11 @@ func (tc TestContext) WithCluster(name string, cluster clusters.Cluster) TestCon
 
 func (tc TestContext) WithCurrentCluster(name string) TestContext {
 	tc.cluster = tc.Cluster(name)
+	return tc
+}
+
+func (tc TestContext) WithDefaultCompiler(name string) TestContext {
+	tc.compilers = tc.compilers.WithDefaultCompiler(name)
 	return tc
 }
 

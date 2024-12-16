@@ -122,7 +122,7 @@ func Test_runner_Run(t *testing.T) {
 		registry := mocks.Registry{
 			Client: client,
 		}
-		return enginecontext.MakeContext(apis.NewBindings(), registry).WithTimeouts(v1alpha1.Timeouts{
+		return enginecontext.MakeContext(clock.RealClock{}, apis.NewBindings(), registry).WithTimeouts(v1alpha1.Timeouts{
 			Apply:   &config.Spec.Timeouts.Apply,
 			Assert:  &config.Spec.Timeouts.Assert,
 			Cleanup: &config.Spec.Timeouts.Cleanup,
@@ -408,7 +408,7 @@ func Test_runner_run(t *testing.T) {
 			r := &runner{
 				clock: clock.RealClock{},
 			}
-			err := r.run(context.TODO(), tt.m, v1alpha2.NamespaceOptions{}, enginecontext.EmptyContext(), tt.tests...)
+			err := r.run(context.TODO(), tt.m, v1alpha2.NamespaceOptions{}, enginecontext.EmptyContext(clock.RealClock{}), tt.tests...)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

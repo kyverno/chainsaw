@@ -21,6 +21,7 @@ import (
 	kerror "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/utils/clock"
 	"k8s.io/utils/ptr"
 )
 
@@ -786,7 +787,7 @@ func TestStepProcessor_Run(t *testing.T) {
 			nt := &testing.MockT{}
 			ctx := context.Background()
 			ctx = logging.WithLogger(ctx, &fakeLogger.Logger{})
-			tcontext := enginecontext.MakeContext(apis.NewBindings(), registry).WithTimeouts(v1alpha1.Timeouts{
+			tcontext := enginecontext.MakeContext(clock.RealClock{}, apis.NewBindings(), registry).WithTimeouts(v1alpha1.Timeouts{
 				Apply:   &config.Spec.Timeouts.Apply,
 				Assert:  &config.Spec.Timeouts.Assert,
 				Cleanup: &config.Spec.Timeouts.Cleanup,

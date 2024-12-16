@@ -47,6 +47,7 @@ func TestInitContext(t *testing.T) {
 			assert.False(t, tc.SkipDelete())
 			assert.True(t, tc.Templating())
 			assert.Nil(t, tc.TerminationGrace())
+			assert.Equal(t, config.Spec.Timeouts, tc.Timeouts())
 		},
 	}, {
 		name: "with delay before cleanup",
@@ -150,6 +151,40 @@ func TestInitContext(t *testing.T) {
 			assert.NotNil(t, tc.Compilers())
 			assert.NotNil(t, tc.Clusters())
 			assert.NotNil(t, tc.CurrentCluster())
+			assert.Nil(t, tc.DelayBeforeCleanup())
+			assert.Equal(t, metav1.DeletePropagationBackground, tc.DeletionPropagation())
+			assert.False(t, tc.DryRun())
+			assert.False(t, tc.FailFast())
+			assert.False(t, tc.FullName())
+			assert.False(t, tc.SkipDelete())
+			assert.True(t, tc.Templating())
+			assert.Nil(t, tc.TerminationGrace())
+		},
+	}, {
+		name: "with clusters",
+		config: func(config model.Configuration) model.Configuration {
+			config.Clusters = v1alpha1.Clusters{
+				"foo": v1alpha1.Cluster{
+					Kubeconfig: "foo",
+					Context:    "bar",
+				},
+			}
+			return config
+		}(config.Spec),
+		defaultCluster: nil,
+		values:         nil,
+		wantErr:        false,
+		want: func(t *testing.T, tc TestContext) {
+			t.Helper()
+			assert.Equal(t, int32(0), tc.Passed())
+			assert.Equal(t, int32(0), tc.Failed())
+			assert.Equal(t, int32(0), tc.Skipped())
+			assert.NotNil(t, tc.Bindings())
+			assert.Nil(t, tc.Catch())
+			assert.NotNil(t, tc.Compilers())
+			assert.NotNil(t, tc.Clusters())
+			assert.NotNil(t, tc.Clusters().Lookup("foo"))
+			assert.Nil(t, tc.CurrentCluster())
 			assert.Nil(t, tc.DelayBeforeCleanup())
 			assert.Equal(t, metav1.DeletePropagationBackground, tc.DeletionPropagation())
 			assert.False(t, tc.DryRun())
