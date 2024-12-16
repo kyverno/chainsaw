@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"flag"
+	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -17,7 +18,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/runner/flags"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/mocks"
-	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

@@ -3,22 +3,29 @@ package assert
 import (
 	"bytes"
 	"context"
+	"errors"
 	"io"
 	"os"
 	"path"
 	"path/filepath"
+	"testing"
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
 	"github.com/kyverno/chainsaw/pkg/commands/root"
 	fakeNamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
-	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/spf13/cobra"
 	testify "github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
+
+type errReader struct{}
+
+func (e *errReader) Read(p []byte) (n int, err error) {
+	return 0, errors.New("error reading from stdin")
+}
 
 func Test_Execute(t *testing.T) {
 	basePath := path.Join("..", "..", "..", "testdata", "commands", "assert")
@@ -320,7 +327,7 @@ data:
 			cmd.Args = cobra.RangeArgs(0, 1)
 			cmd.SilenceUsage = true
 			cmd.SetOut(bytes.NewBufferString(""))
-			cmd.SetIn(&testing.ErrReader{})
+			cmd.SetIn(&errReader{})
 			return cmd
 		},
 		opts: options{
