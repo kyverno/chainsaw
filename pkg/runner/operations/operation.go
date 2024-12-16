@@ -1,4 +1,4 @@
-package runner
+package operations
 
 import (
 	"context"
@@ -14,35 +14,20 @@ import (
 
 type operationFactory = func(context.Context, enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error)
 
-type operation struct {
-	info      OperationInfo
-	opType    model.OperationType
+type Operation struct {
 	operation operationFactory
 }
 
 func newOperation(
-	info OperationInfo,
-	opType model.OperationType,
 	op operationFactory,
-) operation {
-	return operation{
-		info:      info,
-		opType:    opType,
+) Operation {
+	return Operation{
 		operation: op,
 	}
 }
 
-func (o operation) execute(ctx context.Context, tc enginecontext.TestContext, stepReport *model.StepReport) (_ outputs.Outputs, err error) {
-	report := &model.OperationReport{
-		Type:      o.opType,
-		StartTime: time.Now(),
-	}
-	defer func() {
-		report.EndTime = time.Now()
-		report.Err = err
-		stepReport.Add(report)
-	}()
-	if operation, timeout, tc, err := o.operation(ctx, tc.WithBinding("operation", o.info)); err != nil {
+func (o Operation) Execute(ctx context.Context, tc enginecontext.TestContext, stepReport *model.StepReport) (_ outputs.Outputs, err error) {
+	if operation, timeout, tc, err := o.operation(ctx, tc); err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		return nil, err
 	} else {

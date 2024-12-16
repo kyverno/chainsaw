@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"path/filepath"
+	"testing"
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
@@ -16,7 +17,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/runner/mocks"
-	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -784,7 +784,10 @@ func TestStepProcessor_Run(t *testing.T) {
 			if tc.client != nil {
 				registry.Client = tc.client
 			}
-			nt := &testing.MockT{}
+			_failed := false
+			fail := func() { _failed = true }
+			failed := func() bool { return _failed }
+			cleanup := func(func()) {}
 			ctx := context.Background()
 			ctx = logging.WithLogger(ctx, &fakeLogger.Logger{})
 			tcontext := enginecontext.MakeContext(clock.RealClock{}, apis.NewBindings(), registry).WithTimeouts(v1alpha1.Timeouts{
@@ -796,13 +799,9 @@ func TestStepProcessor_Run(t *testing.T) {
 				Exec:    &config.Spec.Timeouts.Exec,
 			})
 			runner := runner{}
-			got := runner.runStep(ctx, nt, tc.basePath, tc.namespacer, tcontext, tc.stepSpec, &model.TestReport{})
+			got := runner.runStep(ctx, cleanup, fail, failed, tc.basePath, tc.namespacer, tcontext, tc.stepSpec, &model.TestReport{})
 			assert.Equal(t, tc.want, got)
-			if tc.expectedFail {
-				assert.True(t, nt.FailedVar, "expected an error but got none")
-			} else {
-				assert.False(t, nt.FailedVar, "expected no error but got one")
-			}
+			assert.Equal(t, tc.expectedFail, _failed)
 		})
 	}
 }
