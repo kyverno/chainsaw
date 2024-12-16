@@ -13,6 +13,7 @@ import (
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/utils/clock"
 )
 
 func TestOperation_Execute(t *testing.T) {
@@ -57,7 +58,7 @@ func TestOperation_Execute(t *testing.T) {
 					return localTC.operation, &localTC.timeout, tc, nil
 				},
 			)
-			tcontext := enginecontext.EmptyContext()
+			tcontext := enginecontext.EmptyContext(clock.RealClock{})
 			ctx := context.Background()
 			_, err := op.execute(ctx, tcontext, &model.StepReport{})
 			if localTC.expectedFail {

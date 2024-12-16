@@ -5,10 +5,11 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"k8s.io/client-go/rest"
+	"k8s.io/utils/clock"
 )
 
 func InitContext(config model.Configuration, defaultCluster *rest.Config, values any) (TestContext, error) {
-	tc := EmptyContext()
+	tc := EmptyContext(clock.RealClock{})
 	// cleanup options
 	tc = tc.WithSkipDelete(config.Cleanup.SkipDelete)
 	if config.Cleanup.DelayBeforeCleanup != nil {
@@ -44,12 +45,7 @@ func InitContext(config model.Configuration, defaultCluster *rest.Config, values
 	// clusters
 	tc = WithClusters(tc, "", config.Clusters)
 	if defaultCluster != nil {
-		cluster, err := clusters.NewClusterFromConfig(defaultCluster)
-		if err != nil {
-			return tc, err
-		}
-		tc = tc.WithCluster(clusters.DefaultClient, cluster)
-		return WithCurrentCluster(tc, clusters.DefaultClient)
+		return WithCurrentCluster(tc.WithCluster(clusters.DefaultClient, clusters.NewClusterFromConfig(defaultCluster)), clusters.DefaultClient)
 	}
 	return tc, nil
 }

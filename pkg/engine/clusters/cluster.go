@@ -16,10 +16,10 @@ type fromConfig struct {
 	config *rest.Config
 }
 
-func NewClusterFromConfig(config *rest.Config) (Cluster, error) {
+func NewClusterFromConfig(config *rest.Config) Cluster {
 	return &fromConfig{
 		config: config,
-	}, nil
+	}
 }
 
 func (c *fromConfig) Config() (*rest.Config, error) {
