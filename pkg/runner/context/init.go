@@ -45,12 +45,7 @@ func InitContext(config model.Configuration, defaultCluster *rest.Config, values
 	// clusters
 	tc = WithClusters(tc, "", config.Clusters)
 	if defaultCluster != nil {
-		cluster, err := clusters.NewClusterFromConfig(defaultCluster)
-		if err != nil {
-			return tc, err
-		}
-		tc = tc.WithCluster(clusters.DefaultClient, cluster)
-		return WithCurrentCluster(tc, clusters.DefaultClient)
+		return WithCurrentCluster(tc.WithCluster(clusters.DefaultClient, clusters.NewClusterFromConfig(defaultCluster)), clusters.DefaultClient)
 	}
 	return tc, nil
 }

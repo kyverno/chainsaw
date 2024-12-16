@@ -9,10 +9,9 @@ import (
 
 func TestNewClusterFromConfig(t *testing.T) {
 	tests := []struct {
-		name    string
-		config  *rest.Config
-		want    Cluster
-		wantErr bool
+		name   string
+		config *rest.Config
+		want   Cluster
 	}{{
 		name: "nil",
 		want: &fromConfig{
@@ -27,17 +26,11 @@ func TestNewClusterFromConfig(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := NewClusterFromConfig(tt.config)
-			if tt.wantErr {
-				assert.Error(t, err)
-				assert.Nil(t, got)
-			} else {
-				assert.NoError(t, err)
-				assert.Equal(t, tt.want, got)
-				got, err := got.Config()
-				assert.NoError(t, err)
-				assert.Same(t, tt.config, got)
-			}
+			got := NewClusterFromConfig(tt.config)
+			assert.Equal(t, tt.want, got)
+			config, err := got.Config()
+			assert.NoError(t, err)
+			assert.Same(t, tt.config, config)
 		})
 	}
 }
