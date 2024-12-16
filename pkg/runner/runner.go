@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
+	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/logging"
@@ -19,6 +20,8 @@ import (
 	"github.com/kyverno/chainsaw/pkg/testing"
 	"github.com/kyverno/pkg/ext/output/color"
 	"go.uber.org/multierr"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/utils/clock"
 )
 
@@ -76,6 +79,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 			// setup namespace
 			tc, nspacer, err := r.setupNamespace(ctx, nsOptions, tc, cleanup)
 			if fail(t, err) {
+				tc.IncFailed()
 				return
 			}
 			// loop through tests
@@ -260,21 +264,34 @@ func (r *runner) setupNamespace(ctx context.Context, nsOptions v1alpha2.Namespac
 		if nsOptions.Compiler != nil {
 			compilers = compilers.WithDefaultCompiler(string(*nsOptions.Compiler))
 		}
-		namespaceData := namespaceData{
-			cleaner:   cleanup,
-			compilers: compilers,
-			name:      nsOptions.Name,
-			template:  nsOptions.Template,
-		}
-		tc, namespace, err := setupNamespace(ctx, tc, namespaceData)
-		if err != nil {
-			tc.IncFailed()
+		var ns *corev1.Namespace
+		if namespace, err := buildNamespace(ctx, compilers, nsOptions.Name, nsOptions.Template, tc); err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 			r.onFail()
 			return tc, nil, err
+		} else if _, clusterClient, err := tc.CurrentClusterClient(); err != nil {
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+			r.onFail()
+			return tc, nil, err
+		} else if clusterClient != nil {
+			if err := clusterClient.Get(ctx, client.Key(namespace), namespace.DeepCopy()); err != nil {
+				if !errors.IsNotFound(err) {
+					logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+					r.onFail()
+					return tc, nil, err
+				} else if err := clusterClient.Create(ctx, namespace.DeepCopy()); err != nil {
+					logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+					r.onFail()
+					return tc, nil, err
+				} else if cleanup != nil {
+					cleanup.Add(clusterClient, namespace)
+				}
+			}
+			ns = namespace
 		}
-		if namespace != nil {
-			return tc, namespacer.New(namespace.GetName()), nil
+		if ns != nil {
+			tc = tc.WithBinding("namespace", ns.GetName())
+			return tc, namespacer.New(ns.GetName()), nil
 		}
 	}
 	return tc, nil, nil

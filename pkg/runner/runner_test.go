@@ -58,7 +58,7 @@ func Test_runner_Run(t *testing.T) {
 	config, err := config.DefaultConfiguration()
 	assert.NoError(t, err)
 	tc := func() enginecontext.TestContext {
-		tc, err := InitContext(config.Spec, nil, nil)
+		tc, err := enginecontext.InitContext(config.Spec, nil, nil)
 		assert.NoError(t, err)
 		return tc
 	}
