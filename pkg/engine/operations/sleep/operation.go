@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
@@ -13,10 +12,10 @@ import (
 )
 
 type operation struct {
-	duration v1alpha1.Sleep
+	duration time.Duration
 }
 
-func New(duration v1alpha1.Sleep) operations.Operation {
+func New(duration time.Duration) operations.Operation {
 	return &operation{
 		duration: duration,
 	}
@@ -31,6 +30,6 @@ func (o *operation) Exec(ctx context.Context, _ apis.Bindings) (_ outputs.Output
 }
 
 func (o *operation) execute() error {
-	time.Sleep(o.duration.Duration.Duration)
+	time.Sleep(o.duration)
 	return nil
 }

@@ -5,27 +5,22 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func Test_operation_Exec(t *testing.T) {
 	tests := []struct {
 		name         string
-		sleep        v1alpha1.Sleep
+		sleep        time.Duration
 		expectedLogs []string
 	}{{
 		name:         "zero",
-		sleep:        v1alpha1.Sleep{},
 		expectedLogs: []string{"SLEEP: RUN - []", "SLEEP: DONE - []"},
 	}, {
-		name: "1s",
-		sleep: v1alpha1.Sleep{
-			Duration: metav1.Duration{Duration: time.Second},
-		},
+		name:         "1s",
+		sleep:        time.Second,
 		expectedLogs: []string{"SLEEP: RUN - []", "SLEEP: DONE - []"},
 	}}
 	for _, tt := range tests {
