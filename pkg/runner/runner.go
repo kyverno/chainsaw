@@ -308,7 +308,7 @@ func (r *runner) runStep(
 					r.onFail()
 				}
 				for _, operation := range operations {
-					_, err := operation.Execute(ctx, operationTc, report)
+					_, err := operation.Execute(ctx, operationTc)
 					if err != nil {
 						fail()
 						r.onFail()
@@ -335,7 +335,7 @@ func (r *runner) runStep(
 					r.onFail()
 				}
 				for _, operation := range operations {
-					_, err := operation.Execute(ctx, operationTc, report)
+					_, err := operation.Execute(ctx, operationTc)
 					if err != nil {
 						fail()
 						r.onFail()
@@ -363,7 +363,7 @@ func (r *runner) runStep(
 						r.onFail()
 					}
 					for _, operation := range operations {
-						_, err := operation.Execute(ctx, operationTc, report)
+						_, err := operation.Execute(ctx, operationTc)
 						if err != nil {
 							fail()
 							r.onFail()
@@ -449,7 +449,7 @@ func (*runner) runAction(
 		report.Err = err
 		stepReport.Add(report)
 	}()
-	return action.Execute(ctx, tc, stepReport)
+	return action.Execute(ctx, tc)
 }
 
 func (r *runner) onFail() {

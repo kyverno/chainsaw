@@ -10,7 +10,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	mock "github.com/kyverno/chainsaw/pkg/engine/operations/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
-	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/utils/clock"
@@ -65,7 +64,7 @@ func TestOperation_Execute(t *testing.T) {
 			)
 			tcontext := enginecontext.EmptyContext(clock.RealClock{})
 			ctx := context.Background()
-			_, err := op.Execute(ctx, tcontext, &model.StepReport{})
+			_, err := op.Execute(ctx, tcontext)
 			if tc.expectedFail {
 				assert.Error(t, err)
 			} else {
@@ -82,7 +81,7 @@ func TestOperation_Execute(t *testing.T) {
 			)
 			tcontext := enginecontext.EmptyContext(clock.RealClock{})
 			ctx := context.Background()
-			_, err := op.Execute(ctx, tcontext, &model.StepReport{})
+			_, err := op.Execute(ctx, tcontext)
 			assert.Error(t, err)
 		})
 	}

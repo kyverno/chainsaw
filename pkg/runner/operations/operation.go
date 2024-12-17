@@ -7,26 +7,29 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/logging"
-	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/pkg/ext/output/color"
 )
 
+type Operation interface {
+	Execute(context.Context, enginecontext.TestContext) (outputs.Outputs, error)
+}
+
 type operationFactory = func(context.Context, enginecontext.TestContext) (operations.Operation, *time.Duration, enginecontext.TestContext, error)
 
-type Operation struct {
+type operation struct {
 	operation operationFactory
 }
 
 func newOperation(
 	op operationFactory,
 ) Operation {
-	return Operation{
+	return operation{
 		operation: op,
 	}
 }
 
-func (o Operation) Execute(ctx context.Context, tc enginecontext.TestContext, stepReport *model.StepReport) (_ outputs.Outputs, err error) {
+func (o operation) Execute(ctx context.Context, tc enginecontext.TestContext) (_ outputs.Outputs, err error) {
 	if operation, timeout, tc, err := o.operation(ctx, tc); err != nil {
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		return nil, err
