@@ -291,7 +291,7 @@ build-ko: $(KO)
 tests: ## Run tests
 tests: $(CLI_BIN)
 	@echo Running tests... >&2
-	@go test ./... -race -coverprofile=coverage.out -covermode=atomic
+	@go test ./... -race -coverprofile=coverage.out -covermode=atomic -coverpkg=./...
 	@go tool cover -html=coverage.out
 
 .PHONY: e2e-tests
