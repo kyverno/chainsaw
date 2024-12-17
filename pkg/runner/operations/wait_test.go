@@ -11,23 +11,20 @@ import (
 func Test_waitOperation(t *testing.T) {
 	tests := []struct {
 		name       string
-		basePath   string
 		namespacer namespacer.Namespacer
 		op         v1alpha1.Wait
 		want       Operation
 	}{{
-		basePath:   "foo",
 		namespacer: namespacer.New("bar"),
 		op:         v1alpha1.Wait{},
 		want: waitAction{
-			basePath:   "foo",
 			namespacer: namespacer.New("bar"),
 			op:         v1alpha1.Wait{},
 		},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := waitOperation(tt.basePath, tt.namespacer, tt.op)
+			got := waitOperation(tt.namespacer, tt.op)
 			assert.Equal(t, tt.want, got)
 		})
 	}

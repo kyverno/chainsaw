@@ -14,7 +14,6 @@ import (
 )
 
 type waitAction struct {
-	basePath   string
 	namespacer namespacer.Namespacer
 	op         v1alpha1.Wait
 }
@@ -25,7 +24,6 @@ func (o waitAction) Execute(ctx context.Context, tc enginecontext.TestContext) (
 		ns = o.namespacer.GetNamespace()
 	}
 	contextData := enginecontext.ContextData{
-		BasePath: o.basePath,
 		Cluster:  o.op.Cluster,
 		Clusters: o.op.Clusters,
 		Timeouts: &v1alpha1.Timeouts{Exec: o.op.Timeout},
@@ -50,7 +48,7 @@ func (o waitAction) Execute(ctx context.Context, tc enginecontext.TestContext) (
 				Entrypoint:     entrypoint,
 				Args:           args,
 			},
-			o.basePath,
+			tc.BasePath(),
 			ns,
 			config,
 		)
@@ -61,9 +59,8 @@ func (o waitAction) Execute(ctx context.Context, tc enginecontext.TestContext) (
 	}
 }
 
-func waitOperation(basePath string, namespacer namespacer.Namespacer, op v1alpha1.Wait) Operation {
+func waitOperation(namespacer namespacer.Namespacer, op v1alpha1.Wait) Operation {
 	return waitAction{
-		basePath:   basePath,
 		namespacer: namespacer,
 		op:         op,
 	}

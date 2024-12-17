@@ -21,9 +21,9 @@ func WithBindings(tc TestContext, variables ...v1alpha1.Binding) (TestContext, e
 	return tc, nil
 }
 
-func WithClusters(tc TestContext, basePath string, c map[string]v1alpha1.Cluster) TestContext {
+func WithClusters(tc TestContext, c map[string]v1alpha1.Cluster) TestContext {
 	for name, cluster := range c {
-		kubeconfig := filepath.Join(basePath, cluster.Kubeconfig)
+		kubeconfig := filepath.Join(tc.BasePath(), cluster.Kubeconfig)
 		cluster := clusters.NewClusterFromKubeconfig(kubeconfig, cluster.Context)
 		tc = tc.WithCluster(name, cluster)
 	}

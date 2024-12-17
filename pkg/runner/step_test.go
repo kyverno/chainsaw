@@ -797,9 +797,9 @@ func TestStepProcessor_Run(t *testing.T) {
 				Delete:  &config.Spec.Timeouts.Delete,
 				Error:   &config.Spec.Timeouts.Error,
 				Exec:    &config.Spec.Timeouts.Exec,
-			})
+			}).WithBasePath(tc.basePath)
 			runner := runner{}
-			got := runner.runStep(ctx, cleanup, fail, failed, tc.basePath, tc.namespacer, tcontext, tc.stepSpec, &model.TestReport{})
+			got := runner.runStep(ctx, cleanup, fail, failed, tc.namespacer, tcontext, tc.stepSpec, &model.TestReport{})
 			assert.Equal(t, tc.want, got)
 			assert.Equal(t, tc.expectedFail, _failed)
 		})

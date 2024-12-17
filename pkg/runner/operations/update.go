@@ -3,18 +3,15 @@ package operations
 import (
 	"context"
 
-	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	opupdate "github.com/kyverno/chainsaw/pkg/engine/operations/update"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
-	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 type updateAction struct {
-	basePath   string
 	namespacer namespacer.Namespacer
 	op         v1alpha1.Update
 	resource   unstructured.Unstructured
@@ -22,7 +19,6 @@ type updateAction struct {
 
 func (o updateAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
 	contextData := enginecontext.ContextData{
-		BasePath:   o.basePath,
 		Cluster:    o.op.Cluster,
 		Clusters:   o.op.Clusters,
 		DryRun:     o.op.DryRun,
@@ -51,8 +47,8 @@ func (o updateAction) Execute(ctx context.Context, tc enginecontext.TestContext)
 	}
 }
 
-func updateOperation(compilers compilers.Compilers, basePath string, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Update) ([]Operation, error) {
-	resources, err := fileRefOrResource(context.TODO(), op.ActionResourceRef, basePath, compilers, bindings)
+func updateOperation(ctx context.Context, tc enginecontext.TestContext, namespacer namespacer.Namespacer, op v1alpha1.Update) ([]Operation, error) {
+	resources, err := fileRefOrResource(ctx, op.ActionResourceRef, tc.BasePath(), tc.Compilers(), tc.Bindings())
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +56,6 @@ func updateOperation(compilers compilers.Compilers, basePath string, namespacer 
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, updateAction{
-			basePath:   basePath,
 			namespacer: namespacer,
 			op:         op,
 			resource:   resource,
