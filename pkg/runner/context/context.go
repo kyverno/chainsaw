@@ -19,6 +19,7 @@ import (
 type TestContext struct {
 	*model.Summary
 	*model.Report
+	basePath            string
 	bindings            apis.Bindings
 	catch               []v1alpha1.CatchFinally
 	cluster             clusters.Cluster
@@ -55,6 +56,10 @@ func EmptyContext(clock clock.PassiveClock) TestContext {
 
 func (tc *TestContext) Bindings() apis.Bindings {
 	return tc.bindings
+}
+
+func (tc *TestContext) BasePath() string {
+	return tc.basePath
 }
 
 func (tc *TestContext) Catch() []v1alpha1.CatchFinally {
@@ -119,6 +124,11 @@ func (tc *TestContext) TerminationGrace() *time.Duration {
 
 func (tc *TestContext) Timeouts() v1alpha1.DefaultTimeouts {
 	return tc.timeouts
+}
+
+func (tc TestContext) WithBasePath(basePath string) TestContext {
+	tc.basePath = basePath
+	return tc
 }
 
 func (tc TestContext) WithBinding(name string, value any) TestContext {

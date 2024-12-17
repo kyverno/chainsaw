@@ -6,7 +6,7 @@ import (
 )
 
 type ContextData struct {
-	BasePath            string
+	BasePath            *string
 	Catch               []v1alpha1.CatchFinally
 	Cluster             *string
 	Clusters            v1alpha1.Clusters
@@ -20,6 +20,9 @@ type ContextData struct {
 }
 
 func SetupContext(tc TestContext, data ContextData) (TestContext, error) {
+	if data.BasePath != nil {
+		tc = tc.WithBasePath(*data.BasePath)
+	}
 	if len(data.Catch) > 0 {
 		tc = tc.WithCatch(data.Catch...)
 	}
@@ -44,7 +47,7 @@ func SetupContext(tc TestContext, data ContextData) (TestContext, error) {
 	if data.Timeouts != nil {
 		tc = tc.WithTimeouts(*data.Timeouts)
 	}
-	tc = WithClusters(tc, data.BasePath, data.Clusters)
+	tc = WithClusters(tc, data.Clusters)
 	if data.Cluster != nil {
 		if _tc, err := WithCurrentCluster(tc, *data.Cluster); err != nil {
 			return tc, err

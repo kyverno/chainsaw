@@ -43,7 +43,7 @@ func InitContext(config model.Configuration, defaultCluster *rest.Config, values
 	// values
 	tc = withValues(tc, values)
 	// clusters
-	tc = WithClusters(tc, "", config.Clusters)
+	tc = WithClusters(tc, config.Clusters)
 	if defaultCluster != nil {
 		return WithCurrentCluster(tc.WithCluster(clusters.DefaultClient, clusters.NewClusterFromConfig(defaultCluster)), clusters.DefaultClient)
 	}

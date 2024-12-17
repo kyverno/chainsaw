@@ -12,7 +12,6 @@ import (
 )
 
 type describeAction struct {
-	basePath   string
 	namespacer namespacer.Namespacer
 	op         v1alpha1.Describe
 }
@@ -23,7 +22,6 @@ func (o describeAction) Execute(ctx context.Context, tc enginecontext.TestContex
 		ns = o.namespacer.GetNamespace()
 	}
 	contextData := enginecontext.ContextData{
-		BasePath: o.basePath,
 		Cluster:  o.op.Cluster,
 		Clusters: o.op.Clusters,
 		Timeouts: &v1alpha1.Timeouts{Exec: o.op.Timeout},
@@ -45,7 +43,7 @@ func (o describeAction) Execute(ctx context.Context, tc enginecontext.TestContex
 				Entrypoint:     entrypoint,
 				Args:           args,
 			},
-			o.basePath,
+			tc.BasePath(),
 			ns,
 			config,
 		)
@@ -55,9 +53,8 @@ func (o describeAction) Execute(ctx context.Context, tc enginecontext.TestContex
 	}
 }
 
-func describeOperation(basePath string, namespacer namespacer.Namespacer, op v1alpha1.Describe) Operation {
+func describeOperation(namespacer namespacer.Namespacer, op v1alpha1.Describe) Operation {
 	return describeAction{
-		basePath:   basePath,
 		namespacer: namespacer,
 		op:         op,
 	}

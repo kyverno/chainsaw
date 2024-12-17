@@ -189,7 +189,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 								Id: i + 1,
 							}
 							tc := tc.WithBinding("step", info)
-							if stop := r.runStep(ctx, t.Cleanup, t.Fail, t.Failed, test.BasePath, nspacer, tc, step, report); stop {
+							if stop := r.runStep(ctx, t.Cleanup, t.Fail, t.Failed, nspacer, tc, step, report); stop {
 								return
 							}
 						}
@@ -238,7 +238,6 @@ func (r *runner) runStep(
 	cleanup func(func()),
 	fail func(),
 	failed func() bool,
-	basePath string,
 	namespacer namespacer.Namespacer,
 	tc enginecontext.TestContext,
 	step v1alpha1.TestStep,
@@ -256,7 +255,6 @@ func (r *runner) runStep(
 		tc = tc.WithDefaultCompiler(string(*step.Compiler))
 	}
 	contextData := enginecontext.ContextData{
-		BasePath:            basePath,
 		Catch:               step.Catch,
 		Cluster:             step.Cluster,
 		Clusters:            step.Clusters,
@@ -301,7 +299,7 @@ func (r *runner) runStep(
 				if operation.Compiler != nil {
 					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				operations, err := operations.FinallyOperation(operationTc.Compilers(), basePath, namespacer, operationTc.Bindings(), operation)
+				operations, err := operations.FinallyOperation(ctx, operationTc, namespacer, operation)
 				if err != nil {
 					fail()
 					logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
@@ -328,7 +326,7 @@ func (r *runner) runStep(
 				if operation.Compiler != nil {
 					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				operations, err := operations.FinallyOperation(operationTc.Compilers(), basePath, namespacer, operationTc.Bindings(), operation)
+				operations, err := operations.FinallyOperation(ctx, operationTc, namespacer, operation)
 				if err != nil {
 					fail()
 					logging.Log(ctx, logging.Finally, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
@@ -356,7 +354,7 @@ func (r *runner) runStep(
 					if operation.Compiler != nil {
 						operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
 					}
-					operations, err := operations.CatchOperation(operationTc.Compilers(), basePath, namespacer, operationTc.Bindings(), operation)
+					operations, err := operations.CatchOperation(ctx, operationTc, namespacer, operation)
 					if err != nil {
 						fail()
 						logging.Log(ctx, logging.Catch, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
@@ -380,7 +378,7 @@ func (r *runner) runStep(
 		}()
 		tc := tc
 		for i, operation := range step.Try {
-			continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, basePath, i, namespacer, cleaner, report)
+			continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, i, namespacer, cleaner, report)
 			if err != nil {
 				fail()
 				if !continueOnError {
@@ -397,7 +395,6 @@ func (r *runner) runOperation(
 	ctx context.Context,
 	tc enginecontext.TestContext,
 	operation v1alpha1.Operation,
-	basePath string,
 	operationId int,
 	namespacer namespacer.Namespacer,
 	cleaner cleaner.Cleaner,
@@ -406,7 +403,7 @@ func (r *runner) runOperation(
 	if operation.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 	}
-	opType, actions, err := operations.TryOperation(tc, basePath, namespacer, operation, cleaner)
+	opType, actions, err := operations.TryOperation(ctx, tc, namespacer, operation, cleaner)
 	if err != nil {
 		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		r.onFail()
@@ -530,7 +527,7 @@ func (r *runner) setupTestContext(ctx context.Context, testId int, scenarioId in
 		return tc, err
 	}
 	contextData := enginecontext.ContextData{
-		BasePath:            test.BasePath,
+		BasePath:            &test.BasePath,
 		Catch:               test.Test.Spec.Catch,
 		Cluster:             test.Test.Spec.Cluster,
 		Clusters:            test.Test.Spec.Clusters,

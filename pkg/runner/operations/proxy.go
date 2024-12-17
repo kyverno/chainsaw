@@ -12,7 +12,6 @@ import (
 )
 
 type proxyAction struct {
-	basePath   string
 	namespacer namespacer.Namespacer
 	op         v1alpha1.Proxy
 }
@@ -23,7 +22,6 @@ func (o proxyAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 		ns = o.namespacer.GetNamespace()
 	}
 	contextData := enginecontext.ContextData{
-		BasePath: o.basePath,
 		Cluster:  o.op.Cluster,
 		Clusters: o.op.Clusters,
 		Timeouts: &v1alpha1.Timeouts{Exec: o.op.Timeout},
@@ -45,7 +43,7 @@ func (o proxyAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 				Entrypoint:     entrypoint,
 				Args:           args,
 			},
-			o.basePath,
+			tc.BasePath(),
 			ns,
 			config,
 		)
@@ -55,9 +53,8 @@ func (o proxyAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 	}
 }
 
-func proxyOperation(basePath string, namespacer namespacer.Namespacer, op v1alpha1.Proxy) Operation {
+func proxyOperation(namespacer namespacer.Namespacer, op v1alpha1.Proxy) Operation {
 	return proxyAction{
-		basePath:   basePath,
 		namespacer: namespacer,
 		op:         op,
 	}
