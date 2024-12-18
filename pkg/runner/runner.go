@@ -294,24 +294,15 @@ func (r *runner) runStep(
 					r.onFail()
 				}
 			}
-			for _, operation := range step.Cleanup {
-				operationTc := tc
+			for i, operation := range step.Cleanup {
 				if operation.Compiler != nil {
-					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+					tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				operations, err := operations.FinallyOperation(ctx, operationTc, namespacer, operation)
+				outputsTc, err := r.runCatch(ctx, tc, operation, i, namespacer)
 				if err != nil {
 					fail()
-					logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-					r.onFail()
 				}
-				for _, operation := range operations {
-					_, err := operation.Execute(ctx, operationTc)
-					if err != nil {
-						fail()
-						r.onFail()
-					}
-				}
+				tc = outputsTc
 			}
 		}
 	})
@@ -321,24 +312,15 @@ func (r *runner) runStep(
 			defer func() {
 				logging.Log(ctx, logging.Finally, logging.EndStatus, nil, color.BoldFgCyan)
 			}()
-			for _, operation := range step.Finally {
-				operationTc := tc
+			for i, operation := range step.Finally {
 				if operation.Compiler != nil {
-					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+					tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				operations, err := operations.FinallyOperation(ctx, operationTc, namespacer, operation)
+				outputsTc, err := r.runCatch(ctx, tc, operation, i, namespacer)
 				if err != nil {
 					fail()
-					logging.Log(ctx, logging.Finally, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-					r.onFail()
 				}
-				for _, operation := range operations {
-					_, err := operation.Execute(ctx, operationTc)
-					if err != nil {
-						fail()
-						r.onFail()
-					}
-				}
+				tc = outputsTc
 			}
 		}()
 	}
@@ -349,44 +331,32 @@ func (r *runner) runStep(
 				defer func() {
 					logging.Log(ctx, logging.Catch, logging.EndStatus, nil, color.BoldFgCyan)
 				}()
-				for _, operation := range catch {
-					operationTc := tc
+				for i, operation := range catch {
 					if operation.Compiler != nil {
-						operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+						tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 					}
-					operations, err := operations.CatchOperation(ctx, operationTc, namespacer, operation)
+					outputsTc, err := r.runCatch(ctx, tc, operation, i, namespacer)
 					if err != nil {
 						fail()
-						logging.Log(ctx, logging.Catch, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-						r.onFail()
 					}
-					for _, operation := range operations {
-						_, err := operation.Execute(ctx, operationTc)
-						if err != nil {
-							fail()
-							r.onFail()
-						}
-					}
+					tc = outputsTc
 				}
 			}
 		}()
 	}
-	{
-		logging.Log(ctx, logging.Try, logging.BeginStatus, nil, color.BoldFgCyan)
-		defer func() {
-			logging.Log(ctx, logging.Try, logging.EndStatus, nil, color.BoldFgCyan)
-		}()
-		tc := tc
-		for i, operation := range step.Try {
-			continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, i, namespacer, cleaner, report)
-			if err != nil {
-				fail()
-				if !continueOnError {
-					return true
-				}
+	logging.Log(ctx, logging.Try, logging.BeginStatus, nil, color.BoldFgCyan)
+	defer func() {
+		logging.Log(ctx, logging.Try, logging.EndStatus, nil, color.BoldFgCyan)
+	}()
+	for i, operation := range step.Try {
+		continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, i, namespacer, cleaner, report)
+		if err != nil {
+			fail()
+			if !continueOnError {
+				return true
 			}
-			tc = outputsTc
 		}
+		tc = outputsTc
 	}
 	return false
 }
@@ -424,6 +394,36 @@ func (r *runner) runOperation(
 	return continueOnError, tc, multierr.Combine(errs...)
 }
 
+func (r *runner) runCatch(
+	ctx context.Context,
+	tc enginecontext.TestContext,
+	operation v1alpha1.CatchFinally,
+	operationId int,
+	namespacer namespacer.Namespacer,
+) (enginecontext.TestContext, error) {
+	if operation.Compiler != nil {
+		tc = tc.WithDefaultCompiler(string(*operation.Compiler))
+	}
+	actions, err := operations.CatchOperation(ctx, tc, namespacer, operation)
+	if err != nil {
+		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+		r.onFail()
+		return tc, err
+	}
+	var errs []error
+	for i, action := range actions {
+		outputs, err := r.runAction(ctx, action, "", operationId, i, tc, nil)
+		if err != nil {
+			errs = append(errs, err)
+			r.onFail()
+		}
+		for k, v := range outputs {
+			tc = tc.WithBinding(k, v)
+		}
+	}
+	return tc, multierr.Combine(errs...)
+}
+
 func (*runner) runAction(
 	ctx context.Context,
 	action operations.Operation,
@@ -437,15 +437,17 @@ func (*runner) runAction(
 		Id:         operationId + 1,
 		ResourceId: actionId + 1,
 	})
-	report := &model.OperationReport{
-		Type:      opType,
-		StartTime: time.Now(),
+	if stepReport != nil {
+		report := &model.OperationReport{
+			Type:      opType,
+			StartTime: time.Now(),
+		}
+		defer func() {
+			report.EndTime = time.Now()
+			report.Err = err
+			stepReport.Add(report)
+		}()
 	}
-	defer func() {
-		report.EndTime = time.Now()
-		report.Err = err
-		stepReport.Add(report)
-	}()
 	return action.Execute(ctx, tc)
 }
 
