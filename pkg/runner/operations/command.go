@@ -11,7 +11,6 @@ import (
 )
 
 type commandAction struct {
-	basePath   string
 	namespacer namespacer.Namespacer
 	op         v1alpha1.Command
 }
@@ -22,7 +21,6 @@ func (o commandAction) Execute(ctx context.Context, tc enginecontext.TestContext
 		ns = o.namespacer.GetNamespace()
 	}
 	contextData := enginecontext.ContextData{
-		BasePath: o.basePath,
 		Cluster:  o.op.Cluster,
 		Clusters: o.op.Clusters,
 		Timeouts: &v1alpha1.Timeouts{Exec: o.op.Timeout},
@@ -35,7 +33,7 @@ func (o commandAction) Execute(ctx context.Context, tc enginecontext.TestContext
 		op := opcommand.New(
 			tc.Compilers(),
 			o.op,
-			o.basePath,
+			tc.BasePath(),
 			ns,
 			config,
 		)
@@ -45,9 +43,8 @@ func (o commandAction) Execute(ctx context.Context, tc enginecontext.TestContext
 	}
 }
 
-func commandOperation(basePath string, namespacer namespacer.Namespacer, op v1alpha1.Command) Operation {
+func commandOperation(namespacer namespacer.Namespacer, op v1alpha1.Command) Operation {
 	return commandAction{
-		basePath:   basePath,
 		namespacer: namespacer,
 		op:         op,
 	}

@@ -3,18 +3,15 @@ package operations
 import (
 	"context"
 
-	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	operror "github.com/kyverno/chainsaw/pkg/engine/operations/error"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
-	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 type errorAction struct {
-	basePath   string
 	namespacer namespacer.Namespacer
 	op         v1alpha1.Error
 	resource   unstructured.Unstructured
@@ -22,7 +19,6 @@ type errorAction struct {
 
 func (o errorAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
 	contextData := enginecontext.ContextData{
-		BasePath:   o.basePath,
 		Cluster:    o.op.Cluster,
 		Clusters:   o.op.Clusters,
 		Templating: o.op.Template,
@@ -46,8 +42,8 @@ func (o errorAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 	}
 }
 
-func errorOperation(compilers compilers.Compilers, basePath string, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Error) ([]Operation, error) {
-	resources, err := fileRefOrCheck(context.TODO(), op.ActionCheckRef, basePath, compilers, bindings)
+func errorOperation(ctx context.Context, tc enginecontext.TestContext, namespacer namespacer.Namespacer, op v1alpha1.Error) ([]Operation, error) {
+	resources, err := fileRefOrCheck(ctx, op.ActionCheckRef, tc.BasePath(), tc.Compilers(), tc.Bindings())
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +51,6 @@ func errorOperation(compilers compilers.Compilers, basePath string, namespacer n
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, errorAction{
-			basePath:   basePath,
 			namespacer: namespacer,
 			op:         op,
 			resource:   resource,

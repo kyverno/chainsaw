@@ -3,18 +3,15 @@ package operations
 import (
 	"context"
 
-	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	opdelete "github.com/kyverno/chainsaw/pkg/engine/operations/delete"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
-	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
 type deleteAction struct {
-	basePath   string
 	namespacer namespacer.Namespacer
 	op         v1alpha1.Delete
 	resource   unstructured.Unstructured
@@ -22,7 +19,6 @@ type deleteAction struct {
 
 func (o deleteAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
 	contextData := enginecontext.ContextData{
-		BasePath:            o.basePath,
 		Cluster:             o.op.Cluster,
 		Clusters:            o.op.Clusters,
 		DeletionPropagation: o.op.DeletionPropagationPolicy,
@@ -49,7 +45,7 @@ func (o deleteAction) Execute(ctx context.Context, tc enginecontext.TestContext)
 	}
 }
 
-func deleteOperation(compilers compilers.Compilers, basePath string, namespacer namespacer.Namespacer, bindings apis.Bindings, op v1alpha1.Delete) ([]Operation, error) {
+func deleteOperation(ctx context.Context, tc enginecontext.TestContext, namespacer namespacer.Namespacer, op v1alpha1.Delete) ([]Operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -64,7 +60,7 @@ func deleteOperation(compilers compilers.Compilers, basePath string, namespacer 
 		resource.SetLabels(op.Ref.Labels)
 		ref.Resource = &resource
 	}
-	resources, err := fileRefOrResource(context.TODO(), ref, basePath, compilers, bindings)
+	resources, err := fileRefOrResource(ctx, ref, tc.BasePath(), tc.Compilers(), tc.Bindings())
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +68,6 @@ func deleteOperation(compilers compilers.Compilers, basePath string, namespacer 
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, deleteAction{
-			basePath:   basePath,
 			namespacer: namespacer,
 			op:         op,
 			resource:   resource,

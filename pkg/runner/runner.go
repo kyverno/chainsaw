@@ -189,7 +189,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 								Id: i + 1,
 							}
 							tc := tc.WithBinding("step", info)
-							if stop := r.runStep(ctx, t.Cleanup, t.Fail, t.Failed, test.BasePath, nspacer, tc, step, report); stop {
+							if stop := r.runStep(ctx, t.Cleanup, t.Fail, t.Failed, nspacer, tc, step, report); stop {
 								return
 							}
 						}
@@ -238,7 +238,6 @@ func (r *runner) runStep(
 	cleanup func(func()),
 	fail func(),
 	failed func() bool,
-	basePath string,
 	namespacer namespacer.Namespacer,
 	tc enginecontext.TestContext,
 	step v1alpha1.TestStep,
@@ -256,7 +255,6 @@ func (r *runner) runStep(
 		tc = tc.WithDefaultCompiler(string(*step.Compiler))
 	}
 	contextData := enginecontext.ContextData{
-		BasePath:            basePath,
 		Catch:               step.Catch,
 		Cluster:             step.Cluster,
 		Clusters:            step.Clusters,
@@ -296,24 +294,15 @@ func (r *runner) runStep(
 					r.onFail()
 				}
 			}
-			for _, operation := range step.Cleanup {
-				operationTc := tc
+			for i, operation := range step.Cleanup {
 				if operation.Compiler != nil {
-					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+					tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				operations, err := operations.FinallyOperation(operationTc.Compilers(), basePath, namespacer, operationTc.Bindings(), operation)
+				outputsTc, err := r.runCatch(ctx, tc, operation, i, namespacer)
 				if err != nil {
 					fail()
-					logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-					r.onFail()
 				}
-				for _, operation := range operations {
-					_, err := operation.Execute(ctx, operationTc)
-					if err != nil {
-						fail()
-						r.onFail()
-					}
-				}
+				tc = outputsTc
 			}
 		}
 	})
@@ -323,24 +312,15 @@ func (r *runner) runStep(
 			defer func() {
 				logging.Log(ctx, logging.Finally, logging.EndStatus, nil, color.BoldFgCyan)
 			}()
-			for _, operation := range step.Finally {
-				operationTc := tc
+			for i, operation := range step.Finally {
 				if operation.Compiler != nil {
-					operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+					tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				operations, err := operations.FinallyOperation(operationTc.Compilers(), basePath, namespacer, operationTc.Bindings(), operation)
+				outputsTc, err := r.runCatch(ctx, tc, operation, i, namespacer)
 				if err != nil {
 					fail()
-					logging.Log(ctx, logging.Finally, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-					r.onFail()
 				}
-				for _, operation := range operations {
-					_, err := operation.Execute(ctx, operationTc)
-					if err != nil {
-						fail()
-						r.onFail()
-					}
-				}
+				tc = outputsTc
 			}
 		}()
 	}
@@ -351,44 +331,32 @@ func (r *runner) runStep(
 				defer func() {
 					logging.Log(ctx, logging.Catch, logging.EndStatus, nil, color.BoldFgCyan)
 				}()
-				for _, operation := range catch {
-					operationTc := tc
+				for i, operation := range catch {
 					if operation.Compiler != nil {
-						operationTc = operationTc.WithDefaultCompiler(string(*operation.Compiler))
+						tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 					}
-					operations, err := operations.CatchOperation(operationTc.Compilers(), basePath, namespacer, operationTc.Bindings(), operation)
+					outputsTc, err := r.runCatch(ctx, tc, operation, i, namespacer)
 					if err != nil {
 						fail()
-						logging.Log(ctx, logging.Catch, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
-						r.onFail()
 					}
-					for _, operation := range operations {
-						_, err := operation.Execute(ctx, operationTc)
-						if err != nil {
-							fail()
-							r.onFail()
-						}
-					}
+					tc = outputsTc
 				}
 			}
 		}()
 	}
-	{
-		logging.Log(ctx, logging.Try, logging.BeginStatus, nil, color.BoldFgCyan)
-		defer func() {
-			logging.Log(ctx, logging.Try, logging.EndStatus, nil, color.BoldFgCyan)
-		}()
-		tc := tc
-		for i, operation := range step.Try {
-			continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, basePath, i, namespacer, cleaner, report)
-			if err != nil {
-				fail()
-				if !continueOnError {
-					return true
-				}
+	logging.Log(ctx, logging.Try, logging.BeginStatus, nil, color.BoldFgCyan)
+	defer func() {
+		logging.Log(ctx, logging.Try, logging.EndStatus, nil, color.BoldFgCyan)
+	}()
+	for i, operation := range step.Try {
+		continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, i, namespacer, cleaner, report)
+		if err != nil {
+			fail()
+			if !continueOnError {
+				return true
 			}
-			tc = outputsTc
 		}
+		tc = outputsTc
 	}
 	return false
 }
@@ -397,7 +365,6 @@ func (r *runner) runOperation(
 	ctx context.Context,
 	tc enginecontext.TestContext,
 	operation v1alpha1.Operation,
-	basePath string,
 	operationId int,
 	namespacer namespacer.Namespacer,
 	cleaner cleaner.Cleaner,
@@ -406,7 +373,7 @@ func (r *runner) runOperation(
 	if operation.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 	}
-	opType, actions, err := operations.TryOperation(tc, basePath, namespacer, operation, cleaner)
+	opType, actions, err := operations.TryOperation(ctx, tc, namespacer, operation, cleaner)
 	if err != nil {
 		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		r.onFail()
@@ -427,6 +394,36 @@ func (r *runner) runOperation(
 	return continueOnError, tc, multierr.Combine(errs...)
 }
 
+func (r *runner) runCatch(
+	ctx context.Context,
+	tc enginecontext.TestContext,
+	operation v1alpha1.CatchFinally,
+	operationId int,
+	namespacer namespacer.Namespacer,
+) (enginecontext.TestContext, error) {
+	if operation.Compiler != nil {
+		tc = tc.WithDefaultCompiler(string(*operation.Compiler))
+	}
+	actions, err := operations.CatchOperation(ctx, tc, namespacer, operation)
+	if err != nil {
+		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+		r.onFail()
+		return tc, err
+	}
+	var errs []error
+	for i, action := range actions {
+		outputs, err := r.runAction(ctx, action, "", operationId, i, tc, nil)
+		if err != nil {
+			errs = append(errs, err)
+			r.onFail()
+		}
+		for k, v := range outputs {
+			tc = tc.WithBinding(k, v)
+		}
+	}
+	return tc, multierr.Combine(errs...)
+}
+
 func (*runner) runAction(
 	ctx context.Context,
 	action operations.Operation,
@@ -440,15 +437,17 @@ func (*runner) runAction(
 		Id:         operationId + 1,
 		ResourceId: actionId + 1,
 	})
-	report := &model.OperationReport{
-		Type:      opType,
-		StartTime: time.Now(),
+	if stepReport != nil {
+		report := &model.OperationReport{
+			Type:      opType,
+			StartTime: time.Now(),
+		}
+		defer func() {
+			report.EndTime = time.Now()
+			report.Err = err
+			stepReport.Add(report)
+		}()
 	}
-	defer func() {
-		report.EndTime = time.Now()
-		report.Err = err
-		stepReport.Add(report)
-	}()
 	return action.Execute(ctx, tc)
 }
 
@@ -530,7 +529,7 @@ func (r *runner) setupTestContext(ctx context.Context, testId int, scenarioId in
 		return tc, err
 	}
 	contextData := enginecontext.ContextData{
-		BasePath:            test.BasePath,
+		BasePath:            &test.BasePath,
 		Catch:               test.Test.Spec.Catch,
 		Cluster:             test.Test.Spec.Cluster,
 		Clusters:            test.Test.Spec.Clusters,
