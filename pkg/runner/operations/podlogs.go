@@ -5,21 +5,19 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
-	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	opcommand "github.com/kyverno/chainsaw/pkg/engine/operations/command"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 )
 
 type podLogsAction struct {
-	namespacer namespacer.Namespacer
-	op         v1alpha1.PodLogs
+	op v1alpha1.PodLogs
 }
 
 func (o podLogsAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
 	ns := ""
-	if o.namespacer != nil {
-		ns = o.namespacer.GetNamespace()
+	if namespacer := tc.Namespacer(); namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	contextData := enginecontext.ContextData{
 		Cluster:  o.op.Cluster,
@@ -53,9 +51,8 @@ func (o podLogsAction) Execute(ctx context.Context, tc enginecontext.TestContext
 	}
 }
 
-func logsOperation(namespacer namespacer.Namespacer, op v1alpha1.PodLogs) Operation {
+func logsOperation(op v1alpha1.PodLogs) Operation {
 	return podLogsAction{
-		namespacer: namespacer,
-		op:         op,
+		op: op,
 	}
 }

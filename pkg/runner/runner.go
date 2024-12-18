@@ -78,7 +78,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 				fail(t, r.cleanup(ctx, tc, cleanup))
 			})
 			// setup namespace
-			tc, nspacer, err := r.setupNamespace(ctx, nsOptions, tc, cleanup)
+			tc, err := r.setupNamespace(ctx, nsOptions, tc, cleanup)
 			if fail(t, err) {
 				tc.IncFailed()
 				return
@@ -163,14 +163,14 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}
 						nsOptions := nsOptions
 						nsOptions.Name = test.Test.Spec.Namespace
-						if nspacer == nil && nsOptions.Name == "" {
+						if tc.Namespacer() == nil && nsOptions.Name == "" {
 							nsOptions.Name = fmt.Sprintf("chainsaw-%s", petname.Generate(2, "-"))
 						}
 						if template := test.Test.Spec.NamespaceTemplate; template != nil && template.Value() != nil {
 							nsOptions.Template = template
 							nsOptions.Compiler = test.Test.Spec.NamespaceTemplateCompiler
 						}
-						tc, nspacer, err := r.setupNamespace(ctx, nsOptions, tc, cleanup)
+						tc, err = r.setupNamespace(ctx, nsOptions, tc, cleanup)
 						if fail(t, err) {
 							return
 						}
@@ -189,7 +189,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 								Id: i + 1,
 							}
 							tc := tc.WithBinding("step", info)
-							if stop := r.runStep(ctx, t.Cleanup, t.Fail, t.Failed, nspacer, tc, step, report); stop {
+							if stop := r.runStep(ctx, t.Cleanup, t.Fail, t.Failed, tc, step, report); stop {
 								return
 							}
 						}
@@ -238,7 +238,6 @@ func (r *runner) runStep(
 	cleanup func(func()),
 	fail func(),
 	failed func() bool,
-	namespacer namespacer.Namespacer,
 	tc enginecontext.TestContext,
 	step v1alpha1.TestStep,
 	testReport *model.TestReport,
@@ -298,7 +297,7 @@ func (r *runner) runStep(
 				if operation.Compiler != nil {
 					tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				outputsTc, err := r.runCatch(ctx, tc, operation, i, namespacer)
+				outputsTc, err := r.runCatch(ctx, tc, operation, i)
 				if err != nil {
 					fail()
 				}
@@ -316,7 +315,7 @@ func (r *runner) runStep(
 				if operation.Compiler != nil {
 					tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				outputsTc, err := r.runCatch(ctx, tc, operation, i, namespacer)
+				outputsTc, err := r.runCatch(ctx, tc, operation, i)
 				if err != nil {
 					fail()
 				}
@@ -335,7 +334,7 @@ func (r *runner) runStep(
 					if operation.Compiler != nil {
 						tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 					}
-					outputsTc, err := r.runCatch(ctx, tc, operation, i, namespacer)
+					outputsTc, err := r.runCatch(ctx, tc, operation, i)
 					if err != nil {
 						fail()
 					}
@@ -349,7 +348,7 @@ func (r *runner) runStep(
 		logging.Log(ctx, logging.Try, logging.EndStatus, nil, color.BoldFgCyan)
 	}()
 	for i, operation := range step.Try {
-		continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, i, namespacer, cleaner, report)
+		continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, i, cleaner, report)
 		if err != nil {
 			fail()
 			if !continueOnError {
@@ -366,14 +365,13 @@ func (r *runner) runOperation(
 	tc enginecontext.TestContext,
 	operation v1alpha1.Operation,
 	operationId int,
-	namespacer namespacer.Namespacer,
 	cleaner cleaner.Cleaner,
 	report *model.StepReport,
 ) (bool, enginecontext.TestContext, error) {
 	if operation.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 	}
-	opType, actions, err := operations.TryOperation(ctx, tc, namespacer, operation, cleaner)
+	opType, actions, err := operations.TryOperation(ctx, tc, operation, cleaner)
 	if err != nil {
 		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		r.onFail()
@@ -399,12 +397,11 @@ func (r *runner) runCatch(
 	tc enginecontext.TestContext,
 	operation v1alpha1.CatchFinally,
 	operationId int,
-	namespacer namespacer.Namespacer,
 ) (enginecontext.TestContext, error) {
 	if operation.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 	}
-	actions, err := operations.CatchOperation(ctx, tc, namespacer, operation)
+	actions, err := operations.CatchOperation(ctx, tc, operation)
 	if err != nil {
 		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		r.onFail()
@@ -477,7 +474,7 @@ func (r *runner) cleanup(ctx context.Context, tc enginecontext.TestContext, clea
 	return multierr.Combine(errs...)
 }
 
-func (r *runner) setupNamespace(ctx context.Context, nsOptions v1alpha2.NamespaceOptions, tc enginecontext.TestContext, cleanup cleaner.Cleaner) (enginecontext.TestContext, namespacer.Namespacer, error) {
+func (r *runner) setupNamespace(ctx context.Context, nsOptions v1alpha2.NamespaceOptions, tc enginecontext.TestContext, cleanup cleaner.Cleaner) (enginecontext.TestContext, error) {
 	if nsOptions.Name != "" {
 		compilers := tc.Compilers()
 		if nsOptions.Compiler != nil {
@@ -487,21 +484,21 @@ func (r *runner) setupNamespace(ctx context.Context, nsOptions v1alpha2.Namespac
 		if namespace, err := buildNamespace(ctx, compilers, nsOptions.Name, nsOptions.Template, tc); err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 			r.onFail()
-			return tc, nil, err
+			return tc, err
 		} else if _, clusterClient, err := tc.CurrentClusterClient(); err != nil {
 			logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 			r.onFail()
-			return tc, nil, err
+			return tc, err
 		} else if clusterClient != nil {
 			if err := clusterClient.Get(ctx, client.Key(namespace), namespace.DeepCopy()); err != nil {
 				if !errors.IsNotFound(err) {
 					logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 					r.onFail()
-					return tc, nil, err
+					return tc, err
 				} else if err := clusterClient.Create(ctx, namespace.DeepCopy()); err != nil {
 					logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 					r.onFail()
-					return tc, nil, err
+					return tc, err
 				} else if cleanup != nil {
 					cleanup.Add(clusterClient, namespace)
 				}
@@ -510,10 +507,11 @@ func (r *runner) setupNamespace(ctx context.Context, nsOptions v1alpha2.Namespac
 		}
 		if ns != nil {
 			tc = tc.WithBinding("namespace", ns.GetName())
-			return tc, namespacer.New(ns.GetName()), nil
+			tc = tc.WithNamespacer(namespacer.New(ns.GetName()))
+			return tc, nil
 		}
 	}
-	return tc, nil, nil
+	return tc, nil
 }
 
 func (r *runner) setupTestContext(ctx context.Context, testId int, scenarioId int, tc enginecontext.TestContext, test discovery.Test, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {

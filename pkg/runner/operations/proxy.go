@@ -5,21 +5,19 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
-	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	opcommand "github.com/kyverno/chainsaw/pkg/engine/operations/command"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 )
 
 type proxyAction struct {
-	namespacer namespacer.Namespacer
-	op         v1alpha1.Proxy
+	op v1alpha1.Proxy
 }
 
 func (o proxyAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
 	ns := ""
-	if o.namespacer != nil {
-		ns = o.namespacer.GetNamespace()
+	if namespacer := tc.Namespacer(); namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	contextData := enginecontext.ContextData{
 		Cluster:  o.op.Cluster,
@@ -53,9 +51,8 @@ func (o proxyAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 	}
 }
 
-func proxyOperation(namespacer namespacer.Namespacer, op v1alpha1.Proxy) Operation {
+func proxyOperation(op v1alpha1.Proxy) Operation {
 	return proxyAction{
-		namespacer: namespacer,
-		op:         op,
+		op: op,
 	}
 }

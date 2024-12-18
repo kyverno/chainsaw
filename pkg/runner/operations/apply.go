@@ -5,7 +5,6 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
-	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	opapply "github.com/kyverno/chainsaw/pkg/engine/operations/apply"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
@@ -13,10 +12,9 @@ import (
 )
 
 type applyAction struct {
-	namespacer namespacer.Namespacer
-	op         v1alpha1.Apply
-	resource   unstructured.Unstructured
-	cleaner    cleaner.CleanerCollector
+	op       v1alpha1.Apply
+	resource unstructured.Unstructured
+	cleaner  cleaner.CleanerCollector
 }
 
 func (o applyAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
@@ -38,7 +36,7 @@ func (o applyAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 			tc.Compilers(),
 			client,
 			o.resource,
-			o.namespacer,
+			tc.Namespacer(),
 			getCleanerOrNil(o.cleaner, tc),
 			tc.Templating(),
 			o.op.Expect,
@@ -50,7 +48,7 @@ func (o applyAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 	}
 }
 
-func applyOperation(ctx context.Context, tc enginecontext.TestContext, namespacer namespacer.Namespacer, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]Operation, error) {
+func applyOperation(ctx context.Context, tc enginecontext.TestContext, cleaner cleaner.CleanerCollector, op v1alpha1.Apply) ([]Operation, error) {
 	resources, err := fileRefOrResource(ctx, op.ActionResourceRef, tc.BasePath(), tc.Compilers(), tc.Bindings())
 	if err != nil {
 		return nil, err
@@ -59,10 +57,9 @@ func applyOperation(ctx context.Context, tc enginecontext.TestContext, namespace
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, applyAction{
-			namespacer: namespacer,
-			op:         op,
-			resource:   resource,
-			cleaner:    cleaner,
+			op:       op,
+			resource: resource,
+			cleaner:  cleaner,
 		})
 	}
 	return ops, nil
