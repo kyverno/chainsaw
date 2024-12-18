@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	opdelete "github.com/kyverno/chainsaw/pkg/engine/operations/delete"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
@@ -12,9 +11,8 @@ import (
 )
 
 type deleteAction struct {
-	namespacer namespacer.Namespacer
-	op         v1alpha1.Delete
-	resource   unstructured.Unstructured
+	op       v1alpha1.Delete
+	resource unstructured.Unstructured
 }
 
 func (o deleteAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
@@ -34,7 +32,7 @@ func (o deleteAction) Execute(ctx context.Context, tc enginecontext.TestContext)
 			tc.Compilers(),
 			client,
 			o.resource,
-			o.namespacer,
+			tc.Namespacer(),
 			tc.Templating(),
 			tc.DeletionPropagation(),
 			o.op.Expect...,
@@ -45,7 +43,7 @@ func (o deleteAction) Execute(ctx context.Context, tc enginecontext.TestContext)
 	}
 }
 
-func deleteOperation(ctx context.Context, tc enginecontext.TestContext, namespacer namespacer.Namespacer, op v1alpha1.Delete) ([]Operation, error) {
+func deleteOperation(ctx context.Context, tc enginecontext.TestContext, op v1alpha1.Delete) ([]Operation, error) {
 	ref := v1alpha1.ActionResourceRef{
 		FileRef: v1alpha1.FileRef{
 			File: op.File,
@@ -68,9 +66,8 @@ func deleteOperation(ctx context.Context, tc enginecontext.TestContext, namespac
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, deleteAction{
-			namespacer: namespacer,
-			op:         op,
-			resource:   resource,
+			op:       op,
+			resource: resource,
 		})
 	}
 	return ops, nil

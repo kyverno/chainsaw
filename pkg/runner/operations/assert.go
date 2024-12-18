@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	opassert "github.com/kyverno/chainsaw/pkg/engine/operations/assert"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
@@ -12,9 +11,8 @@ import (
 )
 
 type assertAction struct {
-	namespacer namespacer.Namespacer
-	op         v1alpha1.Assert
-	resource   unstructured.Unstructured
+	op       v1alpha1.Assert
+	resource unstructured.Unstructured
 }
 
 func (o assertAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
@@ -33,7 +31,7 @@ func (o assertAction) Execute(ctx context.Context, tc enginecontext.TestContext)
 			tc.Compilers(),
 			client,
 			o.resource,
-			o.namespacer,
+			tc.Namespacer(),
 			tc.Templating(),
 		)
 		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Assert.Duration)
@@ -42,7 +40,7 @@ func (o assertAction) Execute(ctx context.Context, tc enginecontext.TestContext)
 	}
 }
 
-func assertOperation(ctx context.Context, tc enginecontext.TestContext, namespacer namespacer.Namespacer, op v1alpha1.Assert) ([]Operation, error) {
+func assertOperation(ctx context.Context, tc enginecontext.TestContext, op v1alpha1.Assert) ([]Operation, error) {
 	resources, err := fileRefOrCheck(ctx, op.ActionCheckRef, tc.BasePath(), tc.Compilers(), tc.Bindings())
 	if err != nil {
 		return nil, err
@@ -51,9 +49,8 @@ func assertOperation(ctx context.Context, tc enginecontext.TestContext, namespac
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, assertAction{
-			namespacer: namespacer,
-			op:         op,
-			resource:   resource,
+			op:       op,
+			resource: resource,
 		})
 	}
 	return ops, nil

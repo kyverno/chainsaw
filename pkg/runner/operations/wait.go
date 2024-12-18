@@ -6,7 +6,6 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
-	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	opcommand "github.com/kyverno/chainsaw/pkg/engine/operations/command"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
@@ -14,14 +13,13 @@ import (
 )
 
 type waitAction struct {
-	namespacer namespacer.Namespacer
-	op         v1alpha1.Wait
+	op v1alpha1.Wait
 }
 
 func (o waitAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
 	ns := ""
-	if o.namespacer != nil {
-		ns = o.namespacer.GetNamespace()
+	if namespacer := tc.Namespacer(); namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	contextData := enginecontext.ContextData{
 		Cluster:  o.op.Cluster,
@@ -59,9 +57,8 @@ func (o waitAction) Execute(ctx context.Context, tc enginecontext.TestContext) (
 	}
 }
 
-func waitOperation(namespacer namespacer.Namespacer, op v1alpha1.Wait) Operation {
+func waitOperation(op v1alpha1.Wait) Operation {
 	return waitAction{
-		namespacer: namespacer,
-		op:         op,
+		op: op,
 	}
 }

@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	oppatch "github.com/kyverno/chainsaw/pkg/engine/operations/patch"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
@@ -12,9 +11,8 @@ import (
 )
 
 type patchAction struct {
-	namespacer namespacer.Namespacer
-	op         v1alpha1.Patch
-	resource   unstructured.Unstructured
+	op       v1alpha1.Patch
+	resource unstructured.Unstructured
 }
 
 func (o patchAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
@@ -36,7 +34,7 @@ func (o patchAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 			tc.Compilers(),
 			client,
 			o.resource,
-			o.namespacer,
+			tc.Namespacer(),
 			tc.Templating(),
 			o.op.Expect,
 			o.op.Outputs,
@@ -47,7 +45,7 @@ func (o patchAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 	}
 }
 
-func patchOperation(ctx context.Context, tc enginecontext.TestContext, namespacer namespacer.Namespacer, op v1alpha1.Patch) ([]Operation, error) {
+func patchOperation(ctx context.Context, tc enginecontext.TestContext, op v1alpha1.Patch) ([]Operation, error) {
 	resources, err := fileRefOrResource(ctx, op.ActionResourceRef, tc.BasePath(), tc.Compilers(), tc.Bindings())
 	if err != nil {
 		return nil, err
@@ -56,9 +54,8 @@ func patchOperation(ctx context.Context, tc enginecontext.TestContext, namespace
 	for i := range resources {
 		resource := resources[i]
 		ops = append(ops, patchAction{
-			namespacer: namespacer,
-			op:         op,
-			resource:   resource,
+			op:       op,
+			resource: resource,
 		})
 	}
 	return ops, nil

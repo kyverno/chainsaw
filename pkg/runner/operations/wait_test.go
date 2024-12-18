@@ -18,13 +18,12 @@ func Test_waitOperation(t *testing.T) {
 		namespacer: namespacer.New("bar"),
 		op:         v1alpha1.Wait{},
 		want: waitAction{
-			namespacer: namespacer.New("bar"),
-			op:         v1alpha1.Wait{},
+			op: v1alpha1.Wait{},
 		},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := waitOperation(tt.namespacer, tt.op)
+			got := waitOperation(tt.op)
 			assert.Equal(t, tt.want, got)
 		})
 	}
