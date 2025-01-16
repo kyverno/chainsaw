@@ -40,10 +40,11 @@ func Save(cfg *rest.Config, w io.Writer) error {
 	}
 	if cfg.ExecProvider != nil {
 		execConfig = &api.ExecConfig{
-			Command:    cfg.ExecProvider.Command,
-			Args:       cfg.ExecProvider.Args,
-			APIVersion: cfg.ExecProvider.APIVersion,
-			Env:        []api.ExecEnvVar{},
+			Command:         cfg.ExecProvider.Command,
+			Args:            cfg.ExecProvider.Args,
+			APIVersion:      cfg.ExecProvider.APIVersion,
+			Env:             []api.ExecEnvVar{},
+			InteractiveMode: api.ExecInteractiveMode(cfg.ExecProvider.InteractiveMode),
 		}
 		for _, envVar := range cfg.ExecProvider.Env {
 			execConfig.Env = append(execConfig.Env, api.ExecEnvVar{
