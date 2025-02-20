@@ -91,7 +91,7 @@ spec:
 ```
 
 !!! tip
-    To indicate that a key or value in the YAML document is an expression, simply place the element between parentheses:
+    To indicate that a key or value in the YAML document is an expression, simply place the element between parenthesis:
 
     - `this is an expression` -> interpreted as a `string`
     - `(this is an expression)` -> interpreted as a JMESPath expression
