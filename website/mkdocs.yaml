@@ -58,6 +58,7 @@ nav:
     - step/catch.md
     - step/finally.md
     - step/cleanup.md
+    - step/skip.md
 - Operations:
   - operations/index.md
   - operations/apply.md
