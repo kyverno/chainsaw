@@ -48,6 +48,7 @@ chainsaw test [flags]... [test directories]...
       --namespace string                          Namespace to use for tests
       --no-cluster                                Runs without cluster
       --no-color                                  Removes output colors
+      --no-warnings                               Suppresses warning messages
       --parallel int                              The maximum number of tests to run at once
       --pause-on-failure                          Pause test execution failure (implies no concurrency)
       --remarshal                                 Remarshals tests yaml to apply anchors before parsing

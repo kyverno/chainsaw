@@ -48,6 +48,13 @@ func TestChainsawCommand(t *testing.T) {
 		wantErr: false,
 		out:     filepath.Join(basePath, "with_repeat_count.txt"),
 	}, {
+		name: "with no-warnings flag",
+		args: []string{
+			"--no-warnings",
+		},
+		wantErr: false,
+		out:     filepath.Join(basePath, "with_no_warnings.txt"),
+	}, {
 		name: "invalid timeout",
 		args: []string{
 			"--timeout",

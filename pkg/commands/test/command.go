@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/loaders/values"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/report"
 	"github.com/kyverno/chainsaw/pkg/runner"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
@@ -55,6 +56,7 @@ type options struct {
 	excludeTestRegex            string
 	includeTestRegex            string
 	noColor                     bool
+	noWarnings                  bool
 	kubeConfigOverrides         clientcmd.ConfigOverrides
 	forceTerminationGracePeriod metav1.Duration
 	delayBeforeCleanup          metav1.Duration
@@ -353,6 +355,20 @@ func Command() *cobra.Command {
 			if err := runnerflags.SetupFlags(configuration.Spec); err != nil {
 				return err
 			}
+
+			// Configure sink based on warning flag
+			if options.noWarnings {
+				fmt.Fprintf(stdOut, "- Using warning suppression: true\n")
+				ctx = logging.WithSink(ctx, runner.NewFilteredSink(clock, func(args ...any) {
+					fmt.Fprintln(stdOut, args...)
+				}, options.noWarnings))
+			} else {
+				ctx = logging.WithSink(ctx, runner.NewSink(clock, func(args ...any) {
+					fmt.Fprintln(stdOut, args...)
+				}))
+			}
+
+			// run the tests
 			err = runner.Run(ctx, configuration.Spec.Namespace, tc, testToRun...)
 			fmt.Fprintln(stdOut, "Tests Summary...")
 			fmt.Fprintln(stdOut, "- Passed  tests", tc.Passed())
@@ -433,6 +449,7 @@ func Command() *cobra.Command {
 	cmd.Flags().IntVar(&options.shardCount, "shard-count", 0, "Number of shards")
 	// others
 	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
+	cmd.Flags().BoolVar(&options.noWarnings, "no-warnings", false, "Suppresses warning messages")
 	cmd.Flags().BoolVar(&options.remarshal, "remarshal", false, "Remarshals tests yaml to apply anchors before parsing")
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)

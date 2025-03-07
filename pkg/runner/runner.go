@@ -3,23 +3,27 @@ package runner
 import (
 	"context"
 	"fmt"
+	"strconv"
+	"strings"
 	"testing"
 	"time"
 
 	petname "github.com/dustinkirkland/golang-petname"
+	"github.com/fatih/color"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/cleanup/cleaner"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
+	engineops "github.com/kyverno/chainsaw/pkg/engine/operations"
+	"github.com/kyverno/chainsaw/pkg/expressions"
 	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/model"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 	"github.com/kyverno/chainsaw/pkg/runner/internal"
 	"github.com/kyverno/chainsaw/pkg/runner/names"
-	"github.com/kyverno/chainsaw/pkg/runner/operations"
-	"github.com/kyverno/pkg/ext/output/color"
+	runnerops "github.com/kyverno/chainsaw/pkg/runner/operations"
 	"go.uber.org/multierr"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -69,7 +73,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 				return false
 			}
 			// setup logger sink
-			ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
+			ctx = logging.WithSink(ctx, NewSink(r.clock, t.Log))
 			// setup logger
 			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "@chainsaw"))
 			// setup cleanup
@@ -90,7 +94,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 				if err != nil {
 					t.Fail()
 					tc.IncFailed()
-					logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+					logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(err))
 					r.onFail()
 				} else {
 					// setup logger
@@ -109,7 +113,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 					runTest := func(ctx context.Context, t *testing.T, testId int, scenarioId int, tc enginecontext.TestContext, bindings ...v1alpha1.Binding) {
 						t.Helper()
 						// setup logger sink
-						ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
+						ctx = logging.WithSink(ctx, NewSink(r.clock, t.Log))
 						// setup concurrency
 						if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
 							t.Parallel()
@@ -178,7 +182,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						tc, err = enginecontext.SetupBindings(tc, test.Test.Spec.Bindings...)
 						if err != nil {
 							t.Fail()
-							logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+							logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(err))
 							r.onFail()
 							return
 						}
@@ -265,10 +269,43 @@ func (r *runner) runStep(
 	tc, err := enginecontext.SetupContextAndBindings(tc, contextData, step.Bindings...)
 	if err != nil {
 		fail()
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(err))
 		r.onFail()
 		return true
 	}
+
+	// Check if step should be skipped
+	if step.Skip != nil {
+		skipValue := *step.Skip
+
+		// Process template if it contains expressions
+		if strings.Contains(skipValue, "{{") {
+			processed, err := expressions.String(ctx, tc.Compilers(), skipValue, tc.Bindings())
+			if err != nil {
+				logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(fmt.Errorf("failed to process skip expression: %w", err)))
+				fail()
+				r.onFail()
+				return true
+			}
+			skipValue = processed
+		}
+
+		// Convert to boolean
+		skip, err := strconv.ParseBool(skipValue)
+		if err != nil {
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(fmt.Errorf("invalid skip value %q: %w", skipValue, err)))
+			fail()
+			r.onFail()
+			return true
+		}
+
+		if skip {
+			// Log that we're skipping this step
+			logging.Log(ctx, logging.Internal, logging.SkippedStatus, nil, BoldYellow, logging.Section("Skipped"))
+			return false
+		}
+	}
+
 	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
 	cleanup(func() {
 		if !cleaner.Empty() || len(step.Cleanup) != 0 {
@@ -280,15 +317,15 @@ func (r *runner) runStep(
 				report.EndTime = time.Now()
 				testReport.Add(report)
 			}()
-			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, nil, color.BoldFgCyan)
+			logging.Log(ctx, logging.Cleanup, logging.BeginStatus, nil, BoldFgCyan)
 			defer func() {
-				logging.Log(ctx, logging.Cleanup, logging.EndStatus, nil, color.BoldFgCyan)
+				logging.Log(ctx, logging.Cleanup, logging.EndStatus, nil, BoldFgCyan)
 			}()
 			if !cleaner.Empty() {
 				if errs := cleaner.Run(ctx, report); len(errs) != 0 {
 					fail()
 					for _, err := range errs {
-						logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+						logging.Log(ctx, logging.Cleanup, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(err))
 					}
 					r.onFail()
 				}
@@ -307,9 +344,9 @@ func (r *runner) runStep(
 	})
 	if len(step.Finally) != 0 {
 		defer func() {
-			logging.Log(ctx, logging.Finally, logging.BeginStatus, nil, color.BoldFgCyan)
+			logging.Log(ctx, logging.Finally, logging.BeginStatus, nil, BoldFgCyan)
 			defer func() {
-				logging.Log(ctx, logging.Finally, logging.EndStatus, nil, color.BoldFgCyan)
+				logging.Log(ctx, logging.Finally, logging.EndStatus, nil, BoldFgCyan)
 			}()
 			for i, operation := range step.Finally {
 				if operation.Compiler != nil {
@@ -326,9 +363,9 @@ func (r *runner) runStep(
 	if catch := tc.Catch(); len(catch) != 0 {
 		defer func() {
 			if failed() {
-				logging.Log(ctx, logging.Catch, logging.BeginStatus, nil, color.BoldFgCyan)
+				logging.Log(ctx, logging.Catch, logging.BeginStatus, nil, BoldFgCyan)
 				defer func() {
-					logging.Log(ctx, logging.Catch, logging.EndStatus, nil, color.BoldFgCyan)
+					logging.Log(ctx, logging.Catch, logging.EndStatus, nil, BoldFgCyan)
 				}()
 				for i, operation := range catch {
 					if operation.Compiler != nil {
@@ -343,9 +380,9 @@ func (r *runner) runStep(
 			}
 		}()
 	}
-	logging.Log(ctx, logging.Try, logging.BeginStatus, nil, color.BoldFgCyan)
+	logging.Log(ctx, logging.Try, logging.BeginStatus, nil, BoldFgCyan)
 	defer func() {
-		logging.Log(ctx, logging.Try, logging.EndStatus, nil, color.BoldFgCyan)
+		logging.Log(ctx, logging.Try, logging.EndStatus, nil, BoldFgCyan)
 	}()
 	for i, operation := range step.Try {
 		continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, i, cleaner, report)
@@ -371,9 +408,9 @@ func (r *runner) runOperation(
 	if operation.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 	}
-	opType, actions, err := operations.TryOperation(ctx, tc, operation, cleaner)
+	opType, actions, err := runnerops.TryOperation(ctx, tc, operation, cleaner)
 	if err != nil {
-		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(err))
 		r.onFail()
 		return false, tc, err
 	}
@@ -401,9 +438,9 @@ func (r *runner) runCatch(
 	if operation.Compiler != nil {
 		tc = tc.WithDefaultCompiler(string(*operation.Compiler))
 	}
-	actions, err := operations.CatchOperation(ctx, tc, operation)
+	actions, err := runnerops.CatchOperation(ctx, tc, operation)
 	if err != nil {
-		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Try, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(err))
 		r.onFail()
 		return tc, err
 	}
@@ -423,7 +460,7 @@ func (r *runner) runCatch(
 
 func (*runner) runAction(
 	ctx context.Context,
-	action operations.Operation,
+	action engineops.Operation,
 	opType model.OperationType,
 	operationId int,
 	actionId int,
@@ -445,7 +482,7 @@ func (*runner) runAction(
 			stepReport.Add(report)
 		}()
 	}
-	return action.Execute(ctx, tc)
+	return action.Exec(ctx, tc.Bindings())
 }
 
 func (r *runner) onFail() {
@@ -482,7 +519,7 @@ func (r *runner) setupNamespace(ctx context.Context, nsOptions v1alpha2.Namespac
 		}
 		var ns *corev1.Namespace
 		if namespace, err := buildNamespace(ctx, compilers, nsOptions.Name, nsOptions.Template, tc); err != nil {
-			logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+			logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(err))
 			r.onFail()
 			return tc, err
 		} else if _, clusterClient, err := tc.CurrentClusterClient(); err != nil {
@@ -522,7 +559,7 @@ func (r *runner) setupTestContext(ctx context.Context, testId int, scenarioId in
 	})
 	tc, err := enginecontext.WithBindings(tc, bindings...)
 	if err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(err))
 		r.onFail()
 		return tc, err
 	}
@@ -540,7 +577,7 @@ func (r *runner) setupTestContext(ctx context.Context, testId int, scenarioId in
 	}
 	tc, err = enginecontext.SetupContext(tc, contextData)
 	if err != nil {
-		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
+		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, BoldRed, logging.ErrSection(err))
 		r.onFail()
 	}
 	return tc, err
@@ -573,3 +610,11 @@ func (r *runner) testCleanup(ctx context.Context, tc enginecontext.TestContext, 
 	}
 	return multierr.Combine(errs...)
 }
+
+// Define colors for logging
+var (
+	BoldRed    = color.New(color.FgRed, color.Bold)
+	BoldYellow = color.New(color.FgYellow, color.Bold)
+	BoldFgCyan = color.New(color.FgCyan, color.Bold)
+	BoldGreen  = color.New(color.FgGreen, color.Bold)
+)
