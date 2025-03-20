@@ -3,6 +3,7 @@ package clusters
 import (
 	"sync"
 
+	"github.com/kyverno/chainsaw/pkg/model"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
@@ -10,15 +11,18 @@ import (
 
 type Cluster interface {
 	Config() (*rest.Config, error)
+	model.WarningsHolder
 }
 
 type fromConfig struct {
 	config *rest.Config
+	*model.WithWarnings
 }
 
 func NewClusterFromConfig(config *rest.Config) Cluster {
 	return &fromConfig{
-		config: config,
+		config:       config,
+		WithWarnings: model.NewWithWarnings(),
 	}
 }
 
@@ -28,6 +32,7 @@ func (c *fromConfig) Config() (*rest.Config, error) {
 
 type fromKubeconfig struct {
 	resolver func() (*rest.Config, error)
+	*model.WithWarnings
 }
 
 func NewClusterFromKubeconfig(kubeconfig string, context string) Cluster {
@@ -37,7 +42,8 @@ func NewClusterFromKubeconfig(kubeconfig string, context string) Cluster {
 		})
 	})
 	return &fromKubeconfig{
-		resolver: resolver,
+		resolver:     resolver,
+		WithWarnings: model.NewWithWarnings(),
 	}
 }
 

@@ -100,6 +100,7 @@ func (o *operation) tryApplyResource(ctx context.Context, tc apis.Bindings, obj 
 	var actual unstructured.Unstructured
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 	err := o.client.Get(ctx, client.Key(&obj), &actual)
+	operations.ResetWarnings(ctx)
 	if err == nil {
 		return o.updateResource(ctx, tc, &actual, obj)
 	}
@@ -135,6 +136,7 @@ func (o *operation) handleCheck(ctx context.Context, tc apis.Bindings, obj unstr
 	} else {
 		tc = bindings.RegisterBinding(tc, "error", err.Error())
 	}
+	tc = operations.RegisterWarningsInBindings(ctx, tc)
 	defer func(tc apis.Bindings) {
 		if _err == nil {
 			outputs, err := outputs.Process(ctx, o.compilers, tc, obj.UnstructuredContent(), o.outputs...)

@@ -47,8 +47,10 @@ Chainsaw provides built-in bindings listed below.
 |---|---|---|
 | `@` | The state of the resource (if any) at the end of the operation | `any` |
 | `$error` | The error message (if any) at the end of the operation | `string` |
+| `$warnings` | List of warnings returned by the K8s API server for the operation | `{code: int, agent: string, text: string}` |
 | `$stdout` | The content of the standard console output (if any) at the end of the operation | `string` |
 | `$stderr` | The content of the standard console error output (if any) at the end of the operation | `string` |
 
 !!! note
     - `$stdout` and `$stderr` are only available in `script` and `command` operations
+    - `$warnings` are only available in `apply`, `create`, `patch`, `update`, and `delete` operations
