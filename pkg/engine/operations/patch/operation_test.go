@@ -15,6 +15,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
+	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/utils/ptr"
 )
 
@@ -206,6 +208,191 @@ func Test_create(t *testing.T) {
 			logger := &mocks.Logger{}
 			ctx := logging.WithLogger(context.TODO(), logger)
 			toCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
+			defer cancel()
+			ctx = toCtx
+			operation := New(
+				apis.DefaultCompilers,
+				tt.client,
+				tt.object,
+				nil,
+				false,
+				tt.expect,
+				nil,
+			)
+			outputs, err := operation.Exec(ctx, nil)
+			assert.Nil(t, outputs)
+			if tt.expectedErr != nil {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func Test_retry_logic(t *testing.T) {
+	pod := unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "Pod",
+			"metadata": map[string]any{
+				"name": "test-pod",
+			},
+			"spec": map[string]any{
+				"containers": []any{
+					map[string]any{
+						"name":  "test-container",
+						"image": "test-image:v1",
+					},
+				},
+			},
+		},
+	}
+
+	tests := []struct {
+		name        string
+		object      unstructured.Unstructured
+		client      *tclient.FakeClient
+		patch       any
+		patchType   types.PatchType
+		expect      []v1alpha1.Expectation
+		expectedErr error
+	}{
+		{
+			name:      "conflict error should be retried and eventually succeed",
+			object:    pod,
+			patch:     []byte(`{"spec":{"containers":[{"name":"test-container","image":"test-image:v2"}]}}`),
+			patchType: types.MergePatchType,
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, call int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
+					u, ok := obj.(*unstructured.Unstructured)
+					if !ok {
+						t.Error("unexpected type")
+					}
+					pod.DeepCopyInto(u)
+					return nil
+				},
+				PatchFn: func(_ context.Context, call int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
+					if call < 2 {
+						return kerrors.NewConflict(
+							schema.GroupResource{Group: "", Resource: "pods"},
+							"test-pod",
+							errors.New("conflict error"),
+						)
+					}
+					return nil
+				},
+			},
+			expect:      nil,
+			expectedErr: nil,
+		},
+		{
+			name:      "server timeout error should be retried and eventually succeed",
+			object:    pod,
+			patch:     []byte(`{"spec":{"containers":[{"name":"test-container","image":"test-image:v2"}]}}`),
+			patchType: types.MergePatchType,
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, call int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
+					u, ok := obj.(*unstructured.Unstructured)
+					if !ok {
+						t.Error("unexpected type")
+					}
+					pod.DeepCopyInto(u)
+					return nil
+				},
+				PatchFn: func(_ context.Context, call int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
+					if call < 2 {
+						return kerrors.NewServerTimeout(
+							schema.GroupResource{Group: "", Resource: "pods"},
+							"patch",
+							10,
+						)
+					}
+					return nil
+				},
+			},
+			expect:      nil,
+			expectedErr: nil,
+		},
+		{
+			name:      "too many requests error should be retried and eventually succeed",
+			object:    pod,
+			patch:     []byte(`{"spec":{"containers":[{"name":"test-container","image":"test-image:v2"}]}}`),
+			patchType: types.MergePatchType,
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, call int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
+					u, ok := obj.(*unstructured.Unstructured)
+					if !ok {
+						t.Error("unexpected type")
+					}
+					pod.DeepCopyInto(u)
+					return nil
+				},
+				PatchFn: func(_ context.Context, call int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
+					if call < 2 {
+						return kerrors.NewTooManyRequests(
+							"too many requests",
+							10,
+						)
+					}
+					return nil
+				},
+			},
+			expect:      nil,
+			expectedErr: nil,
+		},
+		{
+			name:      "service unavailable error should be retried and eventually succeed",
+			object:    pod,
+			patch:     []byte(`{"spec":{"containers":[{"name":"test-container","image":"test-image:v2"}]}}`),
+			patchType: types.MergePatchType,
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, call int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
+					u, ok := obj.(*unstructured.Unstructured)
+					if !ok {
+						t.Error("unexpected type")
+					}
+					pod.DeepCopyInto(u)
+					return nil
+				},
+				PatchFn: func(_ context.Context, call int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
+					if call < 2 {
+						return kerrors.NewServiceUnavailable("service unavailable")
+					}
+					return nil
+				},
+			},
+			expect:      nil,
+			expectedErr: nil,
+		},
+		{
+			name:      "permanent error should not be retried",
+			object:    pod,
+			patch:     []byte(`{"spec":{"containers":[{"name":"test-container","image":"test-image:v2"}]}}`),
+			patchType: types.MergePatchType,
+			client: &tclient.FakeClient{
+				GetFn: func(ctx context.Context, call int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
+					u, ok := obj.(*unstructured.Unstructured)
+					if !ok {
+						t.Error("unexpected type")
+					}
+					pod.DeepCopyInto(u)
+					return nil
+				},
+				PatchFn: func(_ context.Context, call int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
+					return kerrors.NewBadRequest("bad request error")
+				},
+			},
+			expect:      nil,
+			expectedErr: errors.New("bad request error"),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			logger := &mocks.Logger{}
+			ctx := logging.WithLogger(context.TODO(), logger)
+			toCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 			defer cancel()
 			ctx = toCtx
 			operation := New(
