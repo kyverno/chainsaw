@@ -5,12 +5,12 @@ linters:
     - bidichk
     - bodyclose
     - containedctx
+    - copyloopvar
     - decorder
     - dogsled
     - durationcheck
     - errcheck
     - errname
-    - exportloopref
     - gci
     - gochecknoinits
     - gofmt
@@ -28,14 +28,13 @@ linters:
     - noctx
     - nolintlint
     - nosprintfhostport
-    # - paralleltest
     - staticcheck
-    - tenv
     - thelper
     - tparallel
     - typecheck
     - unconvert
     - unused
+    - usetesting
     - wastedassign
     - whitespace
 
