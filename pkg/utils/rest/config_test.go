@@ -185,6 +185,7 @@ func TestSave(t *testing.T) {
 					Name:  "foo",
 					Value: "bar",
 				}},
+				InteractiveMode: api.IfAvailableExecInteractiveMode,
 			},
 		},
 		wantW: `
@@ -212,6 +213,7 @@ users:
       env:
       - name: foo
         value: bar
+      interactiveMode: IfAvailable
       provideClusterInfo: false
 `,
 	}}
