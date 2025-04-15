@@ -1,0 +1,15 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: warning-example
+spec:
+  steps:
+  - name: step-warning-example
+    try:
+    - operation:
+        command:
+          # Generate a warning message in the logs
+          script: |
+            echo "This is a warning message that would be suppressed with --no-warnings"
+            # Exit with code 0 to ensure the test succeeds
+            exit 0 

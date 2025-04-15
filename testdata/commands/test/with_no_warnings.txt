@@ -1,0 +1,27 @@
+Version: dev
+Loading default configuration...
+- Using test file: chainsaw-test
+- TestDirs [.]
+- SkipDelete false
+- FailFast false
+- ReportFormat ''
+- ReportName ''
+- Namespace ''
+- FullName false
+- IncludeTestRegex ''
+- ExcludeTestRegex ''
+- ApplyTimeout 5s
+- AssertTimeout 30s
+- CleanupTimeout 30s
+- DeleteTimeout 15s
+- ErrorTimeout 30s
+- ExecTimeout 5s
+- Default deletion propagation policy Background
+- Using warning suppression: true
+Discovered 0 tests
+No tests found
+Tests Summary...
+- Passed  tests 0
+- Failed  tests 0
+- Skipped tests 0
+- Total   tests 0 
