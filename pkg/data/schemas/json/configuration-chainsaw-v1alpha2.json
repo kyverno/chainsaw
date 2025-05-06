@@ -1841,7 +1841,7 @@
           ],
           "properties": {
             "format": {
-              "description": "ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION).",
+              "description": "ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION).",
               "type": [
                 "string",
                 "null"

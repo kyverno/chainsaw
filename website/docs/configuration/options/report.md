@@ -6,7 +6,7 @@ Reporting options contain the configuration used by Chainsaw for reporting.
 
 | Element | Default | Description |
 |---|---|---|
-| `format` | `JSON` | ReportFormat determines test report format (JSON/XML/JUNIT-TEST/JUNIT-STEP/JUNIT-OPERATION). |
+| `format` | `JSON` | ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION). |
 | `path` | | ReportPath defines the path. |
 | `name` | `chainsaw-report` | ReportName defines the name of report to create. It defaults to "chainsaw-report". |
 
