@@ -15,6 +15,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/ptr"
 )
@@ -52,9 +53,13 @@ func Test_create(t *testing.T) {
 				*obj.(*unstructured.Unstructured) = pod
 				return nil
 			},
+			DeleteFn: func(ctx context.Context, _ int, obj client.Object, opts ...client.DeleteOption) error {
+				return nil
+			},
 		},
 		expect:      nil,
-		expectedErr: errors.New("the resource already exists in the cluster"),
+		expectedErr: nil,
+		cleaner:     cleaner.New(0*time.Second, nil, metav1.DeletePropagationBackground),
 	}, {
 		name:   "Dry Run Resource already exists",
 		object: pod,
@@ -65,7 +70,8 @@ func Test_create(t *testing.T) {
 			},
 		},
 		expect:      nil,
-		expectedErr: errors.New("the resource already exists in the cluster"),
+		expectedErr: nil,
+		cleaner:     cleaner.New(0*time.Second, nil, metav1.DeletePropagationBackground),
 	}, {
 		name:   "Resource does not exist, create it",
 		object: pod,
@@ -234,6 +240,10 @@ func Test_create(t *testing.T) {
 				assert.EqualError(t, err, tt.expectedErr.Error())
 			} else {
 				assert.NoError(t, err)
+			}
+			if tt.name == "Resource already exists" && tt.cleaner != nil {
+				assert.False(t, tt.cleaner.Empty(), "Cleaner should contain the pre-existing resource for cleanup")
+				assert.NotNil(t, tt.client.DeleteFn, "DeleteFn should be set for this test case")
 			}
 		})
 	}
