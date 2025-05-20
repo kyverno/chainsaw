@@ -7,7 +7,7 @@ permissions: {}
 on:
   push:
     tags:
-      - docs-v*
+      - v*
 
 jobs:
   docs-release:
@@ -20,7 +20,7 @@ jobs:
         uses: booxmedialtd/ws-action-parse-semver@7784200024d6b3fc01253e617ec0168daf603de3 # v1.4.7
         with:
           input_string: ${{ github.ref_name }}
-          version_extractor_regex: '^docs-v(.*)$'
+          version_extractor_regex: '^v(.*)$'
       - name: Checkout
         if: ${{ steps.semver.outputs.prerelease == '' }}
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
