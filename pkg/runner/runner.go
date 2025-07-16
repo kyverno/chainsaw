@@ -49,7 +49,7 @@ func (r *runner) Run(ctx context.Context, nsOptions v1alpha2.NamespaceOptions, t
 
 func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.NamespaceOptions, tc enginecontext.TestContext, tests ...discovery.Test) error {
 	defer func() {
-		tc.Report.EndTime = time.Now()
+		tc.EndTime = time.Now()
 	}()
 	// sanity check
 	if len(tests) == 0 {
@@ -134,7 +134,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						defer func() {
 							report.EndTime = time.Now()
 							report.Skipped = t.Skipped()
-							tc.Report.Add(report)
+							tc.Add(report)
 						}()
 						// skip check
 						if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
