@@ -1764,7 +1764,7 @@
           "minimum": 1
         },
         "reportFormat": {
-          "description": "ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION|nil) nil == no report.\nmaps to report.Type, however we don't want generated.deepcopy to have reference to it.",
+          "description": "ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION, nil) nil == no report.\nmaps to report.Type, however we don't want generated.deepcopy to have reference to it.",
           "type": [
             "string",
             "null"

@@ -902,7 +902,7 @@ spec:
                 type: integer
               reportFormat:
                 description: |-
-                  ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION|nil) nil == no report.
+                  ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION, nil) nil == no report.
                   maps to report.Type, however we don't want generated.deepcopy to have reference to it.
                 enum:
                 - JSON
@@ -1899,7 +1899,8 @@ spec:
                 properties:
                   format:
                     default: JSON
-                    description: ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION).
+                    description: ReportFormat determines test report format (JSON,
+                      XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION).
                     enum:
                     - JSON
                     - XML
