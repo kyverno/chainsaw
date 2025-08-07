@@ -42,6 +42,7 @@ nav:
   - test/index.md
   - test/explicit.md
   - test/conventional.md
+  - reference/output-control.md
   - General concepts:
     - general/inheritance.md
     - general/namespace.md
@@ -58,6 +59,7 @@ nav:
     - step/catch.md
     - step/finally.md
     - step/cleanup.md
+    - step/skip.md
 - Operations:
   - operations/index.md
   - operations/apply.md
