@@ -109,7 +109,7 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 			Name: fmt.Sprintf("step-%s", key),
 		}
 		for _, file := range steps[key].OtherFiles {
-			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+			step.Try = append(step.Try, v1alpha1.Operation{
 				Apply: &v1alpha1.Apply{
 					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
@@ -120,7 +120,7 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 			})
 		}
 		for _, file := range steps[key].AssertFiles {
-			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+			step.Try = append(step.Try, v1alpha1.Operation{
 				Assert: &v1alpha1.Assert{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
@@ -131,7 +131,7 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 			})
 		}
 		for _, file := range steps[key].ErrorFiles {
-			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+			step.Try = append(step.Try, v1alpha1.Operation{
 				Error: &v1alpha1.Error{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
