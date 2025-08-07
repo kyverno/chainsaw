@@ -40,10 +40,11 @@ func Save(cfg *rest.Config, w io.Writer) error {
 	}
 	if cfg.ExecProvider != nil {
 		execConfig = &api.ExecConfig{
-			Command:    cfg.ExecProvider.Command,
-			Args:       cfg.ExecProvider.Args,
-			APIVersion: cfg.ExecProvider.APIVersion,
-			Env:        []api.ExecEnvVar{},
+			Command:         cfg.ExecProvider.Command,
+			Args:            cfg.ExecProvider.Args,
+			APIVersion:      cfg.ExecProvider.APIVersion,
+			Env:             []api.ExecEnvVar{},
+			InteractiveMode: api.ExecInteractiveMode(cfg.ExecProvider.InteractiveMode),
 		}
 		for _, envVar := range cfg.ExecProvider.Env {
 			execConfig.Env = append(execConfig.Env, api.ExecEnvVar{
@@ -63,8 +64,8 @@ func Save(cfg *rest.Config, w io.Writer) error {
 				Name: "chainsaw",
 				Cluster: api.Cluster{
 					Server:                   cfg.Host,
-					CertificateAuthorityData: cfg.TLSClientConfig.CAData,
-					InsecureSkipTLSVerify:    cfg.TLSClientConfig.Insecure,
+					CertificateAuthorityData: cfg.CAData,
+					InsecureSkipTLSVerify:    cfg.Insecure,
 				},
 			},
 		},
@@ -81,8 +82,8 @@ func Save(cfg *rest.Config, w io.Writer) error {
 			{
 				Name: "chainsaw",
 				AuthInfo: api.AuthInfo{
-					ClientCertificateData: cfg.TLSClientConfig.CertData,
-					ClientKeyData:         cfg.TLSClientConfig.KeyData,
+					ClientCertificateData: cfg.CertData,
+					ClientKeyData:         cfg.KeyData,
 					Token:                 cfg.BearerToken,
 					Username:              cfg.Username,
 					Password:              cfg.Password,

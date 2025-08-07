@@ -130,8 +130,7 @@ func TestSave(t *testing.T) {
 		format:  v1alpha2.ReportFormatType("xyz"),
 		wantErr: true,
 	}}
-	path, err := os.MkdirTemp("", "")
-	assert.NoError(t, err)
+	path := t.TempDir()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			err := Save(tt.report, tt.format, path, string(tt.format))

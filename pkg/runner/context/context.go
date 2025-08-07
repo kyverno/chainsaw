@@ -9,6 +9,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/client/dryrun"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/clusters"
+	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -30,6 +31,7 @@ type TestContext struct {
 	dryRun              bool
 	failFast            bool
 	fullName            bool
+	namespacer          namespacer.Namespacer
 	skipDelete          bool
 	templating          bool
 	terminationGrace    *time.Duration
@@ -110,6 +112,10 @@ func (tc *TestContext) FullName() bool {
 	return tc.fullName
 }
 
+func (tc *TestContext) Namespacer() namespacer.Namespacer {
+	return tc.namespacer
+}
+
 func (tc *TestContext) SkipDelete() bool {
 	return tc.skipDelete
 }
@@ -178,6 +184,11 @@ func (tc TestContext) WithFailFast(failFast bool) TestContext {
 
 func (tc TestContext) WithFullName(fullName bool) TestContext {
 	tc.fullName = fullName
+	return tc
+}
+
+func (tc TestContext) WithNamespacer(namespacer namespacer.Namespacer) TestContext {
+	tc.namespacer = namespacer
 	return tc
 }
 

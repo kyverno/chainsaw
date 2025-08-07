@@ -790,16 +790,20 @@ func TestStepProcessor_Run(t *testing.T) {
 			cleanup := func(func()) {}
 			ctx := context.Background()
 			ctx = logging.WithLogger(ctx, &fakeLogger.Logger{})
-			tcontext := enginecontext.MakeContext(clock.RealClock{}, apis.NewBindings(), registry).WithTimeouts(v1alpha1.Timeouts{
-				Apply:   &config.Spec.Timeouts.Apply,
-				Assert:  &config.Spec.Timeouts.Assert,
-				Cleanup: &config.Spec.Timeouts.Cleanup,
-				Delete:  &config.Spec.Timeouts.Delete,
-				Error:   &config.Spec.Timeouts.Error,
-				Exec:    &config.Spec.Timeouts.Exec,
-			}).WithBasePath(tc.basePath)
+			tcontext := enginecontext.
+				MakeContext(clock.RealClock{}, apis.NewBindings(), registry).
+				WithBasePath(tc.basePath).
+				WithNamespacer(tc.namespacer).
+				WithTimeouts(v1alpha1.Timeouts{
+					Apply:   &config.Spec.Timeouts.Apply,
+					Assert:  &config.Spec.Timeouts.Assert,
+					Cleanup: &config.Spec.Timeouts.Cleanup,
+					Delete:  &config.Spec.Timeouts.Delete,
+					Error:   &config.Spec.Timeouts.Error,
+					Exec:    &config.Spec.Timeouts.Exec,
+				})
 			runner := runner{}
-			got := runner.runStep(ctx, cleanup, fail, failed, tc.namespacer, tcontext, tc.stepSpec, &model.TestReport{})
+			got := runner.runStep(ctx, cleanup, fail, failed, tcontext, tc.stepSpec, &model.TestReport{})
 			assert.Equal(t, tc.want, got)
 			assert.Equal(t, tc.expectedFail, _failed)
 		})

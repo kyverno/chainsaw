@@ -1,3 +1,4 @@
+version: "2"
 linters:
   enable:
     - asasalint
@@ -5,46 +6,49 @@ linters:
     - bidichk
     - bodyclose
     - containedctx
+    - copyloopvar
     - decorder
     - dogsled
     - durationcheck
-    - errcheck
     - errname
-    - exportloopref
-    - gci
     - gochecknoinits
-    - gofmt
-    - gofumpt
-    - goimports
     - goprintffuncname
     - gosec
-    - gosimple
-    - govet
     - grouper
     - importas
-    - ineffassign
     - makezero
     - misspell
     - noctx
     - nolintlint
     - nosprintfhostport
-    # - paralleltest
-    - staticcheck
-    - tenv
     - thelper
     - tparallel
-    - typecheck
     - unconvert
-    - unused
+    - usetesting
     - wastedassign
     - whitespace
-
-run:
-  timeout: 15m
-
-output:
-  sort-results: true
-
-issues:
-  exclude-files:
-    - ".+\\.generated.go"
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - .+\.generated.go
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - gci
+    - gofmt
+    - gofumpt
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - .+\.generated.go
+      - third_party$
+      - builtin$
+      - examples$

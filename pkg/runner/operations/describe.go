@@ -5,21 +5,19 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/engine/kubectl"
-	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	opcommand "github.com/kyverno/chainsaw/pkg/engine/operations/command"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	enginecontext "github.com/kyverno/chainsaw/pkg/runner/context"
 )
 
 type describeAction struct {
-	namespacer namespacer.Namespacer
-	op         v1alpha1.Describe
+	op v1alpha1.Describe
 }
 
 func (o describeAction) Execute(ctx context.Context, tc enginecontext.TestContext) (outputs.Outputs, error) {
 	ns := ""
-	if o.namespacer != nil {
-		ns = o.namespacer.GetNamespace()
+	if namespacer := tc.Namespacer(); namespacer != nil {
+		ns = namespacer.GetNamespace()
 	}
 	contextData := enginecontext.ContextData{
 		Cluster:  o.op.Cluster,
@@ -53,9 +51,8 @@ func (o describeAction) Execute(ctx context.Context, tc enginecontext.TestContex
 	}
 }
 
-func describeOperation(namespacer namespacer.Namespacer, op v1alpha1.Describe) Operation {
+func describeOperation(op v1alpha1.Describe) Operation {
 	return describeAction{
-		namespacer: namespacer,
-		op:         op,
+		op: op,
 	}
 }
