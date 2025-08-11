@@ -64,8 +64,8 @@ func Save(cfg *rest.Config, w io.Writer) error {
 				Name: "chainsaw",
 				Cluster: api.Cluster{
 					Server:                   cfg.Host,
-					CertificateAuthorityData: cfg.TLSClientConfig.CAData,
-					InsecureSkipTLSVerify:    cfg.TLSClientConfig.Insecure,
+					CertificateAuthorityData: cfg.CAData,
+					InsecureSkipTLSVerify:    cfg.Insecure,
 				},
 			},
 		},
@@ -82,8 +82,8 @@ func Save(cfg *rest.Config, w io.Writer) error {
 			{
 				Name: "chainsaw",
 				AuthInfo: api.AuthInfo{
-					ClientCertificateData: cfg.TLSClientConfig.CertData,
-					ClientKeyData:         cfg.TLSClientConfig.KeyData,
+					ClientCertificateData: cfg.CertData,
+					ClientKeyData:         cfg.KeyData,
 					Token:                 cfg.BearerToken,
 					Username:              cfg.Username,
 					Password:              cfg.Password,
