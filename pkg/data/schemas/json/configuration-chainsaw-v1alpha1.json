@@ -583,6 +583,13 @@
                       "additionalProperties": false
                     }
                   },
+                  "shell": {
+                    "description": "Shell defines the host shell (run with \"... -c $content\").",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
                   "skipCommandOutput": {
                     "description": "SkipCommandOutput removes the command from the output logs.",
                     "type": [
@@ -1317,7 +1324,7 @@
                     }
                   },
                   "content": {
-                    "description": "Content defines a shell script (run with \"sh -c ...\").",
+                    "description": "Content defines a shell script (run with \"$shell -c ...\").",
                     "type": [
                       "string",
                       "null"

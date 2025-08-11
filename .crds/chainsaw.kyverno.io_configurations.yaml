@@ -628,8 +628,8 @@ spec:
                             multi-cluster tests.
                           type: object
                         content:
-                          description: Content defines a shell script (run with "sh
-                            -c ...").
+                          description: Content defines a shell script (run with "$shell
+                            $shellArgs ...").
                           type: string
                         env:
                           description: Env defines additional environment variables.
@@ -684,6 +684,16 @@ spec:
                             - name
                             - value
                             type: object
+                          type: array
+                        shell:
+                          description: Shell defines the host shell (run with "...
+                            $shellArgs $content").
+                          type: string
+                        shellArgs:
+                          description: ShellArgs defines arguments for the host shell
+                            (run with "$shell ... $content").
+                          items:
+                            type: string
                           type: array
                         skipCommandOutput:
                           description: SkipCommandOutput removes the command from
@@ -1660,7 +1670,7 @@ spec:
                               type: object
                             content:
                               description: Content defines a shell script (run with
-                                "sh -c ...").
+                                "$shell $shellArgs ...").
                               type: string
                             env:
                               description: Env defines additional environment variables.
@@ -1715,6 +1725,16 @@ spec:
                                 - name
                                 - value
                                 type: object
+                              type: array
+                            shell:
+                              description: Shell defines the host shell (run with
+                                "... $shellArgs $content").
+                              type: string
+                            shellArgs:
+                              description: ShellArgs defines arguments for the host
+                                shell (run with "$shell ... $content").
+                              items:
+                                type: string
                               type: array
                             skipCommandOutput:
                               description: SkipCommandOutput removes the command from
