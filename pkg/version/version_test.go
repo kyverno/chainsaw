@@ -8,7 +8,7 @@ import (
 )
 
 func TestVersion(t *testing.T) {
-	require.Equal(t, "---", Version())
+	require.Equal(t, "(devel)", Version())
 }
 
 func Test_version(t *testing.T) {

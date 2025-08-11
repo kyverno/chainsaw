@@ -1,4 +1,4 @@
-Version: ---
+Version: (devel)
 Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)...
 - Using test file: chainsaw-test
 - TestDirs [.]
