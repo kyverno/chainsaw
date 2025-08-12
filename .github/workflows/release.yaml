@@ -61,14 +61,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts.json
-        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # 2.9.0
+        uses: svenstaro/upload-release-action@81c65b7cd4de9b2570615ce3aad67a41de5b1a13 # 2.11.2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: dist/artifacts.json
           asset_name: artifacts.json
           tag: ${{ github.ref }}
       - name: Upload metadata.json
-        uses: svenstaro/upload-release-action@04733e069f2d7f7f0b4aebc4fbdbce8613b03ccd # 2.9.0
+        uses: svenstaro/upload-release-action@81c65b7cd4de9b2570615ce3aad67a41de5b1a13 # 2.11.2
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
           file: dist/metadata.json
