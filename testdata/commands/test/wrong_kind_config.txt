@@ -1,2 +1,2 @@
-Version: ---
+Version: (devel)
 Loading config (../../../testdata/commands/test/config/wrong_kind_config.yaml)...
