@@ -445,7 +445,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.deletionPropagationPolicy, "deletion-propagation-policy", "Background", "The deletion propagation policy (Foreground|Background|Orphan)")
 	// error options
 	// reporting options
-	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION)")
+	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION)")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create")
 	cmd.Flags().StringVar(&options.reportPath, "report-path", "", "The path of the report to create")
 	// multi-cluster options
