@@ -1,0 +1,3 @@
+```
+lower('FOOBAR') == 'foobar'
+```

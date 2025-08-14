@@ -15,6 +15,7 @@ chainsaw test [flags]... [test directories]...
       --cleanup-timeout duration                  The cleanup timeout to use as default for configuration (default 30s)
       --cluster strings                           Register cluster (format <cluster name>=<kubeconfig path>:[context name])
       --config string                             Chainsaw configuration file
+      --default-compiler string                   If set, configures the default compiler (jp or cel)
       --delete-timeout duration                   The delete timeout to use as default for configuration (default 15s)
       --deletion-propagation-policy string        The deletion propagation policy (Foreground|Background|Orphan) (default "Background")
       --error-timeout duration                    The error timeout to use as default for configuration (default 30s)
@@ -51,10 +52,12 @@ chainsaw test [flags]... [test directories]...
       --pause-on-failure                          Pause test execution failure (implies no concurrency)
       --remarshal                                 Remarshals tests yaml to apply anchors before parsing
       --repeat-count int                          Number of times to repeat each test (default 1)
-      --report-format string                      Test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION)
+      --report-format string                      Test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION)
       --report-name string                        The name of the report to create (default "chainsaw-report")
       --report-path string                        The path of the report to create
       --selector strings                          Selector (label query) to filter on
+      --shard-count int                           Number of shards
+      --shard-index --shard-count                 Current shard index (if --shard-count > 0)
       --skip-delete                               If set, do not delete the resources after running the tests
       --template                                  If set, resources will be considered for templating (default true)
       --test-dir strings                          Directories containing test cases to run

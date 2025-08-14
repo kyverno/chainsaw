@@ -1199,7 +1199,8 @@ If a resource does not exist in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | `string` |  |  | <p>Name defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
-| `template` | `policy/v1alpha1.Any` |  |  | <p>Template defines a template to create the test namespace.</p> |
+| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
+| `template` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>Template defines a template to create the test namespace.</p> |
 
 ## ReportFormatType     {#chainsaw-kyverno-io-v1alpha2-ReportFormatType}
 
@@ -1220,7 +1221,7 @@ If a resource does not exist in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `format` | [`ReportFormatType`](#chainsaw-kyverno-io-v1alpha2-ReportFormatType) |  |  | <p>ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION).</p> |
+| `format` | [`ReportFormatType`](#chainsaw-kyverno-io-v1alpha2-ReportFormatType) |  |  | <p>ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION).</p> |
 | `path` | `string` |  |  | <p>ReportPath defines the path.</p> |
 | `name` | `string` |  |  | <p>ReportName defines the name of report to create. It defaults to "chainsaw-report".</p> |
 
@@ -1236,5 +1237,6 @@ If a resource does not exist in the cluster it will fail.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `enabled` | `bool` |  |  | <p>Enabled determines whether resources should be considered for templating.</p> |
+| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 
   

@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 )
@@ -46,17 +46,17 @@ func Test_checkBindingName(t *testing.T) {
 func TestRegisterBinding(t *testing.T) {
 	tests := []struct {
 		name        string
-		bindings    binding.Bindings
+		bindings    apis.Bindings
 		bindingName string
 		value       any
 	}{{
-		bindings:    binding.NewBindings(),
+		bindings:    apis.NewBindings(),
 		bindingName: "foo",
 		value:       "bar",
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			bindings := RegisterBinding(context.TODO(), tt.bindings, tt.bindingName, tt.value)
+			bindings := RegisterBinding(tt.bindings, tt.bindingName, tt.value)
 			assert.NotNil(t, bindings)
 			got, err := bindings.Get("$" + tt.bindingName)
 			assert.NoError(t, err)
@@ -71,7 +71,7 @@ func TestRegisterBinding(t *testing.T) {
 func TestResolveBinding(t *testing.T) {
 	tests := []struct {
 		name      string
-		bindings  binding.Bindings
+		bindings  apis.Bindings
 		input     any
 		variable  v1alpha1.Binding
 		wantName  string
@@ -79,49 +79,49 @@ func TestResolveBinding(t *testing.T) {
 		wantErr   bool
 	}{{
 		name:     "ok",
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "foo",
-			Value: v1alpha1.Any{Value: "bar"},
+			Value: v1alpha1.NewProjection("bar"),
 		},
 		wantName:  "foo",
 		wantValue: "bar",
 		wantErr:   false,
 	}, {
 		name:     "error",
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "$foo",
-			Value: v1alpha1.Any{Value: "bar"},
+			Value: v1alpha1.NewProjection("bar"),
 		},
 		wantErr: true,
 	}, {
 		name:     "error",
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "foo",
-			Value: v1alpha1.Any{Value: "($bar)"},
+			Value: v1alpha1.NewProjection("($bar)"),
 		},
 		wantErr: true,
 	}, {
 		name:     "error",
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "($foo)",
-			Value: v1alpha1.Any{Value: "bar"},
+			Value: v1alpha1.NewProjection("bar"),
 		},
 		wantErr: true,
 	}, {
 		name:     "error",
-		bindings: binding.NewBindings().Register("$foo", binding.NewBinding("abc")).Register("$bar", binding.NewBinding("def")),
+		bindings: apis.NewBindings().Register("$foo", apis.NewBinding("abc")).Register("$bar", apis.NewBinding("def")),
 		input:    nil,
 		variable: v1alpha1.Binding{
 			Name:  "($foo)",
-			Value: v1alpha1.Any{Value: "($bar)"},
+			Value: v1alpha1.NewProjection("($bar)"),
 		},
 		wantName:  "abc",
 		wantValue: "def",
@@ -129,7 +129,7 @@ func TestResolveBinding(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			name, value, err := ResolveBinding(context.TODO(), tt.bindings, tt.input, tt.variable)
+			name, value, err := ResolveBinding(context.TODO(), apis.DefaultCompilers, tt.bindings, tt.input, tt.variable)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

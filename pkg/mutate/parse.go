@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	"github.com/kyverno/kyverno-json/pkg/engine/template"
+	"github.com/kyverno/chainsaw/pkg/apis"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	reflectutils "github.com/kyverno/kyverno-json/pkg/utils/reflect"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
@@ -36,7 +36,7 @@ func Parse(ctx context.Context, mutation any) Mutation {
 // it is responsible for projecting the analysed resource and passing the result to the descendant
 type mapNode map[any]Mutation
 
-func (n mapNode) mutate(ctx context.Context, path *field.Path, value any, bindings binding.Bindings, opts ...template.Option) (any, error) {
+func (n mapNode) mutate(ctx context.Context, c compilers.Compilers, path *field.Path, value any, bindings apis.Bindings) (any, error) {
 	out := map[any]any{}
 	for k, v := range n {
 		var projection any
@@ -46,7 +46,7 @@ func (n mapNode) mutate(ctx context.Context, path *field.Path, value any, bindin
 				projection = mapValue.Interface()
 			}
 		}
-		inner, err := v.mutate(ctx, path.Child(fmt.Sprint(k)), projection, bindings, opts...)
+		inner, err := v.mutate(ctx, c, path.Child(fmt.Sprint(k)), projection, bindings)
 		if err != nil {
 			return nil, err
 		}
@@ -60,7 +60,7 @@ func (n mapNode) mutate(ctx context.Context, path *field.Path, value any, bindin
 // if lengths match all descendants are evaluated with their corresponding items.
 type sliceNode []Mutation
 
-func (n sliceNode) mutate(ctx context.Context, path *field.Path, value any, bindings binding.Bindings, opts ...template.Option) (any, error) {
+func (n sliceNode) mutate(ctx context.Context, c compilers.Compilers, path *field.Path, value any, bindings apis.Bindings) (any, error) {
 	if value != nil && reflectutils.GetKind(value) != reflect.Slice && reflectutils.GetKind(value) != reflect.Array {
 		return nil, field.TypeInvalid(path, value, "expected a slice or array")
 	} else {
@@ -73,7 +73,7 @@ func (n sliceNode) mutate(ctx context.Context, path *field.Path, value any, bind
 					projection = valueOf.Index(i).Interface()
 				}
 			}
-			inner, err := n[i].mutate(ctx, path.Index(i), projection, bindings, opts...)
+			inner, err := n[i].mutate(ctx, c, path.Index(i), projection, bindings)
 			if err != nil {
 				return nil, err
 			}
@@ -90,17 +90,19 @@ type scalarNode struct {
 	rhs any
 }
 
-func (n *scalarNode) mutate(ctx context.Context, path *field.Path, value any, bindings binding.Bindings, opts ...template.Option) (any, error) {
+func (n *scalarNode) mutate(ctx context.Context, c compilers.Compilers, path *field.Path, value any, bindings apis.Bindings) (any, error) {
 	rhs := n.rhs
 	expression := parseExpression(ctx, rhs)
 	// we only project if the expression uses the engine syntax
 	// this is to avoid the case where the value is a map and the RHS is a string
-	if expression != nil && expression.Engine != "" {
-		projected, err := template.Execute(ctx, expression.Statement, value, bindings, opts...)
-		if err != nil {
-			return nil, field.InternalError(path, err)
+	if expression != nil {
+		if compiler := c.Compiler(expression.Engine); compiler != nil {
+			projected, err := compilers.Execute(expression.Statement, value, bindings, compiler)
+			if err != nil {
+				return nil, field.InternalError(path, err)
+			}
+			rhs = projected
 		}
-		rhs = projected
 	}
 	return rhs, nil
 }

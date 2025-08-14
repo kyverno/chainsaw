@@ -7,21 +7,23 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	environment "github.com/kyverno/chainsaw/pkg/utils/env"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"github.com/kyverno/pkg/ext/output/color"
 	"k8s.io/client-go/rest"
 )
 
 type operation struct {
+	compilers compilers.Compilers
 	command   v1alpha1.Command
 	basePath  string
 	namespace string
@@ -29,12 +31,14 @@ type operation struct {
 }
 
 func New(
+	compilers compilers.Compilers,
 	command v1alpha1.Command,
 	basePath string,
 	namespace string,
 	cfg *rest.Config,
 ) operations.Operation {
 	return &operation{
+		compilers: compilers,
 		command:   command,
 		basePath:  basePath,
 		namespace: namespace,
@@ -42,13 +46,12 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outputs.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs.Outputs, _err error) {
 	if bindings == nil {
-		bindings = binding.NewBindings()
+		bindings = apis.NewBindings()
 	}
-	logger := internal.GetLogger(ctx, nil)
 	defer func() {
-		internal.LogEnd(logger, logging.Command, _err)
+		internal.LogEnd(ctx, logging.Command, nil, _err)
 	}()
 	cmd, cancel, err := o.createCommand(ctx, bindings)
 	if cancel != nil {
@@ -57,12 +60,16 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outp
 	if err != nil {
 		return nil, err
 	}
-	internal.LogStart(logger, logging.Command, logging.Section("COMMAND", cmd.String()))
+	var logOpts []fmt.Stringer
+	if !o.command.SkipCommandOutput {
+		logOpts = append(logOpts, logging.Section("COMMAND", cmd.String()))
+	}
+	internal.LogStart(ctx, logging.Command, nil, logOpts...)
 	return o.execute(ctx, bindings, cmd)
 }
 
-func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings) (*exec.Cmd, context.CancelFunc, error) {
-	maps, envs, err := internal.RegisterEnvs(ctx, o.namespace, bindings, o.command.Env...)
+func (o *operation) createCommand(ctx context.Context, bindings apis.Bindings) (*exec.Cmd, context.CancelFunc, error) {
+	maps, envs, err := internal.RegisterEnvs(ctx, o.compilers, o.namespace, bindings, o.command.Env...)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -78,8 +85,7 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 		cancel = func() {
 			err := os.Remove(path)
 			if err != nil {
-				logger := internal.GetLogger(ctx, nil)
-				logger.Log(logging.Script, logging.WarnStatus, color.BoldYellow, logging.ErrSection(err))
+				logging.Log(ctx, logging.Script, logging.WarnStatus, nil, color.BoldYellow, logging.ErrSection(err))
 			}
 		}
 		defer f.Close()
@@ -103,29 +109,28 @@ func (o *operation) createCommand(ctx context.Context, bindings binding.Bindings
 	return cmd, cancel, nil
 }
 
-func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd *exec.Cmd) (_outputs outputs.Outputs, _err error) {
-	logger := logging.FromContext(ctx)
+func (o *operation) execute(ctx context.Context, bindings apis.Bindings, cmd *exec.Cmd) (_outputs outputs.Outputs, _err error) {
 	var output internal.CommandOutput
 	if !o.command.SkipLogOutput {
 		defer func() {
 			if sections := output.Sections(); len(sections) != 0 {
-				logger.Log(logging.Command, logging.LogStatus, color.BoldFgCyan, sections...)
+				logging.Log(ctx, logging.Command, logging.LogStatus, nil, color.BoldFgCyan, sections...)
 			}
 		}()
 	}
 	cmd.Stdout = &output.Stdout
 	cmd.Stderr = &output.Stderr
 	err := cmd.Run()
-	bindings = apibindings.RegisterBinding(ctx, bindings, "stdout", output.Out())
-	bindings = apibindings.RegisterBinding(ctx, bindings, "stderr", output.Err())
+	bindings = apibindings.RegisterBinding(bindings, "stdout", output.Out())
+	bindings = apibindings.RegisterBinding(bindings, "stderr", output.Err())
 	if err == nil {
-		bindings = apibindings.RegisterBinding(ctx, bindings, "error", nil)
+		bindings = apibindings.RegisterBinding(bindings, "error", nil)
 	} else {
-		bindings = apibindings.RegisterBinding(ctx, bindings, "error", err.Error())
+		bindings = apibindings.RegisterBinding(bindings, "error", err.Error())
 	}
-	defer func(bindings binding.Bindings) {
+	defer func(bindings apis.Bindings) {
 		if _err == nil {
-			outputs, err := outputs.Process(ctx, bindings, nil, o.command.Outputs...)
+			outputs, err := outputs.Process(ctx, o.compilers, bindings, nil, o.command.Outputs...)
 			if err != nil {
 				_err = err
 				return
@@ -133,10 +138,10 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, cmd 
 			_outputs = outputs
 		}
 	}(bindings)
-	if o.command.Check == nil || o.command.Check.Value == nil {
+	if o.command.Check == nil || o.command.Check.IsNil() {
 		return nil, err
 	}
-	if errs, err := checks.Check(ctx, nil, bindings, o.command.Check); err != nil {
+	if errs, err := checks.Check(ctx, o.compilers, nil, bindings, o.command.Check); err != nil {
 		return nil, err
 	} else {
 		return nil, errs.ToAggregate()

@@ -6,17 +6,27 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
 	"github.com/jmespath-community/go-jmespath/pkg/parsing"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/expressions"
 	"github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var identifier = regexp.MustCompile(`^(?:\w+|\(.+\))$`)
+const (
+	EngineJP  = v1alpha1.EngineJP
+	EngineCEL = v1alpha1.EngineCEL
+)
 
-// Any represents any type.
-type Any = v1alpha1.Any
+var (
+	identifier = regexp.MustCompile(`^(?:\w+|\(.+\))$`)
+	NewAny     = v1alpha1.NewAny
+	NewCheck   = v1alpha1.NewAssertionTree
+	NewMatch   = v1alpha1.NewAssertionTree
+)
+
+type Compiler = v1alpha1.Compiler
 
 // Binding represents a key/value set as a binding in an executing test.
 type Binding struct {
@@ -25,10 +35,12 @@ type Binding struct {
 	// +kubebuilder:validation:Pattern:=`^(?:\w+|\(.+\))$`
 	Name Expression `json:"name"`
 
+	// Compiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	Compiler *Compiler `json:"compiler,omitempty"`
+
 	// Value value of the binding.
-	// +kubebuilder:validation:Schemaless
-	// +kubebuilder:pruning:PreserveUnknownFields
-	Value Any `json:"value"`
+	Value Projection `json:"value"`
 }
 
 func (b Binding) CheckName() error {
@@ -39,7 +51,7 @@ func (b Binding) CheckName() error {
 }
 
 // Check represents a check to be applied on the result of an operation.
-type Check = Any
+type Check = v1alpha1.AssertionTree
 
 // Cluster defines cluster config and context.
 type Cluster struct {
@@ -96,8 +108,8 @@ func (e *Expression) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (e Expression) Value(ctx context.Context, bindings binding.Bindings) (string, error) {
-	return expressions.String(ctx, string(e), bindings)
+func (e Expression) Value(ctx context.Context, compilers compilers.Compilers, bindings apis.Bindings) (string, error) {
+	return expressions.String(ctx, compilers, string(e), bindings)
 }
 
 // Format determines the output format (json or yaml).
@@ -106,7 +118,7 @@ func (e Expression) Value(ctx context.Context, bindings binding.Bindings) (strin
 type Format Expression
 
 // Match represents a match condition against an evaluated object.
-type Match = Any
+type Match = v1alpha1.AssertionTree
 
 // ObjectName represents an object namespace and name.
 type ObjectName struct {
@@ -184,31 +196,6 @@ type DefaultTimeouts struct {
 	// +optional
 	// +kubebuilder:default:="5s"
 	Exec metav1.Duration `json:"exec"`
-}
-
-func (t DefaultTimeouts) Combine(override *Timeouts) DefaultTimeouts {
-	if override == nil {
-		return t
-	}
-	if override.Apply != nil {
-		t.Apply = *override.Apply
-	}
-	if override.Assert != nil {
-		t.Assert = *override.Assert
-	}
-	if override.Error != nil {
-		t.Error = *override.Error
-	}
-	if override.Delete != nil {
-		t.Delete = *override.Delete
-	}
-	if override.Cleanup != nil {
-		t.Cleanup = *override.Cleanup
-	}
-	if override.Exec != nil {
-		t.Exec = *override.Exec
-	}
-	return t
 }
 
 // Timeouts contains timeouts per operation.

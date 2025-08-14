@@ -5,18 +5,19 @@ import (
 	"errors"
 	"strings"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
-func mapResource(ctx context.Context, client client.Client, tc binding.Bindings, resource v1alpha1.ObjectType) (string, bool, error) {
+func mapResource(ctx context.Context, compilers compilers.Compilers, client client.Client, tc apis.Bindings, resource v1alpha1.ObjectType) (string, bool, error) {
 	if resource.APIVersion != "" && resource.Kind != "" {
-		if apiVersion, err := resource.APIVersion.Value(ctx, tc); err != nil {
+		if apiVersion, err := resource.APIVersion.Value(ctx, compilers, tc); err != nil {
 			return "", false, err
-		} else if kind, err := resource.Kind.Value(ctx, tc); err != nil {
+		} else if kind, err := resource.Kind.Value(ctx, compilers, tc); err != nil {
 			return "", false, err
 		} else {
 			return mapResourceFromApiVersionAndKind(client, apiVersion, kind)

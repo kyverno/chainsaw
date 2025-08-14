@@ -3,22 +3,21 @@ package templating
 import (
 	"context"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/engine/functions"
 	"github.com/kyverno/chainsaw/pkg/mutate"
 	mapsutils "github.com/kyverno/chainsaw/pkg/utils/maps"
-	"github.com/kyverno/kyverno-json/pkg/engine/template"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
 
-func Template(ctx context.Context, tpl v1alpha1.Any, value any, bindings binding.Bindings) (any, error) {
-	return mutate.Mutate(ctx, nil, mutate.Parse(ctx, tpl.Value), value, bindings, template.WithFunctionCaller(functions.Caller()))
+func Template(ctx context.Context, compilers compilers.Compilers, tpl v1alpha1.Projection, value any, bindings apis.Bindings) (any, error) {
+	return mutate.Mutate(ctx, compilers, nil, mutate.Parse(ctx, tpl.Value()), value, bindings)
 }
 
-func TemplateAndMerge(ctx context.Context, obj unstructured.Unstructured, bindings binding.Bindings, templates ...v1alpha1.Any) (unstructured.Unstructured, error) {
+func TemplateAndMerge(ctx context.Context, compilers compilers.Compilers, obj unstructured.Unstructured, bindings apis.Bindings, templates ...v1alpha1.Projection) (unstructured.Unstructured, error) {
 	for _, modifier := range templates {
-		patch, err := Template(ctx, modifier, obj.UnstructuredContent(), bindings)
+		patch, err := Template(ctx, compilers, modifier, obj.UnstructuredContent(), bindings)
 		if err != nil {
 			return obj, err
 		}

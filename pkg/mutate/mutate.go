@@ -3,11 +3,11 @@ package mutate
 import (
 	"context"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	"github.com/kyverno/kyverno-json/pkg/engine/template"
+	"github.com/kyverno/chainsaw/pkg/apis"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"k8s.io/apimachinery/pkg/util/validation/field"
 )
 
-func Mutate(ctx context.Context, path *field.Path, mutation Mutation, value any, bindings binding.Bindings, opts ...template.Option) (any, error) {
-	return mutation.mutate(ctx, path, value, bindings, opts...)
+func Mutate(ctx context.Context, compilers compilers.Compilers, path *field.Path, mutation Mutation, value any, bindings apis.Bindings) (any, error) {
+	return mutation.mutate(ctx, compilers, path, value, bindings)
 }

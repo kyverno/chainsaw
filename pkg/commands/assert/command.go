@@ -6,6 +6,7 @@ import (
 	"io"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/client/simple"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
@@ -137,9 +138,13 @@ func runE(opts options, cmd *cobra.Command, client client.Client, namespacer nsp
 }
 
 func assert(opts options, client client.Client, resource unstructured.Unstructured, namespacer nspacer.Namespacer) error {
-	ctx, cancel := context.WithTimeout(context.Background(), opts.timeout.Duration)
-	defer cancel()
-	op := opassert.New(client, resource, namespacer, false)
+	ctx := context.Background()
+	if opts.timeout.Duration != 0 {
+		_ctx, cancel := context.WithTimeout(ctx, opts.timeout.Duration)
+		defer cancel()
+		ctx = _ctx
+	}
+	op := opassert.New(apis.DefaultCompilers, client, resource, namespacer, false)
 	_, err := op.Exec(ctx, nil)
 	return err
 }

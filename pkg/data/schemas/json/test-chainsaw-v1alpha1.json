@@ -96,6 +96,7 @@
                 ],
                 "default": ""
               },
+              "x-kubernetes-list-type": "set",
               "x-kubernetes-patch-strategy": "merge"
             },
             "generateName": {
@@ -207,7 +208,8 @@
                     "additionalProperties": false
                   }
                 ]
-              }
+              },
+              "x-kubernetes-list-type": "atomic"
             },
             "name": {
               "description": "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
@@ -285,6 +287,10 @@
                   }
                 ]
               },
+              "x-kubernetes-list-map-keys": [
+                "uid"
+              ],
+              "x-kubernetes-list-type": "map",
               "x-kubernetes-patch-merge-key": "uid",
               "x-kubernetes-patch-strategy": "merge"
             },
@@ -341,6 +347,17 @@
               "value"
             ],
             "properties": {
+              "compiler": {
+                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "jp",
+                  "cel"
+                ]
+              },
               "name": {
                 "description": "Name the name of the binding.",
                 "type": "string",
@@ -454,6 +471,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -469,10 +497,6 @@
                   },
                   "check": {
                     "description": "Check is an assertion tree to validate the operation outcome.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
                     "x-kubernetes-preserve-unknown-fields": true
                   },
                   "cluster": {
@@ -534,6 +558,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -564,12 +599,19 @@
                         "value"
                       ],
                       "properties": {
-                        "match": {
-                          "description": "Match defines the matching statement.",
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
                           "type": [
-                            "object",
+                            "string",
                             "null"
                           ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
+                        "match": {
+                          "description": "Match defines the matching statement.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "name": {
@@ -584,6 +626,13 @@
                       },
                       "additionalProperties": false
                     }
+                  },
+                  "skipCommandOutput": {
+                    "description": "SkipCommandOutput removes the command from the output logs.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
                   },
                   "skipLogOutput": {
                     "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -608,6 +657,17 @@
                   }
                 },
                 "additionalProperties": false
+              },
+              "compiler": {
+                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "jp",
+                  "cel"
+                ]
               },
               "delete": {
                 "description": "Delete represents a deletion operation.",
@@ -639,6 +699,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -720,15 +791,10 @@
                       "properties": {
                         "check": {
                           "description": "Check defines the verification statement.",
-                          "type": "object",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "match": {
                           "description": "Match defines the matching statement.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         }
                       },
@@ -1228,6 +1294,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -1243,10 +1320,6 @@
                   },
                   "check": {
                     "description": "Check is an assertion tree to validate the operation outcome.",
-                    "type": [
-                      "object",
-                      "null"
-                    ],
                     "x-kubernetes-preserve-unknown-fields": true
                   },
                   "cluster": {
@@ -1311,6 +1384,17 @@
                         "value"
                       ],
                       "properties": {
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                          "type": [
+                            "string",
+                            "null"
+                          ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
                         "name": {
                           "description": "Name the name of the binding.",
                           "type": "string",
@@ -1341,12 +1425,19 @@
                         "value"
                       ],
                       "properties": {
-                        "match": {
-                          "description": "Match defines the matching statement.",
+                        "compiler": {
+                          "description": "Compiler defines the default compiler to use when evaluating expressions.",
                           "type": [
-                            "object",
+                            "string",
                             "null"
                           ],
+                          "enum": [
+                            "jp",
+                            "cel"
+                          ]
+                        },
+                        "match": {
+                          "description": "Match defines the matching statement.",
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "name": {
@@ -1361,6 +1452,13 @@
                       },
                       "additionalProperties": false
                     }
+                  },
+                  "skipCommandOutput": {
+                    "description": "SkipCommandOutput removes the command from the output logs.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ]
                   },
                   "skipLogOutput": {
                     "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -1610,6 +1708,17 @@
             "additionalProperties": false
           }
         },
+        "compiler": {
+          "description": "Compiler defines the default compiler to use when evaluating expressions.",
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "jp",
+            "cel"
+          ]
+        },
         "concurrent": {
           "description": "Concurrent determines whether the test should run concurrently with other tests.",
           "type": [
@@ -1666,11 +1775,18 @@
         },
         "namespaceTemplate": {
           "description": "NamespaceTemplate defines a template to create the test namespace.",
+          "x-kubernetes-preserve-unknown-fields": true
+        },
+        "namespaceTemplateCompiler": {
+          "description": "NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.",
           "type": [
-            "object",
+            "string",
             "null"
           ],
-          "x-kubernetes-preserve-unknown-fields": true
+          "enum": [
+            "jp",
+            "cel"
+          ]
         },
         "scenarios": {
           "description": "Scenarios defines test scenarios.",
@@ -1702,6 +1818,17 @@
                     "value"
                   ],
                   "properties": {
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
+                    },
                     "name": {
                       "description": "Name the name of the binding.",
                       "type": "string",
@@ -1787,6 +1914,17 @@
                     "value"
                   ],
                   "properties": {
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
+                    },
                     "name": {
                       "description": "Name the name of the binding.",
                       "type": "string",
@@ -1900,6 +2038,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -1915,10 +2064,6 @@
                         },
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "cluster": {
@@ -1980,6 +2125,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -2010,12 +2166,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -2030,6 +2193,13 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "skipCommandOutput": {
+                          "description": "SkipCommandOutput removes the command from the output logs.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -2054,6 +2224,17 @@
                         }
                       },
                       "additionalProperties": false
+                    },
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
                     },
                     "delete": {
                       "description": "Delete represents a deletion operation.",
@@ -2085,6 +2266,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -2166,15 +2358,10 @@
                             "properties": {
                               "check": {
                                 "description": "Check defines the verification statement.",
-                                "type": "object",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
                                 "description": "Match defines the matching statement.",
-                                "type": [
-                                  "object",
-                                  "null"
-                                ],
                                 "x-kubernetes-preserve-unknown-fields": true
                               }
                             },
@@ -2674,6 +2861,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -2689,10 +2887,6 @@
                         },
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "cluster": {
@@ -2757,6 +2951,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -2787,12 +2992,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -2807,6 +3019,13 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "skipCommandOutput": {
+                          "description": "SkipCommandOutput removes the command from the output logs.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -3118,6 +3337,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -3133,10 +3363,6 @@
                         },
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "cluster": {
@@ -3198,6 +3424,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -3228,12 +3465,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -3248,6 +3492,13 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "skipCommandOutput": {
+                          "description": "SkipCommandOutput removes the command from the output logs.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -3272,6 +3523,17 @@
                         }
                       },
                       "additionalProperties": false
+                    },
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
                     },
                     "delete": {
                       "description": "Delete represents a deletion operation.",
@@ -3303,6 +3565,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -3384,15 +3657,10 @@
                             "properties": {
                               "check": {
                                 "description": "Check defines the verification statement.",
-                                "type": "object",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
                                 "description": "Match defines the matching statement.",
-                                "type": [
-                                  "object",
-                                  "null"
-                                ],
                                 "x-kubernetes-preserve-unknown-fields": true
                               }
                             },
@@ -3892,6 +4160,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -3907,10 +4186,6 @@
                         },
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "cluster": {
@@ -3975,6 +4250,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -4005,12 +4291,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -4025,6 +4318,13 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "skipCommandOutput": {
+                          "description": "SkipCommandOutput removes the command from the output logs.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -4274,6 +4574,17 @@
                   "additionalProperties": false
                 }
               },
+              "compiler": {
+                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "enum": [
+                  "jp",
+                  "cel"
+                ]
+              },
               "deletionPropagationPolicy": {
                 "description": "DeletionPropagationPolicy decides if a deletion will propagate to the dependents of\nthe object, and how the garbage collector will handle the propagation.\nOverrides the deletion propagation policy set in both the Configuration and the Test.",
                 "type": [
@@ -4393,6 +4704,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -4408,10 +4730,6 @@
                         },
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "cluster": {
@@ -4473,6 +4791,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -4503,12 +4832,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -4523,6 +4859,13 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "skipCommandOutput": {
+                          "description": "SkipCommandOutput removes the command from the output logs.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -4547,6 +4890,17 @@
                         }
                       },
                       "additionalProperties": false
+                    },
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
                     },
                     "delete": {
                       "description": "Delete represents a deletion operation.",
@@ -4578,6 +4932,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -4659,15 +5024,10 @@
                             "properties": {
                               "check": {
                                 "description": "Check defines the verification statement.",
-                                "type": "object",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
                                 "description": "Match defines the matching statement.",
-                                "type": [
-                                  "object",
-                                  "null"
-                                ],
                                 "x-kubernetes-preserve-unknown-fields": true
                               }
                             },
@@ -5167,6 +5527,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -5182,10 +5553,6 @@
                         },
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "cluster": {
@@ -5250,6 +5617,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -5280,12 +5658,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -5300,6 +5685,13 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "skipCommandOutput": {
+                          "description": "SkipCommandOutput removes the command from the output logs.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -5705,6 +6097,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -5781,15 +6184,10 @@
                             "properties": {
                               "check": {
                                 "description": "Check defines the verification statement.",
-                                "type": "object",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
                                 "description": "Match defines the matching statement.",
-                                "type": [
-                                  "object",
-                                  "null"
-                                ],
                                 "x-kubernetes-preserve-unknown-fields": true
                               }
                             },
@@ -5820,12 +6218,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -5931,6 +6336,7 @@
                                         ],
                                         "default": ""
                                       },
+                                      "x-kubernetes-list-type": "set",
                                       "x-kubernetes-patch-strategy": "merge"
                                     },
                                     "generateName": {
@@ -6042,7 +6448,8 @@
                                             "additionalProperties": false
                                           }
                                         ]
-                                      }
+                                      },
+                                      "x-kubernetes-list-type": "atomic"
                                     },
                                     "name": {
                                       "description": "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
@@ -6120,6 +6527,10 @@
                                           }
                                         ]
                                       },
+                                      "x-kubernetes-list-map-keys": [
+                                        "uid"
+                                      ],
+                                      "x-kubernetes-list-type": "map",
                                       "x-kubernetes-patch-merge-key": "uid",
                                       "x-kubernetes-patch-strategy": "merge"
                                     },
@@ -6200,6 +6611,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -6260,10 +6682,6 @@
                         },
                         "resource": {
                           "description": "Check provides a check used in assertions.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "template": {
@@ -6323,6 +6741,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -6338,10 +6767,6 @@
                         },
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "cluster": {
@@ -6403,6 +6828,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -6433,12 +6869,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -6453,6 +6896,13 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "skipCommandOutput": {
+                          "description": "SkipCommandOutput removes the command from the output logs.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -6477,6 +6927,17 @@
                         }
                       },
                       "additionalProperties": false
+                    },
+                    "compiler": {
+                      "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                      "type": [
+                        "string",
+                        "null"
+                      ],
+                      "enum": [
+                        "jp",
+                        "cel"
+                      ]
                     },
                     "continueOnError": {
                       "description": "ContinueOnError determines whether a test should continue or not in case the operation was not successful.\nEven if the test continues executing, it will still be reported as failed.",
@@ -6515,6 +6976,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -6591,15 +7063,10 @@
                             "properties": {
                               "check": {
                                 "description": "Check defines the verification statement.",
-                                "type": "object",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
                                 "description": "Match defines the matching statement.",
-                                "type": [
-                                  "object",
-                                  "null"
-                                ],
                                 "x-kubernetes-preserve-unknown-fields": true
                               }
                             },
@@ -6630,12 +7097,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -6741,6 +7215,7 @@
                                         ],
                                         "default": ""
                                       },
+                                      "x-kubernetes-list-type": "set",
                                       "x-kubernetes-patch-strategy": "merge"
                                     },
                                     "generateName": {
@@ -6852,7 +7327,8 @@
                                             "additionalProperties": false
                                           }
                                         ]
-                                      }
+                                      },
+                                      "x-kubernetes-list-type": "atomic"
                                     },
                                     "name": {
                                       "description": "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
@@ -6930,6 +7406,10 @@
                                           }
                                         ]
                                       },
+                                      "x-kubernetes-list-map-keys": [
+                                        "uid"
+                                      ],
+                                      "x-kubernetes-list-type": "map",
                                       "x-kubernetes-patch-merge-key": "uid",
                                       "x-kubernetes-patch-strategy": "merge"
                                     },
@@ -7010,6 +7490,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -7091,15 +7582,10 @@
                             "properties": {
                               "check": {
                                 "description": "Check defines the verification statement.",
-                                "type": "object",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
                                 "description": "Match defines the matching statement.",
-                                "type": [
-                                  "object",
-                                  "null"
-                                ],
                                 "x-kubernetes-preserve-unknown-fields": true
                               }
                             },
@@ -7317,6 +7803,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -7377,10 +7874,6 @@
                         },
                         "resource": {
                           "description": "Check provides a check used in assertions.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "template": {
@@ -7622,6 +8115,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -7698,15 +8202,10 @@
                             "properties": {
                               "check": {
                                 "description": "Check defines the verification statement.",
-                                "type": "object",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
                                 "description": "Match defines the matching statement.",
-                                "type": [
-                                  "object",
-                                  "null"
-                                ],
                                 "x-kubernetes-preserve-unknown-fields": true
                               }
                             },
@@ -7737,12 +8236,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -7848,6 +8354,7 @@
                                         ],
                                         "default": ""
                                       },
+                                      "x-kubernetes-list-type": "set",
                                       "x-kubernetes-patch-strategy": "merge"
                                     },
                                     "generateName": {
@@ -7959,7 +8466,8 @@
                                             "additionalProperties": false
                                           }
                                         ]
-                                      }
+                                      },
+                                      "x-kubernetes-list-type": "atomic"
                                     },
                                     "name": {
                                       "description": "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
@@ -8037,6 +8545,10 @@
                                           }
                                         ]
                                       },
+                                      "x-kubernetes-list-map-keys": [
+                                        "uid"
+                                      ],
+                                      "x-kubernetes-list-type": "map",
                                       "x-kubernetes-patch-merge-key": "uid",
                                       "x-kubernetes-patch-strategy": "merge"
                                     },
@@ -8271,12 +8783,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -8340,6 +8859,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -8355,10 +8885,6 @@
                         },
                         "check": {
                           "description": "Check is an assertion tree to validate the operation outcome.",
-                          "type": [
-                            "object",
-                            "null"
-                          ],
                           "x-kubernetes-preserve-unknown-fields": true
                         },
                         "cluster": {
@@ -8423,6 +8949,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -8453,12 +8990,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -8473,6 +9017,13 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "skipCommandOutput": {
+                          "description": "SkipCommandOutput removes the command from the output logs.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ]
                         },
                         "skipLogOutput": {
                           "description": "SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.",
@@ -8545,6 +9096,17 @@
                               "value"
                             ],
                             "properties": {
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                                "type": [
+                                  "string",
+                                  "null"
+                                ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
                               "name": {
                                 "description": "Name the name of the binding.",
                                 "type": "string",
@@ -8621,15 +9183,10 @@
                             "properties": {
                               "check": {
                                 "description": "Check defines the verification statement.",
-                                "type": "object",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "match": {
                                 "description": "Match defines the matching statement.",
-                                "type": [
-                                  "object",
-                                  "null"
-                                ],
                                 "x-kubernetes-preserve-unknown-fields": true
                               }
                             },
@@ -8660,12 +9217,19 @@
                               "value"
                             ],
                             "properties": {
-                              "match": {
-                                "description": "Match defines the matching statement.",
+                              "compiler": {
+                                "description": "Compiler defines the default compiler to use when evaluating expressions.",
                                 "type": [
-                                  "object",
+                                  "string",
                                   "null"
                                 ],
+                                "enum": [
+                                  "jp",
+                                  "cel"
+                                ]
+                              },
+                              "match": {
+                                "description": "Match defines the matching statement.",
                                 "x-kubernetes-preserve-unknown-fields": true
                               },
                               "name": {
@@ -8771,6 +9335,7 @@
                                         ],
                                         "default": ""
                                       },
+                                      "x-kubernetes-list-type": "set",
                                       "x-kubernetes-patch-strategy": "merge"
                                     },
                                     "generateName": {
@@ -8882,7 +9447,8 @@
                                             "additionalProperties": false
                                           }
                                         ]
-                                      }
+                                      },
+                                      "x-kubernetes-list-type": "atomic"
                                     },
                                     "name": {
                                       "description": "Name must be unique within a namespace. Is required when creating resources, although some resources may allow a client to request the generation of an appropriate name automatically. Name is primarily intended for creation idempotence and configuration definition. Cannot be updated. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names",
@@ -8960,6 +9526,10 @@
                                           }
                                         ]
                                       },
+                                      "x-kubernetes-list-map-keys": [
+                                        "uid"
+                                      ],
+                                      "x-kubernetes-list-type": "map",
                                       "x-kubernetes-patch-merge-key": "uid",
                                       "x-kubernetes-patch-strategy": "merge"
                                     },
@@ -9218,6 +9788,17 @@
                             "value"
                           ],
                           "properties": {
+                            "compiler": {
+                              "description": "Compiler defines the default compiler to use when evaluating expressions.",
+                              "type": [
+                                "string",
+                                "null"
+                              ],
+                              "enum": [
+                                "jp",
+                                "cel"
+                              ]
+                            },
                             "name": {
                               "description": "Name the name of the binding.",
                               "type": "string",

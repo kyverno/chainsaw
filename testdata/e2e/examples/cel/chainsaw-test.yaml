@@ -1,0 +1,47 @@
+# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: cel
+spec:
+  bindings:
+  - name: a
+    value: 1
+  steps:
+  - bindings:
+    - name: b
+      value: 2
+    try:
+    - compiler: cel
+      apply:
+        template: true
+        bindings:
+        - name: c
+          value: (string(bindings.resolve("a") + bindings.resolve("b")))
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            cel: (cel; bindings.resolve("c"))
+            jp: (jp; $c)
+            default: (bindings.resolve("c"))
+  - bindings:
+    - name: b
+      value: 2
+    try:
+    - assert:
+        bindings:
+        - name: c
+          compiler: cel
+          value: (string(bindings.resolve("a") + bindings.resolve("b")))
+        resource:
+          apiVersion: v1
+          kind: ConfigMap
+          metadata:
+            name: quick-start
+          data:
+            cel: (cel; bindings.resolve("c"))
+            jp: (jp; $c)
+            default: ($c)

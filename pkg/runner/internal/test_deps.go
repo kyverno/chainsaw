@@ -4,18 +4,20 @@ import (
 	"io"
 	"reflect"
 	"regexp"
-	"runtime/pprof"
 	"time"
 )
 
 // TestDeps implements the TestDeps interface for MainStart.
 type TestDeps struct {
+	Test     bool
 	matchPat string
 	matchRe  *regexp.Regexp
 }
 
 func (d *TestDeps) MatchString(pat, str string) (bool, error) {
-	// TODO: this needs design to work with unit tests
+	if d.Test {
+		return true, nil
+	}
 	if d.matchRe == nil || d.matchPat != pat {
 		d.matchPat = pat
 		matchRe, err := regexp.Compile(d.matchPat)
@@ -30,15 +32,14 @@ func (d *TestDeps) MatchString(pat, str string) (bool, error) {
 func (*TestDeps) SetPanicOnExit0(bool) {}
 
 func (*TestDeps) StartCPUProfile(w io.Writer) error {
-	return pprof.StartCPUProfile(w)
+	return nil
 }
 
 func (*TestDeps) StopCPUProfile() {
-	pprof.StopCPUProfile()
 }
 
 func (*TestDeps) WriteProfileTo(name string, w io.Writer, debug int) error {
-	return pprof.Lookup(name).WriteTo(w, debug)
+	return nil
 }
 
 func (*TestDeps) ImportPath() string {

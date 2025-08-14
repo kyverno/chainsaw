@@ -6,13 +6,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
-	ttesting "github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -111,7 +111,6 @@ func Test_operationDelete(t *testing.T) {
 		object: pod,
 		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
-				t := ttesting.FromContext(ctx)
 				assert.Equal(t, "bar", key.Namespace)
 				if call == 0 {
 					return nil
@@ -119,7 +118,6 @@ func Test_operationDelete(t *testing.T) {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
 			DeleteFn: func(ctx context.Context, call int, obj client.Object, _ ...client.DeleteOption) error {
-				t := ttesting.FromContext(ctx)
 				assert.Equal(t, "bar", obj.GetNamespace())
 				return nil
 			},
@@ -143,17 +141,16 @@ func Test_operationDelete(t *testing.T) {
 				return kerrors.NewNotFound(obj.GetObjectKind().GroupVersionKind().GroupVersion().WithResource("pod").GroupResource(), key.Name)
 			},
 			DeleteFn: func(ctx context.Context, call int, obj client.Object, _ ...client.DeleteOption) error {
-				t := ttesting.FromContext(ctx)
 				assert.Equal(t, 1, call)
 				return errors.New("dummy error")
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error == 'dummy error')": true,
 				},
-			},
+			),
 		}},
 		expectedErr:  nil,
 		expectedLogs: []string{"DELETE: RUN - []", "DELETE: DONE - []"},
@@ -167,6 +164,7 @@ func Test_operationDelete(t *testing.T) {
 				nspacer = tt.namespacer(tt.client)
 			}
 			operation := New(
+				apis.DefaultCompilers,
 				tt.client,
 				tt.object,
 				nspacer,
@@ -174,8 +172,8 @@ func Test_operationDelete(t *testing.T) {
 				metav1.DeletePropagationForeground,
 				tt.expect...,
 			)
-			logger := &tlogging.FakeLogger{}
-			outputs, err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t), nil)
+			logger := &mocks.Logger{}
+			outputs, err := operation.Exec(logging.WithLogger(ctx, logger), nil)
 			assert.Nil(t, outputs)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())

@@ -6,13 +6,13 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	tnamespacer "github.com/kyverno/chainsaw/pkg/engine/namespacer/testing"
-	ttesting "github.com/kyverno/chainsaw/pkg/testing"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -281,7 +281,6 @@ func Test_operationAssert(t *testing.T) {
 		},
 		client: &tclient.FakeClient{
 			ListFn: func(ctx context.Context, _ int, list client.ObjectList, opts ...client.ListOption) error {
-				t := ttesting.FromContext(ctx)
 				assert.Contains(t, opts, client.InNamespace("bar"))
 				uList := list.(*unstructured.UnstructuredList)
 				uList.Items = append(uList.Items, unstructured.Unstructured{
@@ -343,13 +342,14 @@ func Test_operationAssert(t *testing.T) {
 				nspacer = tt.namespacer(tt.client)
 			}
 			operation := New(
+				apis.DefaultCompilers,
 				tt.client,
 				tt.expected,
 				nspacer,
 				false,
 			)
-			logger := &tlogging.FakeLogger{}
-			outputs, err := operation.Exec(ttesting.IntoContext(logging.IntoContext(ctx, logger), t), nil)
+			logger := &mocks.Logger{}
+			outputs, err := operation.Exec(logging.WithLogger(ctx, logger), nil)
 			assert.Nil(t, outputs)
 			if tt.expectErr {
 				assert.NotNil(t, err)

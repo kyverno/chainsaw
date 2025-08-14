@@ -1,0 +1,3 @@
+```
+concat('foo', 'bar') == 'foobar'
+```

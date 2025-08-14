@@ -1,14 +1,19 @@
 package main
 
 import (
+	"embed"
 	"fmt"
+	"os"
 	"strings"
 
 	jpfunctions "github.com/jmespath-community/go-jmespath/pkg/functions"
 	chainsawfunctions "github.com/kyverno/chainsaw/pkg/engine/functions"
-	"github.com/kyverno/kyverno-json/pkg/engine/template/functions"
-	kyvernofunctions "github.com/kyverno/kyverno-json/pkg/engine/template/kyverno"
+	"github.com/kyverno/kyverno-json/pkg/jp/functions"
+	kyvernofunctions "github.com/kyverno/kyverno-json/pkg/jp/kyverno"
 )
+
+//go:embed examples
+var examples embed.FS
 
 func main() {
 	fmt.Println("# Functions")
@@ -35,17 +40,30 @@ func main() {
 	fmt.Println()
 	printFunctions(chainsawfunctions.GetFunctions()...)
 	fmt.Println()
-	fmt.Println("## examples")
-	fmt.Println()
-	fmt.Println("- [x_k8s_get](./examples/x_k8s_get.md)")
-	fmt.Println()
 }
 
 func printFunctions(funcs ...jpfunctions.FunctionEntry) {
-	fmt.Println("| Name | Signature |")
+	fmt.Println("| Name | Description |")
 	fmt.Println("|---|---|")
 	for _, function := range funcs {
-		fmt.Println("|", function.Name, "|", "`"+functionString(function)+"`", "|")
+		sig := functionString(function)
+		desc := function.Description
+		desc = strings.TrimSpace(desc)
+		if desc != "" {
+			desc = strings.ToUpper(desc[:1]) + desc[1:]
+			desc = strings.TrimSuffix(desc, ".")
+			desc = desc + "."
+		}
+		fmt.Println("|", fmt.Sprintf("[%s](./examples/%s.md)", function.Name, function.Name), "|", desc, "|")
+		data := fmt.Sprintf("# %s\n\n## Signature\n\n`%s`\n\n## Description\n\n%s\n\n## Examples\n\n", function.Name, sig, desc)
+		if e, err := examples.ReadFile(fmt.Sprintf("examples/%s.md", function.Name)); err != nil {
+			panic(err)
+		} else {
+			data += string(e)
+		}
+		if err := os.WriteFile(fmt.Sprintf("./website/docs/reference/jp/examples/%s.md", function.Name), []byte(data), 0o600); err != nil {
+			panic(err)
+		}
 	}
 }
 

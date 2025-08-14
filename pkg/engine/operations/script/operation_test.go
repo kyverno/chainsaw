@@ -4,9 +4,10 @@ import (
 	"context"
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/utils/ptr"
 )
@@ -80,11 +81,11 @@ func Test_operationScript(t *testing.T) {
 			Content:   "foo",
 			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
 			ActionCheck: v1alpha1.ActionCheck{
-				Check: &v1alpha1.Check{
-					Value: map[string]any{
+				Check: ptr.To(v1alpha1.NewCheck(
+					map[string]any{
 						"($error != null)": true,
 					},
-				},
+				)),
 			},
 		},
 		basePath:  "..",
@@ -96,11 +97,11 @@ func Test_operationScript(t *testing.T) {
 			Content:   "foo",
 			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
 			ActionCheck: v1alpha1.ActionCheck{
-				Check: &v1alpha1.Check{
-					Value: map[string]any{
+				Check: ptr.To(v1alpha1.NewCheck(
+					map[string]any{
 						"(foo('bar'))": true,
 					},
-				},
+				)),
 			},
 		},
 		basePath:  "..",
@@ -112,11 +113,11 @@ func Test_operationScript(t *testing.T) {
 			Content:   "cat operation.go",
 			ActionEnv: v1alpha1.ActionEnv{SkipLogOutput: true},
 			ActionCheck: v1alpha1.ActionCheck{
-				Check: &v1alpha1.Check{
-					Value: map[string]any{
+				Check: ptr.To(v1alpha1.NewCheck(
+					map[string]any{
 						"(foo('bar'))": true,
 					},
-				},
+				)),
 			},
 		},
 		basePath:  "..",
@@ -125,8 +126,9 @@ func Test_operationScript(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := logging.IntoContext(context.TODO(), &tlogging.FakeLogger{})
+			ctx := logging.WithLogger(context.TODO(), &mocks.Logger{})
 			operation := New(
+				apis.DefaultCompilers,
 				tt.script,
 				tt.basePath,
 				tt.namespace,

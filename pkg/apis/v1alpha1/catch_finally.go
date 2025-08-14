@@ -15,6 +15,10 @@ type CatchFinally struct {
 	// +optional
 	Description string `json:"description,omitempty"`
 
+	// Compiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	Compiler *Compiler `json:"compiler,omitempty"`
+
 	// PodLogs determines the pod logs collector to execute.
 	// +optional
 	PodLogs *PodLogs `json:"podLogs,omitempty"`

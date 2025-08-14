@@ -27,7 +27,8 @@ func GetFunctions() []functions.FunctionEntry {
 		Arguments: []functions.ArgSpec{
 			{Types: []functions.JpType{functions.JpString}},
 		},
-		Handler: jpEnv,
+		Handler:     jpEnv,
+		Description: "Returns the value of the environment variable passed in argument.",
 	}, {
 		Name: k8sGet,
 		Arguments: []functions.ArgSpec{
@@ -37,7 +38,8 @@ func GetFunctions() []functions.FunctionEntry {
 			{Types: []functions.JpType{functions.JpString}},
 			{Types: []functions.JpType{functions.JpString}},
 		},
-		Handler: jpKubernetesGet,
+		Handler:     jpKubernetesGet,
+		Description: "Gets a resource from a Kubernetes cluster.",
 	}, {
 		Name: k8sList,
 		Arguments: []functions.ArgSpec{
@@ -46,7 +48,8 @@ func GetFunctions() []functions.FunctionEntry {
 			{Types: []functions.JpType{functions.JpString}},
 			{Types: []functions.JpType{functions.JpString}, Optional: true},
 		},
-		Handler: jpKubernetesList,
+		Handler:     jpKubernetesList,
+		Description: "Lists resources from a Kubernetes cluster.",
 	}, {
 		Name: k8sExists,
 		Arguments: []functions.ArgSpec{
@@ -56,7 +59,8 @@ func GetFunctions() []functions.FunctionEntry {
 			{Types: []functions.JpType{functions.JpString}},
 			{Types: []functions.JpType{functions.JpString}},
 		},
-		Handler: jpKubernetesExists,
+		Handler:     jpKubernetesExists,
+		Description: "Checks if a given resource exists in a Kubernetes cluster.",
 	}, {
 		Name: k8sResourceExists,
 		Arguments: []functions.ArgSpec{
@@ -64,25 +68,29 @@ func GetFunctions() []functions.FunctionEntry {
 			{Types: []functions.JpType{functions.JpString}},
 			{Types: []functions.JpType{functions.JpString}},
 		},
-		Handler: jpKubernetesResourceExists,
+		Handler:     jpKubernetesResourceExists,
+		Description: "Checks if a given resource type is available in a Kubernetes cluster.",
 	}, {
 		Name: k8sServerVersion,
 		Arguments: []functions.ArgSpec{
 			{Types: []functions.JpType{functions.JpAny}},
 		},
-		Handler: jpKubernetesServerVersion,
+		Handler:     jpKubernetesServerVersion,
+		Description: "Returns the version of a Kubernetes cluster.",
 	}, {
 		Name: metricsDecode,
 		Arguments: []functions.ArgSpec{
 			{Types: []functions.JpType{functions.JpString}},
 		},
-		Handler: jpMetricsDecode,
+		Handler:     jpMetricsDecode,
+		Description: "Decodes metrics in the Prometheus text format.",
 	}, {
 		Name: trimSpace,
 		Arguments: []functions.ArgSpec{
 			{Types: []functions.JpType{functions.JpString}},
 		},
-		Handler: jpTrimSpace,
+		Handler:     jpTrimSpace,
+		Description: "Trims leading and trailing spaces from the string passed in argument.",
 	}, {
 		Name: asString,
 		Arguments: []functions.ArgSpec{
@@ -103,5 +111,6 @@ func GetFunctions() []functions.FunctionEntry {
 			}
 			return nil, nil
 		},
+		Description: "Returns the passed in argument converted into a string.",
 	}}
 }

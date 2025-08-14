@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
@@ -33,52 +33,92 @@ func TestResourceRef(t *testing.T) {
 			"($foo)": "($bar)",
 		},
 	)
+
+	withNonStringValues := unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"apiVersion": "v1",
+			"kind":       "namespace",
+			"metadata": map[string]interface{}{
+				"name":      map[string]interface{}{"k": "v"},
+				"namespace": map[string]interface{}{"k": "v"},
+				"labels": map[string]interface{}{
+					"plain":           "value",
+					"templated":       "($foo)",
+					"templated-empty": "($empty)",
+					"nested":          map[string]interface{}{"k": "v"},
+				},
+			},
+		},
+	}
+	expectedForNonStringValues := unstructured.Unstructured{
+		Object: map[string]interface{}{
+			"apiVersion": "v1",
+			"kind":       "namespace",
+			"metadata": map[string]interface{}{
+				"name":      map[string]interface{}{"k": "v"},
+				"namespace": map[string]interface{}{"k": "v"},
+				"labels": map[string]interface{}{
+					"plain":           "value",
+					"templated":       "foo",
+					"templated-empty": "",
+					"nested":          map[string]interface{}{"k": "v"},
+				},
+			},
+		},
+	}
+
 	tests := []struct {
 		name     string
 		obj      *unstructured.Unstructured
-		bindings binding.Bindings
+		bindings apis.Bindings
 		wantErr  bool
 		want     *unstructured.Unstructured
 	}{{
 		name:     "nil",
 		obj:      nil,
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  false,
 		want:     nil,
 	}, {
 		name:     "empty",
 		obj:      &unstructured.Unstructured{},
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  false,
 		want:     &unstructured.Unstructured{},
 	}, {
 		name:     "meta",
 		obj:      noMeta.DeepCopy(),
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  false,
 		want:     &noMeta,
 	}, {
 		name:     "no meta",
 		obj:      meta.DeepCopy(),
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  false,
 		want:     &meta,
 	}, {
 		name:     "bindings",
 		obj:      binds.DeepCopy(),
-		bindings: binding.NewBindings().Register("$foo", binding.NewBinding("foo")).Register("$bar", binding.NewBinding("bar")),
+		bindings: apis.NewBindings().Register("$foo", apis.NewBinding("foo")).Register("$bar", apis.NewBinding("bar")),
 		wantErr:  false,
 		want:     &meta,
 	}, {
 		name:     "error",
 		obj:      binds.DeepCopy(),
-		bindings: binding.NewBindings(),
+		bindings: apis.NewBindings(),
 		wantErr:  true,
 		want:     &binds,
+	}, {
+		name:     "retain non-string values",
+		obj:      withNonStringValues.DeepCopy(),
+		bindings: apis.NewBindings().Register("$foo", apis.NewBinding("foo")).Register("$empty", apis.NewBinding("")),
+		wantErr:  false,
+		want:     &expectedForNonStringValues,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := ResourceRef(context.TODO(), tt.obj, tt.bindings)
+			err := ResourceRef(context.TODO(), apis.DefaultCompilers, tt.obj, tt.bindings)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

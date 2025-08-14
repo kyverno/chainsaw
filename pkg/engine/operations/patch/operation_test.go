@@ -6,14 +6,16 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
-	tlogging "github.com/kyverno/chainsaw/pkg/engine/logging/testing"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/utils/ptr"
 )
 
 func Test_create(t *testing.T) {
@@ -125,11 +127,11 @@ func Test_create(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error)": "some arbitrary error",
 				},
-			},
+			),
 		}},
 		expectedErr: nil,
 	}, {
@@ -145,11 +147,11 @@ func Test_create(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"($error != null)": true,
 				},
-			},
+			),
 		}},
 		expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
 	}, {
@@ -165,16 +167,16 @@ func Test_create(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(
+				map[string]any{
 					"foo": "bar",
 				},
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			)),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"kind": "Service",
 				},
-			},
+			),
 		}},
 		expectedErr: nil,
 	}, {
@@ -190,25 +192,24 @@ func Test_create(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: &v1alpha1.Check{
-				Value: pod.UnstructuredContent(),
-			},
-			Check: v1alpha1.Check{
-				Value: map[string]any{
+			Match: ptr.To(v1alpha1.NewMatch(pod.UnstructuredContent())),
+			Check: v1alpha1.NewCheck(
+				map[string]any{
 					"kind": "Service",
 				},
-			},
+			),
 		}},
 		expectedErr: errors.New(`kind: Invalid value: "Pod": Expected value: "Service"`),
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			logger := &tlogging.FakeLogger{}
-			ctx := logging.IntoContext(context.TODO(), logger)
+			logger := &mocks.Logger{}
+			ctx := logging.WithLogger(context.TODO(), logger)
 			toCtx, cancel := context.WithTimeout(ctx, 2*time.Second)
 			defer cancel()
 			ctx = toCtx
 			operation := New(
+				apis.DefaultCompilers,
 				tt.client,
 				tt.object,
 				nil,

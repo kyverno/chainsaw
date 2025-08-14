@@ -13,6 +13,7 @@ spec:
       value: hello
     try:
     - script:
+        skipCommandOutput: true
         env:
         - name: GREETINGS
           value: (join(' ', [$hello, $chainsaw]))
@@ -21,6 +22,7 @@ spec:
           ($error): ~
           (trim_space($stdout)): hello chainsaw
     - command:
+        skipLogOutput: true
         env:
         - name: GREETINGS
           value: (join(' ', [$hello, $chainsaw]))

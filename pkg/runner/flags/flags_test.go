@@ -4,12 +4,13 @@ import (
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
+	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/utils/ptr"
 )
 
-func TestGetFlags(t *testing.T) {
+func Test_getFlags(t *testing.T) {
 	tests := []struct {
 		name   string
 		config model.Configuration
@@ -85,8 +86,42 @@ func TestGetFlags(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := GetFlags(tt.config)
+			got := getFlags(tt.config)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestSetupFlags(t *testing.T) {
+	config, err := config.DefaultConfiguration()
+	assert.NoError(t, err)
+	tests := []struct {
+		name    string
+		config  model.Configuration
+		wantErr bool
+	}{{
+		name:   "empty",
+		config: model.Configuration{},
+	}, {
+		name:   "default",
+		config: config.Spec,
+	}, {
+		name: "error",
+		config: model.Configuration{
+			Execution: v1alpha2.ExecutionOptions{
+				RepeatCount: ptr.To(-1),
+			},
+		},
+		wantErr: true,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			err := SetupFlags(tt.config)
+			if tt.wantErr {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
 		})
 	}
 }

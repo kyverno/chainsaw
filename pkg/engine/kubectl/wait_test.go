@@ -5,6 +5,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client/simple"
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
@@ -348,7 +349,7 @@ func TestWait(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			entrypoint, args, err := Wait(context.TODO(), client, nil, tt.collector)
+			entrypoint, args, err := Wait(context.TODO(), apis.DefaultCompilers, client, nil, tt.collector)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

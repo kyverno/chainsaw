@@ -15,7 +15,7 @@ type (
 	relativePathInterface = func(string, string) (string, error)
 )
 
-func Test(full bool, test discovery.Test) (string, error) {
+func Test(test discovery.Test, full bool) (string, error) {
 	if test.Test == nil {
 		return "", errors.New("test must not be nil")
 	}

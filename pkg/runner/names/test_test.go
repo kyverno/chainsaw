@@ -84,7 +84,7 @@ func TestTest(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Test(tt.full, tt.test)
+			got, err := Test(tt.test, tt.full)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {
@@ -102,26 +102,21 @@ func TestHelpTest(t *testing.T) {
 		absPathFunc    absolutePathInterface
 		relPathFunc    relativePathInterface
 		expectedErrMsg string
-	}{
-		{
-			name:           "ErrorGettingWorkingDirectory",
-			workingDirFunc: func() (string, error) { return "", errors.New("working directory error") },
-			expectedErrMsg: "failed to get current working dir (working directory error)",
-		},
-		{
-			name:           "ErrorGettingAbsolutePath",
-			absPathFunc:    func(string) (string, error) { return "", errors.New("absolute path error") },
-			expectedErrMsg: "failed to compute absolute path for /some/path (absolute path error)",
-		},
-		{
-			name:           "ErrorGettingRelativePath",
-			workingDirFunc: func() (string, error) { return "/correct/path", nil },
-			absPathFunc:    func(string) (string, error) { return "/correct/path/subdir", nil },
-			relPathFunc:    func(string, string) (string, error) { return "", errors.New("relative path error") },
-			expectedErrMsg: "failed to compute relative path from /correct/path to /correct/path/subdir (relative path error)",
-		},
-	}
-
+	}{{
+		name:           "ErrorGettingWorkingDirectory",
+		workingDirFunc: func() (string, error) { return "", errors.New("working directory error") },
+		expectedErrMsg: "failed to get current working dir (working directory error)",
+	}, {
+		name:           "ErrorGettingAbsolutePath",
+		absPathFunc:    func(string) (string, error) { return "", errors.New("absolute path error") },
+		expectedErrMsg: "failed to compute absolute path for /some/path (absolute path error)",
+	}, {
+		name:           "ErrorGettingRelativePath",
+		workingDirFunc: func() (string, error) { return "/correct/path", nil },
+		absPathFunc:    func(string) (string, error) { return "/correct/path/subdir", nil },
+		relPathFunc:    func(string, string) (string, error) { return "", errors.New("relative path error") },
+		expectedErrMsg: "failed to compute relative path from /correct/path to /correct/path/subdir (relative path error)",
+	}}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			test := discovery.Test{
@@ -132,9 +127,7 @@ func TestHelpTest(t *testing.T) {
 					},
 				},
 			}
-
 			_, err := helpTest(test, tc.workingDirFunc, tc.absPathFunc, tc.relPathFunc)
-
 			if err == nil {
 				t.Fatalf("%s: expected an error but got none", tc.name)
 			}

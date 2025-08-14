@@ -45,6 +45,13 @@ spec:
                   description: Binding represents a key/value set as a binding in
                     an executing test.
                   properties:
+                    compiler:
+                      description: Compiler defines the default compiler to use when
+                        evaluating expressions.
+                      enum:
+                      - jp
+                      - cel
+                      type: string
                     name:
                       description: Name the name of the binding.
                       pattern: ^(?:\w+|\(.+\))$
@@ -98,6 +105,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -113,7 +127,6 @@ spec:
                         check:
                           description: Check is an assertion tree to validate the
                             operation outcome.
-                          type: object
                           x-kubernetes-preserve-unknown-fields: true
                         cluster:
                           description: Cluster defines the target cluster (will be
@@ -146,6 +159,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -165,9 +185,15 @@ spec:
                               a match to determine if the binding must be considered
                               or not.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               match:
                                 description: Match defines the matching statement.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               name:
                                 description: Name the name of the binding.
@@ -181,6 +207,10 @@ spec:
                             - value
                             type: object
                           type: array
+                        skipCommandOutput:
+                          description: SkipCommandOutput removes the command from
+                            the output logs.
+                          type: boolean
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
@@ -195,6 +225,13 @@ spec:
                       required:
                       - entrypoint
                       type: object
+                    compiler:
+                      description: Compiler defines the default compiler to use when
+                        evaluating expressions.
+                      enum:
+                      - jp
+                      - cel
+                      type: string
                     delete:
                       description: Delete represents a deletion operation.
                       not:
@@ -208,6 +245,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -262,11 +306,9 @@ spec:
                             properties:
                               check:
                                 description: Check defines the verification statement.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               match:
                                 description: Match defines the matching statement.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                             required:
                             - check
@@ -564,6 +606,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -579,7 +628,6 @@ spec:
                         check:
                           description: Check is an assertion tree to validate the
                             operation outcome.
-                          type: object
                           x-kubernetes-preserve-unknown-fields: true
                         cluster:
                           description: Cluster defines the target cluster (will be
@@ -613,6 +661,13 @@ spec:
                             description: Binding represents a key/value set as a binding
                               in an executing test.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               name:
                                 description: Name the name of the binding.
                                 pattern: ^(?:\w+|\(.+\))$
@@ -632,9 +687,15 @@ spec:
                               a match to determine if the binding must be considered
                               or not.
                             properties:
+                              compiler:
+                                description: Compiler defines the default compiler
+                                  to use when evaluating expressions.
+                                enum:
+                                - jp
+                                - cel
+                                type: string
                               match:
                                 description: Match defines the matching statement.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               name:
                                 description: Name the name of the binding.
@@ -648,6 +709,10 @@ spec:
                             - value
                             type: object
                           type: array
+                        skipCommandOutput:
+                          description: SkipCommandOutput removes the command from
+                            the output logs.
+                          type: boolean
                         skipLogOutput:
                           description: SkipLogOutput removes the output from the command.
                             Useful for sensitive logs or to reduce noise.
@@ -794,6 +859,13 @@ spec:
                 description: Clusters holds a registry to clusters to support multi-cluster
                   tests.
                 type: object
+              compiler:
+                description: Compiler defines the default compiler to use when evaluating
+                  expressions.
+                enum:
+                - jp
+                - cel
+                type: string
               concurrent:
                 description: Concurrent determines whether the test should run concurrently
                   with other tests.
@@ -830,8 +902,14 @@ spec:
               namespaceTemplate:
                 description: NamespaceTemplate defines a template to create the test
                   namespace.
-                type: object
                 x-kubernetes-preserve-unknown-fields: true
+              namespaceTemplateCompiler:
+                description: NamespaceTemplateCompiler defines the default compiler
+                  to use when evaluating expressions.
+                enum:
+                - jp
+                - cel
+                type: string
               scenarios:
                 description: Scenarios defines test scenarios.
                 items:
@@ -843,6 +921,13 @@ spec:
                         description: Binding represents a key/value set as a binding
                           in an executing test.
                         properties:
+                          compiler:
+                            description: Compiler defines the default compiler to
+                              use when evaluating expressions.
+                            enum:
+                            - jp
+                            - cel
+                            type: string
                           name:
                             description: Name the name of the binding.
                             pattern: ^(?:\w+|\(.+\))$
@@ -888,6 +973,13 @@ spec:
                         description: Binding represents a key/value set as a binding
                           in an executing test.
                         properties:
+                          compiler:
+                            description: Compiler defines the default compiler to
+                              use when evaluating expressions.
+                            enum:
+                            - jp
+                            - cel
+                            type: string
                           name:
                             description: Name the name of the binding.
                             pattern: ^(?:\w+|\(.+\))$
@@ -940,6 +1032,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -955,7 +1054,6 @@ spec:
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               cluster:
                                 description: Cluster defines the target cluster (will
@@ -990,6 +1088,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -1009,9 +1114,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -1025,6 +1136,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -1041,6 +1156,13 @@ spec:
                             required:
                             - entrypoint
                             type: object
+                          compiler:
+                            description: Compiler defines the default compiler to
+                              use when evaluating expressions.
+                            enum:
+                            - jp
+                            - cel
+                            type: string
                           delete:
                             description: Delete represents a deletion operation.
                             not:
@@ -1054,6 +1176,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -1110,11 +1239,9 @@ spec:
                                     check:
                                       description: Check defines the verification
                                         statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                   required:
                                   - check
@@ -1421,6 +1548,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -1436,7 +1570,6 @@ spec:
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               cluster:
                                 description: Cluster defines the target cluster (will
@@ -1471,6 +1604,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -1490,9 +1630,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -1506,6 +1652,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -1676,6 +1826,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -1691,7 +1848,6 @@ spec:
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               cluster:
                                 description: Cluster defines the target cluster (will
@@ -1726,6 +1882,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -1745,9 +1908,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -1761,6 +1930,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -1777,6 +1950,13 @@ spec:
                             required:
                             - entrypoint
                             type: object
+                          compiler:
+                            description: Compiler defines the default compiler to
+                              use when evaluating expressions.
+                            enum:
+                            - jp
+                            - cel
+                            type: string
                           delete:
                             description: Delete represents a deletion operation.
                             not:
@@ -1790,6 +1970,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -1846,11 +2033,9 @@ spec:
                                     check:
                                       description: Check defines the verification
                                         statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                   required:
                                   - check
@@ -2157,6 +2342,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -2172,7 +2364,6 @@ spec:
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               cluster:
                                 description: Cluster defines the target cluster (will
@@ -2207,6 +2398,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -2226,9 +2424,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -2242,6 +2446,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -2393,6 +2601,13 @@ spec:
                       description: Clusters holds a registry to clusters to support
                         multi-cluster tests.
                       type: object
+                    compiler:
+                      description: Compiler defines the default compiler to use when
+                        evaluating expressions.
+                      enum:
+                      - jp
+                      - cel
+                      type: string
                     deletionPropagationPolicy:
                       description: |-
                         DeletionPropagationPolicy decides if a deletion will propagate to the dependents of
@@ -2447,6 +2662,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -2462,7 +2684,6 @@ spec:
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               cluster:
                                 description: Cluster defines the target cluster (will
@@ -2497,6 +2718,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -2516,9 +2744,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -2532,6 +2766,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -2548,6 +2786,13 @@ spec:
                             required:
                             - entrypoint
                             type: object
+                          compiler:
+                            description: Compiler defines the default compiler to
+                              use when evaluating expressions.
+                            enum:
+                            - jp
+                            - cel
+                            type: string
                           delete:
                             description: Delete represents a deletion operation.
                             not:
@@ -2561,6 +2806,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -2617,11 +2869,9 @@ spec:
                                     check:
                                       description: Check defines the verification
                                         statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                   required:
                                   - check
@@ -2928,6 +3178,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -2943,7 +3200,6 @@ spec:
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               cluster:
                                 description: Cluster defines the target cluster (will
@@ -2978,6 +3234,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -2997,9 +3260,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -3013,6 +3282,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -3231,6 +3504,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -3281,11 +3561,9 @@ spec:
                                     check:
                                       description: Check defines the verification
                                         statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                   required:
                                   - check
@@ -3304,9 +3582,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -3349,6 +3633,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -3392,7 +3683,6 @@ spec:
                                 type: string
                               resource:
                                 description: Check provides a check used in assertions.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               template:
                                 description: Template determines whether resources
@@ -3417,6 +3707,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -3432,7 +3729,6 @@ spec:
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               cluster:
                                 description: Cluster defines the target cluster (will
@@ -3467,6 +3763,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -3486,9 +3789,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -3502,6 +3811,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -3518,6 +3831,13 @@ spec:
                             required:
                             - entrypoint
                             type: object
+                          compiler:
+                            description: Compiler defines the default compiler to
+                              use when evaluating expressions.
+                            enum:
+                            - jp
+                            - cel
+                            type: string
                           continueOnError:
                             description: |-
                               ContinueOnError determines whether a test should continue or not in case the operation was not successful.
@@ -3536,6 +3856,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -3586,11 +3913,9 @@ spec:
                                     check:
                                       description: Check defines the verification
                                         statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                   required:
                                   - check
@@ -3609,9 +3934,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -3652,6 +3983,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -3708,11 +4046,9 @@ spec:
                                     check:
                                       description: Check defines the verification
                                         statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                   required:
                                   - check
@@ -3847,6 +4183,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -3890,7 +4233,6 @@ spec:
                                 type: string
                               resource:
                                 description: Check provides a check used in assertions.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               template:
                                 description: Template determines whether resources
@@ -4033,6 +4375,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -4083,11 +4432,9 @@ spec:
                                     check:
                                       description: Check defines the verification
                                         statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                   required:
                                   - check
@@ -4106,9 +4453,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -4246,9 +4599,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -4287,6 +4646,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -4302,7 +4668,6 @@ spec:
                               check:
                                 description: Check is an assertion tree to validate
                                   the operation outcome.
-                                type: object
                                 x-kubernetes-preserve-unknown-fields: true
                               cluster:
                                 description: Cluster defines the target cluster (will
@@ -4337,6 +4702,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -4356,9 +4728,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -4372,6 +4750,10 @@ spec:
                                   - value
                                   type: object
                                 type: array
+                              skipCommandOutput:
+                                description: SkipCommandOutput removes the command
+                                  from the output logs.
+                                type: boolean
                               skipLogOutput:
                                 description: SkipLogOutput removes the output from
                                   the command. Useful for sensitive logs or to reduce
@@ -4408,6 +4790,13 @@ spec:
                                   description: Binding represents a key/value set
                                     as a binding in an executing test.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     name:
                                       description: Name the name of the binding.
                                       pattern: ^(?:\w+|\(.+\))$
@@ -4458,11 +4847,9 @@ spec:
                                     check:
                                       description: Check defines the verification
                                         statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                   required:
                                   - check
@@ -4481,9 +4868,15 @@ spec:
                                     with a match to determine if the binding must
                                     be considered or not.
                                   properties:
+                                    compiler:
+                                      description: Compiler defines the default compiler
+                                        to use when evaluating expressions.
+                                      enum:
+                                      - jp
+                                      - cel
+                                      type: string
                                     match:
                                       description: Match defines the matching statement.
-                                      type: object
                                       x-kubernetes-preserve-unknown-fields: true
                                     name:
                                       description: Name the name of the binding.
@@ -4635,6 +5028,13 @@ spec:
                                 description: Binding represents a key/value set as
                                   a binding in an executing test.
                                 properties:
+                                  compiler:
+                                    description: Compiler defines the default compiler
+                                      to use when evaluating expressions.
+                                    enum:
+                                    - jp
+                                    - cel
+                                    type: string
                                   name:
                                     description: Name the name of the binding.
                                     pattern: ^(?:\w+|\(.+\))$

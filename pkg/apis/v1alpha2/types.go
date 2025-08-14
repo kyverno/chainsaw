@@ -5,8 +5,14 @@ import (
 	_ "github.com/kyverno/kyverno-json/pkg/apis/policy/v1alpha1"
 )
 
+const (
+	EngineJP  = v1alpha1.EngineJP
+	EngineCEL = v1alpha1.EngineCEL
+)
+
 type (
-	Any             = v1alpha1.Any
 	Clusters        = v1alpha1.Clusters
+	Compiler        = v1alpha1.Compiler
 	DefaultTimeouts = v1alpha1.DefaultTimeouts
+	Projection      = v1alpha1.Projection
 )

@@ -1,0 +1,47 @@
+{
+  "name": "report",
+  "startTime": "2009-11-17T20:34:58.651387237Z",
+  "endTime": "2009-11-17T20:44:58.651387237Z",
+  "tests": [
+    {
+      "basePath": "base-path",
+      "name": "test-report",
+      "startTime": "2009-11-17T20:35:58.651387237Z",
+      "endTime": "2009-11-17T20:38:58.651387237Z",
+      "namespace": "demo",
+      "steps": [
+        {
+          "name": "step-report",
+          "startTime": "2009-11-17T20:36:58.651387237Z",
+          "endTime": "2009-11-17T20:37:58.651387237Z",
+          "operations": [
+            {
+              "name": "operation-report",
+              "type": "apply",
+              "startTime": "2009-11-17T20:36:58.651387237Z",
+              "endTime": "2009-11-17T20:37:58.651387237Z"
+            },
+            {
+              "name": "operation-report-err",
+              "type": "assert",
+              "startTime": "2009-11-17T20:36:58.651387237Z",
+              "endTime": "2009-11-17T20:37:58.651387237Z",
+              "failure": {
+                "error": "dummy"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "basePath": "base-path",
+      "name": "test-report-skipped",
+      "concurrent": true,
+      "startTime": "2009-11-17T20:35:58.651387237Z",
+      "endTime": "2009-11-17T20:38:58.651387237Z",
+      "namespace": "skipped",
+      "skipped": true
+    }
+  ]
+}

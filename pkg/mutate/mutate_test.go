@@ -4,17 +4,16 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/stretchr/testify/assert"
 )
 
-// ctx, nil, mutation.Parse(ctx, variable.Value.Value), input, bindings, template.WithFunctionCaller(functions.Caller))
 func TestMutate(t *testing.T) {
 	tests := []struct {
 		name     string
 		mutation Mutation
 		value    any
-		bindings binding.Bindings
+		bindings apis.Bindings
 		want     any
 		wantErr  bool
 	}{{
@@ -118,7 +117,7 @@ func TestMutate(t *testing.T) {
 			"c": []any{"($foo)"},
 		}),
 		value:    map[string]any{},
-		bindings: binding.NewBindings().Register("$foo", binding.NewBinding("bar")),
+		bindings: apis.NewBindings().Register("$foo", apis.NewBinding("bar")),
 		want: map[any]any{
 			"c": []any{"bar"},
 		},
@@ -126,7 +125,7 @@ func TestMutate(t *testing.T) {
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := Mutate(context.TODO(), nil, tt.mutation, tt.value, tt.bindings)
+			got, err := Mutate(context.TODO(), apis.DefaultCompilers, nil, tt.mutation, tt.value, tt.bindings)
 			if tt.wantErr {
 				assert.Error(t, err)
 			} else {

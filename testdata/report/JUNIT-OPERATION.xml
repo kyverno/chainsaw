@@ -1,0 +1,19 @@
+<testsuites name="report" time="600.000000" tests="3" failures="1" skipped="1">
+  <testsuite name="test-report" tests="2" failures="1" errors="0" id="0" package="base-path" time="180.000000" timestamp="2009-11-17T20:34:58Z">
+    <properties>
+      <property name="namespace" value="demo"></property>
+    </properties>
+    <testcase name="step-report / operation-report" classname="apply" time="60.000000"></testcase>
+    <testcase name="step-report / operation-report-err" classname="assert" time="60.000000">
+      <failure message="dummy"></failure>
+    </testcase>
+  </testsuite>
+  <testsuite name="test-report-skipped" tests="1" failures="0" errors="0" id="0" package="base-path" skipped="1" time="180.000000" timestamp="2009-11-17T20:34:58Z">
+    <properties>
+      <property name="namespace" value="skipped"></property>
+    </properties>
+    <testcase name="test-report-skipped" classname="" time="180.000000">
+      <skipped message=""></skipped>
+    </testcase>
+  </testsuite>
+</testsuites>

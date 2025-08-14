@@ -4,12 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
-	"github.com/kyverno/chainsaw/pkg/engine/functions"
-	"github.com/kyverno/kyverno-json/pkg/engine/template"
+	"github.com/kyverno/chainsaw/pkg/apis"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 )
 
-func StringPointer(ctx context.Context, in *string, bindings binding.Bindings) (*string, error) {
+func StringPointer(ctx context.Context, c compilers.Compilers, in *string, bindings apis.Bindings) (*string, error) {
 	if in == nil {
 		return nil, nil
 	}
@@ -17,10 +16,12 @@ func StringPointer(ctx context.Context, in *string, bindings binding.Bindings) (
 		return in, nil
 	}
 	expression := Parse(ctx, *in)
-	if expression == nil || expression.Engine == "" {
+	if expression == nil {
 		return in, nil
 	}
-	if converted, err := template.Execute(ctx, expression.Statement, nil, bindings, template.WithFunctionCaller(functions.Caller())); err != nil {
+	if compiler := c.Compiler(expression.Engine); compiler == nil {
+		return &expression.Statement, nil
+	} else if converted, err := compilers.Execute(expression.Statement, nil, bindings, compiler); err != nil {
 		return nil, err
 	} else if converted == nil {
 		return nil, nil

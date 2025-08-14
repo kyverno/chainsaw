@@ -60,13 +60,21 @@ type TestSpec struct {
 	// +optional
 	Template *bool `json:"template,omitempty"`
 
+	// Compiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	Compiler *Compiler `json:"compiler,omitempty"`
+
 	// Namespace determines whether the test should run in a random ephemeral namespace or not.
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 
 	// NamespaceTemplate defines a template to create the test namespace.
 	// +optional
-	NamespaceTemplate *Any `json:"namespaceTemplate,omitempty"`
+	NamespaceTemplate *Projection `json:"namespaceTemplate,omitempty"`
+
+	// NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	NamespaceTemplateCompiler *Compiler `json:"namespaceTemplateCompiler,omitempty"`
 
 	// Scenarios defines test scenarios.
 	// +optional

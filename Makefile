@@ -7,9 +7,6 @@
 GIT_SHA                            := $(shell git rev-parse HEAD)
 ORG                                ?= kyverno
 PACKAGE                            ?= github.com/$(ORG)/chainsaw
-GOPATH_SHIM                        := ${PWD}/.gopath
-PACKAGE_SHIM                       := $(GOPATH_SHIM)/src/$(PACKAGE)
-INPUT_DIRS                         := $(PACKAGE)/pkg/apis/v1alpha1,$(PACKAGE)/pkg/apis/v1alpha2
 CRDS_PATH                          := ${PWD}/.crds
 CLI_BIN                            := chainsaw
 CGO_ENABLED                        ?= 0
@@ -21,7 +18,7 @@ LD_FLAGS                           := "-s -w"
 endif
 KO_REGISTRY                        := ko.local
 KO_TAGS                            := $(GIT_SHA)
-KIND_IMAGE                         ?= kindest/node:v1.29.2
+KIND_IMAGE                         ?= kindest/node:v1.33.2
 
 #########
 # TOOLS #
@@ -32,13 +29,13 @@ CONTROLLER_GEN                     := $(TOOLS_DIR)/controller-gen
 REGISTER_GEN                       := $(TOOLS_DIR)/register-gen
 DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
 CONVERSION_GEN                     := $(TOOLS_DIR)/conversion-gen
-CODE_GEN_VERSION                   := v0.28.0
+CODE_GEN_VERSION                   := v0.33.3
 REFERENCE_DOCS                     := $(TOOLS_DIR)/genref
 REFERENCE_DOCS_VERSION             := latest
 KIND                               := $(TOOLS_DIR)/kind
-KIND_VERSION                       := v0.22.0
+KIND_VERSION                       := v0.29.0
 KO                                 ?= $(TOOLS_DIR)/ko
-KO_VERSION                         ?= v0.15.1
+KO_VERSION                         ?= v0.18.0
 TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(CONVERSION_GEN) $(REFERENCE_DOCS) $(KIND) $(KO)
 PIP                                ?= "pip"
 ifeq ($(GOOS), darwin)
@@ -50,7 +47,7 @@ COMMA                              := ,
 
 $(CONTROLLER_GEN):
 	@echo Install controller-gen... >&2
-	@cd ./hack/controller-gen && GOBIN=$(TOOLS_DIR) go install
+	@cd ./hack/controller-gen && GOBIN=$(TOOLS_DIR) go install -buildvcs=false
 
 $(REGISTER_GEN):
 	@echo Install register-gen... >&2
@@ -89,54 +86,42 @@ clean-tools: ## Remove installed tools
 # CODEGEN #
 ###########
 
-$(GOPATH_SHIM):
-	@echo Create gopath shim... >&2
-	@mkdir -p $(GOPATH_SHIM)
-
-.INTERMEDIATE: $(PACKAGE_SHIM)
-$(PACKAGE_SHIM): $(GOPATH_SHIM)
-	@echo Create package shim... >&2
-	@mkdir -p $(GOPATH_SHIM)/src/github.com/$(ORG) && ln -s -f ${PWD} $(PACKAGE_SHIM)
-
 .PHONY: codegen-register
 codegen-register: ## Generate types registrations
-codegen-register: $(PACKAGE_SHIM)
 codegen-register: $(REGISTER_GEN)
 	@echo Generate registration... >&2
-	@GOPATH=$(GOPATH_SHIM) $(REGISTER_GEN) \
+	@$(REGISTER_GEN) \
 		--go-header-file=./hack/boilerplate.go.txt \
-		--input-dirs=$(INPUT_DIRS)
+		--output-file zz_generated.register.go \
+		./pkg/apis/...
 
 .PHONY: codegen-deepcopy
 codegen-deepcopy: ## Generate deep copy functions
-codegen-deepcopy: $(PACKAGE_SHIM)
 codegen-deepcopy: $(DEEPCOPY_GEN)
 	@echo Generate deep copy functions... >&2
-	@GOPATH=$(GOPATH_SHIM) $(DEEPCOPY_GEN) \
+	@$(DEEPCOPY_GEN) \
 		--go-header-file=./hack/boilerplate.go.txt \
-		--input-dirs=$(INPUT_DIRS) \
-		--output-file-base=zz_generated.deepcopy
+		--output-file=zz_generated.deepcopy.go \
+		./pkg/apis/...
 
 .PHONY: codegen-conversion
 codegen-conversion: ## Generate conversion functions
-codegen-conversion: $(PACKAGE_SHIM)
 codegen-conversion: $(CONVERSION_GEN)
 	@echo Generate conversion functions... >&2
-	@GOPATH=$(GOPATH_SHIM) $(CONVERSION_GEN) \
+	@$(CONVERSION_GEN) \
 		--go-header-file=./hack/boilerplate.go.txt \
-		--input-dirs=$(INPUT_DIRS) \
-		--output-file-base=zz_generated.conversion
+		--output-file=zz_generated.conversion.go \
+		./pkg/apis/...
 
 .PHONY: codegen-crds
 codegen-crds: ## Generate CRDs
-codegen-crds: $(PACKAGE_SHIM)
 codegen-crds: $(CONTROLLER_GEN)
 codegen-crds: codegen-deepcopy
 codegen-crds: codegen-register
 codegen-crds: codegen-conversion
 	@echo Generate crds... >&2
 	@rm -rf $(CRDS_PATH)
-	@GOPATH=$(GOPATH_SHIM) $(CONTROLLER_GEN) paths=./pkg/apis/... crd:crdVersions=v1,ignoreUnexportedFields=true,generateEmbeddedObjectMeta=false output:dir=$(CRDS_PATH)
+	@$(CONTROLLER_GEN) paths=./pkg/apis/... crd:crdVersions=v1,ignoreUnexportedFields=true,generateEmbeddedObjectMeta=false output:dir=$(CRDS_PATH)
 	@echo Copy generated CRDs to embed in the CLI... >&2
 	@rm -rf pkg/data/crds && mkdir -p pkg/data/crds
 	@cp $(CRDS_PATH)/* pkg/data/crds
@@ -145,7 +130,7 @@ codegen-crds: codegen-conversion
 codegen-cli-docs: ## Generate CLI docs
 codegen-cli-docs: build
 	@echo Generate cli docs... >&2
-	@rm -rf website/docs/reference/commands && mkdir -p website/reference/docs/commands
+	@rm -rf website/docs/reference/commands && mkdir -p website/docs/reference/commands
 	@./$(CLI_BIN) docs -o website/docs/reference/commands --autogenTag=false
 
 .PHONY: codegen-api-docs
@@ -241,7 +226,7 @@ verify-codegen: codegen
 
 .PHONY: mkdocs-serve
 mkdocs-serve: ## Generate and serve mkdocs website
-	@echo Generate and servemkdocs website... >&2
+	@echo Generate and serve mkdocs website... >&2
 	@$(PIP) install -r requirements.txt
 	@mkdocs serve -f ./website/mkdocs.yaml
 
@@ -298,7 +283,14 @@ tests: $(CLI_BIN)
 e2e-tests: ## Run e2e tests
 e2e-tests: $(CLI_BIN)
 	@echo Running e2e tests... >&2
-	@./$(CLI_BIN) test --test-dir ./testdata/e2e --remarshal --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml
+	@./$(CLI_BIN) test ./testdata/e2e --remarshal --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml
+
+.PHONY: e2e-tests-no-cluster
+e2e-tests-no-cluster: ## Run e2e tests with --no-cluster
+e2e-tests-no-cluster: $(CLI_BIN)
+	@echo Running e2e tests with --no-cluster... >&2
+	@./$(CLI_BIN) test testdata/e2e/examples/script-env --no-cluster --remarshal --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml
+	@./$(CLI_BIN) test testdata/e2e/examples/dynamic-clusters --no-cluster --remarshal --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml
 
 .PHONY: e2e-tests-ko 
 e2e-tests-ko: ## Run e2e tests from a docker container

@@ -5,27 +5,28 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 )
 
-func Logs(ctx context.Context, tc binding.Bindings, collector *v1alpha1.PodLogs) (string, []string, error) {
+func Logs(ctx context.Context, compilers compilers.Compilers, tc apis.Bindings, collector *v1alpha1.PodLogs) (string, []string, error) {
 	if collector == nil {
 		return "", nil, errors.New("collector is null")
 	}
-	name, err := collector.Name.Value(ctx, tc)
+	name, err := collector.Name.Value(ctx, compilers, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	namespace, err := collector.Namespace.Value(ctx, tc)
+	namespace, err := collector.Namespace.Value(ctx, compilers, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	selector, err := collector.Selector.Value(ctx, tc)
+	selector, err := collector.Selector.Value(ctx, compilers, tc)
 	if err != nil {
 		return "", nil, err
 	}
-	container, err := collector.Container.Value(ctx, tc)
+	container, err := collector.Container.Value(ctx, compilers, tc)
 	if err != nil {
 		return "", nil, err
 	}

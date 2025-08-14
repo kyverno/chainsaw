@@ -8,6 +8,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	kerror "k8s.io/apimachinery/pkg/api/errors"
@@ -196,7 +197,7 @@ func Test_cleaner_Run(t *testing.T) {
 				timeout: 1 * time.Second,
 				entries: tt.entries,
 			}
-			got := c.Run(context.TODO(), nil)
+			got := c.Run(context.TODO(), &model.StepReport{})
 			assert.Equal(t, tt.want, got)
 		})
 	}

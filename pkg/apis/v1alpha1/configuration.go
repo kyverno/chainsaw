@@ -37,6 +37,10 @@ type ConfigurationSpec struct {
 	// +kubebuilder:default:=true
 	Template bool `json:"template"`
 
+	// Compiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	Compiler *Compiler `json:"compiler,omitempty"`
+
 	// FailFast determines whether the test should stop upon encountering the first failure.
 	// +optional
 	FailFast bool `json:"failFast,omitempty"`
@@ -54,7 +58,7 @@ type ConfigurationSpec struct {
 	// +kubebuilder:default:=Background
 	DeletionPropagationPolicy metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
 
-	// ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION|nil) nil == no report.
+	// ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION, nil) nil == no report.
 	// maps to report.Type, however we don't want generated.deepcopy to have reference to it.
 	// +optional
 	// +kubebuilder:validation:Enum:=JSON;XML;JUNIT-TEST;JUNIT-STEP;JUNIT-OPERATION;
@@ -75,9 +79,13 @@ type ConfigurationSpec struct {
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 
+	// NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.
+	// +optional
+	NamespaceTemplateCompiler *Compiler `json:"namespaceTemplateCompiler,omitempty"`
+
 	// NamespaceTemplate defines a template to create the test namespace.
 	// +optional
-	NamespaceTemplate *Any `json:"namespaceTemplate,omitempty"`
+	NamespaceTemplate *Projection `json:"namespaceTemplate,omitempty"`
 
 	// FullName makes use of the full test case folder path instead of the folder name.
 	// +optional

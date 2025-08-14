@@ -26,7 +26,7 @@ type ActionCheckRef struct {
 
 	// Check provides a check used in assertions.
 	// +optional
-	Check *Check `json:"resource,omitempty"`
+	Check *Projection `json:"resource,omitempty"`
 
 	// Template determines whether resources should be considered for templating.
 	// +optional
@@ -60,6 +60,10 @@ type ActionEnv struct {
 	// SkipLogOutput removes the output from the command. Useful for sensitive logs or to reduce noise.
 	// +optional
 	SkipLogOutput bool `json:"skipLogOutput,omitempty"`
+
+	// SkipCommandOutput removes the command from the output logs.
+	// +optional
+	SkipCommandOutput bool `json:"skipCommandOutput,omitempty"`
 }
 
 // ActionExpectations contains expectations for an action.

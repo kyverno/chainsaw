@@ -13,11 +13,13 @@ Release notes for `TODO`.
 
 ## ⛵ Tutorials ⛵
 
+## 🔧 Fixes 🔧
+
 ## 📚 Docs 📚
 
 ## 🎸 Misc 🎸
 -->
 
-## 🔧 Fixes 🔧
+## 💫 New features 💫
 
-- Fixed default report name not set correctly
+- Continue tests when an error happens when computing the test name

@@ -1,4 +1,4 @@
-Version: ---
+Version: (devel)
 Loading default configuration...
 - Using test file: custom-test.yaml
 - TestDirs [.]
@@ -6,6 +6,7 @@ Loading default configuration...
 - FailFast false
 - ReportFormat 'XML'
 - ReportName 'foo'
+- ReportPath '../../../.temp'
 - Namespace 'bar'
 - FullName true
 - IncludeTestRegex '^.*$'
@@ -30,4 +31,5 @@ Tests Summary...
 - Passed  tests 0
 - Failed  tests 0
 - Skipped tests 0
+Saving report...
 Done.

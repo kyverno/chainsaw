@@ -16,6 +16,7 @@
                 "./testdata/e2e/examples",
                 "--config",
                 "./testdata/e2e/config.yaml",
+                "--remarshal",
             ]
         },
         {

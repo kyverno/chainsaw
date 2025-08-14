@@ -4,16 +4,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	apibindings "github.com/kyverno/chainsaw/pkg/engine/bindings"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 )
 
-func RegisterEnvs(ctx context.Context, namespace string, bindings binding.Bindings, envs ...v1alpha1.Binding) (map[string]string, []string, error) {
+func RegisterEnvs(ctx context.Context, compilers compilers.Compilers, namespace string, bindings apis.Bindings, envs ...v1alpha1.Binding) (map[string]string, []string, error) {
 	mapOut := map[string]string{}
 	var envsOut []string
 	for _, env := range envs {
-		name, value, err := apibindings.ResolveBinding(ctx, bindings, nil, env)
+		name, value, err := apibindings.ResolveBinding(ctx, compilers, bindings, nil, env)
 		if err != nil {
 			return mapOut, envsOut, err
 		}

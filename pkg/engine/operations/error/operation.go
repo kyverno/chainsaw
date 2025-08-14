@@ -4,23 +4,26 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/jmespath-community/go-jmespath/pkg/binding"
+	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/engine/checks"
-	"github.com/kyverno/chainsaw/pkg/engine/logging"
 	"github.com/kyverno/chainsaw/pkg/engine/namespacer"
 	"github.com/kyverno/chainsaw/pkg/engine/operations"
 	"github.com/kyverno/chainsaw/pkg/engine/operations/internal"
 	"github.com/kyverno/chainsaw/pkg/engine/outputs"
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
+	"github.com/kyverno/chainsaw/pkg/logging"
+	"github.com/kyverno/kyverno-json/pkg/core/compilers"
 	"go.uber.org/multierr"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/utils/ptr"
 )
 
 type operation struct {
+	compilers  compilers.Compilers
 	client     client.Client
 	base       unstructured.Unstructured
 	namespacer namespacer.Namespacer
@@ -28,12 +31,14 @@ type operation struct {
 }
 
 func New(
+	compilers compilers.Compilers,
 	client client.Client,
 	expected unstructured.Unstructured,
 	namespacer namespacer.Namespacer,
 	template bool,
 ) operations.Operation {
 	return &operation{
+		compilers:  compilers,
 		client:     client,
 		base:       expected,
 		namespacer: namespacer,
@@ -41,17 +46,16 @@ func New(
 	}
 }
 
-func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outputs.Outputs, _err error) {
+func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs.Outputs, _err error) {
 	if bindings == nil {
-		bindings = binding.NewBindings()
+		bindings = apis.NewBindings()
 	}
 	obj := o.base
-	logger := internal.GetLogger(ctx, &obj)
 	defer func() {
-		internal.LogEnd(logger, logging.Error, _err)
+		internal.LogEnd(ctx, logging.Error, &obj, _err)
 	}()
 	if o.template {
-		if err := templating.ResourceRef(ctx, &obj, bindings); err != nil {
+		if err := templating.ResourceRef(ctx, o.compilers, &obj, bindings); err != nil {
 			return nil, err
 		}
 	}
@@ -60,11 +64,11 @@ func (o *operation) Exec(ctx context.Context, bindings binding.Bindings) (_ outp
 			return nil, err
 		}
 	}
-	internal.LogStart(logger, logging.Error)
+	internal.LogStart(ctx, logging.Error, &obj)
 	return nil, o.execute(ctx, bindings, obj)
 }
 
-func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj unstructured.Unstructured) error {
+func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj unstructured.Unstructured) error {
 	var lastErrs []error
 	err := wait.PollUntilContextCancel(ctx, client.PollInterval, false, func(ctx context.Context) (_ bool, err error) {
 		var errs []error
@@ -75,7 +79,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 			}
 		}()
 		if obj.GetAPIVersion() == "" || obj.GetKind() == "" {
-			_errs, err := checks.Check(ctx, nil, bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
+			_errs, err := checks.Check(ctx, o.compilers, nil, bindings, ptr.To(v1alpha1.NewCheck(obj.UnstructuredContent())))
 			if err != nil {
 				return false, err
 			}
@@ -94,7 +98,7 @@ func (o *operation) execute(ctx context.Context, bindings binding.Bindings, obj 
 			} else {
 				for i := range candidates {
 					candidate := candidates[i]
-					_errs, err := checks.Check(ctx, candidate.UnstructuredContent(), bindings, &v1alpha1.Check{Value: obj.UnstructuredContent()})
+					_errs, err := checks.Check(ctx, o.compilers, candidate.UnstructuredContent(), bindings, ptr.To(v1alpha1.NewCheck(obj.UnstructuredContent())))
 					if err != nil {
 						return false, err
 					}
