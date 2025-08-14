@@ -1,6 +1,7 @@
 package context
 
 import (
+	"context"
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
@@ -227,4 +228,19 @@ func (tc TestContext) WithTimeouts(timeouts v1alpha1.Timeouts) TestContext {
 		tc.timeouts.Exec = *new
 	}
 	return tc
+}
+
+type tcKey struct{}
+
+func TestContextFromCtx(ctx context.Context) *TestContext {
+	tc := ctx.Value(tcKey{})
+	if tc != nil {
+		return tc.(*TestContext)
+	} else {
+		return nil
+	}
+}
+
+func TestContextToCtx(ctx context.Context, tc *TestContext) context.Context {
+	return context.WithValue(ctx, tcKey{}, tc)
 }

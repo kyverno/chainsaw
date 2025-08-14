@@ -25,6 +25,7 @@ func defaultClientFactory(cluster Cluster) (*rest.Config, client.Client, error) 
 	if err != nil {
 		return nil, nil, err
 	}
+	config.WarningHandler = cluster
 	client, err := simple.New(config)
 	if err != nil {
 		return nil, nil, err
