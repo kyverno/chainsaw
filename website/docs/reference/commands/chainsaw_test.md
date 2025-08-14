@@ -52,7 +52,7 @@ chainsaw test [flags]... [test directories]...
       --pause-on-failure                          Pause test execution failure (implies no concurrency)
       --remarshal                                 Remarshals tests yaml to apply anchors before parsing
       --repeat-count int                          Number of times to repeat each test (default 1)
-      --report-format string                      Test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION)
+      --report-format string                      Test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION)
       --report-name string                        The name of the report to create (default "chainsaw-report")
       --report-path string                        The path of the report to create
       --selector strings                          Selector (label query) to filter on

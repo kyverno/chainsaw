@@ -39,18 +39,18 @@ func Wait(ctx context.Context, compilers compilers.Compilers, client client.Clie
 		return "", nil, err
 	}
 	args := []string{"wait", resource}
-	if collector.WaitFor.Deletion != nil {
+	if collector.Deletion != nil {
 		args = append(args, "--for=delete")
-	} else if collector.WaitFor.Condition != nil {
-		name, err := collector.WaitFor.Condition.Name.Value(ctx, compilers, tc)
+	} else if collector.Condition != nil {
+		name, err := collector.Condition.Name.Value(ctx, compilers, tc)
 		if err != nil {
 			return "", nil, err
 		}
 		if name == "" {
 			return "", nil, errors.New("a condition name must be specified for condition wait type")
 		}
-		if collector.WaitFor.Condition.Value != nil {
-			value, err := collector.WaitFor.Condition.Value.Value(ctx, compilers, tc)
+		if collector.Condition.Value != nil {
+			value, err := collector.Condition.Value.Value(ctx, compilers, tc)
 			if err != nil {
 				return "", nil, err
 			}
@@ -58,16 +58,16 @@ func Wait(ctx context.Context, compilers compilers.Compilers, client client.Clie
 		} else {
 			args = append(args, fmt.Sprintf("--for=condition=%s", name))
 		}
-	} else if collector.WaitFor.JsonPath != nil {
-		path, err := collector.WaitFor.JsonPath.Path.Value(ctx, compilers, tc)
+	} else if collector.JsonPath != nil {
+		path, err := collector.JsonPath.Path.Value(ctx, compilers, tc)
 		if err != nil {
 			return "", nil, err
 		}
 		if path == "" {
 			return "", nil, errors.New("a path must be specified for jsonpath wait type")
 		}
-		if collector.WaitFor.JsonPath.Value != nil {
-			value, err := collector.WaitFor.JsonPath.Value.Value(ctx, compilers, tc)
+		if collector.JsonPath.Value != nil {
+			value, err := collector.JsonPath.Value.Value(ctx, compilers, tc)
 			if err != nil {
 				return "", nil, err
 			}
