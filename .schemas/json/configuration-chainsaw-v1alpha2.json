@@ -1445,7 +1445,7 @@
                         }
                       },
                       "content": {
-                        "description": "Content defines a shell script (run with \"sh -c ...\").",
+                        "description": "Content defines a shell script (run with \"$shell $shellArgs ...\").",
                         "type": [
                           "string",
                           "null"
@@ -1538,11 +1538,24 @@
                         }
                       },
                       "shell": {
-                        "description": "Shell defines the host shell (run with \"... -c $content\").",
+                        "description": "Shell defines the host shell (run with \"... $shellArgs $content\").",
                         "type": [
                           "string",
                           "null"
                         ]
+                      },
+                      "shellArgs": {
+                        "description": "ShellArgs defines arguments for the host shell (run with \"$shell ... $content\").",
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
+                        }
                       },
                       "skipCommandOutput": {
                         "description": "SkipCommandOutput removes the command from the output logs.",
