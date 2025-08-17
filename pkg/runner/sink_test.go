@@ -14,7 +14,7 @@ import (
 	"k8s.io/utils/ptr"
 )
 
-func Test_newSink(t *testing.T) {
+func Test_NewSink(t *testing.T) {
 	tests := []struct {
 		name      string
 		test      string
@@ -82,12 +82,66 @@ func Test_newSink(t *testing.T) {
 			log := func(args ...any) {
 				out = args
 			}
-			got := newSink(tclock.NewFakePassiveClock(time.Time{}), log)
+			got := NewSink(tclock.NewFakePassiveClock(time.Time{}), log)
 			if tt.color != nil {
 				tt.color.EnableColor()
 			}
 			got.Log(tt.test, tt.step, tt.operation, tt.status, tt.obj, tt.color, tt.args...)
 			assert.Equal(t, tt.want, out)
+		})
+	}
+}
+
+func Test_NewFilteredSink(t *testing.T) {
+	tests := []struct {
+		name       string
+		test       string
+		step       string
+		operation  logging.Operation
+		status     logging.Status
+		obj        client.Object
+		color      *color.Color
+		args       []fmt.Stringer
+		noWarnings bool
+		wantOutput bool
+	}{
+		{
+			name:       "passes non-warning status",
+			test:       "foo",
+			step:       "bar",
+			operation:  logging.Apply,
+			status:     logging.OkStatus,
+			noWarnings: true,
+			wantOutput: true,
+		},
+		{
+			name:       "filters warning status",
+			test:       "foo",
+			step:       "bar",
+			operation:  logging.Apply,
+			status:     logging.WarnStatus,
+			noWarnings: true,
+			wantOutput: false,
+		},
+		{
+			name:       "passes warning status when noWarnings is false",
+			test:       "foo",
+			step:       "bar",
+			operation:  logging.Apply,
+			status:     logging.WarnStatus,
+			noWarnings: false,
+			wantOutput: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			called := false
+			log := func(args ...any) {
+				called = true
+			}
+			got := NewFilteredSink(tclock.NewFakePassiveClock(time.Time{}), log, tt.noWarnings)
+			got.Log(tt.test, tt.step, tt.operation, tt.status, tt.obj, tt.color, tt.args...)
+			assert.Equal(t, tt.wantOutput, called)
 		})
 	}
 }

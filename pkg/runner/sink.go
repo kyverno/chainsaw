@@ -11,7 +11,8 @@ import (
 
 const eraser = "\b\b\b\b\b\b\b\b\b\b\b\b"
 
-func newSink(clock clock.PassiveClock, log func(args ...any)) logging.SinkFunc {
+// NewSink creates a standard logging sink
+func NewSink(clock clock.PassiveClock, log func(args ...any)) logging.SinkFunc {
 	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
 		sprint := fmt.Sprint
 		opLen := 9
@@ -34,5 +35,20 @@ func newSink(clock clock.PassiveClock, log func(args ...any)) logging.SinkFunc {
 			a = append(a, arg)
 		}
 		log(fmt.Sprint(a...))
+	}
+}
+
+// NewFilteredSink creates a sink that filters out warnings if noWarnings is true.
+func NewFilteredSink(clock clock.PassiveClock, log func(args ...any), noWarnings bool) logging.SinkFunc {
+	sink := NewSink(clock, log)
+	if !noWarnings {
+		return sink
+	}
+	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
+		// Filter out WarnStatus
+		if status == logging.WarnStatus {
+			return
+		}
+		sink(test, step, operation, status, obj, color, args...)
 	}
 }
