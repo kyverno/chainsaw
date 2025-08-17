@@ -102,7 +102,7 @@ func (o *operation) createCommand(ctx context.Context, bindings apis.Bindings) (
 		shellArgs = o.script.ShellArgs
 	}
 	shellArgs = append(shellArgs, o.script.Content)
-	cmd := exec.CommandContext(ctx, shell, shellArgs...) //nolint:gosec
+	cmd := exec.CommandContext(ctx, shell, shellArgs...)
 	cmd.Env = env
 	basePath := o.basePath
 	if o.script.WorkDir != nil {
