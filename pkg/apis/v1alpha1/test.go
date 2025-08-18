@@ -16,7 +16,7 @@ type Test struct {
 
 	// Standard object's metadata.
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
 	// Test spec.
 	Spec TestSpec `json:"spec"`

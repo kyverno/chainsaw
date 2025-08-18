@@ -15,7 +15,7 @@ type Configuration struct {
 
 	// Standard object's metadata.
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
 	// Configuration spec.
 	Spec ConfigurationSpec `json:"spec"`

@@ -16,7 +16,7 @@ type Configuration struct {
 
 	// Standard object's metadata.
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
 	// Configuration spec.
 	Spec ConfigurationSpec `json:"spec"`
@@ -47,7 +47,7 @@ type ConfigurationSpec struct {
 	// Error contains the global error configuration.
 	// +optional
 	// +kubebuilder:default:={}
-	Error ErrorOptions `json:"error,omitempty"`
+	Error ErrorOptions `json:"error"`
 
 	// Execution contains tests execution configuration.
 	// +optional
