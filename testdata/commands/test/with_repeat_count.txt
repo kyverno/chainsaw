@@ -2,6 +2,7 @@ Version: (devel)
 Loading default configuration...
 - Using test file: chainsaw-test
 - TestDirs [.]
+- Quiet false
 - SkipDelete false
 - FailFast false
 - Namespace ''

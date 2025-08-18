@@ -82,7 +82,7 @@ func Test_newSink(t *testing.T) {
 			log := func(args ...any) {
 				out = args
 			}
-			got := newSink(tclock.NewFakePassiveClock(time.Time{}), log)
+			got := newSink(tclock.NewFakePassiveClock(time.Time{}), false, log)
 			if tt.color != nil {
 				tt.color.EnableColor()
 			}

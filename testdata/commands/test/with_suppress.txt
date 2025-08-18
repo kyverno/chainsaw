@@ -3,6 +3,7 @@ Loading default configuration...
 - Using test file: chainsaw-test
 - Timeout 30s
 - TestDirs [.]
+- Quiet false
 - SkipDelete false
 - FailFast false
 - ReportFormat ''
