@@ -850,7 +850,9 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionEnv` | [`ActionEnv`](#chainsaw-kyverno-io-v1alpha1-ActionEnv) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-| `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
+| `content` | `string` |  |  | <p>Content defines a shell script (run with "$shell $shellArgs ...").</p> |
+| `shell` | `string` | :white_check_mark: |  | <p>Shell defines the host shell (run with "... $shellArgs $content").</p> |
+| `shellArgs` | `[]string` | :white_check_mark: |  | <p>ShellArgs defines arguments for the host shell (run with "$shell ... $content").</p> |
 | `workDir` | `string` |  |  | <p>WorkDir is the working directory for script.</p> |
 
 ## Sleep     {#chainsaw-kyverno-io-v1alpha1-Sleep}
