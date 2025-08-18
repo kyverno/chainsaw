@@ -428,7 +428,7 @@ during the testing process.</p>
 | `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
 | `parallel` | `int` |  |  | <p>The maximum number of tests to run at once.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation.</p> |
-| `reportFormat` | [`ReportFormatType`](#chainsaw-kyverno-io-v1alpha1-ReportFormatType) |  |  | <p>ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION|nil) nil == no report. maps to report.Type, however we don't want generated.deepcopy to have reference to it.</p> |
+| `reportFormat` | [`ReportFormatType`](#chainsaw-kyverno-io-v1alpha1-ReportFormatType) |  |  | <p>ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION, nil) nil == no report. maps to report.Type, however we don't want generated.deepcopy to have reference to it.</p> |
 | `reportPath` | `string` |  |  | <p>ReportPath defines the path.</p> |
 | `reportName` | `string` |  |  | <p>ReportName defines the name of report to create. It defaults to "chainsaw-report".</p> |
 | `namespace` | `string` |  |  | <p>Namespace defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
@@ -850,7 +850,9 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionEnv` | [`ActionEnv`](#chainsaw-kyverno-io-v1alpha1-ActionEnv) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-| `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
+| `content` | `string` |  |  | <p>Content defines a shell script (run with "$shell $shellArgs ...").</p> |
+| `shell` | `string` | :white_check_mark: |  | <p>Shell defines the host shell (run with "... $shellArgs $content").</p> |
+| `shellArgs` | `[]string` | :white_check_mark: |  | <p>ShellArgs defines arguments for the host shell (run with "$shell ... $content").</p> |
 | `workDir` | `string` |  |  | <p>WorkDir is the working directory for script.</p> |
 
 ## Sleep     {#chainsaw-kyverno-io-v1alpha1-Sleep}

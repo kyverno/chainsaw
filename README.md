@@ -51,7 +51,7 @@ To attend our community meetings, join the [Chainsaw group](https://groups.googl
 You will then be sent a meeting invite and will have access to the agenda and meeting notes.
 Any member may suggest topics for discussion.
 
-This is a public, weekly for Kyverno-Chainsaw maintainers to make announcements and provide project updates, and request input and feedback.
+This is a public, weekly meeting for Kyverno-Chainsaw maintainers to make announcements and provide project updates, and request input and feedback.
 This forum allows community members to raise agenda items of any sort, including but not limited to any PRs or issues on which they are working.
 
 Weekly every Thursday at 2:00 PM UTC

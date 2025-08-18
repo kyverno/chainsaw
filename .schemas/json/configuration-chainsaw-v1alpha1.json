@@ -1317,7 +1317,7 @@
                     }
                   },
                   "content": {
-                    "description": "Content defines a shell script (run with \"sh -c ...\").",
+                    "description": "Content defines a shell script (run with \"$shell $shellArgs ...\").",
                     "type": [
                       "string",
                       "null"
@@ -1407,6 +1407,26 @@
                         }
                       },
                       "additionalProperties": false
+                    }
+                  },
+                  "shell": {
+                    "description": "Shell defines the host shell (run with \"... $shellArgs $content\").",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "shellArgs": {
+                    "description": "ShellArgs defines arguments for the host shell (run with \"$shell ... $content\").",
+                    "type": [
+                      "array",
+                      "null"
+                    ],
+                    "items": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
                     }
                   },
                   "skipCommandOutput": {
@@ -1764,7 +1784,7 @@
           "minimum": 1
         },
         "reportFormat": {
-          "description": "ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION|nil) nil == no report.\nmaps to report.Type, however we don't want generated.deepcopy to have reference to it.",
+          "description": "ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION, nil) nil == no report.\nmaps to report.Type, however we don't want generated.deepcopy to have reference to it.",
           "type": [
             "string",
             "null"
@@ -1885,7 +1905,6 @@
       "version": "v1alpha1"
     }
   ],
-  "x-kubernetes-selectable-fields": [],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/schema#"
 }

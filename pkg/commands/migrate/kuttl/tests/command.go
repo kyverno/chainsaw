@@ -151,7 +151,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 			}
 		}
 		if !containsKuttlResources {
-			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+			step.Try = append(step.Try, v1alpha1.Operation{
 				Apply: &v1alpha1.Apply{
 					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
@@ -193,7 +193,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 					return err
 				}
 			}
-			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+			step.Try = append(step.Try, v1alpha1.Operation{
 				Apply: &v1alpha1.Apply{
 					ActionResourceRef: v1alpha1.ActionResourceRef{
 						FileRef: v1alpha1.FileRef{
@@ -218,7 +218,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 			}
 		}
 		if !containsKuttlResources {
-			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+			step.Try = append(step.Try, v1alpha1.Operation{
 				Assert: &v1alpha1.Assert{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
@@ -254,7 +254,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 					return err
 				}
 			}
-			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+			step.Try = append(step.Try, v1alpha1.Operation{
 				Assert: &v1alpha1.Assert{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
@@ -279,7 +279,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 			}
 		}
 		if !containsKuttlResources {
-			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+			step.Try = append(step.Try, v1alpha1.Operation{
 				Error: &v1alpha1.Error{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{
@@ -315,7 +315,7 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 					return err
 				}
 			}
-			step.TestStepSpec.Try = append(step.TestStepSpec.Try, v1alpha1.Operation{
+			step.Try = append(step.Try, v1alpha1.Operation{
 				Error: &v1alpha1.Error{
 					ActionCheckRef: v1alpha1.ActionCheckRef{
 						FileRef: v1alpha1.FileRef{

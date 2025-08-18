@@ -317,9 +317,15 @@ type Script struct {
 	ActionOutputs  `json:",inline"`
 	ActionTimeout  `json:",inline"`
 
-	// Content defines a shell script (run with "sh -c ...").
+	// Content defines a shell script (run with "$shell $shellArgs ...").
 	// +optional
 	Content string `json:"content,omitempty"`
+
+	// Shell defines the host shell (run with "... $shellArgs $content").
+	Shell *string `json:"shell,omitempty"`
+
+	// ShellArgs defines arguments for the host shell (run with "$shell ... $content").
+	ShellArgs []string `json:"shellArgs,omitempty"`
 
 	// WorkDir is the working directory for script.
 	// +optional

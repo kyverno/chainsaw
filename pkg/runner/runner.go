@@ -49,7 +49,7 @@ func (r *runner) Run(ctx context.Context, nsOptions v1alpha2.NamespaceOptions, t
 
 func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.NamespaceOptions, tc enginecontext.TestContext, tests ...discovery.Test) error {
 	defer func() {
-		tc.Report.EndTime = time.Now()
+		tc.EndTime = time.Now()
 	}()
 	// sanity check
 	if len(tests) == 0 {
@@ -68,10 +68,33 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 				}
 				return false
 			}
-			// setup logger sink
-			ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
+
+			// Check if quiet mode is enabled - attempt to access binding
+			quietMode := false
+			value, err := tc.Bindings().Get("$quiet")
+			if err == nil && value != nil {
+				if v, err := value.Value(); err == nil {
+					if b, ok := v.(bool); ok {
+						quietMode = b
+					}
+				}
+			}
+
+			// Setup logger sink - if in quiet mode, use a filtered sink
+			var sink logging.Sink
+			if quietMode {
+				// In quiet mode, use a sink that only logs errors and internal messages
+				baseSink := newSink(r.clock, t.Log)
+				sink = newQuietSink(baseSink)
+			} else {
+				// In normal mode, use the full sink
+				sink = newSink(r.clock, t.Log)
+			}
+			ctx = logging.WithSink(ctx, sink)
+
 			// setup logger
 			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "@chainsaw"))
+
 			// setup cleanup
 			cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
 			t.Cleanup(func() {
@@ -134,7 +157,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						defer func() {
 							report.EndTime = time.Now()
 							report.Skipped = t.Skipped()
-							tc.Report.Add(report)
+							tc.Add(report)
 						}()
 						// skip check
 						if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {

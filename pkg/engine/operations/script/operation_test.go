@@ -123,6 +123,16 @@ func Test_operationScript(t *testing.T) {
 		basePath:  "..",
 		namespace: "test-namespace",
 		wantErr:   true,
+	}, {
+		name: "with shell",
+		script: v1alpha1.Script{
+			Shell:     ptr.To("grep"),
+			ShellArgs: []string{"-c", "package"},
+			Content:   "operation.go",
+		},
+		basePath:  "..",
+		namespace: "test-namespace",
+		wantErr:   false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

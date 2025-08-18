@@ -1127,6 +1127,16 @@ func (in *Script) DeepCopyInto(out *Script) {
 	in.ActionEnv.DeepCopyInto(&out.ActionEnv)
 	in.ActionOutputs.DeepCopyInto(&out.ActionOutputs)
 	in.ActionTimeout.DeepCopyInto(&out.ActionTimeout)
+	if in.Shell != nil {
+		in, out := &in.Shell, &out.Shell
+		*out = new(string)
+		**out = **in
+	}
+	if in.ShellArgs != nil {
+		in, out := &in.ShellArgs, &out.ShellArgs
+		*out = make([]string, len(*in))
+		copy(*out, *in)
+	}
 	if in.WorkDir != nil {
 		in, out := &in.WorkDir, &out.WorkDir
 		*out = new(string)

@@ -66,6 +66,8 @@ type options struct {
 	remarshal                   bool
 	shardIndex                  int
 	shardCount                  int
+	quiet                       bool
+	silent                      bool // alias for quiet
 }
 
 func Command() *cobra.Command {
@@ -80,25 +82,49 @@ func Command() *cobra.Command {
 			stdOut := cmd.OutOrStdout()
 			stdErr := cmd.ErrOrStderr()
 			stdIn := cmd.InOrStdin()
-			fmt.Fprintf(stdOut, "Version: %s\n", version.Version())
+
+			// Process quiet/silent mode - silent is an alias for quiet
+			if options.silent {
+				options.quiet = true
+			}
+
+			// Helper function for conditional logging based on quiet flag
+			printfln := func(format string, a ...interface{}) {
+				if !options.quiet {
+					fmt.Fprintf(stdOut, format+"\n", a...)
+				}
+			}
+
+			println := func(a ...interface{}) {
+				if !options.quiet {
+					fmt.Fprintln(stdOut, a...)
+				}
+			}
+
+			printErr := func(a ...interface{}) {
+				// Always print errors regardless of quiet mode
+				fmt.Fprintln(stdErr, a...)
+			}
+
+			printfln("Version: %s", version.Version())
 			var configuration v1alpha2.Configuration
 			// if no config file was provided, give a chance to the default config name
 			if options.config == "" {
 				if _, err := os.Stat(config.DefaultFileName); err == nil {
 					options.config = config.DefaultFileName
-					fmt.Fprintf(stdOut, "No configuration provided but found default file: %s\n", options.config)
+					printfln("No configuration provided but found default file: %s", options.config)
 				}
 			}
 			// try to load configuration file
 			if options.config != "" {
-				fmt.Fprintf(stdOut, "Loading config (%s)...\n", options.config)
+				printfln("Loading config (%s)...", options.config)
 				config, err := config.Load(options.config)
 				if err != nil {
 					return err
 				}
 				configuration = *config
 			} else {
-				fmt.Fprintln(stdOut, "Loading default configuration...")
+				println("Loading default configuration...")
 				config, err := config.DefaultConfiguration()
 				if err != nil {
 					return err
@@ -229,63 +255,63 @@ func Command() *cobra.Command {
 			if options.pauseOnFailure {
 				configuration.Spec.Execution.Parallel = ptr.To(1)
 			}
-			fmt.Fprintf(stdOut, "- Using test file: %s\n", configuration.Spec.Discovery.TestFile)
-			fmt.Fprintf(stdOut, "- TestDirs %v\n", options.testDirs)
-			fmt.Fprintf(stdOut, "- SkipDelete %v\n", configuration.Spec.Cleanup.SkipDelete)
-			fmt.Fprintf(stdOut, "- FailFast %v\n", configuration.Spec.Execution.FailFast)
+			printfln("- Using test file: %s", configuration.Spec.Discovery.TestFile)
+			printfln("- TestDirs %v", options.testDirs)
+			printfln("- SkipDelete %v", configuration.Spec.Cleanup.SkipDelete)
+			printfln("- FailFast %v", configuration.Spec.Execution.FailFast)
 			if configuration.Spec.Report != nil {
-				fmt.Fprintf(stdOut, "- ReportFormat '%v'\n", configuration.Spec.Report.Format)
-				fmt.Fprintf(stdOut, "- ReportName '%v'\n", configuration.Spec.Report.Name)
+				printfln("- ReportFormat '%v'", configuration.Spec.Report.Format)
+				printfln("- ReportName '%v'", configuration.Spec.Report.Name)
 				if configuration.Spec.Report.Path != "" {
-					fmt.Fprintf(stdOut, "- ReportPath '%v'\n", configuration.Spec.Report.Path)
+					printfln("- ReportPath '%v'", configuration.Spec.Report.Path)
 				}
 			}
-			fmt.Fprintf(stdOut, "- Namespace '%v'\n", configuration.Spec.Namespace.Name)
-			fmt.Fprintf(stdOut, "- FullName %v\n", configuration.Spec.Discovery.FullName)
-			fmt.Fprintf(stdOut, "- IncludeTestRegex '%v'\n", configuration.Spec.Discovery.IncludeTestRegex)
-			fmt.Fprintf(stdOut, "- ExcludeTestRegex '%v'\n", configuration.Spec.Discovery.ExcludeTestRegex)
-			fmt.Fprintf(stdOut, "- ApplyTimeout %v\n", configuration.Spec.Timeouts.Apply.Duration)
-			fmt.Fprintf(stdOut, "- AssertTimeout %v\n", configuration.Spec.Timeouts.Assert.Duration)
-			fmt.Fprintf(stdOut, "- CleanupTimeout %v\n", configuration.Spec.Timeouts.Cleanup.Duration)
-			fmt.Fprintf(stdOut, "- DeleteTimeout %v\n", configuration.Spec.Timeouts.Delete.Duration)
-			fmt.Fprintf(stdOut, "- ErrorTimeout %v\n", configuration.Spec.Timeouts.Error.Duration)
-			fmt.Fprintf(stdOut, "- ExecTimeout %v\n", configuration.Spec.Timeouts.Exec.Duration)
-			fmt.Fprintf(stdOut, "- DeletionPropagationPolicy %v\n", configuration.Spec.Deletion.Propagation)
+			printfln("- Namespace '%v'", configuration.Spec.Namespace.Name)
+			printfln("- FullName %v", configuration.Spec.Discovery.FullName)
+			printfln("- IncludeTestRegex '%v'", configuration.Spec.Discovery.IncludeTestRegex)
+			printfln("- ExcludeTestRegex '%v'", configuration.Spec.Discovery.ExcludeTestRegex)
+			printfln("- ApplyTimeout %v", configuration.Spec.Timeouts.Apply.Duration)
+			printfln("- AssertTimeout %v", configuration.Spec.Timeouts.Assert.Duration)
+			printfln("- CleanupTimeout %v", configuration.Spec.Timeouts.Cleanup.Duration)
+			printfln("- DeleteTimeout %v", configuration.Spec.Timeouts.Delete.Duration)
+			printfln("- ErrorTimeout %v", configuration.Spec.Timeouts.Error.Duration)
+			printfln("- ExecTimeout %v", configuration.Spec.Timeouts.Exec.Duration)
+			printfln("- DeletionPropagationPolicy %v", configuration.Spec.Deletion.Propagation)
 			if configuration.Spec.Execution.Parallel != nil && *configuration.Spec.Execution.Parallel > 0 {
-				fmt.Fprintf(stdOut, "- Parallel %d\n", *configuration.Spec.Execution.Parallel)
+				printfln("- Parallel %d", *configuration.Spec.Execution.Parallel)
 			}
 			if configuration.Spec.Execution.RepeatCount != nil {
-				fmt.Fprintf(stdOut, "- RepeatCount %v\n", *configuration.Spec.Execution.RepeatCount)
+				printfln("- RepeatCount %v", *configuration.Spec.Execution.RepeatCount)
 			}
 			if configuration.Spec.Execution.ForceTerminationGracePeriod != nil {
-				fmt.Fprintf(stdOut, "- ForceTerminationGracePeriod %v\n", configuration.Spec.Execution.ForceTerminationGracePeriod.Duration)
+				printfln("- ForceTerminationGracePeriod %v", configuration.Spec.Execution.ForceTerminationGracePeriod.Duration)
 			}
 			if configuration.Spec.Cleanup.DelayBeforeCleanup != nil {
-				fmt.Fprintf(stdOut, "- DelayBeforeCleanup %v\n", configuration.Spec.Cleanup.DelayBeforeCleanup.Duration)
+				printfln("- DelayBeforeCleanup %v", configuration.Spec.Cleanup.DelayBeforeCleanup.Duration)
 			}
 			if len(options.selector) != 0 {
-				fmt.Fprintf(stdOut, "- Selector %v\n", options.selector)
+				printfln("- Selector %v", options.selector)
 			}
 			if len(options.values) != 0 {
-				fmt.Fprintf(stdOut, "- Values %v\n", options.values)
+				printfln("- Values %v", options.values)
 			}
-			fmt.Fprintf(stdOut, "- Template %v\n", configuration.Spec.Templating.Enabled)
+			printfln("- Template %v", configuration.Spec.Templating.Enabled)
 			if configuration.Spec.Templating.Compiler != nil {
-				fmt.Fprintf(stdOut, "- Default compiler %v\n", *configuration.Spec.Templating.Compiler)
+				printfln("- Default compiler %v", *configuration.Spec.Templating.Compiler)
 			}
 			if len(configuration.Spec.Clusters) != 0 {
-				fmt.Fprintf(stdOut, "- Clusters %v\n", configuration.Spec.Clusters)
+				printfln("- Clusters %v", configuration.Spec.Clusters)
 			}
 			if options.remarshal {
-				fmt.Fprintf(stdOut, "- Remarshal %v\n", options.remarshal)
+				printfln("- Remarshal %v", options.remarshal)
 			}
-			fmt.Fprintf(stdOut, "- NoCluster %v\n", options.noCluster)
-			fmt.Fprintf(stdOut, "- PauseOnFailure %v\n", options.pauseOnFailure)
+			printfln("- NoCluster %v", options.noCluster)
+			printfln("- PauseOnFailure %v", options.pauseOnFailure)
 			if options.shardCount > 0 {
-				fmt.Fprintf(stdOut, "- Shard %v / %v\n", options.shardIndex, options.shardCount)
+				printfln("- Shard %v / %v", options.shardIndex, options.shardCount)
 			}
 			// load tests
-			fmt.Fprintln(stdOut, "Loading tests...")
+			println("Loading tests...")
 			if err := fsutils.CheckFolders(options.testDirs...); err != nil {
 				return err
 			}
@@ -314,20 +340,20 @@ func Command() *cobra.Command {
 			var testToRun []discovery.Test
 			for _, test := range tests {
 				if test.Err != nil {
-					fmt.Fprintf(stdOut, "- %s (%s) - (%s)\n", test.Test.Name, test.BasePath, test.Err)
+					printfln("- %s (%s) - (%s)", test.Test.Name, test.BasePath, test.Err)
 				} else {
-					fmt.Fprintf(stdOut, "- %s (%s)\n", test.Test.Name, test.BasePath)
+					printfln("- %s (%s)", test.Test.Name, test.BasePath)
 					testToRun = append(testToRun, test)
 				}
 			}
 			// load values
-			fmt.Fprintln(stdOut, "Loading values...")
+			println("Loading values...")
 			values, err := values.Load(options.values...)
 			if err != nil {
 				return err
 			}
 			// run tests
-			fmt.Fprintln(stdOut, "Running tests...")
+			println("Running tests...")
 			var restConfig *rest.Config
 			if !options.noCluster {
 				cfg, err := restutils.DefaultConfig(options.kubeConfigOverrides)
@@ -339,7 +365,7 @@ func Command() *cobra.Command {
 			var onFailure func()
 			if options.pauseOnFailure {
 				onFailure = func() {
-					fmt.Fprintln(stdErr, "Failure detected, press ENTER to continue...")
+					printErr("Failure detected, press ENTER to continue...")
 					fmt.Fscanln(stdIn) //nolint:errcheck
 				}
 			}
@@ -348,32 +374,36 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
+
+			// Pass quiet mode to the test context so components can access it
+			tc = tc.WithBinding("quiet", options.quiet)
+
 			runner := runner.New(clock, onFailure)
 			// setup flags
 			if err := runnerflags.SetupFlags(configuration.Spec); err != nil {
 				return err
 			}
 			err = runner.Run(ctx, configuration.Spec.Namespace, tc, testToRun...)
-			fmt.Fprintln(stdOut, "Tests Summary...")
-			fmt.Fprintln(stdOut, "- Passed  tests", tc.Passed())
-			fmt.Fprintln(stdOut, "- Failed  tests", tc.Failed())
-			fmt.Fprintln(stdOut, "- Skipped tests", tc.Skipped())
+			println("Tests Summary...")
+			printfln("- Passed  tests %d", tc.Passed())
+			printfln("- Failed  tests %d", tc.Failed())
+			printfln("- Skipped tests %d", tc.Skipped())
 			// process report
 			if err == nil {
 				if configuration.Spec.Report != nil && configuration.Spec.Report.Format != "" {
-					fmt.Fprintln(stdOut, "Saving report...")
+					println("Saving report...")
 					if err := report.Save(tc.Report, configuration.Spec.Report.Format, configuration.Spec.Report.Path, configuration.Spec.Report.Name); err != nil {
 						return err
 					}
 				}
 			}
 			if err != nil {
-				fmt.Fprintln(stdOut, "Done with error.")
+				println("Done with error.")
 			} else if tc.Failed() > 0 {
-				fmt.Fprintln(stdOut, "Done with failures.")
+				println("Done with failures.")
 				err = errors.New("some tests failed")
 			} else {
-				fmt.Fprintln(stdOut, "Done.")
+				println("Done.")
 			}
 			return err
 		},
@@ -415,7 +445,7 @@ func Command() *cobra.Command {
 	cmd.Flags().StringVar(&options.deletionPropagationPolicy, "deletion-propagation-policy", "Background", "The deletion propagation policy (Foreground|Background|Orphan)")
 	// error options
 	// reporting options
-	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION)")
+	cmd.Flags().StringVar(&options.reportFormat, "report-format", "", "Test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION)")
 	cmd.Flags().StringVar(&options.reportName, "report-name", "chainsaw-report", "The name of the report to create")
 	cmd.Flags().StringVar(&options.reportPath, "report-path", "", "The path of the report to create")
 	// multi-cluster options
@@ -434,6 +464,8 @@ func Command() *cobra.Command {
 	// others
 	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
 	cmd.Flags().BoolVar(&options.remarshal, "remarshal", false, "Remarshals tests yaml to apply anchors before parsing")
+	cmd.Flags().BoolVar(&options.quiet, "quiet", false, "Quiet mode - suppresses all output except errors, test failures, and summary")
+	cmd.Flags().BoolVar(&options.silent, "silent", false, "Alias for --quiet")
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
 	}
