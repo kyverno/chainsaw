@@ -628,8 +628,8 @@ spec:
                             multi-cluster tests.
                           type: object
                         content:
-                          description: Content defines a shell script (run with "sh
-                            -c ...").
+                          description: Content defines a shell script (run with "$shell
+                            $shellArgs ...").
                           type: string
                         env:
                           description: Env defines additional environment variables.
@@ -684,6 +684,16 @@ spec:
                             - name
                             - value
                             type: object
+                          type: array
+                        shell:
+                          description: Shell defines the host shell (run with "...
+                            $shellArgs $content").
+                          type: string
+                        shellArgs:
+                          description: ShellArgs defines arguments for the host shell
+                            (run with "$shell ... $content").
+                          items:
+                            type: string
                           type: array
                         skipCommandOutput:
                           description: SkipCommandOutput removes the command from
@@ -902,7 +912,7 @@ spec:
                 type: integer
               reportFormat:
                 description: |-
-                  ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION|nil) nil == no report.
+                  ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION, nil) nil == no report.
                   maps to report.Type, however we don't want generated.deepcopy to have reference to it.
                 enum:
                 - JSON
@@ -1660,7 +1670,7 @@ spec:
                               type: object
                             content:
                               description: Content defines a shell script (run with
-                                "sh -c ...").
+                                "$shell $shellArgs ...").
                               type: string
                             env:
                               description: Env defines additional environment variables.
@@ -1715,6 +1725,16 @@ spec:
                                 - name
                                 - value
                                 type: object
+                              type: array
+                            shell:
+                              description: Shell defines the host shell (run with
+                                "... $shellArgs $content").
+                              type: string
+                            shellArgs:
+                              description: ShellArgs defines arguments for the host
+                                shell (run with "$shell ... $content").
+                              items:
+                                type: string
                               type: array
                             skipCommandOutput:
                               description: SkipCommandOutput removes the command from
@@ -1899,7 +1919,8 @@ spec:
                 properties:
                   format:
                     default: JSON
-                    description: ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION).
+                    description: ReportFormat determines test report format (JSON,
+                      XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION).
                     enum:
                     - JSON
                     - XML

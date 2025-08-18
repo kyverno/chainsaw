@@ -107,7 +107,7 @@ const (
 
 // ReportOptions contains the configuration used for reporting.
 type ReportOptions struct {
-	// ReportFormat determines test report format (JSON|XML|JUNIT-TEST|JUNIT-STEP|JUNIT-OPERATION).
+	// ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION).
 	// +optional
 	// +kubebuilder:validation:Enum:=JSON;XML;JUNIT-TEST;JUNIT-STEP;JUNIT-OPERATION
 	// +kubebuilder:default:="JSON"
