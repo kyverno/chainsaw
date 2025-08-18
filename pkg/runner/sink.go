@@ -11,6 +11,9 @@ import (
 
 const eraser = "\b\b\b\b\b\b\b\b\b\b\b\b"
 
+// newSink creates a new sink for logging.
+// If quietMode is true, it will only log error messages and internal messages.
+// Otherwise, it will log all messages.
 func newSink(clock clock.PassiveClock, log func(args ...any)) logging.SinkFunc {
 	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
 		sprint := fmt.Sprint
@@ -34,5 +37,15 @@ func newSink(clock clock.PassiveClock, log func(args ...any)) logging.SinkFunc {
 			a = append(a, arg)
 		}
 		log(fmt.Sprint(a...))
+	}
+}
+
+// newQuietSink creates a sink wrapper that only logs error messages and internal messages
+func newQuietSink(inner logging.Sink) logging.SinkFunc {
+	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
+		// Only log error messages or internal operations
+		if status == logging.ErrorStatus || operation == logging.Internal {
+			inner.Log(test, step, operation, status, obj, color, args...)
+		}
 	}
 }

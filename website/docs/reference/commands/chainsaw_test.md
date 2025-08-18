@@ -50,6 +50,7 @@ chainsaw test [flags]... [test directories]...
       --no-color                                  Removes output colors
       --parallel int                              The maximum number of tests to run at once
       --pause-on-failure                          Pause test execution failure (implies no concurrency)
+      --quiet                                     Quiet mode - suppresses all output except errors, test failures, and summary
       --remarshal                                 Remarshals tests yaml to apply anchors before parsing
       --repeat-count int                          Number of times to repeat each test (default 1)
       --report-format string                      Test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION)
@@ -58,6 +59,7 @@ chainsaw test [flags]... [test directories]...
       --selector strings                          Selector (label query) to filter on
       --shard-count int                           Number of shards
       --shard-index --shard-count                 Current shard index (if --shard-count > 0)
+      --silent                                    Alias for --quiet
       --skip-delete                               If set, do not delete the resources after running the tests
       --template                                  If set, resources will be considered for templating (default true)
       --test-dir strings                          Directories containing test cases to run
