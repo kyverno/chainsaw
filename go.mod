@@ -10,7 +10,7 @@ require (
 	github.com/go-logr/logr v1.4.3
 	github.com/google/cel-go v0.23.2
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
-	github.com/hashicorp/go-getter v1.7.8
+	github.com/hashicorp/go-getter v1.7.9
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240930152130-6eb5a346873f
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
 	github.com/kudobuilder/kuttl v0.20.0
@@ -105,7 +105,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mitchellh/copystructure v1.2.0 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
-	github.com/mitchellh/go-testing-interface v1.14.1 // indirect
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
