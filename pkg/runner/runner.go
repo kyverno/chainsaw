@@ -68,33 +68,10 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 				}
 				return false
 			}
-
-			// Check if quiet mode is enabled - attempt to access binding
-			quietMode := false
-			value, err := tc.Bindings().Get("$quiet")
-			if err == nil && value != nil {
-				if v, err := value.Value(); err == nil {
-					if b, ok := v.(bool); ok {
-						quietMode = b
-					}
-				}
-			}
-
-			// Setup logger sink - if in quiet mode, use a filtered sink
-			var sink logging.Sink
-			if quietMode {
-				// In quiet mode, use a sink that only logs errors and internal messages
-				baseSink := newSink(r.clock, t.Log)
-				sink = newQuietSink(baseSink)
-			} else {
-				// In normal mode, use the full sink
-				sink = newSink(r.clock, t.Log)
-			}
-			ctx = logging.WithSink(ctx, sink)
-
+			// setup logger sink
+			ctx = logging.WithSink(ctx, newSink(r.clock, tc.Quiet(), t.Log))
 			// setup logger
 			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "@chainsaw"))
-
 			// setup cleanup
 			cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
 			t.Cleanup(func() {
@@ -132,7 +109,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 					runTest := func(ctx context.Context, t *testing.T, testId int, scenarioId int, tc enginecontext.TestContext, bindings ...v1alpha1.Binding) {
 						t.Helper()
 						// setup logger sink
-						ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
+						ctx = logging.WithSink(ctx, newSink(r.clock, tc.Quiet(), t.Log))
 						// setup concurrency
 						if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
 							t.Parallel()

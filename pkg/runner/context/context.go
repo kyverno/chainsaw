@@ -32,6 +32,7 @@ type TestContext struct {
 	failFast            bool
 	fullName            bool
 	namespacer          namespacer.Namespacer
+	quiet               bool
 	skipDelete          bool
 	templating          bool
 	terminationGrace    *time.Duration
@@ -116,6 +117,10 @@ func (tc *TestContext) Namespacer() namespacer.Namespacer {
 	return tc.namespacer
 }
 
+func (tc *TestContext) Quiet() bool {
+	return tc.quiet
+}
+
 func (tc *TestContext) SkipDelete() bool {
 	return tc.skipDelete
 }
@@ -189,6 +194,11 @@ func (tc TestContext) WithFullName(fullName bool) TestContext {
 
 func (tc TestContext) WithNamespacer(namespacer namespacer.Namespacer) TestContext {
 	tc.namespacer = namespacer
+	return tc
+}
+
+func (tc TestContext) WithQuiet(quiet bool) TestContext {
+	tc.quiet = quiet
 	return tc
 }
 
