@@ -138,7 +138,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}()
 						// skip check
 						if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
-							t.Skip()
+							t.SkipNow()
 							return
 						}
 						// setup context
@@ -148,7 +148,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}
 						// fail fast check
 						if tc.FailFast() && tc.Failed() > 0 {
-							t.Skip()
+							t.SkipNow()
 							return
 						}
 						// setup cleaner
