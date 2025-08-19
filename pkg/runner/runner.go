@@ -153,9 +153,9 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}
 						// setup cleaner
 						cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
-						defer func() {
+						t.Cleanup(func() {
 							fail(t, r.testCleanup(ctx, tc, cleanup, report))
-						}()
+						})
 						// setup namespace
 						// TODO: should be part of setupContext ?
 						if test.Test.Spec.Compiler != nil {
