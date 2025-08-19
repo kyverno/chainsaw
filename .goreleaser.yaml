@@ -45,7 +45,8 @@ builds:
 kos:
   - build: chainsaw
     base_image: cgr.dev/chainguard/kubectl:latest-dev
-    repository: ghcr.io/kyverno/chainsaw
+    repositories:
+      - ghcr.io/kyverno/chainsaw
     tags:
       - '{{.Tag}}'
       - '{{ if not .Prerelease }}latest{{ end }}' 
