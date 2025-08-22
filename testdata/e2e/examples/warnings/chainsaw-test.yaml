@@ -1,0 +1,226 @@
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: warnings-example
+spec:
+  steps:
+  - try:
+    - apply:
+        # CRD with a deprecated version to allow testing of warnings capture
+        resource:
+          apiVersion: apiextensions.k8s.io/v1
+          kind: CustomResourceDefinition
+          metadata:
+            name: crontabs.stable.example.com
+          spec:
+            group: stable.example.com
+            versions:
+              - name: v1
+                served: true
+                storage: false
+                deprecated: true
+                deprecationWarning: "example.com/v1 CronTab is deprecated"
+                schema:
+                  openAPIV3Schema:
+                    type: object
+                    properties:
+                      spec:
+                        type: object
+                        properties:
+                          cronSpec:
+                            type: string
+                          image:
+                            type: string
+                          replicas:
+                            type: integer
+              - name: v2
+                served: true
+                storage: true
+                schema:
+                  openAPIV3Schema:
+                    type: object
+                    properties:
+                      spec:
+                        type: object
+                        properties:
+                          cronSpec:
+                            type: string
+                          image:
+                            type: string
+                          replicas:
+                            type: integer
+            scope: Namespaced
+            names:
+              plural: crontabs
+              singular: crontab
+              kind: CronTab
+              shortNames:
+              - ct
+
+    - assert:
+        # wait for CRD to be available
+        resource:
+          apiVersion: apiextensions.k8s.io/v1
+          kind: CustomResourceDefinition
+          metadata:
+            name: crontabs.stable.example.com
+          status:
+            acceptedNames:
+              kind: CronTab
+              plural: crontabs
+              singular: crontab
+
+  - try:
+    # create deprecated version of CRD kind
+    - create:
+        resource:
+          apiVersion: "stable.example.com/v1"
+          kind: CronTab
+          metadata:
+            name: my-new-cron-object
+          spec:
+            cronSpec: "* * * * */5"
+            image: my-awesome-cron-image
+        # API server should return warning about deprecated version
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 1
+              ( $warnings[0].text | contains(@, 'CronTab is deprecated') ): true
+
+  - try:
+    # create nondeprecated version of CRD kind
+    - create:
+        resource:
+          apiVersion: "stable.example.com/v2"
+          kind: CronTab
+          metadata:
+            name: my-new-cron-object-v2
+          spec:
+            cronSpec: "* * * * */5"
+            image: my-awesome-cron-image
+        # no warnings expected
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 0
+
+  - try:
+    # apply deprecated version of CRD kind
+    - apply:
+        resource:
+          apiVersion: "stable.example.com/v1"
+          kind: CronTab
+          metadata:
+            name: my-new-cron-object
+          spec:
+            cronSpec: "* * * * */10"
+            image: my-awesome-cron-image
+        # API server should return warning about deprecated version
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 1
+              ( $warnings[0].text | contains(@, 'CronTab is deprecated') ): true
+
+  - try:
+    # apply nondeprecated version of CRD kind
+    - apply:
+        resource:
+          apiVersion: "stable.example.com/v2"
+          kind: CronTab
+          metadata:
+            name: my-new-cron-object-v2
+          spec:
+            cronSpec: "* * * * */5"
+            image: my-awesome-cron-image
+        # no warnings expected
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 0
+
+  - try:
+    # update deprecated version of CRD kind
+    - update:
+        resource:
+          apiVersion: "stable.example.com/v1"
+          kind: CronTab
+          metadata:
+            name: my-new-cron-object
+          spec:
+            cronSpec: "* * * * */5"
+            image: my-awesome-cron-image-2
+        # API server should return warning about deprecated version
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 1
+              ( $warnings[0].text | contains(@, 'CronTab is deprecated') ): true
+
+  - try:
+    # update nondeprecated version of CRD kind
+    - update:
+        resource:
+          apiVersion: "stable.example.com/v2"
+          kind: CronTab
+          metadata:
+            name: my-new-cron-object-v2
+          spec:
+            cronSpec: "* * * * */5"
+            image: my-awesome-cron-image-2
+        # no warnings expected
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 0
+
+  - try:
+    # patch deprecated version of CRD kind
+    - patch:
+        resource:
+          apiVersion: "stable.example.com/v1"
+          kind: CronTab
+          metadata:
+            name: my-new-cron-object
+          spec:
+            cronSpec: "* * * * */15"
+        # API server should return warning about deprecated version
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 1
+              ( $warnings[0].text | contains(@, 'CronTab is deprecated') ): true
+
+  - try:
+    # patch nondeprecated version of CRD kind
+    - patch:
+        resource:
+          apiVersion: "stable.example.com/v2"
+          kind: CronTab
+          metadata:
+            name: my-new-cron-object-v2
+          spec:
+            cronSpec: "* * * * */15"
+        # no warnings expected
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 0
+
+  - try:
+    # delete deprecated version of CRD kind
+    - delete:
+        ref:
+          apiVersion: "stable.example.com/v1"
+          kind: CronTab
+          name: my-new-cron-object
+        # API server should return warning about deprecated version
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 1
+              ( $warnings[0].text | contains(@, 'CronTab is deprecated') ): true
+
+  - try:
+    # delete non-deprecated version of CRD kind
+    - delete:
+        ref:
+          apiVersion: "stable.example.com/v2"
+          kind: CronTab
+          name: my-new-cron-object-v2
+        # no warnings expected
+        expect:
+          - check:
+              ( $warnings[] | length(@) ): 0
