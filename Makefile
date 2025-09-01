@@ -18,7 +18,7 @@ LD_FLAGS                           := "-s -w"
 endif
 KO_REGISTRY                        := ko.local
 KO_TAGS                            := $(GIT_SHA)
-KIND_IMAGE                         ?= kindest/node:v1.33.2
+KIND_IMAGE                         ?= kindest/node:v1.34.0
 
 #########
 # TOOLS #
@@ -29,11 +29,11 @@ CONTROLLER_GEN                     := $(TOOLS_DIR)/controller-gen
 REGISTER_GEN                       := $(TOOLS_DIR)/register-gen
 DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
 CONVERSION_GEN                     := $(TOOLS_DIR)/conversion-gen
-CODE_GEN_VERSION                   := v0.33.3
+CODE_GEN_VERSION                   := v0.34.0
 REFERENCE_DOCS                     := $(TOOLS_DIR)/genref
 REFERENCE_DOCS_VERSION             := latest
 KIND                               := $(TOOLS_DIR)/kind
-KIND_VERSION                       := v0.29.0
+KIND_VERSION                       := v0.30.0
 KO                                 ?= $(TOOLS_DIR)/ko
 KO_VERSION                         ?= v0.18.0
 TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(CONVERSION_GEN) $(REFERENCE_DOCS) $(KIND) $(KO)

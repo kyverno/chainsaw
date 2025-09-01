@@ -155,3 +155,5 @@ require (
 	sigs.k8s.io/randfill v1.0.0 // indirect
 	sigs.k8s.io/structured-merge-diff/v6 v6.3.0 // indirect
 )
+
+replace sigs.k8s.io/kubectl-validate => github.com/eddycharly/kubectl-validate v0.0.6-0.20250901183710-dcdd2f51a980
