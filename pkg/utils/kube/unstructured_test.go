@@ -18,8 +18,7 @@ func TestToUnstructured(t *testing.T) {
 			"apiVersion": "v1",
 			"kind":       "Namespace",
 			"metadata": map[string]any{
-				"creationTimestamp": nil,
-				"name":              "foo",
+				"name": "foo",
 			},
 			"spec":   map[string]any{},
 			"status": map[string]any{},

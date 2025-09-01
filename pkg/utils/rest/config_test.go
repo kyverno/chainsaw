@@ -199,7 +199,6 @@ contexts:
     user: chainsaw
   name: chainsaw
 current-context: chainsaw
-preferences: {}
 users:
 - name: chainsaw
   user:
