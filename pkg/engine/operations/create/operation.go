@@ -2,7 +2,6 @@ package create
 
 import (
 	"context"
-	"errors"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -101,7 +100,11 @@ func (o *operation) tryCreateResource(ctx context.Context, bindings apis.Binding
 	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
 	err := o.client.Get(ctx, client.Key(&obj), &actual)
 	if err == nil {
-		return nil, errors.New("the resource already exists in the cluster")
+		// Add pre-existing resource to cleaner for proper cleanup
+		if o.cleaner != nil {
+			o.cleaner.Add(o.client, &actual)
+		}
+		return o.handleCheck(ctx, bindings, actual, nil)
 	}
 	if kerrors.IsNotFound(err) {
 		return o.createResource(ctx, bindings, obj)
