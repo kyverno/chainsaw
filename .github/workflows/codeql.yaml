@@ -29,7 +29,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Run Trivy vulnerability scanner in repo mode
-        uses: aquasecurity/trivy-action@f9424c10c36e288d5fa79bd3dfd1aeb2d6eae808 # v0.33.0
+        uses: aquasecurity/trivy-action@b6643a29fecd7f34b3597bc6acb0a98b03d33ff8 # v0.33.1
         with:
           scan-type: fs
           ignore-unfixed: false
@@ -42,7 +42,7 @@ jobs:
         env:
           TRIVY_DB_REPOSITORY: 'public.ecr.aws/aquasecurity/trivy-db:2'
       - name: Upload Trivy scan results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@2d92b76c45b91eb80fc44c74ce3fce0ee94e8f9d # v3.30.0
+        uses: github/codeql-action/upload-sarif@f1f6e5f6af878fb37288ce1c627459e94dbf7d01 # v3.30.1
         with:
           sarif_file: trivy-results.sarif
           category: code
