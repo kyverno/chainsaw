@@ -102,6 +102,10 @@ type TestStepSpec struct {
 	// +optional
 	Clusters Clusters `json:"clusters,omitempty"`
 
+	// Skip determines whether the step should be skipped. Can be a boolean or a template expression.
+	// +optional
+	Skip *string `json:"skip,omitempty"`
+
 	// SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
