@@ -1,4 +1,4 @@
-# cleanup
+# Cleanup
 
 A `cleanup` statement is similar to a [finally](./finally.md) statement but will execute after the test finishes executing, while `finally` executes after the step finishes executing.
 
