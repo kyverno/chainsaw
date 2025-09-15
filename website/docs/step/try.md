@@ -18,6 +18,7 @@ A `try` statement supports all [operations](../operations/index.md) and [helpers
 - [Get](../operations/helpers/get.md)
 - [Patch](../operations/patch.md)
 - [Pod logs](../operations/helpers/logs.md)
+- [Proxy](../operations/helpers/proxy.md)
 - [Script](../operations/script.md)
 - [Sleep](../operations/sleep.md)
 - [Update](../operations/update.md)
