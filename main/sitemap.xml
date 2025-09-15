@@ -89,6 +89,10 @@
          <lastmod>2025-09-15</lastmod>
     </url>
     <url>
+         <loc>https://kyverno.github.io/chainsaw/main/configuration/options/sharding/</loc>
+         <lastmod>2025-09-15</lastmod>
+    </url>
+    <url>
          <loc>https://kyverno.github.io/chainsaw/main/configuration/options/templating/</loc>
          <lastmod>2025-09-15</lastmod>
     </url>
@@ -98,6 +102,10 @@
     </url>
     <url>
          <loc>https://kyverno.github.io/chainsaw/main/configuration/options/values/</loc>
+         <lastmod>2025-09-15</lastmod>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/configuration/options/yaml-anchors/</loc>
          <lastmod>2025-09-15</lastmod>
     </url>
     <url>
@@ -170,6 +178,10 @@
     </url>
     <url>
          <loc>https://kyverno.github.io/chainsaw/main/general/references/</loc>
+         <lastmod>2025-09-15</lastmod>
+    </url>
+    <url>
+         <loc>https://kyverno.github.io/chainsaw/main/general/scenarios/</loc>
          <lastmod>2025-09-15</lastmod>
     </url>
     <url>
