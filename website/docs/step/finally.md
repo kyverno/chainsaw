@@ -1,4 +1,4 @@
-# finally
+# Finally
 
 A `finally` statement is similar to a [catch](./catch.md) statement but will always execute after the [try](./try.md) and eventual [catch](./catch.md) statements finished executing regardless of the success or failure of the test step.
 

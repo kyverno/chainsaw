@@ -1,4 +1,4 @@
-# catch
+# Catch
 
 A `catch` statement is also a sequence of [operations](../operations/index.md).
 
