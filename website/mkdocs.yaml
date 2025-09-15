@@ -82,6 +82,7 @@ nav:
     - operations/helpers/events.md
     - operations/helpers/get.md
     - operations/helpers/logs.md
+    - operations/helpers/proxy.md
     - operations/helpers/wait.md
 - Reference:
   - reference/index.md
