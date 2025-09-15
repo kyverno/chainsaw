@@ -4,7 +4,7 @@ Wait for a specific condition on one or many resources.
 
 ## Configuration
 
-The full structure of the `Wait` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Wait).
+The full structure of `Wait` is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Wait).
 
 ### Features
 

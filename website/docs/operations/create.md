@@ -6,7 +6,7 @@ If the resource to be created already exists in the cluster, the step will fail.
 
 ## Configuration
 
-The full structure of the `Create` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
+The full structure of `Create` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Create).
 
 ### Features
 

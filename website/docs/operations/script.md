@@ -8,7 +8,7 @@ The `script` operation provides a means to run a script during the test step.
 
 ## Configuration
 
-The full structure of the `Script` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Script).
+The full structure of `Script` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Script).
 
 ### Features
 

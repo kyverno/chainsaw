@@ -7,7 +7,7 @@ The `delete` operation defines resources that should be deleted from a Kubernete
 
 ## Configuration
 
-The full structure of the `Delete` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
+The full structure of `Delete` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
 
 ### Features
 

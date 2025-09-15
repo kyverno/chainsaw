@@ -4,7 +4,7 @@ Display one or many resources.
 
 ## Configuration
 
-The full structure of the `Get` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Get).
+The full structure of `Get` is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Get).
 
 ### Features
 

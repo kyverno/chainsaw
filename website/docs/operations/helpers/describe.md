@@ -4,7 +4,7 @@ Show details of a specific resource or group of resources.
 
 ## Configuration
 
-The full structure of the `Describe` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Describe).
+The full structure of `Describe` is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Describe).
 
 ### Features
 
