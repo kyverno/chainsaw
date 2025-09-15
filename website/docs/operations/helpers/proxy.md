@@ -1,6 +1,6 @@
 # Proxy
 
-Wait for a specific condition on one or many resources.
+Proxy runs a proxy request against a configured Kubernetes cluster, targeting pods or services.
 
 ## Configuration
 
@@ -15,21 +15,29 @@ The full structure of `Proxy` is documented [here](../../reference/apis/chainsaw
 | [Templating](../../general/templating.md) support     | :x:                |
 | [Operation checks](../../general/checks.md) support   | :x:                |
 
-### Clustered resources
+### API version
 
-When used with a clustered resource, the `namespace` is ignored and is not added to the corresponding `kubectl` command.
+The target resource API version to send the request to.
 
-### All resources
+### Kind
 
-If you don't specify a `name` or a `selector`, the `wait` operation will consider `all` resources.
+The target resource kind to send the request to.
 
-### Test namespace
+### Namespace
 
-When used with a namespaced resource, Chainsaw will default the scope to the ephemeral test namespace.
+The target resource namespace to send the request to.
 
-### All namespaces
+### Name
 
-When used with a namespaced resource, it is possible to consider all namespaces in the cluster by setting `namespace: '*'`.
+The target resource name to send the request to.
+
+### Port
+
+The target port to send the request to.
+
+### Path
+
+The target path to send the request to.
 
 ## Examples
 
@@ -39,129 +47,21 @@ kind: Test
 metadata:
   name: example
 spec:
+  skip: true
   steps:
   - try:
-    # wait all pods are ready in the test namespace
-    - wait:
+    - proxy:
+        # proxy request to the `kyverno-svc-metrics` service in the `kyverno` namespace
         apiVersion: v1
-        kind: Pod
-        timeout: 1m
-        for:
-          condition:
-            name: Ready
-            value: 'true'
----
-apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: Test
-metadata:
-  name: example
-spec:
-  steps:
-  - try:
-    - wait:
-        apiVersion: v1
-        kind: Pod
-        # wait a specific pod is ready in the test namespace
-        name: my-pod
-        timeout: 1m
-        for:
-          condition:
-            name: Ready
-            value: 'true'
----
-apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: Test
-metadata:
-  name: example
-spec:
-  steps:
-  - try:
-    - wait:
-        apiVersion: v1
-        kind: Pod
-        # wait all pods are ready in the namespace `foo`
-        namespace: foo
-        timeout: 1m
-        for:
-          condition:
-            name: Ready
-            value: 'true'
-```
-
-### Label selector
-
-```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: Test
-metadata:
-  name: example
-spec:
-  steps:
-  - try:
-    - wait:
-        apiVersion: v1
-        kind: Pod
-        # match pods using a label selector query
-        selector: app=foo
-        timeout: 1m
-        for:
-          condition:
-            name: Ready
-            value: 'true'
-```
-
-### Deletion
-
-```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: Test
-metadata:
-  name: example
-spec:
-  steps:
-  - try:
-    - wait:
-        apiVersion: v1
-        kind: Pod
-        timeout: 1m
-        for:
-          # wait for deletion
-          deletion: {}
-```
-
-### JSON Path
-
-```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: Test
-metadata:
-  name: example
-spec:
-  steps:
-  - try:
-    - wait:
-        apiVersion: v1
-        kind: Pod
-        timeout: 1m
-        for:
-          # arbitrary JSON path
-          jsonpath:
-            path: '{.status.phase}'
-            value: Running
-```
-
-### Format
-
-```yaml
-apiVersion: chainsaw.kyverno.io/v1alpha1
-kind: Test
-metadata:
-  name: example
-spec:
-  steps:
-  - try:
-    - wait:
-        apiVersion: v1
-        kind: Pod
-        format: json
+        kind: Service
+        namespace: kyverno
+        name: kyverno-svc-metrics
+        # proxy request to the `metrics-port` port of the service
+        port: metrics-port
+        # send request to the `/metrics` path
+        path: /metrics
+        outputs:
+          # decode received metrics and create an output with the results
+        - name: metrics
+          value: (x_metrics_decode($stdout))
 ```
