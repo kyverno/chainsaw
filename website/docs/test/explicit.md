@@ -14,7 +14,7 @@ A `Test` resource, like any other Kubernetes resource, has an `apiVersion`, `kin
 It also comes with a `spec` section used to declaratively represent the test logic, steps and operations, as well as other configuration elements belonging to the test being defined.
 
 !!! tip "Reference documentation"
-    The full structure of the `Test` resource is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test).
+    The full structure of `Test` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Test).
 
 ## Example
 

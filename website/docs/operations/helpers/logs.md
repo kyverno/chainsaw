@@ -4,7 +4,7 @@ Print the logs for a container in a pod or specified resource.
 
 ## Configuration
 
-The full structure of the `PodLogs` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-PodLogs).
+The full structure of `PodLogs` is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-PodLogs).
 
 ### Features
 
