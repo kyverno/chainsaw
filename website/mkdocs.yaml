@@ -53,14 +53,17 @@ nav:
     - general/references.md
     - general/scenarios.md
     - general/checks.md
-  - Test spec:
-    - test/spec/index.md
-  - Test step spec:
-    - step/index.md
-    - step/try.md
-    - step/catch.md
-    - step/finally.md
-    - step/cleanup.md
+  - Advanced:
+    - Test:
+      - test/spec/index.md
+    - Test step:
+      - step/index.md
+      - step/try.md
+      - step/catch.md
+      - step/finally.md
+      - step/cleanup.md
+    - Step template:
+      - step-template/index.md
 - Operations:
   - operations/index.md
   - operations/apply.md

@@ -5,6 +5,7 @@ JSON schemas for Chainsaw are available:
 - [Configuration (v1alpha1)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/configuration-chainsaw-v1alpha1.json)
 - [Configuration (v1alpha2)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/configuration-chainsaw-v1alpha2.json)
 - [Test (v1alpha1)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/test-chainsaw-v1alpha1.json)
+- [StepTemplate (v1alpha1)](https://github.com/kyverno/chainsaw/blob/main/.schemas/json/test-chainsaw-v1alpha1.json)
 
 They can be used to enable validation and autocompletion in your IDE.
 
@@ -19,7 +20,7 @@ In VS code, simply add a comment on top of your YAML resources.
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
-  name: basic
+  name: example
 spec:
   steps:
   - try:
@@ -27,6 +28,27 @@ spec:
         file: configmap.yaml
     - assert:
         file: configmap-assert.yaml
+```
+
+### StepTemplate
+
+```yaml
+# yaml-language-server: $schema=https://raw.githubusercontent.com/kyverno/chainsaw/main/.schemas/json/steptemplate-chainsaw-v1alpha1.json
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: StepTemplate
+metadata:
+  name: example
+spec:
+  bindings:
+  - name: input
+    value: from-template
+  try:
+  - create:
+      resource:
+        apiVersion: v1
+        kind: ConfigMap
+        metadata:
+          name: ($input)
 ```
 
 ### Configuration
