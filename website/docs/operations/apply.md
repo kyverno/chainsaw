@@ -5,7 +5,7 @@ If the resource does not exist yet it will be created, otherwise, it will be con
 
 ## Configuration
 
-The full structure of the `Apply` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Apply).
+The full structure of `Apply` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Apply).
 
 ### Features
 

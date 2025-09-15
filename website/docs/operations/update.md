@@ -6,7 +6,7 @@ If the resource to be updated doesn't exist in the cluster, the step will fail.
 
 ## Configuration
 
-The full structure of the `Update` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Update).
+The full structure of `Update` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Update).
 
 ### Features
 

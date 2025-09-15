@@ -25,3 +25,5 @@ Please pay attention to the configuration options below, they may or may not be 
 - [No cluster options](./options/no-cluster.md)
 - [Label selectors](./options/label-selectors.md)
 - [External values](./options/values.md)
+- [Sharding](./options/sharding.md)
+- [YAML anchors](./options/yaml-anchors.md)

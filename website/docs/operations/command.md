@@ -9,7 +9,7 @@ The `command` operation provides a mean to execute a specific command during the
 
 ## Configuration
 
-The full structure of the `Command` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
+The full structure of `Command` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Command).
 
 ### Features
 
