@@ -26,4 +26,5 @@ Release notes for `TODO`.
 
 - Added Scenarios documentation
 - Added Sharding documentation
+- Added StepTemplate documentation
 - Added other missing documentation bits
