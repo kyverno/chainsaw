@@ -38,6 +38,8 @@ nav:
     - configuration/options/no-cluster.md
     - configuration/options/label-selectors.md
     - configuration/options/values.md
+    - configuration/options/sharding.md
+    - configuration/options/yaml-anchors.md
 - Test:
   - test/index.md
   - test/explicit.md
@@ -49,6 +51,7 @@ nav:
     - general/templating.md
     - general/outputs.md
     - general/references.md
+    - general/scenarios.md
     - general/checks.md
   - Test spec:
     - test/spec/index.md

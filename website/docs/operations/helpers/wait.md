@@ -129,6 +129,27 @@ spec:
           deletion: {}
 ```
 
+### JSON Path
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
+    - wait:
+        apiVersion: v1
+        kind: Pod
+        timeout: 1m
+        for:
+          # arbitrary JSON path
+          jsonpath:
+            path: '{.status.phase}'
+            value: Running
+```
+
 ### Format
 
 ```yaml

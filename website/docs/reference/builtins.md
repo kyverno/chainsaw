@@ -16,6 +16,7 @@ Chainsaw provides built-in bindings listed below.
 | Name | Purpose | Type |
 |---|---|---|
 | `$test.id` | Current test id | `int` |
+| `$test.scenarioId` | Current test scenario id | `int` |
 | `$test.metadata` | Current test metadata | [metav1.ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |
 
 !!! note

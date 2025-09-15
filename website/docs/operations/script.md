@@ -2,6 +2,10 @@
 
 The `script` operation provides a means to run a script during the test step.
 
+
+!!! tip
+    By default, the shell used to run the script is `sh`. You can specify a custom shell and shell arguments to override what and how the shell is invoked.
+
 ## Configuration
 
 The full structure of the `Script` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Script).
@@ -31,6 +35,26 @@ spec:
   steps:
   - try:
     - script:
+        content: |
+          echo "hello chainsaw"
+```
+
+### Custom shell and shell arguments
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
+    - script:
+        # use `bash` shell
+        shell: bash
+        # invoke `bash` with `-c`
+        shellArgs:
+        - -c
         content: |
           echo "hello chainsaw"
 ```
