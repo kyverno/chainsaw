@@ -43,4 +43,5 @@
 - [update-crd](update-crd/README.md)
 - [values](values/README.md)
 - [wait](wait/README.md)
+- [warnings](warnings/README.md)
 - [yaml-anchors](yaml-anchors/README.md)
