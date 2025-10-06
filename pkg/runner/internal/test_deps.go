@@ -72,6 +72,6 @@ func (*TestDeps) ResetCoverage() {}
 
 func (*TestDeps) SnapshotCoverage() {}
 
-func (*TestDeps) InitRuntimeCoverage() (mode string, tearDown func(string, string) (string, error), snapcov func() float64) {
-	return
+func (*TestDeps) InitRuntimeCoverage() (string, func(string, string) (string, error), func() float64) {
+	return "", nil, nil
 }
