@@ -292,7 +292,7 @@ e2e-tests-no-cluster: ## Run e2e tests with --no-cluster
 e2e-tests-no-cluster: $(CLI_BIN)
 	@echo Running e2e tests with --no-cluster... >&2
 	@./$(CLI_BIN) test testdata/e2e/examples/script-env --no-cluster --remarshal --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml $(SET_FLAGS) $(SET_STRING_FLAGS)
-	@./$(CLI_BIN) test testdata/e2e/examples/dynamic-clusters --no-cluster --remarshal --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml $(SET_FLAGS) $(SET_STRING_FLAGS)
+	@./$(CLI_BIN) test testdata/e2e/examples/dynamic-clusters --no-cluster --remarshal --config ./testdata/e2e/config.yaml --values ./testdata/e2e/values.yaml
 
 .PHONY: e2e-tests-ko 
 e2e-tests-ko: ## Run e2e tests from a docker container
