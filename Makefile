@@ -306,7 +306,7 @@ e2e-tests-ko: build-ko
 		--user $(id -u):$(id -g) \
 		--name chainsaw \
 		--rm \
-		ko.local/github.com/kyverno/chainsaw:$(KO_TAGS) test /chainsaw --remarshal --config /chainsaw/config.yaml --values /chainsaw/values.yaml --selector !no-ko-test
+		ko.local/github.com/kyverno/chainsaw:$(KO_TAGS) test /chainsaw --remarshal --config /chainsaw/config.yaml --values /chainsaw/values.yaml --selector !no-ko-test $(SET_FLAGS) $(SET_STRING_FLAGS)
 
 ########	
 # KIND #
