@@ -57,6 +57,8 @@ chainsaw test [flags]... [test directories]...
       --report-name string                        The name of the report to create (default "chainsaw-report")
       --report-path string                        The path of the report to create
       --selector strings                          Selector (label query) to filter on
+      --set stringArray                           set values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
+      --set-string stringArray                    set STRING values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
       --shard-count int                           Number of shards
       --shard-index --shard-count                 Current shard index (if --shard-count > 0)
       --skip-delete                               If set, do not delete the resources after running the tests
