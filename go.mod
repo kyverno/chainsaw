@@ -17,7 +17,7 @@ require (
 	github.com/kyverno/kyverno-json v0.0.4-0.20241008103124-b294ee72a2bf
 	github.com/kyverno/pkg/ext v0.0.0-20250303002756-48769d003e55
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
-	github.com/prometheus/common v0.66.1
+	github.com/prometheus/common v0.67.1
 	github.com/spf13/cobra v1.10.1
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.11.1
@@ -29,7 +29,7 @@ require (
 	k8s.io/apiserver v0.34.1
 	k8s.io/client-go v0.34.1
 	k8s.io/utils v0.0.0-20250820121507-0af2bda4dd1d
-	sigs.k8s.io/controller-runtime v0.22.1
+	sigs.k8s.io/controller-runtime v0.22.3
 	sigs.k8s.io/kubectl-validate v0.0.5-0.20250909135530-dad770c1cb46
 	sigs.k8s.io/yaml v1.6.0
 )
@@ -163,7 +163,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.8.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	go.yaml.in/yaml/v2 v2.4.2 // indirect
+	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.42.0 // indirect
 	golang.org/x/exp v0.0.0-20250819193227-8b4c13bb791b // indirect
@@ -179,7 +179,7 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20250908214217-97024824d090 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20250908214217-97024824d090 // indirect
 	google.golang.org/grpc v1.75.1 // indirect
-	google.golang.org/protobuf v1.36.9 // indirect
+	google.golang.org/protobuf v1.36.10 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	k8s.io/apiextensions-apiserver v0.34.1 // indirect
