@@ -7,7 +7,9 @@ import (
 	"path/filepath"
 	"testing"
 
+	chainsawvalues "github.com/kyverno/chainsaw/pkg/loaders/values"
 	"github.com/stretchr/testify/assert"
+	"helm.sh/helm/v4/pkg/strvals"
 )
 
 func TestChainsawCommand(t *testing.T) {
@@ -146,6 +148,8 @@ func TestChainsawCommand(t *testing.T) {
 			"--include-test-regex=^.*$",
 			"--exclude-test-regex=^.*$",
 			"--force-termination-grace-period=5s",
+			"--set=env=prod",
+			"--set-string=image.tag=01",
 		},
 		wantErr: false,
 		out:     filepath.Join(basePath, "all_flags.txt"),
@@ -180,5 +184,82 @@ func TestChainsawCommand(t *testing.T) {
 				assert.Equal(t, string(expected), string(actualErr))
 			}
 		})
+	}
+}
+
+func TestCommandHasSetFlags(t *testing.T) {
+	cmd := Command()
+
+	if f := cmd.Flags().Lookup("set"); f == nil {
+		t.Fatalf("expected --set flag to be registered")
+	}
+	if f := cmd.Flags().Lookup("set-string"); f == nil {
+		t.Fatalf("expected --set-string flag to be registered")
+	}
+}
+
+func TestValuesMergeWithSetFlags(t *testing.T) {
+	dir := t.TempDir()
+	valuesFile := filepath.Join(dir, "values.yaml")
+	if err := os.WriteFile(valuesFile, []byte(
+		"env: poc\n"+
+			"nested:\n  a: 1\n"+
+			"arr:\n  - 1\n  - 2\n"), 0o600); err != nil {
+		t.Fatalf("failed to write values file: %v", err)
+	}
+
+	vals, err := chainsawvalues.Load(valuesFile)
+	if err != nil {
+		t.Fatalf("failed to load values: %v", err)
+	}
+
+	// simulate --set
+	if err := strvals.ParseInto("env=prod,nested.b=two,arr={3,4},newkey=true", vals); err != nil {
+		t.Fatalf("ParseInto failed: %v", err)
+	}
+	// simulate --set-string
+	if err := strvals.ParseIntoString("num=08", vals); err != nil {
+		t.Fatalf("ParseIntoString failed: %v", err)
+	}
+
+	if got, want := vals["env"], "prod"; got != want {
+		t.Fatalf("env: got %v want %v", got, want)
+	}
+	nested, ok := vals["nested"].(map[string]any)
+	if !ok {
+		t.Fatalf("nested not a map: %T", vals["nested"])
+	}
+	switch v := nested["a"].(type) {
+	case int64:
+		if v != 1 {
+			t.Fatalf("nested.a: got %v want %v", v, 1)
+		}
+	case int:
+		if v != 1 {
+			t.Fatalf("nested.a: got %v want %v", v, 1)
+		}
+	case float64:
+		if v != 1 {
+			t.Fatalf("nested.a: got %v want %v", v, 1)
+		}
+	default:
+		t.Fatalf("nested.a: unexpected type %T with value %v", v, v)
+	}
+	if got, want := nested["b"], "two"; got != want {
+		t.Fatalf("nested.b: got %v want %v", got, want)
+	}
+	// arrays are replaced by --set list literal
+	arr, ok := vals["arr"].([]any)
+	if !ok {
+		t.Fatalf("arr not a list: %T", vals["arr"])
+	}
+	if len(arr) != 2 || arr[0] != int64(3) || arr[1] != int64(4) {
+		t.Fatalf("arr: got %#v want [3,4]", arr)
+	}
+	if got, want := vals["newkey"], true; got != want {
+		t.Fatalf("newkey: got %v want %v", got, want)
+	}
+	if got, want := vals["num"], "08"; got != want {
+		t.Fatalf("num: got %v want %v", got, want)
 	}
 }
