@@ -12,7 +12,7 @@ If a namespace name is specified at the configuration level Chainsaw will use it
 
 ### Per test
 
-If the test name is specified in a test spec, Chainsaw will use it to run the test regardless of whether a namespace name was configured at the global level.
+If a namespace is specified in a test spec, Chainsaw will use it to run the test regardless of whether a namespace name was configured at the global level.
 
 ### Random
 
