@@ -23,12 +23,12 @@ func newSink(clock clock.PassiveClock, quiet bool, log func(args ...any)) loggin
 	// Once an error occurs, all subsequent logs for that test+step are shown immediately
 	errorOccurred := make(map[string]bool)
 	
-	formatLog := func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, color *color.Color, args ...fmt.Stringer) string {
+	formatLog := func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, col *color.Color, args ...fmt.Stringer) string {
 		sprint := fmt.Sprint
 		opLen := 9
 		stLen := 5
-		if color != nil {
-			sprint = color.Sprint
+		if col != nil {
+			sprint = col.Sprint
 			opLen += 14
 			stLen += 14
 		}
@@ -47,8 +47,8 @@ func newSink(clock clock.PassiveClock, quiet bool, log func(args ...any)) loggin
 		return fmt.Sprint(a...)
 	}
 	
-	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
-		formatted := formatLog(test, step, operation, status, obj, color, args...)
+	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, col *color.Color, args ...fmt.Stringer) {
+		formatted := formatLog(test, step, operation, status, obj, col, args...)
 		bufferKey := test + "|" + step
 		
 		if !quiet {
