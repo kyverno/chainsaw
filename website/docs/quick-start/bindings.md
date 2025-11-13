@@ -48,6 +48,10 @@ spec:
         content: echo $FOO
 ```
 
+## External values
+
+The `$values` binding contains values provided via `--values`, `--set`, or `--set-string` flags.
+
 ## Custom bindings
 
 On top of built-in bindings, you can also create your own ones, combine bindings together, call JMESPath functions using bindings as arguments, etc.

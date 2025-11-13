@@ -30,6 +30,12 @@ spec:
 chainsaw test --values ./values.yaml
 ```
 
+### Set values from command line
+
+```bash
+chainsaw test --set env=production --set-string version=v1.2.0
+```
+
 ### Read from stdin
 
 ```bash
