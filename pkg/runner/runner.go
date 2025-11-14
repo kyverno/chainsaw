@@ -114,16 +114,6 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
 							t.Parallel()
 						}
-						// setup summary
-						defer func() {
-							if t.Skipped() {
-								tc.IncSkipped()
-							} else if t.Failed() {
-								tc.IncFailed()
-							} else {
-								tc.IncPassed()
-							}
-						}()
 						// setup reporting
 						report := &model.TestReport{
 							BasePath:   test.BasePath,
@@ -136,6 +126,16 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							report.Skipped = t.Skipped()
 							tc.Add(report)
 						}()
+						// setup summary - must run after all other cleanup (registered first to run last in LIFO order)
+						t.Cleanup(func() {
+							if t.Skipped() {
+								tc.IncSkipped()
+							} else if t.Failed() {
+								tc.IncFailed()
+							} else {
+								tc.IncPassed()
+							}
+						})
 						// skip check
 						if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
 							t.SkipNow()
