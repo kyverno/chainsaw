@@ -18,3 +18,12 @@ chainsaw test --values ./values.yaml \
     --set clusterDirectory=my-cluster \
     --set-string image.tag=01
 ```
+
+#### Command line overrides
+
+- `--set key=value` — set or override a value (parses types)
+- `--set-string key=value` — set or override a value as string
+
+```bash
+chainsaw test --values ./values.yaml --set env=poc --set-string image.tag=01
+```
