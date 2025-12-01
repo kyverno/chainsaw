@@ -698,6 +698,13 @@ func TestStepProcessor_Run(t *testing.T) {
 							Duration: metav1.Duration{Duration: time.Duration(1) * time.Second},
 						},
 					},
+					{
+						PodLogs: &v1alpha1.PodLogs{
+							ActionObjectSelector: v1alpha1.ActionObjectSelector{
+								Selector: "name=myapp",
+							},
+						},
+					},
 				},
 				Finally: []v1alpha1.CatchFinally{
 					{
@@ -714,6 +721,13 @@ func TestStepProcessor_Run(t *testing.T) {
 					{
 						Sleep: &v1alpha1.Sleep{
 							Duration: metav1.Duration{Duration: time.Duration(1) * time.Second},
+						},
+					},
+					{
+						PodLogs: &v1alpha1.PodLogs{
+							ActionObjectSelector: v1alpha1.ActionObjectSelector{
+								Selector: "name=myapp",
+							},
 						},
 					},
 				},
