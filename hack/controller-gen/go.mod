@@ -3,7 +3,7 @@ module github.com/kyverno/chainsaw/hack/controller-gen
 go 1.24.2
 
 require (
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	k8s.io/apiextensions-apiserver v0.34.2
 	sigs.k8s.io/controller-tools v0.19.0
 )
