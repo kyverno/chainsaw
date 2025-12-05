@@ -1,6 +1,6 @@
 # External values
 
-Chainsaw can pass arbitrary values when running tests using the `--values` flag.
+Chainsaw can pass arbitrary values when running tests using the `--set`, `--set-string` and `--values` flag.
 Values will be available to tests under the `$values` binding.
 
 ## Configuration
@@ -13,5 +13,17 @@ Values will be available to tests under the `$values` binding.
 ### With flags
 
 ```bash
-chainsaw test --values ./values.yaml
+chainsaw test --values ./values.yaml \
+    --set env=poc \
+    --set clusterDirectory=my-cluster \
+    --set-string image.tag=01
+```
+
+#### Command line overrides
+
+- `--set key=value` — set or override a value (parses types)
+- `--set-string key=value` — set or override a value as string
+
+```bash
+chainsaw test --values ./values.yaml --set env=poc --set-string image.tag=01
 ```

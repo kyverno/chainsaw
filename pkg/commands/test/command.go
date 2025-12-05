@@ -23,6 +23,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/version"
 	"github.com/kyverno/pkg/ext/output/color"
 	"github.com/spf13/cobra"
+	"helm.sh/helm/v4/pkg/strvals"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/rest"
@@ -63,6 +64,8 @@ type options struct {
 	noCluster                   bool
 	pauseOnFailure              bool
 	values                      []string
+	set                         []string
+	setString                   []string
 	clusters                    []string
 	remarshal                   bool
 	shardIndex                  int
@@ -339,6 +342,17 @@ func Command() *cobra.Command {
 			if err != nil {
 				return err
 			}
+			// merge --set into values
+			for _, s := range options.set {
+				if err := strvals.ParseInto(s, values); err != nil {
+					return fmt.Errorf("failed parsing --set data: %w", err)
+				}
+			}
+			for _, s := range options.setString {
+				if err := strvals.ParseIntoString(s, values); err != nil {
+					return fmt.Errorf("failed parsing --set-string data: %w", err)
+				}
+			}
 			// run tests
 			fprintln(stdOut, "Running tests...")
 			// setup test context
@@ -443,6 +457,8 @@ func Command() *cobra.Command {
 	cmd.Flags().StringSliceVar(&options.selector, "selector", nil, "Selector (label query) to filter on")
 	// external values
 	cmd.Flags().StringSliceVar(&options.values, "values", nil, "Values passed to the tests")
+	cmd.Flags().StringArrayVar(&options.set, "set", nil, "set values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
+	cmd.Flags().StringArrayVar(&options.setString, "set-string", nil, "set STRING values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
 	// sharding
 	cmd.Flags().IntVar(&options.shardIndex, "shard-index", 0, "Current shard index (if `--shard-count` > 0)")
 	cmd.Flags().IntVar(&options.shardCount, "shard-count", 0, "Number of shards")

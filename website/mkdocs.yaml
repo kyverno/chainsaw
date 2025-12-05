@@ -38,6 +38,8 @@ nav:
     - configuration/options/no-cluster.md
     - configuration/options/label-selectors.md
     - configuration/options/values.md
+    - configuration/options/sharding.md
+    - configuration/options/yaml-anchors.md
 - Test:
   - test/index.md
   - test/explicit.md
@@ -49,15 +51,19 @@ nav:
     - general/templating.md
     - general/outputs.md
     - general/references.md
+    - general/scenarios.md
     - general/checks.md
-  - Test spec:
-    - test/spec/index.md
-  - Test step spec:
-    - step/index.md
-    - step/try.md
-    - step/catch.md
-    - step/finally.md
-    - step/cleanup.md
+  - Advanced:
+    - Test:
+      - test/spec/index.md
+    - Test step:
+      - step/index.md
+      - step/try.md
+      - step/catch.md
+      - step/finally.md
+      - step/cleanup.md
+    - Step template:
+      - step-template/index.md
 - Operations:
   - operations/index.md
   - operations/apply.md
@@ -76,6 +82,7 @@ nav:
     - operations/helpers/events.md
     - operations/helpers/get.md
     - operations/helpers/logs.md
+    - operations/helpers/proxy.md
     - operations/helpers/wait.md
 - Reference:
   - reference/index.md

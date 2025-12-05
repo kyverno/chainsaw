@@ -6,7 +6,7 @@ If the resource to be modified does not exist in the cluster, the step will fail
 
 ## Configuration
 
-The full structure of the `Patch` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Patch).
+The full structure of `Patch` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Patch).
 
 ### Features
 
