@@ -61,11 +61,10 @@ kos:
 
 signs:
   - cmd: cosign
-    certificate: '${artifact}.pem'
+    signature: "${artifact}.sigstore.json"
     args:
       - sign-blob
-      - --output-certificate=${certificate}
-      - --output-signature=${signature}
+      - --bundle=${signature}
       - ${artifact}
       - --yes
     artifacts: all
