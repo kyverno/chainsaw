@@ -5,20 +5,20 @@
 class Chainsaw < Formula
   desc "Declarative Kubernetes end-to-end testing."
   homepage "https://kyverno.github.io/chainsaw"
-  version "0.2.13"
+  version "0.2.14-beta.2"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.13/chainsaw_darwin_amd64.tar.gz"
-      sha256 "265ff7cd8ff45295da91de3e1f31ebc4552e2b389bd5af137214d82ee99bbc2a"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.14-beta.2/chainsaw_darwin_amd64.tar.gz"
+      sha256 "2d07c61e0f61353d2be3ea42605687d5af74d24ad01665d9877eb02f46fb497e"
 
       def install
         bin.install "chainsaw"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.13/chainsaw_darwin_arm64.tar.gz"
-      sha256 "45ce392cece57a7db28760d5c73243acd59090805eb013a304e4ac9e52217092"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.14-beta.2/chainsaw_darwin_arm64.tar.gz"
+      sha256 "b4af18ebc6f3dd510c3408e8733c77af761601f4c8984585d591ebe8c2440d81"
 
       def install
         bin.install "chainsaw"
@@ -27,16 +27,16 @@ class Chainsaw < Formula
   end
 
   on_linux do
-    if Hardware::CPU.intel? and Hardware::CPU.is_64_bit?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.13/chainsaw_linux_amd64.tar.gz"
-      sha256 "6c8d4cdccacbea7100a8354893b3176d874eecfe70c930fbe0496b7967d61ca4"
+    if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.14-beta.2/chainsaw_linux_amd64.tar.gz"
+      sha256 "f6805a9d0cdcd38439e29f7e5a4f995fea11fd1f150b1929db18d55330a085fd"
       def install
         bin.install "chainsaw"
       end
     end
-    if Hardware::CPU.arm? and Hardware::CPU.is_64_bit?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.13/chainsaw_linux_arm64.tar.gz"
-      sha256 "f0bbbd1d4b6090bec8ad82305251098b7e9e5069dc67b328d68aeb57dc2974f7"
+    if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.14-beta.2/chainsaw_linux_arm64.tar.gz"
+      sha256 "000a83671fe05a282f58113f51a812832437c3bcbf80e01aa3fecbdee8b26056"
       def install
         bin.install "chainsaw"
       end
