@@ -104,6 +104,7 @@ func (o *operation) tryCreateResource(ctx context.Context, bindings apis.Binding
 		return nil, errors.New("the resource already exists in the cluster")
 	}
 	if kerrors.IsNotFound(err) {
+		operations.ResetWarnings(ctx)
 		return o.createResource(ctx, bindings, obj)
 	}
 	return nil, err
@@ -123,6 +124,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, obj
 	} else {
 		bindings = apibindings.RegisterBinding(bindings, "error", err.Error())
 	}
+	bindings = operations.RegisterWarningsInBindings(ctx, bindings)
 	defer func(bindings apis.Bindings) {
 		if _err == nil {
 			outputs, err := outputs.Process(ctx, o.compilers, bindings, obj.UnstructuredContent(), o.outputs...)

@@ -3,6 +3,7 @@ package clusters
 import (
 	"testing"
 
+	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/client-go/rest"
 )
@@ -15,13 +16,15 @@ func TestNewClusterFromConfig(t *testing.T) {
 	}{{
 		name: "nil",
 		want: &fromConfig{
-			config: nil,
+			config:       nil,
+			WithWarnings: model.NewWithWarnings(),
 		},
 	}, {
 		name:   "nil",
 		config: &rest.Config{},
 		want: &fromConfig{
-			config: &rest.Config{},
+			config:       &rest.Config{},
+			WithWarnings: model.NewWithWarnings(),
 		},
 	}}
 	for _, tt := range tests {

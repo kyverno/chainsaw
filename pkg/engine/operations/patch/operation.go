@@ -98,6 +98,7 @@ func (o *operation) tryPatchResource(ctx context.Context, bindings apis.Bindings
 	if err != nil {
 		return nil, err
 	}
+	operations.ResetWarnings(ctx)
 	return o.updateResource(ctx, bindings, &actual, obj)
 }
 
@@ -119,6 +120,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, obj
 	} else {
 		bindings = apibindings.RegisterBinding(bindings, "error", err.Error())
 	}
+	bindings = operations.RegisterWarningsInBindings(ctx, bindings)
 	defer func(bindings apis.Bindings) {
 		if _err == nil {
 			outputs, err := outputs.Process(ctx, o.compilers, bindings, obj.UnstructuredContent(), o.outputs...)

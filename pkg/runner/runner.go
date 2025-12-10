@@ -445,6 +445,9 @@ func (*runner) runAction(
 			stepReport.Add(report)
 		}()
 	}
+
+	ctx = enginecontext.TestContextToCtx(ctx, &tc)
+
 	return action.Execute(ctx, tc)
 }
 

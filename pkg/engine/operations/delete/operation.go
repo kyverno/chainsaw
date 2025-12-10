@@ -97,6 +97,7 @@ func (o *operation) getResourcesToDelete(ctx context.Context, obj unstructured.U
 func (o *operation) deleteResources(ctx context.Context, bindings apis.Bindings, resources ...unstructured.Unstructured) error {
 	var errs []error
 	var deleted []unstructured.Unstructured
+	operations.ResetWarnings(ctx)
 	for _, resource := range resources {
 		err := o.deleteResource(ctx, resource)
 		// if the resource was successfully deleted, record it to track actual deletion
@@ -148,6 +149,7 @@ func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, res
 	} else {
 		bindings = apibindings.RegisterBinding(bindings, "error", err.Error())
 	}
+	bindings = operations.RegisterWarningsInBindings(ctx, bindings)
 	if matched, err := checks.Expect(ctx, o.compilers, resource, bindings, o.expect...); matched {
 		return err
 	}
