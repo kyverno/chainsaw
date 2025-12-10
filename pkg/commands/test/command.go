@@ -383,10 +383,10 @@ func Command() *cobra.Command {
 			}
 			runner := runner.New(clock, onFailure)
 			err = runner.Run(context.Background(), configuration.Spec.Namespace, tc, testToRun...)
-			fprintln(stdOut, "Tests Summary...")
-			fprintfln(stdOut, "- Passed  tests %d", tc.Passed())
-			fprintfln(stdOut, "- Failed  tests %d", tc.Failed())
-			fprintfln(stdOut, "- Skipped tests %d", tc.Skipped())
+			fmt.Fprintln(stdOut, "Tests Summary...")
+			fmt.Fprintf(stdOut, "- Passed  tests %d\n", tc.Passed())
+			fmt.Fprintf(stdOut, "- Failed  tests %d\n", tc.Failed())
+			fmt.Fprintf(stdOut, "- Skipped tests %d\n", tc.Skipped())
 			// process report
 			if err == nil {
 				if configuration.Spec.Report != nil && configuration.Spec.Report.Format != "" {
