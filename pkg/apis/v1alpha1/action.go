@@ -82,7 +82,6 @@ type ActionFormat struct {
 
 type ActionInlineResource struct {
 	// Resource provides a resource to be applied.
-	// +kubebuilder:validation:XEmbeddedResource
 	// +kubebuilder:pruning:PreserveUnknownFields
 	// +optional
 	Resource *unstructured.Unstructured `json:"resource,omitempty"`
@@ -124,7 +123,6 @@ type FileRef struct {
 type ActionResourceRef struct {
 	FileRef `json:",inline"`
 	// Resource provides a resource to be applied.
-	// +kubebuilder:validation:XEmbeddedResource
 	// +kubebuilder:pruning:PreserveUnknownFields
 	// +optional
 	Resource *unstructured.Unstructured `json:"resource,omitempty"`
