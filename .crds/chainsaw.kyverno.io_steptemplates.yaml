@@ -2569,7 +2569,6 @@ spec:
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         template:
                           description: Template determines whether resources should
@@ -2913,7 +2912,6 @@ spec:
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         template:
                           description: Template determines whether resources should
@@ -3420,7 +3418,6 @@ spec:
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         template:
                           description: Template determines whether resources should
@@ -3837,7 +3834,6 @@ spec:
                         resource:
                           description: Resource provides a resource to be applied.
                           type: object
-                          x-kubernetes-embedded-resource: true
                           x-kubernetes-preserve-unknown-fields: true
                         template:
                           description: Template determines whether resources should
