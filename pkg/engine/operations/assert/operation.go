@@ -61,6 +61,9 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 		}
 	}
 	if obj.GetKind() != "" {
+		if o.client == nil {
+			return nil, errors.New("cluster client not set")
+		}
 		if err := internal.ApplyNamespacer(o.namespacer, o.client, &obj); err != nil {
 			return nil, err
 		}
