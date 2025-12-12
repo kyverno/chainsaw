@@ -795,6 +795,10 @@ spec:
                               required:
                               - name
                               type: object
+                            creation:
+                              description: Creation specifies parameters for waiting
+                                on a resource's creation.
+                              type: object
                             deletion:
                               description: Deletion specifies parameters for waiting
                                 on a resource's deletion.
@@ -1752,6 +1756,10 @@ spec:
                                     required:
                                     - name
                                     type: object
+                                  creation:
+                                    description: Creation specifies parameters for
+                                      waiting on a resource's creation.
+                                    type: object
                                   deletion:
                                     description: Deletion specifies parameters for
                                       waiting on a resource's deletion.
@@ -2555,6 +2563,10 @@ spec:
                                         type: string
                                     required:
                                     - name
+                                    type: object
+                                  creation:
+                                    description: Creation specifies parameters for
+                                      waiting on a resource's creation.
                                     type: object
                                   deletion:
                                     description: Deletion specifies parameters for
@@ -3401,6 +3413,10 @@ spec:
                                         type: string
                                     required:
                                     - name
+                                    type: object
+                                  creation:
+                                    description: Creation specifies parameters for
+                                      waiting on a resource's creation.
                                     type: object
                                   deletion:
                                     description: Deletion specifies parameters for
@@ -5002,6 +5018,10 @@ spec:
                                         type: string
                                     required:
                                     - name
+                                    type: object
+                                  creation:
+                                    description: Creation specifies parameters for
+                                      waiting on a resource's creation.
                                     type: object
                                   deletion:
                                     description: Deletion specifies parameters for
