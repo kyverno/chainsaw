@@ -1040,6 +1040,7 @@ If a resource does not exist in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `creation` | [`WaitForCreation`](#chainsaw-kyverno-io-v1alpha1-WaitForCreation) |  |  | <p>Creation specifies parameters for waiting on a resource's creation.</p> |
 | `deletion` | [`WaitForDeletion`](#chainsaw-kyverno-io-v1alpha1-WaitForDeletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
 | `condition` | [`WaitForCondition`](#chainsaw-kyverno-io-v1alpha1-WaitForCondition) |  |  | <p>Condition specifies the condition to wait for.</p> |
 | `jsonPath` | [`WaitForJsonPath`](#chainsaw-kyverno-io-v1alpha1-WaitForJsonPath) |  |  | <p>JsonPath specifies the json path condition to wait for.</p> |
@@ -1057,6 +1058,15 @@ If a resource does not exist in the cluster it will fail.</p>
 |---|---|---|---|---|
 | `name` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
 | `value` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
+
+## WaitForCreation     {#chainsaw-kyverno-io-v1alpha1-WaitForCreation}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha1-WaitFor)
+
+<p>WaitForCreation represents parameters for waiting on a resource's creation.</p>
+
 
 ## WaitForDeletion     {#chainsaw-kyverno-io-v1alpha1-WaitForDeletion}
 

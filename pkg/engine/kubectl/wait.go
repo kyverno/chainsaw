@@ -41,6 +41,8 @@ func Wait(ctx context.Context, compilers compilers.Compilers, client client.Clie
 	args := []string{"wait", resource}
 	if collector.Deletion != nil {
 		args = append(args, "--for=delete")
+	} else if collector.Creation != nil {
+		args = append(args, "--for=create")
 	} else if collector.Condition != nil {
 		name, err := collector.Condition.Name.Value(ctx, compilers, tc)
 		if err != nil {

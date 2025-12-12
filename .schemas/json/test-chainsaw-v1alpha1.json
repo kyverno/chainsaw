@@ -1609,6 +1609,13 @@
                         },
                         "additionalProperties": false
                       },
+                      "creation": {
+                        "description": "Creation specifies parameters for waiting on a resource's creation.",
+                        "type": [
+                          "object",
+                          "null"
+                        ]
+                      },
                       "deletion": {
                         "description": "Deletion specifies parameters for waiting on a resource's deletion.",
                         "type": [
@@ -3196,6 +3203,13 @@
                               },
                               "additionalProperties": false
                             },
+                            "creation": {
+                              "description": "Creation specifies parameters for waiting on a resource's creation.",
+                              "type": [
+                                "object",
+                                "null"
+                              ]
+                            },
                             "deletion": {
                               "description": "Deletion specifies parameters for waiting on a resource's deletion.",
                               "type": [
@@ -4514,6 +4528,13 @@
                                 }
                               },
                               "additionalProperties": false
+                            },
+                            "creation": {
+                              "description": "Creation specifies parameters for waiting on a resource's creation.",
+                              "type": [
+                                "object",
+                                "null"
+                              ]
                             },
                             "deletion": {
                               "description": "Deletion specifies parameters for waiting on a resource's deletion.",
@@ -5901,6 +5922,13 @@
                                 }
                               },
                               "additionalProperties": false
+                            },
+                            "creation": {
+                              "description": "Creation specifies parameters for waiting on a resource's creation.",
+                              "type": [
+                                "object",
+                                "null"
+                              ]
                             },
                             "deletion": {
                               "description": "Deletion specifies parameters for waiting on a resource's deletion.",
@@ -8527,6 +8555,13 @@
                                 }
                               },
                               "additionalProperties": false
+                            },
+                            "creation": {
+                              "description": "Creation specifies parameters for waiting on a resource's creation.",
+                              "type": [
+                                "object",
+                                "null"
+                              ]
                             },
                             "deletion": {
                               "description": "Deletion specifies parameters for waiting on a resource's deletion.",
