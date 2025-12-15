@@ -10,5 +10,5 @@ func Step(step v1alpha1.TestStep, i int) string {
 	if step.Name != "" {
 		return step.Name
 	}
-	return fmt.Sprintf("step-%d", i+1)
+	return fmt.Sprintf("step #%d", i+1)
 }

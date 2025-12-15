@@ -6,7 +6,7 @@ Chainsaw provides built-in bindings listed below.
 
 | Name | Purpose | Type |
 |---|---|---|
-| `$values` | Values provided when invoking chainsaw with `--values` flag | `any` |
+| `$values` | Values provided when invoking chainsaw with `--values`, `--set`, or `--set-string` flags | `any` |
 | `$namespace` | Name of the current test namespace | `string` |
 | `$client` | Kubernetes client chainsaw is connected to (if not running with `--no-cluster`) | `object` |
 | `$config` | Kubernetes client config chainsaw is connected to (if not running with `--no-cluster`) | `object` |
@@ -16,6 +16,7 @@ Chainsaw provides built-in bindings listed below.
 | Name | Purpose | Type |
 |---|---|---|
 | `$test.id` | Current test id | `int` |
+| `$test.scenarioId` | Current test scenario id | `int` |
 | `$test.metadata` | Current test metadata | [metav1.ObjectMeta](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#objectmeta-v1-meta) |
 
 !!! note

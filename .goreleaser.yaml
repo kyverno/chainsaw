@@ -45,7 +45,8 @@ builds:
 kos:
   - build: chainsaw
     base_image: cgr.dev/chainguard/kubectl:latest-dev
-    repository: ghcr.io/kyverno/chainsaw
+    repositories:
+      - ghcr.io/kyverno/chainsaw
     tags:
       - '{{.Tag}}'
       - '{{ if not .Prerelease }}latest{{ end }}' 
@@ -60,11 +61,10 @@ kos:
 
 signs:
   - cmd: cosign
-    certificate: '${artifact}.pem'
+    signature: "${artifact}.sigstore.json"
     args:
       - sign-blob
-      - --output-certificate=${certificate}
-      - --output-signature=${signature}
+      - --bundle=${signature}
       - ${artifact}
       - --yes
     artifacts: all

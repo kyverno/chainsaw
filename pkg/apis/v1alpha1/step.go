@@ -16,7 +16,7 @@ type StepTemplate struct {
 
 	// Standard object's metadata.
 	// +optional
-	metav1.ObjectMeta `json:"metadata,omitempty"`
+	metav1.ObjectMeta `json:"metadata"`
 
 	// Test step spec.
 	Spec StepTemplateSpec `json:"spec"`

@@ -14,6 +14,8 @@ body:
       label: chainsaw version Version
       description: What version of chainsaw are you running?
       options:
+      - v0.2.14
+      - v0.2.13
       - v0.2.12
       - v0.2.11
       - v0.2.10

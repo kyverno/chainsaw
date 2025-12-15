@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 	"strings"
 
@@ -22,6 +23,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/version"
 	"github.com/kyverno/pkg/ext/output/color"
 	"github.com/spf13/cobra"
+	"helm.sh/helm/v4/pkg/strvals"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/rest"
@@ -62,12 +64,13 @@ type options struct {
 	noCluster                   bool
 	pauseOnFailure              bool
 	values                      []string
+	set                         []string
+	setString                   []string
 	clusters                    []string
 	remarshal                   bool
 	shardIndex                  int
 	shardCount                  int
 	quiet                       bool
-	silent                      bool // alias for quiet
 }
 
 func Command() *cobra.Command {
@@ -82,49 +85,35 @@ func Command() *cobra.Command {
 			stdOut := cmd.OutOrStdout()
 			stdErr := cmd.ErrOrStderr()
 			stdIn := cmd.InOrStdin()
-
-			// Process quiet/silent mode - silent is an alias for quiet
-			if options.silent {
-				options.quiet = true
+			// helper function for conditional logging based on quiet flag
+			fprintln := func(w io.Writer, a ...any) {
+				fmt.Fprintln(w, a...)
 			}
-
-			// Helper function for conditional logging based on quiet flag
-			printfln := func(format string, a ...interface{}) {
-				if !options.quiet {
-					fmt.Fprintf(stdOut, format+"\n", a...)
-				}
+			if options.quiet {
+				fprintln = func(io.Writer, ...any) {}
 			}
-
-			println := func(a ...interface{}) {
-				if !options.quiet {
-					fmt.Fprintln(stdOut, a...)
-				}
+			fprintfln := func(w io.Writer, format string, a ...any) {
+				fprintln(w, fmt.Sprintf(format, a...))
 			}
-
-			printErr := func(a ...interface{}) {
-				// Always print errors regardless of quiet mode
-				fmt.Fprintln(stdErr, a...)
-			}
-
-			printfln("Version: %s", version.Version())
+			fprintfln(stdOut, "Version: %s", version.Version())
 			var configuration v1alpha2.Configuration
 			// if no config file was provided, give a chance to the default config name
 			if options.config == "" {
 				if _, err := os.Stat(config.DefaultFileName); err == nil {
 					options.config = config.DefaultFileName
-					printfln("No configuration provided but found default file: %s", options.config)
+					fprintfln(stdOut, "No configuration provided but found default file: %s", options.config)
 				}
 			}
 			// try to load configuration file
 			if options.config != "" {
-				printfln("Loading config (%s)...", options.config)
+				fprintfln(stdOut, "Loading config (%s)...", options.config)
 				config, err := config.Load(options.config)
 				if err != nil {
 					return err
 				}
 				configuration = *config
 			} else {
-				println("Loading default configuration...")
+				fprintln(stdOut, "Loading default configuration...")
 				config, err := config.DefaultConfiguration()
 				if err != nil {
 					return err
@@ -255,63 +244,64 @@ func Command() *cobra.Command {
 			if options.pauseOnFailure {
 				configuration.Spec.Execution.Parallel = ptr.To(1)
 			}
-			printfln("- Using test file: %s", configuration.Spec.Discovery.TestFile)
-			printfln("- TestDirs %v", options.testDirs)
-			printfln("- SkipDelete %v", configuration.Spec.Cleanup.SkipDelete)
-			printfln("- FailFast %v", configuration.Spec.Execution.FailFast)
+			fprintfln(stdOut, "- Using test file: %s", configuration.Spec.Discovery.TestFile)
+			fprintfln(stdOut, "- TestDirs %v", options.testDirs)
+			fprintfln(stdOut, "- Quiet %v", options.quiet)
+			fprintfln(stdOut, "- SkipDelete %v", configuration.Spec.Cleanup.SkipDelete)
+			fprintfln(stdOut, "- FailFast %v", configuration.Spec.Execution.FailFast)
 			if configuration.Spec.Report != nil {
-				printfln("- ReportFormat '%v'", configuration.Spec.Report.Format)
-				printfln("- ReportName '%v'", configuration.Spec.Report.Name)
+				fprintfln(stdOut, "- ReportFormat '%v'", configuration.Spec.Report.Format)
+				fprintfln(stdOut, "- ReportName '%v'", configuration.Spec.Report.Name)
 				if configuration.Spec.Report.Path != "" {
-					printfln("- ReportPath '%v'", configuration.Spec.Report.Path)
+					fprintfln(stdOut, "- ReportPath '%v'", configuration.Spec.Report.Path)
 				}
 			}
-			printfln("- Namespace '%v'", configuration.Spec.Namespace.Name)
-			printfln("- FullName %v", configuration.Spec.Discovery.FullName)
-			printfln("- IncludeTestRegex '%v'", configuration.Spec.Discovery.IncludeTestRegex)
-			printfln("- ExcludeTestRegex '%v'", configuration.Spec.Discovery.ExcludeTestRegex)
-			printfln("- ApplyTimeout %v", configuration.Spec.Timeouts.Apply.Duration)
-			printfln("- AssertTimeout %v", configuration.Spec.Timeouts.Assert.Duration)
-			printfln("- CleanupTimeout %v", configuration.Spec.Timeouts.Cleanup.Duration)
-			printfln("- DeleteTimeout %v", configuration.Spec.Timeouts.Delete.Duration)
-			printfln("- ErrorTimeout %v", configuration.Spec.Timeouts.Error.Duration)
-			printfln("- ExecTimeout %v", configuration.Spec.Timeouts.Exec.Duration)
-			printfln("- DeletionPropagationPolicy %v", configuration.Spec.Deletion.Propagation)
+			fprintfln(stdOut, "- Namespace '%v'", configuration.Spec.Namespace.Name)
+			fprintfln(stdOut, "- FullName %v", configuration.Spec.Discovery.FullName)
+			fprintfln(stdOut, "- IncludeTestRegex '%v'", configuration.Spec.Discovery.IncludeTestRegex)
+			fprintfln(stdOut, "- ExcludeTestRegex '%v'", configuration.Spec.Discovery.ExcludeTestRegex)
+			fprintfln(stdOut, "- ApplyTimeout %v", configuration.Spec.Timeouts.Apply.Duration)
+			fprintfln(stdOut, "- AssertTimeout %v", configuration.Spec.Timeouts.Assert.Duration)
+			fprintfln(stdOut, "- CleanupTimeout %v", configuration.Spec.Timeouts.Cleanup.Duration)
+			fprintfln(stdOut, "- DeleteTimeout %v", configuration.Spec.Timeouts.Delete.Duration)
+			fprintfln(stdOut, "- ErrorTimeout %v", configuration.Spec.Timeouts.Error.Duration)
+			fprintfln(stdOut, "- ExecTimeout %v", configuration.Spec.Timeouts.Exec.Duration)
+			fprintfln(stdOut, "- DeletionPropagationPolicy %v", configuration.Spec.Deletion.Propagation)
 			if configuration.Spec.Execution.Parallel != nil && *configuration.Spec.Execution.Parallel > 0 {
-				printfln("- Parallel %d", *configuration.Spec.Execution.Parallel)
+				fprintfln(stdOut, "- Parallel %d", *configuration.Spec.Execution.Parallel)
 			}
 			if configuration.Spec.Execution.RepeatCount != nil {
-				printfln("- RepeatCount %v", *configuration.Spec.Execution.RepeatCount)
+				fprintfln(stdOut, "- RepeatCount %v", *configuration.Spec.Execution.RepeatCount)
 			}
 			if configuration.Spec.Execution.ForceTerminationGracePeriod != nil {
-				printfln("- ForceTerminationGracePeriod %v", configuration.Spec.Execution.ForceTerminationGracePeriod.Duration)
+				fprintfln(stdOut, "- ForceTerminationGracePeriod %v", configuration.Spec.Execution.ForceTerminationGracePeriod.Duration)
 			}
 			if configuration.Spec.Cleanup.DelayBeforeCleanup != nil {
-				printfln("- DelayBeforeCleanup %v", configuration.Spec.Cleanup.DelayBeforeCleanup.Duration)
+				fprintfln(stdOut, "- DelayBeforeCleanup %v", configuration.Spec.Cleanup.DelayBeforeCleanup.Duration)
 			}
 			if len(options.selector) != 0 {
-				printfln("- Selector %v", options.selector)
+				fprintfln(stdOut, "- Selector %v", options.selector)
 			}
 			if len(options.values) != 0 {
-				printfln("- Values %v", options.values)
+				fprintfln(stdOut, "- Values %v", options.values)
 			}
-			printfln("- Template %v", configuration.Spec.Templating.Enabled)
+			fprintfln(stdOut, "- Template %v", configuration.Spec.Templating.Enabled)
 			if configuration.Spec.Templating.Compiler != nil {
-				printfln("- Default compiler %v", *configuration.Spec.Templating.Compiler)
+				fprintfln(stdOut, "- Default compiler %v", *configuration.Spec.Templating.Compiler)
 			}
 			if len(configuration.Spec.Clusters) != 0 {
-				printfln("- Clusters %v", configuration.Spec.Clusters)
+				fprintfln(stdOut, "- Clusters %v", configuration.Spec.Clusters)
 			}
 			if options.remarshal {
-				printfln("- Remarshal %v", options.remarshal)
+				fprintfln(stdOut, "- Remarshal %v", options.remarshal)
 			}
-			printfln("- NoCluster %v", options.noCluster)
-			printfln("- PauseOnFailure %v", options.pauseOnFailure)
+			fprintfln(stdOut, "- NoCluster %v", options.noCluster)
+			fprintfln(stdOut, "- PauseOnFailure %v", options.pauseOnFailure)
 			if options.shardCount > 0 {
-				printfln("- Shard %v / %v", options.shardIndex, options.shardCount)
+				fprintfln(stdOut, "- Shard %v / %v", options.shardIndex, options.shardCount)
 			}
 			// load tests
-			println("Loading tests...")
+			fprintln(stdOut, "Loading tests...")
 			if err := fsutils.CheckFolders(options.testDirs...); err != nil {
 				return err
 			}
@@ -340,20 +330,32 @@ func Command() *cobra.Command {
 			var testToRun []discovery.Test
 			for _, test := range tests {
 				if test.Err != nil {
-					printfln("- %s (%s) - (%s)", test.Test.Name, test.BasePath, test.Err)
+					fprintfln(stdOut, "- %s (%s) - (%s)", test.Test.Name, test.BasePath, test.Err)
 				} else {
-					printfln("- %s (%s)", test.Test.Name, test.BasePath)
+					fprintfln(stdOut, "- %s (%s)", test.Test.Name, test.BasePath)
 					testToRun = append(testToRun, test)
 				}
 			}
 			// load values
-			println("Loading values...")
+			fprintln(stdOut, "Loading values...")
 			values, err := values.Load(options.values...)
 			if err != nil {
 				return err
 			}
+			// merge --set into values
+			for _, s := range options.set {
+				if err := strvals.ParseInto(s, values); err != nil {
+					return fmt.Errorf("failed parsing --set data: %w", err)
+				}
+			}
+			for _, s := range options.setString {
+				if err := strvals.ParseIntoString(s, values); err != nil {
+					return fmt.Errorf("failed parsing --set-string data: %w", err)
+				}
+			}
 			// run tests
-			println("Running tests...")
+			fprintln(stdOut, "Running tests...")
+			// setup test context
 			var restConfig *rest.Config
 			if !options.noCluster {
 				cfg, err := restutils.DefaultConfig(options.kubeConfigOverrides)
@@ -362,48 +364,45 @@ func Command() *cobra.Command {
 				}
 				restConfig = cfg
 			}
-			var onFailure func()
-			if options.pauseOnFailure {
-				onFailure = func() {
-					printErr("Failure detected, press ENTER to continue...")
-					fmt.Fscanln(stdIn) //nolint:errcheck
-				}
-			}
-			ctx := context.Background()
 			tc, err := enginecontext.InitContext(configuration.Spec, restConfig, values)
 			if err != nil {
 				return err
 			}
-
-			// Pass quiet mode to the test context so components can access it
-			tc = tc.WithBinding("quiet", options.quiet)
-
-			runner := runner.New(clock, onFailure)
-			// setup flags
+			tc = tc.WithQuiet(options.quiet)
+			// setup testing flags
 			if err := runnerflags.SetupFlags(configuration.Spec); err != nil {
 				return err
 			}
-			err = runner.Run(ctx, configuration.Spec.Namespace, tc, testToRun...)
-			println("Tests Summary...")
-			printfln("- Passed  tests %d", tc.Passed())
-			printfln("- Failed  tests %d", tc.Failed())
-			printfln("- Skipped tests %d", tc.Skipped())
+			// setup runner and execute
+			var onFailure func()
+			if options.pauseOnFailure {
+				onFailure = func() {
+					fmt.Fprintln(stdErr, "Failure detected, press ENTER to continue...")
+					fmt.Fscanln(stdIn) //nolint:errcheck
+				}
+			}
+			runner := runner.New(clock, onFailure)
+			err = runner.Run(context.Background(), configuration.Spec.Namespace, tc, testToRun...)
+			fmt.Fprintln(stdOut, "Tests Summary...")
+			fmt.Fprintf(stdOut, "- Passed  tests %d\n", tc.Passed())
+			fmt.Fprintf(stdOut, "- Failed  tests %d\n", tc.Failed())
+			fmt.Fprintf(stdOut, "- Skipped tests %d\n", tc.Skipped())
 			// process report
 			if err == nil {
 				if configuration.Spec.Report != nil && configuration.Spec.Report.Format != "" {
-					println("Saving report...")
+					fprintln(stdOut, "Saving report...")
 					if err := report.Save(tc.Report, configuration.Spec.Report.Format, configuration.Spec.Report.Path, configuration.Spec.Report.Name); err != nil {
 						return err
 					}
 				}
 			}
 			if err != nil {
-				println("Done with error.")
+				fprintln(stdOut, "Done with error.")
 			} else if tc.Failed() > 0 {
-				println("Done with failures.")
+				fprintln(stdOut, "Done with failures.")
 				err = errors.New("some tests failed")
 			} else {
-				println("Done.")
+				fprintln(stdOut, "Done.")
 			}
 			return err
 		},
@@ -458,6 +457,8 @@ func Command() *cobra.Command {
 	cmd.Flags().StringSliceVar(&options.selector, "selector", nil, "Selector (label query) to filter on")
 	// external values
 	cmd.Flags().StringSliceVar(&options.values, "values", nil, "Values passed to the tests")
+	cmd.Flags().StringArrayVar(&options.set, "set", nil, "set values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
+	cmd.Flags().StringArrayVar(&options.setString, "set-string", nil, "set STRING values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)")
 	// sharding
 	cmd.Flags().IntVar(&options.shardIndex, "shard-index", 0, "Current shard index (if `--shard-count` > 0)")
 	cmd.Flags().IntVar(&options.shardCount, "shard-count", 0, "Number of shards")
@@ -465,7 +466,6 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
 	cmd.Flags().BoolVar(&options.remarshal, "remarshal", false, "Remarshals tests yaml to apply anchors before parsing")
 	cmd.Flags().BoolVar(&options.quiet, "quiet", false, "Quiet mode - suppresses all output except errors, test failures, and summary")
-	cmd.Flags().BoolVar(&options.silent, "silent", false, "Alias for --quiet")
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
 	}

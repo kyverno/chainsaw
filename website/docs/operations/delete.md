@@ -7,7 +7,7 @@ The `delete` operation defines resources that should be deleted from a Kubernete
 
 ## Configuration
 
-The full structure of the `Delete` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
+The full structure of `Delete` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Delete).
 
 ### Features
 
@@ -17,6 +17,14 @@ The full structure of the `Delete` is documented [here](../reference/apis/chains
 | [Outputs](../general/outputs.md) support           | :x:                |
 | [Templating](../general/templating.md) support     | :white_check_mark: |
 | [Operation checks](../general/checks.md) support   | :white_check_mark: |
+
+### Propagation policy
+
+The deletion propagation policy can be overriden for the specific operation using the `deletionPropagationPolicy` field.
+
+When the `deletionPropagationPolicy` is not specified it is [inherited](../general/inheritance.md) from the configuration, test, or test step.
+
+Look at the [configuration section](../configuration/options/deletion.md#propagation) for details about supported values and how this affects execution.
 
 ## Examples
 
@@ -29,11 +37,23 @@ spec:
   steps:
   - try:
     - delete:
+        # specify reference inline
         ref:
           apiVersion: v1
           kind: Pod
           namespace: default
           name: my-test-pod
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
+    - delete:
+        # use a file
+        file: my-configmap.yaml
 ```
 
 ### Operation check

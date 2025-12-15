@@ -795,6 +795,10 @@ spec:
                               required:
                               - name
                               type: object
+                            creation:
+                              description: Creation specifies parameters for waiting
+                                on a resource's creation.
+                              type: object
                             deletion:
                               description: Deletion specifies parameters for waiting
                                 on a resource's deletion.
@@ -950,6 +954,9 @@ spec:
                         - value
                         type: object
                       type: array
+                    name:
+                      description: Scenario name.
+                      type: string
                   type: object
                 type: array
               skip:
@@ -1751,6 +1758,10 @@ spec:
                                         type: string
                                     required:
                                     - name
+                                    type: object
+                                  creation:
+                                    description: Creation specifies parameters for
+                                      waiting on a resource's creation.
                                     type: object
                                   deletion:
                                     description: Deletion specifies parameters for
@@ -2555,6 +2566,10 @@ spec:
                                         type: string
                                     required:
                                     - name
+                                    type: object
+                                  creation:
+                                    description: Creation specifies parameters for
+                                      waiting on a resource's creation.
                                     type: object
                                   deletion:
                                     description: Deletion specifies parameters for
@@ -3402,6 +3417,10 @@ spec:
                                     required:
                                     - name
                                     type: object
+                                  creation:
+                                    description: Creation specifies parameters for
+                                      waiting on a resource's creation.
+                                    type: object
                                   deletion:
                                     description: Deletion specifies parameters for
                                       waiting on a resource's deletion.
@@ -3647,7 +3666,6 @@ spec:
                               resource:
                                 description: Resource provides a resource to be applied.
                                 type: object
-                                x-kubernetes-embedded-resource: true
                                 x-kubernetes-preserve-unknown-fields: true
                               template:
                                 description: Template determines whether resources
@@ -3999,7 +4017,6 @@ spec:
                               resource:
                                 description: Resource provides a resource to be applied.
                                 type: object
-                                x-kubernetes-embedded-resource: true
                                 x-kubernetes-preserve-unknown-fields: true
                               template:
                                 description: Template determines whether resources
@@ -4518,7 +4535,6 @@ spec:
                               resource:
                                 description: Resource provides a resource to be applied.
                                 type: object
-                                x-kubernetes-embedded-resource: true
                                 x-kubernetes-preserve-unknown-fields: true
                               template:
                                 description: Template determines whether resources
@@ -4943,7 +4959,6 @@ spec:
                               resource:
                                 description: Resource provides a resource to be applied.
                                 type: object
-                                x-kubernetes-embedded-resource: true
                                 x-kubernetes-preserve-unknown-fields: true
                               template:
                                 description: Template determines whether resources
@@ -5006,6 +5021,10 @@ spec:
                                         type: string
                                     required:
                                     - name
+                                    type: object
+                                  creation:
+                                    description: Creation specifies parameters for
+                                      waiting on a resource's creation.
                                     type: object
                                   deletion:
                                     description: Deletion specifies parameters for

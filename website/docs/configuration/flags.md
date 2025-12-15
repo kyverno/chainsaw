@@ -15,6 +15,9 @@ chainsaw test                         \
   --skip-delete false                 \
   --fail-fast true                    \
   --parallel 4                        \
+  --values ./values.yaml              \
+  --set env=production                \
+  --set-string image.tag=v1.2.3       \
   ...
 ```
 

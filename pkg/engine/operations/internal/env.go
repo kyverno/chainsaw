@@ -18,11 +18,14 @@ func RegisterEnvs(ctx context.Context, compilers compilers.Compilers, namespace 
 		if err != nil {
 			return mapOut, envsOut, err
 		}
-		if value, ok := value.(string); !ok {
-			return mapOut, envsOut, fmt.Errorf("value must be a string (%s)", env.Name)
+		if s, ok := value.(string); ok {
+			mapOut[name] = s
+			envsOut = append(envsOut, name+"="+s)
+		} else if s, ok := value.(fmt.Stringer); ok {
+			mapOut[name] = s.String()
+			envsOut = append(envsOut, name+"="+s.String())
 		} else {
-			mapOut[name] = value
-			envsOut = append(envsOut, name+"="+value)
+			return mapOut, envsOut, fmt.Errorf("value must be a string (%s)", env.Name)
 		}
 	}
 	mapOut["NAMESPACE"] = namespace

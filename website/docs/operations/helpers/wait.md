@@ -4,7 +4,7 @@ Wait for a specific condition on one or many resources.
 
 ## Configuration
 
-The full structure of the `Wait` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Wait).
+The full structure of `Wait` is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Wait).
 
 ### Features
 
@@ -127,6 +127,27 @@ spec:
         for:
           # wait for deletion
           deletion: {}
+```
+
+### JSON Path
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
+    - wait:
+        apiVersion: v1
+        kind: Pod
+        timeout: 1m
+        for:
+          # arbitrary JSON path
+          jsonpath:
+            path: '{.status.phase}'
+            value: Running
 ```
 
 ### Format
