@@ -19,7 +19,7 @@ spec:
           value: ($message)
         content: echo $message
         check:
-         (trim_space($stdout)): ((to_number($test.scenarioId) == `1` && 'hello') || 'goodbye')
+          (trim_space($stdout)): ((to_number($test.scenarioId) == `1` && 'hello') || 'goodbye')
 ---
 # yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1

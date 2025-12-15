@@ -36,7 +36,7 @@ spec:
 
 ### Reference
 
-The full structure of the `TestSpec` is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-TestSpec).
+The full structure of `TestSpec` is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-TestSpec).
 
 ## Lifecycle
 

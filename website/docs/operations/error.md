@@ -6,7 +6,7 @@ However, if an error that's not on this list occurs, it will be treated as a tes
 
 ## Configuration
 
-The full structure of the `Error` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Error).
+The full structure of `Error` is documented [here](../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Error).
 
 ### Features
 

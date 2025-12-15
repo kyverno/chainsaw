@@ -9,3 +9,6 @@ spec:
     - assert:
         resource:
           ($values.foo): bar
+          ($values.env): poc
+          ($values.clusterDirectory): my-cluster
+          ($values.image.tag): "01"

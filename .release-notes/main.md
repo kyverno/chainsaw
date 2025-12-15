@@ -5,8 +5,6 @@ Release notes for `TODO`.
 <!--
 ## ‼️ Breaking changes ‼️
 
-## 💫 New features 💫
-
 ## ✨ UI changes ✨
 
 ## ⭐ Examples ⭐
@@ -22,4 +20,11 @@ Release notes for `TODO`.
 
 ## 💫 New features 💫
 
-- Continue tests when an error happens when computing the test name
+- Added support for Kubernetes 1.34
+
+## 📚 Docs 📚
+
+- Added Scenarios documentation
+- Added Sharding documentation
+- Added StepTemplate documentation
+- Added other missing documentation bits

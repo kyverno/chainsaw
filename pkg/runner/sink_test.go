@@ -18,6 +18,7 @@ func Test_newSink(t *testing.T) {
 	tests := []struct {
 		name      string
 		test      string
+		scenario  string
 		step      string
 		operation logging.Operation
 		status    logging.Status
@@ -82,11 +83,11 @@ func Test_newSink(t *testing.T) {
 			log := func(args ...any) {
 				out = args
 			}
-			got := newSink(tclock.NewFakePassiveClock(time.Time{}), log)
+			got := newSink(tclock.NewFakePassiveClock(time.Time{}), false, log)
 			if tt.color != nil {
 				tt.color.EnableColor()
 			}
-			got.Log(tt.test, tt.step, tt.operation, tt.status, tt.obj, tt.color, tt.args...)
+			got.Log(tt.test, tt.scenario, tt.step, tt.operation, tt.status, tt.obj, tt.color, tt.args...)
 			assert.Equal(t, tt.want, out)
 		})
 	}

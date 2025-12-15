@@ -59,6 +59,9 @@ func (o *operation) Exec(ctx context.Context, bindings apis.Bindings) (_ outputs
 	defer func() {
 		internal.LogEnd(ctx, logging.Update, &obj, _err)
 	}()
+	if o.client == nil {
+		return nil, errors.New("cluster client not set")
+	}
 	if o.template {
 		template := v1alpha1.NewProjection(obj.UnstructuredContent())
 		if merged, err := templating.TemplateAndMerge(ctx, o.compilers, obj, bindings, template); err != nil {

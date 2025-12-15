@@ -69,11 +69,11 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 				return false
 			}
 			// setup logger sink
-			ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
+			ctx = logging.WithSink(ctx, newSink(r.clock, tc.Quiet(), t.Log))
 			// setup logger
-			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "@chainsaw"))
+			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "", "@chainsaw"))
 			// setup cleanup
-			cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
+			cleanup := cleaner.New(tc.Timeouts().Cleanup, nil, tc.DeletionPropagation())
 			t.Cleanup(func() {
 				fail(t, r.cleanup(ctx, tc, cleanup))
 			})
@@ -96,34 +96,19 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 					// setup logger
 					size := len("@chainsaw")
 					for i, step := range test.Test.Spec.Steps {
-						name := step.Name
-						if name == "" {
-							name = fmt.Sprintf("step-%d", i+1)
-						}
-						if size < len(name) {
-							size = len(name)
+						if l := len(names.Step(step, i)); size < l {
+							size = l
 						}
 					}
-					ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
 					// helper to run test
-					runTest := func(ctx context.Context, t *testing.T, testId int, scenarioId int, tc enginecontext.TestContext, bindings ...v1alpha1.Binding) {
+					runTest := func(ctx context.Context, t *testing.T, testId int, scenarioId int, scenarioName string, tc enginecontext.TestContext, bindings ...v1alpha1.Binding) {
 						t.Helper()
 						// setup logger sink
-						ctx = logging.WithSink(ctx, newSink(r.clock, t.Log))
+						ctx = logging.WithSink(ctx, newSink(r.clock, tc.Quiet(), t.Log))
 						// setup concurrency
 						if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
 							t.Parallel()
 						}
-						// setup summary
-						defer func() {
-							if t.Skipped() {
-								tc.IncSkipped()
-							} else if t.Failed() {
-								tc.IncFailed()
-							} else {
-								tc.IncPassed()
-							}
-						}()
 						// setup reporting
 						report := &model.TestReport{
 							BasePath:   test.BasePath,
@@ -136,9 +121,19 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							report.Skipped = t.Skipped()
 							tc.Add(report)
 						}()
+						// setup summary - must run after all other cleanup (registered first to run last in LIFO order)
+						t.Cleanup(func() {
+							if t.Skipped() {
+								tc.IncSkipped()
+							} else if t.Failed() {
+								tc.IncFailed()
+							} else {
+								tc.IncPassed()
+							}
+						})
 						// skip check
 						if test.Test.Spec.Skip != nil && *test.Test.Spec.Skip {
-							t.Skip()
+							t.SkipNow()
 							return
 						}
 						// setup context
@@ -148,14 +143,14 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}
 						// fail fast check
 						if tc.FailFast() && tc.Failed() > 0 {
-							t.Skip()
+							t.SkipNow()
 							return
 						}
 						// setup cleaner
-						cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
-						defer func() {
+						cleanup := cleaner.New(tc.Timeouts().Cleanup, nil, tc.DeletionPropagation())
+						t.Cleanup(func() {
 							fail(t, r.testCleanup(ctx, tc, cleanup, report))
-						}()
+						})
 						// setup namespace
 						// TODO: should be part of setupContext ?
 						if test.Test.Spec.Compiler != nil {
@@ -184,7 +179,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}
 						// loop through steps
 						for i, step := range test.Test.Spec.Steps {
-							ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, fmt.Sprintf("%-*s", size, names.Step(step, i))))
+							ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, scenarioName, fmt.Sprintf("%-*s", size, names.Step(step, i))))
 							info := StepInfo{
 								Id: i + 1,
 							}
@@ -197,16 +192,19 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 					// run test scenarios
 					testId := i + 1
 					if len(test.Test.Spec.Scenarios) == 0 {
+						ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, "", fmt.Sprintf("%-*s", size, "@chainsaw")))
 						t.Run(name, func(t *testing.T) {
 							t.Helper()
-							runTest(ctx, t, testId, 0, tc)
+							runTest(ctx, t, testId, 0, "", tc)
 						})
 					} else {
-						for s := range test.Test.Spec.Scenarios {
+						for s, scenario := range test.Test.Spec.Scenarios {
 							scenarioId := s + 1
+							scnearioName := names.Scenario(scenario, s)
+							ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, scnearioName, fmt.Sprintf("%-*s", size, "@chainsaw")))
 							t.Run(name, func(t *testing.T) {
 								t.Helper()
-								runTest(ctx, t, testId, scenarioId, tc, test.Test.Spec.Scenarios[s].Bindings...)
+								runTest(ctx, t, testId, scenarioId, scnearioName, tc, test.Test.Spec.Scenarios[s].Bindings...)
 							})
 						}
 					}
@@ -269,7 +267,7 @@ func (r *runner) runStep(
 		r.onFail()
 		return true
 	}
-	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
+	cleaner := cleaner.New(tc.Timeouts().Cleanup, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
 	cleanup(func() {
 		if !cleaner.Empty() || len(step.Cleanup) != 0 {
 			report := &model.StepReport{

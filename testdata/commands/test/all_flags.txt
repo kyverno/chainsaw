@@ -2,6 +2,7 @@ Version: (devel)
 Loading default configuration...
 - Using test file: custom-test.yaml
 - TestDirs [.]
+- Quiet false
 - SkipDelete false
 - FailFast false
 - ReportFormat 'XML'

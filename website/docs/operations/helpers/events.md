@@ -4,7 +4,7 @@ Display one or many events.
 
 ## Configuration
 
-The full structure of the `Events` resource is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Events).
+The full structure of `Events` is documented [here](../../reference/apis/chainsaw.v1alpha1.md#chainsaw-kyverno-io-v1alpha1-Events).
 
 ### Features
 

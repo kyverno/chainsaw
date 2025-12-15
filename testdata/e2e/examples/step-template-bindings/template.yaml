@@ -14,3 +14,4 @@ spec:
         kind: ConfigMap
         metadata:
           name: ($input)
+          namespace: ($namespace)

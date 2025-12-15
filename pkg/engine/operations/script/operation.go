@@ -93,7 +93,16 @@ func (o *operation) createCommand(ctx context.Context, bindings apis.Bindings) (
 		}
 		env = append(env, fmt.Sprintf("KUBECONFIG=%s", path))
 	}
-	cmd := exec.CommandContext(ctx, "sh", "-c", o.script.Content) //nolint:gosec
+	shell := "sh"
+	if o.script.Shell != nil {
+		shell = *o.script.Shell
+	}
+	shellArgs := []string{"-c"}
+	if len(o.script.ShellArgs) > 0 {
+		shellArgs = o.script.ShellArgs
+	}
+	shellArgs = append(shellArgs, o.script.Content)
+	cmd := exec.CommandContext(ctx, shell, shellArgs...)
 	cmd.Env = env
 	basePath := o.basePath
 	if o.script.WorkDir != nil {

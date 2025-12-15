@@ -6,7 +6,7 @@
 
 | # | Name | Bindings | Try | Catch | Finally | Cleanup |
 |:-:|---|:-:|:-:|:-:|:-:|:-:|
-| 1 | [step-1](#step-step-1) | 0 | 4 | 4 | 2 | 0 |
+| 1 | [step-1](#step-step-1) | 0 | 5 | 4 | 2 | 0 |
 
 ### Step: `step-1`
 
@@ -18,8 +18,9 @@
 |:-:|---|:-:|:-:|---|
 | 1 | `create` | 0 | 0 | *No description* |
 | 2 | `wait` | 0 | 0 | *No description* |
-| 3 | `delete` | 0 | 0 | *No description* |
-| 4 | `wait` | 0 | 0 | *No description* |
+| 3 | `wait` | 0 | 0 | *No description* |
+| 4 | `delete` | 0 | 0 | *No description* |
+| 5 | `wait` | 0 | 0 | *No description* |
 
 #### Catch
 

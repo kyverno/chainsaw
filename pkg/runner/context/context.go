@@ -17,6 +17,15 @@ import (
 	"k8s.io/utils/clock"
 )
 
+type Timeouts struct {
+	Apply   time.Duration
+	Assert  time.Duration
+	Cleanup time.Duration
+	Delete  time.Duration
+	Error   time.Duration
+	Exec    time.Duration
+}
+
 type TestContext struct {
 	*model.Summary
 	*model.Report
@@ -32,10 +41,11 @@ type TestContext struct {
 	failFast            bool
 	fullName            bool
 	namespacer          namespacer.Namespacer
+	quiet               bool
 	skipDelete          bool
 	templating          bool
 	terminationGrace    *time.Duration
-	timeouts            v1alpha1.DefaultTimeouts
+	timeouts            Timeouts
 }
 
 func MakeContext(clock clock.PassiveClock, bindings apis.Bindings, registry clusters.Registry) TestContext {
@@ -116,6 +126,10 @@ func (tc *TestContext) Namespacer() namespacer.Namespacer {
 	return tc.namespacer
 }
 
+func (tc *TestContext) Quiet() bool {
+	return tc.quiet
+}
+
 func (tc *TestContext) SkipDelete() bool {
 	return tc.skipDelete
 }
@@ -128,7 +142,7 @@ func (tc *TestContext) TerminationGrace() *time.Duration {
 	return tc.terminationGrace
 }
 
-func (tc *TestContext) Timeouts() v1alpha1.DefaultTimeouts {
+func (tc *TestContext) Timeouts() Timeouts {
 	return tc.timeouts
 }
 
@@ -192,6 +206,11 @@ func (tc TestContext) WithNamespacer(namespacer namespacer.Namespacer) TestConte
 	return tc
 }
 
+func (tc TestContext) WithQuiet(quiet bool) TestContext {
+	tc.quiet = quiet
+	return tc
+}
+
 func (tc TestContext) WithSkipDelete(skipDelete bool) TestContext {
 	tc.skipDelete = skipDelete
 	return tc
@@ -209,22 +228,22 @@ func (tc TestContext) WithTerminationGrace(terminationGrace *time.Duration) Test
 
 func (tc TestContext) WithTimeouts(timeouts v1alpha1.Timeouts) TestContext {
 	if new := timeouts.Apply; new != nil {
-		tc.timeouts.Apply = *new
+		tc.timeouts.Apply = new.Duration
 	}
 	if new := timeouts.Assert; new != nil {
-		tc.timeouts.Assert = *new
+		tc.timeouts.Assert = new.Duration
 	}
 	if new := timeouts.Cleanup; new != nil {
-		tc.timeouts.Cleanup = *new
+		tc.timeouts.Cleanup = new.Duration
 	}
 	if new := timeouts.Delete; new != nil {
-		tc.timeouts.Delete = *new
+		tc.timeouts.Delete = new.Duration
 	}
 	if new := timeouts.Error; new != nil {
-		tc.timeouts.Error = *new
+		tc.timeouts.Error = new.Duration
 	}
 	if new := timeouts.Exec; new != nil {
-		tc.timeouts.Exec = *new
+		tc.timeouts.Exec = new.Duration
 	}
-	return tc
+	return tc.WithBinding("timeouts", tc.timeouts)
 }

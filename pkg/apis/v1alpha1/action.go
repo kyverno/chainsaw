@@ -82,7 +82,6 @@ type ActionFormat struct {
 
 type ActionInlineResource struct {
 	// Resource provides a resource to be applied.
-	// +kubebuilder:validation:XEmbeddedResource
 	// +kubebuilder:pruning:PreserveUnknownFields
 	// +optional
 	Resource *unstructured.Unstructured `json:"resource,omitempty"`
@@ -124,7 +123,6 @@ type FileRef struct {
 type ActionResourceRef struct {
 	FileRef `json:",inline"`
 	// Resource provides a resource to be applied.
-	// +kubebuilder:validation:XEmbeddedResource
 	// +kubebuilder:pruning:PreserveUnknownFields
 	// +optional
 	Resource *unstructured.Unstructured `json:"resource,omitempty"`
@@ -317,9 +315,15 @@ type Script struct {
 	ActionOutputs  `json:",inline"`
 	ActionTimeout  `json:",inline"`
 
-	// Content defines a shell script (run with "sh -c ...").
+	// Content defines a shell script (run with "$shell $shellArgs ...").
 	// +optional
 	Content string `json:"content,omitempty"`
+
+	// Shell defines the host shell (run with "... $shellArgs $content").
+	Shell *string `json:"shell,omitempty"`
+
+	// ShellArgs defines arguments for the host shell (run with "$shell ... $content").
+	ShellArgs []string `json:"shellArgs,omitempty"`
 
 	// WorkDir is the working directory for script.
 	// +optional
@@ -357,6 +361,10 @@ type Wait struct {
 
 // WaitFor specifies the condition to wait for.
 type WaitFor struct {
+	// Creation specifies parameters for waiting on a resource's creation.
+	// +optional
+	Creation *WaitForCreation `json:"creation,omitempty"`
+
 	// Deletion specifies parameters for waiting on a resource's deletion.
 	// +optional
 	Deletion *WaitForDeletion `json:"deletion,omitempty"`
@@ -379,6 +387,9 @@ type WaitForCondition struct {
 	// +optional
 	Value *Expression `json:"value,omitempty"`
 }
+
+// WaitForCreation represents parameters for waiting on a resource's creation.
+type WaitForCreation struct{}
 
 // WaitForDeletion represents parameters for waiting on a resource's deletion.
 type WaitForDeletion struct{}

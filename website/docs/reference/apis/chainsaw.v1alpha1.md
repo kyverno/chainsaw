@@ -830,6 +830,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `name` | `string` |  |  | <p>Scenario name.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines binding key/values.</p> |
 
 ## Script     {#chainsaw-kyverno-io-v1alpha1-Script}
@@ -850,7 +851,9 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionEnv` | [`ActionEnv`](#chainsaw-kyverno-io-v1alpha1-ActionEnv) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-| `content` | `string` |  |  | <p>Content defines a shell script (run with "sh -c ...").</p> |
+| `content` | `string` |  |  | <p>Content defines a shell script (run with "$shell $shellArgs ...").</p> |
+| `shell` | `string` | :white_check_mark: |  | <p>Shell defines the host shell (run with "... $shellArgs $content").</p> |
+| `shellArgs` | `[]string` | :white_check_mark: |  | <p>ShellArgs defines arguments for the host shell (run with "$shell ... $content").</p> |
 | `workDir` | `string` |  |  | <p>WorkDir is the working directory for script.</p> |
 
 ## Sleep     {#chainsaw-kyverno-io-v1alpha1-Sleep}
@@ -1038,6 +1041,7 @@ If a resource does not exist in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `creation` | [`WaitForCreation`](#chainsaw-kyverno-io-v1alpha1-WaitForCreation) |  |  | <p>Creation specifies parameters for waiting on a resource's creation.</p> |
 | `deletion` | [`WaitForDeletion`](#chainsaw-kyverno-io-v1alpha1-WaitForDeletion) |  |  | <p>Deletion specifies parameters for waiting on a resource's deletion.</p> |
 | `condition` | [`WaitForCondition`](#chainsaw-kyverno-io-v1alpha1-WaitForCondition) |  |  | <p>Condition specifies the condition to wait for.</p> |
 | `jsonPath` | [`WaitForJsonPath`](#chainsaw-kyverno-io-v1alpha1-WaitForJsonPath) |  |  | <p>JsonPath specifies the json path condition to wait for.</p> |
@@ -1055,6 +1059,15 @@ If a resource does not exist in the cluster it will fail.</p>
 |---|---|---|---|---|
 | `name` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Name defines the specific condition to wait for, e.g., "Available", "Ready".</p> |
 | `value` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) |  |  | <p>Value defines the specific condition status to wait for, e.g., "True", "False".</p> |
+
+## WaitForCreation     {#chainsaw-kyverno-io-v1alpha1-WaitForCreation}
+
+**Appears in:**
+    
+- [WaitFor](#chainsaw-kyverno-io-v1alpha1-WaitFor)
+
+<p>WaitForCreation represents parameters for waiting on a resource's creation.</p>
+
 
 ## WaitForDeletion     {#chainsaw-kyverno-io-v1alpha1-WaitForDeletion}
 

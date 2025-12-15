@@ -1445,7 +1445,7 @@
                         }
                       },
                       "content": {
-                        "description": "Content defines a shell script (run with \"sh -c ...\").",
+                        "description": "Content defines a shell script (run with \"$shell $shellArgs ...\").",
                         "type": [
                           "string",
                           "null"
@@ -1535,6 +1535,26 @@
                             }
                           },
                           "additionalProperties": false
+                        }
+                      },
+                      "shell": {
+                        "description": "Shell defines the host shell (run with \"... $shellArgs $content\").",
+                        "type": [
+                          "string",
+                          "null"
+                        ]
+                      },
+                      "shellArgs": {
+                        "description": "ShellArgs defines arguments for the host shell (run with \"$shell ... $content\").",
+                        "type": [
+                          "array",
+                          "null"
+                        ],
+                        "items": {
+                          "type": [
+                            "string",
+                            "null"
+                          ]
                         }
                       },
                       "skipCommandOutput": {
@@ -1672,6 +1692,13 @@
                               }
                             },
                             "additionalProperties": false
+                          },
+                          "creation": {
+                            "description": "Creation specifies parameters for waiting on a resource's creation.",
+                            "type": [
+                              "object",
+                              "null"
+                            ]
                           },
                           "deletion": {
                             "description": "Deletion specifies parameters for waiting on a resource's deletion.",
