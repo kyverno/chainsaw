@@ -86,8 +86,32 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 	var outputs outputs.Outputs
 	err := wait.PollUntilContextCancel(ctx, client.PollInterval, false, func(ctx context.Context) (bool, error) {
 		outputs, lastErr = o.tryCreateResource(ctx, bindings, obj)
-		// TODO: determine if the error can be retried
-		return lastErr == nil, nil
+		// Check if the error is retryable
+		if lastErr != nil {
+			// Conflict errors should be retried
+			if kerrors.IsConflict(lastErr) {
+				return false, nil
+			}
+			// Server timeout errors should be retried
+			if kerrors.IsServerTimeout(lastErr) {
+				return false, nil
+			}
+			// Too many requests errors should be retried
+			if kerrors.IsTooManyRequests(lastErr) {
+				return false, nil
+			}
+			// Service unavailable errors should be retried
+			if kerrors.IsServiceUnavailable(lastErr) {
+				return false, nil
+			}
+			// AlreadyExists error should not be retried as it's a permanent condition
+			if kerrors.IsAlreadyExists(lastErr) {
+				return false, lastErr
+			}
+			// Non-retryable error
+			return false, lastErr
+		}
+		return true, nil
 	})
 	if err == nil {
 		return outputs, nil
@@ -98,26 +122,45 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 	return outputs, err
 }
 
-// TODO: could be replaced by checking the already exists error
 func (o *operation) tryCreateResource(ctx context.Context, bindings apis.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
-	var actual unstructured.Unstructured
-	actual.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
-	err := o.client.Get(ctx, client.Key(&obj), &actual)
-	if err == nil {
+	// First check if the resource exists
+	key := client.Key(&obj)
+	var existing unstructured.Unstructured
+	existing.SetGroupVersionKind(obj.GetObjectKind().GroupVersionKind())
+
+	err := o.client.Get(ctx, key, &existing)
+	if err != nil {
+		// If there was an error other than NotFound, propagate it
+		if !kerrors.IsNotFound(err) {
+			return nil, err
+		}
+
+		// Resource doesn't exist, try to create it
+		createErr := o.client.Create(ctx, &obj)
+		if createErr == nil {
+			// Resource created successfully
+			if o.cleaner != nil {
+				o.cleaner.Add(o.client, &obj)
+			}
+			return o.handleCheck(ctx, bindings, obj, nil)
+		}
+
+		// Check if the error matches any expectations
+		if len(o.expect) > 0 {
+			return o.handleCheck(ctx, bindings, obj, createErr)
+		}
+
+		// If the error is not AlreadyExists, propagate it
+		if !kerrors.IsAlreadyExists(createErr) {
+			return nil, createErr
+		}
+
+		// Resource already exists (race condition)
 		return nil, errors.New("the resource already exists in the cluster")
 	}
-	if kerrors.IsNotFound(err) {
-		return o.createResource(ctx, bindings, obj)
-	}
-	return nil, err
-}
 
-func (o *operation) createResource(ctx context.Context, bindings apis.Bindings, obj unstructured.Unstructured) (outputs.Outputs, error) {
-	err := o.client.Create(ctx, &obj)
-	if err == nil && o.cleaner != nil {
-		o.cleaner.Add(o.client, &obj)
-	}
-	return o.handleCheck(ctx, bindings, obj, err)
+	// Resource already exists
+	return nil, errors.New("the resource already exists in the cluster")
 }
 
 func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, obj unstructured.Unstructured, err error) (_outputs outputs.Outputs, _err error) {

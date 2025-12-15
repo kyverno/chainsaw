@@ -82,8 +82,28 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 	var outputs outputs.Outputs
 	err := wait.PollUntilContextCancel(ctx, client.PollInterval, false, func(ctx context.Context) (bool, error) {
 		outputs, lastErr = o.tryUpdateResource(ctx, bindings, obj)
-		// TODO: determine if the error can be retried
-		return lastErr == nil, nil
+		// Check if the error is retryable
+		if lastErr != nil {
+			// Conflict errors should be retried
+			if kerrors.IsConflict(lastErr) {
+				return false, nil
+			}
+			// Server timeout errors should be retried
+			if kerrors.IsServerTimeout(lastErr) {
+				return false, nil
+			}
+			// Too many requests errors should be retried
+			if kerrors.IsTooManyRequests(lastErr) {
+				return false, nil
+			}
+			// Service unavailable errors should be retried
+			if kerrors.IsServiceUnavailable(lastErr) {
+				return false, nil
+			}
+			// Non-retryable error
+			return false, lastErr
+		}
+		return true, nil
 	})
 	if err == nil {
 		return outputs, nil

@@ -16,6 +16,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/engine/templating"
 	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/kyverno-json/pkg/core/compilers"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/json"
@@ -83,8 +84,32 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 	var outputs outputs.Outputs
 	err := wait.PollUntilContextCancel(ctx, client.PollInterval, false, func(ctx context.Context) (bool, error) {
 		outputs, lastErr = o.tryPatchResource(ctx, bindings, obj)
-		// TODO: determine if the error can be retried
-		return lastErr == nil, nil
+		// Check if the error is retryable
+		if lastErr != nil {
+			// Conflict errors should be retried
+			if kerrors.IsConflict(lastErr) {
+				return false, nil
+			}
+			// Server timeout errors should be retried
+			if kerrors.IsServerTimeout(lastErr) {
+				return false, nil
+			}
+			// Too many requests errors should be retried
+			if kerrors.IsTooManyRequests(lastErr) {
+				return false, nil
+			}
+			// Service unavailable errors should be retried
+			if kerrors.IsServiceUnavailable(lastErr) {
+				return false, nil
+			}
+			// Resource not found errors should not be retried
+			if kerrors.IsNotFound(lastErr) {
+				return false, lastErr
+			}
+			// Non-retryable error
+			return false, lastErr
+		}
+		return true, nil
 	})
 	if err == nil {
 		return outputs, nil
