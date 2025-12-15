@@ -47,7 +47,14 @@ func TestInitContext(t *testing.T) {
 			assert.False(t, tc.SkipDelete())
 			assert.True(t, tc.Templating())
 			assert.Nil(t, tc.TerminationGrace())
-			assert.Equal(t, config.Spec.Timeouts, tc.Timeouts())
+			assert.Equal(t, Timeouts{
+				Apply:   config.Spec.Timeouts.Apply.Duration,
+				Assert:  config.Spec.Timeouts.Assert.Duration,
+				Cleanup: config.Spec.Timeouts.Cleanup.Duration,
+				Delete:  config.Spec.Timeouts.Delete.Duration,
+				Error:   config.Spec.Timeouts.Error.Duration,
+				Exec:    config.Spec.Timeouts.Exec.Duration,
+			}, tc.Timeouts())
 		},
 	}, {
 		name: "with delay before cleanup",

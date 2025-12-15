@@ -73,7 +73,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 			// setup logger
 			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "", "@chainsaw"))
 			// setup cleanup
-			cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
+			cleanup := cleaner.New(tc.Timeouts().Cleanup, nil, tc.DeletionPropagation())
 			t.Cleanup(func() {
 				fail(t, r.cleanup(ctx, tc, cleanup))
 			})
@@ -147,7 +147,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							return
 						}
 						// setup cleaner
-						cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
+						cleanup := cleaner.New(tc.Timeouts().Cleanup, nil, tc.DeletionPropagation())
 						t.Cleanup(func() {
 							fail(t, r.testCleanup(ctx, tc, cleanup, report))
 						})
@@ -267,7 +267,7 @@ func (r *runner) runStep(
 		r.onFail()
 		return true
 	}
-	cleaner := cleaner.New(tc.Timeouts().Cleanup.Duration, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
+	cleaner := cleaner.New(tc.Timeouts().Cleanup, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
 	cleanup(func() {
 		if !cleaner.Empty() || len(step.Cleanup) != 0 {
 			report := &model.StepReport{

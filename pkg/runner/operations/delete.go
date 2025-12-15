@@ -37,7 +37,7 @@ func (o deleteAction) Execute(ctx context.Context, tc enginecontext.TestContext)
 			tc.DeletionPropagation(),
 			o.op.Expect...,
 		)
-		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Delete.Duration)
+		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Delete)
 		defer cancel()
 		return op.Exec(ctx, tc.Bindings())
 	}

@@ -39,7 +39,7 @@ func (o updateAction) Execute(ctx context.Context, tc enginecontext.TestContext)
 			o.op.Expect,
 			o.op.Outputs,
 		)
-		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Apply.Duration)
+		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Apply)
 		defer cancel()
 		return op.Exec(ctx, tc.Bindings())
 	}

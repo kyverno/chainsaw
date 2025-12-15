@@ -32,7 +32,7 @@ func (o waitAction) Execute(ctx context.Context, tc enginecontext.TestContext) (
 		return nil, err
 	} else {
 		// make sure timeout is set to populate the command flag
-		timeout := tc.Timeouts().Exec.Duration
+		timeout := tc.Timeouts().Exec
 		o.op.Timeout = &metav1.Duration{Duration: timeout}
 		entrypoint, args, err := kubectl.Wait(ctx, tc.Compilers(), client, tc.Bindings(), &o.op)
 		if err != nil {
