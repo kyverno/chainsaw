@@ -34,7 +34,7 @@ func (o assertAction) Execute(ctx context.Context, tc enginecontext.TestContext)
 			tc.Namespacer(),
 			tc.Templating(),
 		)
-		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Assert.Duration)
+		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Assert)
 		defer cancel()
 		return op.Exec(ctx, tc.Bindings())
 	}

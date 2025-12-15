@@ -291,21 +291,21 @@ func TestTestContext_Timeouts(t *testing.T) {
 	child2 := parent.WithTimeouts(v1alpha1.Timeouts{})
 	{
 		value := parent.Timeouts()
-		assert.Equal(t, v1alpha1.DefaultTimeouts{}, value)
+		assert.Equal(t, Timeouts{}, value)
 	}
 	{
 		value := child.Timeouts()
-		assert.Equal(t, v1alpha1.DefaultTimeouts{
-			Apply:   metav1.Duration{Duration: 10 * time.Second},
-			Assert:  metav1.Duration{Duration: 20 * time.Second},
-			Cleanup: metav1.Duration{Duration: 30 * time.Second},
-			Delete:  metav1.Duration{Duration: 40 * time.Second},
-			Error:   metav1.Duration{Duration: 50 * time.Second},
-			Exec:    metav1.Duration{Duration: 60 * time.Second},
+		assert.Equal(t, Timeouts{
+			Apply:   10 * time.Second,
+			Assert:  20 * time.Second,
+			Cleanup: 30 * time.Second,
+			Delete:  40 * time.Second,
+			Error:   50 * time.Second,
+			Exec:    60 * time.Second,
 		}, value)
 	}
 	{
 		value := child2.Timeouts()
-		assert.Equal(t, v1alpha1.DefaultTimeouts{}, value)
+		assert.Equal(t, Timeouts{}, value)
 	}
 }

@@ -45,7 +45,7 @@ func (o proxyAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 			ns,
 			config,
 		)
-		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Exec.Duration)
+		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Exec)
 		defer cancel()
 		return op.Exec(ctx, tc.Bindings())
 	}
