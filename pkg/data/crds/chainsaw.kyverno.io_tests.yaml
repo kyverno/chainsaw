@@ -954,6 +954,9 @@ spec:
                         - value
                         type: object
                       type: array
+                    name:
+                      description: Scenario name.
+                      type: string
                   type: object
                 type: array
               skip:

@@ -830,6 +830,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `name` | `string` |  |  | <p>Scenario name.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines binding key/values.</p> |
 
 ## Script     {#chainsaw-kyverno-io-v1alpha1-Script}

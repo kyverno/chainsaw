@@ -71,7 +71,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 			// setup logger sink
 			ctx = logging.WithSink(ctx, newSink(r.clock, tc.Quiet(), t.Log))
 			// setup logger
-			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "@chainsaw"))
+			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "", "@chainsaw"))
 			// setup cleanup
 			cleanup := cleaner.New(tc.Timeouts().Cleanup.Duration, nil, tc.DeletionPropagation())
 			t.Cleanup(func() {
@@ -96,17 +96,12 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 					// setup logger
 					size := len("@chainsaw")
 					for i, step := range test.Test.Spec.Steps {
-						name := step.Name
-						if name == "" {
-							name = fmt.Sprintf("step-%d", i+1)
-						}
-						if size < len(name) {
-							size = len(name)
+						if l := len(names.Step(step, i)); size < l {
+							size = l
 						}
 					}
-					ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, fmt.Sprintf("%-*s", size, "@chainsaw")))
 					// helper to run test
-					runTest := func(ctx context.Context, t *testing.T, testId int, scenarioId int, tc enginecontext.TestContext, bindings ...v1alpha1.Binding) {
+					runTest := func(ctx context.Context, t *testing.T, testId int, scenarioId int, scenarioName string, tc enginecontext.TestContext, bindings ...v1alpha1.Binding) {
 						t.Helper()
 						// setup logger sink
 						ctx = logging.WithSink(ctx, newSink(r.clock, tc.Quiet(), t.Log))
@@ -184,7 +179,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}
 						// loop through steps
 						for i, step := range test.Test.Spec.Steps {
-							ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, fmt.Sprintf("%-*s", size, names.Step(step, i))))
+							ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, scenarioName, fmt.Sprintf("%-*s", size, names.Step(step, i))))
 							info := StepInfo{
 								Id: i + 1,
 							}
@@ -197,16 +192,19 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 					// run test scenarios
 					testId := i + 1
 					if len(test.Test.Spec.Scenarios) == 0 {
+						ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, "", fmt.Sprintf("%-*s", size, "@chainsaw")))
 						t.Run(name, func(t *testing.T) {
 							t.Helper()
-							runTest(ctx, t, testId, 0, tc)
+							runTest(ctx, t, testId, 0, "", tc)
 						})
 					} else {
-						for s := range test.Test.Spec.Scenarios {
+						for s, scenario := range test.Test.Spec.Scenarios {
 							scenarioId := s + 1
+							scnearioName := names.Scenario(scenario, s)
+							ctx := logging.WithLogger(ctx, logging.NewLogger(test.Test.Name, scnearioName, fmt.Sprintf("%-*s", size, "@chainsaw")))
 							t.Run(name, func(t *testing.T) {
 								t.Helper()
-								runTest(ctx, t, testId, scenarioId, tc, test.Test.Spec.Scenarios[s].Bindings...)
+								runTest(ctx, t, testId, scenarioId, scnearioName, tc, test.Test.Spec.Scenarios[s].Bindings...)
 							})
 						}
 					}

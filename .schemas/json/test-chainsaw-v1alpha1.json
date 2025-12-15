@@ -1868,6 +1868,13 @@
                   },
                   "additionalProperties": false
                 }
+              },
+              "name": {
+                "description": "Scenario name.",
+                "type": [
+                  "string",
+                  "null"
+                ]
               }
             },
             "additionalProperties": false
