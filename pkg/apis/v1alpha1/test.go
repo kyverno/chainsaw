@@ -110,6 +110,10 @@ type TestSpec struct {
 
 // Scenario defines per scenario bindings.
 type Scenario struct {
+	// Scenario name.
+	// +optional
+	Name string `json:"name,omitempty"`
+
 	// Bindings defines binding key/values.
 	// +optional
 	Bindings []Binding `json:"bindings,omitempty"`

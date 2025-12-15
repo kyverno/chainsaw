@@ -11,7 +11,7 @@ import (
 )
 
 func TestWithSink(t *testing.T) {
-	var f SinkFunc = func(string, string, Operation, Status, client.Object, *color.Color, ...fmt.Stringer) {
+	var f SinkFunc = func(string, string, string, Operation, Status, client.Object, *color.Color, ...fmt.Stringer) {
 	}
 	ctx := context.Background()
 	assert.NotNil(t, ctx)
@@ -20,7 +20,7 @@ func TestWithSink(t *testing.T) {
 }
 
 func Test_getSink(t *testing.T) {
-	var f SinkFunc = func(string, string, Operation, Status, client.Object, *color.Color, ...fmt.Stringer) {
+	var f SinkFunc = func(string, string, string, Operation, Status, client.Object, *color.Color, ...fmt.Stringer) {
 	}
 	ctx := context.Background()
 	assert.NotNil(t, ctx)

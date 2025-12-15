@@ -4,9 +4,10 @@ import (
 	"context"
 )
 
-type sinkKey struct{}
-
-type loggerKey struct{}
+type (
+	sinkKey   struct{}
+	loggerKey struct{}
+)
 
 func WithSink(ctx context.Context, sink Sink) context.Context {
 	return context.WithValue(ctx, sinkKey{}, sink)

@@ -18,10 +18,10 @@ func (f LoggerFunc) Log(ctx context.Context, operation Operation, status Status,
 	f(ctx, operation, status, obj, color, args...)
 }
 
-func NewLogger(test string, step string) LoggerFunc {
+func NewLogger(test, scenario, step string) LoggerFunc {
 	return func(ctx context.Context, operation Operation, status Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
 		if sink := getSink(ctx); sink != nil {
-			sink.Log(test, step, operation, status, obj, color, args...)
+			sink.Log(test, scenario, step, operation, status, obj, color, args...)
 		}
 	}
 }

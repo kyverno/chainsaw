@@ -23,7 +23,7 @@ func newSink(clock clock.PassiveClock, quiet bool, log func(args ...any)) loggin
 	// Once an error occurs, all subsequent logs for that test+step are shown immediately
 	errorOccurred := make(map[string]bool)
 
-	formatLog := func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, col *color.Color, args ...fmt.Stringer) string {
+	formatLog := func(test, scenario, step string, operation logging.Operation, status logging.Status, obj client.Object, col *color.Color, args ...fmt.Stringer) string {
 		sprint := fmt.Sprint
 		opLen := 9
 		stLen := 5
@@ -33,7 +33,12 @@ func newSink(clock clock.PassiveClock, quiet bool, log func(args ...any)) loggin
 			stLen += 14
 		}
 		a := make([]any, 0, len(args)+2)
-		prefix := fmt.Sprintf("%s| %s | %s | %s | %-*s | %-*s |", eraser, clock.Now().Format("15:04:05"), sprint(test), sprint(step), opLen, sprint(operation), stLen, sprint(status))
+		var prefix string
+		if scenario == "" {
+			prefix = fmt.Sprintf("%s| %s | %s | %s | %-*s | %-*s |", eraser, clock.Now().Format("15:04:05"), sprint(test), sprint(step), opLen, sprint(operation), stLen, sprint(status))
+		} else {
+			prefix = fmt.Sprintf("%s| %s | %s | %s | %s | %-*s | %-*s |", eraser, clock.Now().Format("15:04:05"), sprint(test), sprint(scenario), sprint(step), opLen, sprint(operation), stLen, sprint(status))
+		}
 		if obj != nil {
 			gvk := obj.GetObjectKind().GroupVersionKind()
 			key := client.Key(obj)
@@ -47,9 +52,9 @@ func newSink(clock clock.PassiveClock, quiet bool, log func(args ...any)) loggin
 		return fmt.Sprint(a...)
 	}
 
-	return func(test string, step string, operation logging.Operation, status logging.Status, obj client.Object, col *color.Color, args ...fmt.Stringer) {
-		formatted := formatLog(test, step, operation, status, obj, col, args...)
-		bufferKey := test + "|" + step
+	return func(test, scenario, step string, operation logging.Operation, status logging.Status, obj client.Object, col *color.Color, args ...fmt.Stringer) {
+		formatted := formatLog(test, scenario, step, operation, status, obj, col, args...)
+		bufferKey := test + "|" + scenario + "|" + step
 
 		if !quiet {
 			// Not in quiet mode - log everything immediately

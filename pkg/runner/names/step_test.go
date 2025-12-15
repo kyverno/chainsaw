@@ -19,7 +19,7 @@ func TestStep(t *testing.T) {
 			Name: "",
 		},
 		i:    10,
-		want: "step-11",
+		want: "step #11",
 	}, {
 		name: "with name",
 		step: v1alpha1.TestStep{

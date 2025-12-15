@@ -15,6 +15,7 @@ func TestLoggerFunc_Log(t *testing.T) {
 	tests := []struct {
 		name      string
 		test      string
+		scenario  string
 		step      string
 		operation Operation
 		status    Status
@@ -33,8 +34,9 @@ func TestLoggerFunc_Log(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			called := false
-			var f SinkFunc = func(test, step string, operation Operation, status Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
+			var f SinkFunc = func(test, scenario, step string, operation Operation, status Status, obj client.Object, color *color.Color, args ...fmt.Stringer) {
 				assert.Equal(t, tt.test, test)
+				assert.Equal(t, tt.scenario, scenario)
 				assert.Equal(t, tt.step, step)
 				assert.Equal(t, tt.operation, operation)
 				assert.Equal(t, tt.status, status)
@@ -45,7 +47,7 @@ func TestLoggerFunc_Log(t *testing.T) {
 			}
 			ctx := context.Background()
 			ctx = WithSink(ctx, f)
-			logger := NewLogger(tt.test, tt.step)
+			logger := NewLogger(tt.test, tt.scenario, tt.step)
 			logger.Log(ctx, tt.operation, tt.status, tt.obj, tt.color, tt.args...)
 			assert.True(t, called)
 		})
