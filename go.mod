@@ -25,10 +25,10 @@ require (
 	go.uber.org/multierr v1.11.0
 	gopkg.in/yaml.v3 v3.0.1
 	helm.sh/helm/v4 v4.0.4
-	k8s.io/api v0.34.3
+	k8s.io/api v0.35.0
 	k8s.io/apimachinery v0.35.0
 	k8s.io/apiserver v0.34.3
-	k8s.io/client-go v0.34.3
+	k8s.io/client-go v0.35.0
 	k8s.io/utils v0.0.0-20251002143259-bc988d571ff4
 	sigs.k8s.io/controller-runtime v0.22.4
 	sigs.k8s.io/kubectl-validate v0.0.5-0.20250909135530-dad770c1cb46
@@ -109,7 +109,6 @@ require (
 	github.com/google/btree v1.1.3 // indirect
 	github.com/google/gnostic-models v0.7.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
-	github.com/google/pprof v0.0.0-20250403155104-27863c87afa6 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.6 // indirect
