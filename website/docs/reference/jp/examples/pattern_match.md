@@ -10,4 +10,6 @@
 
 ## Examples
 
-TODO
+```
+pattern_match('*.*.*.*', '127.0.0.1')
+```
