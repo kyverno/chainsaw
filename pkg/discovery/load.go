@@ -97,7 +97,7 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 	}
 	test := &v1alpha1.Test{
 		TypeMeta: metav1.TypeMeta{
-			APIVersion: v1alpha1.SchemeGroupVersion.String(),
+			APIVersion: v1alpha1.GroupVersion.String(),
 			Kind:       "Test",
 		},
 		ObjectMeta: metav1.ObjectMeta{

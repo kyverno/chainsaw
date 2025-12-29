@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 type (
@@ -20,7 +21,7 @@ type (
 	converter     = func(unstructured.Unstructured) (*v1alpha1.StepTemplate, error)
 )
 
-var stepTemplate_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("StepTemplate")
+var stepTemplate_v1alpha1 = schema.GroupVersion(v1alpha1.GroupVersion).WithKind("StepTemplate")
 
 func Load(path string, remarshal bool) ([]*v1alpha1.StepTemplate, error) {
 	content, err := os.ReadFile(filepath.Clean(path))

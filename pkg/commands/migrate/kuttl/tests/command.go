@@ -77,7 +77,7 @@ func processFolder(stdout io.Writer, stderr io.Writer, folder string, save, clea
 		fmt.Fprintf(stderr, "Converting test %s ...\n", folder)
 		test := v1alpha1.Test{
 			TypeMeta: metav1.TypeMeta{
-				APIVersion: v1alpha1.SchemeGroupVersion.String(),
+				APIVersion: v1alpha1.GroupVersion.String(),
 				Kind:       "Test",
 			},
 		}
