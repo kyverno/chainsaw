@@ -28,8 +28,8 @@ type (
 )
 
 var (
-	configuration_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Configuration")
-	configuration_v1alpha2 = v1alpha2.SchemeGroupVersion.WithKind("Configuration")
+	configuration_v1alpha1 = schema.GroupVersion(v1alpha1.GroupVersion).WithKind("Configuration")
+	configuration_v1alpha2 = schema.GroupVersion(v1alpha2.GroupVersion).WithKind("Configuration")
 )
 
 func Load(path string) (*v1alpha2.Configuration, error) {

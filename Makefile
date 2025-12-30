@@ -29,13 +29,13 @@ CONTROLLER_GEN                     := $(TOOLS_DIR)/controller-gen
 REGISTER_GEN                       := $(TOOLS_DIR)/register-gen
 DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
 CONVERSION_GEN                     := $(TOOLS_DIR)/conversion-gen
-CODE_GEN_VERSION                   := v0.34.0
+CODE_GEN_VERSION                   := v0.35.0
 REFERENCE_DOCS                     := $(TOOLS_DIR)/genref
 REFERENCE_DOCS_VERSION             := latest
 KIND                               := $(TOOLS_DIR)/kind
-KIND_VERSION                       := v0.30.0
+KIND_VERSION                       := v0.31.0
 KO                                 ?= $(TOOLS_DIR)/ko
-KO_VERSION                         ?= v0.18.0
+KO_VERSION                         ?= v0.18.1
 TOOLS                              := $(CONTROLLER_GEN) $(REGISTER_GEN) $(DEEPCOPY_GEN) $(CONVERSION_GEN) $(REFERENCE_DOCS) $(KIND) $(KO)
 PIP                                ?= "pip"
 ifeq ($(GOOS), darwin)

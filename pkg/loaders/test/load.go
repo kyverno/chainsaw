@@ -12,6 +12,7 @@ import (
 	"github.com/kyverno/pkg/ext/resource/loader"
 	"github.com/kyverno/pkg/ext/yaml"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 type (
@@ -20,7 +21,7 @@ type (
 	converter     = func(unstructured.Unstructured) (*v1alpha1.Test, error)
 )
 
-var test_v1alpha1 = v1alpha1.SchemeGroupVersion.WithKind("Test")
+var test_v1alpha1 = schema.GroupVersion(v1alpha1.GroupVersion).WithKind("Test")
 
 func Load(file string, remarshal bool) ([]*v1alpha1.Test, error) {
 	content, err := os.ReadFile(filepath.Clean(file))
