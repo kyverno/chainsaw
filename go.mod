@@ -31,7 +31,7 @@ require (
 	k8s.io/client-go v0.35.0
 	k8s.io/utils v0.0.0-20251222233032-718f0e51e6d2
 	sigs.k8s.io/controller-runtime v0.22.4
-	sigs.k8s.io/kubectl-validate v0.0.5-0.20250909135530-dad770c1cb46
+	sigs.k8s.io/kubectl-validate v0.0.5-0.20260105161640-a97ccfaca20b
 	sigs.k8s.io/yaml v1.6.0
 )
 
@@ -193,5 +193,3 @@ require (
 	sigs.k8s.io/randfill v1.0.0 // indirect
 	sigs.k8s.io/structured-merge-diff/v6 v6.3.1 // indirect
 )
-
-replace sigs.k8s.io/kubectl-validate v0.0.5-0.20250909135530-dad770c1cb46 => github.com/eddycharly/kubectl-validate v0.0.6-0.20251223155231-9431c46daf3f
