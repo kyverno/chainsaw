@@ -1,9 +1,10 @@
-# yaml-language-server: $schema=../../../../.schemas/json/test-chainsaw-v1alpha1.json
+# yaml-language-server: $schema=../../../../../.schemas/json/test-chainsaw-v1alpha1.json
 apiVersion: chainsaw.kyverno.io/v1alpha1
 kind: Test
 metadata:
   name: negative-script
 spec:
+  concurrent: false
   steps:
   - try:
     - script:
