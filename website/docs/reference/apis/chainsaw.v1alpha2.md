@@ -132,6 +132,7 @@ auto_generated: true
 | `name` | `string` |  |  | <p>Name defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
 | `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `template` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>Template defines a template to create the test namespace.</p> |
+| `fastDelete` | `bool` |  |  | <p>FastDelete skips waiting for namespace deletion.</p> |
 
 ## ReportFormatType     {#chainsaw-kyverno-io-v1alpha2-ReportFormatType}
 

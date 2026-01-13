@@ -431,9 +431,10 @@ during the testing process.</p>
 | `reportFormat` | [`ReportFormatType`](#chainsaw-kyverno-io-v1alpha1-ReportFormatType) |  |  | <p>ReportFormat determines test report format (JSON, XML, JUNIT-TEST, JUNIT-STEP, JUNIT-OPERATION, nil) nil == no report. maps to report.Type, however we don't want generated.deepcopy to have reference to it.</p> |
 | `reportPath` | `string` |  |  | <p>ReportPath defines the path.</p> |
 | `reportName` | `string` |  |  | <p>ReportName defines the name of report to create. It defaults to "chainsaw-report".</p> |
-| `namespace` | `string` |  |  | <p>Namespace defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
+| `namespace` | `string` |  |  | <p>Namespace defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in the test spec.</p> |
 | `namespaceTemplateCompiler` | `policy/v1alpha1.Compiler` |  |  | <p>NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.</p> |
 | `namespaceTemplate` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
+| `fastNamespaceDeletion` | `bool` |  |  | <p>FastNamespaceDeletion skips waiting for namespace deletion.</p> |
 | `fullName` | `bool` |  |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
 | `excludeTestRegex` | `string` |  |  | <p>ExcludeTestRegex is used to exclude tests based on a regular expression.</p> |
 | `includeTestRegex` | `string` |  |  | <p>IncludeTestRegex is used to include tests based on a regular expression.</p> |
@@ -911,6 +912,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `namespace` | `string` |  |  | <p>Namespace determines whether the test should run in a random ephemeral namespace or not.</p> |
 | `namespaceTemplate` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
 | `namespaceTemplateCompiler` | `policy/v1alpha1.Compiler` |  |  | <p>NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.</p> |
+| `fastNamespaceDeletion` | `bool` |  |  | <p>FastNamespaceDeletion skips waiting for namespace deletion.</p> |
 | `scenarios` | [`[]Scenario`](#chainsaw-kyverno-io-v1alpha1-Scenario) |  |  | <p>Scenarios defines test scenarios.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `steps` | [`[]TestStep`](#chainsaw-kyverno-io-v1alpha1-TestStep) | :white_check_mark: |  | <p>Steps defining the test.</p> |

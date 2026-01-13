@@ -52,6 +52,7 @@ type options struct {
 	reportPath                  string
 	reportName                  string
 	namespace                   string
+	fastNamespaceDeletion       bool
 	deletionPropagationPolicy   string
 	fullName                    bool
 	excludeTestRegex            string
@@ -191,6 +192,9 @@ func Command() *cobra.Command {
 			if flagutils.IsSet(flags, "namespace") {
 				configuration.Spec.Namespace.Name = options.namespace
 			}
+			if flagutils.IsSet(flags, "fast-namespace-deletion") {
+				configuration.Spec.Namespace.FastDelete = options.fastNamespaceDeletion
+			}
 			if flagutils.IsSet(flags, "deletion-propagation-policy") {
 				configuration.Spec.Deletion.Propagation = metav1.DeletionPropagation(options.deletionPropagationPolicy)
 			}
@@ -257,6 +261,7 @@ func Command() *cobra.Command {
 				}
 			}
 			fprintfln(stdOut, "- Namespace '%v'", configuration.Spec.Namespace.Name)
+			fprintfln(stdOut, "- FastNamespaceDeletion '%v'", configuration.Spec.Namespace.FastDelete)
 			fprintfln(stdOut, "- FullName %v", configuration.Spec.Discovery.FullName)
 			fprintfln(stdOut, "- IncludeTestRegex '%v'", configuration.Spec.Discovery.IncludeTestRegex)
 			fprintfln(stdOut, "- ExcludeTestRegex '%v'", configuration.Spec.Discovery.ExcludeTestRegex)
@@ -434,6 +439,7 @@ func Command() *cobra.Command {
 	cmd.Flags().DurationVar(&options.forceTerminationGracePeriod.Duration, "force-termination-grace-period", 0, "If specified, overrides termination grace periods in applicable resources")
 	// namespace options
 	cmd.Flags().StringVar(&options.namespace, "namespace", "", "Namespace to use for tests")
+	cmd.Flags().BoolVar(&options.fastNamespaceDeletion, "fast-namespace-deletion", false, "Skips waiting for namespace deletion")
 	// templating options
 	cmd.Flags().BoolVar(&options.template, "template", config.Spec.Templating.Enabled, "If set, resources will be considered for templating")
 	cmd.Flags().StringVar(&options.defaultCompiler, "default-compiler", "", "If set, configures the default compiler (jp or cel)")

@@ -1846,6 +1846,13 @@
                 "cel"
               ]
             },
+            "fastDelete": {
+              "description": "FastDelete skips waiting for namespace deletion.",
+              "type": [
+                "boolean",
+                "null"
+              ]
+            },
             "name": {
               "description": "Name defines the namespace to use for tests.\nIf not specified, every test will execute in a random ephemeral namespace\nunless the namespace is overridden in a the test spec.",
               "type": [
