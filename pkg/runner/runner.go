@@ -78,7 +78,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 				wg.Wait()
 			})
 			// setup cleanup
-			cleanup := cleaner.New(tc.Timeouts().Cleanup, false, nil, tc.DeletionPropagation())
+			cleanup := cleaner.New(tc.Timeouts().Cleanup, !nsOptions.FastDelete, nil, tc.DeletionPropagation())
 			t.Cleanup(func() {
 				fail(t, r.cleanup(ctx, tc, cleanup))
 				logging.Log(ctx, logging.Internal, logging.LogStatus, nil, color.BoldRed)
@@ -154,18 +154,16 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							t.SkipNow()
 							return
 						}
-						// setup cleaner
-						cleanup := cleaner.New(tc.Timeouts().Cleanup, false, nil, tc.DeletionPropagation())
-						t.Cleanup(func() {
-							fail(t, r.testCleanup(ctx, tc, cleanup, report))
-						})
-						// setup namespace
+						// prepare namespace
 						// TODO: should be part of setupContext ?
 						if test.Test.Spec.Compiler != nil {
 							tc = tc.WithDefaultCompiler(string(*test.Test.Spec.Compiler))
 						}
 						nsOptions := nsOptions
 						nsOptions.Name = test.Test.Spec.Namespace
+						if test.Test.Spec.FastNamespaceDeletion != nil {
+							nsOptions.FastDelete = *test.Test.Spec.FastNamespaceDeletion
+						}
 						if tc.Namespacer() == nil && nsOptions.Name == "" {
 							nsOptions.Name = fmt.Sprintf("chainsaw-%s", petname.Generate(2, "-"))
 						}
@@ -173,6 +171,12 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							nsOptions.Template = template
 							nsOptions.Compiler = test.Test.Spec.NamespaceTemplateCompiler
 						}
+						// setup cleaner
+						cleanup := cleaner.New(tc.Timeouts().Cleanup, !nsOptions.FastDelete, nil, tc.DeletionPropagation())
+						t.Cleanup(func() {
+							fail(t, r.testCleanup(ctx, tc, cleanup, report))
+						})
+						// setup namespace
 						tc, err = r.setupNamespace(ctx, nsOptions, tc, cleanup)
 						if fail(t, err) {
 							return

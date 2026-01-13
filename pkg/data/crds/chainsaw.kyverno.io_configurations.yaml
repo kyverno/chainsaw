@@ -874,6 +874,9 @@ spec:
                 description: FailFast determines whether the test should stop upon
                   encountering the first failure.
                 type: boolean
+              fastNamespaceDeletion:
+                description: FastNamespaceDeletion skips waiting for namespace deletion.
+                type: boolean
               forceTerminationGracePeriod:
                 description: ForceTerminationGracePeriod forces the termination grace
                   period on pods, statefulsets, daemonsets and deployments.
@@ -890,7 +893,7 @@ spec:
                 description: |-
                   Namespace defines the namespace to use for tests.
                   If not specified, every test will execute in a random ephemeral namespace
-                  unless the namespace is overridden in a the test spec.
+                  unless the namespace is overridden in the test spec.
                 type: string
               namespaceTemplate:
                 description: NamespaceTemplate defines a template to create the test
@@ -1912,6 +1915,9 @@ spec:
                     - jp
                     - cel
                     type: string
+                  fastDelete:
+                    description: FastDelete skips waiting for namespace deletion.
+                    type: boolean
                   name:
                     description: |-
                       Name defines the namespace to use for tests.

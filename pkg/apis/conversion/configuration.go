@@ -23,6 +23,7 @@ func Convert_v1alpha2_ConfigurationSpec_To_v1alpha1_ConfigurationSpec(in *v1alph
 	out.Namespace = in.Namespace.Name
 	out.NamespaceTemplate = in.Namespace.Template
 	out.NamespaceTemplateCompiler = in.Namespace.Compiler
+	out.FastNamespaceDeletion = in.Namespace.FastDelete
 	if in := in.Report; in != nil {
 		out.ReportFormat = v1alpha1.ReportFormatType(in.Format)
 		out.ReportPath = in.Path
@@ -59,9 +60,10 @@ func Convert_v1alpha1_ConfigurationSpec_To_v1alpha2_ConfigurationSpec(in *v1alph
 		ForceTerminationGracePeriod: in.ForceTerminationGracePeriod,
 	}
 	out.Namespace = v1alpha2.NamespaceOptions{
-		Name:     in.Namespace,
-		Compiler: in.NamespaceTemplateCompiler,
-		Template: in.NamespaceTemplate,
+		Name:       in.Namespace,
+		Compiler:   in.NamespaceTemplateCompiler,
+		Template:   in.NamespaceTemplate,
+		FastDelete: in.FastNamespaceDeletion,
 	}
 	out.Report = &v1alpha2.ReportOptions{
 		Format: v1alpha2.ReportFormatType(in.ReportFormat),

@@ -22,6 +22,7 @@ chainsaw test [flags]... [test directories]...
       --exclude-test-regex string                 Regular expression to exclude tests
       --exec-timeout duration                     The exec timeout to use as default for configuration (default 5s)
       --fail-fast                                 Stop the test upon encountering the first failure
+      --fast-namespace-deletion                   Skips waiting for namespace deletion
       --force-termination-grace-period duration   If specified, overrides termination grace periods in applicable resources
       --full-name                                 Use full test case folder path instead of folder name
   -h, --help                                      help for test

@@ -1786,6 +1786,13 @@
             "null"
           ]
         },
+        "fastNamespaceDeletion": {
+          "description": "FastNamespaceDeletion skips waiting for namespace deletion.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "forceTerminationGracePeriod": {
           "description": "ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.",
           "type": [

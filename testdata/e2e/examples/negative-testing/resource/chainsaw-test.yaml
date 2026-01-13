@@ -5,6 +5,7 @@ metadata:
   name: negative-resource
 spec:
   concurrent: false
+  fastNamespaceDeletion: true
   steps:
   - try:
     - apply:

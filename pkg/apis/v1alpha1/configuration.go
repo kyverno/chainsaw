@@ -75,7 +75,7 @@ type ConfigurationSpec struct {
 
 	// Namespace defines the namespace to use for tests.
 	// If not specified, every test will execute in a random ephemeral namespace
-	// unless the namespace is overridden in a the test spec.
+	// unless the namespace is overridden in the test spec.
 	// +optional
 	Namespace string `json:"namespace,omitempty"`
 
@@ -86,6 +86,10 @@ type ConfigurationSpec struct {
 	// NamespaceTemplate defines a template to create the test namespace.
 	// +optional
 	NamespaceTemplate *Projection `json:"namespaceTemplate,omitempty"`
+
+	// FastNamespaceDeletion skips waiting for namespace deletion.
+	// +optional
+	FastNamespaceDeletion bool `json:"fastNamespaceDeletion,omitempty"`
 
 	// FullName makes use of the full test case folder path instead of the folder name.
 	// +optional

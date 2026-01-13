@@ -9,6 +9,7 @@ Loading config (../../../testdata/commands/test/config/config_all_fields.yaml)..
 - ReportName 'custom-chainsaw-report'
 - ReportPath '../../../.temp'
 - Namespace 'test-namespace'
+- FastNamespaceDeletion false
 - FullName true
 - IncludeTestRegex '^include-.*'
 - ExcludeTestRegex '^exclude-.*'

@@ -76,6 +76,10 @@ type TestSpec struct {
 	// +optional
 	NamespaceTemplateCompiler *Compiler `json:"namespaceTemplateCompiler,omitempty"`
 
+	// FastNamespaceDeletion skips waiting for namespace deletion.
+	// +optional
+	FastNamespaceDeletion *bool `json:"fastNamespaceDeletion,omitempty"`
+
 	// Scenarios defines test scenarios.
 	// +optional
 	Scenarios []Scenario `json:"scenarios,omitempty"`

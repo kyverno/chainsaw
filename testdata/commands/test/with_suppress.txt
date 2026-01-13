@@ -9,6 +9,7 @@ Loading default configuration...
 - ReportFormat ''
 - ReportName ''
 - Namespace ''
+- FastNamespaceDeletion false
 - FullName false
 - IncludeTestRegex ''
 - ExcludeTestRegex ''

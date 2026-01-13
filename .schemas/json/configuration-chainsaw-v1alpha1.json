@@ -1729,6 +1729,13 @@
             "null"
           ]
         },
+        "fastNamespaceDeletion": {
+          "description": "FastNamespaceDeletion skips waiting for namespace deletion.",
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
         "forceTerminationGracePeriod": {
           "description": "ForceTerminationGracePeriod forces the termination grace period on pods, statefulsets, daemonsets and deployments.",
           "type": [
@@ -1751,7 +1758,7 @@
           ]
         },
         "namespace": {
-          "description": "Namespace defines the namespace to use for tests.\nIf not specified, every test will execute in a random ephemeral namespace\nunless the namespace is overridden in a the test spec.",
+          "description": "Namespace defines the namespace to use for tests.\nIf not specified, every test will execute in a random ephemeral namespace\nunless the namespace is overridden in the test spec.",
           "type": [
             "string",
             "null"

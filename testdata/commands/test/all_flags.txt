@@ -9,6 +9,7 @@ Loading default configuration...
 - ReportName 'foo'
 - ReportPath '../../../.temp'
 - Namespace 'bar'
+- FastNamespaceDeletion false
 - FullName true
 - IncludeTestRegex '^.*$'
 - ExcludeTestRegex '^.*$'

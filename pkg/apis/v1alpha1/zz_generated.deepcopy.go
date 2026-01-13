@@ -1336,6 +1336,11 @@ func (in *TestSpec) DeepCopyInto(out *TestSpec) {
 		*out = new(policyv1alpha1.Compiler)
 		**out = **in
 	}
+	if in.FastNamespaceDeletion != nil {
+		in, out := &in.FastNamespaceDeletion, &out.FastNamespaceDeletion
+		*out = new(bool)
+		**out = **in
+	}
 	if in.Scenarios != nil {
 		in, out := &in.Scenarios, &out.Scenarios
 		*out = make([]Scenario, len(*in))

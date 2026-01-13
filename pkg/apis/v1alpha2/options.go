@@ -93,6 +93,10 @@ type NamespaceOptions struct {
 	// Template defines a template to create the test namespace.
 	// +optional
 	Template *Projection `json:"template,omitempty"`
+
+	// FastDelete skips waiting for namespace deletion.
+	// +optional
+	FastDelete bool `json:"fastDelete,omitempty"`
 }
 
 type ReportFormatType string
