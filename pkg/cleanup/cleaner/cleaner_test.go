@@ -19,32 +19,46 @@ import (
 
 func TestNew(t *testing.T) {
 	tests := []struct {
-		name    string
-		timeout time.Duration
-		delay   *time.Duration
-		want    Cleaner
+		name            string
+		timeout         time.Duration
+		delay           *time.Duration
+		waitForDeletion bool
+		want            Cleaner
 	}{{
-		name:    "with timeout",
-		timeout: time.Minute,
-		delay:   nil,
+		name:            "with timeout",
+		timeout:         time.Minute,
+		delay:           nil,
+		waitForDeletion: false,
 		want: &cleaner{
 			timeout:     time.Minute,
 			delay:       nil,
 			propagation: metav1.DeletePropagationBackground,
 		},
 	}, {
-		name:    "with delay",
-		timeout: time.Minute,
-		delay:   ptr.To(10 * time.Second),
+		name:            "with delay",
+		timeout:         time.Minute,
+		delay:           ptr.To(10 * time.Second),
+		waitForDeletion: false,
 		want: &cleaner{
 			timeout:     time.Minute,
 			delay:       ptr.To(10 * time.Second),
 			propagation: metav1.DeletePropagationBackground,
 		},
+	}, {
+		name:            "with waitForDeletion",
+		timeout:         time.Minute,
+		delay:           nil,
+		waitForDeletion: true,
+		want: &cleaner{
+			timeout:         time.Minute,
+			delay:           nil,
+			propagation:     metav1.DeletePropagationBackground,
+			waitForDeletion: true,
+		},
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := New(tt.timeout, true, tt.delay, metav1.DeletePropagationBackground)
+			got := New(tt.timeout, tt.waitForDeletion, tt.delay, metav1.DeletePropagationBackground)
 			assert.Equal(t, tt.want, got)
 		})
 	}
@@ -193,9 +207,10 @@ func Test_cleaner_Run(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &cleaner{
-				delay:   ptr.To(time.Second),
-				timeout: 1 * time.Second,
-				entries: tt.entries,
+				delay:           ptr.To(time.Second),
+				timeout:         1 * time.Second,
+				entries:         tt.entries,
+				waitForDeletion: true,
 			}
 			got := c.Run(context.TODO(), &model.StepReport{})
 			assert.Equal(t, tt.want, got)
