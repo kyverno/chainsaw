@@ -25,19 +25,21 @@ type Cleaner interface {
 	Run(ctx context.Context, stepReport *model.StepReport) []error
 }
 
-func New(timeout time.Duration, delay *time.Duration, propagation metav1.DeletionPropagation) Cleaner {
+func New(timeout time.Duration, waitForDeletion bool, delay *time.Duration, propagation metav1.DeletionPropagation) Cleaner {
 	return &cleaner{
-		delay:       delay,
-		timeout:     timeout,
-		propagation: propagation,
+		delay:           delay,
+		timeout:         timeout,
+		propagation:     propagation,
+		waitForDeletion: waitForDeletion,
 	}
 }
 
 type cleaner struct {
-	delay       *time.Duration
-	timeout     time.Duration
-	propagation metav1.DeletionPropagation
-	entries     []cleanupEntry
+	delay           *time.Duration
+	timeout         time.Duration
+	propagation     metav1.DeletionPropagation
+	waitForDeletion bool
+	entries         []cleanupEntry
 }
 
 func (c *cleaner) Add(client client.Client, object client.Object) {
@@ -82,8 +84,10 @@ func (c *cleaner) delete(ctx context.Context, entry cleanupEntry) error {
 		if !kerrors.IsNotFound(err) {
 			return err
 		}
-	} else if err := client.WaitForDeletion(ctx, entry.client, entry.object); err != nil {
-		return err
+	} else if c.waitForDeletion {
+		if err := client.WaitForDeletion(ctx, entry.client, entry.object); err != nil {
+			return err
+		}
 	}
 	return nil
 }

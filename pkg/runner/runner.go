@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -72,10 +73,15 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 			ctx = logging.WithSink(ctx, newSink(r.clock, tc.Quiet(), t.Log))
 			// setup logger
 			ctx = logging.WithLogger(ctx, logging.NewLogger(t.Name(), "", "@chainsaw"))
+			wg := sync.WaitGroup{}
+			t.Cleanup(func() {
+				wg.Wait()
+			})
 			// setup cleanup
-			cleanup := cleaner.New(tc.Timeouts().Cleanup, nil, tc.DeletionPropagation())
+			cleanup := cleaner.New(tc.Timeouts().Cleanup, false, nil, tc.DeletionPropagation())
 			t.Cleanup(func() {
 				fail(t, r.cleanup(ctx, tc, cleanup))
+				logging.Log(ctx, logging.Internal, logging.LogStatus, nil, color.BoldRed)
 			})
 			// setup namespace
 			tc, err := r.setupNamespace(ctx, nsOptions, tc, cleanup)
@@ -103,6 +109,8 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 					// helper to run test
 					runTest := func(ctx context.Context, t *testing.T, testId int, scenarioId int, scenarioName string, tc enginecontext.TestContext, bindings ...v1alpha1.Binding) {
 						t.Helper()
+						wg.Add(1)
+						defer wg.Done()
 						// setup logger sink
 						ctx = logging.WithSink(ctx, newSink(r.clock, tc.Quiet(), t.Log))
 						// setup concurrency
@@ -147,7 +155,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							return
 						}
 						// setup cleaner
-						cleanup := cleaner.New(tc.Timeouts().Cleanup, nil, tc.DeletionPropagation())
+						cleanup := cleaner.New(tc.Timeouts().Cleanup, false, nil, tc.DeletionPropagation())
 						t.Cleanup(func() {
 							fail(t, r.testCleanup(ctx, tc, cleanup, report))
 						})
@@ -267,7 +275,7 @@ func (r *runner) runStep(
 		r.onFail()
 		return true
 	}
-	cleaner := cleaner.New(tc.Timeouts().Cleanup, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
+	cleaner := cleaner.New(tc.Timeouts().Cleanup, true, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
 	cleanup(func() {
 		if !cleaner.Empty() || len(step.Cleanup) != 0 {
 			report := &model.StepReport{
