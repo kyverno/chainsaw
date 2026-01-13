@@ -6,6 +6,7 @@ Loading default configuration...
 - SkipDelete false
 - FailFast false
 - Namespace ''
+- FastNamespaceDeletion false
 - FullName false
 - IncludeTestRegex 'test[4-6]'
 - ExcludeTestRegex 'test[1-3]'

@@ -261,7 +261,7 @@ func Command() *cobra.Command {
 				}
 			}
 			fprintfln(stdOut, "- Namespace '%v'", configuration.Spec.Namespace.Name)
-			fprintfln(stdOut, "- FastNamespaceDeletion '%v'", configuration.Spec.Namespace.FastDelete)
+			fprintfln(stdOut, "- FastNamespaceDeletion %v", configuration.Spec.Namespace.FastDelete)
 			fprintfln(stdOut, "- FullName %v", configuration.Spec.Discovery.FullName)
 			fprintfln(stdOut, "- IncludeTestRegex '%v'", configuration.Spec.Discovery.IncludeTestRegex)
 			fprintfln(stdOut, "- ExcludeTestRegex '%v'", configuration.Spec.Discovery.ExcludeTestRegex)
