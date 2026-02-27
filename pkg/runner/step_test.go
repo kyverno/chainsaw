@@ -623,7 +623,8 @@ func TestStepProcessor_Run(t *testing.T) {
 			},
 		},
 	}, {
-		name: "try, catch and finally operation with apply handler",
+		name:         "try, catch and finally operation with apply handler",
+		expectedFail: true, // PodLogs in Finally/Catch runs kubectl without a real cluster → exit status 1 → fail()
 		client: &fake.FakeClient{
 			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				obj.(*unstructured.Unstructured).Object = map[string]any{
