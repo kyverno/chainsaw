@@ -1,6 +1,7 @@
 package resource
 
 import (
+	"bytes"
 	"errors"
 	"io"
 	"net/http"
@@ -13,6 +14,26 @@ import (
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 )
+
+type fakeReadSeeker struct {
+	*bytes.Reader
+	seekErr error
+	readErr error
+}
+
+func (f *fakeReadSeeker) Seek(offset int64, whence int) (int64, error) {
+	if f.seekErr != nil {
+		return 0, f.seekErr
+	}
+	return f.Reader.Seek(offset, whence)
+}
+
+func (f *fakeReadSeeker) Read(p []byte) (int, error) {
+	if f.readErr != nil {
+		return 0, f.readErr
+	}
+	return f.Reader.Read(p)
+}
 
 func TestLoad(t *testing.T) {
 	baseDir := filepath.Join("..", "..", "..", "testdata", "resource")
@@ -114,6 +135,42 @@ func TestLoadFromURI_FromHTTPServer(t *testing.T) {
 	assert.Len(t, resources, 1)
 	assert.Equal(t, "Pod", resources[0].GetKind())
 	assert.Equal(t, "test-pod", resources[0].GetName())
+}
+
+func TestReadDownloadedContent(t *testing.T) {
+	tests := []struct {
+		name      string
+		reader    readSeeker
+		want      []byte
+		wantError string
+	}{
+		{
+			name:   "success",
+			reader: &fakeReadSeeker{Reader: bytes.NewReader([]byte("hello"))},
+			want:   []byte("hello"),
+		},
+		{
+			name:      "seek error",
+			reader:    &fakeReadSeeker{Reader: bytes.NewReader([]byte("hello")), seekErr: errors.New("boom")},
+			wantError: "error rewinding downloaded content: boom",
+		},
+		{
+			name:      "read error",
+			reader:    &fakeReadSeeker{Reader: bytes.NewReader([]byte("hello")), readErr: errors.New("boom")},
+			wantError: "error reading downloaded content: boom",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := readDownloadedContent(tt.reader)
+			if tt.wantError != "" {
+				assert.EqualError(t, err, tt.wantError)
+				return
+			}
+			assert.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }
 
 func TestParse(t *testing.T) {
