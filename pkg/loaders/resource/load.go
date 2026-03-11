@@ -28,11 +28,11 @@ type (
 
 func readDownloadedContent(reader readSeeker) ([]byte, error) {
 	if _, err := reader.Seek(0, 0); err != nil {
-		return nil, fmt.Errorf("error rewinding downloaded content: %s", err)
+		return nil, fmt.Errorf("error rewinding downloaded content: %w", err)
 	}
 	content, err := io.ReadAll(reader)
 	if err != nil {
-		return nil, fmt.Errorf("error reading downloaded content: %s", err)
+		return nil, fmt.Errorf("error reading downloaded content: %w", err)
 	}
 	return content, nil
 }
