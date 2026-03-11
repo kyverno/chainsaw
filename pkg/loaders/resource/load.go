@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -73,7 +74,10 @@ func LoadFromURI(url *url.URL, manifest bool) ([]unstructured.Unstructured, erro
 	}); err != nil {
 		return nil, fmt.Errorf("error downloading content: %s", err)
 	}
-	content, err := os.ReadFile(tempFile.Name())
+	if _, err := tempFile.Seek(0, 0); err != nil {
+		return nil, fmt.Errorf("error rewinding downloaded content: %s", err)
+	}
+	content, err := io.ReadAll(tempFile)
 	if err != nil {
 		return nil, fmt.Errorf("error reading downloaded content: %s", err)
 	}
