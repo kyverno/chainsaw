@@ -2,6 +2,9 @@ package resource
 
 import (
 	"errors"
+	"io"
+	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -94,6 +97,23 @@ func TestLoadFromURI(t *testing.T) {
 			assert.Error(t, err)
 		}
 	}
+}
+
+func TestLoadFromURI_FromHTTPServer(t *testing.T) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+		_, err := io.WriteString(w, "apiVersion: v1\nkind: Pod\nmetadata:\n  name: test-pod\n")
+		assert.NoError(t, err)
+	}))
+	t.Cleanup(server.Close)
+
+	url, err := url.ParseRequestURI(server.URL)
+	assert.NoError(t, err)
+
+	resources, err := LoadFromURI(url, true)
+	assert.NoError(t, err)
+	assert.Len(t, resources, 1)
+	assert.Equal(t, "Pod", resources[0].GetKind())
+	assert.Equal(t, "test-pod", resources[0].GetName())
 }
 
 func TestParse(t *testing.T) {
