@@ -6022,6 +6022,13 @@
                     ],
                     "x-kubernetes-preserve-unknown-fields": true
                   },
+                  "subresource": {
+                    "description": "Subresource specifies the name of the subresource that the patch should target.",
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
                   "template": {
                     "description": "Template determines whether resources should be considered for templating.",
                     "type": [

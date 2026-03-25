@@ -48,6 +48,10 @@ func (c *dryRunClient) RESTMapper() meta.RESTMapper {
 	return c.inner.RESTMapper()
 }
 
+func (c *dryRunClient) SubResource(subResource string) ctrlclient.SubResourceClient {
+	return c.inner.SubResource(subResource)
+}
+
 func New(inner Client) Client {
 	return &dryRunClient{inner: inner}
 }

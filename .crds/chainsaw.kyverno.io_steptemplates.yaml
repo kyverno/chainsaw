@@ -3431,6 +3431,10 @@ spec:
                           description: Resource provides a resource to be applied.
                           type: object
                           x-kubernetes-preserve-unknown-fields: true
+                        subresource:
+                          description: Subresource specifies the name of the subresource
+                            that the patch should target.
+                          type: string
                         template:
                           description: Template determines whether resources should
                             be considered for templating.

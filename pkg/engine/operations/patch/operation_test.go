@@ -36,14 +36,24 @@ func Test_create(t *testing.T) {
 					},
 				},
 			},
+			"status": map[string]any{
+				"conditions": []any{
+					map[string]any{
+						"type":   "Ready",
+						"status": "False",
+					},
+				},
+			},
 		},
 	}
+
 	tests := []struct {
 		name        string
 		object      unstructured.Unstructured
 		client      *tclient.FakeClient
 		expect      []v1alpha1.Expectation
 		expectedErr error
+		subresource string
 	}{{
 		name:   "Resource doesn't exist",
 		object: pod,
@@ -202,6 +212,18 @@ func Test_create(t *testing.T) {
 			),
 		}},
 		expectedErr: errors.New(`kind: Invalid value: "Pod": Expected value: "Service"`),
+	}, {
+		name:   "Dry Run Subresoruce Resource exists, patch it",
+		object: pod,
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+				*obj.(*unstructured.Unstructured) = pod
+				return nil
+			},
+		},
+		expect:      nil,
+		expectedErr: nil,
+		subresource: "status",
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -218,6 +240,7 @@ func Test_create(t *testing.T) {
 				false,
 				tt.expect,
 				nil,
+				tt.subresource,
 			)
 			outputs, err := operation.Exec(ctx, nil)
 			assert.Nil(t, outputs)
@@ -403,6 +426,7 @@ func Test_retry_logic(t *testing.T) {
 				false,
 				tt.expect,
 				nil,
+				"",
 			)
 			outputs, err := operation.Exec(ctx, nil)
 			assert.Nil(t, outputs)
