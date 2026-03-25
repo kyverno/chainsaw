@@ -16,6 +16,7 @@ type FakeClient struct {
 	DeleteFn             func(ctx context.Context, call int, obj client.Object, opts ...client.DeleteOption) error
 	ListFn               func(ctx context.Context, call int, list client.ObjectList, opts ...client.ListOption) error
 	PatchFn              func(ctx context.Context, call int, obj client.Object, patch client.Patch, opts ...client.PatchOption) error
+	SubResourceFn        func(subResource string) client.SubResourceClient
 	IsObjectNamespacedFn func(call int, obj runtime.Object) (bool, error)
 	RESTMapperFn         func(call int) meta.RESTMapper
 	numCalls             int
@@ -63,4 +64,52 @@ func (c *FakeClient) RESTMapper() meta.RESTMapper {
 
 func (c *FakeClient) NumCalls() int {
 	return c.numCalls
+}
+
+type FakeSubResourceWriter struct {
+	GetFn    func(ctx context.Context, obj client.Object, subResource client.Object, opts ...client.SubResourceGetOption) error
+	CreateFn func(ctx context.Context, obj client.Object, subResource client.Object, opts ...client.SubResourceCreateOption) error
+	UpdateFn func(ctx context.Context, obj client.Object, opts ...client.SubResourceUpdateOption) error
+	PatchFn  func(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.SubResourcePatchOption) error
+	ApplyFn  func(ctx context.Context, obj runtime.ApplyConfiguration, opts ...client.SubResourceApplyOption) error
+}
+
+func (f *FakeSubResourceWriter) Get(ctx context.Context, obj client.Object, subResource client.Object, opts ...client.SubResourceGetOption) error {
+	return f.GetFn(ctx, obj, subResource, opts...)
+}
+
+func (f *FakeSubResourceWriter) Create(ctx context.Context, obj client.Object, subResource client.Object, opts ...client.SubResourceCreateOption) error {
+	return f.CreateFn(ctx, obj, subResource, opts...)
+}
+
+func (f *FakeSubResourceWriter) Update(ctx context.Context, obj client.Object, opts ...client.SubResourceUpdateOption) error {
+	return f.UpdateFn(ctx, obj, opts...)
+}
+
+func (f *FakeSubResourceWriter) Patch(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.SubResourcePatchOption) error {
+	return f.PatchFn(ctx, obj, patch, opts...)
+}
+func (f *FakeSubResourceWriter) Apply(ctx context.Context, obj runtime.ApplyConfiguration, opts ...client.SubResourceApplyOption) error {
+	return f.ApplyFn(ctx, obj, opts...)
+}
+
+func NewFakeSubResourceWriter() *FakeSubResourceWriter {
+	return &FakeSubResourceWriter{
+		UpdateFn: func(ctx context.Context, obj client.Object, opts ...client.SubResourceUpdateOption) error {
+			return nil
+		},
+		PatchFn: func(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.SubResourcePatchOption) error {
+			return nil
+		},
+		CreateFn: func(ctx context.Context, obj client.Object, subResource client.Object, opts ...client.SubResourceCreateOption) error {
+			return nil
+		},
+	}
+}
+
+func (c *FakeClient) SubResource(subResource string) client.SubResourceClient {
+	if c.SubResourceFn != nil {
+		return c.SubResourceFn(subResource)
+	}
+	return NewFakeSubResourceWriter()
 }

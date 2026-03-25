@@ -270,6 +270,9 @@ type Patch struct {
 	ActionOutputs      `json:",inline"`
 	ActionResourceRef  `json:",inline"`
 	ActionTimeout      `json:",inline"`
+
+	// Subresource specifies the name of the subresource that the patch should target.
+	Subresource string `json:"subresource,omitempty"`
 }
 
 // PodLogs defines how to collect pod logs.

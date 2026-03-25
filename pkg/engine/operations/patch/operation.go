@@ -24,13 +24,14 @@ import (
 )
 
 type operation struct {
-	compilers  compilers.Compilers
-	client     client.Client
-	base       unstructured.Unstructured
-	namespacer namespacer.Namespacer
-	template   bool
-	expect     []v1alpha1.Expectation
-	outputs    []v1alpha1.Output
+	compilers   compilers.Compilers
+	client      client.Client
+	base        unstructured.Unstructured
+	namespacer  namespacer.Namespacer
+	template    bool
+	expect      []v1alpha1.Expectation
+	outputs     []v1alpha1.Output
+	subresoruce string
 }
 
 func New(
@@ -41,15 +42,17 @@ func New(
 	template bool,
 	expect []v1alpha1.Expectation,
 	outputs []v1alpha1.Output,
+	subresoruce string,
 ) operations.Operation {
 	return &operation{
-		compilers:  compilers,
-		client:     client,
-		base:       obj,
-		namespacer: namespacer,
-		template:   template,
-		expect:     expect,
-		outputs:    outputs,
+		compilers:   compilers,
+		client:      client,
+		base:        obj,
+		namespacer:  namespacer,
+		template:    template,
+		expect:      expect,
+		outputs:     outputs,
+		subresoruce: subresoruce,
 	}
 }
 
@@ -138,6 +141,9 @@ func (o *operation) updateResource(ctx context.Context, bindings apis.Bindings, 
 	bytes, err := json.Marshal(patched)
 	if err != nil {
 		return nil, err
+	}
+	if o.subresoruce != "" {
+		return o.handleCheck(ctx, bindings, obj, o.client.SubResource(o.subresoruce).Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 	}
 	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 }
