@@ -28,7 +28,9 @@ func RegisterEnvs(ctx context.Context, compilers compilers.Compilers, namespace 
 			return mapOut, envsOut, fmt.Errorf("value must be a string (%s)", env.Name)
 		}
 	}
-	mapOut["NAMESPACE"] = namespace
-	envsOut = append(envsOut, "NAMESPACE="+namespace)
+	if _, exists := mapOut["NAMESPACE"]; !exists {
+		mapOut["NAMESPACE"] = namespace
+		envsOut = append(envsOut, "NAMESPACE="+namespace)
+	}
 	return mapOut, envsOut, nil
 }
