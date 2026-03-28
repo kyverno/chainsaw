@@ -759,6 +759,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionResourceRef` | [`ActionResourceRef`](#chainsaw-kyverno-io-v1alpha1-ActionResourceRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+| `subresource` | `string` | :white_check_mark: |  | <p>Subresource specifies the name of the subresource that the patch should target.</p> |
 
 ## PodLogs     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 

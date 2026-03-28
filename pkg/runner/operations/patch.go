@@ -38,6 +38,7 @@ func (o patchAction) Execute(ctx context.Context, tc enginecontext.TestContext) 
 			tc.Templating(),
 			o.op.Expect,
 			o.op.Outputs,
+			o.op.Subresource,
 		)
 		ctx, cancel := context.WithTimeout(ctx, tc.Timeouts().Apply)
 		defer cancel()

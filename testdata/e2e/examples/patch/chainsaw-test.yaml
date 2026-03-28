@@ -5,7 +5,8 @@ metadata:
   name: patch
 spec:
   steps:
-  - try:
+  - description: "Patch a ConfigMap"
+    try:
     - apply:
         resource:
           apiVersion: v1
@@ -31,3 +32,42 @@ spec:
           data:
             foo: bar
             lorem: ipsum
+  - description: "Patch the 'status' subresource of a Pod"
+    try:
+      - apply:
+          resource:
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              name: test-pod
+            spec:
+              containers:
+                - name: test-container
+                  image: busybox
+      - patch:
+          subresource: status
+          resource:
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              name: test-pod
+            status:
+              conditions:
+                - type: TestCondition
+                  status: "True"
+                  reason: TestReason
+                  message: TestMessage
+                  lastTransitionTime: "2026-03-28T10:51:35Z"
+      - assert:
+          resource:
+            apiVersion: v1
+            kind: Pod
+            metadata:
+              name: test-pod
+            status:
+              conditions:
+                - type: TestCondition
+                  status: "True"
+                  reason: TestReason
+                  message: TestMessage
+                  lastTransitionTime: "2026-03-28T10:51:35Z"
