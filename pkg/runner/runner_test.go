@@ -22,7 +22,6 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/utils/clock"
-	"k8s.io/utils/ptr"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -190,7 +189,7 @@ func Test_runner_Run(t *testing.T) {
 		tests: []discovery.Test{{
 			Test: &model.Test{
 				Spec: v1alpha1.TestSpec{
-					Skip: ptr.To(true),
+					Skip: new(true),
 				},
 			},
 		}},
@@ -290,7 +289,7 @@ func Test_runner_Run(t *testing.T) {
 		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{
 				Name:     "chain-saw",
-				Compiler: ptr.To(v1alpha2.EngineCEL),
+				Compiler: new(v1alpha2.EngineCEL),
 			},
 		},
 		tc: func() enginecontext.TestContext {
@@ -316,7 +315,7 @@ func Test_runner_Run(t *testing.T) {
 		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{
 				Name:     "chain-saw",
-				Compiler: ptr.To(v1alpha2.EngineCEL),
+				Compiler: new(v1alpha2.EngineCEL),
 			},
 		},
 		tc: func() enginecontext.TestContext {
