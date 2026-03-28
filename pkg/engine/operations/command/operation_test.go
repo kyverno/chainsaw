@@ -9,7 +9,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/utils/ptr"
 )
 
 func Test_operationCommand(t *testing.T) {
@@ -62,7 +61,7 @@ func Test_operationCommand(t *testing.T) {
 			Entrypoint: "cat",
 			Args:       []string{"operation.go"},
 			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
-			WorkDir:    ptr.To("/bar"),
+			WorkDir:    new("/bar"),
 		},
 		basePath:   "..",
 		namespace:  "test-namespace",
@@ -74,7 +73,7 @@ func Test_operationCommand(t *testing.T) {
 			Entrypoint: "cat",
 			Args:       []string{"operation.go"},
 			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
-			WorkDir:    ptr.To("./foo"),
+			WorkDir:    new("./foo"),
 		},
 		basePath:   "..",
 		namespace:  "test-namespace",
@@ -87,7 +86,7 @@ func Test_operationCommand(t *testing.T) {
 			Args:       []string{"operation.go"},
 			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
 			ActionCheck: v1alpha1.ActionCheck{
-				Check: ptr.To(v1alpha1.NewCheck(
+				Check: new(v1alpha1.NewCheck(
 					map[string]any{
 						"($error != null)": true,
 					},
@@ -104,7 +103,7 @@ func Test_operationCommand(t *testing.T) {
 			Args:       []string{"operation.go"},
 			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
 			ActionCheck: v1alpha1.ActionCheck{
-				Check: ptr.To(v1alpha1.NewCheck(
+				Check: new(v1alpha1.NewCheck(
 					map[string]any{
 						"(foo('bar'))": true,
 					},
@@ -121,7 +120,7 @@ func Test_operationCommand(t *testing.T) {
 			Args:       []string{"operation.go"},
 			ActionEnv:  v1alpha1.ActionEnv{SkipLogOutput: true},
 			ActionCheck: v1alpha1.ActionCheck{
-				Check: ptr.To(v1alpha1.NewCheck(
+				Check: new(v1alpha1.NewCheck(
 					map[string]any{
 						"(foo('bar'))": true,
 					},

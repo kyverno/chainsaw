@@ -21,7 +21,6 @@ import (
 	"github.com/spf13/cobra"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/utils/ptr"
 	"sigs.k8s.io/yaml"
 )
 
@@ -512,7 +511,7 @@ func testAssert(to *v1alpha1.TestStepSpec, in unstructured.Unstructured) error {
 				Container: v1alpha1.Expression(collector.Container),
 			}
 			if collector.Tail != 0 {
-				op.Tail = ptr.To(collector.Tail)
+				op.Tail = new(collector.Tail)
 			}
 			to.Catch = append(to.Catch, v1alpha1.CatchFinally{PodLogs: op})
 		case "command":

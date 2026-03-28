@@ -7,7 +7,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/utils/ptr"
 )
 
 func TestLogs(t *testing.T) {
@@ -97,7 +96,7 @@ func TestLogs(t *testing.T) {
 				},
 			},
 			Container: "bar",
-			Tail:      ptr.To(100),
+			Tail:      new(100),
 		},
 		wantEntrypoint: "kubectl",
 		wantArgs:       []string{"logs", "--prefix", "foo", "-n", "lorem", "-c", "bar", "--tail", "100"},

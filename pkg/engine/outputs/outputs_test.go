@@ -7,7 +7,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/utils/ptr"
 )
 
 func TestProcess(t *testing.T) {
@@ -44,13 +43,11 @@ func TestProcess(t *testing.T) {
 		tc:    apis.NewBindings(),
 		input: map[string]any{},
 		outputs: []v1alpha1.Output{{
-			Match: ptr.To(
-				v1alpha1.NewMatch(
-					map[string]any{
-						"bar": "baz",
-					},
-				),
-			),
+			Match: new(v1alpha1.NewMatch(
+				map[string]any{
+					"bar": "baz",
+				},
+			)),
 			Binding: v1alpha1.Binding{
 				Name:  "foo",
 				Value: v1alpha1.NewProjection("bar"),
@@ -63,13 +60,11 @@ func TestProcess(t *testing.T) {
 		tc:    apis.NewBindings(),
 		input: nil,
 		outputs: []v1alpha1.Output{{
-			Match: ptr.To(
-				v1alpha1.NewMatch(
-					map[string]any{
-						"($bar)": "baz",
-					},
-				),
-			),
+			Match: new(v1alpha1.NewMatch(
+				map[string]any{
+					"($bar)": "baz",
+				},
+			)),
 			Binding: v1alpha1.Binding{
 				Name:  "foo",
 				Value: v1alpha1.NewProjection("bar"),
