@@ -8,12 +8,12 @@ require (
 	github.com/evanphx/json-patch v5.9.11+incompatible
 	github.com/fatih/color v1.19.0
 	github.com/go-logr/logr v1.4.3
-	github.com/google/cel-go v0.26.1
+	github.com/google/cel-go v0.27.0
 	github.com/google/shlex v0.0.0-20191202100458-e7afc7fbc510
 	github.com/hashicorp/go-getter v1.8.5
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240930152130-6eb5a346873f
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
-	github.com/kudobuilder/kuttl v0.24.0
+	github.com/kudobuilder/kuttl v0.25.0
 	github.com/kyverno/kyverno-json v0.0.4-0.20241008103124-b294ee72a2bf
 	github.com/kyverno/pkg/ext v0.0.0-20250303002756-48769d003e55
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
@@ -143,7 +143,6 @@ require (
 	github.com/prometheus/procfs v0.19.2 // indirect
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/spiffe/go-spiffe/v2 v2.6.0 // indirect
-	github.com/stoewer/go-strcase v1.3.1 // indirect
 	github.com/ulikunitz/xz v0.5.15 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
