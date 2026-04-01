@@ -1,6 +1,8 @@
 package clusters
 
 import (
+	"maps"
+
 	"github.com/kyverno/chainsaw/pkg/client"
 	"github.com/kyverno/chainsaw/pkg/client/simple"
 	engineclient "github.com/kyverno/chainsaw/pkg/engine/client"
@@ -47,9 +49,7 @@ func NewRegistry(f clientFactory) Registry {
 
 func (c registry) Register(name string, cluster Cluster) Registry {
 	values := map[string]Cluster{}
-	for k, v := range c.clusters {
-		values[k] = v
-	}
+	maps.Copy(values, c.clusters)
 	values[name] = cluster
 	return registry{
 		clientFactory: c.clientFactory,

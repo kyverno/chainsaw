@@ -10,7 +10,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha2"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/utils/ptr"
 )
 
 func Test_getFile(t *testing.T) {
@@ -92,7 +91,7 @@ func TestSave(t *testing.T) {
 		}, {
 			BasePath:   "base-path",
 			Name:       "test-report-skipped",
-			Concurrent: ptr.To(true),
+			Concurrent: new(true),
 			StartTime:  time.Date(2009, 11, 17, 20, 35, 58, 651387237, time.UTC),
 			EndTime:    time.Date(2009, 11, 17, 20, 38, 58, 651387237, time.UTC),
 			Namespace:  "skipped",

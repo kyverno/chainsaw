@@ -14,7 +14,6 @@ import (
 	kerror "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/utils/ptr"
 )
 
 func TestNew(t *testing.T) {
@@ -37,11 +36,11 @@ func TestNew(t *testing.T) {
 	}, {
 		name:            "with delay",
 		timeout:         time.Minute,
-		delay:           ptr.To(10 * time.Second),
+		delay:           new(10 * time.Second),
 		waitForDeletion: false,
 		want: &cleaner{
 			timeout:     time.Minute,
-			delay:       ptr.To(10 * time.Second),
+			delay:       new(10 * time.Second),
 			propagation: metav1.DeletePropagationBackground,
 		},
 	}, {
@@ -207,7 +206,7 @@ func Test_cleaner_Run(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &cleaner{
-				delay:           ptr.To(time.Second),
+				delay:           new(time.Second),
 				timeout:         1 * time.Second,
 				entries:         tt.entries,
 				waitForDeletion: true,

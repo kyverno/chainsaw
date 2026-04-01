@@ -4,7 +4,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func remarshal(document []byte, unmarshal func(in []byte, out interface{}) (err error)) ([]byte, error) {
+func remarshal(document []byte, unmarshal func(in []byte, out any) (err error)) ([]byte, error) {
 	if unmarshal == nil {
 		unmarshal = yaml.Unmarshal
 	}

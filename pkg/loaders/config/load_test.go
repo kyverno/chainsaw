@@ -14,7 +14,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/utils/ptr"
 )
 
 func TestLoad(t *testing.T) {
@@ -113,7 +112,7 @@ func TestLoad(t *testing.T) {
 				},
 				Execution: v1alpha2.ExecutionOptions{
 					FailFast:                    true,
-					Parallel:                    ptr.To(4),
+					Parallel:                    new(4),
 					ForceTerminationGracePeriod: &metav1.Duration{Duration: 10 * time.Second},
 				},
 				Report: &v1alpha2.ReportOptions{

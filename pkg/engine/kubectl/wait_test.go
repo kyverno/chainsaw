@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/utils/ptr"
 )
 
 func TestWait(t *testing.T) {
@@ -82,7 +81,7 @@ func TestWait(t *testing.T) {
 			WaitFor: v1alpha1.WaitFor{
 				Condition: &v1alpha1.WaitForCondition{
 					Name:  "Ready",
-					Value: ptr.To(v1alpha1.Expression("test")),
+					Value: new(v1alpha1.Expression("test")),
 				},
 			},
 		},
@@ -101,7 +100,7 @@ func TestWait(t *testing.T) {
 			WaitFor: v1alpha1.WaitFor{
 				Condition: &v1alpha1.WaitForCondition{
 					Name:  "Ready",
-					Value: ptr.To(v1alpha1.Expression("")),
+					Value: new(v1alpha1.Expression("")),
 				},
 			},
 		},
@@ -154,7 +153,7 @@ func TestWait(t *testing.T) {
 			WaitFor: v1alpha1.WaitFor{
 				JsonPath: &v1alpha1.WaitForJsonPath{
 					Path:  "{.status.phase}",
-					Value: ptr.To(v1alpha1.Expression("Running")),
+					Value: new(v1alpha1.Expression("Running")),
 				},
 			},
 		},
