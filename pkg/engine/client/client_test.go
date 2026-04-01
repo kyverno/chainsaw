@@ -14,6 +14,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func TestNew(t *testing.T) {
@@ -573,4 +574,53 @@ func Test_runnerClient_RESTMapper(t *testing.T) {
 	got := c.RESTMapper()
 	assert.Equal(t, 1, inner.NumCalls())
 	assert.Nil(t, got)
+}
+
+func Test_runnerClient_SubResource(t *testing.T) {
+	tests := []struct {
+		name        string
+		inner       func(t *testing.T) *tclient.FakeClient
+		subResource string
+		wantNotNil  bool
+	}{{
+		name: "returns subresource client",
+		inner: func(t *testing.T) *tclient.FakeClient {
+			t.Helper()
+			return &tclient.FakeClient{
+				SubResourceFn: func(subResource string) ctrlclient.SubResourceClient {
+					assert.Equal(t, "status", subResource)
+					return tclient.NewFakeSubResourceWriter()
+				},
+			}
+		},
+		subResource: "status",
+		wantNotNil:  true,
+	}, {
+		name: "nil inner returns default",
+		inner: func(t *testing.T) *tclient.FakeClient {
+			t.Helper()
+			return &tclient.FakeClient{
+				SubResourceFn: func(subResource string) ctrlclient.SubResourceClient {
+					return nil
+				},
+			}
+		},
+		subResource: "scale",
+		wantNotNil:  false,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockClient := tt.inner(t)
+			c := &runnerClient{
+				inner: mockClient,
+			}
+			got := c.SubResource(tt.subResource)
+			assert.Equal(t, 1, mockClient.NumCalls())
+			if tt.wantNotNil {
+				assert.NotNil(t, got)
+			} else {
+				assert.Nil(t, got)
+			}
+		})
+	}
 }

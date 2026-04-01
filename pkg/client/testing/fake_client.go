@@ -62,6 +62,14 @@ func (c *FakeClient) RESTMapper() meta.RESTMapper {
 	return c.RESTMapperFn(c.numCalls)
 }
 
+func (c *FakeClient) SubResource(subResource string) client.SubResourceClient {
+	defer func() { c.numCalls++ }()
+	if c.SubResourceFn != nil {
+		return c.SubResourceFn(subResource)
+	}
+	return NewFakeSubResourceWriter()
+}
+
 func (c *FakeClient) NumCalls() int {
 	return c.numCalls
 }
@@ -89,6 +97,7 @@ func (f *FakeSubResourceWriter) Update(ctx context.Context, obj client.Object, o
 func (f *FakeSubResourceWriter) Patch(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.SubResourcePatchOption) error {
 	return f.PatchFn(ctx, obj, patch, opts...)
 }
+
 func (f *FakeSubResourceWriter) Apply(ctx context.Context, obj runtime.ApplyConfiguration, opts ...client.SubResourceApplyOption) error {
 	return f.ApplyFn(ctx, obj, opts...)
 }
@@ -105,11 +114,4 @@ func NewFakeSubResourceWriter() *FakeSubResourceWriter {
 			return nil
 		},
 	}
-}
-
-func (c *FakeClient) SubResource(subResource string) client.SubResourceClient {
-	if c.SubResourceFn != nil {
-		return c.SubResourceFn(subResource)
-	}
-	return NewFakeSubResourceWriter()
 }
