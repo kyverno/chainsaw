@@ -27,7 +27,7 @@ func TestPrettyDiff(t *testing.T) {
 	}, {
 		name: "error",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"": func() {},
 			},
 		},
@@ -35,12 +35,12 @@ func TestPrettyDiff(t *testing.T) {
 	}, {
 		name: "error",
 		expected: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"": "",
 			},
 		},
 		actual: unstructured.Unstructured{
-			Object: map[string]interface{}{
+			Object: map[string]any{
 				"": func() {},
 			},
 		},

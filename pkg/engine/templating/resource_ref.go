@@ -37,7 +37,7 @@ func ResourceRef(ctx context.Context, c compilers.Compilers, obj *unstructured.U
 
 func getStringLabels(obj *unstructured.Unstructured) map[string]string {
 	if labels, ok, _ := unstructured.NestedFieldNoCopy(obj.UnstructuredContent(), "metadata", "labels"); ok {
-		if labelsMap, ok := labels.(map[string]interface{}); ok {
+		if labelsMap, ok := labels.(map[string]any); ok {
 			tempLabels := make(map[string]string)
 			for k, v := range labelsMap {
 				if stringValue, ok := v.(string); ok {

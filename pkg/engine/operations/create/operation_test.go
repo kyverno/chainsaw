@@ -17,7 +17,6 @@ import (
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/utils/ptr"
 )
 
 func Test_create(t *testing.T) {
@@ -194,7 +193,7 @@ func Test_create(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: ptr.To(v1alpha1.NewMatch(
+			Match: new(v1alpha1.NewMatch(
 				map[string]any{
 					"foo": "bar",
 				},
@@ -218,7 +217,7 @@ func Test_create(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: ptr.To(v1alpha1.NewMatch(pod.UnstructuredContent())),
+			Match: new(v1alpha1.NewMatch(pod.UnstructuredContent())),
 			Check: v1alpha1.NewCheck(
 				map[string]any{
 					"kind": "Service",

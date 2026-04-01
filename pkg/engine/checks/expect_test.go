@@ -8,7 +8,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/utils/ptr"
 )
 
 func TestExpectations(t *testing.T) {
@@ -42,7 +41,7 @@ func TestExpectations(t *testing.T) {
 		},
 		bindings: nil,
 		expect: []v1alpha1.Expectation{{
-			Match: ptr.To(v1alpha1.NewMatch(
+			Match: new(v1alpha1.NewMatch(
 				map[string]any{
 					"foo": "baz",
 				},
@@ -64,7 +63,7 @@ func TestExpectations(t *testing.T) {
 		},
 		bindings: nil,
 		expect: []v1alpha1.Expectation{{
-			Match: ptr.To(v1alpha1.NewMatch(
+			Match: new(v1alpha1.NewMatch(
 				map[string]any{
 					"foo": "bar",
 				},
@@ -86,7 +85,7 @@ func TestExpectations(t *testing.T) {
 		},
 		bindings: nil,
 		expect: []v1alpha1.Expectation{{
-			Match: ptr.To(v1alpha1.NewMatch(
+			Match: new(v1alpha1.NewMatch(
 				map[string]any{
 					"foo": "bar",
 				},
@@ -108,7 +107,7 @@ func TestExpectations(t *testing.T) {
 		},
 		bindings: nil,
 		expect: []v1alpha1.Expectation{{
-			Match: ptr.To(v1alpha1.NewMatch(
+			Match: new(v1alpha1.NewMatch(
 				map[string]any{
 					"(foo())": "bar",
 				},
