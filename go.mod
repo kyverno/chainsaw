@@ -13,7 +13,7 @@ require (
 	github.com/hashicorp/go-getter v1.8.5
 	github.com/jmespath-community/go-jmespath v1.1.2-0.20240930152130-6eb5a346873f
 	github.com/jstemmer/go-junit-report/v2 v2.1.0
-	github.com/kudobuilder/kuttl v0.24.0
+	github.com/kudobuilder/kuttl v0.25.0
 	github.com/kyverno/kyverno-json v0.0.4-0.20241008103124-b294ee72a2bf
 	github.com/kyverno/pkg/ext v0.0.0-20250303002756-48769d003e55
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2
