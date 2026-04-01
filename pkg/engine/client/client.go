@@ -9,6 +9,7 @@ import (
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/types"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 func New(inner client.Client) client.Client {
@@ -99,4 +100,8 @@ func (c *runnerClient) ok(ctx context.Context, op logging.Operation, obj client.
 
 func (c *runnerClient) error(ctx context.Context, op logging.Operation, obj client.Object, err error) {
 	logging.Log(ctx, op, logging.OkStatus, obj, color.BoldYellow, logging.ErrSection(err))
+}
+
+func (c *runnerClient) SubResource(subResource string) ctrlclient.SubResourceClient {
+	return c.inner.SubResource(subResource)
 }

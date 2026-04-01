@@ -5,6 +5,7 @@ import (
 
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
 type Client interface {
@@ -32,6 +33,9 @@ type Client interface {
 	// Patch patches the given obj in the Kubernetes cluster. obj must be a
 	// struct pointer so that obj can be updated with the content returned by the Server.
 	Patch(ctx context.Context, obj Object, patch Patch, opts ...PatchOption) error
+
+	// SubResource resource writer for the given subresource.
+	SubResource(subResource string) ctrlclient.SubResourceClient
 
 	// IsObjectNamespaced returns true if the GroupVersionKind of the object is namespaced.
 	IsObjectNamespaced(obj runtime.Object) (bool, error)

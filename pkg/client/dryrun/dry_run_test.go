@@ -540,3 +540,19 @@ func Test_dryRunClient_RESTMapper(t *testing.T) {
 	assert.Equal(t, 1, inner.NumCalls())
 	assert.Nil(t, got)
 }
+
+func Test_dryRunClient_SubResource(t *testing.T) {
+	subResourceName := "status"
+	inner := &tclient.FakeClient{
+		SubResourceFn: func(subResource string) ctrlclient.SubResourceClient {
+			assert.Equal(t, subResourceName, subResource)
+			return nil
+		},
+	}
+	c := &dryRunClient{
+		inner: inner,
+	}
+	got := c.SubResource(subResourceName)
+	assert.Equal(t, 1, inner.NumCalls())
+	assert.Nil(t, got)
+}
