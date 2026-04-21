@@ -30,17 +30,23 @@ func tryLoadTestFile(file string, remarshal bool) ([]*v1alpha1.Test, error) {
 }
 
 func tryLoadTestFiles(fileName string, path string, remarshal bool) ([]*v1alpha1.Test, error) {
-	if filepath.Ext(fileName) != "" {
-		return tryLoadTestFile(filepath.Join(path, fileName), remarshal)
+	resolve := func(name string) string {
+		if filepath.IsAbs(name) {
+			return name
+		}
+		return filepath.Join(path, name)
 	}
-	tests, err := tryLoadTestFile(filepath.Join(path, fileName+".yaml"), remarshal)
+	if filepath.Ext(fileName) != "" {
+		return tryLoadTestFile(resolve(fileName), remarshal)
+	}
+	tests, err := tryLoadTestFile(resolve(fileName+".yaml"), remarshal)
 	if err != nil {
 		return nil, err
 	}
 	if tests != nil {
 		return tests, nil
 	}
-	return tryLoadTestFile(filepath.Join(path, fileName+".yml"), remarshal)
+	return tryLoadTestFile(resolve(fileName+".yml"), remarshal)
 }
 
 func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
@@ -85,6 +91,11 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 				})
 			}
 			return tests, nil
+		}
+		// an absolute path points at a single specific file - don't fall back to
+		// per-folder step discovery which would ignore the path entirely
+		if filepath.IsAbs(fileName) {
+			return nil, nil
 		}
 	}
 	// next, look at files
