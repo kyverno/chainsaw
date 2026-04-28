@@ -10,4 +10,14 @@ Normalizes or canonicalizes a given path by removing excess slashes.
 
 ## Examples
 
-TODO
+```
+path_canonicalize('/foo//bar') == '/foo/bar'
+```
+
+```
+path_canonicalize('/foo/./bar') == '/foo/bar'
+```
+
+```
+path_canonicalize('/foo/../bar') == '/bar'
+```

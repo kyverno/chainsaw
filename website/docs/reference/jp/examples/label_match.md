@@ -10,4 +10,18 @@ Object arguments must be enclosed in backticks; ex. `{{request.object.spec.templ
 
 ## Examples
 
-TODO
+```
+label_match(`{"app":"foo","env":"prod"}`, `{"app":"foo"}`) == `true`
+```
+
+```
+label_match(`{"app":"foo","env":"prod"}`, `{"app":"foo","env":"prod"}`) == `true`
+```
+
+```
+label_match(`{"app":"foo"}`, `{"app":"foo","env":"prod"}`) == `false`
+```
+
+```
+label_match(`{"app":"foo"}`, `{}`) == `true`
+```

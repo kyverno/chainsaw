@@ -10,4 +10,10 @@ Calculate the difference between a start and end date in RFC3339 format.
 
 ## Examples
 
-TODO
+```
+time_diff('2024-01-01T00:00:00Z', '2024-01-02T00:00:00Z') == '24h0m0s'
+```
+
+```
+time_diff('2024-01-01T00:00:00Z', '2024-01-01T01:30:00Z') == '1h30m0s'
+```
