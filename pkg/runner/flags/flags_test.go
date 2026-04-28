@@ -7,7 +7,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/loaders/config"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/utils/ptr"
 )
 
 func Test_getFlags(t *testing.T) {
@@ -57,7 +56,7 @@ func Test_getFlags(t *testing.T) {
 		name: "parallel",
 		config: model.Configuration{
 			Execution: v1alpha2.ExecutionOptions{
-				Parallel: ptr.To(10),
+				Parallel: new(10),
 			},
 		},
 		want: map[string]string{
@@ -72,7 +71,7 @@ func Test_getFlags(t *testing.T) {
 		name: "repeat count",
 		config: model.Configuration{
 			Execution: v1alpha2.ExecutionOptions{
-				RepeatCount: ptr.To(10),
+				RepeatCount: new(10),
 			},
 		},
 		want: map[string]string{
@@ -109,7 +108,7 @@ func TestSetupFlags(t *testing.T) {
 		name: "error",
 		config: model.Configuration{
 			Execution: v1alpha2.ExecutionOptions{
-				RepeatCount: ptr.To(-1),
+				RepeatCount: new(-1),
 			},
 		},
 		wantErr: true,

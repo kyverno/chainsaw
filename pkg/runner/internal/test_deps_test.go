@@ -105,6 +105,11 @@ func TestTestDeps_ImportPath(t *testing.T) {
 	assert.Equal(t, "", d.ImportPath())
 }
 
+func TestTestDeps_ModulePath(t *testing.T) {
+	d := &TestDeps{}
+	assert.Equal(t, "", d.ModulePath())
+}
+
 func TestTestDeps_StartTestLog(t *testing.T) {
 	d := &TestDeps{}
 	d.StartTestLog(nil)

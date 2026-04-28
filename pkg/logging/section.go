@@ -29,8 +29,7 @@ func Section(name string, args ...any) fmt.Stringer {
 func ErrSection(err error) fmt.Stringer {
 	var errs []string
 	for _, err := range multierr.Errors(err) {
-		var agg utilerrors.Aggregate
-		if errors.As(err, &agg) {
+		if agg, ok := errors.AsType[utilerrors.Aggregate](err); ok {
 			for _, err := range agg.Errors() {
 				errs = append(errs, err.Error())
 			}

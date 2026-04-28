@@ -11,7 +11,6 @@ import (
 	"github.com/kyverno/chainsaw/pkg/utils/kube"
 	"github.com/stretchr/testify/assert"
 	tclock "k8s.io/utils/clock/testing"
-	"k8s.io/utils/ptr"
 )
 
 func Test_newSink(t *testing.T) {
@@ -52,7 +51,7 @@ func Test_newSink(t *testing.T) {
 		step:      "bar",
 		operation: logging.Apply,
 		status:    logging.OkStatus,
-		obj:       ptr.To(kube.Namespace("dog")),
+		obj:       new(kube.Namespace("dog")),
 		color:     nil,
 		args:      nil,
 		want:      []any{"\b\b\b\b\b\b\b\b\b\b\b\b| 00:00:00 | foo | bar | APPLY     | OK    | v1/Namespace @ dog"},
@@ -62,7 +61,7 @@ func Test_newSink(t *testing.T) {
 		step:      "bar",
 		operation: logging.Apply,
 		status:    logging.OkStatus,
-		obj:       ptr.To(kube.Namespace("dog")),
+		obj:       new(kube.Namespace("dog")),
 		color:     color.New(color.FgGreen),
 		args:      nil,
 		want:      []any{"\b\b\b\b\b\b\b\b\b\b\b\b| 00:00:00 | \x1b[32mfoo\x1b[0m | \x1b[32mbar\x1b[0m | \x1b[32mAPPLY\x1b[0m          | \x1b[32mOK\x1b[0m         | v1/Namespace @ dog"},

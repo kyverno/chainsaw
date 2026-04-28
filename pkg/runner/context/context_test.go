@@ -15,7 +15,6 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/clock"
 	tclock "k8s.io/utils/clock/testing"
-	"k8s.io/utils/ptr"
 )
 
 func TestEmptyContext(t *testing.T) {
@@ -176,14 +175,14 @@ func TestTestContext_CurrentClusterClient(t *testing.T) {
 
 func TestTestContext_DelayBeforeCleanup(t *testing.T) {
 	parent := EmptyContext(clock.RealClock{})
-	child := parent.WithDelayBeforeCleanup(ptr.To(30 * time.Second))
+	child := parent.WithDelayBeforeCleanup(new(30 * time.Second))
 	{
 		value := parent.DelayBeforeCleanup()
 		assert.Nil(t, value)
 	}
 	{
 		value := child.DelayBeforeCleanup()
-		assert.Equal(t, value, ptr.To(30*time.Second))
+		assert.Equal(t, value, new(30*time.Second))
 	}
 }
 
@@ -267,14 +266,14 @@ func TestTestContext_Templating(t *testing.T) {
 
 func TestTestContext_TerminationGrace(t *testing.T) {
 	parent := EmptyContext(clock.RealClock{})
-	child := parent.WithTerminationGrace(ptr.To(30 * time.Second))
+	child := parent.WithTerminationGrace(new(30 * time.Second))
 	{
 		value := parent.TerminationGrace()
 		assert.Nil(t, value)
 	}
 	{
 		value := child.TerminationGrace()
-		assert.Equal(t, ptr.To(30*time.Second), value)
+		assert.Equal(t, new(30*time.Second), value)
 	}
 }
 

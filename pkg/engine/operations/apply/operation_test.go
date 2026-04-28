@@ -15,7 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/utils/ptr"
 )
 
 func Test_apply(t *testing.T) {
@@ -241,7 +240,7 @@ func Test_apply(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: ptr.To(v1alpha1.NewMatch(podv2.UnstructuredContent())),
+			Match: new(v1alpha1.NewMatch(podv2.UnstructuredContent())),
 			Check: v1alpha1.NewCheck(
 				map[string]any{
 					"kind": "Service",
@@ -262,7 +261,7 @@ func Test_apply(t *testing.T) {
 			},
 		},
 		expect: []v1alpha1.Expectation{{
-			Match: ptr.To(v1alpha1.NewMatch(podv1.UnstructuredContent())),
+			Match: new(v1alpha1.NewMatch(podv1.UnstructuredContent())),
 			Check: v1alpha1.NewCheck(
 				map[string]any{
 					"kind": "Service",

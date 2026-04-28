@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
-	"k8s.io/utils/ptr"
 )
 
 func TestToUnstructured(t *testing.T) {
@@ -13,7 +12,7 @@ func TestToUnstructured(t *testing.T) {
 	assert.Panics(t, func() {
 		ToUnstructured(nilPtr)
 	})
-	assert.Equal(t, ToUnstructured(ptr.To(Namespace("foo"))), unstructured.Unstructured{
+	assert.Equal(t, ToUnstructured(new(Namespace("foo"))), unstructured.Unstructured{
 		Object: map[string]any{
 			"apiVersion": "v1",
 			"kind":       "Namespace",

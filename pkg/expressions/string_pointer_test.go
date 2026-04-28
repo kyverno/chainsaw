@@ -6,7 +6,6 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/stretchr/testify/assert"
-	"k8s.io/utils/ptr"
 )
 
 func TestStringPointer(t *testing.T) {
@@ -24,51 +23,51 @@ func TestStringPointer(t *testing.T) {
 		wantErr:  false,
 	}, {
 		name:     "empty",
-		in:       ptr.To(""),
+		in:       new(""),
 		bindings: apis.NewBindings(),
-		want:     ptr.To(""),
+		want:     new(""),
 		wantErr:  false,
 	}, {
 		name:     "null",
-		in:       ptr.To("(null)"),
+		in:       new("(null)"),
 		bindings: apis.NewBindings(),
 		want:     nil,
 		wantErr:  false,
 	}, {
 		name:     "error",
-		in:       ptr.To("($foo)"),
+		in:       new("($foo)"),
 		bindings: apis.NewBindings(),
 		want:     nil,
 		wantErr:  true,
 	}, {
 		name:     "not string",
-		in:       ptr.To("(`42`)"),
+		in:       new("(`42`)"),
 		bindings: apis.NewBindings(),
 		want:     nil,
 		wantErr:  true,
 	}, {
 		name:     "string",
-		in:       ptr.To("('foo')"),
+		in:       new("('foo')"),
 		bindings: apis.NewBindings(),
-		want:     ptr.To("foo"),
+		want:     new("foo"),
 		wantErr:  false,
 	}, {
 		name:     "string",
-		in:       ptr.To("foo"),
+		in:       new("foo"),
 		bindings: apis.NewBindings(),
-		want:     ptr.To("foo"),
+		want:     new("foo"),
 		wantErr:  false,
 	}, {
 		name:     "binding",
-		in:       ptr.To("($foo)"),
+		in:       new("($foo)"),
 		bindings: apis.NewBindings().Register("$foo", apis.NewBinding("bar")),
-		want:     ptr.To("bar"),
+		want:     new("bar"),
 		wantErr:  false,
 	}, {
 		name:     "binding",
-		in:       ptr.To("($foo)"),
-		bindings: apis.NewBindings().Register("$foo", apis.NewBinding(ptr.To("bar"))),
-		want:     ptr.To("bar"),
+		in:       new("($foo)"),
+		bindings: apis.NewBindings().Register("$foo", apis.NewBinding(new("bar"))),
+		want:     new("bar"),
 		wantErr:  false,
 	}}
 	for _, tt := range tests {

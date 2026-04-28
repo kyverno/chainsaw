@@ -15,7 +15,6 @@ import (
 
 func Command() *cobra.Command {
 	save := false
-	force := false
 	description := false
 	cmd := &cobra.Command{
 		Use:          "test",
@@ -59,7 +58,7 @@ func Command() *cobra.Command {
 		},
 	}
 	cmd.Flags().BoolVar(&save, "save", false, "If set, created test will be saved")
-	cmd.Flags().BoolVar(&force, "force", false, "If set, existing test will be deleted if needed")
+	cmd.Flags().BoolVar(new(false), "force", false, "If set, existing test will be deleted if needed")
 	cmd.Flags().BoolVar(&description, "description", true, "If set, adds description when applicable")
 	return cmd
 }

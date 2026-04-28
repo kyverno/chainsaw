@@ -10,7 +10,6 @@ import (
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/stretchr/testify/assert"
 	"k8s.io/client-go/tools/clientcmd"
-	"k8s.io/utils/ptr"
 )
 
 func TestDescribe(t *testing.T) {
@@ -186,7 +185,7 @@ func TestDescribe(t *testing.T) {
 					Kind:       "Pod",
 				},
 			},
-			ShowEvents: ptr.To(true),
+			ShowEvents: new(true),
 		},
 		wantEntrypoint: "kubectl",
 		wantArgs:       []string{"describe", "pods", "-n", "$NAMESPACE", "--show-events=true"},
@@ -200,7 +199,7 @@ func TestDescribe(t *testing.T) {
 					Kind:       "Pod",
 				},
 			},
-			ShowEvents: ptr.To(false),
+			ShowEvents: new(false),
 		},
 		wantEntrypoint: "kubectl",
 		wantArgs:       []string{"describe", "pods", "-n", "$NAMESPACE", "--show-events=false"},
@@ -219,7 +218,7 @@ func TestDescribe(t *testing.T) {
 					},
 				},
 			},
-			ShowEvents: ptr.To(false),
+			ShowEvents: new(false),
 		},
 		wantEntrypoint: "kubectl",
 		wantArgs:       []string{"describe", "pods", "--all-namespaces", "--show-events=false"},

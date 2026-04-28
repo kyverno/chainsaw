@@ -12,7 +12,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/utils/ptr"
 )
 
 func Test_buildNamespace(t *testing.T) {
@@ -45,7 +44,7 @@ func Test_buildNamespace(t *testing.T) {
 		compilers: apis.DefaultCompilers,
 		tc:        tc.WithBinding("bar", "bar"),
 		nsName:    "foo",
-		nsTemplate: ptr.To(v1alpha1.NewProjection(map[string]any{
+		nsTemplate: new(v1alpha1.NewProjection(map[string]any{
 			"metadata": map[string]any{
 				"labels": map[string]any{
 					"foo": "bar",
@@ -69,7 +68,7 @@ func Test_buildNamespace(t *testing.T) {
 		compilers:  apis.DefaultCompilers,
 		tc:         tc.WithBinding("bar", "bar"),
 		nsName:     "foo",
-		nsTemplate: ptr.To(v1alpha1.NewProjection(nil)),
+		nsTemplate: new(v1alpha1.NewProjection(nil)),
 		want: &corev1.Namespace{
 			TypeMeta: metav1.TypeMeta{
 				APIVersion: corev1.SchemeGroupVersion.String(),
@@ -84,7 +83,7 @@ func Test_buildNamespace(t *testing.T) {
 		compilers: apis.DefaultCompilers,
 		tc:        tc.WithBinding("bar", "bar"),
 		nsName:    "foo",
-		nsTemplate: ptr.To(v1alpha1.NewProjection(map[string]any{
+		nsTemplate: new(v1alpha1.NewProjection(map[string]any{
 			"metadata": map[string]any{
 				"labels": map[string]any{
 					"foo": "($bar)",
@@ -108,7 +107,7 @@ func Test_buildNamespace(t *testing.T) {
 		compilers: apis.DefaultCompilers,
 		tc:        tc.WithBinding("bar", "bar"),
 		nsName:    "foo",
-		nsTemplate: ptr.To(v1alpha1.NewProjection(map[string]any{
+		nsTemplate: new(v1alpha1.NewProjection(map[string]any{
 			"metadata": map[string]any{
 				"labels": map[string]any{
 					"foo": "($flop)",

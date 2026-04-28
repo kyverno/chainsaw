@@ -11,7 +11,7 @@ func Test_summay(t *testing.T) {
 	var wg sync.WaitGroup
 	var s Summary
 	const count int32 = 10000
-	for i := 0; i < int(count); i++ {
+	for range int(count) {
 		wg.Add(3)
 		go func() {
 			defer wg.Done()

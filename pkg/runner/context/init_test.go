@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/rest"
-	"k8s.io/utils/ptr"
 )
 
 func TestInitContext(t *testing.T) {
@@ -59,7 +58,7 @@ func TestInitContext(t *testing.T) {
 	}, {
 		name: "with delay before cleanup",
 		config: func(config model.Configuration) model.Configuration {
-			config.Cleanup.DelayBeforeCleanup = ptr.To(metav1.Duration{Duration: 30 * time.Second})
+			config.Cleanup.DelayBeforeCleanup = new(metav1.Duration{Duration: 30 * time.Second})
 			return config
 		}(config.Spec),
 		defaultCluster: nil,
@@ -75,7 +74,7 @@ func TestInitContext(t *testing.T) {
 			assert.NotNil(t, tc.Compilers())
 			assert.NotNil(t, tc.Clusters())
 			assert.Nil(t, tc.CurrentCluster())
-			assert.Equal(t, ptr.To(30*time.Second), tc.DelayBeforeCleanup())
+			assert.Equal(t, new(30*time.Second), tc.DelayBeforeCleanup())
 			assert.Equal(t, metav1.DeletePropagationBackground, tc.DeletionPropagation())
 			assert.False(t, tc.DryRun())
 			assert.False(t, tc.FailFast())
@@ -87,7 +86,7 @@ func TestInitContext(t *testing.T) {
 	}, {
 		name: "with compiler",
 		config: func(config model.Configuration) model.Configuration {
-			config.Templating.Compiler = ptr.To(v1alpha1.EngineJP)
+			config.Templating.Compiler = new(v1alpha1.EngineJP)
 			return config
 		}(config.Spec),
 		defaultCluster: nil,
@@ -116,7 +115,7 @@ func TestInitContext(t *testing.T) {
 	}, {
 		name: "with termination grace",
 		config: func(config model.Configuration) model.Configuration {
-			config.Execution.ForceTerminationGracePeriod = ptr.To(metav1.Duration{Duration: 30 * time.Second})
+			config.Execution.ForceTerminationGracePeriod = new(metav1.Duration{Duration: 30 * time.Second})
 			return config
 		}(config.Spec),
 		defaultCluster: nil,
@@ -140,7 +139,7 @@ func TestInitContext(t *testing.T) {
 			assert.False(t, tc.SkipDelete())
 			assert.True(t, tc.Templating())
 			assert.NotNil(t, tc.TerminationGrace())
-			assert.Equal(t, ptr.To(30*time.Second), tc.TerminationGrace())
+			assert.Equal(t, new(30*time.Second), tc.TerminationGrace())
 		},
 	}, {
 		name:           "with default cluster",

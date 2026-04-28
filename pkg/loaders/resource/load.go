@@ -3,6 +3,7 @@ package resource
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/url"
 	"os"
 	"path/filepath"
@@ -17,9 +18,24 @@ import (
 )
 
 type (
-	splitter  = func([]byte) ([][]byte, error)
-	converter = func([]byte) ([]byte, error)
+	splitter   = func([]byte) ([][]byte, error)
+	converter  = func([]byte) ([]byte, error)
+	readSeeker = interface {
+		io.Reader
+		io.Seeker
+	}
 )
+
+func readDownloadedContent(reader readSeeker) ([]byte, error) {
+	if _, err := reader.Seek(0, 0); err != nil {
+		return nil, fmt.Errorf("error rewinding downloaded content: %w", err)
+	}
+	content, err := io.ReadAll(reader)
+	if err != nil {
+		return nil, fmt.Errorf("error reading downloaded content: %w", err)
+	}
+	return content, nil
+}
 
 func Load(pattern string, manifest bool) ([]unstructured.Unstructured, error) {
 	matchingFiles, err := filepath.Glob(pattern)
@@ -73,9 +89,9 @@ func LoadFromURI(url *url.URL, manifest bool) ([]unstructured.Unstructured, erro
 	}); err != nil {
 		return nil, fmt.Errorf("error downloading content: %s", err)
 	}
-	content, err := os.ReadFile(tempFile.Name())
+	content, err := readDownloadedContent(tempFile)
 	if err != nil {
-		return nil, fmt.Errorf("error reading downloaded content: %s", err)
+		return nil, err
 	}
 	if err := tempFile.Close(); err != nil {
 		return nil, fmt.Errorf("error closing temp file: %s", err)

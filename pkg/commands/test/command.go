@@ -29,7 +29,6 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/utils/clock"
-	"k8s.io/utils/ptr"
 )
 
 type options struct {
@@ -151,7 +150,7 @@ func Command() *cobra.Command {
 				configuration.Spec.Templating.Enabled = options.template
 			}
 			if flagutils.IsSet(flags, "default-compiler") {
-				configuration.Spec.Templating.Compiler = ptr.To(v1alpha1.Compiler(options.defaultCompiler))
+				configuration.Spec.Templating.Compiler = new(v1alpha1.Compiler(options.defaultCompiler))
 			}
 			if flagutils.IsSet(flags, "fail-fast") {
 				configuration.Spec.Execution.FailFast = options.failFast
@@ -246,7 +245,7 @@ func Command() *cobra.Command {
 			}
 			// if pause on failure is set, force non concurrency
 			if options.pauseOnFailure {
-				configuration.Spec.Execution.Parallel = ptr.To(1)
+				configuration.Spec.Execution.Parallel = new(1)
 			}
 			fprintfln(stdOut, "- Using test file: %s", configuration.Spec.Discovery.TestFile)
 			fprintfln(stdOut, "- TestDirs %v", options.testDirs)

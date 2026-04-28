@@ -16,7 +16,7 @@ func Test_remarshal(t *testing.T) {
 	tests := []struct {
 		name      string
 		document  string
-		unmarshal func(in []byte, out interface{}) (err error)
+		unmarshal func(in []byte, out any) (err error)
 		want      string
 		wantErr   bool
 	}{{
@@ -26,7 +26,7 @@ func Test_remarshal(t *testing.T) {
 		wantErr:  false,
 	}, {
 		name: "error",
-		unmarshal: func(in []byte, out interface{}) (err error) {
+		unmarshal: func(in []byte, out any) (err error) {
 			return errors.New("dummy")
 		},
 		wantErr: true,

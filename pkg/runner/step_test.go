@@ -22,7 +22,6 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/utils/clock"
-	"k8s.io/utils/ptr"
 )
 
 func TestStepProcessor_Run(t *testing.T) {
@@ -377,7 +376,7 @@ func TestStepProcessor_Run(t *testing.T) {
 								},
 							},
 							ActionDryRun: v1alpha1.ActionDryRun{
-								DryRun: ptr.To[bool](true),
+								DryRun: new(true),
 							},
 						},
 					},
@@ -404,7 +403,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
-				SkipDelete: ptr.To[bool](true),
+				SkipDelete: new(true),
 				Timeouts:   &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
 					{
@@ -439,7 +438,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
-				SkipDelete: ptr.To[bool](true),
+				SkipDelete: new(true),
 				Timeouts:   &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
 					{
@@ -480,7 +479,7 @@ func TestStepProcessor_Run(t *testing.T) {
 		basePath: testData,
 		stepSpec: v1alpha1.TestStep{
 			TestStepSpec: v1alpha1.TestStepSpec{
-				SkipDelete: ptr.To[bool](true),
+				SkipDelete: new(true),
 				Timeouts:   &v1alpha1.Timeouts{},
 				Try: []v1alpha1.Operation{
 					{
@@ -544,7 +543,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					{
 						Assert: &v1alpha1.Assert{
 							ActionCheckRef: v1alpha1.ActionCheckRef{
-								Check: ptr.To(v1alpha1.NewProjection(
+								Check: new(v1alpha1.NewProjection(
 									map[string]any{
 										"apiVersion": "v1",
 										"kind":       "Pod",

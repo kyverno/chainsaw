@@ -35,33 +35,33 @@ func TestResourceRef(t *testing.T) {
 	)
 
 	withNonStringValues := unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"apiVersion": "v1",
 			"kind":       "namespace",
-			"metadata": map[string]interface{}{
-				"name":      map[string]interface{}{"k": "v"},
-				"namespace": map[string]interface{}{"k": "v"},
-				"labels": map[string]interface{}{
+			"metadata": map[string]any{
+				"name":      map[string]any{"k": "v"},
+				"namespace": map[string]any{"k": "v"},
+				"labels": map[string]any{
 					"plain":           "value",
 					"templated":       "($foo)",
 					"templated-empty": "($empty)",
-					"nested":          map[string]interface{}{"k": "v"},
+					"nested":          map[string]any{"k": "v"},
 				},
 			},
 		},
 	}
 	expectedForNonStringValues := unstructured.Unstructured{
-		Object: map[string]interface{}{
+		Object: map[string]any{
 			"apiVersion": "v1",
 			"kind":       "namespace",
-			"metadata": map[string]interface{}{
-				"name":      map[string]interface{}{"k": "v"},
-				"namespace": map[string]interface{}{"k": "v"},
-				"labels": map[string]interface{}{
+			"metadata": map[string]any{
+				"name":      map[string]any{"k": "v"},
+				"namespace": map[string]any{"k": "v"},
+				"labels": map[string]any{
 					"plain":           "value",
 					"templated":       "foo",
 					"templated-empty": "",
-					"nested":          map[string]interface{}{"k": "v"},
+					"nested":          map[string]any{"k": "v"},
 				},
 			},
 		},

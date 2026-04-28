@@ -46,6 +46,10 @@ func (*TestDeps) ImportPath() string {
 	return ""
 }
 
+func (*TestDeps) ModulePath() string {
+	return ""
+}
+
 func (*TestDeps) StartTestLog(w io.Writer) {}
 
 func (*TestDeps) StopTestLog() error {
