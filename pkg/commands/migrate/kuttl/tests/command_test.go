@@ -5,12 +5,15 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 
 	petname "github.com/dustinkirkland/golang-petname"
 	"github.com/kyverno/chainsaw/pkg/commands/root"
 	"github.com/stretchr/testify/assert"
 )
+
+const kuttlOutPath = "../../../../../testdata/kuttl"
 
 func Test_Execute(t *testing.T) {
 	basePath := "../../../../../testdata/commands/migrate/kuttl/tests"
@@ -31,7 +34,7 @@ func Test_Execute(t *testing.T) {
 		name: "migrate",
 		args: []string{
 			"tests",
-			"../../../../../testdata/kuttl",
+			kuttlOutPath,
 		},
 		out:     filepath.Join(basePath, "out.txt"),
 		wantErr: false,
@@ -39,7 +42,7 @@ func Test_Execute(t *testing.T) {
 		name: "migrate save",
 		args: []string{
 			"tests",
-			"../../../../../testdata/kuttl",
+			kuttlOutPath,
 			"--save",
 		},
 		out:     filepath.Join(basePath, "out-save.txt"),
@@ -67,6 +70,12 @@ func Test_Execute(t *testing.T) {
 			cmd.SetArgs(tt.args)
 			out := bytes.NewBufferString("")
 			cmd.SetOut(out)
+
+			if slices.Contains(tt.args, "--save") {
+				defer os.Remove(filepath.Join(kuttlOutPath, "chainsaw-test.yaml"))
+			}
+			cmd.SetErr(os.Stderr)
+
 			err := cmd.Execute()
 			if tt.wantErr {
 				assert.Error(t, err)

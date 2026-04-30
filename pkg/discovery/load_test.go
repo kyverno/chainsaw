@@ -349,3 +349,20 @@ func Test_tryLoadTest(t *testing.T) {
 	_, err = tryLoadTestFile(filePath, false)
 	assert.Error(t, err)
 }
+
+func TestLoadTest_absoluteTestFile(t *testing.T) {
+	absFile, err := filepath.Abs("../../testdata/discovery/test/chainsaw-test.yaml")
+	if err != nil {
+		t.Fatalf("Failed to resolve absolute path: %v", err)
+	}
+	// absolute filename is used as-is, independent of the test-dir argument
+	got, err := LoadTest(absFile, "../../testdata/discovery/manifests", false)
+	assert.NoError(t, err)
+	assert.Len(t, got, 1)
+	assert.Equal(t, "test", got[0].Test.Name)
+	// absolute path that doesn't exist must not fall through to step-file discovery
+	missing := filepath.Join(t.TempDir(), "does-not-exist.yaml")
+	got, err = LoadTest(missing, "../../testdata/discovery/manifests", false)
+	assert.NoError(t, err)
+	assert.Nil(t, got)
+}
