@@ -82,6 +82,15 @@ func (r *StepReport) Failed() bool {
 	return false
 }
 
+func (r *TestReport) Failed() bool {
+	for _, step := range r.Steps {
+		if step.Failed() {
+			return true
+		}
+	}
+	return false
+}
+
 type OperationReport struct {
 	Name      string
 	Type      OperationType
