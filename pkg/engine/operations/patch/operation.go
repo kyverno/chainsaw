@@ -23,15 +23,16 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
+const annotationPatchSubresoruce = "chainsaw.kyverno.io/patch-subresource"
+
 type operation struct {
-	compilers   compilers.Compilers
-	client      client.Client
-	base        unstructured.Unstructured
-	namespacer  namespacer.Namespacer
-	template    bool
-	expect      []v1alpha1.Expectation
-	outputs     []v1alpha1.Output
-	subresoruce string
+	compilers  compilers.Compilers
+	client     client.Client
+	base       unstructured.Unstructured
+	namespacer namespacer.Namespacer
+	template   bool
+	expect     []v1alpha1.Expectation
+	outputs    []v1alpha1.Output
 }
 
 func New(
@@ -42,17 +43,15 @@ func New(
 	template bool,
 	expect []v1alpha1.Expectation,
 	outputs []v1alpha1.Output,
-	subresoruce string,
 ) operations.Operation {
 	return &operation{
-		compilers:   compilers,
-		client:      client,
-		base:        obj,
-		namespacer:  namespacer,
-		template:    template,
-		expect:      expect,
-		outputs:     outputs,
-		subresoruce: subresoruce,
+		compilers:  compilers,
+		client:     client,
+		base:       obj,
+		namespacer: namespacer,
+		template:   template,
+		expect:     expect,
+		outputs:    outputs,
 	}
 }
 
@@ -142,8 +141,9 @@ func (o *operation) updateResource(ctx context.Context, bindings apis.Bindings, 
 	if err != nil {
 		return nil, err
 	}
-	if o.subresoruce != "" {
-		return o.handleCheck(ctx, bindings, obj, o.client.SubResource(o.subresoruce).Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
+
+	if sr, ok := actual.GetAnnotations()[annotationPatchSubresoruce]; ok {
+		return o.handleCheck(ctx, bindings, obj, o.client.SubResource(sr).Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 	}
 	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 }

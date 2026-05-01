@@ -79,12 +79,13 @@ spec:
     - try:
         - patch:
             # specify resource inline, where a subresource is patched
-            subresoruce: status
             resource:
               apiVersion: v1
               kind: Pod
               metadata:
                 name: test-pod
+                annotations:
+                  chainsaw.kyverno.io/patch-subresource: status
               status:
                 conditions:
                   - type: TestCondition

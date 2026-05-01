@@ -747,7 +747,9 @@ For multiple objects use labels.</p>
 - [Operation](#chainsaw-kyverno-io-v1alpha1-Operation)
 
 <p>Patch represents a set of resources that should be patched.
-If a resource doesn't exist yet in the cluster it will fail.</p>
+If a resource doesn't exist yet in the cluster it will fail.
+Subresoruces can be patched by adding the annotation &quot;chainsaw.kyverno.io/patch-subresource&quot;,
+where the value is the name of the subresource to be patched, to the resource.</p>
 
 
 | Field | Type | Required | Inline | Description |
@@ -759,7 +761,6 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `ActionOutputs` | [`ActionOutputs`](#chainsaw-kyverno-io-v1alpha1-ActionOutputs) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionResourceRef` | [`ActionResourceRef`](#chainsaw-kyverno-io-v1alpha1-ActionResourceRef) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
-| `subresource` | `string` | :white_check_mark: |  | <p>Subresource specifies the name of the subresource that the patch should target.</p> |
 
 ## PodLogs     {#chainsaw-kyverno-io-v1alpha1-PodLogs}
 
