@@ -212,7 +212,7 @@ func Test_create(t *testing.T) {
 		expectedErr: errors.New(`kind: Invalid value: "Pod": Expected value: "Service"`),
 	}, {
 		name:   "Dry Run Subresoruce Resource exists, patch it",
-		object: withSubresorucePatch(pod, "status"),
+		object: withSubresourcePatch(pod, "status"),
 		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
 				*obj.(*unstructured.Unstructured) = pod
@@ -433,8 +433,16 @@ func Test_retry_logic(t *testing.T) {
 		})
 	}
 }
+func withSubresourcePatch(obj unstructured.Unstructured, subresource string) unstructured.Unstructured {
+	patchedObject := obj.DeepCopy()
 
-func withSubresorucePatch(pod unstructured.Unstructured, sr string) unstructured.Unstructured {
-	pod.GetAnnotations()[annotationPatchSubresoruce] = sr
-	return pod
+	annotations := patchedObject.GetAnnotations()
+	if annotations == nil {
+		annotations = make(map[string]string)
+	}
+
+	annotations[annotationPatchSubresoruce] = subresource
+	patchedObject.SetAnnotations(annotations)
+
+	return *patchedObject
 }

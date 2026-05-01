@@ -133,6 +133,10 @@ func (o *operation) tryPatchResource(ctx context.Context, bindings apis.Bindings
 }
 
 func (o *operation) updateResource(ctx context.Context, bindings apis.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (outputs.Outputs, error) {
+	annotations := obj.GetAnnotations()
+	// don't add chainsaw annotation to patch
+	unstructured.RemoveNestedField(obj.Object, "metadata", "annotations", annotationPatchSubresoruce)
+
 	patched, err := client.PatchObject(actual, &obj)
 	if err != nil {
 		return nil, err
@@ -142,8 +146,10 @@ func (o *operation) updateResource(ctx context.Context, bindings apis.Bindings, 
 		return nil, err
 	}
 
-	if sr, ok := actual.GetAnnotations()[annotationPatchSubresoruce]; ok {
-		return o.handleCheck(ctx, bindings, obj, o.client.SubResource(sr).Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
+	if annotations != nil {
+		if subResource, ok := annotations[annotationPatchSubresoruce]; ok {
+			return o.handleCheck(ctx, bindings, obj, o.client.SubResource(subResource).Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
+		}
 	}
 	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 }
