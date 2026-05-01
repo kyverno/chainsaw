@@ -23,7 +23,11 @@ import (
 	"k8s.io/apimachinery/pkg/util/wait"
 )
 
-const annotationPatchSubresoruce = "chainsaw.kyverno.io/patch-subresource"
+const (
+	annotationPatchSubresource = "chainsaw.kyverno.io/patch-subresource"
+	fieldMetadata              = "metadata"
+	fieldAnnotations           = "annotations"
+)
 
 type operation struct {
 	compilers  compilers.Compilers
@@ -133,9 +137,9 @@ func (o *operation) tryPatchResource(ctx context.Context, bindings apis.Bindings
 }
 
 func (o *operation) updateResource(ctx context.Context, bindings apis.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (outputs.Outputs, error) {
-	annotations := obj.GetAnnotations()
-	// don't add chainsaw annotation to patch
-	unstructured.RemoveNestedField(obj.Object, "metadata", "annotations", annotationPatchSubresoruce)
+
+	sr := evaluateSubresourcePatch(&obj)
+	removePatchSubresourceAnnotation(&obj)
 
 	patched, err := client.PatchObject(actual, &obj)
 	if err != nil {
@@ -146,12 +150,28 @@ func (o *operation) updateResource(ctx context.Context, bindings apis.Bindings, 
 		return nil, err
 	}
 
-	if annotations != nil {
-		if subResource, ok := annotations[annotationPatchSubresoruce]; ok {
-			return o.handleCheck(ctx, bindings, obj, o.client.SubResource(subResource).Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
-		}
+	if sr != "" {
+		return o.handleCheck(ctx, bindings, obj, o.client.SubResource(sr).Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 	}
 	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
+}
+
+func evaluateSubresourcePatch(obj *unstructured.Unstructured) string {
+	annotations := obj.GetAnnotations()
+	if annotations == nil {
+		return ""
+	}
+
+	return annotations[annotationPatchSubresource]
+}
+
+// Don't add chainsaw annotation to patch.
+func removePatchSubresourceAnnotation(obj *unstructured.Unstructured) {
+	unstructured.RemoveNestedField(obj.Object, fieldMetadata, fieldAnnotations, annotationPatchSubresource)
+
+	if len(obj.GetAnnotations()) == 0 {
+		unstructured.RemoveNestedField(obj.Object, fieldMetadata, fieldAnnotations)
+	}
 }
 
 func (o *operation) handleCheck(ctx context.Context, bindings apis.Bindings, obj unstructured.Unstructured, err error) (_outputs outputs.Outputs, _err error) {

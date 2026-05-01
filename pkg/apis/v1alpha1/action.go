@@ -262,7 +262,7 @@ type Get struct {
 
 // Patch represents a set of resources that should be patched.
 // If a resource doesn't exist yet in the cluster it will fail.
-// Subresoruces can be patched by adding the annotation "chainsaw.kyverno.io/patch-subresource",
+// Subresources can be patched by adding the annotation "chainsaw.kyverno.io/patch-subresource",
 // where the value is the name of the subresource to be patched, to the resource.
 type Patch struct {
 	ActionBindings     `json:",inline"`
