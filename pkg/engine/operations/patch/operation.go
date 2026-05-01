@@ -31,7 +31,7 @@ type operation struct {
 	template    bool
 	expect      []v1alpha1.Expectation
 	outputs     []v1alpha1.Output
-	subresoruce string
+	subresource string
 }
 
 func New(
@@ -42,7 +42,7 @@ func New(
 	template bool,
 	expect []v1alpha1.Expectation,
 	outputs []v1alpha1.Output,
-	subresoruce string,
+	subresource string,
 ) operations.Operation {
 	return &operation{
 		compilers:   compilers,
@@ -52,7 +52,7 @@ func New(
 		template:    template,
 		expect:      expect,
 		outputs:     outputs,
-		subresoruce: subresoruce,
+		subresource: subresource,
 	}
 }
 
@@ -142,8 +142,8 @@ func (o *operation) updateResource(ctx context.Context, bindings apis.Bindings, 
 	if err != nil {
 		return nil, err
 	}
-	if o.subresoruce != "" {
-		return o.handleCheck(ctx, bindings, obj, o.client.SubResource(o.subresoruce).Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
+	if o.subresource != "" {
+		return o.handleCheck(ctx, bindings, obj, o.client.SubResource(o.subresource).Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 	}
 	return o.handleCheck(ctx, bindings, obj, o.client.Patch(ctx, actual, client.RawPatch(types.MergePatchType, bytes)))
 }

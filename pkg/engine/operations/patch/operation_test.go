@@ -212,7 +212,7 @@ func Test_create(t *testing.T) {
 		}},
 		expectedErr: errors.New(`kind: Invalid value: "Pod": Expected value: "Service"`),
 	}, {
-		name:   "Dry Run Subresoruce Resource exists, patch it",
+		name:   "Dry Run Subresource Resource exists, patch it",
 		object: pod,
 		client: &tclient.FakeClient{
 			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
