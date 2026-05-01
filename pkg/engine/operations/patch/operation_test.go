@@ -447,3 +447,101 @@ func withSubresourcePatch(obj unstructured.Unstructured, subresource string) uns
 
 	return *patchedObject
 }
+
+func Test_evaluateSubresourcePatch(t *testing.T) {
+	tests := []struct {
+		name string
+		obj  *unstructured.Unstructured
+		want string
+	}{
+		{
+			name: "no annotations",
+			obj: &unstructured.Unstructured{
+				Object: map[string]any{
+					"metadata": map[string]any{},
+				},
+			},
+			want: "",
+		},
+		{
+			name: "other annotations",
+			obj: &unstructured.Unstructured{
+				Object: map[string]any{
+					"metadata": map[string]any{
+						"annotations": map[string]string{
+							"foo": "bar",
+						},
+					},
+				},
+			},
+			want: "",
+		},
+		{
+			name: "patch subresource annotation",
+			obj: &unstructured.Unstructured{
+				Object: map[string]any{
+					"metadata": map[string]any{
+						"annotations": map[string]any{
+							annotationPatchSubresource: "status",
+						},
+					},
+				},
+			},
+			want: "status",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := evaluateSubresourcePatch(tt.obj)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_removePatchSubresourceAnnotation(t *testing.T) {
+	tests := []struct {
+		name        string
+		annotations map[string]string
+		want        map[string]string
+	}{
+		{
+			name:        "no annotations",
+			annotations: map[string]string{},
+			want:        nil,
+		},
+		{
+			name: "other annotations",
+			annotations: map[string]string{
+				"foo": "bar",
+			},
+			want: map[string]string{
+				"foo": "bar",
+			},
+		},
+		{
+			name: "patch subresource annotation only",
+			annotations: map[string]string{
+				annotationPatchSubresource: "status",
+			},
+			want: nil,
+		},
+		{
+			name: "patch subresource annotation and others",
+			annotations: map[string]string{
+				annotationPatchSubresource: "status",
+				"foo":                      "bar",
+			},
+			want: map[string]string{
+				"foo": "bar",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			us := &unstructured.Unstructured{}
+			us.SetAnnotations(tt.annotations)
+			removePatchSubresourceAnnotation(us)
+			assert.Equal(t, tt.want, us.GetAnnotations())
+		})
+	}
+}

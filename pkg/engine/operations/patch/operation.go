@@ -137,7 +137,6 @@ func (o *operation) tryPatchResource(ctx context.Context, bindings apis.Bindings
 }
 
 func (o *operation) updateResource(ctx context.Context, bindings apis.Bindings, actual *unstructured.Unstructured, obj unstructured.Unstructured) (outputs.Outputs, error) {
-
 	sr := evaluateSubresourcePatch(&obj)
 	removePatchSubresourceAnnotation(&obj)
 
