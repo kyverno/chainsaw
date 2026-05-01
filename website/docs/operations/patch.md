@@ -69,6 +69,29 @@ spec:
             name: chainsaw-quick-start
           data:
             foo: bar
+---
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example-subresource
+spec:
+  steps:
+    - try:
+        - patch:
+            # specify resource inline, where a subresource is patched
+            subresoruce: status
+            resource:
+              apiVersion: v1
+              kind: Pod
+              metadata:
+                name: test-pod
+              status:
+                conditions:
+                  - type: TestCondition
+                    status: "True"
+                    reason: TestReason
+                    message: TestMessage
+                    lastTransitionTime: "2026-03-28T10:51:35Z"
 ```
 
 ### Operation check
