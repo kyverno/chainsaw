@@ -47,6 +47,29 @@
 <span class=w>            </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">chainsaw-quick-start</span>
 <span class=w>          </span><span class=nt>data</span><span class=p>:</span>
 <span class=w>            </span><span class=nt>foo</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">bar</span>
+<span class=nn>---</span>
+<span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">chainsaw.kyverno.io/v1alpha1</span>
+<span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Test</span>
+<span class=nt>metadata</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">example-subresource</span>
+<span class=nt>spec</span><span class=p>:</span>
+<span class=w>  </span><span class=nt>steps</span><span class=p>:</span>
+<span class=w>    </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>try</span><span class=p>:</span>
+<span class=w>        </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>patch</span><span class=p>:</span>
+<span class=w>            </span><span class=c1># specify resource inline, where a subresource is patched</span>
+<span class=w>            </span><span class=nt>subresoruce</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">status</span>
+<span class=w>            </span><span class=nt>resource</span><span class=p>:</span>
+<span class=w>              </span><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">v1</span>
+<span class=w>              </span><span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Pod</span>
+<span class=w>              </span><span class=nt>metadata</span><span class=p>:</span>
+<span class=w>                </span><span class=nt>name</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">test-pod</span>
+<span class=w>              </span><span class=nt>status</span><span class=p>:</span>
+<span class=w>                </span><span class=nt>conditions</span><span class=p>:</span>
+<span class=w>                  </span><span class="p p-Indicator">-</span><span class=w> </span><span class=nt>type</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">TestCondition</span>
+<span class=w>                    </span><span class=nt>status</span><span class=p>:</span><span class=w> </span><span class=s>&quot;True&quot;</span>
+<span class=w>                    </span><span class=nt>reason</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">TestReason</span>
+<span class=w>                    </span><span class=nt>message</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">TestMessage</span>
+<span class=w>                    </span><span class=nt>lastTransitionTime</span><span class=p>:</span><span class=w> </span><span class=s>&quot;2026-03-28T10:51:35Z&quot;</span>
 </code></pre></div> <h3 id=operation-check>Operation check<a class=headerlink href=#operation-check title="Permanent link">&para;</a></h3> <div class=highlight><pre><span></span><code><span class=nt>apiVersion</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">chainsaw.kyverno.io/v1alpha1</span>
 <span class=nt>kind</span><span class=p>:</span><span class=w> </span><span class="l l-Scalar l-Scalar-Plain">Test</span>
 <span class=nt>metadata</span><span class=p>:</span>
