@@ -151,3 +151,37 @@ func TestStepReport_Failed(t *testing.T) {
 		})
 	}
 }
+
+func TestTestReport_Failed(t *testing.T) {
+	tests := []struct {
+		name   string
+		report TestReport
+		want   bool
+	}{{
+		name:   "no steps",
+		report: TestReport{},
+	}, {
+		name: "all steps passed",
+		report: TestReport{
+			Steps: []*StepReport{
+				{Operations: []*OperationReport{{}, {}}},
+			},
+		},
+		want: false,
+	}, {
+		name: "one step failed",
+		report: TestReport{
+			Steps: []*StepReport{
+				{Operations: []*OperationReport{{}}},
+				{Operations: []*OperationReport{{Err: errors.New("boom")}}},
+			},
+		},
+		want: true,
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.report.Failed()
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
