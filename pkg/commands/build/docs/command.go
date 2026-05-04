@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"text/template"
 
-	"github.com/Masterminds/sprig"
+	"github.com/Masterminds/sprig/v3"
 	"github.com/kyverno/chainsaw/pkg/discovery"
 	"github.com/spf13/cobra"
 )

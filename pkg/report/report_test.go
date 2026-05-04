@@ -22,17 +22,17 @@ func Test_getFile(t *testing.T) {
 		path:      "foo",
 		name:      "bar",
 		extension: "xml",
-		want:      "foo/bar.xml",
+		want:      filepath.FromSlash("foo/bar.xml"),
 	}, {
 		path:      "foo",
 		name:      "bar.json",
 		extension: "xml",
-		want:      "foo/bar.json",
+		want:      filepath.FromSlash("foo/bar.json"),
 	}, {
 		path:      "foo",
 		name:      "bar.xml",
 		extension: "xml",
-		want:      "foo/bar.xml",
+		want:      filepath.FromSlash("foo/bar.xml"),
 	}, {
 		path:      "",
 		name:      "bar",
