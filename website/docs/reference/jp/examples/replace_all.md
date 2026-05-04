@@ -10,4 +10,10 @@ Replace all instances of one string with another in an overall parent string.
 
 ## Examples
 
-TODO
+```
+replace_all('foobar', 'o', 'i') == 'fiibar'
+```
+
+```
+replace_all('hello world hello', 'hello', 'hi') == 'hi world hi'
+```

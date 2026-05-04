@@ -10,4 +10,20 @@ Returns the highest found element in the provided array argument. An empty array
 
 ## Examples
 
-TODO
+### With numbers
+
+```
+max([`1`, `5`, `3`]) == `5`
+```
+
+### With strings
+
+```
+max(['b', 'a', 'c']) == 'c'
+```
+
+### With an empty array
+
+```
+max(`[]`) == null
+```

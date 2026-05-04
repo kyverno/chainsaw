@@ -10,4 +10,14 @@ Length argument must be enclosed in backticks; ex. "{{request.object.metadata.na
 
 ## Examples
 
-TODO
+```
+truncate('foobar', `3`) == 'foo'
+```
+
+```
+truncate('hello world', `5`) == 'hello'
+```
+
+```
+truncate('short', `10`) == 'short'
+```

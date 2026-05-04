@@ -10,4 +10,14 @@ Trims the second string prefix from the first string if the first string starts 
 
 ## Examples
 
-TODO
+```
+trim_prefix('foobar', 'foo') == 'bar'
+```
+
+```
+trim_prefix('foobar', 'baz') == 'foobar'
+```
+
+```
+trim_prefix('foobar', '') == 'foobar'
+```
