@@ -24,6 +24,19 @@ The full structure of `Script` is documented [here](../reference/apis/chainsaw.v
 - Unless `--no-cluster` is specified, Chainsaw always executes commands in the context of a temporary `KUBECONFIG`, built from the configured target cluster.
 - This specific `KUBECONFIG` has a single cluster, auth info and context configured (all named `chainsaw`).
 
+### Working directory
+
+Use `workDir` to set the working directory in which the script will be executed. When omitted, the script runs in the directory containing the test file.
+
+`workDir` accepts either an absolute path or a relative path. A relative path is resolved against the directory containing the test file.
+
+```yaml
+- script:
+    workDir: /path/to/project
+    content: |
+      make build
+```
+
 ## Examples
 
 ```yaml
