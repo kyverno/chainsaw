@@ -23,7 +23,7 @@ The list of organizations that have publicly shared the usage of Chainsaw:
 | [Linode COSI driver](https://github.com/linode/linode-cosi-driver) | Running all end to end tests for object store driver |
 | [Odigos](https://github.com/odigos-io/odigos) | Chainsaw helps us run complex e2e tests confidently, ensuring project reliability. |
 | [ToolHive](https://github.com/stacklok/toolhive) | Chainsaw helps us test the helm chart installations for multi-tenancy and single tenancy ensuring operator installation reliability. |
-
+| [Argo Rollouts Gateway API](https://rollouts-plugin-trafficrouter-gatewayapi.readthedocs.io/en/latest/) | Chainsaw [replaced our flaky golang tests](https://github.com/argoproj-labs/rollouts-plugin-trafficrouter-gatewayapi/issues/142) bringing back confidence to [our e2e test suite](https://github.com/argoproj-labs/rollouts-plugin-trafficrouter-gatewayapi/tree/main/test/e2e/chainsaw). |
 
 <!-- append the line below to the table
 | [name](URL) | brief description of how you are using Chainsaw | 
