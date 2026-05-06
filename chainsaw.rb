@@ -5,22 +5,22 @@
 class Chainsaw < Formula
   desc "Declarative Kubernetes end-to-end testing."
   homepage "https://kyverno.github.io/chainsaw"
-  version "0.2.14"
+  version "0.2.15-beta.4"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.14/chainsaw_darwin_amd64.tar.gz"
-      sha256 "983ce0e4ff32a2112481833d7be4e0a0f0530fadba630fa93d3a635539bc1db0"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.15-beta.4/chainsaw_darwin_amd64.tar.gz"
+      sha256 "1f2de9db0c7bc9ccfe3779273228a162635f61b4b6627bdecc33cab70ec4ea2e"
 
-      def install
+      define_method(:install) do
         bin.install "chainsaw"
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.14/chainsaw_darwin_arm64.tar.gz"
-      sha256 "ff806554a15e12faca08b54d373a61e27808f40c34208248924f7b71a301f786"
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.15-beta.4/chainsaw_darwin_arm64.tar.gz"
+      sha256 "dfb72ae40eb75752d5ea29200072b16c429476272c1e423c81a62043a7f1e377"
 
-      def install
+      define_method(:install) do
         bin.install "chainsaw"
       end
     end
@@ -28,16 +28,16 @@ class Chainsaw < Formula
 
   on_linux do
     if Hardware::CPU.intel? && Hardware::CPU.is_64_bit?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.14/chainsaw_linux_amd64.tar.gz"
-      sha256 "f2f4a3f9a541d65db12f5c910950758f7d56fae20ad5b1272cdc271c9568443e"
-      def install
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.15-beta.4/chainsaw_linux_amd64.tar.gz"
+      sha256 "9de4ceee19159e13a25a98fee8463b1282c63079568f5e9ff089aec46e10a7d9"
+      define_method(:install) do
         bin.install "chainsaw"
       end
     end
     if Hardware::CPU.arm? && Hardware::CPU.is_64_bit?
-      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.14/chainsaw_linux_arm64.tar.gz"
-      sha256 "b6494b71e490ab825890fc12cc575de7f59bfa637d5cfe73c66987e4454e397c"
-      def install
+      url "https://github.com/kyverno/chainsaw/releases/download/v0.2.15-beta.4/chainsaw_linux_arm64.tar.gz"
+      sha256 "5e95714bf334e046fc0f8c0cf86c5945ae418f50ec1fb4b97bb3db6b877c16b8"
+      define_method(:install) do
         bin.install "chainsaw"
       end
     end
