@@ -21,7 +21,7 @@ Please pay attention to the configuration options below, they may or may not be 
 - [Error options](./options/error.md)
 - [Reporting options](./options/report.md)
 - [Multi-cluster options](./options/clusters.md)
-- [Pause options](./options/no-cluster.md)
+- [Pause options](./options/pause.md)
 - [No cluster options](./options/no-cluster.md)
 - [Label selectors](./options/label-selectors.md)
 - [External values](./options/values.md)
