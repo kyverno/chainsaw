@@ -31,6 +31,20 @@ Chainsaw will expand environment variables in the form of `$VARIABLE_NAME`. If y
 
 This matches [Kubernetes' behavior](https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/pod-v1/#entrypoint) for container command and args fields.
 
+### Working directory
+
+Use `workDir` to set the working directory in which the command will be executed. When omitted, the command runs in the directory containing the test file.
+
+`workDir` accepts either an absolute path or a relative path. A relative path is resolved against the directory containing the test file.
+
+```yaml
+- command:
+    entrypoint: make
+    args:
+    - build
+    workDir: /path/to/project
+```
+
 ## Examples
 
 ```yaml
