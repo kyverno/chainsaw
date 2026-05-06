@@ -37,6 +37,21 @@ Use `workDir` to set the working directory in which the script will be executed.
       make build
 ```
 
+### Log suppression
+
+Two fields control whether script output appears in the test logs:
+
+- `skipLogOutput`: suppresses the script's stdout/stderr output from the logs. Useful for reducing noise or hiding sensitive values.
+- `skipCommandOutput`: suppresses the shell invocation itself from the logs.
+
+```yaml
+- script:
+    skipLogOutput: true
+    skipCommandOutput: true
+    content: |
+      echo secret-value
+```
+
 ## Examples
 
 ```yaml
