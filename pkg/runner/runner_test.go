@@ -311,6 +311,103 @@ func Test_runner_Run(t *testing.T) {
 			passed: 1,
 		},
 	}, {
+		name: "test with concurrency group",
+		config: model.Configuration{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name: "chain-saw",
+			},
+		},
+		tc: func() enginecontext.TestContext {
+			client := &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(v1alpha1.Resource("Namespace"), "chain-saw")
+				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
+				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+					return nil
+				},
+			}
+			return mockTC(client)
+		}(),
+		tests: []discovery.Test{{
+			Test: &model.Test{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Test",
+				},
+				ObjectMeta: metav1.ObjectMeta{Name: "test"},
+				Spec: v1alpha1.TestSpec{
+					Concurrency: &v1alpha1.ConcurrencyOptions{Group: "group-a"},
+					Steps: []v1alpha1.TestStep{{
+						TestStepSpec: v1alpha1.TestStepSpec{
+							Try: []v1alpha1.Operation{{
+								Script: &v1alpha1.Script{Content: "echo hello"},
+							}},
+						},
+					}},
+				},
+			},
+		}},
+		want: &summaryResult{passed: 1},
+	}, {
+		name: "multiple tests in same concurrency group",
+		config: model.Configuration{
+			Namespace: v1alpha2.NamespaceOptions{
+				Name: "chain-saw",
+			},
+		},
+		tc: func() enginecontext.TestContext {
+			client := &fake.FakeClient{
+				GetFn: func(ctx context.Context, call int, key ctrlclient.ObjectKey, obj ctrlclient.Object, opts ...ctrlclient.GetOption) error {
+					return kerrors.NewNotFound(v1alpha1.Resource("Namespace"), "chain-saw")
+				},
+				CreateFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.CreateOption) error {
+					return nil
+				},
+				DeleteFn: func(ctx context.Context, call int, obj ctrlclient.Object, opts ...ctrlclient.DeleteOption) error {
+					return nil
+				},
+			}
+			return mockTC(client)
+		}(),
+		tests: []discovery.Test{
+			{
+				Test: &model.Test{
+					TypeMeta:   metav1.TypeMeta{APIVersion: "chainsaw.kyverno.io/v1alpha1", Kind: "Test"},
+					ObjectMeta: metav1.ObjectMeta{Name: "test-1"},
+					Spec: v1alpha1.TestSpec{
+						Concurrency: &v1alpha1.ConcurrencyOptions{Group: "group-a"},
+						Steps: []v1alpha1.TestStep{{
+							TestStepSpec: v1alpha1.TestStepSpec{
+								Try: []v1alpha1.Operation{{
+									Script: &v1alpha1.Script{Content: "echo one"},
+								}},
+							},
+						}},
+					},
+				},
+			},
+			{
+				Test: &model.Test{
+					TypeMeta:   metav1.TypeMeta{APIVersion: "chainsaw.kyverno.io/v1alpha1", Kind: "Test"},
+					ObjectMeta: metav1.ObjectMeta{Name: "test-2"},
+					Spec: v1alpha1.TestSpec{
+						Concurrency: &v1alpha1.ConcurrencyOptions{Group: "group-a"},
+						Steps: []v1alpha1.TestStep{{
+							TestStepSpec: v1alpha1.TestStepSpec{
+								Try: []v1alpha1.Operation{{
+									Script: &v1alpha1.Script{Content: "echo two"},
+								}},
+							},
+						}},
+					},
+				},
+			},
+		},
+		want: &summaryResult{passed: 2},
+	}, {
 		name: "With scanrio",
 		config: model.Configuration{
 			Namespace: v1alpha2.NamespaceOptions{
