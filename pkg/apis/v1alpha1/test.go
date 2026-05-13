@@ -52,6 +52,10 @@ type TestSpec struct {
 	// +optional
 	Concurrent *bool `json:"concurrent,omitempty"`
 
+	// Concurrency defines concurrency options for the test.
+	// +optional
+	Concurrency *ConcurrencyOptions `json:"concurrency,omitempty"`
+
 	// SkipDelete determines whether the resources created by the test should be deleted after the test is executed.
 	// +optional
 	SkipDelete *bool `json:"skipDelete,omitempty"`
@@ -110,6 +114,14 @@ type TestSpec struct {
 	// +optional
 	// +kubebuilder:validation:Enum:=Orphan;Background;Foreground
 	DeletionPropagationPolicy *metav1.DeletionPropagation `json:"deletionPropagationPolicy,omitempty"`
+}
+
+// ConcurrencyOptions defines concurrency options for a test.
+type ConcurrencyOptions struct {
+	// Group assigns the test to a concurrency group. Tests in the same group run
+	// sequentially; tests in different groups run in parallel.
+	// +optional
+	Group string `json:"group,omitempty"`
 }
 
 // Scenario defines per scenario bindings.
