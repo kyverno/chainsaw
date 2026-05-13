@@ -884,6 +884,15 @@ spec:
                 description: Concurrent determines whether the test should run concurrently
                   with other tests.
                 type: boolean
+              concurrency:
+                description: Concurrency defines concurrency options for the test.
+                properties:
+                  group:
+                    description: |-
+                      Group assigns the test to a concurrency group. Tests in the same group run
+                      sequentially; tests in different groups run in parallel.
+                    type: string
+                type: object
               delayBeforeCleanup:
                 description: DelayBeforeCleanup adds a delay between the time a test
                   ends and the time cleanup starts.
