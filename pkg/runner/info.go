@@ -5,9 +5,10 @@ import (
 )
 
 type TestInfo struct {
-	Id         int
-	ScenarioId int
-	Metadata   metav1.ObjectMeta
+	Id           int
+	ScenarioId   int
+	ScenarioName string
+	Metadata     metav1.ObjectMeta
 }
 
 type StepInfo struct {

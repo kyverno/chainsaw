@@ -417,6 +417,28 @@ func Test_runner_run(t *testing.T) {
 	}
 }
 
+func Test_runner_setupTestContext(t *testing.T) {
+	r := &runner{clock: clock.RealClock{}}
+	tc := enginecontext.EmptyContext(clock.RealClock{})
+	test := discovery.Test{
+		Test: &model.Test{
+			ObjectMeta: metav1.ObjectMeta{Name: "my-test"},
+		},
+	}
+	got, err := r.setupTestContext(context.TODO(), 1, 2, "my-scenario", tc, test)
+	assert.NoError(t, err)
+	binding, err := got.Bindings().Get("$test")
+	assert.NoError(t, err)
+	val, err := binding.Value()
+	assert.NoError(t, err)
+	info, ok := val.(TestInfo)
+	assert.True(t, ok)
+	assert.Equal(t, 1, info.Id)
+	assert.Equal(t, 2, info.ScenarioId)
+	assert.Equal(t, "my-scenario", info.ScenarioName)
+	assert.Equal(t, "my-test", info.Metadata.Name)
+}
+
 func Test_runner_onFail(t *testing.T) {
 	{
 		r := &runner{
