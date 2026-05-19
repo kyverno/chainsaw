@@ -7,6 +7,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/commands/docs"
 	"github.com/kyverno/chainsaw/pkg/commands/export"
 	"github.com/kyverno/chainsaw/pkg/commands/lint"
+	"github.com/kyverno/chainsaw/pkg/commands/kubebuilder"
 	"github.com/kyverno/chainsaw/pkg/commands/migrate"
 	"github.com/kyverno/chainsaw/pkg/commands/renovate"
 	"github.com/kyverno/chainsaw/pkg/commands/root"
@@ -24,6 +25,7 @@ func RootCommand() *cobra.Command {
 		docs.Command(),
 		export.Command(),
 		lint.Command(),
+		kubebuilder.Command(),
 		migrate.Command(),
 		renovate.Command(),
 		test.Command(),
