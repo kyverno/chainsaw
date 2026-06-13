@@ -24,12 +24,13 @@ func fileRefOrResource(ctx context.Context, ref v1alpha1.ActionResourceRef, base
 		if err != nil {
 			return nil, err
 		}
-		url, err := url.ParseRequestURI(ref)
-		if err != nil {
-			return resource.Load(filepath.Join(basePath, ref), true)
-		} else {
-			return resource.LoadFromURI(url, true)
+		if u, err := url.ParseRequestURI(ref); err == nil && u.Scheme != "" {
+			return resource.LoadFromURI(u, true)
 		}
+		if filepath.IsAbs(ref) {
+			return resource.Load(ref, true)
+		}
+		return resource.Load(filepath.Join(basePath, ref), true)
 	}
 	return nil, errors.New("file or resource must be set")
 }
@@ -47,12 +48,13 @@ func fileRefOrCheck(ctx context.Context, ref v1alpha1.ActionCheckRef, basePath s
 		if err != nil {
 			return nil, err
 		}
-		url, err := url.ParseRequestURI(ref)
-		if err != nil {
-			return resource.Load(filepath.Join(basePath, ref), false)
-		} else {
-			return resource.LoadFromURI(url, false)
+		if u, err := url.ParseRequestURI(ref); err == nil && u.Scheme != "" {
+			return resource.LoadFromURI(u, false)
 		}
+		if filepath.IsAbs(ref) {
+			return resource.Load(ref, false)
+		}
+		return resource.Load(filepath.Join(basePath, ref), false)
 	}
 	return nil, errors.New("file or resource must be set")
 }
