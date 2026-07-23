@@ -196,6 +196,9 @@ func TestCommandHasSetFlags(t *testing.T) {
 	if f := cmd.Flags().Lookup("set-string"); f == nil {
 		t.Fatalf("expected --set-string flag to be registered")
 	}
+	if f := cmd.Flags().Lookup("skip-kubeconfig-injection"); f == nil {
+		t.Fatalf("expected --skip-kubeconfig-injection flag to be registered")
+	}
 }
 
 func TestValuesMergeWithSetFlags(t *testing.T) {

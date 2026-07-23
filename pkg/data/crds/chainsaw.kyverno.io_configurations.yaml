@@ -154,6 +154,12 @@ spec:
                             - value
                             type: object
                           type: array
+                        kubeconfigInjection:
+                          default: true
+                          description: |-
+                            KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                            into subprocesses. It defaults to true when omitted.
+                          type: boolean
                         outputs:
                           description: Outputs defines output bindings.
                           items:
@@ -296,6 +302,12 @@ spec:
                             or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
                             files within the "manifest" directory.
                           type: string
+                        kubeconfigInjection:
+                          default: true
+                          description: |-
+                            KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                            into subprocesses. It defaults to true when omitted.
+                          type: boolean
                         ref:
                           description: Ref determines objects to be deleted.
                           properties:
@@ -373,6 +385,12 @@ spec:
                             Kind of the referent.
                             More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
                           type: string
+                        kubeconfigInjection:
+                          default: true
+                          description: |-
+                            KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                            into subprocesses. It defaults to true when omitted.
+                          type: boolean
                         name:
                           description: |-
                             Name of the referent.
@@ -435,6 +453,12 @@ spec:
                             yaml).
                           pattern: ^(?:json|yaml|\(.+\))$
                           type: string
+                        kubeconfigInjection:
+                          default: true
+                          description: |-
+                            KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                            into subprocesses. It defaults to true when omitted.
+                          type: boolean
                         name:
                           description: |-
                             Name of the referent.
@@ -495,6 +519,12 @@ spec:
                             Kind of the referent.
                             More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
                           type: string
+                        kubeconfigInjection:
+                          default: true
+                          description: |-
+                            KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                            into subprocesses. It defaults to true when omitted.
+                          type: boolean
                         name:
                           description: |-
                             Name of the referent.
@@ -549,6 +579,12 @@ spec:
                           description: Container in pod to get logs from else --all-containers
                             is used.
                           type: string
+                        kubeconfigInjection:
+                          default: true
+                          description: |-
+                            KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                            into subprocesses. It defaults to true when omitted.
+                          type: boolean
                         name:
                           description: |-
                             Name of the referent.
@@ -656,6 +692,12 @@ spec:
                             - value
                             type: object
                           type: array
+                        kubeconfigInjection:
+                          default: true
+                          description: |-
+                            KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                            into subprocesses. It defaults to true when omitted.
+                          type: boolean
                         outputs:
                           description: Outputs defines output bindings.
                           items:
@@ -805,6 +847,12 @@ spec:
                             Kind of the referent.
                             More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
                           type: string
+                        kubeconfigInjection:
+                          default: true
+                          description: |-
+                            KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                            into subprocesses. It defaults to true when omitted.
+                          type: boolean
                         name:
                           description: |-
                             Name of the referent.
@@ -1199,6 +1247,12 @@ spec:
                                 - value
                                 type: object
                               type: array
+                            kubeconfigInjection:
+                              default: true
+                              description: |-
+                                KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                                into subprocesses. It defaults to true when omitted.
+                              type: boolean
                             outputs:
                               description: Outputs defines output bindings.
                               items:
@@ -1341,6 +1395,12 @@ spec:
                                 or an expression that matches multiple files, such as "manifest/*.yaml" for all YAML
                                 files within the "manifest" directory.
                               type: string
+                            kubeconfigInjection:
+                              default: true
+                              description: |-
+                                KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                                into subprocesses. It defaults to true when omitted.
+                              type: boolean
                             ref:
                               description: Ref determines objects to be deleted.
                               properties:
@@ -1419,6 +1479,12 @@ spec:
                                 Kind of the referent.
                                 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
                               type: string
+                            kubeconfigInjection:
+                              default: true
+                              description: |-
+                                KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                                into subprocesses. It defaults to true when omitted.
+                              type: boolean
                             name:
                               description: |-
                                 Name of the referent.
@@ -1481,6 +1547,12 @@ spec:
                                 or yaml).
                               pattern: ^(?:json|yaml|\(.+\))$
                               type: string
+                            kubeconfigInjection:
+                              default: true
+                              description: |-
+                                KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                                into subprocesses. It defaults to true when omitted.
+                              type: boolean
                             name:
                               description: |-
                                 Name of the referent.
@@ -1542,6 +1614,12 @@ spec:
                                 Kind of the referent.
                                 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
                               type: string
+                            kubeconfigInjection:
+                              default: true
+                              description: |-
+                                KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                                into subprocesses. It defaults to true when omitted.
+                              type: boolean
                             name:
                               description: |-
                                 Name of the referent.
@@ -1597,6 +1675,12 @@ spec:
                               description: Container in pod to get logs from else
                                 --all-containers is used.
                               type: string
+                            kubeconfigInjection:
+                              default: true
+                              description: |-
+                                KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                                into subprocesses. It defaults to true when omitted.
+                              type: boolean
                             name:
                               description: |-
                                 Name of the referent.
@@ -1704,6 +1788,12 @@ spec:
                                 - value
                                 type: object
                               type: array
+                            kubeconfigInjection:
+                              default: true
+                              description: |-
+                                KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                                into subprocesses. It defaults to true when omitted.
+                              type: boolean
                             outputs:
                               description: Outputs defines output bindings.
                               items:
@@ -1854,6 +1944,12 @@ spec:
                                 Kind of the referent.
                                 More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
                               type: string
+                            kubeconfigInjection:
+                              default: true
+                              description: |-
+                                KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+                                into subprocesses. It defaults to true when omitted.
+                              type: boolean
                             name:
                               description: |-
                                 Name of the referent.

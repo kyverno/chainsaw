@@ -76,7 +76,7 @@ func (o *operation) createCommand(ctx context.Context, bindings apis.Bindings) (
 	env := os.Environ()
 	env = append(env, envs...)
 	var cancel context.CancelFunc
-	if o.cfg != nil {
+	if o.cfg != nil && o.command.ActionClusters.InjectKubeconfig() {
 		f, err := os.CreateTemp("", "chainsaw-kubeconfig-")
 		if err != nil {
 			return nil, nil, err

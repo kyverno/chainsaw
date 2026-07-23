@@ -36,7 +36,7 @@ func (o describeAction) Execute(ctx context.Context, tc enginecontext.TestContex
 		op := opcommand.New(
 			tc.Compilers(),
 			v1alpha1.Command{
-				ActionClusters: o.op.ActionClusters,
+				ActionClusters: tc.KubeconfigInjection(o.op.ActionClusters),
 				ActionTimeout:  o.op.ActionTimeout,
 				Entrypoint:     entrypoint,
 				Args:           args,

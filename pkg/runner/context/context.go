@@ -42,6 +42,7 @@ type TestContext struct {
 	fullName            bool
 	namespacer          namespacer.Namespacer
 	quiet               bool
+	skipKubeconfig      bool
 	skipDelete          bool
 	templating          bool
 	terminationGrace    *time.Duration
@@ -130,6 +131,13 @@ func (tc *TestContext) Quiet() bool {
 	return tc.quiet
 }
 
+func (tc TestContext) KubeconfigInjection(action v1alpha1.ActionClusters) v1alpha1.ActionClusters {
+	if tc.skipKubeconfig {
+		action.KubeconfigInjection = new(false)
+	}
+	return action
+}
+
 func (tc *TestContext) SkipDelete() bool {
 	return tc.skipDelete
 }
@@ -213,6 +221,11 @@ func (tc TestContext) WithQuiet(quiet bool) TestContext {
 
 func (tc TestContext) WithSkipDelete(skipDelete bool) TestContext {
 	tc.skipDelete = skipDelete
+	return tc
+}
+
+func (tc TestContext) WithSkipKubeconfigInjection(skip bool) TestContext {
+	tc.skipKubeconfig = skip
 	return tc
 }
 

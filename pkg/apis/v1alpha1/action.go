@@ -42,6 +42,16 @@ type ActionClusters struct {
 	// Clusters holds a registry to clusters to support multi-cluster tests.
 	// +optional
 	Clusters Clusters `json:"clusters,omitempty"`
+
+	// KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig
+	// into subprocesses. It defaults to true when omitted.
+	// +optional
+	// +kubebuilder:default:=true
+	KubeconfigInjection *bool `json:"kubeconfigInjection,omitempty"`
+}
+
+func (a ActionClusters) InjectKubeconfig() bool {
+	return a.KubeconfigInjection == nil || *a.KubeconfigInjection
 }
 
 // ActionDryRun contains dry run options for an action.

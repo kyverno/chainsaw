@@ -2,6 +2,8 @@ package command
 
 import (
 	"context"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
@@ -9,6 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/client-go/rest"
 )
 
 func Test_operationCommand(t *testing.T) {
@@ -152,4 +155,33 @@ func Test_operationCommand(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_operationCreateCommandPreservesParentKubeconfig(t *testing.T) {
+	t.Setenv("KUBECONFIG", "/parent/kubeconfig")
+	op := &operation{
+		command: v1alpha1.Command{
+			Entrypoint: "true",
+			ActionClusters: v1alpha1.ActionClusters{
+				KubeconfigInjection: new(false),
+			},
+		},
+		cfg: &rest.Config{Host: "https://example.test"},
+	}
+
+	cmd, cancel, err := op.createCommand(context.Background(), nil)
+	assert.NoError(t, err)
+	if cancel != nil {
+		t.Cleanup(cancel)
+	}
+
+	var kubeconfig string
+	for _, entry := range cmd.Env {
+		if strings.HasPrefix(entry, "KUBECONFIG=") {
+			kubeconfig = strings.TrimPrefix(entry, "KUBECONFIG=")
+		}
+	}
+	assert.Equal(t, "/parent/kubeconfig", kubeconfig)
+	_, err = os.Stat(kubeconfig)
+	assert.Error(t, err)
 }

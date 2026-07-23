@@ -111,6 +111,11 @@ func (in *ActionClusters) DeepCopyInto(out *ActionClusters) {
 			(*out)[key] = val
 		}
 	}
+	if in.KubeconfigInjection != nil {
+		in, out := &in.KubeconfigInjection, &out.KubeconfigInjection
+		*out = new(bool)
+		**out = **in
+	}
 	return
 }
 

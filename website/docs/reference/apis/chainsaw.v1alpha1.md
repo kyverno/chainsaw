@@ -128,6 +128,7 @@ auto_generated: true
 |---|---|---|---|---|
 | `cluster` | `string` |  |  | <p>Cluster defines the target cluster (will be inherited if not specified).</p> |
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
+| `kubeconfigInjection` | `bool` |  |  | <p>KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig into subprocesses. It defaults to true when omitted.</p> |
 
 ## ActionDryRun     {#chainsaw-kyverno-io-v1alpha1-ActionDryRun}
 
