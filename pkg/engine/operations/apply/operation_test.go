@@ -15,6 +15,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 func Test_apply(t *testing.T) {
@@ -301,6 +302,108 @@ func Test_apply(t *testing.T) {
 				nil,
 			)
 			outputs, err := operation.Exec(ctx, nil)
+			assert.Nil(t, outputs)
+			if tt.expectedErr != nil {
+				assert.EqualError(t, err, tt.expectedErr.Error())
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func Test_retry_logic(t *testing.T) {
+	pod := unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "Pod",
+			"metadata": map[string]any{
+				"name": "test-pod",
+			},
+			"spec": map[string]any{
+				"containers": []any{
+					map[string]any{
+						"name":  "test-container",
+						"image": "test-image:v2",
+					},
+				},
+			},
+		},
+	}
+	tests := []struct {
+		name        string
+		client      *tclient.FakeClient
+		expect      []v1alpha1.Expectation
+		expectedErr error
+	}{{
+		name: "conflict error should be retried and eventually succeed",
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
+				pod.DeepCopyInto(obj.(*unstructured.Unstructured))
+				return nil
+			},
+			PatchFn: func(_ context.Context, call int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
+				if call < 2 {
+					return kerrors.NewConflict(schema.GroupResource{Group: "", Resource: "pods"}, "test-pod", errors.New("conflict error"))
+				}
+				return nil
+			},
+		},
+		expectedErr: nil,
+	}, {
+		name: "permanent error should not be retried",
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
+				pod.DeepCopyInto(obj.(*unstructured.Unstructured))
+				return nil
+			},
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
+				return kerrors.NewBadRequest("bad request error")
+			},
+		},
+		expectedErr: errors.New("bad request error"),
+	}, {
+		// reproduces https://github.com/kyverno/chainsaw/issues/2442: a failed
+		// `expect` check must not be treated as a retryable apply error, or the
+		// operation patches the resource in an endless loop until the context expires.
+		name: "failed expect check should not be retried",
+		client: &tclient.FakeClient{
+			GetFn: func(ctx context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
+				pod.DeepCopyInto(obj.(*unstructured.Unstructured))
+				return nil
+			},
+			PatchFn: func(_ context.Context, _ int, _ client.Object, _ client.Patch, _ ...client.PatchOption) error {
+				return nil
+			},
+		},
+		expect: []v1alpha1.Expectation{{
+			Check: v1alpha1.NewCheck(
+				map[string]any{
+					"($error != null)": true,
+				},
+			),
+		}},
+		expectedErr: errors.New("($error != null): Invalid value: false: Expected value: true"),
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			logger := &mocks.Logger{}
+			ctx := logging.WithLogger(context.TODO(), logger)
+			toCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
+			defer cancel()
+			ctx = toCtx
+			operation := New(
+				apis.DefaultCompilers,
+				tt.client,
+				pod,
+				nil,
+				nil,
+				false,
+				tt.expect,
+				nil,
+			)
+			outputs, err := operation.Exec(ctx, nil)
+			assert.LessOrEqual(t, tt.client.NumCalls(), 10, "operation should not retry indefinitely")
 			assert.Nil(t, outputs)
 			if tt.expectedErr != nil {
 				assert.EqualError(t, err, tt.expectedErr.Error())
