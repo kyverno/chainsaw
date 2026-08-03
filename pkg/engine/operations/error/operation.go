@@ -95,6 +95,10 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 				if kerrors.IsNotFound(err) {
 					return true, nil
 				}
+				if internal.IsRetriable(err) {
+					errs = append(errs, err)
+					return false, nil
+				}
 				return false, err
 			} else if len(candidates) == 0 {
 				return true, nil
@@ -119,7 +123,10 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 	}
 	// eventually return a combination of last errors
 	if len(lastErrs) != 0 {
-		return multierr.Combine(lastErrs...)
+		return multierr.Append(
+			multierr.Combine(lastErrs...),
+			fmt.Errorf("operation terminated with error: %w", err),
+		)
 	}
 	// return received error
 	return err

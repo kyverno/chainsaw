@@ -80,8 +80,8 @@ func Test_operationError(t *testing.T) {
 				return nil
 			},
 		},
-		expectedErr:  fmt.Errorf("v1/Pod/foo/test-pod - resource matches expectation"),
-		expectedLogs: []string{"ERROR: RUN - []", "ERROR: ERROR - [=== ERROR\nv1/Pod/foo/test-pod - resource matches expectation]"},
+		expectedErr:  fmt.Errorf("v1/Pod/foo/test-pod - resource matches expectation; operation terminated with error: context deadline exceeded"),
+		expectedLogs: []string{"ERROR: RUN - []", "ERROR: ERROR - [=== ERROR\noperation terminated with error: context deadline exceeded\nv1/Pod/foo/test-pod - resource matches expectation]"},
 	}, {
 		name: "Bad assert",
 		expected: unstructured.Unstructured{
