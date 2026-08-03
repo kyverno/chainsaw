@@ -361,6 +361,31 @@ data:
 		},
 		wantErrMsg: "failed to read from stdin: error reading from stdin",
 		wantErr:    true,
+	}, {
+		name: "Success case - resourcePath set (fake client lookup)",
+		setupFunc: func() *cobra.Command {
+			cmd := &cobra.Command{}
+			cmd.Args = cobra.RangeArgs(0, 1)
+			cmd.SilenceUsage = true
+			cmd.SetOut(bytes.NewBufferString(""))
+			return cmd
+		},
+		opts: options{
+			assertPath:   path.Join(basePath, "assert.yaml"),
+			resourcePath: path.Join(basePath, "assert.yaml"),
+			noColor:      true,
+			namespace:    "default",
+			timeout:      metav1.Duration{Duration: 5 * time.Second},
+		},
+		nspacer: &fakeNamespacer.FakeNamespacer{
+			ApplyFn: func(call int, client client.Client, obj client.Object) error {
+				return nil
+			},
+			GetNamespaceFn: func(call int) string {
+				return "default"
+			},
+		},
+		wantErr: false,
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
