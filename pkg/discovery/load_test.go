@@ -225,6 +225,44 @@ func TestLoadTest(t *testing.T) {
 		}},
 		wantErr: false,
 	}, {
+		name:     "cleanup",
+		fileName: "chainsaw-test.yaml",
+		path:     filepath.Join(basePath, "cleanup"),
+		want: []Test{{
+			BasePath: "../../testdata/discovery/cleanup",
+			Test: &model.Test{
+				TypeMeta: metav1.TypeMeta{
+					APIVersion: "chainsaw.kyverno.io/v1alpha1",
+					Kind:       "Test",
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					Name: "cleanup",
+				},
+				Spec: v1alpha1.TestSpec{
+					Steps: []v1alpha1.TestStep{{
+						Name: "step-01",
+						TestStepSpec: v1alpha1.TestStepSpec{
+							Try: []v1alpha1.Operation{{
+								Apply: &v1alpha1.Apply{
+									ActionResourceRef: v1alpha1.ActionResourceRef{
+										FileRef: v1alpha1.FileRef{
+											File: "01-configmap.yaml",
+										},
+									},
+								},
+							}},
+							Cleanup: []v1alpha1.CatchFinally{{
+								Delete: &v1alpha1.Delete{
+									File: "01-cleanup.yaml",
+								},
+							}},
+						},
+					}},
+				},
+			},
+		}},
+		wantErr: false,
+	}, {
 		name:     "empty test",
 		fileName: "",
 		path:     filepath.Join(basePath, "empty-test"),

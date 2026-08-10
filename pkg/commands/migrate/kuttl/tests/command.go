@@ -327,6 +327,13 @@ func processStep(stderr io.Writer, step *v1alpha1.TestStep, s discovery.Step, fo
 			s.ErrorFiles[f] = ""
 		}
 	}
+	for _, file := range s.CleanupFiles {
+		step.Cleanup = append(step.Cleanup, v1alpha1.CatchFinally{
+			Delete: &v1alpha1.Delete{
+				File: v1alpha1.Expression(file),
+			},
+		})
+	}
 	return nil
 }
 

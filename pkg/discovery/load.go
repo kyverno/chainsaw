@@ -152,6 +152,13 @@ func LoadTest(fileName string, path string, remarshal bool) ([]Test, error) {
 				},
 			})
 		}
+		for _, file := range steps[key].CleanupFiles {
+			step.Cleanup = append(step.Cleanup, v1alpha1.CatchFinally{
+				Delete: &v1alpha1.Delete{
+					File: v1alpha1.Expression(file),
+				},
+			})
+		}
 		test.Spec.Steps = append(test.Spec.Steps, step)
 	}
 	tests = append(tests, Test{

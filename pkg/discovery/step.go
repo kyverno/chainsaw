@@ -9,9 +9,10 @@ import (
 var StepFileName = regexp.MustCompile(`^(\d+)-(.*)\.(?:yaml|yml)$`)
 
 type Step struct {
-	AssertFiles []string
-	ErrorFiles  []string
-	OtherFiles  []string
+	AssertFiles  []string
+	ErrorFiles   []string
+	CleanupFiles []string
+	OtherFiles   []string
 }
 
 func TryFindStepFiles(path string) (map[string]Step, error) {
@@ -40,6 +41,8 @@ func TryFindStepFiles(path string) (map[string]Step, error) {
 				s.AssertFiles = append(s.AssertFiles, file)
 			case "errors":
 				s.ErrorFiles = append(s.ErrorFiles, file)
+			case "cleanup":
+				s.CleanupFiles = append(s.CleanupFiles, file)
 			default:
 				s.OtherFiles = append(s.OtherFiles, file)
 			}
