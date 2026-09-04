@@ -29,7 +29,7 @@ CONTROLLER_GEN                     := $(TOOLS_DIR)/controller-gen
 REGISTER_GEN                       := $(TOOLS_DIR)/register-gen
 DEEPCOPY_GEN                       := $(TOOLS_DIR)/deepcopy-gen
 CONVERSION_GEN                     := $(TOOLS_DIR)/conversion-gen
-CODE_GEN_VERSION                   := v0.35.0
+CODE_GEN_VERSION                   := v0.37.0
 REFERENCE_DOCS                     := $(TOOLS_DIR)/genref
 REFERENCE_DOCS_VERSION             := latest
 KIND                               := $(TOOLS_DIR)/kind
@@ -279,6 +279,7 @@ SET_STRING_FLAGS ?= --set-string image.tag=01
 tests: ## Run tests
 tests: $(CLI_BIN)
 	@echo Running tests... >&2
+	@cd ./hack/controller-gen && go test ./... -race
 	@go test ./... -race -coverprofile=coverage.out -covermode=atomic
 	@go tool cover -html=coverage.out
 
