@@ -187,8 +187,9 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							info := StepInfo{
 								Id: i + 1,
 							}
-							tc := tc.WithBinding("step", info)
-							if stop := r.runStep(ctx, t.Cleanup, t.Fail, t.Failed, tc, step, report); stop {
+							var stop bool
+							stop, tc = r.runStep(ctx, t.Cleanup, t.Fail, t.Failed, tc.WithBinding("step", info), step, report)
+							if stop {
 								return
 							}
 						}
@@ -243,7 +244,8 @@ func (r *runner) runStep(
 	tc enginecontext.TestContext,
 	step v1alpha1.TestStep,
 	testReport *model.TestReport,
-) bool {
+) (stop bool, outTc enginecontext.TestContext) {
+	outTc = tc
 	report := &model.StepReport{
 		Name:      step.Name,
 		StartTime: time.Now(),
@@ -253,7 +255,7 @@ func (r *runner) runStep(
 		testReport.Add(report)
 	}()
 	if step.Compiler != nil {
-		tc = tc.WithDefaultCompiler(string(*step.Compiler))
+		outTc = outTc.WithDefaultCompiler(string(*step.Compiler))
 	}
 	contextData := enginecontext.ContextData{
 		Catch:               step.Catch,
@@ -264,14 +266,15 @@ func (r *runner) runStep(
 		Templating:          step.Template,
 		Timeouts:            step.Timeouts,
 	}
-	tc, err := enginecontext.SetupContextAndBindings(tc, contextData, step.Bindings...)
+	outTc, err := enginecontext.SetupContextAndBindings(outTc, contextData, step.Bindings...)
 	if err != nil {
 		fail()
 		logging.Log(ctx, logging.Internal, logging.ErrorStatus, nil, color.BoldRed, logging.ErrSection(err))
 		r.onFail()
-		return true
+		stop = true
+		return
 	}
-	cleaner := cleaner.New(tc.Timeouts().Cleanup, true, tc.DelayBeforeCleanup(), tc.DeletionPropagation())
+	cleaner := cleaner.New(outTc.Timeouts().Cleanup, true, outTc.DelayBeforeCleanup(), outTc.DeletionPropagation())
 	cleanup(func() {
 		if !cleaner.Empty() || len(step.Cleanup) != 0 {
 			report := &model.StepReport{
@@ -297,13 +300,13 @@ func (r *runner) runStep(
 			}
 			for i, operation := range step.Cleanup {
 				if operation.Compiler != nil {
-					tc = tc.WithDefaultCompiler(string(*operation.Compiler))
+					outTc = outTc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				outputsTc, err := r.runCatch(ctx, tc, operation, i)
+				outputsTc, err := r.runCatch(ctx, outTc, operation, i)
 				if err != nil {
 					fail()
 				}
-				tc = outputsTc
+				outTc = outputsTc
 			}
 		}
 	})
@@ -315,17 +318,17 @@ func (r *runner) runStep(
 			}()
 			for i, operation := range step.Finally {
 				if operation.Compiler != nil {
-					tc = tc.WithDefaultCompiler(string(*operation.Compiler))
+					outTc = outTc.WithDefaultCompiler(string(*operation.Compiler))
 				}
-				outputsTc, err := r.runCatch(ctx, tc, operation, i)
+				outputsTc, err := r.runCatch(ctx, outTc, operation, i)
 				if err != nil {
 					fail()
 				}
-				tc = outputsTc
+				outTc = outputsTc
 			}
 		}()
 	}
-	if catch := tc.Catch(); len(catch) != 0 {
+	if catch := outTc.Catch(); len(catch) != 0 {
 		defer func() {
 			if failed() {
 				logging.Log(ctx, logging.Catch, logging.BeginStatus, nil, color.BoldFgCyan)
@@ -334,13 +337,13 @@ func (r *runner) runStep(
 				}()
 				for i, operation := range catch {
 					if operation.Compiler != nil {
-						tc = tc.WithDefaultCompiler(string(*operation.Compiler))
+						outTc = outTc.WithDefaultCompiler(string(*operation.Compiler))
 					}
-					outputsTc, err := r.runCatch(ctx, tc, operation, i)
+					outputsTc, err := r.runCatch(ctx, outTc, operation, i)
 					if err != nil {
 						fail()
 					}
-					tc = outputsTc
+					outTc = outputsTc
 				}
 			}
 		}()
@@ -350,16 +353,17 @@ func (r *runner) runStep(
 		logging.Log(ctx, logging.Try, logging.EndStatus, nil, color.BoldFgCyan)
 	}()
 	for i, operation := range step.Try {
-		continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, i, cleaner, report)
+		continueOnError, outputsTc, err := r.runOperation(ctx, outTc, operation, i, cleaner, report)
 		if err != nil {
 			fail()
 			if !continueOnError {
-				return true
+				stop = true
+				return
 			}
 		}
-		tc = outputsTc
+		outTc = outputsTc
 	}
-	return false
+	return
 }
 
 func (r *runner) runOperation(

@@ -802,7 +802,7 @@ func TestStepProcessor_Run(t *testing.T) {
 					Exec:    &config.Spec.Timeouts.Exec,
 				})
 			runner := runner{}
-			got := runner.runStep(ctx, cleanup, fail, failed, tcontext, tc.stepSpec, &model.TestReport{})
+			got, _ := runner.runStep(ctx, cleanup, fail, failed, tcontext, tc.stepSpec, &model.TestReport{})
 			assert.Equal(t, tc.want, got)
 			assert.Equal(t, tc.expectedFail, _failed)
 		})
