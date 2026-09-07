@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"path/filepath"
+	"strings"
 	"testing"
 	"time"
 
@@ -785,7 +786,6 @@ func TestStepProcessor_Run(t *testing.T) {
 			}
 			_failed := false
 			fail := func() { _failed = true }
-			failed := func() bool { return _failed }
 			cleanup := func(func()) {}
 			ctx := context.Background()
 			ctx = logging.WithLogger(ctx, &fakeLogger.Logger{})
@@ -802,9 +802,63 @@ func TestStepProcessor_Run(t *testing.T) {
 					Exec:    &config.Spec.Timeouts.Exec,
 				})
 			runner := runner{}
-			got := runner.runStep(ctx, cleanup, fail, failed, tcontext, tc.stepSpec, &model.TestReport{})
+			got := runner.runStep(ctx, cleanup, fail, tcontext, tc.stepSpec, &model.TestReport{})
 			assert.Equal(t, tc.want, got)
 			assert.Equal(t, tc.expectedFail, _failed)
 		})
 	}
+}
+
+func TestRunner_CatchIsLocalToStep(t *testing.T) {
+	logger := &fakeLogger.Logger{}
+	ctx := logging.WithLogger(context.Background(), logger)
+	failed := false
+	fail := func() {
+		failed = true
+	}
+	cleanup := func(func()) {}
+	continueOnError := true
+	execTimeout := metav1.Duration{Duration: 5 * time.Second}
+
+	tc := enginecontext.MakeContext(
+		clock.RealClock{},
+		apis.NewBindings(),
+		mocks.Registry{},
+	).WithTimeouts(v1alpha1.Timeouts{
+		Exec: &execTimeout,
+	})
+
+	failingStep := v1alpha1.TestStep{
+		TestStepSpec: v1alpha1.TestStepSpec{
+			Try: []v1alpha1.Operation{{
+				OperationBase: v1alpha1.OperationBase{
+					ContinueOnError: &continueOnError,
+				},
+				Command: &v1alpha1.Command{
+					Entrypoint: "/bin/sh",
+					Args:       []string{"-c", "exit 1"},
+				},
+			}},
+			Catch: []v1alpha1.CatchFinally{{
+				Command: &v1alpha1.Command{Entrypoint: "/bin/sh", Args: []string{"-c", "echo failed-step-catch"}},
+			}},
+		},
+	}
+	successfulStep := v1alpha1.TestStep{
+		TestStepSpec: v1alpha1.TestStepSpec{
+			Try: []v1alpha1.Operation{{
+				Command: &v1alpha1.Command{Entrypoint: "/bin/sh", Args: []string{"-c", "exit 0"}},
+			}},
+			Catch: []v1alpha1.CatchFinally{{
+				Command: &v1alpha1.Command{Entrypoint: "/bin/sh", Args: []string{"-c", "echo successful-step-catch"}},
+			}},
+		},
+	}
+
+	r := runner{}
+	r.runStep(ctx, cleanup, fail, tc, failingStep, &model.TestReport{})
+	r.runStep(ctx, cleanup, fail, tc, successfulStep, &model.TestReport{})
+
+	assert.True(t, failed)
+	assert.Equal(t, 1, strings.Count(strings.Join(logger.Logs, "\n"), "CATCH: BEGIN"))
 }

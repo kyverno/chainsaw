@@ -188,7 +188,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 								Id: i + 1,
 							}
 							tc := tc.WithBinding("step", info)
-							if stop := r.runStep(ctx, t.Cleanup, t.Fail, t.Failed, tc, step, report); stop {
+							if stop := r.runStep(ctx, t.Cleanup, t.Fail, tc, step, report); stop {
 								return
 							}
 						}
@@ -239,7 +239,6 @@ func (r *runner) runStep(
 	ctx context.Context,
 	cleanup func(func()),
 	fail func(),
-	failed func() bool,
 	tc enginecontext.TestContext,
 	step v1alpha1.TestStep,
 	testReport *model.TestReport,
@@ -248,6 +247,7 @@ func (r *runner) runStep(
 		Name:      step.Name,
 		StartTime: time.Now(),
 	}
+	stepFailed := false
 	defer func() {
 		report.EndTime = time.Now()
 		testReport.Add(report)
@@ -327,7 +327,7 @@ func (r *runner) runStep(
 	}
 	if catch := tc.Catch(); len(catch) != 0 {
 		defer func() {
-			if failed() {
+			if stepFailed {
 				logging.Log(ctx, logging.Catch, logging.BeginStatus, nil, color.BoldFgCyan)
 				defer func() {
 					logging.Log(ctx, logging.Catch, logging.EndStatus, nil, color.BoldFgCyan)
@@ -352,6 +352,7 @@ func (r *runner) runStep(
 	for i, operation := range step.Try {
 		continueOnError, outputsTc, err := r.runOperation(ctx, tc, operation, i, cleaner, report)
 		if err != nil {
+			stepFailed = true
 			fail()
 			if !continueOnError {
 				return true
