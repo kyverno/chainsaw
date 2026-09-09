@@ -582,6 +582,14 @@
                       "additionalProperties": false
                     }
                   },
+                  "kubeconfigInjection": {
+                    "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "default": true
+                  },
                   "outputs": {
                     "description": "Outputs defines output bindings.",
                     "type": [
@@ -808,6 +816,14 @@
                       "null"
                     ]
                   },
+                  "kubeconfigInjection": {
+                    "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "default": true
+                  },
                   "ref": {
                     "description": "Ref determines objects to be deleted.",
                     "type": [
@@ -937,6 +953,14 @@
                     "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": "string"
                   },
+                  "kubeconfigInjection": {
+                    "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "default": true
+                  },
                   "name": {
                     "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
@@ -1041,6 +1065,14 @@
                     ],
                     "pattern": "^(?:json|yaml|\\(.+\\))$"
                   },
+                  "kubeconfigInjection": {
+                    "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "default": true
+                  },
                   "name": {
                     "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
@@ -1143,6 +1175,14 @@
                     "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": "string"
                   },
+                  "kubeconfigInjection": {
+                    "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "default": true
+                  },
                   "name": {
                     "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                     "type": [
@@ -1231,6 +1271,14 @@
                       "string",
                       "null"
                     ]
+                  },
+                  "kubeconfigInjection": {
+                    "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "default": true
                   },
                   "name": {
                     "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -1407,6 +1455,14 @@
                       },
                       "additionalProperties": false
                     }
+                  },
+                  "kubeconfigInjection": {
+                    "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "default": true
                   },
                   "outputs": {
                     "description": "Outputs defines output bindings.",
@@ -1661,6 +1717,14 @@
                   "kind": {
                     "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                     "type": "string"
+                  },
+                  "kubeconfigInjection": {
+                    "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                    "type": [
+                      "boolean",
+                      "null"
+                    ],
+                    "default": true
                   },
                   "name": {
                     "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -2190,6 +2254,14 @@
                             "additionalProperties": false
                           }
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
                           "type": [
@@ -2416,6 +2488,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "ref": {
                           "description": "Ref determines objects to be deleted.",
                           "type": [
@@ -2545,6 +2625,14 @@
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -2649,6 +2737,14 @@
                           ],
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -2751,6 +2847,14 @@
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -2839,6 +2943,14 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -3015,6 +3127,14 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
@@ -3269,6 +3389,14 @@
                         "kind": {
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -3516,6 +3644,14 @@
                             "additionalProperties": false
                           }
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
                           "type": [
@@ -3742,6 +3878,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "ref": {
                           "description": "Ref determines objects to be deleted.",
                           "type": [
@@ -3871,6 +4015,14 @@
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -3975,6 +4127,14 @@
                           ],
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -4077,6 +4237,14 @@
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -4165,6 +4333,14 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -4341,6 +4517,14 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
@@ -4595,6 +4779,14 @@
                         "kind": {
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -4910,6 +5102,14 @@
                             "additionalProperties": false
                           }
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
                           "type": [
@@ -5136,6 +5336,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "ref": {
                           "description": "Ref determines objects to be deleted.",
                           "type": [
@@ -5265,6 +5473,14 @@
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -5369,6 +5585,14 @@
                           ],
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -5471,6 +5695,14 @@
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -5559,6 +5791,14 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -5735,6 +5975,14 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
@@ -5989,6 +6237,14 @@
                         "kind": {
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -6323,6 +6579,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
                           "type": [
@@ -6491,6 +6755,14 @@
                             "string",
                             "null"
                           ]
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "resource": {
                           "description": "Check provides a check used in assertions.",
@@ -6663,6 +6935,14 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
@@ -6892,6 +7172,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
                           "type": [
@@ -7101,6 +7389,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "ref": {
                           "description": "Ref determines objects to be deleted.",
                           "type": [
@@ -7229,6 +7525,14 @@
                         "kind": {
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -7374,6 +7678,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "resource": {
                           "description": "Check provides a check used in assertions.",
                           "x-kubernetes-preserve-unknown-fields": true
@@ -7453,6 +7765,14 @@
                             "null"
                           ],
                           "pattern": "^(?:json|yaml|\\(.+\\))$"
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -7555,6 +7875,14 @@
                         "kind": {
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -7721,6 +8049,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
                           "type": [
@@ -7856,6 +8192,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
                           "type": [
@@ -7950,6 +8294,14 @@
                         "kind": {
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",
@@ -8171,6 +8523,14 @@
                             },
                             "additionalProperties": false
                           }
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
@@ -8419,6 +8779,14 @@
                             "null"
                           ]
                         },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
+                        },
                         "outputs": {
                           "description": "Outputs defines output bindings.",
                           "type": [
@@ -8629,6 +8997,14 @@
                         "kind": {
                           "description": "Kind of the referent.\nMore info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds",
                           "type": "string"
+                        },
+                        "kubeconfigInjection": {
+                          "description": "KubeconfigInjection determines whether Chainsaw injects its generated kubeconfig\ninto subprocesses. It defaults to true when omitted.",
+                          "type": [
+                            "boolean",
+                            "null"
+                          ],
+                          "default": true
                         },
                         "name": {
                           "description": "Name of the referent.\nMore info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names",

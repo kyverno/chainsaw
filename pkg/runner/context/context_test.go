@@ -130,6 +130,16 @@ func TestTestContext_Compilers(t *testing.T) {
 	}
 }
 
+func TestTestContext_KubeconfigInjection(t *testing.T) {
+	parent := EmptyContext(clock.RealClock{})
+	disabled := v1alpha1.ActionClusters{KubeconfigInjection: new(false)}
+	enabled := v1alpha1.ActionClusters{KubeconfigInjection: new(true)}
+
+	assert.True(t, parent.KubeconfigInjection(v1alpha1.ActionClusters{}).InjectKubeconfig())
+	assert.False(t, parent.KubeconfigInjection(disabled).InjectKubeconfig())
+	assert.False(t, parent.WithSkipKubeconfigInjection(true).KubeconfigInjection(enabled).InjectKubeconfig())
+}
+
 func TestTestContext_CurrentCluster(t *testing.T) {
 	config, err := config.DefaultConfiguration()
 	assert.NoError(t, err)

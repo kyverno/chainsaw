@@ -71,6 +71,7 @@ type options struct {
 	shardIndex                  int
 	shardCount                  int
 	quiet                       bool
+	skipKubeconfigInjection     bool
 }
 
 func Command() *cobra.Command {
@@ -373,6 +374,7 @@ func Command() *cobra.Command {
 				return err
 			}
 			tc = tc.WithQuiet(options.quiet)
+			tc = tc.WithSkipKubeconfigInjection(options.skipKubeconfigInjection)
 			// setup testing flags
 			if err := runnerflags.SetupFlags(configuration.Spec); err != nil {
 				return err
@@ -471,6 +473,7 @@ func Command() *cobra.Command {
 	cmd.Flags().BoolVar(&options.noColor, "no-color", false, "Removes output colors")
 	cmd.Flags().BoolVar(&options.remarshal, "remarshal", false, "Remarshals tests yaml to apply anchors before parsing")
 	cmd.Flags().BoolVar(&options.quiet, "quiet", false, "Quiet mode - suppresses all output except errors, test failures, and summary")
+	cmd.Flags().BoolVar(&options.skipKubeconfigInjection, "skip-kubeconfig-injection", false, "Preserve the parent KUBECONFIG for scripts, commands, and kubectl helpers")
 	if err := cmd.MarkFlagFilename("config"); err != nil {
 		panic(err)
 	}

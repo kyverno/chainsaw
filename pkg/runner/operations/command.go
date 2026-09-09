@@ -28,6 +28,7 @@ func (o commandAction) Execute(ctx context.Context, tc enginecontext.TestContext
 	} else if config, _, err := tc.CurrentClusterClient(); err != nil {
 		return nil, err
 	} else {
+		o.op.ActionClusters = tc.KubeconfigInjection(o.op.ActionClusters)
 		op := opcommand.New(
 			tc.Compilers(),
 			o.op,

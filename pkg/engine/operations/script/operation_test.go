@@ -2,6 +2,8 @@ package script
 
 import (
 	"context"
+	"os"
+	"strings"
 	"testing"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
@@ -9,6 +11,7 @@ import (
 	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
+	"k8s.io/client-go/rest"
 )
 
 func Test_operationScript(t *testing.T) {
@@ -151,6 +154,59 @@ func Test_operationScript(t *testing.T) {
 				}
 			} else {
 				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func Test_operationCreateCommandKubeconfigInjection(t *testing.T) {
+	t.Setenv("KUBECONFIG", "/parent/kubeconfig")
+	cfg := &rest.Config{Host: "https://example.test"}
+
+	for _, tt := range []struct {
+		name                string
+		kubeconfigInjection *bool
+		wantKubeconfig      string
+	}{
+		{
+			name:           "injects generated kubeconfig by default",
+			wantKubeconfig: "generated",
+		},
+		{
+			name:                "preserves parent kubeconfig when disabled",
+			kubeconfigInjection: new(false),
+			wantKubeconfig:      "/parent/kubeconfig",
+		},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			op := &operation{
+				script: v1alpha1.Script{
+					Content: "true",
+					ActionClusters: v1alpha1.ActionClusters{
+						KubeconfigInjection: tt.kubeconfigInjection,
+					},
+				},
+				cfg: cfg,
+			}
+			cmd, cancel, err := op.createCommand(context.Background(), nil)
+			assert.NoError(t, err)
+			if cancel != nil {
+				t.Cleanup(cancel)
+			}
+
+			var kubeconfig string
+			for _, entry := range cmd.Env {
+				if strings.HasPrefix(entry, "KUBECONFIG=") {
+					kubeconfig = strings.TrimPrefix(entry, "KUBECONFIG=")
+				}
+			}
+			assert.NotEmpty(t, kubeconfig)
+			if tt.wantKubeconfig == "generated" {
+				assert.NotEqual(t, "/parent/kubeconfig", kubeconfig)
+				_, err := os.Stat(kubeconfig)
+				assert.NoError(t, err)
+			} else {
+				assert.Equal(t, tt.wantKubeconfig, kubeconfig)
 			}
 		})
 	}
