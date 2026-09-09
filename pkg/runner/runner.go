@@ -137,7 +137,7 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 							return
 						}
 						// setup context
-						tc, err := r.setupTestContext(ctx, testId, scenarioId, tc, test, bindings...)
+						tc, err := r.setupTestContext(ctx, testId, scenarioId, scenarioName, tc, test, bindings...)
 						if fail(t, err) {
 							return
 						}
@@ -516,11 +516,12 @@ func (r *runner) setupNamespace(ctx context.Context, nsOptions v1alpha2.Namespac
 	return tc, nil
 }
 
-func (r *runner) setupTestContext(ctx context.Context, testId int, scenarioId int, tc enginecontext.TestContext, test discovery.Test, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {
+func (r *runner) setupTestContext(ctx context.Context, testId int, scenarioId int, scenarioName string, tc enginecontext.TestContext, test discovery.Test, bindings ...v1alpha1.Binding) (enginecontext.TestContext, error) {
 	tc = tc.WithBinding("test", TestInfo{
-		Id:         testId,
-		ScenarioId: scenarioId,
-		Metadata:   test.Test.ObjectMeta,
+		Id:           testId,
+		ScenarioId:   scenarioId,
+		ScenarioName: scenarioName,
+		Metadata:     test.Test.ObjectMeta,
 	})
 	tc, err := enginecontext.WithBindings(tc, bindings...)
 	if err != nil {
