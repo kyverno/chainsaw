@@ -3,6 +3,7 @@ package yaml
 import (
 	"errors"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -39,7 +40,7 @@ func Test_remarshal(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
-			assert.Equal(t, tt.want, string(got))
+			assert.Equal(t, strings.ReplaceAll(tt.want, "\r\n", "\n"), strings.ReplaceAll(string(got), "\r\n", "\n"))
 		})
 	}
 }
@@ -68,7 +69,7 @@ func TestRemarshal(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 			}
-			assert.Equal(t, tt.want, string(got))
+			assert.Equal(t, strings.ReplaceAll(tt.want, "\r\n", "\n"), strings.ReplaceAll(string(got), "\r\n", "\n"))
 		})
 	}
 }

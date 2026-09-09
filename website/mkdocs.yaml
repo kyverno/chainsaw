@@ -232,6 +232,7 @@ nav:
     - guides/test-docs.md
 - Community: 
   - community/index.md
+  - Ecosystem & Related Projects: community/ecosystem.md
   - Contributing: community/contribute.md
   - Reporting a bug: community/reporting-a-bug.md
   - Reporting a docs issue: community/reporting-a-docs-issue.md

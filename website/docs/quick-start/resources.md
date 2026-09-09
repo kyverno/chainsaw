@@ -18,3 +18,9 @@ If you haven't watched the video below yet, we strongly recommend watching it to
         title="Mastering Kubernetes Testing with Kyverno Chainsaw!" frameborder="0" allowfullscreen>
     </iframe>
 </div>
+
+## Ecosystem & Related Projects
+
+- [Sawchain](https://github.com/guidewire-oss/sawchain) - An open-source Go testing library that builds on Chainsaw's packages to enable ergonomic YAML-driven Kubernetes testing in Go.
+- For more related projects and integrations, visit the [Ecosystem & Related Projects](../community/ecosystem.md) page.
+

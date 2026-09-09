@@ -67,7 +67,7 @@ func TestTest(t *testing.T) {
 			},
 		},
 		wantErr: false,
-		want:    "../dir/dir[foo]",
+		want:    filepath.FromSlash("../dir/dir[foo]"),
 	}, {
 		name: "full name",
 		full: true,
@@ -80,7 +80,7 @@ func TestTest(t *testing.T) {
 			},
 		},
 		wantErr: false,
-		want:    "dir/dir[foo]",
+		want:    filepath.FromSlash("dir/dir[foo]"),
 	}}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

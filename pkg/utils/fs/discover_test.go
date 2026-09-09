@@ -4,6 +4,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,6 +30,9 @@ func TestDiscoverFolders(t *testing.T) {
 }
 
 func TestDiscoverFoldersWithError(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("skipping test on Windows: chmod 0000 does not make directory unreadable")
+	}
 	root := t.TempDir()
 	unreadableDir := filepath.Join(root, "unreadable")
 	assert.NoError(t, os.MkdirAll(unreadableDir, os.ModePerm))

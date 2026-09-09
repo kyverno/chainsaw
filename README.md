@@ -37,6 +37,14 @@ Built under the Kyverno umbrella, you can use the Kyverno Chainsaw **Slack chann
 - [Kyverno Chainsaw 0.1.4 - Awesome new features!](https://kyverno.io/blog/2024/02/15/kyverno-chainsaw-0.1.4-awesome-new-features/)
 - [Mastering Kubernetes Testing with Kyverno Chainsaw!](https://youtu.be/hQJWGzogIiI)
 
+## Related Projects & Ecosystem
+
+Chainsaw's package design allows other projects to build on top of its core libraries:
+
+- [Sawchain](https://github.com/guidewire-oss/sawchain): An open-source Go testing library that builds on Chainsaw's public packages to enable ergonomic YAML-driven Kubernetes testing within Go test frameworks implementing `testing.TB` (like Ginkgo).
+
+For more related projects, check out our [Ecosystem & Related Projects](https://kyverno.github.io/chainsaw/latest/community/ecosystem/) documentation.
+
 ## Getting Started
 
 Please refer to the [Getting Started](https://kyverno.github.io/chainsaw/latest/quick-start/) documentation.
