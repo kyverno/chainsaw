@@ -410,6 +410,19 @@ during the testing process.</p>
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
 | `workDir` | `string` |  |  | <p>WorkDir is the working directory for command.</p> |
 
+## ConcurrencyOptions     {#chainsaw-kyverno-io-v1alpha1-ConcurrencyOptions}
+
+**Appears in:**
+    
+- [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
+
+<p>ConcurrencyOptions defines concurrency options for a test.</p>
+
+
+| Field | Type | Required | Inline | Description |
+|---|---|---|---|---|
+| `group` | `string` |  |  | <p>Group assigns the test to a concurrency group. Tests in the same group run sequentially; tests in different groups run in parallel.</p> |
+
 ## ConfigurationSpec     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
 **Appears in:**
@@ -907,6 +920,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `skip` | `bool` |  |  | <p>Skip determines whether the test should skipped.</p> |
 | `concurrent` | `bool` |  |  | <p>Concurrent determines whether the test should run concurrently with other tests.</p> |
+| `concurrency` | [`ConcurrencyOptions`](#chainsaw-kyverno-io-v1alpha1-ConcurrencyOptions) |  |  | <p>Concurrency defines concurrency options for the test.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the test should be deleted after the test is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
 | `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |

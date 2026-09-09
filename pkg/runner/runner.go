@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -83,6 +84,18 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 				tc.IncFailed()
 				return
 			}
+			// build per-group mutexes so tests in the same group serialize
+			groupMutexes := map[string]*sync.Mutex{}
+			for i := range tests {
+				if tests[i].Test == nil {
+					continue
+				}
+				if c := tests[i].Test.Spec.Concurrency; c != nil && c.Group != "" {
+					if _, ok := groupMutexes[c.Group]; !ok {
+						groupMutexes[c.Group] = &sync.Mutex{}
+					}
+				}
+			}
 			// loop through tests
 			for i := range tests {
 				test := tests[i]
@@ -106,7 +119,12 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						// setup logger sink
 						ctx = logging.WithSink(ctx, newSink(r.clock, tc.Quiet(), t.Log))
 						// setup concurrency
-						if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
+						if c := test.Test.Spec.Concurrency; c != nil && c.Group != "" {
+							t.Parallel()
+							mu := groupMutexes[c.Group]
+							mu.Lock()
+							defer mu.Unlock()
+						} else if test.Test.Spec.Concurrent == nil || *test.Test.Spec.Concurrent {
 							t.Parallel()
 						}
 						// setup reporting
