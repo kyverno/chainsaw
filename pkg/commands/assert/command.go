@@ -18,9 +18,12 @@ import (
 	restutils "github.com/kyverno/chainsaw/pkg/utils/rest"
 	"github.com/kyverno/pkg/ext/output/color"
 	"github.com/spf13/cobra"
+	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/tools/clientcmd"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -98,14 +101,50 @@ func runE(opts options, cmd *cobra.Command, client client.Client, namespacer nsp
 			return fmt.Errorf("failed to load file '%s': %w", opts.resourcePath, err)
 		}
 		client = &tclient.FakeClient{
-			GetFn: func(_ context.Context, _ int, _ ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
-				// TODO: we should improve the lookup logic here
-				*obj.(*unstructured.Unstructured) = ressources[0]
-				return nil
+			GetFn: func(_ context.Context, _ int, key ctrlclient.ObjectKey, obj ctrlclient.Object, _ ...ctrlclient.GetOption) error {
+				for _, res := range ressources {
+					if res.GetName() == key.Name && res.GetNamespace() == key.Namespace {
+						expectedGVK := obj.GetObjectKind().GroupVersionKind()
+						if expectedGVK.Kind != "" && expectedGVK.Kind != res.GetKind() {
+							continue
+						}
+						if expectedGVK.Group != "" && expectedGVK.Group != res.GroupVersionKind().Group {
+							continue
+						}
+						*obj.(*unstructured.Unstructured) = res
+						return nil
+					}
+				}
+				return kerrors.NewNotFound(schema.GroupResource{
+					Group:    obj.GetObjectKind().GroupVersionKind().Group,
+					Resource: obj.GetObjectKind().GroupVersionKind().Kind,
+				}, key.Name)
 			},
-			ListFn: func(_ context.Context, _ int, list ctrlclient.ObjectList, _ ...ctrlclient.ListOption) error {
+			ListFn: func(_ context.Context, _ int, list ctrlclient.ObjectList, opts ...ctrlclient.ListOption) error {
+				listOpts := &ctrlclient.ListOptions{}
+				for _, opt := range opts {
+					opt.ApplyToList(listOpts)
+				}
+				expectedGVK := list.GetObjectKind().GroupVersionKind()
+				
+				var filtered []unstructured.Unstructured
+				for _, res := range ressources {
+					if expectedGVK.Kind != "" && expectedGVK.Kind != res.GetKind()+"List" && expectedGVK.Kind != res.GetKind() {
+						continue
+					}
+					if expectedGVK.Group != "" && expectedGVK.Group != res.GroupVersionKind().Group {
+						continue
+					}
+					if listOpts.Namespace != "" && listOpts.Namespace != res.GetNamespace() {
+						continue
+					}
+					if listOpts.LabelSelector != nil && !listOpts.LabelSelector.Matches(labels.Set(res.GetLabels())) {
+						continue
+					}
+					filtered = append(filtered, res)
+				}
 				*list.(*unstructured.UnstructuredList) = unstructured.UnstructuredList{
-					Items: ressources,
+					Items: filtered,
 				}
 				return nil
 			},
