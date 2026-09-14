@@ -27,8 +27,9 @@ func saveJUnitTest(report *model.Report, file string) error {
 		}
 		for _, test := range tests {
 			testCase := junit.Testcase{
-				Name: test.Name,
-				Time: durationInSecondsString(test.StartTime, test.EndTime),
+				Name:      test.Name,
+				Classname: test.Name,
+				Time:      durationInSecondsString(test.StartTime, test.EndTime),
 			}
 			if test.Skipped {
 				testCase.Skipped = &junit.Result{}
@@ -80,16 +81,18 @@ func saveJUnitStep(report *model.Report, file string) error {
 		testSuite.AddProperty("namespace", test.Namespace)
 		if test.Skipped {
 			testCase := junit.Testcase{
-				Name: test.Name,
-				Time: durationInSecondsString(test.StartTime, test.EndTime),
+				Name:      test.Name,
+				Classname: test.Name,
+				Time:      durationInSecondsString(test.StartTime, test.EndTime),
 			}
 			testCase.Skipped = &junit.Result{}
 			testSuite.AddTestcase(testCase)
 		} else {
 			for _, step := range test.Steps {
 				testCase := junit.Testcase{
-					Name: step.Name,
-					Time: durationInSecondsString(step.StartTime, step.EndTime),
+					Name:      step.Name,
+					Classname: test.Name,
+					Time:      durationInSecondsString(step.StartTime, step.EndTime),
 				}
 				var errs []error
 				for _, operation := range step.Operations {
@@ -132,8 +135,9 @@ func saveJUnitOperation(report *model.Report, file string) error {
 		testSuite.AddProperty("namespace", test.Namespace)
 		if test.Skipped {
 			testCase := junit.Testcase{
-				Name: test.Name,
-				Time: durationInSecondsString(test.StartTime, test.EndTime),
+				Name:      test.Name,
+				Classname: test.Name,
+				Time:      durationInSecondsString(test.StartTime, test.EndTime),
 			}
 			testCase.Skipped = &junit.Result{}
 			testSuite.AddTestcase(testCase)
@@ -142,7 +146,7 @@ func saveJUnitOperation(report *model.Report, file string) error {
 				for _, operation := range step.Operations {
 					testCase := junit.Testcase{
 						Name:      fmt.Sprintf("%s / %s", step.Name, operation.Name),
-						Classname: string(operation.Type),
+						Classname: test.Name,
 						Time:      durationInSecondsString(operation.StartTime, operation.EndTime),
 					}
 					if err := operation.Err; err != nil {

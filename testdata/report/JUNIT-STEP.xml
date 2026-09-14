@@ -3,7 +3,7 @@
     <properties>
       <property name="namespace" value="demo"></property>
     </properties>
-    <testcase name="step-report" classname="" time="60.000000">
+    <testcase name="step-report" classname="test-report" time="60.000000">
       <failure message="dummy"></failure>
     </testcase>
   </testsuite>
@@ -11,7 +11,7 @@
     <properties>
       <property name="namespace" value="skipped"></property>
     </properties>
-    <testcase name="test-report-skipped" classname="" time="180.000000">
+    <testcase name="test-report-skipped" classname="test-report-skipped" time="180.000000">
       <skipped message=""></skipped>
     </testcase>
   </testsuite>
