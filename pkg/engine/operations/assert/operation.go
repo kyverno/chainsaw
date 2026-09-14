@@ -3,6 +3,7 @@ package assert
 import (
 	"context"
 	"errors"
+	"fmt"
 
 	"github.com/kyverno/chainsaw/pkg/apis"
 	"github.com/kyverno/chainsaw/pkg/apis/v1alpha1"
@@ -100,6 +101,10 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 					errs = append(errs, errors.New("actual resource not found"))
 					return false, nil
 				}
+				if internal.IsRetriable(err) {
+					errs = append(errs, err)
+					return false, nil
+				}
 				return false, err
 			} else if len(candidates) == 0 {
 				errs = append(errs, errors.New("no actual resource found"))
@@ -127,7 +132,10 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, obj uns
 	}
 	// eventually return a combination of last errors
 	if len(lastErrs) != 0 {
-		return multierr.Combine(lastErrs...)
+		return multierr.Append(
+			multierr.Combine(lastErrs...),
+			fmt.Errorf("operation terminated with error: %w", err),
+		)
 	}
 	// return received error
 	return err
