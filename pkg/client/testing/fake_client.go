@@ -2,14 +2,15 @@ package testing
 
 import (
 	"context"
+	"sync"
 
 	"k8s.io/apimachinery/pkg/api/meta"
 	"k8s.io/apimachinery/pkg/runtime"
 	client "sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-// TODO: not thread safe
 type FakeClient struct {
+	mu                   sync.RWMutex
 	GetFn                func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error
 	CreateFn             func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error
 	UpdateFn             func(ctx context.Context, call int, obj client.Object, opts ...client.UpdateOption) error
@@ -23,47 +24,73 @@ type FakeClient struct {
 }
 
 func (c *FakeClient) Get(ctx context.Context, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
-	defer func() { c.numCalls++ }()
-	return c.GetFn(ctx, c.numCalls, key, obj, opts...)
+	c.mu.Lock()
+	call := c.numCalls
+	c.numCalls++
+	c.mu.Unlock()
+	return c.GetFn(ctx, call, key, obj, opts...)
 }
 
 func (c *FakeClient) List(ctx context.Context, list client.ObjectList, opts ...client.ListOption) error {
-	defer func() { c.numCalls++ }()
-	return c.ListFn(ctx, c.numCalls, list, opts...)
+	c.mu.Lock()
+	call := c.numCalls
+	c.numCalls++
+	c.mu.Unlock()
+	return c.ListFn(ctx, call, list, opts...)
 }
 
 func (c *FakeClient) Create(ctx context.Context, obj client.Object, opts ...client.CreateOption) error {
-	defer func() { c.numCalls++ }()
-	return c.CreateFn(ctx, c.numCalls, obj, opts...)
+	c.mu.Lock()
+	call := c.numCalls
+	c.numCalls++
+	c.mu.Unlock()
+	return c.CreateFn(ctx, call, obj, opts...)
 }
 
 func (c *FakeClient) Update(ctx context.Context, obj client.Object, opts ...client.UpdateOption) error {
-	defer func() { c.numCalls++ }()
-	return c.UpdateFn(ctx, c.numCalls, obj, opts...)
+	c.mu.Lock()
+	call := c.numCalls
+	c.numCalls++
+	c.mu.Unlock()
+	return c.UpdateFn(ctx, call, obj, opts...)
 }
 
 func (c *FakeClient) Delete(ctx context.Context, obj client.Object, opts ...client.DeleteOption) error {
-	defer func() { c.numCalls++ }()
-	return c.DeleteFn(ctx, c.numCalls, obj, opts...)
+	c.mu.Lock()
+	call := c.numCalls
+	c.numCalls++
+	c.mu.Unlock()
+	return c.DeleteFn(ctx, call, obj, opts...)
 }
 
 func (c *FakeClient) Patch(ctx context.Context, obj client.Object, patch client.Patch, opts ...client.PatchOption) error {
-	defer func() { c.numCalls++ }()
-	return c.PatchFn(ctx, c.numCalls, obj, patch, opts...)
+	c.mu.Lock()
+	call := c.numCalls
+	c.numCalls++
+	c.mu.Unlock()
+	return c.PatchFn(ctx, call, obj, patch, opts...)
 }
 
 func (c *FakeClient) IsObjectNamespaced(obj runtime.Object) (bool, error) {
-	defer func() { c.numCalls++ }()
-	return c.IsObjectNamespacedFn(c.numCalls, obj)
+	c.mu.Lock()
+	call := c.numCalls
+	c.numCalls++
+	c.mu.Unlock()
+	return c.IsObjectNamespacedFn(call, obj)
 }
 
 func (c *FakeClient) RESTMapper() meta.RESTMapper {
-	defer func() { c.numCalls++ }()
-	return c.RESTMapperFn(c.numCalls)
+	c.mu.Lock()
+	call := c.numCalls
+	c.numCalls++
+	c.mu.Unlock()
+	return c.RESTMapperFn(call)
 }
 
 func (c *FakeClient) SubResource(subResource string) client.SubResourceClient {
-	defer func() { c.numCalls++ }()
+	c.mu.Lock()
+	c.numCalls++
+	c.mu.Unlock()
 	if c.SubResourceFn != nil {
 		return c.SubResourceFn(subResource)
 	}
@@ -71,6 +98,8 @@ func (c *FakeClient) SubResource(subResource string) client.SubResourceClient {
 }
 
 func (c *FakeClient) NumCalls() int {
+	c.mu.RLock()
+	defer c.mu.RUnlock()
 	return c.numCalls
 }
 

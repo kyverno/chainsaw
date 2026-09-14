@@ -153,6 +153,37 @@ func TestFakeClient(t *testing.T) {
 		assert.NotNil(t, sw)
 		assert.Equal(t, 1, c.NumCalls())
 	})
+
+	t.Run("Concurrent calls", func(t *testing.T) {
+		c := &FakeClient{
+			GetFn: func(ctx context.Context, call int, key client.ObjectKey, obj client.Object, opts ...client.GetOption) error {
+				return nil
+			},
+			CreateFn: func(ctx context.Context, call int, obj client.Object, opts ...client.CreateOption) error {
+				return nil
+			},
+		}
+
+		const numGoroutines = 50
+		done := make(chan bool, numGoroutines*2)
+
+		for i := 0; i < numGoroutines; i++ {
+			go func() {
+				_ = c.Get(context.Background(), client.ObjectKey{}, nil)
+				done <- true
+			}()
+			go func() {
+				_ = c.Create(context.Background(), nil)
+				done <- true
+			}()
+		}
+
+		for i := 0; i < numGoroutines*2; i++ {
+			<-done
+		}
+
+		assert.Equal(t, numGoroutines*2, c.NumCalls())
+	})
 }
 
 func TestFakeSubResourceWriter(t *testing.T) {
