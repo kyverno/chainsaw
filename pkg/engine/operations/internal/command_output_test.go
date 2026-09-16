@@ -103,3 +103,53 @@ func TestCommandOutput_Sections(t *testing.T) {
 		})
 	}
 }
+
+func TestCommandOutput_CheckObj(t *testing.T) {
+	tests := []struct {
+		name   string
+		stdout string
+		want   any
+	}{{
+		name:   "plain text output is not parseable",
+		stdout: "OK\n",
+		want:   nil,
+	}, {
+		name:   "empty output",
+		stdout: "",
+		want:   nil,
+	}, {
+		name:   "single yaml document",
+		stdout: "apiVersion: v1\nkind: LimitRange\nspec:\n  limits:\n  - type: Container\n",
+		want: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "LimitRange",
+			"spec": map[string]any{
+				"limits": []any{
+					map[string]any{"type": "Container"},
+				},
+			},
+		},
+	}, {
+		name:   "plain yaml object with no apiVersion/kind is still usable",
+		stdout: "foo: bar\nbaz: 1\n",
+		want: map[string]any{
+			"foo": "bar",
+			"baz": int64(1),
+		},
+	}, {
+		name:   "multiple documents come back as a slice",
+		stdout: "apiVersion: v1\nkind: A\n---\napiVersion: v1\nkind: B\n",
+		want: []any{
+			map[string]any{"apiVersion": "v1", "kind": "A"},
+			map[string]any{"apiVersion": "v1", "kind": "B"},
+		},
+	}}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			co := &CommandOutput{
+				Stdout: *bytes.NewBufferString(tt.stdout),
+			}
+			assert.Equal(t, tt.want, co.CheckObj())
+		})
+	}
+}

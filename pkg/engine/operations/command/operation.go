@@ -141,7 +141,7 @@ func (o *operation) execute(ctx context.Context, bindings apis.Bindings, cmd *ex
 	if o.command.Check == nil || o.command.Check.IsNil() {
 		return nil, err
 	}
-	if errs, err := checks.Check(ctx, o.compilers, nil, bindings, o.command.Check); err != nil {
+	if errs, err := checks.Check(ctx, o.compilers, output.CheckObj(), bindings, o.command.Check); err != nil {
 		return nil, err
 	} else {
 		return nil, errs.ToAggregate()
