@@ -2,6 +2,7 @@ package patch
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"testing"
 	"time"
@@ -13,11 +14,102 @@ import (
 	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/mocks"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/types"
 )
+
+func Test_patch_uses_merge_patch_semantics(t *testing.T) {
+	const resourceVersion = "12345"
+	actual := unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "Pod",
+			"metadata": map[string]any{
+				"name":            "test-pod",
+				"resourceVersion": resourceVersion,
+			},
+			"spec": map[string]any{
+				"containers": []any{
+					map[string]any{
+						"name":  "app",
+						"image": "nginx:1.26",
+						"resources": map[string]any{
+							"requests": map[string]any{
+								"cpu":    "10m",
+								"memory": "16Mi",
+							},
+							"limits": map[string]any{
+								"cpu":    "100m",
+								"memory": "64Mi",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	patch := unstructured.Unstructured{
+		Object: map[string]any{
+			"apiVersion": "v1",
+			"kind":       "Pod",
+			"metadata": map[string]any{
+				"name": "test-pod",
+			},
+			"spec": map[string]any{
+				"containers": []any{
+					map[string]any{
+						"name":  "app",
+						"image": "nginx:1.27",
+					},
+				},
+			},
+		},
+	}
+	var patchBody map[string]any
+	client := &tclient.FakeClient{
+		GetFn: func(_ context.Context, _ int, _ client.ObjectKey, obj client.Object, _ ...client.GetOption) error {
+			actual.DeepCopyInto(obj.(*unstructured.Unstructured))
+			return nil
+		},
+		PatchFn: func(_ context.Context, _ int, obj client.Object, sent client.Patch, _ ...client.PatchOption) error {
+			require.Equal(t, types.MergePatchType, sent.Type())
+			data, err := sent.Data(obj)
+			require.NoError(t, err)
+			require.NoError(t, json.Unmarshal(data, &patchBody))
+			return nil
+		},
+	}
+	operation := New(
+		apis.DefaultCompilers,
+		client,
+		patch,
+		nil,
+		false,
+		nil,
+		nil,
+		"",
+	)
+	ctx := logging.WithLogger(context.TODO(), &mocks.Logger{})
+	_, err := operation.Exec(ctx, nil)
+	require.NoError(t, err)
+
+	metadata, ok := patchBody["metadata"].(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, resourceVersion, metadata["resourceVersion"])
+	spec, ok := patchBody["spec"].(map[string]any)
+	require.True(t, ok)
+	containers, ok := spec["containers"].([]any)
+	require.True(t, ok)
+	require.Len(t, containers, 1)
+	container, ok := containers[0].(map[string]any)
+	require.True(t, ok)
+	assert.Equal(t, "app", container["name"])
+	assert.Equal(t, "nginx:1.27", container["image"])
+	assert.NotContains(t, container, "resources")
+}
 
 func Test_create(t *testing.T) {
 	pod := unstructured.Unstructured{
