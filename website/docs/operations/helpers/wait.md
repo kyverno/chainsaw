@@ -145,7 +145,7 @@ spec:
         timeout: 1m
         for:
           # arbitrary JSON path
-          jsonpath:
+          jsonPath:
             path: '{.status.phase}'
             value: Running
 ```
