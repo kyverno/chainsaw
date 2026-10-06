@@ -96,6 +96,46 @@ func TestSave(t *testing.T) {
 			EndTime:    time.Date(2009, 11, 17, 20, 38, 58, 651387237, time.UTC),
 			Namespace:  "skipped",
 			Skipped:    true,
+		}, {
+			BasePath:     "base-path",
+			Name:         "test-report-scenario",
+			ScenarioId:   1,
+			ScenarioName: "named-scenario",
+			StartTime:    time.Date(2009, 11, 17, 20, 35, 58, 651387237, time.UTC),
+			EndTime:      time.Date(2009, 11, 17, 20, 38, 58, 651387237, time.UTC),
+			Namespace:    "scenario",
+			Steps: []*model.StepReport{{
+				Name:      "step-report",
+				StartTime: time.Date(2009, 11, 17, 20, 36, 58, 651387237, time.UTC),
+				EndTime:   time.Date(2009, 11, 17, 20, 37, 58, 651387237, time.UTC),
+				Operations: []*model.OperationReport{{
+					Name:      "operation-report",
+					Type:      model.OperationTypeScript,
+					StartTime: time.Date(2009, 11, 17, 20, 36, 58, 651387237, time.UTC),
+					EndTime:   time.Date(2009, 11, 17, 20, 37, 58, 651387237, time.UTC),
+				}},
+			}},
+		}, {
+			// scenarios without an explicit name fall back to the generated name
+			BasePath:     "base-path",
+			Name:         "test-report-scenario",
+			ScenarioId:   2,
+			ScenarioName: "scenario #2",
+			StartTime:    time.Date(2009, 11, 17, 20, 35, 58, 651387237, time.UTC),
+			EndTime:      time.Date(2009, 11, 17, 20, 38, 58, 651387237, time.UTC),
+			Namespace:    "scenario",
+			Steps: []*model.StepReport{{
+				Name:      "step-report",
+				StartTime: time.Date(2009, 11, 17, 20, 36, 58, 651387237, time.UTC),
+				EndTime:   time.Date(2009, 11, 17, 20, 37, 58, 651387237, time.UTC),
+				Operations: []*model.OperationReport{{
+					Name:      "operation-report-err",
+					Type:      model.OperationTypeScript,
+					StartTime: time.Date(2009, 11, 17, 20, 36, 58, 651387237, time.UTC),
+					EndTime:   time.Date(2009, 11, 17, 20, 37, 58, 651387237, time.UTC),
+					Err:       errors.New("dummy"),
+				}},
+			}},
 		}},
 	}
 	tests := []struct {
@@ -105,26 +145,32 @@ func TestSave(t *testing.T) {
 		wantErr bool
 		out     string
 	}{{
+		name:   "json",
 		report: report,
 		format: v1alpha2.JSONFormat,
 		out:    "JSON.json",
 	}, {
+		name:   "xml",
 		report: report,
 		format: v1alpha2.XMLFormat,
 		out:    "XML.xml",
 	}, {
+		name:   "junit-test",
 		report: report,
 		format: v1alpha2.JUnitTestFormat,
 		out:    "JUNIT-TEST.xml",
 	}, {
+		name:   "junit-step",
 		report: report,
 		format: v1alpha2.JUnitStepFormat,
 		out:    "JUNIT-STEP.xml",
 	}, {
+		name:   "junit-operation",
 		report: report,
 		format: v1alpha2.JUnitOperationFormat,
 		out:    "JUNIT-OPERATION.xml",
 	}, {
+		name:    "unknown-format",
 		report:  report,
 		format:  v1alpha2.ReportFormatType("xyz"),
 		wantErr: true,
@@ -138,7 +184,7 @@ func TestSave(t *testing.T) {
 			} else {
 				assert.NoError(t, err)
 				if tt.out != "" {
-					expected, err := os.ReadFile(filepath.Join(path, tt.out))
+					expected, err := os.ReadFile(filepath.Join("../../testdata/report", tt.out))
 					assert.NoError(t, err)
 					actual, err := os.ReadFile(filepath.Join(path, tt.out))
 					assert.NoError(t, err)

@@ -6,24 +6,28 @@
     {
       "basePath": "base-path",
       "name": "test-report",
+      "status": "failed",
       "startTime": "2009-11-17T20:35:58.651387237Z",
       "endTime": "2009-11-17T20:38:58.651387237Z",
       "namespace": "demo",
       "steps": [
         {
           "name": "step-report",
+          "status": "failed",
           "startTime": "2009-11-17T20:36:58.651387237Z",
           "endTime": "2009-11-17T20:37:58.651387237Z",
           "operations": [
             {
               "name": "operation-report",
               "type": "apply",
+              "status": "passed",
               "startTime": "2009-11-17T20:36:58.651387237Z",
               "endTime": "2009-11-17T20:37:58.651387237Z"
             },
             {
               "name": "operation-report-err",
               "type": "assert",
+              "status": "failed",
               "startTime": "2009-11-17T20:36:58.651387237Z",
               "endTime": "2009-11-17T20:37:58.651387237Z",
               "failure": {
@@ -38,10 +42,67 @@
       "basePath": "base-path",
       "name": "test-report-skipped",
       "concurrent": true,
+      "status": "skipped",
       "startTime": "2009-11-17T20:35:58.651387237Z",
       "endTime": "2009-11-17T20:38:58.651387237Z",
-      "namespace": "skipped",
-      "skipped": true
+      "namespace": "skipped"
+    },
+    {
+      "basePath": "base-path",
+      "name": "test-report-scenario",
+      "scenarioId": 1,
+      "scenario": "named-scenario",
+      "status": "passed",
+      "startTime": "2009-11-17T20:35:58.651387237Z",
+      "endTime": "2009-11-17T20:38:58.651387237Z",
+      "namespace": "scenario",
+      "steps": [
+        {
+          "name": "step-report",
+          "status": "passed",
+          "startTime": "2009-11-17T20:36:58.651387237Z",
+          "endTime": "2009-11-17T20:37:58.651387237Z",
+          "operations": [
+            {
+              "name": "operation-report",
+              "type": "script",
+              "status": "passed",
+              "startTime": "2009-11-17T20:36:58.651387237Z",
+              "endTime": "2009-11-17T20:37:58.651387237Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "basePath": "base-path",
+      "name": "test-report-scenario",
+      "scenarioId": 2,
+      "scenario": "scenario #2",
+      "status": "failed",
+      "startTime": "2009-11-17T20:35:58.651387237Z",
+      "endTime": "2009-11-17T20:38:58.651387237Z",
+      "namespace": "scenario",
+      "steps": [
+        {
+          "name": "step-report",
+          "status": "failed",
+          "startTime": "2009-11-17T20:36:58.651387237Z",
+          "endTime": "2009-11-17T20:37:58.651387237Z",
+          "operations": [
+            {
+              "name": "operation-report-err",
+              "type": "script",
+              "status": "failed",
+              "startTime": "2009-11-17T20:36:58.651387237Z",
+              "endTime": "2009-11-17T20:37:58.651387237Z",
+              "failure": {
+                "error": "dummy"
+              }
+            }
+          ]
+        }
+      ]
     }
   ]
 }

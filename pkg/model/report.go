@@ -38,14 +38,23 @@ func (r *Report) Add(report *TestReport) {
 }
 
 type TestReport struct {
-	BasePath   string
-	Name       string
-	Concurrent *bool
-	StartTime  time.Time
-	EndTime    time.Time
-	Namespace  string
-	Skipped    bool
-	Steps      []*StepReport
+	BasePath     string
+	Name         string
+	ScenarioId   int
+	ScenarioName string
+	Concurrent   *bool
+	StartTime    time.Time
+	EndTime      time.Time
+	Namespace    string
+	Skipped      bool
+	Steps        []*StepReport
+}
+
+func (r *TestReport) DisplayName() string {
+	if r.ScenarioName == "" {
+		return r.Name
+	}
+	return fmt.Sprintf("%s [%s]", r.Name, r.ScenarioName)
 }
 
 func (r *TestReport) Add(report *StepReport) {

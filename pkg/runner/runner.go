@@ -111,10 +111,12 @@ func (r *runner) run(ctx context.Context, m mainstart, nsOptions v1alpha2.Namesp
 						}
 						// setup reporting
 						report := &model.TestReport{
-							BasePath:   test.BasePath,
-							Name:       test.Test.Name,
-							Concurrent: test.Test.Spec.Concurrent,
-							StartTime:  time.Now(),
+							BasePath:     test.BasePath,
+							Name:         test.Test.Name,
+							ScenarioId:   scenarioId,
+							ScenarioName: scenarioName,
+							Concurrent:   test.Test.Spec.Concurrent,
+							StartTime:    time.Now(),
 						}
 						defer func() {
 							report.EndTime = time.Now()

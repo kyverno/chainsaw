@@ -1,4 +1,4 @@
-<testsuites name="report" time="600.000000" tests="3" failures="1" skipped="1">
+<testsuites name="report" time="600.000000" tests="5" failures="2" skipped="1">
   <testsuite name="test-report" tests="2" failures="1" errors="0" id="0" package="base-path" time="180.000000" timestamp="2009-11-17T20:34:58Z">
     <properties>
       <property name="namespace" value="demo"></property>
@@ -14,6 +14,22 @@
     </properties>
     <testcase name="test-report-skipped" classname="" time="180.000000">
       <skipped message=""></skipped>
+    </testcase>
+  </testsuite>
+  <testsuite name="test-report-scenario [named-scenario]" tests="1" failures="0" errors="0" id="0" package="base-path" time="180.000000" timestamp="2009-11-17T20:34:58Z">
+    <properties>
+      <property name="namespace" value="scenario"></property>
+      <property name="scenario" value="named-scenario"></property>
+    </properties>
+    <testcase name="step-report / operation-report" classname="script" time="60.000000"></testcase>
+  </testsuite>
+  <testsuite name="test-report-scenario [scenario #2]" tests="1" failures="1" errors="0" id="0" package="base-path" time="180.000000" timestamp="2009-11-17T20:34:58Z">
+    <properties>
+      <property name="namespace" value="scenario"></property>
+      <property name="scenario" value="scenario #2"></property>
+    </properties>
+    <testcase name="step-report / operation-report-err" classname="script" time="60.000000">
+      <failure message="dummy"></failure>
     </testcase>
   </testsuite>
 </testsuites>

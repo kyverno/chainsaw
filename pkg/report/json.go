@@ -28,14 +28,16 @@ func saveJson(report *model.Report, file string) error {
 		Operations []OperationReport `json:"operations,omitempty"`
 	}
 	type TestReport struct {
-		BasePath   string       `json:"basePath,omitempty"`
-		Name       string       `json:"name,omitempty"`
-		Concurrent *bool        `json:"concurrent,omitempty"`
-		Status     string       `json:"status"`
-		StartTime  time.Time    `json:"startTime"`
-		EndTime    time.Time    `json:"endTime"`
-		Namespace  string       `json:"namespace,omitempty"`
-		Steps      []StepReport `json:"steps,omitempty"`
+		BasePath     string       `json:"basePath,omitempty"`
+		Name         string       `json:"name,omitempty"`
+		ScenarioId   int          `json:"scenarioId,omitempty"`
+		ScenarioName string       `json:"scenario,omitempty"`
+		Concurrent   *bool        `json:"concurrent,omitempty"`
+		Status       string       `json:"status"`
+		StartTime    time.Time    `json:"startTime"`
+		EndTime      time.Time    `json:"endTime"`
+		Namespace    string       `json:"namespace,omitempty"`
+		Steps        []StepReport `json:"steps,omitempty"`
 	}
 	type Report struct {
 		Name      string       `json:"name,omitempty"`
@@ -56,13 +58,15 @@ func saveJson(report *model.Report, file string) error {
 			testStatus = "failed"
 		}
 		testReport := TestReport{
-			BasePath:   test.BasePath,
-			Name:       test.Name,
-			Concurrent: test.Concurrent,
-			Status:     testStatus,
-			StartTime:  test.StartTime,
-			EndTime:    test.EndTime,
-			Namespace:  test.Namespace,
+			BasePath:     test.BasePath,
+			Name:         test.Name,
+			ScenarioId:   test.ScenarioId,
+			ScenarioName: test.ScenarioName,
+			Concurrent:   test.Concurrent,
+			Status:       testStatus,
+			StartTime:    test.StartTime,
+			EndTime:      test.EndTime,
+			Namespace:    test.Namespace,
 		}
 		for _, step := range test.Steps {
 			stepStatus := "passed"

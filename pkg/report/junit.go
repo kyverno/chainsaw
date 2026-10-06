@@ -27,7 +27,7 @@ func saveJUnitTest(report *model.Report, file string) error {
 		}
 		for _, test := range tests {
 			testCase := junit.Testcase{
-				Name: test.Name,
+				Name: test.DisplayName(),
 				Time: durationInSecondsString(test.StartTime, test.EndTime),
 			}
 			if test.Skipped {
@@ -72,15 +72,18 @@ func saveJUnitStep(report *model.Report, file string) error {
 	}
 	addTestSuite := func(test *model.TestReport) {
 		testSuite := junit.Testsuite{
-			Name:    test.Name,
+			Name:    test.DisplayName(),
 			Package: test.BasePath,
 			Time:    durationInSecondsString(test.StartTime, test.EndTime),
 		}
 		testSuite.SetTimestamp(report.StartTime)
 		testSuite.AddProperty("namespace", test.Namespace)
+		if test.ScenarioName != "" {
+			testSuite.AddProperty("scenario", test.ScenarioName)
+		}
 		if test.Skipped {
 			testCase := junit.Testcase{
-				Name: test.Name,
+				Name: test.DisplayName(),
 				Time: durationInSecondsString(test.StartTime, test.EndTime),
 			}
 			testCase.Skipped = &junit.Result{}
@@ -124,15 +127,18 @@ func saveJUnitOperation(report *model.Report, file string) error {
 	}
 	addTestSuite := func(test *model.TestReport) {
 		testSuite := junit.Testsuite{
-			Name:    test.Name,
+			Name:    test.DisplayName(),
 			Package: test.BasePath,
 			Time:    durationInSecondsString(test.StartTime, test.EndTime),
 		}
 		testSuite.SetTimestamp(report.StartTime)
 		testSuite.AddProperty("namespace", test.Namespace)
+		if test.ScenarioName != "" {
+			testSuite.AddProperty("scenario", test.ScenarioName)
+		}
 		if test.Skipped {
 			testCase := junit.Testcase{
-				Name: test.Name,
+				Name: test.DisplayName(),
 				Time: durationInSecondsString(test.StartTime, test.EndTime),
 			}
 			testCase.Skipped = &junit.Result{}
