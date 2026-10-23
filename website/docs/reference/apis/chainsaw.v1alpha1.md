@@ -83,7 +83,7 @@ auto_generated: true
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `check` | `policy/v1alpha1.AssertionTree` |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
+| `check` | [`Check`](#chainsaw-kyverno-io-v1alpha1-Check) |  |  | <p>Check is an assertion tree to validate the operation outcome.</p> |
 
 ## ActionCheckRef     {#chainsaw-kyverno-io-v1alpha1-ActionCheckRef}
 
@@ -345,7 +345,7 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | [`Expression`](#chainsaw-kyverno-io-v1alpha1-Expression) | :white_check_mark: |  | <p>Name the name of the binding.</p> |
-| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
+| `compiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha1-Compiler) |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `value` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) | :white_check_mark: |  | <p>Value value of the binding.</p> |
 
 ## CatchFinally     {#chainsaw-kyverno-io-v1alpha1-CatchFinally}
@@ -363,7 +363,7 @@ during the testing process.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
-| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
+| `compiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha1-Compiler) |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `podLogs` | [`PodLogs`](#chainsaw-kyverno-io-v1alpha1-PodLogs) |  |  | <p>PodLogs determines the pod logs collector to execute.</p> |
 | `events` | [`Events`](#chainsaw-kyverno-io-v1alpha1-Events) |  |  | <p>Events determines the events collector to execute.</p> |
 | `describe` | [`Describe`](#chainsaw-kyverno-io-v1alpha1-Describe) |  |  | <p>Describe determines the resource describe collector to execute.</p> |
@@ -373,6 +373,16 @@ during the testing process.</p>
 | `command` | [`Command`](#chainsaw-kyverno-io-v1alpha1-Command) |  |  | <p>Command defines a command to run.</p> |
 | `script` | [`Script`](#chainsaw-kyverno-io-v1alpha1-Script) |  |  | <p>Script defines a script to run.</p> |
 | `sleep` | [`Sleep`](#chainsaw-kyverno-io-v1alpha1-Sleep) |  |  | <p>Sleep defines zzzz.</p> |
+
+## Check     {#chainsaw-kyverno-io-v1alpha1-Check}
+
+**Appears in:**
+    
+- [ActionCheck](#chainsaw-kyverno-io-v1alpha1-ActionCheck)
+- [Expectation](#chainsaw-kyverno-io-v1alpha1-Expectation)
+
+<p>Check represents a check to be applied on the result of an operation.</p>
+
 
 ## Clusters     {#chainsaw-kyverno-io-v1alpha1-Clusters}
 
@@ -410,6 +420,17 @@ during the testing process.</p>
 | `args` | `[]string` |  |  | <p>Args is the command arguments.</p> |
 | `workDir` | `string` |  |  | <p>WorkDir is the working directory for command.</p> |
 
+## Compiler     {#chainsaw-kyverno-io-v1alpha1-Compiler}
+
+**Appears in:**
+    
+- [Binding](#chainsaw-kyverno-io-v1alpha1-Binding)
+- [CatchFinally](#chainsaw-kyverno-io-v1alpha1-CatchFinally)
+- [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec)
+- [OperationBase](#chainsaw-kyverno-io-v1alpha1-OperationBase)
+- [TestSpec](#chainsaw-kyverno-io-v1alpha1-TestSpec)
+- [TestStepSpec](#chainsaw-kyverno-io-v1alpha1-TestStepSpec)
+
 ## ConfigurationSpec     {#chainsaw-kyverno-io-v1alpha1-ConfigurationSpec}
 
 **Appears in:**
@@ -424,7 +445,7 @@ during the testing process.</p>
 | `timeouts` | [`DefaultTimeouts`](#chainsaw-kyverno-io-v1alpha1-DefaultTimeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running the tests (implies SkipClusterDelete).</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
-| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
+| `compiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha1-Compiler) |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `failFast` | `bool` |  |  | <p>FailFast determines whether the test should stop upon encountering the first failure.</p> |
 | `parallel` | `int` |  |  | <p>The maximum number of tests to run at once.</p> |
 | `deletionPropagationPolicy` | [`meta/v1.DeletionPropagation`](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#deletionpropagation-v1-meta) |  |  | <p>DeletionPropagationPolicy decides if a deletion will propagate to the dependents of the object, and how the garbage collector will handle the propagation.</p> |
@@ -432,7 +453,7 @@ during the testing process.</p>
 | `reportPath` | `string` |  |  | <p>ReportPath defines the path.</p> |
 | `reportName` | `string` |  |  | <p>ReportName defines the name of report to create. It defaults to "chainsaw-report".</p> |
 | `namespace` | `string` |  |  | <p>Namespace defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in the test spec.</p> |
-| `namespaceTemplateCompiler` | `policy/v1alpha1.Compiler` |  |  | <p>NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.</p> |
+| `namespaceTemplateCompiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha1-Compiler) |  |  | <p>NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.</p> |
 | `namespaceTemplate` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
 | `fastNamespaceDeletion` | `bool` |  |  | <p>FastNamespaceDeletion skips waiting for namespace deletion.</p> |
 | `fullName` | `bool` |  |  | <p>FullName makes use of the full test case folder path instead of the folder name.</p> |
@@ -567,8 +588,8 @@ with a match filter to determine if the verification should be considered.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
-| `match` | `policy/v1alpha1.AssertionTree` |  |  | <p>Match defines the matching statement.</p> |
-| `check` | `policy/v1alpha1.AssertionTree` | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
+| `match` | [`Match`](#chainsaw-kyverno-io-v1alpha1-Match) |  |  | <p>Match defines the matching statement.</p> |
+| `check` | [`Check`](#chainsaw-kyverno-io-v1alpha1-Check) | :white_check_mark: |  | <p>Check defines the verification statement.</p> |
 
 ## Expression     {#chainsaw-kyverno-io-v1alpha1-Expression}
 
@@ -631,6 +652,16 @@ with a match filter to determine if the verification should be considered.</p>
 | `ActionFormat` | [`ActionFormat`](#chainsaw-kyverno-io-v1alpha1-ActionFormat) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionObject` | [`ActionObject`](#chainsaw-kyverno-io-v1alpha1-ActionObject) | :white_check_mark: | :white_check_mark: | *No description provided.* |
 | `ActionTimeout` | [`ActionTimeout`](#chainsaw-kyverno-io-v1alpha1-ActionTimeout) | :white_check_mark: | :white_check_mark: | *No description provided.* |
+
+## Match     {#chainsaw-kyverno-io-v1alpha1-Match}
+
+**Appears in:**
+    
+- [Expectation](#chainsaw-kyverno-io-v1alpha1-Expectation)
+- [Output](#chainsaw-kyverno-io-v1alpha1-Output)
+
+<p>Match represents a match condition against an evaluated object.</p>
+
 
 ## ObjectName     {#chainsaw-kyverno-io-v1alpha1-ObjectName}
 
@@ -722,9 +753,10 @@ For multiple objects use labels.</p>
 
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
+| `name` | `string` |  |  | <p>Name is the name of the operation in the test report. When it is empty, the report uses the description, and then the operation number.</p> |
 | `description` | `string` |  |  | <p>Description contains a description of the operation.</p> |
 | `continueOnError` | `bool` |  |  | <p>ContinueOnError determines whether a test should continue or not in case the operation was not successful. Even if the test continues executing, it will still be reported as failed.</p> |
-| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
+| `compiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha1-Compiler) |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 
 ## Output     {#chainsaw-kyverno-io-v1alpha1-Output}
 
@@ -738,7 +770,7 @@ For multiple objects use labels.</p>
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `Binding` | [`Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) | :white_check_mark: | :white_check_mark: | <p>Binding determines the binding to create when the match succeeds.</p> |
-| `match` | `policy/v1alpha1.AssertionTree` |  |  | <p>Match defines the matching statement.</p> |
+| `match` | [`Match`](#chainsaw-kyverno-io-v1alpha1-Match) |  |  | <p>Match defines the matching statement.</p> |
 
 ## Patch     {#chainsaw-kyverno-io-v1alpha1-Patch}
 
@@ -909,10 +941,10 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `concurrent` | `bool` |  |  | <p>Concurrent determines whether the test should run concurrently with other tests.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the test should be deleted after the test is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
-| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
+| `compiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha1-Compiler) |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `namespace` | `string` |  |  | <p>Namespace determines whether the test should run in a random ephemeral namespace or not.</p> |
 | `namespaceTemplate` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>NamespaceTemplate defines a template to create the test namespace.</p> |
-| `namespaceTemplateCompiler` | `policy/v1alpha1.Compiler` |  |  | <p>NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.</p> |
+| `namespaceTemplateCompiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha1-Compiler) |  |  | <p>NamespaceTemplateCompiler defines the default compiler to use when evaluating expressions.</p> |
 | `fastNamespaceDeletion` | `bool` |  |  | <p>FastNamespaceDeletion skips waiting for namespace deletion.</p> |
 | `scenarios` | [`[]Scenario`](#chainsaw-kyverno-io-v1alpha1-Scenario) |  |  | <p>Scenarios defines test scenarios.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
@@ -955,7 +987,7 @@ If a resource doesn't exist yet in the cluster it will fail.</p>
 | `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `skipDelete` | `bool` |  |  | <p>SkipDelete determines whether the resources created by the step should be deleted after the test step is executed.</p> |
 | `template` | `bool` |  |  | <p>Template determines whether resources should be considered for templating.</p> |
-| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
+| `compiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha1-Compiler) |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 | `bindings` | [`[]Binding`](#chainsaw-kyverno-io-v1alpha1-Binding) |  |  | <p>Bindings defines additional binding key/values.</p> |
 | `try` | [`[]Operation`](#chainsaw-kyverno-io-v1alpha1-Operation) |  |  | <p>Try defines what the step will try to execute.</p> |
 | `catch` | [`[]CatchFinally`](#chainsaw-kyverno-io-v1alpha1-CatchFinally) |  |  | <p>Catch defines what the step will execute when an error happens.</p> |

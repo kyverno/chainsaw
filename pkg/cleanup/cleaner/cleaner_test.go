@@ -8,6 +8,7 @@ import (
 
 	"github.com/kyverno/chainsaw/pkg/client"
 	tclient "github.com/kyverno/chainsaw/pkg/client/testing"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"github.com/stretchr/testify/assert"
 	corev1 "k8s.io/api/core/v1"
@@ -215,4 +216,28 @@ func Test_cleaner_Run(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func Test_cleaner_Run_output(t *testing.T) {
+	obj := &corev1.Namespace{
+		TypeMeta:   metav1.TypeMeta{APIVersion: "v1", Kind: "Namespace"},
+		ObjectMeta: metav1.ObjectMeta{Name: "foo"},
+	}
+	c := cleaner{
+		entries: []cleanupEntry{{
+			object: obj,
+			client: &tclient.FakeClient{
+				DeleteFn: func(ctx context.Context, call int, obj client.Object, opts ...client.DeleteOption) error {
+					logging.Log(ctx, logging.Delete, logging.OkStatus, obj, nil)
+					return nil
+				},
+			},
+		}},
+	}
+	report := &model.StepReport{}
+	errs := c.Run(context.Background(), report)
+	assert.Empty(t, errs)
+	assert.Len(t, report.Operations, 1)
+	assert.Equal(t, model.OperationTypeDelete, report.Operations[0].Type)
+	assert.Equal(t, "DELETE | OK | v1/Namespace @ foo\n", report.Operations[0].Output)
 }

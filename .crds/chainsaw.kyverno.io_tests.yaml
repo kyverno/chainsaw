@@ -4422,6 +4422,11 @@ spec:
                             - apiVersion
                             - kind
                             type: object
+                          name:
+                            description: |-
+                              Name is the name of the operation in the test report.
+                              When it is empty, the report uses the description, and then the operation number.
+                            type: string
                           patch:
                             description: Patch represents a patch operation.
                             not:

@@ -19,6 +19,7 @@ func saveJson(report *model.Report, file string) error {
 		StartTime time.Time           `json:"startTime"`
 		EndTime   time.Time           `json:"endTime"`
 		Failure   *Failure            `json:"failure,omitempty"`
+		Output    string              `json:"output,omitempty"`
 	}
 	type StepReport struct {
 		Name       string            `json:"name,omitempty"`
@@ -86,6 +87,7 @@ func saveJson(report *model.Report, file string) error {
 					Status:    opStatus,
 					StartTime: operation.StartTime,
 					EndTime:   operation.EndTime,
+					Output:    operation.Output,
 				}
 				if operation.Err != nil {
 					operationReport.Failure = &Failure{

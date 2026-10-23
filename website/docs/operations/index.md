@@ -55,9 +55,27 @@ spec:
             foo: bar
 ```
 
+### Name
+
+All operations support a `name` field. The test report uses it as the name of the operation (see [reporting options](../configuration/options/report.md#operation-names-and-output)).
+
+```yaml
+apiVersion: chainsaw.kyverno.io/v1alpha1
+kind: Test
+metadata:
+  name: example
+spec:
+  steps:
+  - try:
+    - name: wait
+      description: Waits a couple of seconds
+      sleep:
+        duration: 3s
+```
+
 ### Description
 
-All operations support a `description` field that can be used document your tests.
+All operations support a `description` field that can be used document your tests. When an operation has no `name`, the test report uses the description as the name of the operation.
 
 ```yaml
 apiVersion: chainsaw.kyverno.io/v1alpha1

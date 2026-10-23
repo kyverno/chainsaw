@@ -2,9 +2,11 @@ package cleaner
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"github.com/kyverno/chainsaw/pkg/client"
+	"github.com/kyverno/chainsaw/pkg/logging"
 	"github.com/kyverno/chainsaw/pkg/model"
 	kerrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -63,10 +65,12 @@ func (c *cleaner) Run(ctx context.Context, stepReport *model.StepReport) []error
 			Type:      model.OperationTypeDelete,
 			StartTime: time.Now(),
 		}
-		if report.Err = c.delete(ctx, c.entries[i]); report.Err != nil {
+		var output strings.Builder
+		if report.Err = c.delete(logging.WithRecorder(ctx, &output), c.entries[i]); report.Err != nil {
 			errs = append(errs, report.Err)
 		}
 		report.EndTime = time.Now()
+		report.Output = output.String()
 		if stepReport != nil {
 			stepReport.Add(&report)
 		}

@@ -7587,6 +7587,13 @@
                       },
                       "additionalProperties": false
                     },
+                    "name": {
+                      "description": "Name is the name of the operation in the test report.\nWhen it is empty, the report uses the description, and then the operation number.",
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
                     "patch": {
                       "description": "Patch represents a patch operation.",
                       "type": [

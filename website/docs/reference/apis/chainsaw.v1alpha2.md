@@ -38,6 +38,19 @@ auto_generated: true
 | `skipDelete` | `bool` |  |  | <p>If set, do not delete the resources after running a test.</p> |
 | `delayBeforeCleanup` | [`meta/v1.Duration`](https://pkg.go.dev/k8s.io/apimachinery/pkg/apis/meta/v1#Duration) |  |  | <p>DelayBeforeCleanup adds a delay between the time a test ends and the time cleanup starts.</p> |
 
+## Clusters     {#chainsaw-kyverno-io-v1alpha2-Clusters}
+
+**Appears in:**
+    
+- [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
+
+## Compiler     {#chainsaw-kyverno-io-v1alpha2-Compiler}
+
+**Appears in:**
+    
+- [NamespaceOptions](#chainsaw-kyverno-io-v1alpha2-NamespaceOptions)
+- [TemplatingOptions](#chainsaw-kyverno-io-v1alpha2-TemplatingOptions)
+
 ## ConfigurationSpec     {#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec}
 
 **Appears in:**
@@ -50,7 +63,7 @@ auto_generated: true
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `cleanup` | [`CleanupOptions`](#chainsaw-kyverno-io-v1alpha2-CleanupOptions) |  |  | <p>Cleanup contains cleanup configuration.</p> |
-| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha1-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
+| `clusters` | [`Clusters`](#chainsaw-kyverno-io-v1alpha2-Clusters) |  |  | <p>Clusters holds a registry to clusters to support multi-cluster tests.</p> |
 | `deletion` | [`DeletionOptions`](#chainsaw-kyverno-io-v1alpha2-DeletionOptions) |  |  | <p>Deletion contains the global deletion configuration.</p> |
 | `discovery` | [`DiscoveryOptions`](#chainsaw-kyverno-io-v1alpha2-DiscoveryOptions) |  |  | <p>Discovery contains tests discovery configuration.</p> |
 | `error` | [`ErrorOptions`](#chainsaw-kyverno-io-v1alpha2-ErrorOptions) |  |  | <p>Error contains the global error configuration.</p> |
@@ -58,7 +71,13 @@ auto_generated: true
 | `namespace` | [`NamespaceOptions`](#chainsaw-kyverno-io-v1alpha2-NamespaceOptions) |  |  | <p>Namespace contains properties for the namespace to use for tests.</p> |
 | `report` | [`ReportOptions`](#chainsaw-kyverno-io-v1alpha2-ReportOptions) |  |  | <p>Report contains properties for the report.</p> |
 | `templating` | [`TemplatingOptions`](#chainsaw-kyverno-io-v1alpha2-TemplatingOptions) |  |  | <p>Templating contains the templating config.</p> |
-| `timeouts` | [`DefaultTimeouts`](#chainsaw-kyverno-io-v1alpha1-DefaultTimeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |
+| `timeouts` | [`DefaultTimeouts`](#chainsaw-kyverno-io-v1alpha2-DefaultTimeouts) |  |  | <p>Global timeouts configuration. Applies to all tests/test steps if not overridden.</p> |
+
+## DefaultTimeouts     {#chainsaw-kyverno-io-v1alpha2-DefaultTimeouts}
+
+**Appears in:**
+    
+- [ConfigurationSpec](#chainsaw-kyverno-io-v1alpha2-ConfigurationSpec)
 
 ## DeletionOptions     {#chainsaw-kyverno-io-v1alpha2-DeletionOptions}
 
@@ -130,9 +149,15 @@ auto_generated: true
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `name` | `string` |  |  | <p>Name defines the namespace to use for tests. If not specified, every test will execute in a random ephemeral namespace unless the namespace is overridden in a the test spec.</p> |
-| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
-| `template` | [`Projection`](#chainsaw-kyverno-io-v1alpha1-Projection) |  |  | <p>Template defines a template to create the test namespace.</p> |
+| `compiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha2-Compiler) |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
+| `template` | [`Projection`](#chainsaw-kyverno-io-v1alpha2-Projection) |  |  | <p>Template defines a template to create the test namespace.</p> |
 | `fastDelete` | `bool` |  |  | <p>FastDelete skips waiting for namespace deletion.</p> |
+
+## Projection     {#chainsaw-kyverno-io-v1alpha2-Projection}
+
+**Appears in:**
+    
+- [NamespaceOptions](#chainsaw-kyverno-io-v1alpha2-NamespaceOptions)
 
 ## ReportFormatType     {#chainsaw-kyverno-io-v1alpha2-ReportFormatType}
 
@@ -169,6 +194,6 @@ auto_generated: true
 | Field | Type | Required | Inline | Description |
 |---|---|---|---|---|
 | `enabled` | `bool` |  |  | <p>Enabled determines whether resources should be considered for templating.</p> |
-| `compiler` | `policy/v1alpha1.Compiler` |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
+| `compiler` | [`Compiler`](#chainsaw-kyverno-io-v1alpha2-Compiler) |  |  | <p>Compiler defines the default compiler to use when evaluating expressions.</p> |
 
   

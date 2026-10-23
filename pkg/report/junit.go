@@ -4,12 +4,21 @@ import (
 	"encoding/xml"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/jstemmer/go-junit-report/v2/junit"
 	"github.com/kyverno/chainsaw/pkg/model"
 	"go.uber.org/multierr"
 )
+
+// systemOut gives the system-out element of a test case, or nil when there is no output.
+func systemOut(output string) *junit.Output {
+	if output == "" {
+		return nil
+	}
+	return &junit.Output{Data: output}
+}
 
 func durationInSecondsString(start, end time.Time) string {
 	duration := end.Sub(start)
@@ -92,11 +101,14 @@ func saveJUnitStep(report *model.Report, file string) error {
 					Time: durationInSecondsString(step.StartTime, step.EndTime),
 				}
 				var errs []error
+				var output strings.Builder
 				for _, operation := range step.Operations {
 					if operation.Err != nil {
 						errs = append(errs, operation.Err)
 					}
+					output.WriteString(operation.Output)
 				}
+				testCase.SystemOut = systemOut(output.String())
 				if err := multierr.Combine(errs...); err != nil {
 					testCase.Failure = &junit.Result{
 						Message: err.Error(),
@@ -144,6 +156,7 @@ func saveJUnitOperation(report *model.Report, file string) error {
 						Name:      fmt.Sprintf("%s / %s", step.Name, operation.Name),
 						Classname: string(operation.Type),
 						Time:      durationInSecondsString(operation.StartTime, operation.EndTime),
+						SystemOut: systemOut(operation.Output),
 					}
 					if err := operation.Err; err != nil {
 						testCase.Failure = &junit.Result{

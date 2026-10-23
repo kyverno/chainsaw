@@ -3,6 +3,7 @@ package runner
 import (
 	"context"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -382,7 +383,7 @@ func (r *runner) runOperation(
 	continueOnError := operation.ContinueOnError != nil && *operation.ContinueOnError
 	var errs []error
 	for i, action := range actions {
-		outputs, err := r.runAction(ctx, action, opType, operationId, i, tc, report)
+		outputs, err := r.runAction(ctx, action, opType, operationName(operation.Name, operation.Description, i, len(actions)), operationId, i, tc, report)
 		if err != nil {
 			errs = append(errs, err)
 			r.onFail()
@@ -411,7 +412,7 @@ func (r *runner) runCatch(
 	}
 	var errs []error
 	for i, action := range actions {
-		outputs, err := r.runAction(ctx, action, "", operationId, i, tc, nil)
+		outputs, err := r.runAction(ctx, action, "", "", operationId, i, tc, nil)
 		if err != nil {
 			errs = append(errs, err)
 			r.onFail()
@@ -427,6 +428,7 @@ func (*runner) runAction(
 	ctx context.Context,
 	action operations.Operation,
 	opType model.OperationType,
+	name string,
 	operationId int,
 	actionId int,
 	tc enginecontext.TestContext,
@@ -437,17 +439,35 @@ func (*runner) runAction(
 		ResourceId: actionId + 1,
 	})
 	if stepReport != nil {
+		var output strings.Builder
+		ctx = logging.WithRecorder(ctx, &output)
 		report := &model.OperationReport{
+			Name:      name,
 			Type:      opType,
 			StartTime: time.Now(),
 		}
 		defer func() {
 			report.EndTime = time.Now()
 			report.Err = err
+			report.Output = output.String()
 			stepReport.Add(report)
 		}()
 	}
 	return action.Execute(ctx, tc)
+}
+
+// operationName gives the report name of an action of an operation: the operation
+// name or, when it is empty, the operation description, with the action number when
+// the operation has more than one action. An empty result lets the step report use
+// its default name.
+func operationName(name string, description string, action int, actions int) string {
+	if name == "" {
+		name = description
+	}
+	if name == "" || actions <= 1 {
+		return name
+	}
+	return fmt.Sprintf("%s (%d/%d)", name, action+1, actions)
 }
 
 func (r *runner) onFail() {

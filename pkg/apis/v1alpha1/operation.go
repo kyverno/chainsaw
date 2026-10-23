@@ -2,6 +2,11 @@ package v1alpha1
 
 // OperationBase defines common elements to all operations.
 type OperationBase struct {
+	// Name is the name of the operation in the test report.
+	// When it is empty, the report uses the description, and then the operation number.
+	// +optional
+	Name string `json:"name,omitempty"`
+
 	// Description contains a description of the operation.
 	// +optional
 	Description string `json:"description,omitempty"`

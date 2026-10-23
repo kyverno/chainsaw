@@ -97,4 +97,5 @@ type OperationReport struct {
 	StartTime time.Time
 	EndTime   time.Time
 	Err       error
+	Output    string
 }
