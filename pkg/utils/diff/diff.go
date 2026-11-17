@@ -12,7 +12,9 @@ func prune(expected map[string]any, actual map[string]any) {
 			delete(actual, k)
 		} else {
 			if v, ok := v.(map[string]any); ok {
-				prune(expected[k].(map[string]any), v)
+				if expected, ok := expected[k].(map[string]any); ok {
+					prune(expected, v)
+				}
 			}
 		}
 	}
@@ -27,7 +29,9 @@ func pruneMetadata(expected map[string]any, actual map[string]any) {
 			delete(actual, k)
 		} else {
 			if v, ok := v.(map[string]any); ok {
-				prune(expected[k].(map[string]any), v)
+				if expected, ok := expected[k].(map[string]any); ok {
+					prune(expected, v)
+				}
 			}
 		}
 	}
@@ -42,10 +46,12 @@ func pruneRoot(expected map[string]any, actual map[string]any) {
 			delete(actual, k)
 		} else {
 			if v, ok := v.(map[string]any); ok {
-				if k == "metadata" {
-					pruneMetadata(expected[k].(map[string]any), v)
-				} else {
-					prune(expected[k].(map[string]any), v)
+				if expected, ok := expected[k].(map[string]any); ok {
+					if k == "metadata" {
+						pruneMetadata(expected, v)
+					} else {
+						prune(expected, v)
+					}
 				}
 			}
 		}
